@@ -11,7 +11,7 @@ public class SettingsManager {
     public static String getLastAddr(Context context) {
         SharedPreferences pref = context.getSharedPreferences(key, Context.MODE_PRIVATE);
         if (pref.contains("last_mac")) {
-            return pref.getString("last_addr", "");
+            return pref.getString("last_mac", "");
         }
         return "";
     }

@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
             if (mBluetoothLeService.isConnected()) {
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
                 buttonConnect.setText("DISCONNECT");
+                buttonConnect.setEnabled(true);
             }
         }
 
@@ -147,9 +148,10 @@ public class MainActivity extends Activity {
         buttonConnect.setOnClickListener(clickListener);
         buttonPebbleService.setOnClickListener(clickListener);
 
-        if (PebbleConnectivity.isInstanceCreated())
+        if (PebbleConnectivity.isInstanceCreated()) {
+            buttonPebbleService.setEnabled(true);
             buttonPebbleService.setText("STOP");
-        else
+        } else
             buttonPebbleService.setText("START");
 
         if (!mDeviceAddress.isEmpty())
@@ -213,13 +215,19 @@ public class MainActivity extends Activity {
         {
             switch (view.getId()) {
                 case R.id.buttonPebbleService:
-                    buttonPebbleService.setText("STARTED");
                     Intent intent1 = new Intent(getApplicationContext(), PebbleConnectivity.class);
-                    startService(intent1);
+
+                    if (PebbleConnectivity.isInstanceCreated()) {
+                        buttonPebbleService.setText("START");
+                        stopService(intent1);
+                    } else {
+                        buttonPebbleService.setText("STOP");
+                        startService(intent1);
+                    }
                     break;
                 case R.id.buttonBluetoothScan:
-                    Intent intent = new Intent(MainActivity.this, ScanActivity.class);
-                    startActivityForResult(intent, DEVICE_SCAN_REQUEST);
+                    Intent intent2 = new Intent(MainActivity.this, ScanActivity.class);
+                    startActivityForResult(intent2, DEVICE_SCAN_REQUEST);
                     break;
                 case R.id.buttonBluetoothConnect:
                     if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
