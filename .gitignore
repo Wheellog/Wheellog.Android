@@ -38,3 +38,8 @@ captures/
 
 # Keystore files
 *.jks
+
+# Log Files
+*.log
+.idea
+.idea/
