@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Scan"/>
+            android:text="@string/scan"/>
 
         <Button
             android:id="@+id/buttonBluetoothConnect"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:enabled="false"
-            android:text="Connect"/>
+            android:text="@string/connect"/>
 
         <Button
             android:id="@+id/buttonPebbleService"
@@ -36,7 +36,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:text="Start"/>
+            android:text="@string/start"/>
 
     </LinearLayout>
 

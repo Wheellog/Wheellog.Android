@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.cooper.wheellog;
 
 import android.app.Notification;
@@ -36,8 +20,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -47,7 +31,7 @@ import java.util.UUID;
 public class BluetoothLeService extends Service {
 
     private static final String DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
-    private static final String NOTITY_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
+//    private static final String NOTITY_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     private static final String SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
     
@@ -66,12 +50,6 @@ public class BluetoothLeService extends Service {
 
     private Handler mHandler = new Handler();
 
-    private static BluetoothLeService instance = null;
-
-    public static boolean isInstanceCreated() {
-        return instance != null;
-    }
-
     public static IntentFilter makeBluetoothUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
@@ -81,7 +59,6 @@ public class BluetoothLeService extends Service {
         intentFilter.addAction(Constants.ACTION_REQUEST_SERIAL_DATA);
         return intentFilter;
     }
-
 
     public boolean isConnected() {
         return mConnectionState == STATE_CONNECTED;
@@ -110,13 +87,15 @@ public class BluetoothLeService extends Service {
                 LOGI("Disconnected from GATT server.");
                 broadcastUpdate(Constants.ACTION_BLUETOOTH_DISCONNECTED);
             }
+            else
+                Toast.makeText(BluetoothLeService.this, "Unknown Connection State\rState = " + String.valueOf(newState), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             LOGI("onServicesDiscovered called");
-            if (status == 0) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
                 LOGI("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
                 BluetoothGattService targetService = gatt.getService(UUID.fromString(BluetoothLeService.SERVICE_UUID));
                 if (targetService == null) {
@@ -147,15 +126,15 @@ public class BluetoothLeService extends Service {
             LOGI("onServicesDiscovered called, status == BluetoothGatt.GATT_FAILURE");
         }
 
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt,
-                                         BluetoothGattCharacteristic characteristic,
-                                         int status) {
-            super.onCharacteristicRead(gatt, characteristic, status);
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(Constants.ACTION_BLUETOOTH_DATA_AVAILABLE, characteristic);
-            }
-        }
+//        @Override
+//        public void onCharacteristicRead(BluetoothGatt gatt,
+//                                         BluetoothGattCharacteristic characteristic,
+//                                         int status) {
+//            super.onCharacteristicRead(gatt, characteristic, status);
+//            if (status == BluetoothGatt.GATT_SUCCESS) {
+//                broadcastUpdate(Constants.ACTION_BLUETOOTH_DATA_AVAILABLE, characteristic);
+//            }
+//        }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
@@ -183,7 +162,7 @@ public class BluetoothLeService extends Service {
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
             LOGI("onDescriptorWrite " + String.valueOf(status));
-            if (status == 0) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
                 Wheel.getInstance().setConnectionState(true);
                 broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTED);
             }
@@ -195,11 +174,11 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    private void broadcastUpdate(final String action,
-                                 final BluetoothGattCharacteristic characteristic) {
-        final Intent intent = new Intent(action);
-        sendBroadcast(intent);
-    }
+//    private void broadcastUpdate(final String action,
+//                                 final BluetoothGattCharacteristic characteristic) {
+//        final Intent intent = new Intent(action);
+//        sendBroadcast(intent);
+//    }
 
     public class LocalBinder extends Binder {
         BluetoothLeService getService() {
@@ -214,13 +193,11 @@ public class BluetoothLeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        instance = this;
-
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name)
-                .setContentTitle("Service Running")
+                .setContentTitle(getString(R.string.notification_title))
                 .setContentIntent(pendingIntent)
                 .build();
 
@@ -333,35 +310,35 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt = null;
     }
 
-    /**
-     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
-     *
-     * @param characteristic The characteristic to read from.
-     */
-    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        mBluetoothGatt.readCharacteristic(characteristic);
-    }
+//    /**
+//     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
+//     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
+//     * callback.
+//     *
+//     * @param characteristic The characteristic to read from.
+//     */
+//    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
+//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.w(TAG, "BluetoothAdapter not initialized");
+//            return;
+//        }
+//        mBluetoothGatt.readCharacteristic(characteristic);
+//    }
 
-    /**
-     * Enables or disables notification on a give characteristic.
-     *
-     * @param characteristic Characteristic to act on.
-     * @param enabled If true, enable notification.  False otherwise.
-     */
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-    }
+//    /**
+//     * Enables or disables notification on a give characteristic.
+//     *
+//     * @param characteristic Characteristic to act on.
+//     * @param enabled If true, enable notification.  False otherwise.
+//     */
+//    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
+//                                              boolean enabled) {
+//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.w(TAG, "BluetoothAdapter not initialized");
+//            return;
+//        }
+//        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+//    }
 
 
     public boolean writeBluetoothGattCharacteristic(byte[] cmd) {
@@ -390,9 +367,9 @@ public class BluetoothLeService extends Service {
      *
      * @return A {@code List} of supported services.
      */
-    public List<BluetoothGattService> getSupportedGattServices() {
-        if (mBluetoothGatt == null) return null;
-
-        return mBluetoothGatt.getServices();
-    }
+//    public List<BluetoothGattService> getSupportedGattServices() {
+//        if (mBluetoothGatt == null) return null;
+//
+//        return mBluetoothGatt.getServices();
+//    }
 }

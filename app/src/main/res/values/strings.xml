@@ -4,6 +4,11 @@
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>
-    <string name="menu_scan">Scan</string>
-    <string name="menu_stop">Stop</string>
+    <string name="scan">Scan</string>
+    <string name="stop">Stop</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="start">Start</string>
+
+    <string name="notification_title">Service Running</string>
 </resources>

@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
             }
             if (mBluetoothLeService.isConnected()) {
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
-                buttonConnect.setText("DISCONNECT");
+                buttonConnect.setText(R.string.disconnect);
                 buttonConnect.setEnabled(true);
             }
         }
@@ -74,9 +74,10 @@ public class MainActivity extends Activity {
             if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) { // && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
                 Log.d(TAG, "Bluetooth connected");
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
-                buttonConnect.setText("DISCONNECT");
+                buttonConnect.setText(R.string.disconnect);
                 SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
                 buttonPebbleService.setEnabled(true);
+                buttonConnect.setEnabled(true);
                 byte[] data = new byte[20];
                 data[0] = (byte) -86;
                 data[1] = (byte) 85;
@@ -87,7 +88,8 @@ public class MainActivity extends Activity {
                 mBluetoothLeService.writeBluetoothGattCharacteristic(data);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
-                buttonConnect.setText("CONNECT");
+                buttonConnect.setText(R.string.connect);
+                buttonConnect.setEnabled(true);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
                 textViewSpeed.setText(String.format("%s KPH", Wheel.getInstance().getSpeedDouble()));
                 textViewVoltage.setText(String.format("%sV", Wheel.getInstance().getVoltageDouble()));
@@ -150,9 +152,9 @@ public class MainActivity extends Activity {
 
         if (PebbleConnectivity.isInstanceCreated()) {
             buttonPebbleService.setEnabled(true);
-            buttonPebbleService.setText("STOP");
+            buttonPebbleService.setText(R.string.stop);
         } else
-            buttonPebbleService.setText("START");
+            buttonPebbleService.setText(R.string.start);
 
         if (!mDeviceAddress.isEmpty())
             buttonConnect.setEnabled(true);
@@ -218,10 +220,10 @@ public class MainActivity extends Activity {
                     Intent intent1 = new Intent(getApplicationContext(), PebbleConnectivity.class);
 
                     if (PebbleConnectivity.isInstanceCreated()) {
-                        buttonPebbleService.setText("START");
+                        buttonPebbleService.setText(R.string.start);
                         stopService(intent1);
                     } else {
-                        buttonPebbleService.setText("STOP");
+                        buttonPebbleService.setText(R.string.stop);
                         startService(intent1);
                     }
                     break;
@@ -230,10 +232,16 @@ public class MainActivity extends Activity {
                     startActivityForResult(intent2, DEVICE_SCAN_REQUEST);
                     break;
                 case R.id.buttonBluetoothConnect:
+                    boolean result = false;
+                    buttonConnect.setEnabled(false);
                     if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
-                        mBluetoothLeService.connect(mDeviceAddress);
+                        result = mBluetoothLeService.connect(mDeviceAddress);
                     else {
                         mBluetoothLeService.disconnect();
+                    }
+                    if (!result) {
+                        buttonConnect.setEnabled(true);
+                        Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
                     }
             }
         }
