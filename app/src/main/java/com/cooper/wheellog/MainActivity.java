@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
     TextView textViewVersion;
     TextView textViewSerial;
     TextView textViewTotalDistance;
+    TextView textViewRideTime;
 
     Handler mHandler = new Handler();
     private BluetoothLeService mBluetoothLeService;
@@ -105,6 +106,7 @@ public class MainActivity extends Activity {
                 textViewName.setText(Wheel.getInstance().getName());
                 textViewType.setText(Wheel.getInstance().getType());
                 textViewSerial.setText(Wheel.getInstance().getSerial());
+                textViewRideTime.setText(Wheel.getInstance().getCurrentTimeString());
             } else if (Constants.ACTION_REQUEST_SERIAL_DATA.equals(action)) {
                 byte[] data = new byte[20];
                 data[0] = (byte) -86;
@@ -146,6 +148,7 @@ public class MainActivity extends Activity {
         textViewName = (TextView) findViewById(R.id.tvName);
         textViewVersion = (TextView) findViewById(R.id.tvVersion);
         textViewSerial = (TextView) findViewById(R.id.tvSerial);
+        textViewRideTime = (TextView) findViewById(R.id.tvRideTime);
 
         buttonScan.setOnClickListener(clickListener);
         buttonConnect.setOnClickListener(clickListener);

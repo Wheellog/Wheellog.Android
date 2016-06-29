@@ -1,5 +1,7 @@
 package com.cooper.wheellog;
 
+import java.util.concurrent.TimeUnit;
+
 public class Wheel {
     private static int speed;
     private static long totalDistance;
@@ -9,7 +11,7 @@ public class Wheel {
     private static int battery;
     private static int voltage;
     private static long currentDistance;
-    private static double currentTime;
+    private static int currentTime;
     private static int maxSpeed;
     private static int fanStatus;
     private static int connectionState = BluetoothLeService.STATE_DISCONNECTED;
@@ -35,10 +37,16 @@ public class Wheel {
     public int getConnectionState() { return connectionState; }
     public int getMaxSpeed() { return maxSpeed; }
     public int getVersion() { return mVersion; }
+    public int getCurrentTime() { return currentTime; };
 
     public String getName() { return mDeviceNameString; }
     public String getType() { return mUnicycleType; }
     public String getSerial() { return mUnicycleSN; }
+    public String getCurrentTimeString() {
+        long hours = TimeUnit.MINUTES.toHours(currentTime);
+        long minutes = currentTime - TimeUnit.HOURS.toMinutes(hours);
+        return String.format("%02d:%02d", hours, minutes);
+    }
 
     public double getSpeedDouble() { return (double) speed / 10.0F; }
     public double getVoltageDouble() { return (double) voltage / 10.0F; }

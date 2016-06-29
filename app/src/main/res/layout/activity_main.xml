@@ -66,20 +66,21 @@
                 android:gravity="center_horizontal"
                 android:text="0.0 KPH" />
 
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:paddingTop="10dp"
                 android:textStyle="bold"
-                android:text="Max Speed"/>
+                android:text="Ride Time"/>
 
             <TextView
-                android:id="@+id/tvMaxSpeed"
+                android:id="@+id/tvRideTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="0.0 KPH" />
+                android:text="00:00" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -167,6 +168,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
+                android:textStyle="bold"
+                android:text="Max Speed"/>
+
+            <TextView
+                android:id="@+id/tvMaxSpeed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="0.0 KPH" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingTop="10dp"
                 android:textStyle="bold"
                 android:text="Voltage"/>
 

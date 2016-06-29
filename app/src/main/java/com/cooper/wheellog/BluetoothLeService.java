@@ -36,6 +36,7 @@ public class BluetoothLeService extends Service {
     private static final String SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
     
     private final static String TAG = BluetoothLeService.class.getSimpleName();
+    private static final boolean autoConnect = false;
     private final boolean DEBUG = false;
 
     private BluetoothManager mBluetoothManager;
@@ -275,7 +276,7 @@ public class BluetoothLeService extends Service {
         }
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
-        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        mBluetoothGatt = device.connectGatt(this, autoConnect, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
