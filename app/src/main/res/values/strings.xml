@@ -7,6 +7,7 @@
     <string name="scan">Scan</string>
     <string name="stop">Stop</string>
     <string name="connect">Connect</string>
+    <string name="connecting">Connecting</string>
     <string name="disconnect">Disconnect</string>
     <string name="start">Start</string>
 

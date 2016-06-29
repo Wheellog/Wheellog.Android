@@ -58,6 +58,7 @@ public class MainActivity extends Activity {
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
                 buttonConnect.setText(R.string.disconnect);
                 buttonConnect.setEnabled(true);
+                buttonPebbleService.setEnabled(true);
             }
         }
 
@@ -210,19 +211,24 @@ public class MainActivity extends Activity {
         stopService(bluetoothServiceIntent);
     }
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
+    private View.OnClickListener clickListener = new View.OnClickListener()
+    {
 
         @Override
         public void onClick(View view)
         {
-            switch (view.getId()) {
+            switch (view.getId())
+            {
                 case R.id.buttonPebbleService:
                     Intent intent1 = new Intent(getApplicationContext(), PebbleConnectivity.class);
 
-                    if (PebbleConnectivity.isInstanceCreated()) {
+                    if (PebbleConnectivity.isInstanceCreated())
+                    {
                         buttonPebbleService.setText(R.string.start);
                         stopService(intent1);
-                    } else {
+                    }
+                    else
+                    {
                         buttonPebbleService.setText(R.string.stop);
                         startService(intent1);
                     }
@@ -232,17 +238,20 @@ public class MainActivity extends Activity {
                     startActivityForResult(intent2, DEVICE_SCAN_REQUEST);
                     break;
                 case R.id.buttonBluetoothConnect:
-                    boolean result = false;
+                    buttonConnect.setText(R.string.connecting);
                     buttonConnect.setEnabled(false);
                     if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
-                        result = mBluetoothLeService.connect(mDeviceAddress);
-                    else {
+                    {
+                        Boolean result = mBluetoothLeService.connect(mDeviceAddress);
+                        if (!result)
+                        {
+                            buttonConnect.setEnabled(true);
+                            buttonConnect.setText(R.string.connect);
+                            Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else
                         mBluetoothLeService.disconnect();
-                    }
-                    if (!result) {
-                        buttonConnect.setEnabled(true);
-                        Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
-                    }
             }
         }
     };
