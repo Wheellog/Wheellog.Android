@@ -87,9 +87,10 @@ public class MainActivity extends Activity {
                 data[17] = (byte) 20;
                 data[18] = (byte) 90;
                 data[19] = (byte) 90;
-                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+//                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
+                Toast.makeText(MainActivity.this, "DISCONNECTED", Toast.LENGTH_SHORT).show();
                 buttonConnect.setText(R.string.connect);
                 buttonConnect.setEnabled(true);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
