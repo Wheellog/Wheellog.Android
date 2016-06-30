@@ -43,9 +43,12 @@ public class Wheel {
     public String getType() { return mUnicycleType; }
     public String getSerial() { return mUnicycleSN; }
     public String getCurrentTimeString() {
-        long hours = TimeUnit.MINUTES.toHours(currentTime);
-        long minutes = currentTime - TimeUnit.HOURS.toMinutes(hours);
-        return String.format("%02d:%02d", hours, minutes);
+        long hours = TimeUnit.SECONDS.toHours(currentTime);
+        long minutes = TimeUnit.SECONDS.toMinutes(currentTime) -
+                TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(currentTime));
+        long seconds = TimeUnit.SECONDS.toSeconds(currentTime) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(currentTime));
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
     public double getSpeedDouble() { return (double) speed / 10.0F; }

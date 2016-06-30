@@ -36,8 +36,8 @@ public class BluetoothLeService extends Service {
     private static final String SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
     
     private final static String TAG = BluetoothLeService.class.getSimpleName();
-    private static final boolean autoConnect = false;
-    private final boolean DEBUG = false;
+    private static final boolean autoConnect = true;
+    private static final boolean DEBUG = false;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
