@@ -44,6 +44,7 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+    private boolean launchedFromPebble = false;
 
     public static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -122,6 +123,11 @@ public class BluetoothLeService extends Service {
                 mBluetoothGatt.writeDescriptor(descriptor);
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
+
+                if (launchedFromPebble) {
+                    Intent intent = new Intent(getApplicationContext(), PebbleConnectivity.class);
+                    startService(intent);
+                }
                 return;
             }
             LOGI("onServicesDiscovered called, status == BluetoothGatt.GATT_FAILURE");
@@ -194,6 +200,7 @@ public class BluetoothLeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this)

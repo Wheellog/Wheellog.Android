@@ -84,11 +84,6 @@ public class MainActivity extends Activity {
                 buttonPebbleService.setEnabled(true);
                 buttonConnect.setEnabled(true);
 
-                if (launchedFromPebble) {
-                    Intent pebbleIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
-                    startService(pebbleIntent);
-                }
-
                 byte[] data = new byte[20];
                 data[0] = (byte) -86;
                 data[1] = (byte) 85;
@@ -96,7 +91,7 @@ public class MainActivity extends Activity {
                 data[17] = (byte) 20;
                 data[18] = (byte) 90;
                 data[19] = (byte) 90;
-//                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
                 Toast.makeText(MainActivity.this, "DISCONNECTED", Toast.LENGTH_SHORT).show();
@@ -139,6 +134,7 @@ public class MainActivity extends Activity {
         launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
 
         Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
+        gattServiceIntent.putExtra(com.cooper.wheellog.Constants.LAUNCHED_FROM_PEBBLE, launchedFromPebble);
         startService(gattServiceIntent);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
