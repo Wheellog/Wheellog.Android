@@ -37,17 +37,16 @@ public class BluetoothLeService extends Service {
     
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private static final boolean autoConnect = true;
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
-    private boolean launchedFromPebble = false;
 
     public static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
+    public static final int STATE_CONNECTING = 1;
     public static final int STATE_CONNECTED = 2;
 
     private Handler mHandler = new Handler();
@@ -59,11 +58,12 @@ public class BluetoothLeService extends Service {
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_REQUEST_SERIAL_DATA);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_STARTED);
         return intentFilter;
     }
 
-    public boolean isConnected() {
-        return mConnectionState == STATE_CONNECTED;
+    public int getConnectionState() {
+        return mConnectionState;
     }
     
     private void LOGI(final String msg) {
@@ -123,11 +123,6 @@ public class BluetoothLeService extends Service {
                 mBluetoothGatt.writeDescriptor(descriptor);
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
-
-                if (launchedFromPebble) {
-                    Intent intent = new Intent(getApplicationContext(), PebbleConnectivity.class);
-                    startService(intent);
-                }
                 return;
             }
             LOGI("onServicesDiscovered called, status == BluetoothGatt.GATT_FAILURE");
@@ -200,7 +195,6 @@ public class BluetoothLeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this)
@@ -259,7 +253,7 @@ public class BluetoothLeService extends Service {
      *         callback.
      */
     public boolean connect(final String address) {
-        if (mBluetoothAdapter == null || address == null) {
+        if (mBluetoothAdapter == null || address == null || address.isEmpty()) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
@@ -281,8 +275,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-        // We want to directly connect to the device, so we are setting the autoConnect
-        // parameter to false.
+
         mBluetoothGatt = device.connectGatt(this, autoConnect, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
@@ -300,6 +293,10 @@ public class BluetoothLeService extends Service {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
+        }
+        if (mConnectionState != STATE_CONNECTED) {
+            mConnectionState = STATE_DISCONNECTED;
+            broadcastUpdate(Constants.ACTION_BLUETOOTH_DISCONNECTED);
         }
         mBluetoothGatt.disconnect();
     }

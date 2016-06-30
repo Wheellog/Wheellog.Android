@@ -11,7 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -45,12 +45,10 @@ public class MainActivity extends Activity {
     TextView textViewTotalDistance;
     TextView textViewRideTime;
 
-    Handler mHandler = new Handler();
     private BluetoothLeService mBluetoothLeService;
     String mDeviceAddress;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
-    private boolean launchedFromPebble = false;
     private final String TAG = "MainActivity";
     private static final int PERMISSION_REQUEST_CODE = 10;
 
@@ -63,16 +61,13 @@ public class MainActivity extends Activity {
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 finish();
             }
-            if (mBluetoothLeService.isConnected()) {
-                mConnectionState = BluetoothLeService.STATE_CONNECTED;
-                buttonConnect.setText(R.string.disconnect);
-                buttonConnect.setEnabled(true);
-                buttonPebbleService.setEnabled(true);
-                buttonDataService.setEnabled(true);
-            }
 
-            if (launchedFromPebble && !"".equals(mDeviceAddress))
-                mBluetoothLeService.connect(mDeviceAddress);
+            if (mConnectionState != mBluetoothLeService.getConnectionState())
+                setConnectionState(mBluetoothLeService.getConnectionState());
+
+            if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED &&
+                    mDeviceAddress != null && !mDeviceAddress.isEmpty())
+                connectToWheel();
         }
 
         @Override
@@ -86,27 +81,9 @@ public class MainActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
-                Log.d(TAG, "Bluetooth connected");
-                mConnectionState = BluetoothLeService.STATE_CONNECTED;
-                buttonConnect.setText(R.string.disconnect);
-                SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
-                buttonPebbleService.setEnabled(true);
-                buttonDataService.setEnabled(true);
-                buttonConnect.setEnabled(true);
-
-                byte[] data = new byte[20];
-                data[0] = (byte) -86;
-                data[1] = (byte) 85;
-                data[16] = (byte) -101;
-                data[17] = (byte) 20;
-                data[18] = (byte) 90;
-                data[19] = (byte) 90;
-                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                setConnectionState(BluetoothLeService.STATE_CONNECTED);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
-                mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
-                Toast.makeText(MainActivity.this, "DISCONNECTED", Toast.LENGTH_SHORT).show();
-                buttonConnect.setText(R.string.connect);
-                buttonConnect.setEnabled(true);
+                setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
                 textViewSpeed.setText(String.format("%s KPH", Wheel.getInstance().getSpeedDouble()));
                 textViewVoltage.setText(String.format("%sV", Wheel.getInstance().getVoltageDouble()));
@@ -135,19 +112,39 @@ public class MainActivity extends Activity {
         }
     };
 
+    private void setConnectionState(int connectionState) {
+        switch (connectionState) {
+            case BluetoothLeService.STATE_CONNECTED:
+                Log.d(TAG, "Bluetooth connected");
+                buttonConnect.setText(R.string.disconnect);
+                buttonScan.setEnabled(false);
+                SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
+
+                byte[] data = new byte[20];
+                data[0] = (byte) -86;
+                data[1] = (byte) 85;
+                data[16] = (byte) -101;
+                data[17] = (byte) 20;
+                data[18] = (byte) 90;
+                data[19] = (byte) 90;
+                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                break;
+            case BluetoothLeService.STATE_CONNECTING:
+                buttonScan.setEnabled(false);
+                buttonConnect.setText(R.string.waiting_for_device);
+                break;
+            case BluetoothLeService.STATE_DISCONNECTED:
+                buttonScan.setEnabled(true);
+                buttonConnect.setText(R.string.connect);
+                break;
+        }
+        mConnectionState = connectionState;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent intent = getIntent();
-        launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
-
-        Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
-        gattServiceIntent.putExtra(com.cooper.wheellog.Constants.LAUNCHED_FROM_PEBBLE, launchedFromPebble);
-        startService(gattServiceIntent);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-
         mDeviceAddress = SettingsManager.getLastAddr(getApplicationContext());
 
         buttonScan = (Button) findViewById(R.id.buttonBluetoothScan);
@@ -175,25 +172,35 @@ public class MainActivity extends Activity {
         buttonPebbleService.setOnClickListener(clickListener);
         buttonDataService.setOnClickListener(clickListener);
 
-        if (PebbleConnectivity.isInstanceCreated()) {
-            buttonPebbleService.setEnabled(true);
+        if (PebbleConnectivity.isInstanceCreated())
             buttonPebbleService.setText(R.string.stop_pebble_service);
-        } else
+        else
             buttonPebbleService.setText(R.string.start_pebble_service);
 
-        if (DataLogger.isInstanceCreated()) {
-            buttonDataService.setEnabled(true);
+        if (DataLogger.isInstanceCreated())
             buttonDataService.setText(R.string.stop_data_service);
-        } else
+        else
             buttonDataService.setText(R.string.start_data_service);
 
-        if (!mDeviceAddress.isEmpty())
-            buttonConnect.setEnabled(true);
+        if (mDeviceAddress == null || mDeviceAddress.isEmpty())
+            buttonConnect.setEnabled(false);
+
+//        Intent intent = getIntent();
+//        boolean launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
+//        if (launchedFromPebble)
+//            startPebbleService();
+
+        Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
+        startService(gattServiceIntent);
+        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (mBluetoothLeService != null &&
+                mConnectionState != mBluetoothLeService.getConnectionState())
+            setConnectionState(mBluetoothLeService.getConnectionState());
         registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeBluetoothUpdateIntentFilter());
     }
 
@@ -201,7 +208,6 @@ public class MainActivity extends Activity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mBluetoothUpdateReceiver);
-        mHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -223,7 +229,6 @@ public class MainActivity extends Activity {
         Toast.makeText(this, "Please BACK again to exit", Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
-
             @Override
             public void run() {
                 doubleBackToExitPressedOnce=false;
@@ -259,34 +264,16 @@ public class MainActivity extends Activity {
                     startActivityForResult(scanActivityIntent, DEVICE_SCAN_REQUEST);
                     break;
                 case R.id.buttonBluetoothConnect:
-                    buttonConnect.setText(R.string.connecting);
-                    buttonConnect.setEnabled(false);
                     if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
-                    {
-                        Boolean result = mBluetoothLeService.connect(mDeviceAddress);
-                        if (!result)
-                        {
-                            buttonConnect.setEnabled(true);
-                            buttonConnect.setText(R.string.connect);
-                            Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                        connectToWheel();
                     else
-                        mBluetoothLeService.disconnect();
+                        disconnectFromWheel();
                     break;
                 case R.id.buttonPebbleService:
-                    Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
-
-                    if (PebbleConnectivity.isInstanceCreated())
-                    {
-                        buttonPebbleService.setText(R.string.start_pebble_service);
-                        stopService(pebbleServiceIntent);
-                    }
+                    if (!PebbleConnectivity.isInstanceCreated())
+                        startPebbleService();
                     else
-                    {
-                        buttonPebbleService.setText(R.string.stop_pebble_service);
-                        startService(pebbleServiceIntent);
-                    }
+                        stopPebbleService();
                     break;
                 case R.id.buttonDataLoggingService:
 
@@ -312,13 +299,39 @@ public class MainActivity extends Activity {
         }
     };
 
+    private void stopPebbleService() { startPebbleService(false);}
+    private void startPebbleService() { startPebbleService(true);}
+    private void startPebbleService(boolean start) {
+        Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
+
+        if (start) {
+                buttonPebbleService.setText(R.string.stop_pebble_service);
+                startService(pebbleServiceIntent);
+        } else {
+            buttonPebbleService.setText(R.string.start_pebble_service);
+            stopService(pebbleServiceIntent);
+        }
+    }
+
+    private void connectToWheel() { connectToWheel(true);}
+    private void disconnectFromWheel() { connectToWheel(false);}
+    private void connectToWheel(boolean connect) {
+
+        if (connect) {
+            setConnectionState(BluetoothLeService.STATE_CONNECTING);
+            Boolean connecting = mBluetoothLeService.connect(mDeviceAddress);
+            if (!connecting) {
+                setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
+                Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else
+         mBluetoothLeService.disconnect();
+    }
+
     private boolean checkExternalFilePermission(){
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED){
-            return true;
-        } else {
-            return false;
-        }
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestExternalFilePermission(){
@@ -330,7 +343,7 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

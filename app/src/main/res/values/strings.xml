@@ -9,6 +9,7 @@
     <string name="connect">Connect</string>
     <string name="connecting">Connecting</string>
     <string name="disconnect">Disconnect</string>
+    <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Service</string>
     <string name="stop_pebble_service">Stop Pebble Service</string>
     <string name="start_data_service">Start Logging Service</string>

@@ -27,7 +27,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:enabled="false"
             android:text="@string/connect"/>
 
     </LinearLayout>
@@ -42,7 +41,6 @@
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:text="@string/start_pebble_service"/>
 
         <Button
@@ -50,7 +48,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:enabled="false"
             android:text="@string/start_data_service"/>
 
     </LinearLayout>
