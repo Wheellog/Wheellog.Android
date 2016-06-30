@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
     String mDeviceAddress;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
-
+    private boolean launchedFromPebble = false;
     private final String TAG = "MainActivity";
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -61,6 +61,9 @@ public class MainActivity extends Activity {
                 buttonConnect.setEnabled(true);
                 buttonPebbleService.setEnabled(true);
             }
+
+            if (launchedFromPebble && !"".equals(mDeviceAddress))
+                mBluetoothLeService.connect(mDeviceAddress);
         }
 
         @Override
@@ -73,13 +76,19 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) { // && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
+            if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
                 Log.d(TAG, "Bluetooth connected");
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
                 buttonConnect.setText(R.string.disconnect);
                 SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
                 buttonPebbleService.setEnabled(true);
                 buttonConnect.setEnabled(true);
+
+                if (launchedFromPebble) {
+                    Intent pebbleIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
+                    startService(pebbleIntent);
+                }
+
                 byte[] data = new byte[20];
                 data[0] = (byte) -86;
                 data[1] = (byte) 85;
@@ -124,6 +133,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = getIntent();
+        launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
 
         Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
         startService(gattServiceIntent);

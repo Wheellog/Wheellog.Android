@@ -13,7 +13,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.cooper.wheellog.MainActivity">
+        <activity
+            android:name="com.cooper.wheellog.MainActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -22,6 +24,16 @@
         <activity android:name="com.cooper.wheellog.ScanActivity" android:theme="@style/AppTheme.SemiTransparent" />
         <service android:name="com.cooper.wheellog.PebbleConnectivity" />
         <service android:name="com.cooper.wheellog.BluetoothLeService" />
+
+        <receiver
+            android:name="PebbleBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.getpebble.action.app.RECEIVE"/>
+                <action android:name="com.getpebble.action.app.RECEIVE_ACK"/>
+                <action android:name="com.getpebble.action.app.RECEIVE_NACK"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
