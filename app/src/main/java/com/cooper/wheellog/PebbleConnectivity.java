@@ -112,7 +112,7 @@ public class PebbleConnectivity extends Service {
 
         PebbleKit.startAppOnPebble(this, APP_UUID);
         mHandler.post(mSendPebbleData);
-        Log.d(TAG, "Started");
+        Log.d(TAG, "PebbleConnectivity Started");
         return START_STICKY;
     }
 
@@ -123,7 +123,7 @@ public class PebbleConnectivity extends Service {
         mHandler.removeCallbacksAndMessages(null);
 //        unregisterReceiver(ackReceiver);
         unregisterReceiver(nackReceiver);
-        Log.d(TAG, "Stopped");
+        Log.d(TAG, "PebbleConnectivity Stopped");
     }
 
     private PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {

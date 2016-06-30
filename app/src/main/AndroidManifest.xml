@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,16 +15,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.cooper.wheellog.MainActivity"
+            android:name=".MainActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.cooper.wheellog.ScanActivity" android:theme="@style/AppTheme.SemiTransparent" />
-        <service android:name="com.cooper.wheellog.PebbleConnectivity" />
-        <service android:name="com.cooper.wheellog.BluetoothLeService" />
+        <activity android:name=".ScanActivity" android:theme="@style/AppTheme.SemiTransparent" />
+        <service android:name=".PebbleConnectivity" />
+        <service android:name=".BluetoothLeService" />
+        <service android:name=".DataLogger" />
 
         <receiver
             android:name="PebbleBroadcastReceiver"

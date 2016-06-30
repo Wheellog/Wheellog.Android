@@ -32,7 +32,6 @@ public class ScanActivity extends AppCompatListActivity {
     private static final int PERMISSION_REQUEST_CODE = 10;
     private static final int REQUEST_ENABLE_BT = 20;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,13 +1,19 @@
 package com.cooper.wheellog;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,9 +25,10 @@ public class MainActivity extends Activity {
 
     private static final int DEVICE_SCAN_REQUEST = 10;
 
-    Button buttonPebbleService;
     Button buttonScan;
     Button buttonConnect;
+    Button buttonPebbleService;
+    Button buttonDataService;
 
     TextView textViewSpeed;
     TextView textViewTemperature;
@@ -45,6 +52,7 @@ public class MainActivity extends Activity {
     private boolean doubleBackToExitPressedOnce = false;
     private boolean launchedFromPebble = false;
     private final String TAG = "MainActivity";
+    private static final int PERMISSION_REQUEST_CODE = 10;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -60,6 +68,7 @@ public class MainActivity extends Activity {
                 buttonConnect.setText(R.string.disconnect);
                 buttonConnect.setEnabled(true);
                 buttonPebbleService.setEnabled(true);
+                buttonDataService.setEnabled(true);
             }
 
             if (launchedFromPebble && !"".equals(mDeviceAddress))
@@ -82,6 +91,7 @@ public class MainActivity extends Activity {
                 buttonConnect.setText(R.string.disconnect);
                 SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
                 buttonPebbleService.setEnabled(true);
+                buttonDataService.setEnabled(true);
                 buttonConnect.setEnabled(true);
 
                 byte[] data = new byte[20];
@@ -140,9 +150,10 @@ public class MainActivity extends Activity {
 
         mDeviceAddress = SettingsManager.getLastAddr(getApplicationContext());
 
-        buttonPebbleService = (Button) findViewById(R.id.buttonPebbleService);
         buttonScan = (Button) findViewById(R.id.buttonBluetoothScan);
         buttonConnect = (Button) findViewById(R.id.buttonBluetoothConnect);
+        buttonPebbleService = (Button) findViewById(R.id.buttonPebbleService);
+        buttonDataService = (Button) findViewById(R.id.buttonDataLoggingService);
 
         textViewSpeed = (TextView) findViewById(R.id.tvSpeed);
         textViewCurrent = (TextView) findViewById(R.id.tvCurrent);
@@ -162,12 +173,19 @@ public class MainActivity extends Activity {
         buttonScan.setOnClickListener(clickListener);
         buttonConnect.setOnClickListener(clickListener);
         buttonPebbleService.setOnClickListener(clickListener);
+        buttonDataService.setOnClickListener(clickListener);
 
         if (PebbleConnectivity.isInstanceCreated()) {
             buttonPebbleService.setEnabled(true);
-            buttonPebbleService.setText(R.string.stop);
+            buttonPebbleService.setText(R.string.stop_pebble_service);
         } else
-            buttonPebbleService.setText(R.string.start);
+            buttonPebbleService.setText(R.string.start_pebble_service);
+
+        if (DataLogger.isInstanceCreated()) {
+            buttonDataService.setEnabled(true);
+            buttonDataService.setText(R.string.stop_data_service);
+        } else
+            buttonDataService.setText(R.string.start_data_service);
 
         if (!mDeviceAddress.isEmpty())
             buttonConnect.setEnabled(true);
@@ -219,6 +237,11 @@ public class MainActivity extends Activity {
             stopService(PebbleServiceIntent);
         }
 
+        if (DataLogger.isInstanceCreated()) {
+            Intent DataServiceIntent = new Intent(getApplicationContext(), DataLogger.class);
+            stopService(DataServiceIntent);
+        }
+
         Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
         stopService(bluetoothServiceIntent);
     }
@@ -231,23 +254,9 @@ public class MainActivity extends Activity {
         {
             switch (view.getId())
             {
-                case R.id.buttonPebbleService:
-                    Intent intent1 = new Intent(getApplicationContext(), PebbleConnectivity.class);
-
-                    if (PebbleConnectivity.isInstanceCreated())
-                    {
-                        buttonPebbleService.setText(R.string.start);
-                        stopService(intent1);
-                    }
-                    else
-                    {
-                        buttonPebbleService.setText(R.string.stop);
-                        startService(intent1);
-                    }
-                    break;
                 case R.id.buttonBluetoothScan:
-                    Intent intent2 = new Intent(MainActivity.this, ScanActivity.class);
-                    startActivityForResult(intent2, DEVICE_SCAN_REQUEST);
+                    Intent scanActivityIntent = new Intent(MainActivity.this, ScanActivity.class);
+                    startActivityForResult(scanActivityIntent, DEVICE_SCAN_REQUEST);
                     break;
                 case R.id.buttonBluetoothConnect:
                     buttonConnect.setText(R.string.connecting);
@@ -264,9 +273,75 @@ public class MainActivity extends Activity {
                     }
                     else
                         mBluetoothLeService.disconnect();
+                    break;
+                case R.id.buttonPebbleService:
+                    Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
+
+                    if (PebbleConnectivity.isInstanceCreated())
+                    {
+                        buttonPebbleService.setText(R.string.start_pebble_service);
+                        stopService(pebbleServiceIntent);
+                    }
+                    else
+                    {
+                        buttonPebbleService.setText(R.string.stop_pebble_service);
+                        startService(pebbleServiceIntent);
+                    }
+                    break;
+                case R.id.buttonDataLoggingService:
+
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkExternalFilePermission())
+                        requestExternalFilePermission();
+                    else
+                    {
+                        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), DataLogger.class);
+                        if (DataLogger.isInstanceCreated())
+                        {
+                            buttonDataService.setText(R.string.start_data_service);
+                            stopService(dataLoggerServiceIntent);
+                        }
+                        else
+                        {
+                            buttonDataService.setText(R.string.stop_data_service);
+                            startService(dataLoggerServiceIntent);
+                        }
+                        break;
+                    }
+                    break;
             }
         }
     };
+
+    private boolean checkExternalFilePermission(){
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void requestExternalFilePermission(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            Toast.makeText(this, "External write permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent dataLoggingIntent = new Intent(MainActivity.this, DataLogger.class);
+                    startService(dataLoggingIntent);
+                } else {
+                    Toast.makeText(this, "External write permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
