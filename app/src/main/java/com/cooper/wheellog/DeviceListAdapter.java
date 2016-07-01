@@ -22,7 +22,7 @@ public class DeviceListAdapter extends BaseAdapter {
 
     public DeviceListAdapter(AppCompatActivity appCompatActivity) {
         super();
-        mLeDevices = new ArrayList<BluetoothDevice>();
+        mLeDevices = new ArrayList<>();
         mInflator = appCompatActivity.getLayoutInflater();
     }
 
@@ -36,9 +36,9 @@ public class DeviceListAdapter extends BaseAdapter {
         return mLeDevices.get(position);
     }
 
-    public void clear() {
-        mLeDevices.clear();
-    }
+//    public void clear() {
+//        mLeDevices.clear();
+//    }
 
     @Override
     public int getCount() {

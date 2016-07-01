@@ -37,7 +37,7 @@ public class BluetoothLeService extends Service {
     
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private static final boolean autoConnect = true;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -58,7 +58,6 @@ public class BluetoothLeService extends Service {
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_REQUEST_SERIAL_DATA);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_STARTED);
         return intentFilter;
     }
 

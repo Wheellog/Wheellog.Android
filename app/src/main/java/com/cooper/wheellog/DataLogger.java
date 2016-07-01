@@ -57,20 +57,23 @@ public class DataLogger extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.UK);
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
         registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeBluetoothUpdateIntentFilter());
 
-        File root = android.os.Environment.getExternalStorageDirectory();
-        //LOGI("\nExternal file system root: "+root);
+        if (isExternalStorageReadable() && isExternalStorageWritable()) {
 
-        checkExternalMedia();
+            File dir = getDownloadsStorageDir();
 
-        File dir = new File (root.getAbsolutePath() + "/Download");
-        dir.mkdirs();
-        file = new File(dir, "wheelLog.txt");
-        fileExists = file.exists();
+            SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
+            String fileName = sdFormatter.format(new Date()) + ".csv";
 
-        Log.d(TAG, "DataLogger Started");
+            file = new File(dir, fileName);
+            fileExists = file.exists();
+
+            Log.d(TAG, "DataLogger Started");
+            return START_STICKY;
+        }
+        stopSelf();
         return START_STICKY;
     }
 
@@ -81,24 +84,27 @@ public class DataLogger extends Service
         Log.d(TAG, "DataLogger stopped");
     }
 
-    private void checkExternalMedia(){
-        boolean mExternalStorageAvailable;
-        boolean mExternalStorageWritable;
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
 
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            // Can read and write the media
-            mExternalStorageAvailable = mExternalStorageWritable = true;
-        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            // Can only read the media
-            mExternalStorageAvailable = true;
-            mExternalStorageWritable = false;
-        } else {
-            // Can't read or write
-            mExternalStorageAvailable = mExternalStorageWritable = false;
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
+
+    public File getDownloadsStorageDir() {
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), "wheelLog");
+        if (!file.mkdirs()) {
+            Log.e(TAG, "Directory not created");
         }
-        LOGI("\n\nExternal Media: readable="
-                +mExternalStorageAvailable+" writable="+mExternalStorageWritable);
+        return file;
     }
 
     private void writeToSDFile(){
@@ -109,14 +115,15 @@ public class DataLogger extends Service
             if (!fileExists)
             {
                 fileExists = true;
-                pw.println("date,speed,voltage,current,distance,fan_status");
+                pw.println("date,speed,voltage,current,battery_level,distance,temperature,fan_status");
             }
 
-            pw.println(String.format("%s,%f,%f,%f,%f,%d",
+            pw.println(String.format(Locale.US, "%s,%f,%f,%f,%d,%f,%d,%d",
                     sdf.format(new Date()),
                     Wheel.getInstance().getSpeedDouble(),
                     Wheel.getInstance().getVoltageDouble(),
                     Wheel.getInstance().getCurrentDouble(),
+                    Wheel.getInstance().getBatteryLevel(),
                     Wheel.getInstance().getCurrentDistanceDouble(),
                     Wheel.getInstance().getTemperature(),
                     Wheel.getInstance().getFanStatus()

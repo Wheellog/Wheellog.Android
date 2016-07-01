@@ -21,6 +21,8 @@ import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 public class MainActivity extends Activity {
 
     private static final int DEVICE_SCAN_REQUEST = 10;
@@ -87,14 +89,14 @@ public class MainActivity extends Activity {
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
                 textViewSpeed.setText(String.format("%s KPH", Wheel.getInstance().getSpeedDouble()));
                 textViewVoltage.setText(String.format("%sV", Wheel.getInstance().getVoltageDouble()));
-                textViewTemperature.setText(String.format("%d°C", Wheel.getInstance().getTemperature()));
+                textViewTemperature.setText(String.format(Locale.US, "%d°C", Wheel.getInstance().getTemperature()));
                 textViewCurrent.setText(String.format("%sW", Wheel.getInstance().getCurrentDouble()));
-                textViewBattery.setText(String.format("%d%%", Wheel.getInstance().getBatteryLevel()));
+                textViewBattery.setText(String.format(Locale.US, "%d%%", Wheel.getInstance().getBatteryLevel()));
                 textViewFanStatus.setText(Wheel.getInstance().getFanStatus() == 0 ? "Off" : "On");
                 textViewMaxSpeed.setText(String.format("%s KPH", Wheel.getInstance().getMaxSpeedDouble()));
                 textViewCurrentDistance.setText(String.format("%s KM", Wheel.getInstance().getCurrentDistanceDouble()));
                 textViewTotalDistance.setText(String.format("%s KM", Wheel.getInstance().getTotalDistanceDouble()));
-                textViewVersion.setText(String.format("%d", Wheel.getInstance().getVersion()));
+                textViewVersion.setText(String.format(Locale.US, "%d", Wheel.getInstance().getVersion()));
                 textViewName.setText(Wheel.getInstance().getName());
                 textViewType.setText(Wheel.getInstance().getType());
                 textViewSerial.setText(Wheel.getInstance().getSerial());
@@ -130,10 +132,12 @@ public class MainActivity extends Activity {
                 mBluetoothLeService.writeBluetoothGattCharacteristic(data);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
+                Log.d(TAG, "Bluetooth connecting");
                 buttonScan.setEnabled(false);
                 buttonConnect.setText(R.string.waiting_for_device);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
+                Log.d(TAG, "Bluetooth disconnected");
                 buttonScan.setEnabled(true);
                 buttonConnect.setText(R.string.connect);
                 break;

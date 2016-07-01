@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Wheel {
@@ -7,14 +8,14 @@ public class Wheel {
     private static long totalDistance;
     private static int current;
     private static int temperature;
-    private static int currentMode;
+//    private static int currentMode;
     private static int battery;
     private static int voltage;
     private static long currentDistance;
     private static int currentTime;
     private static int maxSpeed;
     private static int fanStatus;
-    private static int connectionState = BluetoothLeService.STATE_DISCONNECTED;
+    private static int wheelConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private static String mDeviceNameString;
     private static String mUnicycleType;
     private static int mVersion;
@@ -34,10 +35,10 @@ public class Wheel {
     public int getTemperature() { return temperature; }
     public int getBatteryLevel() { return battery; }
     public int getFanStatus() { return fanStatus; }
-    public int getConnectionState() { return connectionState; }
-    public int getMaxSpeed() { return maxSpeed; }
+    public int getConnectionState() { return wheelConnectionState; }
+//    public int getMaxSpeed() { return maxSpeed; }
     public int getVersion() { return mVersion; }
-    public int getCurrentTime() { return currentTime; };
+//    public int getCurrentTime() { return currentTime; };
 
     public String getName() { return mDeviceNameString; }
     public String getType() { return mUnicycleType; }
@@ -48,7 +49,7 @@ public class Wheel {
                 TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(currentTime));
         long seconds = TimeUnit.SECONDS.toSeconds(currentTime) -
                 TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(currentTime));
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
     public double getSpeedDouble() { return (double) speed / 10.0F; }
@@ -58,7 +59,7 @@ public class Wheel {
     public double getCurrentDistanceDouble() { return (double) currentDistance / 1000.0F; }
     public double getTotalDistanceDouble() { return (double) totalDistance / 1000.0F; }
 
-    public void setConnectionState(boolean connected) { connectionState = connected ? 1 : 0; }
+    public void setConnectionState(boolean connected) { wheelConnectionState = connected ? 1 : 0; }
 
     private int byteArrayInt2(byte low, byte high) {
         return (low & 255) + ((high & 255) * 256);
@@ -81,10 +82,10 @@ public class Wheel {
                 totalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
                 current = byteArrayInt2(data[10], data[11]);
                 temperature = byteArrayInt2(data[12], data[13]) / 100;
-                currentMode = -1;
-                if ((data[15] & 255) == 224) {
-                    currentMode = data[14];
-                }
+//                currentMode = -1;
+//                if ((data[15] & 255) == 224) {
+//                    currentMode = data[14];
+//                }
 
                 if (voltage < 500) {
                     battery = 10;
@@ -116,17 +117,13 @@ public class Wheel {
                 }
                 try {
                     mVersion = Integer.parseInt(ss[ss.length - 1]);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 return Constants.REQUEST_SERIAL_DATA;
             } else if ((data[16] & 255) == 179) {
                 byte[] sndata = new byte[18];
-                for (int i = 0; i < 14; i++) {
-                    sndata[i] = data[i + 2];
-                }
-                for (int i = 14; i < 17; i++) {
-                    sndata[i] = data[i + 3];
-                }
+                System.arraycopy(data, 2, sndata, 0, 14);
+                System.arraycopy(data, 17, sndata, 14, 3);
                 sndata[17] = (byte) 0;
                 mUnicycleSN = new String(sndata);
             }
