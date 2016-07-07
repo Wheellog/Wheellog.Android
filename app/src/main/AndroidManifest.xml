@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScanActivity" android:theme="@style/AppTheme.SemiTransparent" />
+        <activity android:name=".ScanActivity" android:theme="@style/AppTheme.Transparent" />
         <service android:name=".PebbleConnectivity" />
         <service android:name=".BluetoothLeService" />
         <service android:name=".DataLogger" />

@@ -1,36 +1,38 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Locale;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final int DEVICE_SCAN_REQUEST = 10;
 
-    Button buttonScan;
-    Button buttonConnect;
-    Button buttonPebbleService;
-    Button buttonDataService;
+    Menu mMenu;
+    MenuItem miWheel;
+    MenuItem miWatch;
+    MenuItem miLogging;
 
     TextView textViewSpeed;
     TextView textViewTemperature;
@@ -53,7 +55,6 @@ public class MainActivity extends Activity {
     private boolean doubleBackToExitPressedOnce = false;
     private final String TAG = "MainActivity";
     private static final int PERMISSION_REQUEST_CODE = 10;
-
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -67,7 +68,7 @@ public class MainActivity extends Activity {
             if (mConnectionState != mBluetoothLeService.getConnectionState())
                 setConnectionState(mBluetoothLeService.getConnectionState());
 
-            if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED &&
+            if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty())
                 connectToWheel();
         }
@@ -83,24 +84,13 @@ public class MainActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
+                Log.d(TAG, "Bluetooth connected");
                 setConnectionState(BluetoothLeService.STATE_CONNECTED);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
+                Log.d(TAG, "Bluetooth disconnected");
                 setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
-                textViewSpeed.setText(String.format("%s KPH", Wheel.getInstance().getSpeedDouble()));
-                textViewVoltage.setText(String.format("%sV", Wheel.getInstance().getVoltageDouble()));
-                textViewTemperature.setText(String.format(Locale.US, "%d°C", Wheel.getInstance().getTemperature()));
-                textViewCurrent.setText(String.format("%sW", Wheel.getInstance().getCurrentDouble()));
-                textViewBattery.setText(String.format(Locale.US, "%d%%", Wheel.getInstance().getBatteryLevel()));
-                textViewFanStatus.setText(Wheel.getInstance().getFanStatus() == 0 ? "Off" : "On");
-                textViewMaxSpeed.setText(String.format("%s KPH", Wheel.getInstance().getMaxSpeedDouble()));
-                textViewCurrentDistance.setText(String.format("%s KM", Wheel.getInstance().getCurrentDistanceDouble()));
-                textViewTotalDistance.setText(String.format("%s KM", Wheel.getInstance().getTotalDistanceDouble()));
-                textViewVersion.setText(String.format(Locale.US, "%d", Wheel.getInstance().getVersion()));
-                textViewName.setText(Wheel.getInstance().getName());
-                textViewType.setText(Wheel.getInstance().getType());
-                textViewSerial.setText(Wheel.getInstance().getSerial());
-                textViewRideTime.setText(Wheel.getInstance().getCurrentTimeString());
+                updateScreen();
             } else if (Constants.ACTION_REQUEST_SERIAL_DATA.equals(action)) {
                 byte[] data = new byte[20];
                 data[0] = (byte) -86;
@@ -115,34 +105,83 @@ public class MainActivity extends Activity {
     };
 
     private void setConnectionState(int connectionState) {
+
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                Log.d(TAG, "Bluetooth connected");
-                buttonConnect.setText(R.string.disconnect);
-                buttonScan.setEnabled(false);
-                SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
+                if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
+                    SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
 
-                byte[] data = new byte[20];
-                data[0] = (byte) -86;
-                data[1] = (byte) 85;
-                data[16] = (byte) -101;
-                data[17] = (byte) 20;
-                data[18] = (byte) 90;
-                data[19] = (byte) 90;
-                mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                String serial = Wheel.getInstance().getSerial();
+                if (serial == null || serial.isEmpty()) {
+                    byte[] data = new byte[20];
+                    data[0] = (byte) -86;
+                    data[1] = (byte) 85;
+                    data[16] = (byte) -101;
+                    data[17] = (byte) 20;
+                    data[18] = (byte) 90;
+                    data[19] = (byte) 90;
+                    mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                }
                 break;
             case BluetoothLeService.STATE_CONNECTING:
-                Log.d(TAG, "Bluetooth connecting");
-                buttonScan.setEnabled(false);
-                buttonConnect.setText(R.string.waiting_for_device);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                Log.d(TAG, "Bluetooth disconnected");
-                buttonScan.setEnabled(true);
-                buttonConnect.setText(R.string.connect);
                 break;
         }
         mConnectionState = connectionState;
+        setMenuIconStates();
+    }
+
+    private void setMenuIconStates() {
+        if (mMenu == null)
+            return;
+
+        switch (mConnectionState) {
+            case BluetoothLeService.STATE_CONNECTED:
+                miWheel.setIcon(R.drawable.ic_action_wheel_orange);
+                miWheel.setTitle(R.string.disconnect_from_wheel);
+                break;
+            case BluetoothLeService.STATE_CONNECTING:
+                miWheel.setIcon(R.drawable.anim_wheel_icon);
+                miWheel.setTitle(R.string.disconnect_from_wheel);
+                ((AnimationDrawable) miWheel.getIcon()).start();
+                break;
+            case BluetoothLeService.STATE_DISCONNECTED:
+                miWheel.setIcon(R.drawable.ic_action_wheel_white);
+                miWheel.setTitle(R.string.connect_to_wheel);
+                break;
+        }
+
+        if (PebbleConnectivity.isInstanceCreated()) {
+            miWatch.setIcon(R.drawable.ic_action_watch_orange);
+        } else {
+            miWatch.setIcon(R.drawable.ic_action_watch_white);
+        }
+
+        if (DataLogger.isInstanceCreated()) {
+            miLogging.setTitle(R.string.stop_data_service);
+            miLogging.setIcon(R.drawable.ic_action_logging_orange);
+        } else {
+            miLogging.setTitle(R.string.start_data_service);
+            miLogging.setIcon(R.drawable.ic_action_logging_white);
+        }
+    }
+
+    private void updateScreen() {
+        textViewSpeed.setText(String.format("%s KPH", Wheel.getInstance().getSpeedDouble()));
+        textViewVoltage.setText(String.format("%sV", Wheel.getInstance().getVoltageDouble()));
+        textViewTemperature.setText(String.format(Locale.US, "%d°C", Wheel.getInstance().getTemperature()));
+        textViewCurrent.setText(String.format("%sW", Wheel.getInstance().getCurrentDouble()));
+        textViewBattery.setText(String.format(Locale.US, "%d%%", Wheel.getInstance().getBatteryLevel()));
+        textViewFanStatus.setText(Wheel.getInstance().getFanStatus() == 0 ? "Off" : "On");
+        textViewMaxSpeed.setText(String.format("%s KPH", Wheel.getInstance().getMaxSpeedDouble()));
+        textViewCurrentDistance.setText(String.format("%s KM", Wheel.getInstance().getCurrentDistanceDouble()));
+        textViewTotalDistance.setText(String.format("%s KM", Wheel.getInstance().getTotalDistanceDouble()));
+        textViewVersion.setText(String.format(Locale.US, "%d", Wheel.getInstance().getVersion()));
+        textViewName.setText(Wheel.getInstance().getName());
+        textViewType.setText(Wheel.getInstance().getType());
+        textViewSerial.setText(Wheel.getInstance().getSerial());
+        textViewRideTime.setText(Wheel.getInstance().getCurrentTimeString());
     }
 
     @Override
@@ -150,11 +189,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDeviceAddress = SettingsManager.getLastAddr(getApplicationContext());
-
-        buttonScan = (Button) findViewById(R.id.buttonBluetoothScan);
-        buttonConnect = (Button) findViewById(R.id.buttonBluetoothConnect);
-        buttonPebbleService = (Button) findViewById(R.id.buttonPebbleService);
-        buttonDataService = (Button) findViewById(R.id.buttonDataLoggingService);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         textViewSpeed = (TextView) findViewById(R.id.tvSpeed);
         textViewCurrent = (TextView) findViewById(R.id.tvCurrent);
@@ -171,29 +207,6 @@ public class MainActivity extends Activity {
         textViewSerial = (TextView) findViewById(R.id.tvSerial);
         textViewRideTime = (TextView) findViewById(R.id.tvRideTime);
 
-        buttonScan.setOnClickListener(clickListener);
-        buttonConnect.setOnClickListener(clickListener);
-        buttonPebbleService.setOnClickListener(clickListener);
-        buttonDataService.setOnClickListener(clickListener);
-
-        if (PebbleConnectivity.isInstanceCreated())
-            buttonPebbleService.setText(R.string.stop_pebble_service);
-        else
-            buttonPebbleService.setText(R.string.start_pebble_service);
-
-        if (DataLogger.isInstanceCreated())
-            buttonDataService.setText(R.string.stop_data_service);
-        else
-            buttonDataService.setText(R.string.start_data_service);
-
-        if (mDeviceAddress == null || mDeviceAddress.isEmpty())
-            buttonConnect.setEnabled(false);
-
-//        Intent intent = getIntent();
-//        boolean launchedFromPebble = intent.getBooleanExtra(Constants.LAUNCHED_FROM_PEBBLE, false);
-//        if (launchedFromPebble)
-//            startPebbleService();
-
         Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
         startService(gattServiceIntent);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
@@ -202,10 +215,21 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+
+//        if (mDeviceAddress == null || mDeviceAddress.isEmpty())
+//            buttonConnect.setEnabled(false);
+
         if (mBluetoothLeService != null &&
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
+
         registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeBluetoothUpdateIntentFilter());
+        updateScreen();
+    }
+
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        setMenuIconStates();
     }
 
     @Override
@@ -219,6 +243,57 @@ public class MainActivity extends Activity {
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        mMenu = menu;
+        miWheel = mMenu.findItem(R.id.miWheel);
+        miWatch = mMenu.findItem(R.id.miWatch);
+        miLogging = mMenu.findItem(R.id.miLogging);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.miSearch:
+                Intent scanActivityIntent = new Intent(MainActivity.this, ScanActivity.class);
+                startActivityForResult(scanActivityIntent, DEVICE_SCAN_REQUEST);
+                return true;
+            case R.id.miWheel:
+                if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
+                    connectToWheel();
+                else
+                    disconnectFromWheel();
+                return true;
+            case R.id.miLogging:
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkExternalFilePermission())
+                    requestExternalFilePermission();
+                else
+                {
+                    Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), DataLogger.class);
+                    if (DataLogger.isInstanceCreated()) {
+                        stopService(dataLoggerServiceIntent);
+                        miLogging.setIcon(R.drawable.ic_action_logging_white);
+                        miLogging.setTitle(R.string.start_data_service);
+                    } else {
+                        startService(dataLoggerServiceIntent);
+                        miLogging.setIcon(R.drawable.ic_action_logging_orange);
+                        miLogging.setTitle(R.string.stop_data_service);
+                    }
+                }
+                return true;
+            case R.id.miWatch:
+                if (!PebbleConnectivity.isInstanceCreated())
+                    startPebbleService();
+                else
+                    stopPebbleService();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -253,55 +328,8 @@ public class MainActivity extends Activity {
 
         Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
         stopService(bluetoothServiceIntent);
+        Wheel.getInstance().reset();
     }
-
-    private View.OnClickListener clickListener = new View.OnClickListener()
-    {
-
-        @Override
-        public void onClick(View view)
-        {
-            switch (view.getId())
-            {
-                case R.id.buttonBluetoothScan:
-                    Intent scanActivityIntent = new Intent(MainActivity.this, ScanActivity.class);
-                    startActivityForResult(scanActivityIntent, DEVICE_SCAN_REQUEST);
-                    break;
-                case R.id.buttonBluetoothConnect:
-                    if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
-                        connectToWheel();
-                    else
-                        disconnectFromWheel();
-                    break;
-                case R.id.buttonPebbleService:
-                    if (!PebbleConnectivity.isInstanceCreated())
-                        startPebbleService();
-                    else
-                        stopPebbleService();
-                    break;
-                case R.id.buttonDataLoggingService:
-
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkExternalFilePermission())
-                        requestExternalFilePermission();
-                    else
-                    {
-                        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), DataLogger.class);
-                        if (DataLogger.isInstanceCreated())
-                        {
-                            buttonDataService.setText(R.string.start_data_service);
-                            stopService(dataLoggerServiceIntent);
-                        }
-                        else
-                        {
-                            buttonDataService.setText(R.string.stop_data_service);
-                            startService(dataLoggerServiceIntent);
-                        }
-                        break;
-                    }
-                    break;
-            }
-        }
-    };
 
     private void stopPebbleService() { startPebbleService(false);}
     private void startPebbleService() { startPebbleService(true);}
@@ -309,11 +337,13 @@ public class MainActivity extends Activity {
         Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
 
         if (start) {
-                buttonPebbleService.setText(R.string.stop_pebble_service);
-                startService(pebbleServiceIntent);
+            startService(pebbleServiceIntent);
+            miWatch.setIcon(R.drawable.ic_action_watch_orange);
+            miWatch.setTitle(R.string.stop_pebble_service);
         } else {
-            buttonPebbleService.setText(R.string.start_pebble_service);
             stopService(pebbleServiceIntent);
+            miWatch.setIcon(R.drawable.ic_action_watch_white);
+            miWatch.setTitle(R.string.start_pebble_service);
         }
     }
 
@@ -327,7 +357,9 @@ public class MainActivity extends Activity {
             if (!connecting) {
                 setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
                 Toast.makeText(MainActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
+                return;
             }
+            Log.d(TAG, "Bluetooth connecting");
         }
         else
          mBluetoothLeService.disconnect();
@@ -365,7 +397,7 @@ public class MainActivity extends Activity {
         if (requestCode == DEVICE_SCAN_REQUEST) {
             if (resultCode == RESULT_OK) {
                 mDeviceAddress = data.getStringExtra("MAC");
-                buttonConnect.setEnabled(true);
+//                buttonConnect.setEnabled(true);
             }
         }
     }

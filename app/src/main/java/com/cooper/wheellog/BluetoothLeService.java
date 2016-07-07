@@ -197,7 +197,7 @@ public class BluetoothLeService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentIntent(pendingIntent)
                 .build();

@@ -1,0 +1,6 @@
+<animation-list android:id="@+id/anim_wheel_icon"
+    android:oneshot="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_action_wheel_orange" android:duration="500" />
+    <item android:drawable="@drawable/ic_action_wheel_white" android:duration="500" />
+</animation-list>

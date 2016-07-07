@@ -31,6 +31,9 @@ public class Wheel {
         return mInstance;
     }
 
+
+    public void reset() { mInstance = null; }
+
     public int getSpeed() { return speed; }
     public int getTemperature() { return temperature; }
     public int getBatteryLevel() { return battery; }

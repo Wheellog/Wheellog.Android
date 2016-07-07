@@ -21,7 +21,7 @@ import java.util.Locale;
 
 public class DataLogger extends Service
 {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private final static String TAG = DataLogger.class.getSimpleName();
     private static DataLogger instance = null;
     SimpleDateFormat sdf;
@@ -57,7 +57,7 @@ public class DataLogger extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
+        sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
         registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeBluetoothUpdateIntentFilter());
 
         if (isExternalStorageReadable() && isExternalStorageWritable()) {
@@ -115,7 +115,7 @@ public class DataLogger extends Service
             if (!fileExists)
             {
                 fileExists = true;
-                pw.println("date,speed,voltage,current,battery_level,distance,temperature,fan_status");
+                pw.println("date,time,speed,voltage,current,battery_level,distance,temperature,fan_status");
             }
 
             pw.println(String.format(Locale.US, "%s,%f,%f,%f,%d,%f,%d,%d",

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,16 +16,26 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class ScanActivity extends AppCompatListActivity {
+public class ScanActivity extends AppCompatActivity {
     private DeviceListAdapter mDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
     private Handler mHandler;
+    private ProgressBar pb;
+    private TextView scanTitle;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
@@ -34,7 +45,38 @@ public class ScanActivity extends AppCompatListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan);
+//        setContentView(R.layout.activity_scan);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = inflater.inflate(R.layout.activity_scan, null);
+        ListView lv = (ListView) convertView.findViewById(android.R.id.list);
+        pb = (ProgressBar) convertView.findViewById(R.id.scanProgress);
+        scanTitle = (TextView) convertView.findViewById(R.id.scan_title);
+        lv.setOnItemClickListener(onItemClickListener);
+        mDeviceListAdapter = new DeviceListAdapter(this);
+        lv.setAdapter(mDeviceListAdapter);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ScanActivity.this)
+                .setView(convertView)
+//                .setTitle("Searching...")
+//                .setCustomTitle(null)
+                .setCancelable(false)
+                .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                    @Override
+                    public boolean onKey(DialogInterface dialogInterface, int keycode, KeyEvent keyEvent) {
+                        if (keycode == KeyEvent.KEYCODE_BACK &&
+                                keyEvent.getAction() == KeyEvent.ACTION_UP &&
+                                !keyEvent.isCanceled()) {
+                            if (mScanning)
+                                scanLeDevice(false);
+                            mHandler.removeCallbacksAndMessages(null);
+                            dialogInterface.cancel();
+                            finish();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+        alertDialog.show();
 
         mHandler = new Handler();
 
@@ -79,11 +121,6 @@ public class ScanActivity extends AppCompatListActivity {
             }
         }
 
-        // Initializes list view adapter.
-        mDeviceListAdapter = new DeviceListAdapter(this);
-        setListAdapter(mDeviceListAdapter);
-        getListView().setOnItemClickListener(onItemClickListener);
-
         if (checkPermission())
             scanLeDevice(true);
     }
@@ -125,19 +162,20 @@ public class ScanActivity extends AppCompatListActivity {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mScanning = false;
-                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    invalidateOptionsMenu();
+                    scanLeDevice(false);
                 }
             }, SCAN_PERIOD);
 
             mScanning = true;
             mBluetoothAdapter.startLeScan(mLeScanCallback);
+            pb.setVisibility(View.VISIBLE);
+            scanTitle.setText(R.string.scanning);
         } else {
             mScanning = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            pb.setVisibility(View.GONE);
+            scanTitle.setText(R.string.devices);
         }
-        invalidateOptionsMenu();
     }
 
     private boolean checkPermission(){
