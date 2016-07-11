@@ -4,10 +4,14 @@
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>
+    <string name="error_bluetooth_not_initialised">Unable to initialize Bluetooth, exiting</string>
+    <string name="bluetooth_required">Bluetooth is required and was not successfully enabled.</string>
+    <string name="back_to_exit">Press BACK again to exit</string>
     <string name="scan">Scan</string>
     <string name="stop">Stop</string>
     <string name="connect">Connect</string>
     <string name="connecting">Connecting</string>
+    <string name="connection_failed">Connection Failed</string>
     <string name="disconnect">Disconnect</string>
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>

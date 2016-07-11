@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:id="@+id/main_view"
     tools:context="com.cooper.wheellog.MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -12,9 +13,7 @@
         android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleTextColor="@android:color/white"
-        android:background="?attr/colorPrimary">
-    </android.support.v7.widget.Toolbar>
+        app:titleTextColor="@android:color/white"/>
 
     <android.widget.TextClock
         android:layout_height="wrap_content"
@@ -25,234 +24,163 @@
         android:textStyle="bold"
         android:gravity="center"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
 
-        <LinearLayout
+        <android.support.v7.widget.GridLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
+            android:layout_height="wrap_content"
+            app:columnCount="2"
+            app:orientation="horizontal">
 
-            android:layout_weight="1">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:textStyle="bold"
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
                 android:text="Speed"/>
 
             <TextView
                 android:id="@+id/tvSpeed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                style="@style/Stats"
                 android:text="0.0 KPH" />
 
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Ride Time"/>
-
-            <TextView
-                android:id="@+id/tvRideTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="00:00" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Distance Travelled"/>
-
-            <TextView
-                android:id="@+id/tvCurrentDistance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="0.0 KM" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Total Distance"/>
-
-            <TextView
-                android:id="@+id/tvTotalDistance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="0.0 KM" />
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Version"/>
-
-            <TextView
-                android:id="@+id/tvVersion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Type"/>
-
-            <TextView
-                android:id="@+id/tvType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Name"/>
-
-            <TextView
-                android:id="@+id/tvName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:layout_weight="1">
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:textStyle="bold"
+                style="@style/Stats.Title"
                 android:text="Max Speed"/>
 
             <TextView
                 android:id="@+id/tvMaxSpeed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                style="@style/Stats"
                 android:text="0.0 KPH" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Voltage"/>
-
-            <TextView
-                android:id="@+id/tvVoltage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="0V" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Current"/>
-
-            <TextView
-                android:id="@+id/tvCurrent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="0.0W" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Fan Status"/>
-
-            <TextView
-                android:id="@+id/tvFanStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="Off" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
-                android:text="Temperature"/>
-
-            <TextView
-                android:id="@+id/tvTemperature"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="0.0 C" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:textStyle="bold"
+                style="@style/Stats.Title"
                 android:text="Battery"/>
 
             <TextView
                 android:id="@+id/tvBattery"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                style="@style/Stats"
                 android:text="0%" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:paddingTop="10dp"
-                android:textStyle="bold"
+                style="@style/Stats.Title"
+                android:text="Distance"/>
+
+            <TextView
+                android:id="@+id/tvCurrentDistance"
+                style="@style/Stats"
+                android:text="0.0 KM" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Ride Time"/>
+
+            <TextView
+                android:id="@+id/tvRideTime"
+                style="@style/Stats"
+                android:text="00:00" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Voltage"/>
+
+            <TextView
+                android:id="@+id/tvVoltage"
+                style="@style/Stats"
+                android:text="0V" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Current"/>
+
+            <TextView
+                android:id="@+id/tvCurrent"
+                style="@style/Stats"
+                android:text="0.0W" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Temperature"/>
+
+            <TextView
+                android:id="@+id/tvTemperature"
+                style="@style/Stats"
+                android:text="0.0 C" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Fan Status"/>
+
+            <TextView
+                android:id="@+id/tvFanStatus"
+                style="@style/Stats"
+                android:text="Off" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Total Distance"/>
+
+            <TextView
+                android:id="@+id/tvTotalDistance"
+                style="@style/Stats"
+                android:text="0.0 KM" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Name"/>
+
+            <TextView
+                android:id="@+id/tvName"
+                style="@style/Stats"
+                android:text="NAME"/>
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Type"/>
+
+            <TextView
+                android:id="@+id/tvType"
+                style="@style/Stats"
+                android:text="KS16B"
+                app:layout_columnWeight="1" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
+                android:text="Version"/>
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:text="120"
+                style="@style/Stats"/>
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
                 android:text="Serial Number"/>
 
             <TextView
                 android:id="@+id/tvSerial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal" />
-        </LinearLayout>
+                style="@style/Stats"
+                android:text="SERIAL_NUMBER" />
 
-    </LinearLayout>
+        </android.support.v7.widget.GridLayout>
+
+    <!--</ScrollView>-->
+
 
 </LinearLayout>

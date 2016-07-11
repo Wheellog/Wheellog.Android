@@ -27,6 +27,7 @@ public class DataLogger extends Service
     SimpleDateFormat sdf;
     private boolean fileExists;
     private File file;
+    private WheelLog wheelLog;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -69,7 +70,7 @@ public class DataLogger extends Service
 
             file = new File(dir, fileName);
             fileExists = file.exists();
-
+            wheelLog = (WheelLog) getApplicationContext();
             Log.d(TAG, "DataLogger Started");
             return START_STICKY;
         }
@@ -120,13 +121,13 @@ public class DataLogger extends Service
 
             pw.println(String.format(Locale.US, "%s,%f,%f,%f,%d,%f,%d,%d",
                     sdf.format(new Date()),
-                    Wheel.getInstance().getSpeedDouble(),
-                    Wheel.getInstance().getVoltageDouble(),
-                    Wheel.getInstance().getCurrentDouble(),
-                    Wheel.getInstance().getBatteryLevel(),
-                    Wheel.getInstance().getCurrentDistanceDouble(),
-                    Wheel.getInstance().getTemperature(),
-                    Wheel.getInstance().getFanStatus()
+                    wheelLog.getSpeedDouble(),
+                    wheelLog.getVoltageDouble(),
+                    wheelLog.getCurrentDouble(),
+                    wheelLog.getBatteryLevel(),
+                    wheelLog.getDistanceDouble(),
+                    wheelLog.getTemperature(),
+                    wheelLog.getFanStatus()
                     ));
             pw.flush();
             pw.close();

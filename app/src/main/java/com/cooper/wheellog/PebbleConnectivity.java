@@ -25,6 +25,7 @@ public class PebbleConnectivity extends Service {
 
     private Handler mHandler = new Handler();
     private static PebbleConnectivity instance = null;
+    WheelLog wheelLog;
 
     int lastSpeed = 0;
     int lastBattery = 0;
@@ -41,33 +42,33 @@ public class PebbleConnectivity extends Service {
         public void run() {
             PebbleDictionary outgoing = new PebbleDictionary();
 
-            if (lastSpeed != Wheel.getInstance().getSpeed())
+            if (lastSpeed != wheelLog.getSpeed())
             {
-                lastSpeed = Wheel.getInstance().getSpeed();
+                lastSpeed = wheelLog.getSpeed();
                 outgoing.addInt32(KEY_SPEED, lastSpeed);
             }
 
-            if (lastBattery != Wheel.getInstance().getBatteryLevel())
+            if (lastBattery != wheelLog.getBatteryLevel())
             {
-                lastBattery = Wheel.getInstance().getBatteryLevel();
+                lastBattery = wheelLog.getBatteryLevel();
                 outgoing.addInt32(KEY_BATTERY, lastBattery);
             }
 
-            if (lastTemperature != Wheel.getInstance().getTemperature())
+            if (lastTemperature != wheelLog.getTemperature())
             {
-                lastTemperature = Wheel.getInstance().getTemperature();
+                lastTemperature = wheelLog.getTemperature();
                 outgoing.addInt32(KEY_TEMPERATURE, lastTemperature);
             }
 
-            if (lastFanStatus != Wheel.getInstance().getFanStatus())
+            if (lastFanStatus != wheelLog.getFanStatus())
             {
-                lastFanStatus = Wheel.getInstance().getFanStatus();
+                lastFanStatus = wheelLog.getFanStatus();
                 outgoing.addInt32(KEY_FAN_STATE, lastFanStatus);
             }
 
-            if (lastBluetooth != Wheel.getInstance().getConnectionState())
+            if (lastBluetooth != wheelLog.getConnectionState())
             {
-                lastBluetooth = Wheel.getInstance().getConnectionState();
+                lastBluetooth = wheelLog.getConnectionState();
                 outgoing.addInt32(KEY_BT_STATE, lastBluetooth);
             }
 
@@ -106,7 +107,7 @@ public class PebbleConnectivity extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
-
+        wheelLog = (WheelLog) getApplicationContext(); 
 //        PebbleKit.registerReceivedAckHandler(this, ackReceiver);
         PebbleKit.registerReceivedNackHandler(this, nackReceiver);
 
