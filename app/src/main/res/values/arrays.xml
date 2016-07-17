@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="modes">
+        <item>@string/mode_play</item>
+        <item>@string/mode_ride</item>
+        <item>@string/mode_learn</item>
+    </string-array>
+</resources>

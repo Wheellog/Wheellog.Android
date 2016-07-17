@@ -37,7 +37,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
 
                     Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                     mainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mainActivityIntent.putExtra(com.cooper.wheellog.Constants.LAUNCHED_FROM_PEBBLE, true);
+                    mainActivityIntent.putExtra(com.cooper.wheellog.Constants.INTENT_EXTRA_LAUNCHED_FROM_PEBBLE, true);
                     context.getApplicationContext().startActivity(mainActivityIntent);
                 } else if (data.contains(com.cooper.wheellog.Constants.PEBBLE_KEY_PLAY_HORN)) {
                     final Intent hornIntent = new Intent(com.cooper.wheellog.Constants.ACTION_REQUEST_HORN);

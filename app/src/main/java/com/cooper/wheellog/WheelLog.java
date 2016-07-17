@@ -11,7 +11,7 @@ public class WheelLog extends Application {
     private long mTotalDistance;
     private int mCurrent;
     private int mTemperature;
-//    private int currentMode;
+    private int mMode;
     private int mBattery;
     private int mVoltage;
     private long mDistance;
@@ -32,6 +32,7 @@ public class WheelLog extends Application {
 //    public int getMaxSpeed() { return maxSpeed; }
     public int getVersion() { return mVersion; }
 //    public int getCurrentTime() { return currentTime; };
+    public int getMode() { return mMode; }
 
     public String getName() { return mName; }
     public String getType() { return mType; }
@@ -54,9 +55,7 @@ public class WheelLog extends Application {
 
     public void setConnectionState(boolean connected) { mConnectionState = connected ? 1 : 0; }
 
-    private int byteArrayInt2(byte low, byte high) {
-        return (low & 255) + ((high & 255) * 256);
-    }
+    private int byteArrayInt2(byte low, byte high) { return (low & 255) + ((high & 255) * 256); }
 
     private long byteArrayInt4(byte value1, byte value2, byte value3, byte value4) {
         return (((((long) ((value1 & 255) << 16))) | ((long) ((value2 & 255) << 24))) | ((long) (value3 & 255))) | ((long) ((value4 & 255) << 8));
@@ -76,9 +75,9 @@ public class WheelLog extends Application {
                 mCurrent = byteArrayInt2(data[10], data[11]);
                 mTemperature = byteArrayInt2(data[12], data[13]) / 100;
 //                currentMode = -1;
-//                if ((data[15] & 255) == 224) {
-//                    currentMode = data[14];
-//                }
+                if ((data[15] & 255) == 224) {
+                    mMode = data[14];
+                }
 
                 if (mVoltage < 500) {
                     mBattery = 10;

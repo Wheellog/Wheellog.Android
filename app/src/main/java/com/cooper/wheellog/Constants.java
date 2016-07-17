@@ -15,12 +15,21 @@ public class Constants {
 //    public static final String ACTION_PEBBLE_SERVICE_STARTED = "com.cooper.wheellog.pebbleServiceStarted";
 //    public static final String ACTION_LOGGING_SERVICE_STARTED = "com.cooper.wheellog.loggingServiceStarted";
 
+    public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
+    public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
+    public static final String KINGSONG_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+
+//    public static final String GOTWAY_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb"; //UPDATED
+//    public static final String GOTWAY_READ_CHARACTER_UUID = "0000fff1-0000-1000-8000-00805f9b34fb"; // UPDATED- GUESS
+//    public static final String GOTWAY_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
     public static final int PEBBLE_KEY_LAUNCH_APP = 10008;
     public static final int PEBBLE_KEY_PLAY_HORN = 10009;
     public static final int PEBBLE_KEY_PLAY_HORN_MP3 = 10010;
 
-    public static final String LAUNCHED_FROM_PEBBLE = "launched_from_pebble";
+    public static final String INTENT_EXTRA_LAUNCHED_FROM_PEBBLE = "launched_from_pebble";
+    public static final String INTENT_EXTRA_BLE_AUTO_CONNECT = "direct_ble_connection";
 
     public static final int REQUEST_SERIAL_DATA = 10;
 }

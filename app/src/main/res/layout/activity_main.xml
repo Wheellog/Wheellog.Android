@@ -130,6 +130,16 @@
             <TextView
                 android:paddingTop="10dp"
                 style="@style/Stats.Title"
+                android:text="Mode"/>
+
+            <TextView
+                android:id="@+id/tvMode"
+                style="@style/Stats"
+                android:text="" />
+
+            <TextView
+                android:paddingTop="10dp"
+                style="@style/Stats.Title"
                 android:text="Total Distance"/>
 
             <TextView

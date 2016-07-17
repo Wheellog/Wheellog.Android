@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textViewSerial;
     TextView textViewTotalDistance;
     TextView textViewRideTime;
+    TextView textViewMode;
 
     private WheelLog wheelLog;
     private BluetoothLeService mBluetoothLeService;
@@ -91,18 +92,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTING) {
+            if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
                 Log.d(TAG, "Bluetooth Connecting");
                 setConnectionState(BluetoothLeService.STATE_CONNECTING);
             } else if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
                 Log.d(TAG, "Bluetooth connected");
-                if (wheelLog.getName().isEmpty()) {
-                    final Intent getNameIntent = new Intent(Constants.ACTION_REQUEST_NAME_DATA);
-                    sendBroadcast(getNameIntent);
-                } else if (wheelLog.getSerial().isEmpty()) {
-                    final Intent getSerialIntent = new Intent(Constants.ACTION_REQUEST_SERIAL_DATA);
-                    sendBroadcast(getSerialIntent);
-                }
                 setConnectionState(BluetoothLeService.STATE_CONNECTED);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 Log.d(TAG, "Bluetooth disconnected");
@@ -119,8 +113,19 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothLeService.STATE_CONNECTED:
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
                     SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
+
+                if (wheelLog.getName().isEmpty()) {
+                    final Intent getNameIntent = new Intent(Constants.ACTION_REQUEST_NAME_DATA);
+                    sendBroadcast(getNameIntent);
+                } else if (wheelLog.getSerial().isEmpty()) {
+                    final Intent getSerialIntent = new Intent(Constants.ACTION_REQUEST_SERIAL_DATA);
+                    sendBroadcast(getSerialIntent);
+                }
+
                 break;
             case BluetoothLeService.STATE_CONNECTING:
+                if (mConnectionState == BluetoothLeService.STATE_CONNECTING)
+                    showSnackBar(R.string.bluetooth_direct_connect_failed);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
                 break;
@@ -190,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
         textViewType.setText(wheelLog.getType());
         textViewSerial.setText(wheelLog.getSerial());
         textViewRideTime.setText(wheelLog.getCurrentTimeString());
+        textViewMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
     }
 
     @Override
@@ -215,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         textViewVersion = (TextView) findViewById(R.id.tvVersion);
         textViewSerial = (TextView) findViewById(R.id.tvSerial);
         textViewRideTime = (TextView) findViewById(R.id.tvRideTime);
+        textViewMode = (TextView) findViewById(R.id.tvMode);
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -285,11 +292,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (mBluetoothLeService != null) {
-            unbindService(mServiceConnection);
+            if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_CONNECTED)
+                mBluetoothLeService.disconnect();
             mBluetoothLeService.close();
-            mBluetoothLeService = null;
+            unbindService(mServiceConnection);
             Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
             stopService(gattServiceIntent);
+            mBluetoothLeService = null;
         }
         wheelLog.reset();
     }
@@ -447,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
                     mDeviceAddress = data.getStringExtra("MAC");
                     wheelLog.reset();
                     updateScreen();
+                    mBluetoothLeService.close();
                     connectToWheel();
                 }
                 break;
