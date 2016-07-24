@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -19,11 +20,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class DataLogger extends Service
+public class LoggingService extends Service
 {
     private static final boolean DEBUG = false;
-    private final static String TAG = DataLogger.class.getSimpleName();
-    private static DataLogger instance = null;
+    private final static String TAG = LoggingService.class.getSimpleName();
+    private static LoggingService instance = null;
     SimpleDateFormat sdf;
     private boolean fileExists;
     private File file;
@@ -59,7 +60,7 @@ public class DataLogger extends Service
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
         sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
-        registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeBluetoothUpdateIntentFilter());
+        registerReceiver(mBluetoothUpdateReceiver, new IntentFilter(Constants.ACTION_WHEEL_DATA_AVAILABLE));
 
         if (isExternalStorageReadable() && isExternalStorageWritable()) {
 
@@ -70,6 +71,11 @@ public class DataLogger extends Service
 
             file = new File(dir, fileName);
             fileExists = file.exists();
+
+            Intent serviceStartedIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_STARTED);
+            serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+            sendBroadcast(serviceStartedIntent);
+
             wheelLog = (WheelLog) getApplicationContext();
             Log.d(TAG, "DataLogger Started");
             return START_STICKY;

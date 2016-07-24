@@ -25,9 +25,12 @@
     <string name="stop_pebble_service">Stop Pebble Dash</string>
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>
+    <string name="started_logging">Started logging to </string>
+    <string name="search_for_wheel">Search for Wheel</string>
     <string name="scanning">Scanning…</string>
     <string name="devices">Devices</string>
     <string name="mode_learn">Beginner</string>
-    <string name="mode_play">Play</string>
-    <string name="mode_ride">Ride</string>
+    <string name="mode_play">Expert</string>
+    <string name="mode_ride">Normal</string>
+    <string name="waiting_for_wheel">Waiting for wheel…</string>
 </resources>

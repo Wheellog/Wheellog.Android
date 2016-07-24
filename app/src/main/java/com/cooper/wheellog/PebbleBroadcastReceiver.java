@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.widget.Toast;
 
 import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.PebbleKit;
@@ -29,18 +28,16 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
                 final PebbleDictionary data = PebbleDictionary.fromJson(jsonData);
 //                Toast.makeText(context,jsonData, Toast.LENGTH_SHORT).show();
                 PebbleKit.sendAckToPebble(context, transactionId);
-                if (data.contains(com.cooper.wheellog.Constants.PEBBLE_KEY_LAUNCH_APP)) {
-                    if (!PebbleConnectivity.isInstanceCreated()) {
-                        Intent pebbleServiceIntent = new Intent(context.getApplicationContext(), PebbleConnectivity.class);
-                        context.startService(pebbleServiceIntent);
-                    }
-
+                if (data.contains(com.cooper.wheellog.Constants.PEBBLE_KEY_LAUNCH_APP) && !PebbleService.isInstanceCreated()) {
                     Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                     mainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mainActivityIntent.putExtra(com.cooper.wheellog.Constants.INTENT_EXTRA_LAUNCHED_FROM_PEBBLE, true);
                     context.getApplicationContext().startActivity(mainActivityIntent);
+
+                    Intent pebbleServiceIntent = new Intent(context.getApplicationContext(), PebbleService.class);
+                    context.startService(pebbleServiceIntent);
                 } else if (data.contains(com.cooper.wheellog.Constants.PEBBLE_KEY_PLAY_HORN)) {
-                    final Intent hornIntent = new Intent(com.cooper.wheellog.Constants.ACTION_REQUEST_HORN);
+                    final Intent hornIntent = new Intent(com.cooper.wheellog.Constants.ACTION_REQUEST_KINGSONG_HORN);
                     context.sendBroadcast(hornIntent);
                 } else if (data.contains(com.cooper.wheellog.Constants.PEBBLE_KEY_PLAY_HORN_MP3)) {
                     MediaPlayer mp = MediaPlayer.create(context, R.raw.bicycle_bell);

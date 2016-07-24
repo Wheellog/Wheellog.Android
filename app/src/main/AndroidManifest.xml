@@ -27,9 +27,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ScanActivity" android:theme="@style/AppTheme.Transparent" />
-        <service android:name=".PebbleConnectivity" />
+        <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
-        <service android:name=".DataLogger" />
+        <service android:name=".LoggingService" />
 
         <receiver
             android:name="PebbleBroadcastReceiver"

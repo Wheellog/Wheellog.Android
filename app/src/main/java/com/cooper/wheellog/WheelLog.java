@@ -20,9 +20,10 @@ public class WheelLog extends Application {
     private int mFanStatus;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private String mName = "";
-    private String mType = "";
+    private String mModel = "";
     private int mVersion;
     private String mSerialNumber = "";
+    private int mWheelType;
 
     public int getSpeed() { return mSpeed; }
     public int getTemperature() { return mTemperature; }
@@ -31,11 +32,12 @@ public class WheelLog extends Application {
     public int getConnectionState() { return mConnectionState; }
 //    public int getMaxSpeed() { return maxSpeed; }
     public int getVersion() { return mVersion; }
-//    public int getCurrentTime() { return currentTime; };
+//    public int getCurrentTime() { return currentTime; }
     public int getMode() { return mMode; }
+    public int getWheelType() { return mWheelType; }
 
     public String getName() { return mName; }
-    public String getType() { return mType; }
+    public String getModel() { return mModel; }
     public String getSerial() { return mSerialNumber; }
     public String getCurrentTimeString() {
         long hours = TimeUnit.SECONDS.toHours(mCurrentTime);
@@ -62,6 +64,14 @@ public class WheelLog extends Application {
     }
 
     public void decodeResponse(byte[] data) {
+        if (mWheelType == Constants.WHEEL_TYPE_KINGSONG)
+            decodeKingSong(data);
+
+        Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        sendBroadcast(intent);
+    }
+
+    private void decodeKingSong(byte[] data) {
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
@@ -99,22 +109,22 @@ public class WheelLog extends Application {
                     i++;
                 }
                 mName = new String(data, 2, end).trim();
+                mModel = "";
                 String[] ss = mName.split("-");
                 for (i = 0; i < ss.length - 1; i++) {
                     if (i != 0) {
-                        mType += "-";
+                        mModel += "-";
                     }
-                    mType += ss[i];
+                    mModel += ss[i];
                 }
                 try {
                     mVersion = Integer.parseInt(ss[ss.length - 1]);
                 } catch (Exception ignored) {
                 }
 
-                if (mSerialNumber.isEmpty()) {
-                    final Intent getSerialIntent = new Intent(Constants.ACTION_REQUEST_SERIAL_DATA);
-                    sendBroadcast(getSerialIntent);
-                }
+                if (mSerialNumber.isEmpty())
+                    sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
+
             } else if ((data[16] & 255) == 179) { // Serial Number
                 byte[] sndata = new byte[18];
                 System.arraycopy(data, 2, sndata, 0, 14);
@@ -139,9 +149,14 @@ public class WheelLog extends Application {
         mFanStatus = 0;
         mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
         mName = "";
-        mType = "";
+        mModel = "";
         mVersion = 0;
         mSerialNumber = "";
+        mWheelType = 0;
+    }
+
+    public void setWheelType(int wheelType) {
+        mWheelType = wheelType;
     }
 
 }

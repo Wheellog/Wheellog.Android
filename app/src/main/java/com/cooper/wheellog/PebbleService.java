@@ -12,7 +12,7 @@ import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.util.UUID;
 
-public class PebbleConnectivity extends Service {
+public class PebbleService extends Service {
 
     private static final UUID APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
 
@@ -24,7 +24,7 @@ public class PebbleConnectivity extends Service {
     static final String TAG = "PebbleConnectivitySvc";
 
     private Handler mHandler = new Handler();
-    private static PebbleConnectivity instance = null;
+    private static PebbleService instance = null;
     WheelLog wheelLog;
 
     int lastSpeed = 0;
@@ -80,7 +80,7 @@ public class PebbleConnectivity extends Service {
         }
     };
 
-    /*
+/*
     private void sendPebbleAlert(final String text) {
         // Push a notification
         final Intent i = new Intent("com.getpebble.action.SEND_NOTIFICATION");
@@ -113,6 +113,10 @@ public class PebbleConnectivity extends Service {
 
         PebbleKit.startAppOnPebble(this, APP_UUID);
         mHandler.post(mSendPebbleData);
+
+        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_STARTED);
+        sendBroadcast(serviceStartedIntent);
+
         Log.d(TAG, "PebbleConnectivity Started");
         return START_STICKY;
     }

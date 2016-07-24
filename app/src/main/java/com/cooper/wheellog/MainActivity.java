@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,21 +36,21 @@ public class MainActivity extends AppCompatActivity {
     MenuItem miWatch;
     MenuItem miLogging;
 
-    TextView textViewSpeed;
-    TextView textViewTemperature;
-    TextView textViewCurrent;
-    TextView textViewVoltage;
-    TextView textViewBattery;
-    TextView textViewFanStatus;
-    TextView textViewMaxSpeed;
-    TextView textViewCurrentDistance;
-    TextView textViewType;
-    TextView textViewName;
-    TextView textViewVersion;
-    TextView textViewSerial;
-    TextView textViewTotalDistance;
-    TextView textViewRideTime;
-    TextView textViewMode;
+    TextView tvSpeed;
+    TextView tvTemperature;
+    TextView tvCurrent;
+    TextView tvVoltage;
+    TextView tvBattery;
+    TextView tvFanStatus;
+    TextView tvMaxSpeed;
+    TextView tvDistance;
+    TextView tvModel;
+    TextView tvName;
+    TextView tvVersion;
+    TextView tvSerial;
+    TextView tvTotalDistance;
+    TextView tvRideTime;
+    TextView tvMode;
 
     private WheelLog wheelLog;
     private BluetoothLeService mBluetoothLeService;
@@ -102,7 +101,25 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Bluetooth disconnected");
                 setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
+                if (wheelLog.getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                    if (wheelLog.getName().isEmpty())
+                        sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
+                    else if (wheelLog.getSerial().isEmpty())
+                        sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
+                }
                 updateScreen();
+            } else if (Constants.ACTION_PEBBLE_SERVICE_STARTED.equals(action)) {
+                if (miWatch != null) {
+                    miWatch.setIcon(R.drawable.ic_action_watch_orange);
+                    miWatch.setTitle(R.string.stop_pebble_service);
+                }
+            } else if (Constants.ACTION_LOGGING_SERVICE_STARTED.equals(action)) {
+                if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                    String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                    showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
+                }
+            } else if (Constants.ACTION_WHEEL_TYPE_DEFINED.equals(action)) {
+                configureDisplay(wheelLog.getWheelType());
             }
         }
     };
@@ -113,15 +130,6 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothLeService.STATE_CONNECTED:
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
                     SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
-
-                if (wheelLog.getName().isEmpty()) {
-                    final Intent getNameIntent = new Intent(Constants.ACTION_REQUEST_NAME_DATA);
-                    sendBroadcast(getNameIntent);
-                } else if (wheelLog.getSerial().isEmpty()) {
-                    final Intent getSerialIntent = new Intent(Constants.ACTION_REQUEST_SERIAL_DATA);
-                    sendBroadcast(getSerialIntent);
-                }
-
                 break;
             case BluetoothLeService.STATE_CONNECTING:
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING)
@@ -143,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             miWheel.getIcon().setAlpha(64);
         }
 
-            switch (mConnectionState) {
+        switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 miWheel.setIcon(R.drawable.ic_action_wheel_orange);
                 miWheel.setTitle(R.string.disconnect_from_wheel);
@@ -165,13 +173,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        if (PebbleConnectivity.isInstanceCreated()) {
+        if (PebbleService.isInstanceCreated()) {
             miWatch.setIcon(R.drawable.ic_action_watch_orange);
         } else {
             miWatch.setIcon(R.drawable.ic_action_watch_white);
         }
 
-        if (DataLogger.isInstanceCreated()) {
+        if (LoggingService.isInstanceCreated()) {
             miLogging.setTitle(R.string.stop_data_service);
             miLogging.setIcon(R.drawable.ic_action_logging_orange);
         } else {
@@ -179,23 +187,108 @@ public class MainActivity extends AppCompatActivity {
             miLogging.setIcon(R.drawable.ic_action_logging_white);
         }
     }
+    
+    private void configureDisplay(int wheelType) {
+        TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
+        TextView tvTitleSpeed = (TextView) findViewById(R.id.tvTitleSpeed);
+        TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleMaxSpeed);
+        TextView tvTitleBattery = (TextView) findViewById(R.id.tvTitleBattery);
+        TextView tvTitleDistance = (TextView) findViewById(R.id.tvTitleDistance);
+        TextView tvTitleRideTime = (TextView) findViewById(R.id.tvTitleRideTime);
+        TextView tvTitleVoltage = (TextView) findViewById(R.id.tvTitleVoltage);
+        TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
+        TextView tvTitleTemperature = (TextView) findViewById(R.id.tvTitleTemperature);
+        TextView tvTitleFanStatus = (TextView) findViewById(R.id.tvTitleFanStatus);
+        TextView tvTitleMode = (TextView) findViewById(R.id.tvTitleMode);
+        TextView tvTitleTotalDistance = (TextView) findViewById(R.id.tvTitleTotalDistance);
+        TextView tvTitleName = (TextView) findViewById(R.id.tvTitleName);
+        TextView tvTitleModel = (TextView) findViewById(R.id.tvTitleModel);
+        TextView tvTitleVersion = (TextView) findViewById(R.id.tvTitleVersion);
+        TextView tvTitleSerial = (TextView) findViewById(R.id.tvTitleSerial);
+
+        if (wheelType == Constants.WHEEL_TYPE_KINGSONG) {
+            tvWaitText.setVisibility(View.GONE);
+            tvTitleSpeed.setVisibility(View.VISIBLE);
+            tvSpeed.setVisibility(View.VISIBLE);
+            tvTitleMaxSpeed.setVisibility(View.VISIBLE);
+            tvMaxSpeed.setVisibility(View.VISIBLE);
+            tvTitleBattery.setVisibility(View.VISIBLE);
+            tvBattery.setVisibility(View.VISIBLE);
+            tvTitleDistance.setVisibility(View.VISIBLE);
+            tvDistance.setVisibility(View.VISIBLE);
+            tvTitleRideTime.setVisibility(View.VISIBLE);
+            tvRideTime.setVisibility(View.VISIBLE);
+            tvTitleVoltage.setVisibility(View.VISIBLE);
+            tvVoltage.setVisibility(View.VISIBLE);
+            tvTitleCurrent.setVisibility(View.VISIBLE);
+            tvCurrent.setVisibility(View.VISIBLE);
+            tvTitleTemperature.setVisibility(View.VISIBLE);
+            tvTemperature.setVisibility(View.VISIBLE);
+            tvTitleFanStatus.setVisibility(View.VISIBLE);
+            tvFanStatus.setVisibility(View.VISIBLE);
+            tvTitleMode.setVisibility(View.VISIBLE);
+            tvMode.setVisibility(View.VISIBLE);
+            tvTitleTotalDistance.setVisibility(View.VISIBLE);
+            tvTotalDistance.setVisibility(View.VISIBLE);
+            tvTitleName.setVisibility(View.VISIBLE);
+            tvName.setVisibility(View.VISIBLE);
+            tvTitleModel.setVisibility(View.VISIBLE);
+            tvModel.setVisibility(View.VISIBLE);
+            tvTitleVersion.setVisibility(View.VISIBLE);
+            tvVersion.setVisibility(View.VISIBLE);
+            tvTitleSerial.setVisibility(View.VISIBLE);
+            tvSerial.setVisibility(View.VISIBLE);
+        } else {
+            tvWaitText.setVisibility(View.VISIBLE);
+            tvTitleSpeed.setVisibility(View.GONE);
+            tvSpeed.setVisibility(View.GONE);
+            tvTitleMaxSpeed.setVisibility(View.GONE);
+            tvMaxSpeed.setVisibility(View.GONE);
+            tvTitleBattery.setVisibility(View.GONE);
+            tvBattery.setVisibility(View.GONE);
+            tvTitleDistance.setVisibility(View.GONE);
+            tvDistance.setVisibility(View.GONE);
+            tvTitleRideTime.setVisibility(View.GONE);
+            tvRideTime.setVisibility(View.GONE);
+            tvTitleVoltage.setVisibility(View.GONE);
+            tvVoltage.setVisibility(View.GONE);
+            tvTitleCurrent.setVisibility(View.GONE);
+            tvCurrent.setVisibility(View.GONE);
+            tvTitleTemperature.setVisibility(View.GONE);
+            tvTemperature.setVisibility(View.GONE);
+            tvTitleFanStatus.setVisibility(View.GONE);
+            tvFanStatus.setVisibility(View.GONE);
+            tvTitleMode.setVisibility(View.GONE);
+            tvMode.setVisibility(View.GONE);
+            tvTitleTotalDistance.setVisibility(View.GONE);
+            tvTotalDistance.setVisibility(View.GONE);
+            tvTitleName.setVisibility(View.GONE);
+            tvName.setVisibility(View.GONE);
+            tvTitleModel.setVisibility(View.GONE);
+            tvModel.setVisibility(View.GONE);
+            tvTitleVersion.setVisibility(View.GONE);
+            tvVersion.setVisibility(View.GONE);
+            tvTitleSerial.setVisibility(View.GONE);
+            tvSerial.setVisibility(View.GONE);
+        }
+    }
 
     private void updateScreen() {
-        textViewSpeed.setText(String.format(Locale.US, "%.1f KPH", wheelLog.getSpeedDouble()));
-        textViewVoltage.setText(String.format("%sV", wheelLog.getVoltageDouble()));
-        textViewTemperature.setText(String.format(Locale.US, "%d°C", wheelLog.getTemperature()));
-        textViewCurrent.setText(String.format("%sW", wheelLog.getCurrentDouble()));
-        textViewBattery.setText(String.format(Locale.US, "%d%%", wheelLog.getBatteryLevel()));
-        textViewFanStatus.setText(wheelLog.getFanStatus() == 0 ? "Off" : "On");
-        textViewMaxSpeed.setText(String.format(Locale.US, "%.1f KPH", wheelLog.getMaxSpeedDouble()));
-        textViewCurrentDistance.setText(String.format(Locale.US, "%.2f KM", wheelLog.getDistanceDouble()));
-        textViewTotalDistance.setText(String.format(Locale.US, "%.2f KM", wheelLog.getTotalDistanceDouble()));
-        textViewVersion.setText(String.format(Locale.US, "%d", wheelLog.getVersion()));
-        textViewName.setText(wheelLog.getName());
-        textViewType.setText(wheelLog.getType());
-        textViewSerial.setText(wheelLog.getSerial());
-        textViewRideTime.setText(wheelLog.getCurrentTimeString());
-        textViewMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
+        tvSpeed.setText(String.format(Locale.US, "%.1f KPH", wheelLog.getSpeedDouble()));
+        tvVoltage.setText(String.format("%sV", wheelLog.getVoltageDouble()));
+        tvTemperature.setText(String.format(Locale.US, "%d°C", wheelLog.getTemperature()));
+        tvCurrent.setText(String.format("%sW", wheelLog.getCurrentDouble()));
+        tvBattery.setText(String.format(Locale.US, "%d%%", wheelLog.getBatteryLevel()));
+        tvFanStatus.setText(wheelLog.getFanStatus() == 0 ? "Off" : "On");
+        tvMaxSpeed.setText(String.format(Locale.US, "%.1f KPH", wheelLog.getMaxSpeedDouble()));
+        tvDistance.setText(String.format(Locale.US, "%.2f KM", wheelLog.getDistanceDouble()));
+        tvTotalDistance.setText(String.format(Locale.US, "%.2f KM", wheelLog.getTotalDistanceDouble()));
+        tvVersion.setText(String.format(Locale.US, "%d", wheelLog.getVersion()));
+        tvName.setText(wheelLog.getName());
+        tvModel.setText(wheelLog.getModel());
+        tvSerial.setText(wheelLog.getSerial());
+        tvRideTime.setText(wheelLog.getCurrentTimeString());
+        tvMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
     }
 
     @Override
@@ -207,21 +300,21 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         wheelLog = (WheelLog) getApplicationContext();
 
-        textViewSpeed = (TextView) findViewById(R.id.tvSpeed);
-        textViewCurrent = (TextView) findViewById(R.id.tvCurrent);
-        textViewTemperature = (TextView) findViewById(R.id.tvTemperature);
-        textViewVoltage = (TextView) findViewById(R.id.tvVoltage);
-        textViewBattery = (TextView) findViewById(R.id.tvBattery);
-        textViewFanStatus = (TextView) findViewById(R.id.tvFanStatus);
-        textViewMaxSpeed = (TextView) findViewById(R.id.tvMaxSpeed);
-        textViewCurrentDistance = (TextView) findViewById(R.id.tvCurrentDistance);
-        textViewTotalDistance = (TextView) findViewById(R.id.tvTotalDistance);
-        textViewType = (TextView) findViewById(R.id.tvType);
-        textViewName = (TextView) findViewById(R.id.tvName);
-        textViewVersion = (TextView) findViewById(R.id.tvVersion);
-        textViewSerial = (TextView) findViewById(R.id.tvSerial);
-        textViewRideTime = (TextView) findViewById(R.id.tvRideTime);
-        textViewMode = (TextView) findViewById(R.id.tvMode);
+        tvSpeed = (TextView) findViewById(R.id.tvSpeed);
+        tvCurrent = (TextView) findViewById(R.id.tvCurrent);
+        tvTemperature = (TextView) findViewById(R.id.tvTemperature);
+        tvVoltage = (TextView) findViewById(R.id.tvVoltage);
+        tvBattery = (TextView) findViewById(R.id.tvBattery);
+        tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
+        tvMaxSpeed = (TextView) findViewById(R.id.tvMaxSpeed);
+        tvDistance = (TextView) findViewById(R.id.tvDistance);
+        tvTotalDistance = (TextView) findViewById(R.id.tvTotalDistance);
+        tvModel = (TextView) findViewById(R.id.tvModel);
+        tvName = (TextView) findViewById(R.id.tvName);
+        tvVersion = (TextView) findViewById(R.id.tvVersion);
+        tvSerial = (TextView) findViewById(R.id.tvSerial);
+        tvRideTime = (TextView) findViewById(R.id.tvRideTime);
+        tvMode = (TextView) findViewById(R.id.tvMode);
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -241,14 +334,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
             finish();
         } else if (!mBluetoothAdapter.isEnabled()) {
-
-
             // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
             // fire an intent to display a dialog asking the user to grant permission to enable it.
-            if (!mBluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, RESULT_REQUEST_ENABLE_BT);
-            }
+            if (!mBluetoothAdapter.isEnabled())
+                startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT);
         } else {
             startBluetoothService();
         }
@@ -262,7 +351,10 @@ public class MainActivity extends AppCompatActivity {
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
 
-        registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeBluetoothUpdateIntentFilter());
+        if (wheelLog.getWheelType() > 0)
+            configureDisplay(wheelLog.getWheelType());
+
+        registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeIntentFilter());
         updateScreen();
     }
 
@@ -281,23 +373,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (PebbleConnectivity.isInstanceCreated()) {
-            Intent PebbleServiceIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
-            stopService(PebbleServiceIntent);
-        }
+        if (PebbleService.isInstanceCreated())
+            stopPebbleService();
 
-        if (DataLogger.isInstanceCreated()) {
-            Intent DataServiceIntent = new Intent(getApplicationContext(), DataLogger.class);
-            stopService(DataServiceIntent);
-        }
+        if (LoggingService.isInstanceCreated())
+            stopService(new Intent(getApplicationContext(), LoggingService.class));
 
         if (mBluetoothLeService != null) {
-            if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_CONNECTED)
-                mBluetoothLeService.disconnect();
-            mBluetoothLeService.close();
             unbindService(mServiceConnection);
-            Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
-            stopService(gattServiceIntent);
+            stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
         wheelLog.reset();
@@ -318,8 +402,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miSearch:
-                Intent scanActivityIntent = new Intent(MainActivity.this, ScanActivity.class);
-                startActivityForResult(scanActivityIntent, RESULT_DEVICE_SCAN_REQUEST);
+                startActivityForResult(new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST);
                 return true;
             case R.id.miWheel:
                 if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
@@ -332,20 +415,14 @@ public class MainActivity extends AppCompatActivity {
                     requestExternalFilePermission();
                 else
                 {
-                    Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), DataLogger.class);
-                    if (DataLogger.isInstanceCreated()) {
-                        stopService(dataLoggerServiceIntent);
-                        miLogging.setIcon(R.drawable.ic_action_logging_white);
-                        miLogging.setTitle(R.string.start_data_service);
-                    } else {
-                        startService(dataLoggerServiceIntent);
-                        miLogging.setIcon(R.drawable.ic_action_logging_orange);
-                        miLogging.setTitle(R.string.stop_data_service);
-                    }
+                    if (!LoggingService.isInstanceCreated())
+                        startLoggingService();
+                    else
+                        stopLoggingService();
                 }
                 return true;
             case R.id.miWatch:
-                if (!PebbleConnectivity.isInstanceCreated())
+                if (!PebbleService.isInstanceCreated())
                     startPebbleService();
                 else
                     stopPebbleService();
@@ -373,28 +450,41 @@ public class MainActivity extends AppCompatActivity {
         }, 2000);
     }
 
-    private void showSnackBar(int msg)
-    {
+    private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
+    private void showSnackBar(String msg) { showSnackBar(msg, 2000); }
+    private void showSnackBar(String msg, int timeout) {
         if (snackbar == null) {
             View mainView = findViewById(R.id.main_view);
             snackbar = Snackbar
                     .make(mainView, "", Snackbar.LENGTH_LONG);
             snackbar.getView().setBackgroundResource(R.color.primary_dark);
-            snackbar.setDuration(2000);
+            snackbar.setDuration(timeout);
         }
         snackbar.setText(msg);
         snackbar.show();
     }
 
+
+    private void stopLoggingService() { startLoggingService(false); }
+    private void startLoggingService() { startLoggingService(true); }
+    private void startLoggingService(boolean start) {
+        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
+        if (start) {
+            startService(dataLoggerServiceIntent);
+            miLogging.setIcon(R.drawable.ic_action_logging_orange);
+            miLogging.setTitle(R.string.stop_data_service);
+        } else {
+            stopService(dataLoggerServiceIntent);
+            miLogging.setIcon(R.drawable.ic_action_logging_white);
+            miLogging.setTitle(R.string.start_data_service);
+        }
+    }
     private void stopPebbleService() { startPebbleService(false);}
     private void startPebbleService() { startPebbleService(true);}
     private void startPebbleService(boolean start) {
-        Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleConnectivity.class);
-
+        Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleService.class);
         if (start) {
             startService(pebbleServiceIntent);
-            miWatch.setIcon(R.drawable.ic_action_watch_orange);
-            miWatch.setTitle(R.string.stop_pebble_service);
         } else {
             stopService(pebbleServiceIntent);
             miWatch.setIcon(R.drawable.ic_action_watch_white);
@@ -403,9 +493,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startBluetoothService() {
-        Intent gattServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
-        startService(gattServiceIntent);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
+        startService(bluetoothServiceIntent);
+        bindService(bluetoothServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     private void connectToWheel() { connectToWheel(true);}
@@ -417,8 +507,10 @@ public class MainActivity extends AppCompatActivity {
             if (!connecting)
                 showSnackBar(R.string.connection_failed);
         }
-        else
-         mBluetoothLeService.disconnect();
+        else {
+            mBluetoothLeService.disconnect();
+            mBluetoothLeService.close();
+        }
     }
 
     private boolean checkExternalFilePermission(){
@@ -438,12 +530,10 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case RESULT_PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent dataLoggingIntent = new Intent(MainActivity.this, DataLogger.class);
-                    startService(dataLoggingIntent);
-                } else {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    startLoggingService();
+                else
                     Toast.makeText(this, "External write permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-                }
                 break;
         }
     }
