@@ -7,12 +7,12 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class WheelLog extends Application {
-    private int mSpeed;
+    private int mSpeed = 150;
     private long mTotalDistance;
     private int mCurrent;
-    private int mTemperature;
+    private int mTemperature = 40;
     private int mMode;
-    private int mBattery;
+    private int mBattery = 50;
     private int mVoltage;
     private long mDistance;
     private int mCurrentTime;
@@ -136,12 +136,12 @@ public class WheelLog extends Application {
     }
 
     public void reset() {
-        mSpeed = 0;
+        mSpeed = 150;
         mTotalDistance = 0;
         mCurrent = 0;
-        mTemperature = 0;
-//        currentMode = 0;
-        mBattery = 0;
+        mTemperature = 40;
+        mMode = 0;
+        mBattery = 50;
         mVoltage = 0;
         mDistance = 0;
         mCurrentTime = 0;

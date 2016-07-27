@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     TextView tvRideTime;
     TextView tvMode;
 
+    WheelView speedView;
+
     private WheelLog wheelLog;
     private BluetoothLeService mBluetoothLeService;
     private BluetoothAdapter mBluetoothAdapter;
@@ -289,6 +291,9 @@ public class MainActivity extends AppCompatActivity {
         tvSerial.setText(wheelLog.getSerial());
         tvRideTime.setText(wheelLog.getCurrentTimeString());
         tvMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
+        speedView.setSpeed(wheelLog.getSpeed());
+        speedView.setBattery(wheelLog.getBatteryLevel());
+        speedView.setTemperature(wheelLog.getTemperature());
     }
 
     @Override
@@ -315,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         tvSerial = (TextView) findViewById(R.id.tvSerial);
         tvRideTime = (TextView) findViewById(R.id.tvRideTime);
         tvMode = (TextView) findViewById(R.id.tvMode);
-
+        speedView = (WheelView) findViewById(R.id.speedView);
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {

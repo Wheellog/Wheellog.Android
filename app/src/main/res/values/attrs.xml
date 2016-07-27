@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="WheelView">
+        <attr name="outer_thickness" format="dimension" />
+        <attr name="inner_thickness" format="dimension" />
+        <attr name="inner_outer_padding" format="dimension" />
+        <attr name="inner_text_padding" format="dimension" />
+    </declare-styleable>
+</resources>

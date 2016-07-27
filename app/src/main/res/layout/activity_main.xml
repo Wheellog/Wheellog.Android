@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:cooper="http://schemas.android.com/apk/res/com.cooper.wheellog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,6 +26,17 @@
             android:textStyle="bold"
             android:gravity="start"/>
     </android.support.v7.widget.Toolbar>
+
+    <com.cooper.wheellog.WheelView
+        android:id="@+id/speedView"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        cooper:outer_thickness="40dp"
+        cooper:inner_outer_padding="5dp"
+        cooper:inner_thickness="20dp"
+        cooper:inner_text_padding="20dp"/>
+
 
     <ScrollView
         android:layout_width="match_parent"
