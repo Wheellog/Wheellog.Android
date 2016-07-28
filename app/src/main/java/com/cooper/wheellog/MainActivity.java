@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,8 +25,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
+import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.viewpagerindicator.LinePageIndicator;
+
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tvRideTime;
     TextView tvMode;
 
-    WheelView speedView;
+    WheelView wheelView;
 
     private WheelLog wheelLog;
     private BluetoothLeService mBluetoothLeService;
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
+    int viewPagerPage = 0;
 
     private final String TAG = "MainActivity";
     private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
@@ -276,30 +282,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateScreen() {
-        tvSpeed.setText(String.format(Locale.US, "%.1f KPH", wheelLog.getSpeedDouble()));
-        tvVoltage.setText(String.format("%sV", wheelLog.getVoltageDouble()));
-        tvTemperature.setText(String.format(Locale.US, "%d°C", wheelLog.getTemperature()));
-        tvCurrent.setText(String.format("%sW", wheelLog.getCurrentDouble()));
-        tvBattery.setText(String.format(Locale.US, "%d%%", wheelLog.getBatteryLevel()));
-        tvFanStatus.setText(wheelLog.getFanStatus() == 0 ? "Off" : "On");
-        tvMaxSpeed.setText(String.format(Locale.US, "%.1f KPH", wheelLog.getMaxSpeedDouble()));
-        tvDistance.setText(String.format(Locale.US, "%.2f KM", wheelLog.getDistanceDouble()));
-        tvTotalDistance.setText(String.format(Locale.US, "%.2f KM", wheelLog.getTotalDistanceDouble()));
-        tvVersion.setText(String.format(Locale.US, "%d", wheelLog.getVersion()));
-        tvName.setText(wheelLog.getName());
-        tvModel.setText(wheelLog.getModel());
-        tvSerial.setText(wheelLog.getSerial());
-        tvRideTime.setText(wheelLog.getCurrentTimeString());
-        tvMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
-        speedView.setSpeed(wheelLog.getSpeed());
-        speedView.setBattery(wheelLog.getBatteryLevel());
-        speedView.setTemperature(wheelLog.getTemperature());
+        if (viewPagerPage == 0) {
+            wheelView.setSpeed(wheelLog.getSpeed());
+            wheelView.setBattery(wheelLog.getBatteryLevel());
+            wheelView.setTemperature(wheelLog.getTemperature());
+            wheelView.setRideTime(wheelLog.getCurrentTimeString());
+            wheelView.setTopSpeed(wheelLog.getMaxSpeedDouble());
+            wheelView.setDistance(wheelLog.getDistanceDouble());
+            wheelView.setTotalDistance(wheelLog.getTotalDistanceDouble());
+        } else if (viewPagerPage == 1) {
+            tvSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getSpeedDouble()));
+            tvVoltage.setText(String.format("%sV", wheelLog.getVoltageDouble()));
+            tvTemperature.setText(String.format(Locale.US, "%d°C", wheelLog.getTemperature()));
+            tvCurrent.setText(String.format("%sW", wheelLog.getCurrentDouble()));
+            tvBattery.setText(String.format(Locale.US, "%d%%", wheelLog.getBatteryLevel()));
+            tvFanStatus.setText(wheelLog.getFanStatus() == 0 ? "Off" : "On");
+            tvMaxSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getMaxSpeedDouble()));
+            tvDistance.setText(String.format(Locale.US, "%.2f km", wheelLog.getDistanceDouble()));
+            tvTotalDistance.setText(String.format(Locale.US, "%.2f km", wheelLog.getTotalDistanceDouble()));
+            tvVersion.setText(String.format(Locale.US, "%d", wheelLog.getVersion()));
+            tvName.setText(wheelLog.getName());
+            tvModel.setText(wheelLog.getModel());
+            tvSerial.setText(wheelLog.getSerial());
+            tvRideTime.setText(wheelLog.getCurrentTimeString());
+            tvMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ViewPageAdapter adapter = new ViewPageAdapter(this);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(adapter);
+        LinePageIndicator titleIndicator = (LinePageIndicator)findViewById(R.id.indicator);
+        titleIndicator.setViewPager(pager);
+        pager.addOnPageChangeListener(pageChangeListener);
+
         mDeviceAddress = SettingsManager.getLastAddr(getApplicationContext());
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -320,7 +341,10 @@ public class MainActivity extends AppCompatActivity {
         tvSerial = (TextView) findViewById(R.id.tvSerial);
         tvRideTime = (TextView) findViewById(R.id.tvRideTime);
         tvMode = (TextView) findViewById(R.id.tvMode);
-        speedView = (WheelView) findViewById(R.id.speedView);
+        wheelView = (WheelView) findViewById(R.id.wheelView);
+        TextClock textClock = (TextClock) findViewById(R.id.textClock);
+        textClock.setTypeface(Typefaces.get(this, "fonts/Cone.otf"));
+
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -454,6 +478,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 2000);
     }
+
+    ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener(){
+        @Override
+        public void onPageSelected(int position) {
+            super.onPageSelected(position);
+            viewPagerPage = position;
+            updateScreen();
+        }
+    };
 
     private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
     private void showSnackBar(String msg) { showSnackBar(msg, 2000); }

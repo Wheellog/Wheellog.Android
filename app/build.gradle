@@ -8,8 +8,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
         targetSdkVersion 24
-        versionCode 6
-        versionName "1.0.1"
+        versionCode 8
+        versionName "1.1.1"
     }
     buildTypes {
         release {
@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
     compile 'com.android.support:gridlayout-v7:24.1.1'
+    compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
 }

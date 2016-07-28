@@ -20,13 +20,16 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScanActivity" android:theme="@style/AppTheme.Transparent" />
+        <activity android:name=".ScanActivity"
+            android:theme="@style/AppTheme.Transparent"
+            android:screenOrientation="portrait" />
         <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
         <service android:name=".LoggingService" />

@@ -4,5 +4,8 @@
         <attr name="inner_thickness" format="dimension" />
         <attr name="inner_outer_padding" format="dimension" />
         <attr name="inner_text_padding" format="dimension" />
+        <attr name="box_top_padding" format="dimension" />
+        <attr name="box_outer_padding" format="dimension" />
+        <attr name="box_inner_padding" format="dimension" />
     </declare-styleable>
 </resources>

@@ -8,6 +8,7 @@
         <item name="actionButtonStyle">@style/AppTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/background</item>
+        <item name="vpiLinePageIndicatorStyle">@style/LinePageIndicatorStyle</item>
     </style>
 
     <style name="AppTheme.Transparent" parent="AppTheme">
@@ -36,7 +37,6 @@
         <item name="layout_columnWeight">1</item>
         <item name="android:textColor">#AAFFFFFF</item>
     </style>
-    <!--<item name="android:typeface">monospace</item>-->
 
     <style name="Stats.Title" parent="@style/Stats">
         <item name="android:textColor">#CCFFFFFF</item>
@@ -46,8 +46,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="WheelView_SpeedText">
-        <item name="android:textColor">@android:color/white</item>
+    <style name="LinePageIndicatorStyle">
+        <item name="android:padding">5dp</item>
     </style>
-
 </resources>
