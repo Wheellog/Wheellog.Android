@@ -44,10 +44,11 @@ public class MainActivity extends AppCompatActivity {
     TextView tvSpeed;
     TextView tvTemperature;
     TextView tvCurrent;
+    TextView tvPower;
     TextView tvVoltage;
     TextView tvBattery;
     TextView tvFanStatus;
-    TextView tvMaxSpeed;
+    TextView tvTopSpeed;
     TextView tvDistance;
     TextView tvModel;
     TextView tvName;
@@ -199,12 +200,13 @@ public class MainActivity extends AppCompatActivity {
     private void configureDisplay(int wheelType) {
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
         TextView tvTitleSpeed = (TextView) findViewById(R.id.tvTitleSpeed);
-        TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleMaxSpeed);
+        TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleTopSpeed);
         TextView tvTitleBattery = (TextView) findViewById(R.id.tvTitleBattery);
         TextView tvTitleDistance = (TextView) findViewById(R.id.tvTitleDistance);
         TextView tvTitleRideTime = (TextView) findViewById(R.id.tvTitleRideTime);
         TextView tvTitleVoltage = (TextView) findViewById(R.id.tvTitleVoltage);
         TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
+        TextView tvTitlePower = (TextView) findViewById(R.id.tvTitlePower);
         TextView tvTitleTemperature = (TextView) findViewById(R.id.tvTitleTemperature);
         TextView tvTitleFanStatus = (TextView) findViewById(R.id.tvTitleFanStatus);
         TextView tvTitleMode = (TextView) findViewById(R.id.tvTitleMode);
@@ -219,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             tvTitleSpeed.setVisibility(View.VISIBLE);
             tvSpeed.setVisibility(View.VISIBLE);
             tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-            tvMaxSpeed.setVisibility(View.VISIBLE);
+            tvTopSpeed.setVisibility(View.VISIBLE);
             tvTitleBattery.setVisibility(View.VISIBLE);
             tvBattery.setVisibility(View.VISIBLE);
             tvTitleDistance.setVisibility(View.VISIBLE);
@@ -230,6 +232,8 @@ public class MainActivity extends AppCompatActivity {
             tvVoltage.setVisibility(View.VISIBLE);
             tvTitleCurrent.setVisibility(View.VISIBLE);
             tvCurrent.setVisibility(View.VISIBLE);
+            tvTitlePower.setVisibility(View.VISIBLE);
+            tvPower.setVisibility(View.VISIBLE);
             tvTitleTemperature.setVisibility(View.VISIBLE);
             tvTemperature.setVisibility(View.VISIBLE);
             tvTitleFanStatus.setVisibility(View.VISIBLE);
@@ -251,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
             tvTitleSpeed.setVisibility(View.GONE);
             tvSpeed.setVisibility(View.GONE);
             tvTitleMaxSpeed.setVisibility(View.GONE);
-            tvMaxSpeed.setVisibility(View.GONE);
+            tvTopSpeed.setVisibility(View.GONE);
             tvTitleBattery.setVisibility(View.GONE);
             tvBattery.setVisibility(View.GONE);
             tvTitleDistance.setVisibility(View.GONE);
@@ -262,6 +266,8 @@ public class MainActivity extends AppCompatActivity {
             tvVoltage.setVisibility(View.GONE);
             tvTitleCurrent.setVisibility(View.GONE);
             tvCurrent.setVisibility(View.GONE);
+            tvTitlePower.setVisibility(View.GONE);
+            tvPower.setVisibility(View.GONE);
             tvTitleTemperature.setVisibility(View.GONE);
             tvTemperature.setVisibility(View.GONE);
             tvTitleFanStatus.setVisibility(View.GONE);
@@ -287,20 +293,23 @@ public class MainActivity extends AppCompatActivity {
             wheelView.setBattery(wheelLog.getBatteryLevel());
             wheelView.setTemperature(wheelLog.getTemperature());
             wheelView.setRideTime(wheelLog.getCurrentTimeString());
-            wheelView.setTopSpeed(wheelLog.getMaxSpeedDouble());
+            wheelView.setTopSpeed(wheelLog.getTopSpeedDouble());
             wheelView.setDistance(wheelLog.getDistanceDouble());
             wheelView.setTotalDistance(wheelLog.getTotalDistanceDouble());
+            wheelView.setVoltage(wheelLog.getVoltageDouble());
+            wheelView.setCurrent(wheelLog.getPowerDouble());
         } else if (viewPagerPage == 1) {
             tvSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getSpeedDouble()));
-            tvVoltage.setText(String.format("%sV", wheelLog.getVoltageDouble()));
+            tvVoltage.setText(String.format(Locale.US, "%.2fV", wheelLog.getVoltageDouble()));
             tvTemperature.setText(String.format(Locale.US, "%d°C", wheelLog.getTemperature()));
-            tvCurrent.setText(String.format("%sW", wheelLog.getCurrentDouble()));
+            tvCurrent.setText(String.format(Locale.US, "%.2fA", wheelLog.getCurrentDouble()));
+            tvPower.setText(String.format(Locale.US, "%.2fW", wheelLog.getPowerDouble()));
             tvBattery.setText(String.format(Locale.US, "%d%%", wheelLog.getBatteryLevel()));
             tvFanStatus.setText(wheelLog.getFanStatus() == 0 ? "Off" : "On");
-            tvMaxSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getMaxSpeedDouble()));
+            tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getTopSpeedDouble()));
             tvDistance.setText(String.format(Locale.US, "%.2f km", wheelLog.getDistanceDouble()));
             tvTotalDistance.setText(String.format(Locale.US, "%.2f km", wheelLog.getTotalDistanceDouble()));
-            tvVersion.setText(String.format(Locale.US, "%d", wheelLog.getVersion()));
+            tvVersion.setText(String.format(Locale.US, "%.2f", wheelLog.getVersion()/100.0));
             tvName.setText(wheelLog.getName());
             tvModel.setText(wheelLog.getModel());
             tvSerial.setText(wheelLog.getSerial());
@@ -328,11 +337,12 @@ public class MainActivity extends AppCompatActivity {
 
         tvSpeed = (TextView) findViewById(R.id.tvSpeed);
         tvCurrent = (TextView) findViewById(R.id.tvCurrent);
+        tvPower = (TextView) findViewById(R.id.tvPower);
         tvTemperature = (TextView) findViewById(R.id.tvTemperature);
         tvVoltage = (TextView) findViewById(R.id.tvVoltage);
         tvBattery = (TextView) findViewById(R.id.tvBattery);
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
-        tvMaxSpeed = (TextView) findViewById(R.id.tvMaxSpeed);
+        tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
         tvDistance = (TextView) findViewById(R.id.tvDistance);
         tvTotalDistance = (TextView) findViewById(R.id.tvTotalDistance);
         tvModel = (TextView) findViewById(R.id.tvModel);
@@ -343,8 +353,8 @@ public class MainActivity extends AppCompatActivity {
         tvMode = (TextView) findViewById(R.id.tvMode);
         wheelView = (WheelView) findViewById(R.id.wheelView);
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
-        textClock.setTypeface(Typefaces.get(this, "fonts/Cone.otf"));
-
+        textClock.setTypeface(Typefaces.get(this, "fonts/prime_edited.otf"));
+        wheelView.setMaxSpeed(300);
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {

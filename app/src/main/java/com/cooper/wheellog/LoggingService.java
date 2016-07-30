@@ -122,14 +122,15 @@ public class LoggingService extends Service
             if (!fileExists)
             {
                 fileExists = true;
-                pw.println("date,time,speed,voltage,current,battery_level,distance,temperature,fan_status");
+                pw.println("date,time,speed,voltage,current,power,battery_level,distance,temperature,fan_status");
             }
 
-            pw.println(String.format(Locale.US, "%s,%f,%f,%f,%d,%f,%d,%d",
+            pw.println(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
                     sdf.format(new Date()),
                     wheelLog.getSpeedDouble(),
                     wheelLog.getVoltageDouble(),
                     wheelLog.getCurrentDouble(),
+                    wheelLog.getPowerDouble(),
                     wheelLog.getBatteryLevel(),
                     wheelLog.getDistanceDouble(),
                     wheelLog.getTemperature(),

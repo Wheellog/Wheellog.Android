@@ -2,21 +2,22 @@ package com.cooper.wheellog;
 
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class WheelLog extends Application {
-    private int mSpeed = 150;
+    private int mSpeed;
     private long mTotalDistance;
     private int mCurrent;
-    private int mTemperature = 40;
+    private int mTemperature;
     private int mMode;
-    private int mBattery = 50;
+    private int mBattery;
     private int mVoltage;
     private long mDistance;
     private int mCurrentTime;
-    private int mMaxSpeed;
+    private int mTopSpeed;
     private int mFanStatus;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private String mName = "";
@@ -25,12 +26,12 @@ public class WheelLog extends Application {
     private String mSerialNumber = "";
     private int mWheelType;
 
-    public int getSpeed() { return mSpeed; }
-    public int getTemperature() { return mTemperature; }
+    public int getSpeed() { return mSpeed / 10; }
+    public int getTemperature() { return mTemperature / 100; }
     public int getBatteryLevel() { return mBattery; }
     public int getFanStatus() { return mFanStatus; }
     public int getConnectionState() { return mConnectionState; }
-//    public int getMaxSpeed() { return maxSpeed; }
+//    public int getTopSpeed() { return maxSpeed; }
     public int getVersion() { return mVersion; }
 //    public int getCurrentTime() { return currentTime; }
     public int getMode() { return mMode; }
@@ -48,12 +49,13 @@ public class WheelLog extends Application {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    public double getSpeedDouble() { return (double) mSpeed / 10.0F; }
-    public double getVoltageDouble() { return (double) mVoltage / 10.0F; }
-    public double getCurrentDouble() { return (double) mCurrent / 10.0F; }
-    public double getMaxSpeedDouble() { return (double) mMaxSpeed / 10.0F; }
-    public double getDistanceDouble() { return (double) mDistance / 1000.0F; }
-    public double getTotalDistanceDouble() { return (double) mTotalDistance / 1000.0F; }
+    public double getSpeedDouble() { return mSpeed / 100.0; }
+    public double getVoltageDouble() { return mVoltage / 100.0; }
+    public double getPowerDouble() { return (mCurrent/100.0)*(mVoltage/100.0); }
+    public double getCurrentDouble() { return mCurrent/100.0; }
+    public double getTopSpeedDouble() { return mTopSpeed / 100.0; }
+    public double getDistanceDouble() { return mDistance / 1000.0; }
+    public double getTotalDistanceDouble() { return mTotalDistance / 1000.0; }
 
     public void setConnectionState(boolean connected) { mConnectionState = connected ? 1 : 0; }
 
@@ -79,27 +81,32 @@ public class WheelLog extends Application {
                 return;
             }
             if ((data[16] & 255) == 169) { // Live data
-                mVoltage = byteArrayInt2(data[2], data[3]) / 10;
-                mSpeed = byteArrayInt2(data[4], data[5]) / 10;
+                mVoltage = byteArrayInt2(data[2], data[3]);
+                mSpeed = byteArrayInt2(data[4], data[5]);
                 mTotalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
                 mCurrent = byteArrayInt2(data[10], data[11]);
-                mTemperature = byteArrayInt2(data[12], data[13]) / 100;
+                if (mCurrent > 7000) {
+                    mCurrent = 7000;
+                } else if (mCurrent < 0) {
+                    mCurrent = 0;
+                }
+                mTemperature = byteArrayInt2(data[12], data[13]);
 //                currentMode = -1;
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
                 }
 
-                if (mVoltage < 500) {
+                if (mVoltage < 5000) {
                     mBattery = 10;
-                } else if (mVoltage >= 660) {
+                } else if (mVoltage >= 6600) {
                     mBattery = 100;
                 } else {
-                    mBattery = (((mVoltage/10) - 50) * 100) / 16;
+                    mBattery = (((mVoltage/100) - 50) * 100) / 16;
                 }
             } else if ((data[16] & 255) == 185) { // Distance/Time/Fan Data
                 mDistance = byteArrayInt4(data[2], data[3], data[4], data[5]);
                 mCurrentTime = byteArrayInt2(data[6], data[7]);
-                mMaxSpeed = byteArrayInt2(data[8], data[9]) / 10;
+                mTopSpeed = byteArrayInt2(data[8], data[9]);
                 mFanStatus = data[12];
             } else if ((data[16] & 255) == 187) { // Name and Type data
                 int end = 0;
@@ -136,16 +143,16 @@ public class WheelLog extends Application {
     }
 
     public void reset() {
-        mSpeed = 150;
+        mSpeed = 0;
         mTotalDistance = 0;
         mCurrent = 0;
-        mTemperature = 40;
+        mTemperature = 0;
         mMode = 0;
-        mBattery = 50;
+        mBattery = 0;
         mVoltage = 0;
         mDistance = 0;
         mCurrentTime = 0;
-        mMaxSpeed = 0;
+        mTopSpeed = 0;
         mFanStatus = 0;
         mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
         mName = "";

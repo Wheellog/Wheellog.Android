@@ -27,183 +27,177 @@
                 android:id="@+id/tvTitleSpeed"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Speed"/>
+                android:text="@string/speed"/>
 
             <TextView
                 android:id="@+id/tvSpeed"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0.0 KPH" />
-
+                style="@style/Stats" />
 
             <TextView
-                android:id="@+id/tvTitleMaxSpeed"
+                android:id="@+id/tvTitleTopSpeed"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Max Speed"/>
+                android:text="@string/top_speed"/>
 
             <TextView
-                android:id="@+id/tvMaxSpeed"
+                android:id="@+id/tvTopSpeed"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0.0 KPH" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleBattery"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Battery"/>
+                android:text="@string/battery"/>
 
             <TextView
                 android:id="@+id/tvBattery"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0%" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleDistance"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Distance"/>
+                android:text="@string/distance"/>
 
             <TextView
                 android:id="@+id/tvDistance"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0.0 KM" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleRideTime"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Ride Time"/>
+                android:text="@string/ride_time"/>
 
             <TextView
                 android:id="@+id/tvRideTime"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="00:00" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleVoltage"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Voltage"/>
+                android:text="@string/voltage"/>
 
             <TextView
                 android:id="@+id/tvVoltage"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0V" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleCurrent"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Current"/>
+                android:text="@string/current"/>
 
             <TextView
                 android:id="@+id/tvCurrent"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0.0W" />
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitlePower"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/power"/>
+
+            <TextView
+                android:id="@+id/tvPower"
+                android:visibility="gone"
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleTemperature"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Temperature"/>
+                android:text="@string/temperature"/>
 
             <TextView
                 android:id="@+id/tvTemperature"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0.0 C" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleFanStatus"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Fan Status"/>
+                android:text="@string/fan_status"/>
 
             <TextView
                 android:id="@+id/tvFanStatus"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="Off" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleMode"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Mode"/>
+                android:text="@string/mode"/>
 
             <TextView
                 android:id="@+id/tvMode"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleTotalDistance"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Total Distance"/>
+                android:text="@string/total_distance"/>
 
             <TextView
                 android:id="@+id/tvTotalDistance"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="0.0 KM" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleName"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Name"/>
+                android:text="@string/name"/>
 
             <TextView
                 android:id="@+id/tvName"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="NAME"/>
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleModel"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Model"/>
+                android:text="@string/model"/>
 
             <TextView
                 android:id="@+id/tvModel"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="KS16B"
-                app:layout_columnWeight="1" />
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleVersion"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Version"/>
+                android:text="@string/version"/>
 
             <TextView
                 android:id="@+id/tvVersion"
                 android:visibility="gone"
-                android:text="120"
                 style="@style/Stats"/>
 
             <TextView
                 android:id="@+id/tvTitleSerial"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="Serial Number"/>
+                android:text="@string/serial_number"/>
 
             <TextView
                 android:id="@+id/tvSerial"
                 android:visibility="gone"
-                style="@style/Stats"
-                android:text="SERIAL_NUMBER" />
+                style="@style/Stats" />
 
         </android.support.v7.widget.GridLayout>
 

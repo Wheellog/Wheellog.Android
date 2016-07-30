@@ -33,4 +33,21 @@
     <string name="mode_play">Expert</string>
     <string name="mode_ride">Normal</string>
     <string name="waiting_for_wheel">Waiting for wheel…</string>
+    <string name="speed">Speed</string>
+    <string name="top_speed">Top Speed</string>
+    <string name="battery">Battery</string>
+    <string name="distance">Distance</string>
+    <string name="ride_time">Ride Time</string>
+    <string name="voltage">Voltage</string>
+    <string name="current">Current</string>
+    <string name="power">Power</string>
+    <string name="temperature">Temperature</string>
+    <string name="fan_status">Fan Status</string>
+    <string name="mode">Mode</string>
+    <string name="total_distance">Total Distance</string>
+    <string name="total">Total</string>
+    <string name="name">Name</string>
+    <string name="model">Model</string>
+    <string name="version">Version</string>
+    <string name="serial_number">Serial Number</string>
 </resources>

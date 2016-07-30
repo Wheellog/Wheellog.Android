@@ -4,14 +4,17 @@
     <color name="primary_dark">#062141</color>
     <color name="primary_light">#D1C4E9</color>
     <color name="accent">#FF5722</color>
-    <color name="speed_dial">#FF5722</color>
-    <color name="battery_dial">#00cc00</color>
-    <color name="temperature_dial">#33ccff</color>
-    <color name="arc_dim">#30000000</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
     <color name="background">#284a73</color>
     <color name="navigation_bar">#1f3a5a</color>
+    <color name="wheelview_text">#AAFFFFFF</color>
+    <color name="wheelview_speed_text">#FFFFFF</color>
+    <color name="wheelview_speed_dial">#FF5722</color>
+    <color name="wheelview_battery_dial">#00cc00</color>
+    <color name="wheelview_temperature_dial">#33ccff</color>
+    <color name="wheelview_arc_dim">#30000000</color>
+
 </resources>

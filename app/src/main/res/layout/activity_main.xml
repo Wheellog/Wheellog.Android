@@ -22,8 +22,9 @@
             android:layout_width="match_parent"
             android:format24Hour="HH:mm:ss"
             android:format12Hour="HH:mm:ss"
-            android:textSize="45sp"
+            android:textSize="30sp"
             android:textStyle="bold"
+            android:textColor="@color/wheelview_text"
             android:gravity="start"/>
     </android.support.v7.widget.Toolbar>
 
@@ -45,7 +46,7 @@
         android:layout_width="match_parent"
         app:strokeWidth="4dp"
         app:lineWidth="50dp"
-        app:unselectedColor="@color/arc_dim"
+        app:unselectedColor="@color/wheelview_arc_dim"
         app:selectedColor="@color/accent"
         style="@style/LinePageIndicatorStyle"/>
 </LinearLayout>
