@@ -45,7 +45,7 @@ public class WheelView extends View {
     private int mSpeed = 0;
     private int mBattery = 0;
     private int mTemperature = 0;
-    private String mCurrentTime = "";
+    private String mCurrentTime = "00:00:00";
     private Double mDistance = 0.0;
     private Double mTotalDistance = 0.0;
     private Double mTopSpeed = 0.0;
@@ -398,9 +398,6 @@ public class WheelView extends View {
         canvas.drawText(getResources().getString(R.string.distance), blRect.centerX(), blRect.centerY()-(box_inner_padding/2), textPaint);
         canvas.drawText(getResources().getString(R.string.total), brRect.centerX(), brRect.centerY()-(box_inner_padding/2), textPaint);
 
-        if (isInEditMode())
-            return;
-
         canvas.drawText(String.format(Locale.US, "%.2fV", mVoltage), tlRect.centerX(), tlRect.centerY()+boxTextHeight, textPaint);
         canvas.drawText(String.format(Locale.US, "%.2fW", mCurrent), trRect.centerX(), trRect.centerY()+boxTextHeight, textPaint);
         canvas.drawText(mCurrentTime, mlRect.centerX(), mlRect.centerY()+boxTextHeight+(box_inner_padding/2), textPaint);
@@ -429,7 +426,6 @@ public class WheelView extends View {
     }
 
     private float calculateFontSize(@NonNull Rect textBounds, @NonNull Rect textContainer, @NonNull String text, @NonNull Paint textPaint) {
-
         int stage = 1;
         float textSize = 0;
 
@@ -441,18 +437,17 @@ public class WheelView extends View {
             textPaint.setTextSize(textSize);
             textPaint.getTextBounds(text, 0, text.length(), textBounds);
 
-            textBounds.offsetTo(textContainer.left, textContainer.top);
-            boolean fits = textContainer.contains(textBounds);
-
             if (isInEditMode())
                 return textSize;
+
+            float textWidth = textPaint.measureText(text);
+
+            boolean fits = textWidth < textContainer.width() && textBounds.height() < textContainer.height();
 
             if (stage == 1 && !fits) stage++;
             else
             if (stage == 2 &&  fits) stage++;
         }
-
         return textSize;
     }
-
 }
