@@ -405,7 +405,12 @@ public class WheelView extends View {
         canvas.drawText(String.format(Locale.US, "%.2fW", mCurrent), trRect.centerX(), trRect.centerY()+boxTextHeight, textPaint);
         canvas.drawText(mCurrentTime, mlRect.centerX(), mlRect.centerY()+boxTextHeight+(box_inner_padding/2), textPaint);
         canvas.drawText(String.format(Locale.US, "%.1f km/h", mTopSpeed), mrRect.centerX(), mrRect.centerY()+boxTextHeight, textPaint);
-        canvas.drawText(String.format(Locale.US, "%.2f km", mDistance), blRect.centerX(), blRect.centerY()+boxTextHeight, textPaint);
+
+        if (mDistance < 1)
+            canvas.drawText(String.format(Locale.US, "%.0f m", mDistance*1000), blRect.centerX(), blRect.centerY()+boxTextHeight, textPaint);
+        else
+            canvas.drawText(String.format(Locale.US, "%.2f km", mDistance), blRect.centerX(), blRect.centerY()+boxTextHeight, textPaint);
+
         canvas.drawText(String.format(Locale.US, "%.0f km", mTotalDistance), brRect.centerX(), brRect.centerY()+boxTextHeight, textPaint);
 
 

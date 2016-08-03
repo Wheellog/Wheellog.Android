@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="kingsong_services">
+        <item>00001800_0000_1000_8000_00805f9b34fb</item>
+        <item>00001801_0000_1000_8000_00805f9b34fb</item>
+        <item>0000180a_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffe0_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="kingsong_00001800_0000_1000_8000_00805f9b34fb">
+        <item>00002a00_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a01_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a02_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a03_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a04_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    <string-array name="kingsong_00001801_0000_1000_8000_00805f9b34fb">
+        <item>00002a05_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    <string-array name="kingsong_0000180a_0000_1000_8000_00805f9b34fb">
+        <item>00002a23_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a24_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a25_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a26_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a27_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a28_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a29_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a2a_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a50_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    <string-array name="kingsong_0000fff0_0000_1000_8000_00805f9b34fb">
+        <item>0000fff1_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff2_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff3_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff4_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff5_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    <string-array name="kingsong_0000ffe0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffe1_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+</resources>

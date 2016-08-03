@@ -14,16 +14,14 @@ public class Constants {
     public static final String ACTION_REQUEST_KINGSONG_HORN = "com.cooper.wheellog.requestHorn";
     public static final String ACTION_PEBBLE_SERVICE_STARTED = "com.cooper.wheellog.pebbleServiceStarted";
     public static final String ACTION_LOGGING_SERVICE_STARTED = "com.cooper.wheellog.loggingServiceStarted";
-    public static final String ACTION_WHEEL_TYPE_DEFINED = "com.cooper.wheellog.wheelTypeDefined";
 
     public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_NOTITY_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
 
-//    public static final String GOTWAY_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb"; //UPDATED
-//    public static final String GOTWAY_READ_CHARACTER_UUID = "0000fff1-0000-1000-8000-00805f9b34fb"; // UPDATED- GUESS
-//    public static final String GOTWAY_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    public static final String GOTWAY_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
+    public static final String GOTWAY_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
 
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
     public static final int PEBBLE_KEY_LAUNCH_APP = 10008;
@@ -35,4 +33,5 @@ public class Constants {
     public static final String INTENT_EXTRA_LOGGING_FILE_LOCATION = "logging_file_location";
 
     public static final int WHEEL_TYPE_KINGSONG = 1;
+    public static final int WHEEL_TYPE_GOTWAY = 2;
 }

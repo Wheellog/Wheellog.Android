@@ -1,10 +1,14 @@
 package com.cooper.wheellog;
 
 import android.app.Application;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
-import android.util.Log;
 
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class WheelLog extends Application {
@@ -51,7 +55,7 @@ public class WheelLog extends Application {
 
     public double getSpeedDouble() { return mSpeed / 100.0; }
     public double getVoltageDouble() { return mVoltage / 100.0; }
-    public double getPowerDouble() { return (mCurrent/100.0)*(mVoltage/100.0); }
+    public double getPowerDouble() { return (mCurrent*mVoltage)/10000.0; }
     public double getCurrentDouble() { return mCurrent/100.0; }
     public double getTopSpeedDouble() { return mTopSpeed / 100.0; }
     public double getDistanceDouble() { return mDistance / 1000.0; }
@@ -66,18 +70,27 @@ public class WheelLog extends Application {
     }
 
     public void decodeResponse(byte[] data) {
+
+//        StringBuilder stringBuilder = new StringBuilder(data.length);
+//        for (byte aData : data)
+//            stringBuilder.append(String.format("%02d ", aData));
+//        Log.i("OUTPUT", stringBuilder.toString());
+
         if (mWheelType == Constants.WHEEL_TYPE_KINGSONG)
             decodeKingSong(data);
+        else if (mWheelType == Constants.WHEEL_TYPE_GOTWAY)
+            decodeGotway(data);
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         sendBroadcast(intent);
     }
 
     private void decodeKingSong(byte[] data) {
+
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
-            if (a1 != 170 || a2 != 85) { // Not sure what this does?
+            if (a1 != 170 || a2 != 85) {
                 return;
             }
             if ((data[16] & 255) == 169) { // Live data
@@ -91,17 +104,17 @@ public class WheelLog extends Application {
                     mCurrent = 0;
                 }
                 mTemperature = byteArrayInt2(data[12], data[13]);
-//                currentMode = -1;
+
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
                 }
 
                 if (mVoltage < 5000) {
-                    mBattery = 10;
+                    mBattery = 0;
                 } else if (mVoltage >= 6600) {
                     mBattery = 100;
                 } else {
-                    mBattery = (((mVoltage/100) - 50) * 100) / 16;
+                    mBattery = (mVoltage - 5000) / 16;
                 }
             } else if ((data[16] & 255) == 185) { // Distance/Time/Fan Data
                 mDistance = byteArrayInt4(data[2], data[3], data[4], data[5]);
@@ -142,6 +155,44 @@ public class WheelLog extends Application {
         }
     }
 
+    private void decodeGotway(byte[] data) {
+        if (data.length >= 20) {
+            int a1 = data[0] & 255;
+            int a2 = data[1] & 255;
+            if (a1 != 85 || a2 != 170) {
+                return;
+            }
+
+            if (data[5] >= 0)
+                mSpeed = (int) Math.round(((data[4] * 256.0) + data[5]) * 3.6);
+            else
+                mSpeed = (int) Math.round((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+
+            mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
+
+            mDistance = byteArrayInt2(data[9], data[8]);
+
+            mVoltage = (data[2] * 256) + (data[3] & 255);
+
+            if (mVoltage <= 5290) {
+                mBattery = 0;
+            } else if (mVoltage >= 6580) {
+                mBattery = 100;
+            } else {
+                mBattery = (mVoltage - 5290) / 13;
+            }
+
+        } else if (data.length >= 10) {
+            int a1 = data[4] & 255;
+            int a2 = data[5] & 255;
+            if (a1 != 85 || a2 != 170) {
+                return;
+            }
+
+            mTotalDistance = ((((data[6] * 256) + data[7]) * 65536) + (((data[8] & 255) * 256) + (data[9] & 255)));
+        }
+    }
+
     public void reset() {
         mSpeed = 0;
         mTotalDistance = 0;
@@ -162,8 +213,64 @@ public class WheelLog extends Application {
         mWheelType = 0;
     }
 
-    public void setWheelType(int wheelType) {
-        mWheelType = wheelType;
-    }
+    public boolean detectWheel(BluetoothGatt gatt) {
+        Class<R.array> res = R.array.class;
+        String wheel_types[] = getResources().getStringArray(R.array.wheel_types);
+        for (String wheel_Type : wheel_types) {
+            boolean detected_wheel = true;
+            java.lang.reflect.Field services_res = null;
+            try { services_res = res.getField(wheel_Type+"_services"); } catch (Exception ignored) {}
+            int services_res_id = 0;
+            if (services_res != null)
+                try { services_res_id = services_res.getInt(null); } catch (Exception ignored) {}
 
+            String services[] = getResources().getStringArray(services_res_id);
+
+            for (String service_uuid : services) {
+                UUID s_uuid = UUID.fromString(service_uuid.replace("_", "-"));
+                BluetoothGattService service = gatt.getService(s_uuid);
+                if (service != null) {
+                    java.lang.reflect.Field characteristic_res = null;
+                    try { characteristic_res = res.getField(wheel_Type+"_"+service_uuid); } catch (Exception ignored) {}
+                    int characteristic_res_id = 0;
+                    if (characteristic_res != null)
+                        try { characteristic_res_id = characteristic_res.getInt(null); } catch (Exception ignored) {}
+                    String characteristics[] = getResources().getStringArray(characteristic_res_id);
+                    for (String characteristic_uuid : characteristics) {
+                        UUID c_uuid = UUID.fromString(characteristic_uuid.replace("_", "-"));
+                        BluetoothGattCharacteristic characteristic = service.getCharacteristic(c_uuid);
+                        if (characteristic == null) {
+                            detected_wheel = false;
+                            break;
+                        }
+                    }
+                } else {
+                    detected_wheel = false;
+                    break;
+                }
+            }
+
+            if (detected_wheel) {
+                if (getResources().getString(R.string.kingsong).equals(wheel_Type)) {
+                    mWheelType = Constants.WHEEL_TYPE_KINGSONG;
+                    BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_NOTITY_CHARACTER_UUID));
+                    gatt.setCharacteristicNotification(notifyCharacteristic, true);
+                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    gatt.writeDescriptor(descriptor);
+                } else if (getResources().getString(R.string.gotway).equals(wheel_Type)) {
+                    mWheelType = Constants.WHEEL_TYPE_GOTWAY;
+                    BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
+                    gatt.setCharacteristicNotification(notifyCharacteristic, true);
+                    // Let the user know it's working by making the wheel beep
+                    notifyCharacteristic.setValue("b".getBytes());
+                    gatt.writeCharacteristic(notifyCharacteristic);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 }

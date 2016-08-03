@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 setConnectionState(BluetoothLeService.STATE_CONNECTING);
             } else if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
                 Log.d(TAG, "Bluetooth connected");
+                configureDisplay(wheelLog.getWheelType());
                 setConnectionState(BluetoothLeService.STATE_CONNECTED);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 Log.d(TAG, "Bluetooth disconnected");
@@ -127,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
                     String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
                     showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
                 }
-            } else if (Constants.ACTION_WHEEL_TYPE_DEFINED.equals(action)) {
-                configureDisplay(wheelLog.getWheelType());
             }
         }
     };
@@ -250,6 +249,14 @@ public class MainActivity extends AppCompatActivity {
             tvVersion.setVisibility(View.VISIBLE);
             tvTitleSerial.setVisibility(View.VISIBLE);
             tvSerial.setVisibility(View.VISIBLE);
+
+        } else if (wheelType == Constants.WHEEL_TYPE_GOTWAY) {
+            tvWaitText.setVisibility(View.GONE);
+            tvTitleSpeed.setVisibility(View.VISIBLE);
+            tvSpeed.setVisibility(View.VISIBLE);
+            tvTitleTemperature.setVisibility(View.VISIBLE);
+            tvTemperature.setVisibility(View.VISIBLE);
+
         } else {
             tvWaitText.setVisibility(View.VISIBLE);
             tvTitleSpeed.setVisibility(View.GONE);
@@ -353,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
         tvMode = (TextView) findViewById(R.id.tvMode);
         wheelView = (WheelView) findViewById(R.id.wheelView);
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
-        textClock.setTypeface(Typefaces.get(this, "fonts/prime_edited.otf"));
+        textClock.setTypeface(Typefaces.get(this, "fonts/prime.otf"));
         wheelView.setMaxSpeed(300);
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.

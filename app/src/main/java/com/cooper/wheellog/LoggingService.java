@@ -142,7 +142,7 @@ public class LoggingService extends Service
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.i(TAG, "******* File not found. Did you" +
-                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
+                    " add a WRITE_EXTERNAL_STORAGE permission to the manifest?");
         } catch (IOException e) {
             e.printStackTrace();
         }

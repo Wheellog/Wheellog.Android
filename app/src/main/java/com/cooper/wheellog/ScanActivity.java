@@ -23,7 +23,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -57,8 +56,6 @@ public class ScanActivity extends AppCompatActivity {
         lv.setAdapter(mDeviceListAdapter);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(ScanActivity.this, R.style.AppTheme_Dialog_Alert)
                 .setView(convertView)
-//                .setTitle("Searching...")
-//                .setCustomTitle(null)
                 .setCancelable(false)
                 .setOnKeyListener(new DialogInterface.OnKeyListener() {
                     @Override
@@ -77,7 +74,6 @@ public class ScanActivity extends AppCompatActivity {
                     }
                 });
         alertDialog.show();
-
         mHandler = new Handler();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkPermission())
