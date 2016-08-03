@@ -125,9 +125,9 @@ public class WheelView extends View {
 
         mSpeed = speed;
         mSpeed = mSpeed < 0 ? 0 : mSpeed;
-        mSpeed = mSpeed > mMaxSpeed ? mMaxSpeed : mSpeed;
+        speed = speed > mMaxSpeed ? mMaxSpeed : speed;
 
-        targetSpeed = Math.round(((float) mSpeed / mMaxSpeed) * 112);
+        targetSpeed = Math.round(((float) speed / mMaxSpeed) * 112);
         refreshDrawableState();
     }
 

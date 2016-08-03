@@ -254,8 +254,24 @@ public class MainActivity extends AppCompatActivity {
             tvWaitText.setVisibility(View.GONE);
             tvTitleSpeed.setVisibility(View.VISIBLE);
             tvSpeed.setVisibility(View.VISIBLE);
+            tvTitleMaxSpeed.setVisibility(View.VISIBLE);
+            tvTopSpeed.setVisibility(View.VISIBLE);
+            tvTitleBattery.setVisibility(View.VISIBLE);
+            tvBattery.setVisibility(View.VISIBLE);
+            tvTitleDistance.setVisibility(View.VISIBLE);
+            tvDistance.setVisibility(View.VISIBLE);
+            tvTitleRideTime.setVisibility(View.VISIBLE);
+            tvRideTime.setVisibility(View.VISIBLE);
+            tvTitleVoltage.setVisibility(View.VISIBLE);
+            tvVoltage.setVisibility(View.VISIBLE);
+            tvTitleCurrent.setVisibility(View.VISIBLE);
+            tvCurrent.setVisibility(View.VISIBLE);
+            tvTitlePower.setVisibility(View.VISIBLE);
+            tvPower.setVisibility(View.VISIBLE);
             tvTitleTemperature.setVisibility(View.VISIBLE);
             tvTemperature.setVisibility(View.VISIBLE);
+            tvTitleTotalDistance.setVisibility(View.VISIBLE);
+            tvTotalDistance.setVisibility(View.VISIBLE);
 
         } else {
             tvWaitText.setVisibility(View.VISIBLE);

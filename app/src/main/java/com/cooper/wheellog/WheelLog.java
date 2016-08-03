@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,7 @@ public class WheelLog extends Application {
     private int mVersion;
     private String mSerialNumber = "";
     private int mWheelType;
+    private long rideStartTime;
 
     public int getSpeed() { return mSpeed / 10; }
     public int getTemperature() { return mTemperature / 100; }
@@ -156,23 +158,32 @@ public class WheelLog extends Application {
     }
 
     private void decodeGotway(byte[] data) {
+        if (rideStartTime == 0)
+            rideStartTime = Calendar.getInstance().getTimeInMillis();
+
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
-            if (a1 != 85 || a2 != 170) {
+            int a19 = data[18] & 255;
+            if (a1 != 85 || a2 != 170 || a19 != 0) {
                 return;
             }
 
             if (data[5] >= 0)
-                mSpeed = (int) Math.round(((data[4] * 256.0) + data[5]) * 3.6);
+                mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
             else
-                mSpeed = (int) Math.round((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+                mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+
+            if (mSpeed > mTopSpeed)
+                mTopSpeed = mSpeed;
 
             mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
 
             mDistance = byteArrayInt2(data[9], data[8]);
 
             mVoltage = (data[2] * 256) + (data[3] & 255);
+
+            mCurrent = Math.abs((data[10] * 256) + data[11]);
 
             if (mVoltage <= 5290) {
                 mBattery = 0;
@@ -182,10 +193,13 @@ public class WheelLog extends Application {
                 mBattery = (mVoltage - 5290) / 13;
             }
 
+            mCurrentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+
         } else if (data.length >= 10) {
-            int a1 = data[4] & 255;
-            int a2 = data[5] & 255;
-            if (a1 != 85 || a2 != 170) {
+            int a1 = data[0];
+            int a5 = data[4] & 255;
+            int a6 = data[5] & 255;
+            if (a1 != 90 || a5 != 85 || a6 != 170) {
                 return;
             }
 
@@ -211,6 +225,7 @@ public class WheelLog extends Application {
         mVersion = 0;
         mSerialNumber = "";
         mWheelType = 0;
+        rideStartTime = 0;
     }
 
     public boolean detectWheel(BluetoothGatt gatt) {
