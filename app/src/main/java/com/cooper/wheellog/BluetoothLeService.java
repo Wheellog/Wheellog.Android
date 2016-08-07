@@ -1,8 +1,5 @@
 package com.cooper.wheellog;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -19,20 +16,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.cooper.wheellog.Utils.Constants;
+import com.cooper.wheellog.Utils.NotificationUtil;
+
 import java.util.UUID;
+
+import timber.log.Timber;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
  * given Bluetooth LE device.
  */
 public class BluetoothLeService extends Service {
-    
-    private final static String TAG = "BluetoothLeService";
-    private static final boolean DEBUG = false;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -43,10 +40,10 @@ public class BluetoothLeService extends Service {
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
     public static final int STATE_CONNECTED = 2;
-    private static final int notification_id = 1;
 
     private boolean disconnectRequested = false;
     private boolean autoConnect = false;
+    private NotificationUtil mNotificationHandler;
 
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -56,19 +53,12 @@ public class BluetoothLeService extends Service {
             if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) {
                 mConnectionState = STATE_CONNECTED;
                 ((WheelLog) getApplicationContext()).setConnectionState(true);
-                updateNotification(R.string.wheel_connected);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 mConnectionState = STATE_DISCONNECTED;
                 ((WheelLog) getApplicationContext()).setConnectionState(false);
-                updateNotification(R.string.wheel_disconnected);
             } else if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
                 ((WheelLog) getApplicationContext()).setConnectionState(false);
                 mConnectionState = STATE_CONNECTING;
-                if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT))
-                    updateNotification(R.string.wheel_searching);
-                else
-                    updateNotification(R.string.wheel_connecting);
-
             } else if (Constants.ACTION_REQUEST_KINGSONG_NAME_DATA.equals(action)) {
                 if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                     byte[] data = new byte[20];
@@ -102,6 +92,13 @@ public class BluetoothLeService extends Service {
                     data[19] = (byte) 90;
                     writeBluetoothGattCharacteristic(data);
                 }
+            } else if (Constants.ACTION_REQUEST_CONNECTION_TOGGLE.equals(action)) {
+                if (mConnectionState == STATE_DISCONNECTED)
+                    connect();
+                else {
+                    disconnect();
+                    close();
+                }
             }
         }
     };
@@ -111,24 +108,20 @@ public class BluetoothLeService extends Service {
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTING);
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_DISCONNECTED);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_HORN);
-        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_STARTED);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_STARTED);
+        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_REQUEST_CONNECTION_TOGGLE);
         return intentFilter;
     }
 
     public int getConnectionState() {
         return mConnectionState;
     }
-    
-    private void LOGI(final String msg) {
-        if (DEBUG)
-            Log.i(TAG, msg);
-    }
+
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -137,17 +130,17 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                LOGI("Connected to GATT server.");
+                Timber.i("Connected to GATT server.");
                 // Attempts to discover services after successful connection.
-                LOGI("Attempting to start service discovery:" +
+                Timber.i("Attempting to start service discovery:%b",
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                LOGI("Disconnected from GATT server.");
+                Timber.i("Disconnected from GATT server.");
                 if (!disconnectRequested && !autoConnect &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     autoConnect = true;
                     mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
-                    updateNotification(R.string.wheel_searching);
+//                    Notifications.updateNotification(BluetoothLeService.this, R.string.wheel_searching, mConnectionState);
                     broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
                 } else {
                     mConnectionState = STATE_DISCONNECTED;
@@ -161,9 +154,9 @@ public class BluetoothLeService extends Service {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
-            LOGI("onServicesDiscovered called");
+            Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                LOGI("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
+                Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
                 boolean recognisedWheel = ((WheelLog) getApplicationContext()).detectWheel(gatt);
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
@@ -172,7 +165,7 @@ public class BluetoothLeService extends Service {
                     disconnect();
                 return;
             }
-            LOGI("onServicesDiscovered called, status == BluetoothGatt.GATT_FAILURE");
+            Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_FAILURE");
         }
 
         @Override
@@ -200,7 +193,7 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
 
-            LOGI("onCharacteristicChanged called " + characteristic.getUuid().toString());
+            Timber.i("onCharacteristicChanged called %s", characteristic.getUuid().toString());
 
             if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                 if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
@@ -220,7 +213,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
-            LOGI("onDescriptorWrite " + String.valueOf(status));
+            Timber.i("onDescriptorWrite %d", status);
         }
     };
 
@@ -233,23 +226,6 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
         intent.putExtra(extra, true);
         sendBroadcast(intent);
-    }
-
-    private Notification buildNotification(int text) {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        return new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setContentTitle(getString(text))
-                .setContentIntent(pendingIntent)
-                .build();
-    }
-
-    private void updateNotification(int text) {
-        Notification notification = buildNotification(text);
-
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(notification_id, notification);
     }
 
     public class LocalBinder extends Binder {
@@ -265,11 +241,9 @@ public class BluetoothLeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Notification notification = buildNotification(R.string.wheel_disconnected);
-
+        mNotificationHandler = new NotificationUtil(this);
         registerReceiver(messageReceiver, makeIntentFilter());
-        startForeground(notification_id, notification);
+        startForeground(Constants.NOTIFICATION_ID, mNotificationHandler.buildNotification());
 
         return START_STICKY;
     }
@@ -281,6 +255,7 @@ public class BluetoothLeService extends Service {
                 mConnectionState != STATE_DISCONNECTED)
             mBluetoothGatt.disconnect();
         close();
+        mNotificationHandler.unregisterReceiver();
         unregisterReceiver(messageReceiver);
         stopForeground(true);
     }
@@ -296,7 +271,7 @@ public class BluetoothLeService extends Service {
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {
-                Log.e(TAG, "Unable to initialize BluetoothManager.");
+                Timber.e("Unable to initialize BluetoothManager.");
                 return false;
             }
         }
@@ -304,36 +279,41 @@ public class BluetoothLeService extends Service {
             mBluetoothAdapter = mBluetoothManager.getAdapter();
 
         if (mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+            Timber.e("Unable to obtain a BluetoothAdapter.");
             return false;
         }
 
         return true;
     }
 
+    public void setDeviceAddress(String address) {
+        if (address != null && !address.isEmpty())
+            mBluetoothDeviceAddress = address;
+    }
+
     /**
      * Connects to the GATT server hosted on the Bluetooth LE device.
-     *
-     * @param address The device address of the destination device.
      *
      * @return Return true if the connection is initiated successfully. The connection result
      *         is reported asynchronously through the
      *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
      *         callback.
      */
-    public boolean connect(final String address) {
+
+    public boolean connect() { //final String address) {
         disconnectRequested = false;
         autoConnect = false;
 
-        if (mBluetoothAdapter == null || address == null || address.isEmpty()) {
-            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+        if (mBluetoothAdapter == null || mBluetoothDeviceAddress == null || mBluetoothDeviceAddress.isEmpty()) {
+            Timber.w("BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
 
         // Previously connected device.  Try to reconnect.
-        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
-                && mBluetoothGatt != null) {
-            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+//        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
+//                && mBluetoothGatt != null) {
+        if (mBluetoothGatt != null && mBluetoothGatt.getDevice().getAddress().equals(mBluetoothDeviceAddress)) {
+            Timber.d("Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
                 broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING);
@@ -343,14 +323,14 @@ public class BluetoothLeService extends Service {
             }
         }
 
-        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mBluetoothDeviceAddress);
         if (device == null) {
-            Log.w(TAG, "Device not found.  Unable to connect.");
+            Timber.w("Device not found.  Unable to connect.");
             return false;
         }
         mBluetoothGatt = device.connectGatt(this, autoConnect, mGattCallback);
-        Log.d(TAG, "Trying to create a new connection.");
-        mBluetoothDeviceAddress = address;
+        Timber.d("Trying to create a new connection.");
+//        mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
         broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING);
         return true;
@@ -365,7 +345,7 @@ public class BluetoothLeService extends Service {
     public void disconnect() {
         disconnectRequested = true;
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
+            Timber.w("BluetoothAdapter not initialized");
             return;
         }
         if (mConnectionState != STATE_CONNECTED)
@@ -395,7 +375,7 @@ public class BluetoothLeService extends Service {
 //     */
 //    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
 //        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-//            Log.w(TAG, "BluetoothAdapter not initialized");
+//            Timber.w(TAG, "BluetoothAdapter not initialized");
 //            return;
 //        }
 //        mBluetoothGatt.readCharacteristic(characteristic);
@@ -410,7 +390,7 @@ public class BluetoothLeService extends Service {
 //    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
 //                                              boolean enabled) {
 //        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-//            Log.w(TAG, "BluetoothAdapter not initialized");
+//            Timber.w(TAG, "BluetoothAdapter not initialized");
 //            return;
 //        }
 //        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
@@ -426,16 +406,16 @@ public class BluetoothLeService extends Service {
 
             BluetoothGattService service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
             if (service == null) {
-                LOGI("writeBluetoothGattCharacteristic service == null");
+                Timber.i("writeBluetoothGattCharacteristic service == null");
                 return false;
             }
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
             if (characteristic == null) {
-                LOGI("writeBluetoothGattCharacteristic characteristic == null");
+                Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                 return false;
             }
             characteristic.setValue(cmd);
-            LOGI("writeBluetoothGattCharacteristic writeType = " + characteristic.getWriteType());
+            Timber.i("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
             characteristic.setWriteType(1);
             return this.mBluetoothGatt.writeCharacteristic(characteristic);
         }

@@ -1,14 +1,14 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.Utils;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import java.util.Hashtable;
 
-public class Typefaces {
-    private static final String TAG = "Typefaces";
+import timber.log.Timber;
 
-    private static final Hashtable<String, Typeface> cache = new Hashtable<String, Typeface>();
+public class Typefaces {
+
+    private static final Hashtable<String, Typeface> cache = new Hashtable<>();
 
     public static Typeface get(Context c, String assetPath) {
         synchronized (cache) {
@@ -17,10 +17,9 @@ public class Typefaces {
                     Typeface t = Typeface.createFromAsset(c.getAssets(),
                             assetPath);
                     cache.put(assetPath, t);
-                    Log.e(TAG, "Loaded '" + assetPath);
+                    Timber.i("Loaded '%s'", assetPath);
                 } catch (Exception e) {
-                    Log.e(TAG, "Could not get typeface '" + assetPath
-                            + "' because " + e.getMessage());
+                    Timber.e("Could not get typeface '%s' because %s", assetPath, e.getMessage());
                     return null;
                 }
             }

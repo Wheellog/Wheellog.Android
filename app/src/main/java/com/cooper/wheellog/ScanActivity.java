@@ -44,7 +44,6 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_scan);
 
         LayoutInflater inflater = getLayoutInflater();
         View convertView = inflater.inflate(R.layout.activity_scan, null);

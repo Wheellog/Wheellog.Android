@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
+
+import com.cooper.wheellog.Utils.Constants;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
 import java.util.UUID;
+
+import timber.log.Timber;
 
 public class PebbleService extends Service {
 
@@ -21,7 +24,6 @@ public class PebbleService extends Service {
     static final int KEY_TEMPERATURE = 2;
     static final int KEY_FAN_STATE = 3;
     static final int KEY_BT_STATE = 4;
-    static final String TAG = "PebbleConnectivitySvc";
 
     private Handler mHandler = new Handler();
     private static PebbleService instance = null;
@@ -114,21 +116,25 @@ public class PebbleService extends Service {
         PebbleKit.startAppOnPebble(this, APP_UUID);
         mHandler.post(mSendPebbleData);
 
-        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_STARTED);
+        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
+        serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceStartedIntent);
 
-        Log.d(TAG, "PebbleConnectivity Started");
+        Timber.d("PebbleConnectivity Started");
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
+        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
+        serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+        sendBroadcast(serviceStartedIntent);
         instance = null;
         PebbleKit.closeAppOnPebble(this, APP_UUID);
         mHandler.removeCallbacksAndMessages(null);
 //        unregisterReceiver(ackReceiver);
         unregisterReceiver(nackReceiver);
-        Log.d(TAG, "PebbleConnectivity Stopped");
+        Timber.d("PebbleConnectivity Stopped");
     }
 
     private PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {

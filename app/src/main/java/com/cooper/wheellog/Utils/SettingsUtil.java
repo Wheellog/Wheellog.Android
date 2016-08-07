@@ -1,10 +1,10 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 
-public class SettingsManager {
+public class SettingsUtil {
 
     private static final String key = "WheelLog";
 

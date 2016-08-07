@@ -1,4 +1,4 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.Views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,6 +12,9 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+
+import com.cooper.wheellog.R;
+import com.cooper.wheellog.Utils.Typefaces;
 
 import java.util.Locale;
 
@@ -196,7 +199,7 @@ public class WheelView extends View {
     }
 
     private void refresh() {
-        if (!refreshDisplay && !isInEditMode()) {
+        if (!refreshDisplay) {
             refreshDisplay = true;
             refreshHandler.postDelayed(refreshRunner, 30);
         }
@@ -298,7 +301,6 @@ public class WheelView extends View {
         Rect tempRect = new Rect(lLeft, tTop, lRight, tTop+(tlRect.height()/3));
         boxTextSize = calculateFontSize(boundaryOfText, tempRect, getResources().getString(R.string.top_speed)+"W", textPaint);
         boxTextHeight = boundaryOfText.height();
-        
         refresh();
     }
 
@@ -426,28 +428,22 @@ public class WheelView extends View {
     }
 
     private float calculateFontSize(@NonNull Rect textBounds, @NonNull Rect textContainer, @NonNull String text, @NonNull Paint textPaint) {
-        int stage = 1;
-        float textSize = 0;
+        textPaint.setTextSize(100);
+        textPaint.getTextBounds(text, 0, text.length(), textBounds);
 
-        while(stage < 3) {
-            if (stage == 1) textSize += 10;
-            else
-            if (stage == 2) textSize -= 1;
+        int h = textBounds.height();
+        float w = textPaint.measureText(text);
 
-            textPaint.setTextSize(textSize);
-            textPaint.getTextBounds(text, 0, text.length(), textBounds);
+        float target_h = (float) textContainer.height()*1.0f;
+        float target_w = (float) textContainer.width()*1.0f;
 
-            if (isInEditMode())
-                return textSize;
+        float size_h = ((target_h/h)*100f);
+        float size_w = ((target_w/w)*100f);
 
-            float textWidth = textPaint.measureText(text);
-
-            boolean fits = textWidth < textContainer.width() && textBounds.height() < textContainer.height();
-
-            if (stage == 1 && !fits) stage++;
-            else
-            if (stage == 2 &&  fits) stage++;
-        }
-        return textSize;
+        float result = size_h <= size_w ? size_h : size_w;
+        textPaint.setTextSize(result);
+        textPaint.getTextBounds(text, 0, text.length(), textBounds);
+        return result;
     }
+
 }

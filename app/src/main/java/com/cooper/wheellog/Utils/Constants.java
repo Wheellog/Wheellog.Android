@@ -1,4 +1,4 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.Utils;
 
 import java.util.UUID;
 
@@ -7,13 +7,17 @@ public class Constants {
     public static final String ACTION_BLUETOOTH_CONNECTING = "com.cooper.wheellog.bluetoothConnecting";
     public static final String ACTION_BLUETOOTH_CONNECTED = "com.cooper.wheellog.bluetoothConnected";
     public static final String ACTION_BLUETOOTH_DISCONNECTED = "com.cooper.wheellog.bluetoothDisconnected";
-    public static final String ACTION_BLUETOOTH_DATA_AVAILABLE = "com.cooper.wheellog.bluetoothDataAvailable";
-    public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.cooper.wheellog.wheelDataAvailable";
+    public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.cooper.wheelTimber.wheelDataAvailable";
     public static final String ACTION_REQUEST_KINGSONG_SERIAL_DATA = "com.cooper.wheellog.requestSerialData";
     public static final String ACTION_REQUEST_KINGSONG_NAME_DATA = "com.cooper.wheellog.requestNameData";
     public static final String ACTION_REQUEST_KINGSONG_HORN = "com.cooper.wheellog.requestHorn";
-    public static final String ACTION_PEBBLE_SERVICE_STARTED = "com.cooper.wheellog.pebbleServiceStarted";
-    public static final String ACTION_LOGGING_SERVICE_STARTED = "com.cooper.wheellog.loggingServiceStarted";
+    public static final String ACTION_PEBBLE_SERVICE_TOGGLED = "com.cooper.wheellog.pebbleServiceToggled";
+    public static final String ACTION_LOGGING_SERVICE_TOGGLED = "com.cooper.wheellog.loggingServiceToggled";
+    public static final String ACTION_REQUEST_CONNECTION_TOGGLE = "com.cooper.wheellog.requestConnectionToggle";
+
+    public static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
+    public static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
+    public static final String NOTIFICATION_BUTTON_WATCH = "com.cooper.wheellog.notificationWatchButton";
 
     public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
@@ -31,7 +35,10 @@ public class Constants {
     public static final String INTENT_EXTRA_LAUNCHED_FROM_PEBBLE = "launched_from_pebble";
     public static final String INTENT_EXTRA_BLE_AUTO_CONNECT = "ble_auto_connect";
     public static final String INTENT_EXTRA_LOGGING_FILE_LOCATION = "logging_file_location";
+    public static final String INTENT_EXTRA_IS_RUNNING = "is_running";
 
     public static final int WHEEL_TYPE_KINGSONG = 1;
     public static final int WHEEL_TYPE_GOTWAY = 2;
+
+    public static final int NOTIFICATION_ID = 1;
 }

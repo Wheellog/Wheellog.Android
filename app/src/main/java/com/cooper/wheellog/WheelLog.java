@@ -7,10 +7,14 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 
+import com.cooper.wheellog.Utils.Constants;
+
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import timber.log.Timber;
 
 public class WheelLog extends Application {
     private int mSpeed;
@@ -71,12 +75,21 @@ public class WheelLog extends Application {
         return (((((long) ((value1 & 255) << 16))) | ((long) ((value2 & 255) << 24))) | ((long) (value3 & 255))) | ((long) ((value4 & 255) << 8));
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+    }
+
     public void decodeResponse(byte[] data) {
 
 //        StringBuilder stringBuilder = new StringBuilder(data.length);
 //        for (byte aData : data)
 //            stringBuilder.append(String.format("%02d ", aData));
-//        Log.i("OUTPUT", stringBuilder.toString());
+//        Timber.i("OUTPUT", stringBuilder.toString());
 
         if (mWheelType == Constants.WHEEL_TYPE_KINGSONG)
             decodeKingSong(data);

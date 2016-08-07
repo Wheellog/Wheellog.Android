@@ -20,7 +20,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
@@ -29,9 +28,15 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cooper.wheellog.Utils.Constants;
+import com.cooper.wheellog.Utils.SettingsUtil;
+import com.cooper.wheellog.Utils.Typefaces;
+import com.cooper.wheellog.Views.WheelView;
 import com.viewpagerindicator.LinePageIndicator;
 
 import java.util.Locale;
+
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     private Snackbar snackbar;
     int viewPagerPage = 0;
 
-    private final String TAG = "MainActivity";
     private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
     private static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     private static final int RESULT_REQUEST_ENABLE_BT = 30;
@@ -80,19 +84,22 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
-                Log.e(TAG, getResources().getString(R.string.error_bluetooth_not_initialised));
+                Timber.e( getResources().getString(R.string.error_bluetooth_not_initialised));
                 Toast.makeText(MainActivity.this, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show();
                 finish();
             }
 
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
-                    mDeviceAddress != null && !mDeviceAddress.isEmpty())
+                    mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
+                mBluetoothLeService.setDeviceAddress(mDeviceAddress);
                 connectToWheel();
+            }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
+            finish();
         }
     };
 
@@ -101,14 +108,14 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
-                Log.d(TAG, "Bluetooth Connecting");
+                Timber.d("Bluetooth Connecting");
                 setConnectionState(BluetoothLeService.STATE_CONNECTING);
             } else if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
-                Log.d(TAG, "Bluetooth connected");
+                Timber.d("Bluetooth connected");
                 configureDisplay(wheelLog.getWheelType());
                 setConnectionState(BluetoothLeService.STATE_CONNECTED);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
-                Log.d(TAG, "Bluetooth disconnected");
+                Timber.d("Bluetooth disconnected");
                 setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
                 if (wheelLog.getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
@@ -118,16 +125,17 @@ public class MainActivity extends AppCompatActivity {
                         sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                 }
                 updateScreen();
-            } else if (Constants.ACTION_PEBBLE_SERVICE_STARTED.equals(action)) {
-                if (miWatch != null) {
-                    miWatch.setIcon(R.drawable.ic_action_watch_orange);
-                    miWatch.setTitle(R.string.stop_pebble_service);
+            } else if (Constants.ACTION_PEBBLE_SERVICE_TOGGLED.equals(action)) {
+                setMenuIconStates();
+            } else if (Constants.ACTION_LOGGING_SERVICE_TOGGLED.equals(action)) {
+                boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+                if (running) {
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                        String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
+                    }
                 }
-            } else if (Constants.ACTION_LOGGING_SERVICE_STARTED.equals(action)) {
-                if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                    String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
-                    showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
-                }
+                setMenuIconStates();
             }
         }
     };
@@ -137,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
-                    SettingsManager.setLastAddr(getApplicationContext(), mDeviceAddress);
+                    SettingsUtil.setLastAddr(getApplicationContext(), mDeviceAddress);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING)
@@ -353,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         titleIndicator.setViewPager(pager);
         pager.addOnPageChangeListener(pageChangeListener);
 
-        mDeviceAddress = SettingsManager.getLastAddr(getApplicationContext());
+        mDeviceAddress = SettingsUtil.getLastAddr(getApplicationContext());
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         wheelLog = (WheelLog) getApplicationContext();
@@ -540,27 +548,19 @@ public class MainActivity extends AppCompatActivity {
     private void startLoggingService() { startLoggingService(true); }
     private void startLoggingService(boolean start) {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
-        if (start) {
+        if (start)
             startService(dataLoggerServiceIntent);
-            miLogging.setIcon(R.drawable.ic_action_logging_orange);
-            miLogging.setTitle(R.string.stop_data_service);
-        } else {
+        else
             stopService(dataLoggerServiceIntent);
-            miLogging.setIcon(R.drawable.ic_action_logging_white);
-            miLogging.setTitle(R.string.start_data_service);
-        }
     }
     private void stopPebbleService() { startPebbleService(false);}
     private void startPebbleService() { startPebbleService(true);}
     private void startPebbleService(boolean start) {
         Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleService.class);
-        if (start) {
+        if (start)
             startService(pebbleServiceIntent);
-        } else {
+        else
             stopService(pebbleServiceIntent);
-            miWatch.setIcon(R.drawable.ic_action_watch_white);
-            miWatch.setTitle(R.string.start_pebble_service);
-        }
     }
 
     private void startBluetoothService() {
@@ -574,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
     private void connectToWheel(boolean connect) {
 
         if (connect) {
-            Boolean connecting = mBluetoothLeService.connect(mDeviceAddress);
+            Boolean connecting = mBluetoothLeService.connect();
             if (!connecting)
                 showSnackBar(R.string.connection_failed);
         }
@@ -615,6 +615,7 @@ public class MainActivity extends AppCompatActivity {
             case RESULT_DEVICE_SCAN_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mDeviceAddress = data.getStringExtra("MAC");
+                    mBluetoothLeService.setDeviceAddress(mDeviceAddress);
                     wheelLog.reset();
                     updateScreen();
                     mBluetoothLeService.close();
@@ -629,6 +630,29 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 break;
+        }
+    }
+
+    public static class notificationButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Constants.NOTIFICATION_BUTTON_CONNECTION.equals(action))
+                context.sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
+            else if (Constants.NOTIFICATION_BUTTON_WATCH.equals(action)) {
+                Intent pebbleServiceIntent = new Intent(context.getApplicationContext(), PebbleService.class);
+                if (PebbleService.isInstanceCreated())
+                    context.stopService(pebbleServiceIntent);
+                else
+                    context.startService(pebbleServiceIntent);
+            } else if (Constants.NOTIFICATION_BUTTON_LOGGING.equals(action)) {
+                Intent loggingServiceIntent = new Intent(context.getApplicationContext(), LoggingService.class);
+                if (LoggingService.isInstanceCreated())
+                    context.stopService(loggingServiceIntent);
+                else
+                    context.startService(loggingServiceIntent);
+//            Timber.i("KEVTEST", action);
+            }
         }
     }
 }

@@ -43,6 +43,14 @@
                 <action android:name="com.getpebble.action.app.RECEIVE_NACK"/>
             </intent-filter>
         </receiver>
+        <receiver android:name="MainActivity$notificationButtonListener" android:exported="false">
+            <intent-filter>
+                <action android:name="com.cooper.wheellog.notificationConnectionButton" />
+                <action android:name="com.cooper.wheellog.notificationLoggingButton" />
+                <action android:name="com.cooper.wheellog.notificationWatchButton" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

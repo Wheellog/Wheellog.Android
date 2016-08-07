@@ -1,7 +1,6 @@
 package com.cooper.wheellog;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +34,6 @@ class ViewPageAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View arg0, Object arg1) {
-        return arg0 == ((View) arg1);
+        return arg0 == (arg1);
     }
 }

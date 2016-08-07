@@ -8,35 +8,27 @@ import android.content.IntentFilter;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
+
+import com.cooper.wheellog.Utils.Constants;
+import com.cooper.wheellog.Utils.FileUtil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 public class LoggingService extends Service
 {
-    private static final boolean DEBUG = false;
-    private final static String TAG = LoggingService.class.getSimpleName();
     private static LoggingService instance = null;
     SimpleDateFormat sdf;
-    private boolean fileExists;
-    private File file;
+    private String filename;
     private WheelLog wheelLog;
 
     public static boolean isInstanceCreated() {
         return instance != null;
-    }
-
-    private void LOGI(final String msg) {
-        if (DEBUG)
-            Log.i(TAG, msg);
     }
 
     private final BroadcastReceiver mBluetoothUpdateReceiver = new BroadcastReceiver()
@@ -46,7 +38,7 @@ public class LoggingService extends Service
         {
             final String action = intent.getAction();
             if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action))
-                writeToSDFile();
+                updateFile();
         }
     };
 
@@ -64,20 +56,22 @@ public class LoggingService extends Service
 
         if (isExternalStorageReadable() && isExternalStorageWritable()) {
 
-            File dir = getDownloadsStorageDir();
-
             SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
-            String fileName = sdFormatter.format(new Date()) + ".csv";
+            filename = sdFormatter.format(new Date()) + ".csv";
+            File file = FileUtil.getFile(filename);
+            if (file == null) {
+                stopSelf();
+                return START_STICKY;
+            }
 
-            file = new File(dir, fileName);
-            fileExists = file.exists();
-
-            Intent serviceStartedIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_STARTED);
-            serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
-            sendBroadcast(serviceStartedIntent);
+            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature,fan_status");
+            Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
+            sendBroadcast(serviceIntent);
 
             wheelLog = (WheelLog) getApplicationContext();
-            Log.d(TAG, "DataLogger Started");
+            Timber.d("DataLogger Started");
             return START_STICKY;
         }
         stopSelf();
@@ -86,9 +80,12 @@ public class LoggingService extends Service
 
     @Override
     public void onDestroy() {
+        Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+        sendBroadcast(serviceIntent);
         instance = null;
         unregisterReceiver(mBluetoothUpdateReceiver);
-        Log.d(TAG, "DataLogger stopped");
+        Timber.d("DataLogger stopped");
     }
 
     /* Checks if external storage is available for read and write */
@@ -104,48 +101,18 @@ public class LoggingService extends Service
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    public File getDownloadsStorageDir() {
-        // Get the directory for the user's public pictures directory.
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "wheelLog");
-        if (!file.mkdirs()) {
-            Log.e(TAG, "Directory not created");
-        }
-        return file;
-    }
-
-    private void writeToSDFile(){
-        try {
-            FileOutputStream f = new FileOutputStream(file, true);
-            PrintWriter pw = new PrintWriter(f);
-
-            if (!fileExists)
-            {
-                fileExists = true;
-                pw.println("date,time,speed,voltage,current,power,battery_level,distance,temperature,fan_status");
-            }
-
-            pw.println(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
-                    sdf.format(new Date()),
-                    wheelLog.getSpeedDouble(),
-                    wheelLog.getVoltageDouble(),
-                    wheelLog.getCurrentDouble(),
-                    wheelLog.getPowerDouble(),
-                    wheelLog.getBatteryLevel(),
-                    wheelLog.getDistanceDouble(),
-                    wheelLog.getTemperature(),
-                    wheelLog.getFanStatus()
-                    ));
-            pw.flush();
-            pw.close();
-            f.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.i(TAG, "******* File not found. Did you" +
-                    " add a WRITE_EXTERNAL_STORAGE permission to the manifest?");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        LOGI("File written to "+file);
+    private void updateFile(){
+        FileUtil.writeLine(filename,
+                String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
+                sdf.format(new Date()),
+                wheelLog.getSpeedDouble(),
+                wheelLog.getVoltageDouble(),
+                wheelLog.getCurrentDouble(),
+                wheelLog.getPowerDouble(),
+                wheelLog.getBatteryLevel(),
+                wheelLog.getDistanceDouble(),
+                wheelLog.getTemperature(),
+                wheelLog.getFanStatus()
+                ));
     }
 }
