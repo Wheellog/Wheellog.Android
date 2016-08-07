@@ -568,19 +568,9 @@ public class MainActivity extends AppCompatActivity {
         bindService(bluetoothServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
-    private void connectToWheel() { connectToWheel(true);}
-    private void disconnectFromWheel() { connectToWheel(false);}
-    private void connectToWheel(boolean connect) {
-
-        if (connect) {
-            Boolean connecting = mBluetoothLeService.connect();
-            if (!connecting)
-                showSnackBar(R.string.connection_failed);
-        }
-        else {
-            mBluetoothLeService.disconnect();
-            mBluetoothLeService.close();
-        }
+    private void disconnectFromWheel() { connectToWheel();}
+    private void connectToWheel() {
+        sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
     }
 
     private boolean checkExternalFilePermission(){
@@ -598,6 +588,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        Timber.i("onRequestPermissionsResult");
         switch (requestCode) {
             case RESULT_PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -610,10 +601,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Timber.i("onActivityResult");
         switch (requestCode) {
             case RESULT_DEVICE_SCAN_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mDeviceAddress = data.getStringExtra("MAC");
+                    Timber.i("Device selected = %s", mDeviceAddress);
                     mBluetoothLeService.setDeviceAddress(mDeviceAddress);
                     WheelData.getInstance().reset();
                     updateScreen();

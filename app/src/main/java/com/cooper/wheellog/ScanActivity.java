@@ -28,18 +28,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import timber.log.Timber;
+
 public class ScanActivity extends AppCompatActivity {
     private DeviceListAdapter mDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
-    private Handler mHandler;
+    private Handler mHandler = new Handler();
     private ProgressBar pb;
     private TextView scanTitle;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
     private static final int PERMISSION_REQUEST_CODE = 10;
-    private static final int REQUEST_ENABLE_BT = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class ScanActivity extends AppCompatActivity {
         lv.setOnItemClickListener(onItemClickListener);
         mDeviceListAdapter = new DeviceListAdapter(this);
         lv.setAdapter(mDeviceListAdapter);
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ScanActivity.this, R.style.AppTheme_Dialog_Alert)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
                 .setView(convertView)
                 .setCancelable(false)
                 .setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -73,7 +74,6 @@ public class ScanActivity extends AppCompatActivity {
                     }
                 });
         alertDialog.show();
-        mHandler = new Handler();
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkPermission())
             requestPermission();
@@ -105,8 +105,10 @@ public class ScanActivity extends AppCompatActivity {
             if (mScanning)
                 scanLeDevice(false);
             mHandler.removeCallbacksAndMessages(null);
+            String deviceAddress = mDeviceListAdapter.getDevice(i).getAddress();
+            Timber.i("Device selected = %s", deviceAddress);
             Intent intent = new Intent();
-            intent.putExtra("MAC", mDeviceListAdapter.getDevice(i).getAddress());
+            intent.putExtra("MAC", deviceAddress);
             setResult(RESULT_OK, intent);
             finish();
         }
@@ -175,19 +177,6 @@ public class ScanActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // User chose not to enable Bluetooth.
-        if (requestCode == REQUEST_ENABLE_BT)
-            if (resultCode == Activity.RESULT_CANCELED) {
-                finish();
-                return;
-            } else {
-                scanLeDevice(true);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public static boolean isLocationEnabled(Context context) {

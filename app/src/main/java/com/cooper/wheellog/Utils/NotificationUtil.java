@@ -16,7 +16,6 @@ import com.cooper.wheellog.MainActivity;
 import com.cooper.wheellog.PebbleService;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
 
 import java.util.Locale;
 
@@ -116,7 +115,6 @@ public class NotificationUtil {
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_orange);
         else
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
-
 
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

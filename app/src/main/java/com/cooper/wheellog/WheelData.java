@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.cooper.wheellog.Utils.Constants;
+import com.cooper.wheellog.Utils.FileUtil;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -95,8 +96,9 @@ public class WheelData {
 
 //        StringBuilder stringBuilder = new StringBuilder(data.length);
 //        for (byte aData : data)
-//            stringBuilder.append(String.format("%02d ", aData));
+//            stringBuilder.append(String.format(Locale.US, "%02d ", aData));
 //        Timber.i("OUTPUT", stringBuilder.toString());
+//        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
 
         if (mWheelType == Constants.WHEEL_TYPE_KINGSONG)
             decodeKingSong(data);
