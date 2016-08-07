@@ -52,15 +52,15 @@ public class BluetoothLeService extends Service {
             final String action = intent.getAction();
             if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) {
                 mConnectionState = STATE_CONNECTED;
-                ((WheelLog) getApplicationContext()).setConnectionState(true);
+                WheelData.getInstance().setConnectionState(true);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 mConnectionState = STATE_DISCONNECTED;
-                ((WheelLog) getApplicationContext()).setConnectionState(false);
+                WheelData.getInstance().setConnectionState(false);
             } else if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
-                ((WheelLog) getApplicationContext()).setConnectionState(false);
+                WheelData.getInstance().setConnectionState(false);
                 mConnectionState = STATE_CONNECTING;
             } else if (Constants.ACTION_REQUEST_KINGSONG_NAME_DATA.equals(action)) {
-                if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                     byte[] data = new byte[20];
                     data[0] = (byte) -86;
                     data[1] = (byte) 85;
@@ -71,7 +71,7 @@ public class BluetoothLeService extends Service {
                     writeBluetoothGattCharacteristic(data);
                 }
             } else if (Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA.equals(action)) {
-                if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                     byte[] data = new byte[20];
                     data[0] = (byte) -86;
                     data[1] = (byte) 85;
@@ -82,7 +82,7 @@ public class BluetoothLeService extends Service {
                     writeBluetoothGattCharacteristic(data);
                 }
             } else if (Constants.ACTION_REQUEST_KINGSONG_HORN.equals(action)) {
-                if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                     byte[] data = new byte[20];
                     data[0] = (byte) -86;
                     data[1] = (byte) 85;
@@ -157,7 +157,7 @@ public class BluetoothLeService extends Service {
             Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
-                boolean recognisedWheel = ((WheelLog) getApplicationContext()).detectWheel(gatt);
+                boolean recognisedWheel = WheelData.getInstance().detectWheel(gatt);
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTED);
@@ -173,17 +173,17 @@ public class BluetoothLeService extends Service {
             super.onCharacteristicRead(gatt, characteristic, status);
 
             if (status == 0) {
-                if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                     if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
                         byte[] value = characteristic.getValue();
-                        ((WheelLog) getApplicationContext()).decodeResponse(value);
+                        WheelData.getInstance().decodeResponse(value);
                     }
                 }
 
-                if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_GOTWAY) {
+                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_GOTWAY) {
 //                if (characteristic.getUuid().toString().equals(Constants.GOTWAY_READ_CHARACTER_UUID)) {
                     byte[] value = characteristic.getValue();
-                    ((WheelLog) getApplicationContext()).decodeResponse(value);
+                    WheelData.getInstance().decodeResponse(value);
 //                }
                 }
             }
@@ -195,17 +195,17 @@ public class BluetoothLeService extends Service {
 
             Timber.i("onCharacteristicChanged called %s", characteristic.getUuid().toString());
 
-            if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+            if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                 if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
                     byte[] value = characteristic.getValue();
-                    ((WheelLog) getApplicationContext()).decodeResponse(value);
+                    WheelData.getInstance().decodeResponse(value);
                 }
             }
 
-            if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_GOTWAY) {
+            if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_GOTWAY) {
 //                if (characteristic.getUuid().toString().equals(Constants.GOTWAY_READ_CHARACTER_UUID)) {
                     byte[] value = characteristic.getValue();
-                    ((WheelLog) getApplicationContext()).decodeResponse(value);
+                    WheelData.getInstance().decodeResponse(value);
 //                }
             }
         }
@@ -402,7 +402,7 @@ public class BluetoothLeService extends Service {
             return false;
         }
 
-        if (((WheelLog) getApplicationContext()).getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+        if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
 
             BluetoothGattService service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
             if (service == null) {

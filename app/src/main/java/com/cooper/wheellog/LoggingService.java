@@ -25,7 +25,6 @@ public class LoggingService extends Service
     private static LoggingService instance = null;
     SimpleDateFormat sdf;
     private String filename;
-    private WheelLog wheelLog;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -70,7 +69,6 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
             sendBroadcast(serviceIntent);
 
-            wheelLog = (WheelLog) getApplicationContext();
             Timber.d("DataLogger Started");
             return START_STICKY;
         }
@@ -105,14 +103,14 @@ public class LoggingService extends Service
         FileUtil.writeLine(filename,
                 String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
                 sdf.format(new Date()),
-                wheelLog.getSpeedDouble(),
-                wheelLog.getVoltageDouble(),
-                wheelLog.getCurrentDouble(),
-                wheelLog.getPowerDouble(),
-                wheelLog.getBatteryLevel(),
-                wheelLog.getDistanceDouble(),
-                wheelLog.getTemperature(),
-                wheelLog.getFanStatus()
+                WheelData.getInstance().getSpeedDouble(),
+                WheelData.getInstance().getVoltageDouble(),
+                WheelData.getInstance().getCurrentDouble(),
+                WheelData.getInstance().getPowerDouble(),
+                WheelData.getInstance().getBatteryLevel(),
+                WheelData.getInstance().getDistanceDouble(),
+                WheelData.getInstance().getTemperature(),
+                WheelData.getInstance().getFanStatus()
                 ));
     }
 }

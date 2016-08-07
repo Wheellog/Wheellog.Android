@@ -15,6 +15,7 @@ import com.cooper.wheellog.LoggingService;
 import com.cooper.wheellog.MainActivity;
 import com.cooper.wheellog.PebbleService;
 import com.cooper.wheellog.R;
+import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.util.Locale;
@@ -51,7 +52,7 @@ public class NotificationUtil {
                     notificationMessageId = R.string.wheel_connecting;
                 updateNotification();
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
-                int batteryLevel = ((WheelLog) mContext.getApplicationContext()).getBatteryLevel();
+                int batteryLevel = WheelData.getInstance().getBatteryLevel();
                 if (mBatteryLevel != batteryLevel) {
                     mBatteryLevel = batteryLevel;
                     updateNotification();

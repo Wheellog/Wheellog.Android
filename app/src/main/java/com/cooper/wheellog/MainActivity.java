@@ -64,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tvMode;
 
     WheelView wheelView;
-
-    private WheelLog wheelLog;
+    
     private BluetoothLeService mBluetoothLeService;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
@@ -112,16 +111,16 @@ public class MainActivity extends AppCompatActivity {
                 setConnectionState(BluetoothLeService.STATE_CONNECTING);
             } else if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
                 Timber.d("Bluetooth connected");
-                configureDisplay(wheelLog.getWheelType());
+                configureDisplay(WheelData.getInstance().getWheelType());
                 setConnectionState(BluetoothLeService.STATE_CONNECTED);
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 Timber.d("Bluetooth disconnected");
                 setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
-                if (wheelLog.getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
-                    if (wheelLog.getName().isEmpty())
+                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                    if (WheelData.getInstance().getName().isEmpty())
                         sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
-                    else if (wheelLog.getSerial().isEmpty())
+                    else if (WheelData.getInstance().getSerial().isEmpty())
                         sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                 }
                 updateScreen();
@@ -320,32 +319,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateScreen() {
         if (viewPagerPage == 0) {
-            wheelView.setSpeed(wheelLog.getSpeed());
-            wheelView.setBattery(wheelLog.getBatteryLevel());
-            wheelView.setTemperature(wheelLog.getTemperature());
-            wheelView.setRideTime(wheelLog.getCurrentTimeString());
-            wheelView.setTopSpeed(wheelLog.getTopSpeedDouble());
-            wheelView.setDistance(wheelLog.getDistanceDouble());
-            wheelView.setTotalDistance(wheelLog.getTotalDistanceDouble());
-            wheelView.setVoltage(wheelLog.getVoltageDouble());
-            wheelView.setCurrent(wheelLog.getPowerDouble());
+            wheelView.setSpeed(WheelData.getInstance().getSpeed());
+            wheelView.setBattery(WheelData.getInstance().getBatteryLevel());
+            wheelView.setTemperature(WheelData.getInstance().getTemperature());
+            wheelView.setRideTime(WheelData.getInstance().getCurrentTimeString());
+            wheelView.setTopSpeed(WheelData.getInstance().getTopSpeedDouble());
+            wheelView.setDistance(WheelData.getInstance().getDistanceDouble());
+            wheelView.setTotalDistance(WheelData.getInstance().getTotalDistanceDouble());
+            wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
+            wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
         } else if (viewPagerPage == 1) {
-            tvSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getSpeedDouble()));
-            tvVoltage.setText(String.format(Locale.US, "%.2fV", wheelLog.getVoltageDouble()));
-            tvTemperature.setText(String.format(Locale.US, "%d°C", wheelLog.getTemperature()));
-            tvCurrent.setText(String.format(Locale.US, "%.2fA", wheelLog.getCurrentDouble()));
-            tvPower.setText(String.format(Locale.US, "%.2fW", wheelLog.getPowerDouble()));
-            tvBattery.setText(String.format(Locale.US, "%d%%", wheelLog.getBatteryLevel()));
-            tvFanStatus.setText(wheelLog.getFanStatus() == 0 ? "Off" : "On");
-            tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", wheelLog.getTopSpeedDouble()));
-            tvDistance.setText(String.format(Locale.US, "%.2f km", wheelLog.getDistanceDouble()));
-            tvTotalDistance.setText(String.format(Locale.US, "%.2f km", wheelLog.getTotalDistanceDouble()));
-            tvVersion.setText(String.format(Locale.US, "%.2f", wheelLog.getVersion()/100.0));
-            tvName.setText(wheelLog.getName());
-            tvModel.setText(wheelLog.getModel());
-            tvSerial.setText(wheelLog.getSerial());
-            tvRideTime.setText(wheelLog.getCurrentTimeString());
-            tvMode.setText(getResources().getStringArray(R.array.modes)[wheelLog.getMode()]);
+            tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
+            tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
+            tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
+            tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
+            tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
+            tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
+            tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? "Off" : "On");
+            tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
+            tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
+            tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
+            tvVersion.setText(String.format(Locale.US, "%.2f", WheelData.getInstance().getVersion()/100.0));
+            tvName.setText(WheelData.getInstance().getName());
+            tvModel.setText(WheelData.getInstance().getModel());
+            tvSerial.setText(WheelData.getInstance().getSerial());
+            tvRideTime.setText(WheelData.getInstance().getCurrentTimeString());
+            tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
         }
     }
 
@@ -353,6 +352,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        WheelData.initiate(this);
 
         ViewPageAdapter adapter = new ViewPageAdapter(this);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
@@ -364,7 +364,6 @@ public class MainActivity extends AppCompatActivity {
         mDeviceAddress = SettingsUtil.getLastAddr(getApplicationContext());
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        wheelLog = (WheelLog) getApplicationContext();
 
         tvSpeed = (TextView) findViewById(R.id.tvSpeed);
         tvCurrent = (TextView) findViewById(R.id.tvCurrent);
@@ -421,8 +420,8 @@ public class MainActivity extends AppCompatActivity {
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
 
-        if (wheelLog.getWheelType() > 0)
-            configureDisplay(wheelLog.getWheelType());
+        if (WheelData.getInstance().getWheelType() > 0)
+            configureDisplay(WheelData.getInstance().getWheelType());
 
         registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeIntentFilter());
         updateScreen();
@@ -454,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
-        wheelLog.reset();
+        WheelData.getInstance().reset();
     }
 
     @Override
@@ -616,7 +615,7 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     mDeviceAddress = data.getStringExtra("MAC");
                     mBluetoothLeService.setDeviceAddress(mDeviceAddress);
-                    wheelLog.reset();
+                    WheelData.getInstance().reset();
                     updateScreen();
                     mBluetoothLeService.close();
                     connectToWheel();
