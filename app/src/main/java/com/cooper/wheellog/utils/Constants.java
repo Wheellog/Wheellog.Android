@@ -1,4 +1,4 @@
-package com.cooper.wheellog.Utils;
+package com.cooper.wheellog.utils;
 
 import java.util.UUID;
 

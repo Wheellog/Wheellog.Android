@@ -10,8 +10,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 
-import com.cooper.wheellog.Utils.Constants;
-import com.cooper.wheellog.Utils.FileUtil;
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.FileUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

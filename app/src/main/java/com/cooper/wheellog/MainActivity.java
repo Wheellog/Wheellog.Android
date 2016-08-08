@@ -28,10 +28,10 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cooper.wheellog.Utils.Constants;
-import com.cooper.wheellog.Utils.SettingsUtil;
-import com.cooper.wheellog.Utils.Typefaces;
-import com.cooper.wheellog.Views.WheelView;
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.SettingsUtil;
+import com.cooper.wheellog.utils.Typefaces;
+import com.cooper.wheellog.views.WheelView;
 import com.viewpagerindicator.LinePageIndicator;
 
 import java.util.Locale;
@@ -622,29 +622,6 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 break;
-        }
-    }
-
-    public static class notificationButtonListener extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (Constants.NOTIFICATION_BUTTON_CONNECTION.equals(action))
-                context.sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
-            else if (Constants.NOTIFICATION_BUTTON_WATCH.equals(action)) {
-                Intent pebbleServiceIntent = new Intent(context.getApplicationContext(), PebbleService.class);
-                if (PebbleService.isInstanceCreated())
-                    context.stopService(pebbleServiceIntent);
-                else
-                    context.startService(pebbleServiceIntent);
-            } else if (Constants.NOTIFICATION_BUTTON_LOGGING.equals(action)) {
-                Intent loggingServiceIntent = new Intent(context.getApplicationContext(), LoggingService.class);
-                if (LoggingService.isInstanceCreated())
-                    context.stopService(loggingServiceIntent);
-                else
-                    context.startService(loggingServiceIntent);
-//            Timber.i("KEVTEST", action);
-            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.cooper.wheellog.Utils;
+package com.cooper.wheellog.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

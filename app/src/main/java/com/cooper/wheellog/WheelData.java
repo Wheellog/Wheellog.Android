@@ -7,8 +7,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
 
-import com.cooper.wheellog.Utils.Constants;
-import com.cooper.wheellog.Utils.FileUtil;
+import com.cooper.wheellog.utils.Constants;
 
 import java.util.Calendar;
 import java.util.Locale;

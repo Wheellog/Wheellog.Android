@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.cooper.wheellog.Utils.Constants;
+import com.cooper.wheellog.utils.Constants;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 

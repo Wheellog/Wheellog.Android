@@ -18,8 +18,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
-import com.cooper.wheellog.Utils.Constants;
-import com.cooper.wheellog.Utils.NotificationUtil;
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.NotificationUtil;
 
 import java.util.UUID;
 
@@ -44,7 +44,6 @@ public class BluetoothLeService extends Service {
     private boolean disconnectRequested = false;
     private boolean autoConnect = false;
     private NotificationUtil mNotificationHandler;
-
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override

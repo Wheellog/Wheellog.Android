@@ -1,4 +1,4 @@
-package com.cooper.wheellog.Views;
+package com.cooper.wheellog.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,7 +14,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.cooper.wheellog.R;
-import com.cooper.wheellog.Utils.Typefaces;
+import com.cooper.wheellog.utils.Typefaces;
 
 import java.util.Locale;
 

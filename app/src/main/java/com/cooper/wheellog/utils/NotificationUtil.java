@@ -1,4 +1,4 @@
-package com.cooper.wheellog.Utils;
+package com.cooper.wheellog.utils;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -154,5 +154,28 @@ public class NotificationUtil {
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         return intentFilter;
+    }
+
+    public static class notificationButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Constants.NOTIFICATION_BUTTON_CONNECTION.equals(action))
+                context.sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
+            else if (Constants.NOTIFICATION_BUTTON_WATCH.equals(action)) {
+                Intent pebbleServiceIntent = new Intent(context.getApplicationContext(), PebbleService.class);
+                if (PebbleService.isInstanceCreated())
+                    context.stopService(pebbleServiceIntent);
+                else
+                    context.startService(pebbleServiceIntent);
+            } else if (Constants.NOTIFICATION_BUTTON_LOGGING.equals(action)) {
+                Intent loggingServiceIntent = new Intent(context.getApplicationContext(), LoggingService.class);
+                if (LoggingService.isInstanceCreated())
+                    context.stopService(loggingServiceIntent);
+                else
+                    context.startService(loggingServiceIntent);
+//            Timber.i("KEVTEST", action);
+            }
+        }
     }
 }
