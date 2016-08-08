@@ -1,7 +1,6 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -20,8 +19,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -46,8 +45,8 @@ public class ScanActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LayoutInflater inflater = getLayoutInflater();
-        View convertView = inflater.inflate(R.layout.activity_scan, null);
+        final ViewGroup nullParent = null;
+        View convertView = getLayoutInflater().inflate(R.layout.activity_scan, nullParent);
         ListView lv = (ListView) convertView.findViewById(android.R.id.list);
         pb = (ProgressBar) convertView.findViewById(R.id.scanProgress);
         scanTitle = (TextView) convertView.findViewById(R.id.scan_title);
