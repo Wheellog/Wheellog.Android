@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <drawable name="notification_icon_bg">#3333B5E5</drawable>
+
     <color name="primary">#1f3a5a</color>
     <color name="primary_dark">#062141</color>
     <color name="primary_light">#D1C4E9</color>

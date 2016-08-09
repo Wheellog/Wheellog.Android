@@ -68,8 +68,7 @@ public class NotificationUtil {
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
 
 
-        RemoteViews notificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification);
-        notificationView.setTextViewText(R.id.text_title, mContext.getString(R.string.app_name));
+        RemoteViews notificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_base);
 
         PendingIntent pendingConnectionIntent = PendingIntent.getBroadcast(mContext, 0,
                 new Intent(Constants.NOTIFICATION_BUTTON_CONNECTION), 0);
@@ -97,6 +96,8 @@ public class NotificationUtil {
                 break;
         }
 
+        notificationView.setTextViewText(R.id.text_title, mContext.getString(R.string.app_name));
+
         String message;
 
         if (mConnectionState == BluetoothLeService.STATE_CONNECTED)
@@ -117,22 +118,20 @@ public class NotificationUtil {
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return new Notification.Builder(mContext)
-                    .setSmallIcon(R.drawable.ic_stat_wheel)
-                    .setContentIntent(pendingIntent)
-                    .setCustomContentView(notificationView)
-                    .setStyle(new Notification.DecoratedCustomViewStyle())
-                    .build();
-        } else {
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            return new Notification.Builder(mContext)
+//                    .setSmallIcon(R.drawable.ic_stat_wheel)
+//                    .setContentIntent(pendingIntent)
+//                    .setTicker("")
+//                    .setCustomContentView(notificationView)
+//                    .build();
+//        } else {
             return new NotificationCompat.Builder(mContext)
                     .setSmallIcon(R.drawable.ic_stat_wheel)
                     .setContentIntent(pendingIntent)
-                    .setTicker("")
                     .setContent(notificationView)
-                    .setCustomBigContentView(null)
                     .build();
-        }
+//        }
     }
 
     private void updateNotification() {

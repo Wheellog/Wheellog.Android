@@ -2,4 +2,14 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="notification_content_margin_start">16dp</dimen>
+    <dimen name="notification_content_margin_end">16dp</dimen>
+    <dimen name="notification_content_picture_margin">56dp</dimen>
+    <dimen name="notification_content_plus_picture_margin_end">72dp</dimen>
+    <dimen name="notification_action_list_height">56dp</dimen>
+    <dimen name="notification_content_margin_top">37.5dp</dimen>
+    <dimen name="notification_content_margin_bottom">16dp</dimen>
+    <dimen name="notification_text_margin_top">0.5dp</dimen>
+    <dimen name="notification_large_icon_size">64dp</dimen>
 </resources>

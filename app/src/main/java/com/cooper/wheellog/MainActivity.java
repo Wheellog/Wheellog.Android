@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.IBinder;
@@ -382,8 +383,11 @@ public class MainActivity extends AppCompatActivity {
         tvRideTime = (TextView) findViewById(R.id.tvRideTime);
         tvMode = (TextView) findViewById(R.id.tvMode);
         wheelView = (WheelView) findViewById(R.id.wheelView);
+        Typeface typefacePrime = Typefaces.get(this, "fonts/prime.otf");
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
-        textClock.setTypeface(Typefaces.get(this, "fonts/prime.otf"));
+        TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
+        textClock.setTypeface(typefacePrime);
+        tvWaitText.setTypeface(typefacePrime);
         wheelView.setMaxSpeed(300);
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
