@@ -25,6 +25,8 @@ public class NotificationUtil {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private int notificationMessageId = R.string.wheel_disconnected;
     private int mBatteryLevel = 0;
+    private double mDistance = 0;
+    private int mTemperature = 0;
 
     public NotificationUtil(Context context) {
         mContext = context;
@@ -52,8 +54,15 @@ public class NotificationUtil {
                 updateNotification();
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
                 int batteryLevel = WheelData.getInstance().getBatteryLevel();
-                if (mBatteryLevel != batteryLevel) {
+                int temperature = WheelData.getInstance().getTemperature();
+                double distance = (double) Math.round(WheelData.getInstance().getDistanceDouble() * 10) / 10;
+
+                if (mBatteryLevel != batteryLevel ||
+                        mDistance != distance ||
+                        mTemperature != temperature) {
                     mBatteryLevel = batteryLevel;
+                    mTemperature = temperature;
+                    mDistance = distance;
                     updateNotification();
                 }
             } else if (Constants.ACTION_PEBBLE_SERVICE_TOGGLED.equals(action) ||
@@ -98,14 +107,15 @@ public class NotificationUtil {
 
         notificationView.setTextViewText(R.id.text_title, mContext.getString(R.string.app_name));
 
-        String message;
+        String title = mContext.getString(notificationMessageId);
 
-        if (mConnectionState == BluetoothLeService.STATE_CONNECTED)
-            message = String.format(Locale.US, "%s - %d%%", mContext.getString(notificationMessageId), mBatteryLevel);
-        else
-            message = mContext.getString(notificationMessageId);
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTED) {
+            String spacer = mContext.getString(R.string.notification_header_divider_symbol);
+            String message = String.format(Locale.US, "%d%% %s %d°C %s %.1f km", mBatteryLevel, spacer, mTemperature, spacer, mDistance);
+            notificationView.setTextViewText(R.id.text_message, message);
+        }
 
-        notificationView.setTextViewText(R.id.text_message, message);
+        notificationView.setTextViewText(R.id.text_title, title);
 
         if (PebbleService.isInstanceCreated())
             notificationView.setImageViewResource(R.id.ib_watch, R.drawable.ic_action_watch_orange);

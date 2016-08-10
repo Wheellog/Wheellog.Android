@@ -50,4 +50,6 @@
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
+
+    <string name="notification_header_divider_symbol" translatable="false">•</string>
 </resources>

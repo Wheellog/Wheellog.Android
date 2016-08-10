@@ -26,7 +26,9 @@ public class WheelData {
     private int mBattery;
     private int mVoltage;
     private long mDistance;
+    private long mLastDistance;
     private int mCurrentTime;
+    private int mLastCurrentTime;
     private int mTopSpeed;
     private int mFanStatus;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
@@ -42,9 +44,8 @@ public class WheelData {
     
     public static void initiate(Context context) {
         if(mInstance == null)
-        {
             mInstance = new WheelData();
-        }
+
         mContext = context.getApplicationContext();
     }
 
@@ -57,9 +58,9 @@ public class WheelData {
     public int getBatteryLevel() { return mBattery; }
     public int getFanStatus() { return mFanStatus; }
     public int getConnectionState() { return mConnectionState; }
-    //    public int getTopSpeed() { return maxSpeed; }
+//    public int getTopSpeed() { return mTopSpeed; }
     public int getVersion() { return mVersion; }
-    //    public int getCurrentTime() { return currentTime; }
+//    public int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
     public int getMode() { return mMode; }
     public int getWheelType() { return mWheelType; }
 
@@ -67,11 +68,12 @@ public class WheelData {
     public String getModel() { return mModel; }
     public String getSerial() { return mSerialNumber; }
     public String getCurrentTimeString() {
-        long hours = TimeUnit.SECONDS.toHours(mCurrentTime);
-        long minutes = TimeUnit.SECONDS.toMinutes(mCurrentTime) -
-                TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(mCurrentTime));
-        long seconds = TimeUnit.SECONDS.toSeconds(mCurrentTime) -
-                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(mCurrentTime));
+        int currentTime = mCurrentTime + mLastCurrentTime;
+        long hours = TimeUnit.SECONDS.toHours(currentTime);
+        long minutes = TimeUnit.SECONDS.toMinutes(currentTime) -
+                TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(currentTime));
+        long seconds = TimeUnit.SECONDS.toSeconds(currentTime) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(currentTime));
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
@@ -80,7 +82,7 @@ public class WheelData {
     public double getPowerDouble() { return (mCurrent*mVoltage)/10000.0; }
     public double getCurrentDouble() { return mCurrent/100.0; }
     public double getTopSpeedDouble() { return mTopSpeed / 100.0; }
-    public double getDistanceDouble() { return mDistance / 1000.0; }
+    public double getDistanceDouble() { return (mDistance+mLastDistance) / 1000.0; }
     public double getTotalDistanceDouble() { return mTotalDistance / 1000.0; }
 
     public void setConnectionState(boolean connected) { mConnectionState = connected ? 1 : 0; }
@@ -89,6 +91,20 @@ public class WheelData {
 
     private long byteArrayInt4(byte value1, byte value2, byte value3, byte value4) {
         return (((((long) ((value1 & 255) << 16))) | ((long) ((value2 & 255) << 24))) | ((long) (value3 & 255))) | ((long) ((value4 & 255) << 8));
+    }
+
+    private void setDistance(long distance) {
+        if (mDistance > distance) {
+            mLastDistance = mDistance;
+            mDistance = distance;
+        }
+    }
+
+    private void setCurrentTime(int currentTime) {
+        if (mCurrentTime > currentTime) {
+            mLastCurrentTime = mCurrentTime;
+            mCurrentTime = currentTime;
+        }
     }
 
     public void decodeResponse(byte[] data) {
@@ -140,8 +156,10 @@ public class WheelData {
                     mBattery = (mVoltage - 5000) / 16;
                 }
             } else if ((data[16] & 255) == 185) { // Distance/Time/Fan Data
-                mDistance = byteArrayInt4(data[2], data[3], data[4], data[5]);
-                mCurrentTime = byteArrayInt2(data[6], data[7]);
+                long distance = byteArrayInt4(data[2], data[3], data[4], data[5]);
+                setDistance(distance);
+                int currentTime = byteArrayInt2(data[6], data[7]);
+                setCurrentTime(currentTime);
                 mTopSpeed = byteArrayInt2(data[8], data[9]);
                 mFanStatus = data[12];
             } else if ((data[16] & 255) == 187) { // Name and Type data
@@ -200,7 +218,8 @@ public class WheelData {
 
             mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
 
-            mDistance = byteArrayInt2(data[9], data[8]);
+            long distance = byteArrayInt2(data[9], data[8]);
+            setDistance(distance);
 
             mVoltage = (data[2] * 256) + (data[3] & 255);
 
@@ -214,7 +233,8 @@ public class WheelData {
                 mBattery = (mVoltage - 5290) / 13;
             }
 
-            mCurrentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+            int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+            setCurrentTime(currentTime);
 
         } else if (data.length >= 10) {
             int a1 = data[0];
@@ -237,6 +257,7 @@ public class WheelData {
         mBattery = 0;
         mVoltage = 0;
         mDistance = 0;
+        mLastDistance = 0;
         mCurrentTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
