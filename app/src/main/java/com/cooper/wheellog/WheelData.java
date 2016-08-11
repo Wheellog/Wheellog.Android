@@ -94,17 +94,20 @@ public class WheelData {
     }
 
     private void setDistance(long distance) {
-        if (mDistance > distance) {
-            mLastDistance = mDistance;
-            mDistance = distance;
-        }
+        if (mDistance > distance)
+            mLastDistance += mDistance;
+        mDistance = distance;
     }
 
     private void setCurrentTime(int currentTime) {
-        if (mCurrentTime > currentTime) {
-            mLastCurrentTime = mCurrentTime;
-            mCurrentTime = currentTime;
-        }
+        if (mCurrentTime > currentTime)
+            mLastCurrentTime += mCurrentTime;
+        mCurrentTime = currentTime;
+    }
+
+    private void setTopSpeed(int topSpeed) {
+        if (topSpeed > mTopSpeed)
+            mTopSpeed = topSpeed;
     }
 
     public void decodeResponse(byte[] data) {
@@ -160,7 +163,7 @@ public class WheelData {
                 setDistance(distance);
                 int currentTime = byteArrayInt2(data[6], data[7]);
                 setCurrentTime(currentTime);
-                mTopSpeed = byteArrayInt2(data[8], data[9]);
+                setTopSpeed(byteArrayInt2(data[8], data[9]));
                 mFanStatus = data[12];
             } else if ((data[16] & 255) == 187) { // Name and Type data
                 int end = 0;
@@ -213,8 +216,7 @@ public class WheelData {
             else
                 mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
 
-            if (mSpeed > mTopSpeed)
-                mTopSpeed = mSpeed;
+            setTopSpeed(mSpeed);
 
             mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
 

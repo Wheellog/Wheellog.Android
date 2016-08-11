@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.support.v7.app.NotificationCompat;
 import android.widget.RemoteViews;
 
@@ -39,18 +38,18 @@ public class NotificationUtil {
             final String action = intent.getAction();
             if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) {
                 mConnectionState = BluetoothLeService.STATE_CONNECTED;
-                notificationMessageId = R.string.wheel_connected;
+                notificationMessageId = R.string.connected;
                 updateNotification();
             } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
                 mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
-                notificationMessageId = R.string.wheel_disconnected;
+                notificationMessageId = R.string.disconnected;
                 updateNotification();
             } else if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
                 mConnectionState = BluetoothLeService.STATE_CONNECTING;
                 if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT))
-                    notificationMessageId = R.string.wheel_searching;
+                    notificationMessageId = R.string.searching;
                 else
-                    notificationMessageId = R.string.wheel_connecting;
+                    notificationMessageId = R.string.connecting;
                 updateNotification();
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
                 int batteryLevel = WheelData.getInstance().getBatteryLevel();
@@ -109,7 +108,7 @@ public class NotificationUtil {
 
         String title = mContext.getString(notificationMessageId);
 
-        if (mConnectionState == BluetoothLeService.STATE_CONNECTED) {
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTED || (mDistance + mTemperature + mBatteryLevel) > 0) {
             String spacer = mContext.getString(R.string.notification_header_divider_symbol);
             String message = String.format(Locale.US, "%d%% %s %d°C %s %.1f km", mBatteryLevel, spacer, mTemperature, spacer, mDistance);
             notificationView.setTextViewText(R.id.text_message, message);
