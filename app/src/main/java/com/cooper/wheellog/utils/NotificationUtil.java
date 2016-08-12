@@ -126,21 +126,11 @@ public class NotificationUtil {
         else
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
-
-//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            return new Notification.Builder(mContext)
-//                    .setSmallIcon(R.drawable.ic_stat_wheel)
-//                    .setContentIntent(pendingIntent)
-//                    .setTicker("")
-//                    .setCustomContentView(notificationView)
-//                    .build();
-//        } else {
-            return new NotificationCompat.Builder(mContext)
-                    .setSmallIcon(R.drawable.ic_stat_wheel)
-                    .setContentIntent(pendingIntent)
-                    .setContent(notificationView)
-                    .build();
-//        }
+        return new NotificationCompat.Builder(mContext)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setContentIntent(pendingIntent)
+                .setContent(notificationView)
+                .build();
     }
 
     private void updateNotification() {
@@ -182,7 +172,6 @@ public class NotificationUtil {
                     context.stopService(loggingServiceIntent);
                 else
                     context.startService(loggingServiceIntent);
-//            Timber.i("KEVTEST", action);
             }
         }
     }

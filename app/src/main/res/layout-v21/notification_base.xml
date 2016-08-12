@@ -26,8 +26,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="top"
-        android:layout_marginStart="16dp"
-        android:minHeight="@dimen/notification_large_icon_height"
+        android:layout_marginStart="12dp"
+        android:minHeight="@dimen/notification_large_icon_size"
         android:orientation="vertical"
         android:gravity="center_vertical"
         >

@@ -12,7 +12,8 @@
         android:paddingEnd="10dp"
         android:layout_alignParentEnd="true"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_watch_grey" />
+        android:src="@drawable/ic_action_watch_grey"
+        android:contentDescription="@string/icon_watch" />
 
     <ImageButton
         android:id="@+id/ib_logging"
@@ -22,7 +23,8 @@
         android:paddingEnd="10dp"
         android:layout_toStartOf="@id/ib_watch"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_logging_grey" />
+        android:src="@drawable/ic_action_logging_grey"
+        android:contentDescription="@string/icon_logging" />
 
     <ImageButton
         android:id="@+id/ib_connection"
@@ -32,6 +34,7 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_wheel_grey" />
+        android:src="@drawable/ic_action_wheel_grey"
+        android:contentDescription="@string/icon_connection" />
 
 </RelativeLayout>
