@@ -22,7 +22,7 @@ public class NotificationUtil {
 
     private Context mContext;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
-    private int notificationMessageId = R.string.wheel_disconnected;
+    private int notificationMessageId = R.string.disconnected;
     private int mBatteryLevel = 0;
     private double mDistance = 0;
     private int mTemperature = 0;

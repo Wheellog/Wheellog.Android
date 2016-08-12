@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/status_bar_latest_event_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:tag="base"
+    >
+    <include layout="@layout/notification_template_header" />
+    <include layout="@layout/notification_buttons" />
+    <LinearLayout
+        android:id="@+id/notification_main_column"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginStart="@dimen/notification_content_margin_start"
+        android:layout_marginEnd="@dimen/notification_content_margin_end"
+        android:layout_marginTop="@dimen/notification_content_margin_top"
+        android:layout_marginBottom="@dimen/notification_content_margin_bottom"
+        android:orientation="vertical"
+        >
+        <include layout="@layout/notification_template_part_line1" />
+        <include layout="@layout/notification_template_text" />
+    </LinearLayout>
+
+</FrameLayout>
