@@ -158,8 +158,9 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private void requestPermission(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-            Toast.makeText(this, "Locatiom permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            Toast.makeText(this, "Location permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+            finish();
         } else {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
         }

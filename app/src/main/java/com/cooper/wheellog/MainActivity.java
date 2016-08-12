@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);
-                connectToWheel();
+                toggleConnectToWheel();
             }
         }
 
@@ -165,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
         if (mDeviceAddress == null || mDeviceAddress.isEmpty()) {
             miWheel.setEnabled(false);
             miWheel.getIcon().setAlpha(64);
+        } else {
+            miWheel.setEnabled(true);
+            miWheel.getIcon().setAlpha(255);
         }
 
         switch (mConnectionState) {
@@ -478,10 +481,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST);
                 return true;
             case R.id.miWheel:
-                if (mConnectionState == BluetoothLeService.STATE_DISCONNECTED)
-                    connectToWheel();
-                else
-                    disconnectFromWheel();
+                toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkExternalFilePermission())
@@ -572,8 +572,7 @@ public class MainActivity extends AppCompatActivity {
         bindService(bluetoothServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
-    private void disconnectFromWheel() { connectToWheel();}
-    private void connectToWheel() {
+    private void toggleConnectToWheel() {
         sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
     }
 
@@ -614,8 +613,9 @@ public class MainActivity extends AppCompatActivity {
                     mBluetoothLeService.setDeviceAddress(mDeviceAddress);
                     WheelData.getInstance().reset();
                     updateScreen();
+                    setMenuIconStates();
                     mBluetoothLeService.close();
-                    connectToWheel();
+                    toggleConnectToWheel();
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:
