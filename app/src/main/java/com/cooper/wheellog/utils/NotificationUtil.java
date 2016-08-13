@@ -109,9 +109,7 @@ public class NotificationUtil {
         String title = mContext.getString(notificationMessageId);
 
         if (mConnectionState == BluetoothLeService.STATE_CONNECTED || (mDistance + mTemperature + mBatteryLevel) > 0) {
-            String spacer = mContext.getString(R.string.notification_header_divider_symbol);
-            String message = String.format(Locale.US, "%d%% %s %d°C %s %.1f km", mBatteryLevel, spacer, mTemperature, spacer, mDistance);
-            notificationView.setTextViewText(R.id.text_message, message);
+            notificationView.setTextViewText(R.id.text_message, mContext.getString(R.string.notification_text, mBatteryLevel, mTemperature, mDistance));
         }
 
         notificationView.setTextViewText(R.id.text_title, title);

@@ -7,7 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
@@ -20,6 +22,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -136,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 setMenuIconStates();
+            } else if (Constants.ACTION_PREFERENCE_CHANGED.equals(action)) {
+                loadPreferences();
             }
         }
     };
@@ -145,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
-                    SettingsUtil.setLastAddr(getApplicationContext(), mDeviceAddress);
+                    SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING)
@@ -365,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
         titleIndicator.setViewPager(pager);
         pager.addOnPageChangeListener(pageChangeListener);
 
-        mDeviceAddress = SettingsUtil.getLastAddr(getApplicationContext());
+        mDeviceAddress = SettingsUtil.getLastAddress(getApplicationContext());
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -391,7 +396,9 @@ public class MainActivity extends AppCompatActivity {
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
         textClock.setTypeface(typefacePrime);
         tvWaitText.setTypeface(typefacePrime);
-        wheelView.setMaxSpeed(300);
+
+        loadPreferences();
+
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -430,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
         if (WheelData.getInstance().getWheelType() > 0)
             configureDisplay(WheelData.getInstance().getWheelType());
 
-        registerReceiver(mBluetoothUpdateReceiver, BluetoothLeService.makeIntentFilter());
+        registerReceiver(mBluetoothUpdateReceiver, makeIntentFilter());
         updateScreen();
     }
 
@@ -532,6 +539,16 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private void loadPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean use_mph = sharedPreferences.getBoolean("use_mph", false);
+        int max_speed = sharedPreferences.getInt("max_speed", 30) * 10;
+        wheelView.setMaxSpeed(max_speed);
+        wheelView.setUseMPH(use_mph);
+        wheelView.invalidate();
+
+    }
+
     private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
     private void showSnackBar(String msg) { showSnackBar(msg, 2000); }
     private void showSnackBar(String msg, int timeout) {
@@ -627,5 +644,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    private IntentFilter makeIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTING);
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_DISCONNECTED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
+        return intentFilter;
     }
 }

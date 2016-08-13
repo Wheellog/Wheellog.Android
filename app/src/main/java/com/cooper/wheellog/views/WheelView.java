@@ -45,6 +45,7 @@ public class WheelView extends View {
     float boxTextHeight;
 
     private int mMaxSpeed = 300;
+    private boolean mUseMPH = false;
     private int mSpeed = 0;
     private int mBattery = 0;
     private int mTemperature = 0;
@@ -120,6 +121,10 @@ public class WheelView extends View {
 
     public void setMaxSpeed(int maxSpeed) {
         mMaxSpeed = maxSpeed;
+    }
+
+    public void setUseMPH(boolean use_mph) {
+        mUseMPH = use_mph;
     }
 
     public void setSpeed(int speed) {
@@ -351,13 +356,17 @@ public class WheelView extends View {
         //################# DRAW SPEED TEXT ##################
         //####################################################
 
-        String speedString = String.format(Locale.US, "%02d", Math.round(mSpeed/10.0));
+        int speed = mUseMPH ? (int) Math.round(mSpeed*0.621371) : mSpeed;
+
+        String speedString = String.format(Locale.US, "%02d", Math.round(speed/10.0));
+
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_text));
         textPaint.setTextSize(speedTextSize);
         canvas.drawText(speedString,outerArcRect.centerX(),speedTextRect.centerY()+(speedTextRect.height()/2), textPaint);
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        canvas.drawText("km/h", outerArcRect.centerX(),speedTextRect.bottom+(speedTextKPHHeight*1.25F), textPaint);
+        String metric = mUseMPH ? "mph" : "km/h";
+        canvas.drawText(metric, outerArcRect.centerX(),speedTextRect.bottom+(speedTextKPHHeight*1.25F), textPaint);
 
         //####################################################
         //######## DRAW BATTERY AND TEMPERATURE TEXT #########

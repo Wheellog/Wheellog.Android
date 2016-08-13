@@ -102,17 +102,14 @@ public class BluetoothLeService extends Service {
         }
     };
 
-    public static IntentFilter makeIntentFilter() {
+    private IntentFilter makeIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTING);
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_DISCONNECTED);
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_HORN);
-        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_REQUEST_CONNECTION_TOGGLE);
         return intentFilter;
     }

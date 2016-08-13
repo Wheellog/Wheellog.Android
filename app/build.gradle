@@ -27,5 +27,5 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:24.1.1'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.jakewharton.timber:timber:4.1.2'
-
+    compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
 }

@@ -53,8 +53,7 @@
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
-
-    <string name="notification_header_divider_symbol" translatable="false">•</string>
+    <string name="notification_text">%1$d%% • %2$d°C • %3$.1f km</string>
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
