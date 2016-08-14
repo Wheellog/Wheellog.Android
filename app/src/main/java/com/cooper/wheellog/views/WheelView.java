@@ -358,11 +358,15 @@ public class WheelView extends View {
 
         int speed = mUseMPH ? (int) Math.round(mSpeed*0.621371) : mSpeed;
 
-        String speedString = String.format(Locale.US, "%02d", Math.round(speed/10.0));
+        String speedString;
+        if (speed < 100)
+            speedString = String.format(Locale.US, "%.1f", speed/10.0);
+        else
+            speedString = String.format(Locale.US, "%02d", Math.round(speed/10.0));
 
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_text));
         textPaint.setTextSize(speedTextSize);
-        canvas.drawText(speedString,outerArcRect.centerX(),speedTextRect.centerY()+(speedTextRect.height()/2), textPaint);
+        canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY()+(speedTextRect.height()/2), textPaint);
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
         String metric = mUseMPH ? "mph" : "km/h";
