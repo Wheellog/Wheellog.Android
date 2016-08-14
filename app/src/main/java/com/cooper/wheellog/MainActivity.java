@@ -26,7 +26,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
@@ -39,8 +38,19 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 import timber.log.Timber;
@@ -70,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
     TextView tvRideTime;
     TextView tvMode;
 
+    LineChart chart1;
+
     WheelView wheelView;
     
     private BluetoothLeService mBluetoothLeService;
@@ -79,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
     int viewPagerPage = 0;
+    private long graph_last_update_time;
+    private int graph_update_count = 0;
+    private ArrayList<String> graph_xaxis = new ArrayList<>();
 
+    private static final int GRAPH_UPDATE_INTERVAL = 500; // milliseconds
     private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
     private static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     private static final int RESULT_REQUEST_ENABLE_BT = 30;
@@ -130,7 +146,24 @@ public class MainActivity extends AppCompatActivity {
                     else if (WheelData.getInstance().getSerial().isEmpty())
                         sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                 }
+
+                if (graph_last_update_time+GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
+                    graph_last_update_time = Calendar.getInstance().getTimeInMillis();
+                    LineData data = chart1.getData();
+                    LineDataSet dataset_speed = (LineDataSet) data.getDataSetByLabel("speed", true);
+                    LineDataSet dataset_current = (LineDataSet) data.getDataSetByLabel("current", true);
+                    dataset_speed.addEntry(new Entry(graph_update_count, (float) WheelData.getInstance().getSpeedDouble()));
+                    dataset_current.addEntry(new Entry(graph_update_count, (float) WheelData.getInstance().getCurrentDouble()));
+                    graph_xaxis.add(new SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().getTime()));
+                    graph_update_count++;
+                    if (dataset_speed.getEntryCount() > (3600000 / GRAPH_UPDATE_INTERVAL)) {
+//                        graph_xaxis.remove(0);
+                        dataset_speed.removeFirst();
+                        dataset_current.removeFirst();
+                    }
+                }
                 updateScreen();
+
             } else if (Constants.ACTION_PEBBLE_SERVICE_TOGGLED.equals(action)) {
                 setMenuIconStates();
             } else if (Constants.ACTION_LOGGING_SERVICE_TOGGLED.equals(action)) {
@@ -357,6 +390,12 @@ public class MainActivity extends AppCompatActivity {
             tvSerial.setText(WheelData.getInstance().getSerial());
             tvRideTime.setText(WheelData.getInstance().getCurrentTimeString());
             tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
+        } else if (viewPagerPage == 2) {
+            ((LineDataSet) chart1.getData().getDataSetByLabel("speed", true)).notifyDataSetChanged();
+            ((LineDataSet) chart1.getData().getDataSetByLabel("current", true)).notifyDataSetChanged();
+            chart1.getData().notifyDataChanged();
+            chart1.notifyDataSetChanged();
+            chart1.invalidate();
         }
     }
 
@@ -369,6 +408,8 @@ public class MainActivity extends AppCompatActivity {
         ViewPageAdapter adapter = new ViewPageAdapter(this);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(3);
+
         LinePageIndicator titleIndicator = (LinePageIndicator)findViewById(R.id.indicator);
         titleIndicator.setViewPager(pager);
         pager.addOnPageChangeListener(pageChangeListener);
@@ -399,6 +440,45 @@ public class MainActivity extends AppCompatActivity {
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
         textClock.setTypeface(typefacePrime);
         tvWaitText.setTypeface(typefacePrime);
+
+        chart1 = (LineChart) findViewById(R.id.chart);
+        chart1.setDrawGridBackground(false);
+        chart1.setDescription("");
+        chart1.setHardwareAccelerationEnabled(true);
+        chart1.setHighlightPerTapEnabled(false);
+        chart1.setHighlightPerDragEnabled(false);
+        chart1.getLegend().setTextColor(getResources().getColor(android.R.color.white));
+
+        YAxis leftAxis = chart1.getAxisLeft();
+        YAxis rightAxis = chart1.getAxisRight();
+        leftAxis.setDrawGridLines(false);
+        rightAxis.setDrawGridLines(false);
+        leftAxis.setTextColor(getResources().getColor(android.R.color.white));
+        rightAxis.setTextColor(getResources().getColor(android.R.color.white));
+
+        XAxis xAxis = chart1.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(getResources().getColor(android.R.color.white));
+        xAxis.setValueFormatter(chartAxisValueFormatter);
+
+        LineDataSet dataset_speed = new LineDataSet(null, "speed");
+        LineDataSet dataset_current = new LineDataSet(null, "current");
+        dataset_speed.setLineWidth(2);
+        dataset_current.setLineWidth(2);
+        dataset_speed.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataset_current.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        dataset_speed.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataset_current.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataset_speed.setColor(getResources().getColor(android.R.color.white));
+        dataset_current.setColor(getResources().getColor(R.color.accent));
+        dataset_speed.setDrawCircles(false);
+        dataset_current.setDrawCircles(false);
+        dataset_speed.setDrawValues(false);
+        dataset_current.setDrawValues(false);
+        LineData chart1_linedata = new LineData();
+        chart1_linedata.addDataSet(dataset_current);
+        chart1_linedata.addDataSet(dataset_speed);
+        chart1.setData(chart1_linedata);
 
         loadPreferences();
 
@@ -669,4 +749,16 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
         return intentFilter;
     }
+
+    AxisValueFormatter chartAxisValueFormatter = new AxisValueFormatter() {
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return graph_xaxis.get((int) value);
+        }
+
+        // we don't draw numbers, so no decimal digits needed
+        @Override
+        public int getDecimalDigits() {  return 0; }
+    };
 }
