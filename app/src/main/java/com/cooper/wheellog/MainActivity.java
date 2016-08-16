@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
     int viewPagerPage = 0;
-    private ArrayList<String> xaxis_labels = new ArrayList<>();
+    private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
 
     private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
@@ -126,40 +126,46 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver mBluetoothUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
-                Timber.d("Bluetooth Connecting");
-                setConnectionState(BluetoothLeService.STATE_CONNECTING);
-            } else if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action) && mConnectionState != BluetoothLeService.STATE_CONNECTED) {
-                Timber.d("Bluetooth connected");
-                configureDisplay(WheelData.getInstance().getWheelType());
-                setConnectionState(BluetoothLeService.STATE_CONNECTED);
-            } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
-                Timber.d("Bluetooth disconnected");
-                setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
-            } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
 
-                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
-                    if (WheelData.getInstance().getName().isEmpty())
-                        sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
-                    else if (WheelData.getInstance().getSerial().isEmpty())
-                        sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
-                }
-                updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
-
-            } else if (Constants.ACTION_PEBBLE_SERVICE_TOGGLED.equals(action)) {
-                setMenuIconStates();
-            } else if (Constants.ACTION_LOGGING_SERVICE_TOGGLED.equals(action)) {
-                boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-                if (running) {
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                        String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
-                        showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
+            switch (intent.getAction()) {
+                case Constants.ACTION_BLUETOOTH_CONNECTING:
+                    Timber.d("Bluetooth Connecting");
+                    setConnectionState(BluetoothLeService.STATE_CONNECTING);
+                    break;
+                case Constants.ACTION_BLUETOOTH_CONNECTED:
+                    Timber.d("Bluetooth connected");
+                    configureDisplay(WheelData.getInstance().getWheelType());
+                    setConnectionState(BluetoothLeService.STATE_CONNECTED);
+                    break;
+                case Constants.ACTION_BLUETOOTH_DISCONNECTED:
+                    Timber.d("Bluetooth disconnected");
+                    setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
+                    break;
+                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                        if (WheelData.getInstance().getName().isEmpty())
+                            sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
+                        else if (WheelData.getInstance().getSerial().isEmpty())
+                            sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                     }
-                }
-                setMenuIconStates();
-            } else if (Constants.ACTION_PREFERENCE_CHANGED.equals(action)) {
-                loadPreferences();
+                    updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
+                    break;
+                case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
+                    setMenuIconStates();
+                    break;
+                case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
+                    boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+                    if (running) {
+                        if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                            String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                            showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
+                        }
+                    }
+                    setMenuIconStates();
+                    break;
+                case Constants.ACTION_PREFERENCE_CHANGED:
+                    loadPreferences();
+                    break;
             }
         }
     };
@@ -250,189 +256,199 @@ public class MainActivity extends AppCompatActivity {
         TextView tvTitleVersion = (TextView) findViewById(R.id.tvTitleVersion);
         TextView tvTitleSerial = (TextView) findViewById(R.id.tvTitleSerial);
 
-        if (wheelType == Constants.WHEEL_TYPE_KINGSONG) {
-            tvWaitText.setVisibility(View.GONE);
-            tvTitleSpeed.setVisibility(View.VISIBLE);
-            tvSpeed.setVisibility(View.VISIBLE);
-            tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-            tvTopSpeed.setVisibility(View.VISIBLE);
-            tvTitleBattery.setVisibility(View.VISIBLE);
-            tvBattery.setVisibility(View.VISIBLE);
-            tvTitleDistance.setVisibility(View.VISIBLE);
-            tvDistance.setVisibility(View.VISIBLE);
-            tvTitleRideTime.setVisibility(View.VISIBLE);
-            tvRideTime.setVisibility(View.VISIBLE);
-            tvTitleVoltage.setVisibility(View.VISIBLE);
-            tvVoltage.setVisibility(View.VISIBLE);
-            tvTitleCurrent.setVisibility(View.VISIBLE);
-            tvCurrent.setVisibility(View.VISIBLE);
-            tvTitlePower.setVisibility(View.VISIBLE);
-            tvPower.setVisibility(View.VISIBLE);
-            tvTitleTemperature.setVisibility(View.VISIBLE);
-            tvTemperature.setVisibility(View.VISIBLE);
-            tvTitleFanStatus.setVisibility(View.VISIBLE);
-            tvFanStatus.setVisibility(View.VISIBLE);
-            tvTitleMode.setVisibility(View.VISIBLE);
-            tvMode.setVisibility(View.VISIBLE);
-            tvTitleTotalDistance.setVisibility(View.VISIBLE);
-            tvTotalDistance.setVisibility(View.VISIBLE);
-            tvTitleName.setVisibility(View.VISIBLE);
-            tvName.setVisibility(View.VISIBLE);
-            tvTitleModel.setVisibility(View.VISIBLE);
-            tvModel.setVisibility(View.VISIBLE);
-            tvTitleVersion.setVisibility(View.VISIBLE);
-            tvVersion.setVisibility(View.VISIBLE);
-            tvTitleSerial.setVisibility(View.VISIBLE);
-            tvSerial.setVisibility(View.VISIBLE);
-
-        } else if (wheelType == Constants.WHEEL_TYPE_GOTWAY) {
-            tvWaitText.setVisibility(View.GONE);
-            tvTitleSpeed.setVisibility(View.VISIBLE);
-            tvSpeed.setVisibility(View.VISIBLE);
-            tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-            tvTopSpeed.setVisibility(View.VISIBLE);
-            tvTitleBattery.setVisibility(View.VISIBLE);
-            tvBattery.setVisibility(View.VISIBLE);
-            tvTitleDistance.setVisibility(View.VISIBLE);
-            tvDistance.setVisibility(View.VISIBLE);
-            tvTitleRideTime.setVisibility(View.VISIBLE);
-            tvRideTime.setVisibility(View.VISIBLE);
-            tvTitleVoltage.setVisibility(View.VISIBLE);
-            tvVoltage.setVisibility(View.VISIBLE);
-            tvTitleCurrent.setVisibility(View.VISIBLE);
-            tvCurrent.setVisibility(View.VISIBLE);
-            tvTitlePower.setVisibility(View.VISIBLE);
-            tvPower.setVisibility(View.VISIBLE);
-            tvTitleTemperature.setVisibility(View.VISIBLE);
-            tvTemperature.setVisibility(View.VISIBLE);
-            tvTitleTotalDistance.setVisibility(View.VISIBLE);
-            tvTotalDistance.setVisibility(View.VISIBLE);
-
-        } else {
-            tvWaitText.setVisibility(View.VISIBLE);
-            tvTitleSpeed.setVisibility(View.GONE);
-            tvSpeed.setVisibility(View.GONE);
-            tvTitleMaxSpeed.setVisibility(View.GONE);
-            tvTopSpeed.setVisibility(View.GONE);
-            tvTitleBattery.setVisibility(View.GONE);
-            tvBattery.setVisibility(View.GONE);
-            tvTitleDistance.setVisibility(View.GONE);
-            tvDistance.setVisibility(View.GONE);
-            tvTitleRideTime.setVisibility(View.GONE);
-            tvRideTime.setVisibility(View.GONE);
-            tvTitleVoltage.setVisibility(View.GONE);
-            tvVoltage.setVisibility(View.GONE);
-            tvTitleCurrent.setVisibility(View.GONE);
-            tvCurrent.setVisibility(View.GONE);
-            tvTitlePower.setVisibility(View.GONE);
-            tvPower.setVisibility(View.GONE);
-            tvTitleTemperature.setVisibility(View.GONE);
-            tvTemperature.setVisibility(View.GONE);
-            tvTitleFanStatus.setVisibility(View.GONE);
-            tvFanStatus.setVisibility(View.GONE);
-            tvTitleMode.setVisibility(View.GONE);
-            tvMode.setVisibility(View.GONE);
-            tvTitleTotalDistance.setVisibility(View.GONE);
-            tvTotalDistance.setVisibility(View.GONE);
-            tvTitleName.setVisibility(View.GONE);
-            tvName.setVisibility(View.GONE);
-            tvTitleModel.setVisibility(View.GONE);
-            tvModel.setVisibility(View.GONE);
-            tvTitleVersion.setVisibility(View.GONE);
-            tvVersion.setVisibility(View.GONE);
-            tvTitleSerial.setVisibility(View.GONE);
-            tvSerial.setVisibility(View.GONE);
+        switch (wheelType) {
+            case Constants.WHEEL_TYPE_KINGSONG:
+                tvWaitText.setVisibility(View.GONE);
+                tvTitleSpeed.setVisibility(View.VISIBLE);
+                tvSpeed.setVisibility(View.VISIBLE);
+                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
+                tvTopSpeed.setVisibility(View.VISIBLE);
+                tvTitleBattery.setVisibility(View.VISIBLE);
+                tvBattery.setVisibility(View.VISIBLE);
+                tvTitleDistance.setVisibility(View.VISIBLE);
+                tvDistance.setVisibility(View.VISIBLE);
+                tvTitleRideTime.setVisibility(View.VISIBLE);
+                tvRideTime.setVisibility(View.VISIBLE);
+                tvTitleVoltage.setVisibility(View.VISIBLE);
+                tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleCurrent.setVisibility(View.VISIBLE);
+                tvCurrent.setVisibility(View.VISIBLE);
+                tvTitlePower.setVisibility(View.VISIBLE);
+                tvPower.setVisibility(View.VISIBLE);
+                tvTitleTemperature.setVisibility(View.VISIBLE);
+                tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleFanStatus.setVisibility(View.VISIBLE);
+                tvFanStatus.setVisibility(View.VISIBLE);
+                tvTitleMode.setVisibility(View.VISIBLE);
+                tvMode.setVisibility(View.VISIBLE);
+                tvTitleTotalDistance.setVisibility(View.VISIBLE);
+                tvTotalDistance.setVisibility(View.VISIBLE);
+                tvTitleName.setVisibility(View.VISIBLE);
+                tvName.setVisibility(View.VISIBLE);
+                tvTitleModel.setVisibility(View.VISIBLE);
+                tvModel.setVisibility(View.VISIBLE);
+                tvTitleVersion.setVisibility(View.VISIBLE);
+                tvVersion.setVisibility(View.VISIBLE);
+                tvTitleSerial.setVisibility(View.VISIBLE);
+                tvSerial.setVisibility(View.VISIBLE);
+                break;
+            case Constants.WHEEL_TYPE_GOTWAY:
+                tvWaitText.setVisibility(View.GONE);
+                tvTitleSpeed.setVisibility(View.VISIBLE);
+                tvSpeed.setVisibility(View.VISIBLE);
+                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
+                tvTopSpeed.setVisibility(View.VISIBLE);
+                tvTitleBattery.setVisibility(View.VISIBLE);
+                tvBattery.setVisibility(View.VISIBLE);
+                tvTitleDistance.setVisibility(View.VISIBLE);
+                tvDistance.setVisibility(View.VISIBLE);
+                tvTitleRideTime.setVisibility(View.VISIBLE);
+                tvRideTime.setVisibility(View.VISIBLE);
+                tvTitleVoltage.setVisibility(View.VISIBLE);
+                tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleCurrent.setVisibility(View.VISIBLE);
+                tvCurrent.setVisibility(View.VISIBLE);
+                tvTitlePower.setVisibility(View.VISIBLE);
+                tvPower.setVisibility(View.VISIBLE);
+                tvTitleTemperature.setVisibility(View.VISIBLE);
+                tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleTotalDistance.setVisibility(View.VISIBLE);
+                tvTotalDistance.setVisibility(View.VISIBLE);
+                break;
+            default:
+                tvWaitText.setVisibility(View.VISIBLE);
+                tvTitleSpeed.setVisibility(View.GONE);
+                tvSpeed.setVisibility(View.GONE);
+                tvTitleMaxSpeed.setVisibility(View.GONE);
+                tvTopSpeed.setVisibility(View.GONE);
+                tvTitleBattery.setVisibility(View.GONE);
+                tvBattery.setVisibility(View.GONE);
+                tvTitleDistance.setVisibility(View.GONE);
+                tvDistance.setVisibility(View.GONE);
+                tvTitleRideTime.setVisibility(View.GONE);
+                tvRideTime.setVisibility(View.GONE);
+                tvTitleVoltage.setVisibility(View.GONE);
+                tvVoltage.setVisibility(View.GONE);
+                tvTitleCurrent.setVisibility(View.GONE);
+                tvCurrent.setVisibility(View.GONE);
+                tvTitlePower.setVisibility(View.GONE);
+                tvPower.setVisibility(View.GONE);
+                tvTitleTemperature.setVisibility(View.GONE);
+                tvTemperature.setVisibility(View.GONE);
+                tvTitleFanStatus.setVisibility(View.GONE);
+                tvFanStatus.setVisibility(View.GONE);
+                tvTitleMode.setVisibility(View.GONE);
+                tvMode.setVisibility(View.GONE);
+                tvTitleTotalDistance.setVisibility(View.GONE);
+                tvTotalDistance.setVisibility(View.GONE);
+                tvTitleName.setVisibility(View.GONE);
+                tvName.setVisibility(View.GONE);
+                tvTitleModel.setVisibility(View.GONE);
+                tvModel.setVisibility(View.GONE);
+                tvTitleVersion.setVisibility(View.GONE);
+                tvVersion.setVisibility(View.GONE);
+                tvTitleSerial.setVisibility(View.GONE);
+                tvSerial.setVisibility(View.GONE);
+                break;
         }
     }
 
     private void updateScreen(boolean updateGraph) {
-        if (viewPagerPage == 0) { // GUI View
-            wheelView.setSpeed(WheelData.getInstance().getSpeed());
-            wheelView.setBattery(WheelData.getInstance().getBatteryLevel());
-            wheelView.setTemperature(WheelData.getInstance().getTemperature());
-            wheelView.setRideTime(WheelData.getInstance().getCurrentTimeString());
-            wheelView.setTopSpeed(WheelData.getInstance().getTopSpeedDouble());
-            wheelView.setDistance(WheelData.getInstance().getDistanceDouble());
-            wheelView.setTotalDistance(WheelData.getInstance().getTotalDistanceDouble());
-            wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
-            wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
-        } else if (viewPagerPage == 1) { // Text View
-
-            if (use_mph) {
-                tvSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getSpeedDouble())));
-                tvTopSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
-                tvDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getDistanceDouble())));
-                tvTotalDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
-            } else {
-                tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
-                tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
-                tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
-                tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
-            }
-
-            tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
-            tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
-            tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
-            tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
-            tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
-            tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? "Off" : "On");
-            tvVersion.setText(String.format(Locale.US, "%.2f", WheelData.getInstance().getVersion()/100.0));
-            tvName.setText(WheelData.getInstance().getName());
-            tvModel.setText(WheelData.getInstance().getModel());
-            tvSerial.setText(WheelData.getInstance().getSerial());
-            tvRideTime.setText(WheelData.getInstance().getCurrentTimeString());
-            tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
-        } else if (viewPagerPage == 2 && updateGraph) { // Graph  View
-            xaxis_labels = WheelData.getInstance().getXAxis();
-
-            if (xaxis_labels.size() > 0) {
-
-                LineDataSet dataSetSpeed;
-                LineDataSet dataSetCurrent;
-                
-                if (chart1.getData() == null) {
-                    dataSetSpeed = new LineDataSet(null, "speed");
-                    dataSetCurrent = new LineDataSet(null, "current");
-                    dataSetSpeed.setLineWidth(2);
-                    dataSetCurrent.setLineWidth(2);
-                    dataSetSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    dataSetCurrent.setAxisDependency(YAxis.AxisDependency.RIGHT);
-                    dataSetSpeed.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                    dataSetCurrent.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                    dataSetSpeed.setColor(getResources().getColor(android.R.color.white));
-                    dataSetCurrent.setColor(getResources().getColor(R.color.accent));
-                    dataSetSpeed.setDrawCircles(false);
-                    dataSetCurrent.setDrawCircles(false);
-                    dataSetSpeed.setDrawValues(false);
-                    dataSetCurrent.setDrawValues(false);
-                    LineData chart1_lineData = new LineData();
-                    chart1_lineData.addDataSet(dataSetCurrent);
-                    chart1_lineData.addDataSet(dataSetSpeed);
-                    chart1.setData(chart1_lineData);
+        switch (viewPagerPage) {
+            case 0: // GUI View
+                wheelView.setSpeed(WheelData.getInstance().getSpeed());
+                wheelView.setBattery(WheelData.getInstance().getBatteryLevel());
+                wheelView.setTemperature(WheelData.getInstance().getTemperature());
+                wheelView.setRideTime(WheelData.getInstance().getCurrentTimeString());
+                wheelView.setTopSpeed(WheelData.getInstance().getTopSpeedDouble());
+                wheelView.setDistance(WheelData.getInstance().getDistanceDouble());
+                wheelView.setTotalDistance(WheelData.getInstance().getTotalDistanceDouble());
+                wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
+                wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
+                break;
+            case 1: // Text View
+                if (use_mph) {
+                    tvSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getSpeedDouble())));
+                    tvTopSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
+                    tvDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getDistanceDouble())));
+                    tvTotalDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
                 } else {
-                    dataSetSpeed = (LineDataSet) chart1.getData().getDataSetByLabel("speed", true);
-                    dataSetCurrent = (LineDataSet) chart1.getData().getDataSetByLabel("current", true);
+                    tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
+                    tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
+                    tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
+                    tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
-                dataSetSpeed.clear();
-                dataSetCurrent.clear();
+                tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
+                tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
+                tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
+                tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
+                tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
+                tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? "Off" : "On");
+                tvVersion.setText(String.format(Locale.US, "%.2f", WheelData.getInstance().getVersion()/100.0));
+                tvName.setText(WheelData.getInstance().getName());
+                tvModel.setText(WheelData.getInstance().getModel());
+                tvSerial.setText(WheelData.getInstance().getSerial());
+                tvRideTime.setText(WheelData.getInstance().getCurrentTimeString());
+                tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
+                break;
+            case 2: // Graph  View
+                if (updateGraph) {
+                    xAxis_labels = WheelData.getInstance().getXAxis();
 
-                for (float d : WheelData.getInstance().getCurrentAxis())
-                    dataSetCurrent.addEntry(new Entry(dataSetCurrent.getEntryCount(), d));
+                    if (xAxis_labels.size() > 0) {
 
-                for (float d : WheelData.getInstance().getSpeedAxis()) {
-                    if (use_mph)
-                        dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), (float) kmToMiles(d)));
-                    else
-                        dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), d));
+                        LineDataSet dataSetSpeed;
+                        LineDataSet dataSetCurrent;
+
+                        if (chart1.getData() == null) {
+                            dataSetSpeed = new LineDataSet(null, "speed");
+                            dataSetCurrent = new LineDataSet(null, "current");
+                            dataSetSpeed.setLineWidth(2);
+                            dataSetCurrent.setLineWidth(2);
+                            dataSetSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
+                            dataSetCurrent.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                            dataSetSpeed.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                            dataSetCurrent.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                            dataSetSpeed.setColor(getResources().getColor(android.R.color.white));
+                            dataSetCurrent.setColor(getResources().getColor(R.color.accent));
+                            dataSetSpeed.setDrawCircles(false);
+                            dataSetCurrent.setDrawCircles(false);
+                            dataSetSpeed.setDrawValues(false);
+                            dataSetCurrent.setDrawValues(false);
+                            LineData chart1_lineData = new LineData();
+                            chart1_lineData.addDataSet(dataSetCurrent);
+                            chart1_lineData.addDataSet(dataSetSpeed);
+                            chart1.setData(chart1_lineData);
+                        } else {
+                            dataSetSpeed = (LineDataSet) chart1.getData().getDataSetByLabel("speed", true);
+                            dataSetCurrent = (LineDataSet) chart1.getData().getDataSetByLabel("current", true);
+                        }
+
+                        dataSetSpeed.clear();
+                        dataSetCurrent.clear();
+
+                        ArrayList<Float> currentAxis = WheelData.getInstance().getCurrentAxis();
+                        ArrayList<Float> speedAxis = WheelData.getInstance().getSpeedAxis();
+
+                        for (int i = 0; i < currentAxis.size(); i++)
+                            dataSetCurrent.addEntry(new Entry(dataSetCurrent.getEntryCount(), currentAxis.get(i)));
+
+                        for (int i = 0; i < speedAxis.size(); i++) {
+                            if (use_mph)
+                                dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), (float) kmToMiles(speedAxis.get(i))));
+                            else
+                                dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), speedAxis.get(i)));
+                        }
+
+                        dataSetCurrent.notifyDataSetChanged();
+                        dataSetSpeed.notifyDataSetChanged();
+                        chart1.getData().notifyDataChanged();
+                        chart1.notifyDataSetChanged();
+                        chart1.invalidate();
+                        break;
+                    }
                 }
-
-                dataSetCurrent.notifyDataSetChanged();
-                dataSetSpeed.notifyDataSetChanged();
-                chart1.getData().notifyDataChanged();
-                chart1.notifyDataSetChanged();
-                chart1.invalidate();
-            }
         }
     }
 
@@ -492,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
         leftAxis.setDrawGridLines(false);
         rightAxis.setDrawGridLines(false);
         leftAxis.setTextColor(getResources().getColor(android.R.color.white));
-        rightAxis.setTextColor(getResources().getColor(android.R.color.white));
+        rightAxis.setTextColor(getResources().getColor(R.color.accent));
 
         XAxis xAxis = chart1.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -773,7 +789,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return xaxis_labels.get((int) value);
+            return xAxis_labels.get((int) value);
         }
 
         // we don't draw numbers, so no decimal digits needed
