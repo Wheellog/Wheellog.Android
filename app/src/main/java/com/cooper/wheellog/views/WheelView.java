@@ -18,6 +18,9 @@ import com.cooper.wheellog.utils.Typefaces;
 
 import java.util.Locale;
 
+import static com.cooper.wheellog.utils.MathsUtil.dpToPx;
+import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
+
 public class WheelView extends View {
 
     private Paint outerArcPaint;
@@ -95,13 +98,13 @@ public class WheelView extends View {
                 R.styleable.WheelView,
                 0, 0);
 
-        outerStrokeWidth = a.getDimension(R.styleable.WheelView_outer_thickness, dpToPx(40));
-        innerStrokeWidth = a.getDimension(R.styleable.WheelView_inner_thickness, dpToPx(30));
-        inner_outer_padding = a.getDimension(R.styleable.WheelView_inner_outer_padding, dpToPx(5));
-        inner_text_padding = a.getDimension(R.styleable.WheelView_inner_text_padding, dpToPx(0));
-        box_top_padding = a.getDimension(R.styleable.WheelView_box_top_padding, dpToPx(20));
-        box_outer_padding = a.getDimension(R.styleable.WheelView_box_outer_padding, dpToPx(20));
-        box_inner_padding = a.getDimension(R.styleable.WheelView_box_inner_padding, dpToPx(10));
+        outerStrokeWidth = a.getDimension(R.styleable.WheelView_outer_thickness, dpToPx(context, 40));
+        innerStrokeWidth = a.getDimension(R.styleable.WheelView_inner_thickness, dpToPx(context, 30));
+        inner_outer_padding = a.getDimension(R.styleable.WheelView_inner_outer_padding, dpToPx(context, 5));
+        inner_text_padding = a.getDimension(R.styleable.WheelView_inner_text_padding, 0);
+        box_top_padding = a.getDimension(R.styleable.WheelView_box_top_padding, dpToPx(context, 20));
+        box_outer_padding = a.getDimension(R.styleable.WheelView_box_outer_padding, dpToPx(context, 20));
+        box_inner_padding = a.getDimension(R.styleable.WheelView_box_inner_padding, dpToPx(context, 10));
 
         outerArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         outerArcPaint.setAntiAlias(true);
@@ -308,11 +311,6 @@ public class WheelView extends View {
         boxTextHeight = boundaryOfText.height();
         refresh();
     }
-
-    private int dpToPx(int dp) {
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics()));
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -356,7 +354,7 @@ public class WheelView extends View {
         //################# DRAW SPEED TEXT ##################
         //####################################################
 
-        int speed = mUseMPH ? (int) Math.round(mSpeed*0.621371) : mSpeed;
+        int speed = mUseMPH ? (int) Math.round(kmToMiles(mSpeed)) : mSpeed;
 
         String speedString;
         if (speed < 100)
@@ -418,14 +416,21 @@ public class WheelView extends View {
             canvas.drawText(String.format(Locale.US, "%.2fV", mVoltage), tlRect.centerX(), tlRect.centerY() + boxTextHeight, textPaint);
             canvas.drawText(String.format(Locale.US, "%.2fW", mCurrent), trRect.centerX(), trRect.centerY() + boxTextHeight, textPaint);
             canvas.drawText(mCurrentTime, mlRect.centerX(), mlRect.centerY() + boxTextHeight + (box_inner_padding / 2), textPaint);
-            canvas.drawText(String.format(Locale.US, "%.1f km/h", mTopSpeed), mrRect.centerX(), mrRect.centerY() + boxTextHeight, textPaint);
 
-            if (mDistance < 1)
-                canvas.drawText(String.format(Locale.US, "%.0f m", mDistance * 1000), blRect.centerX(), blRect.centerY() + boxTextHeight, textPaint);
-            else
-                canvas.drawText(String.format(Locale.US, "%.2f km", mDistance), blRect.centerX(), blRect.centerY() + boxTextHeight, textPaint);
+            if (mUseMPH) {
+                canvas.drawText(String.format(Locale.US, "%.1f mph", kmToMiles(mTopSpeed)), mrRect.centerX(), mrRect.centerY() + boxTextHeight, textPaint);
+                canvas.drawText(String.format(Locale.US, "%.2f mi", kmToMiles(mDistance)), blRect.centerX(), blRect.centerY() + boxTextHeight, textPaint);
+                canvas.drawText(String.format(Locale.US, "%.0f mi", kmToMiles(mTotalDistance)), brRect.centerX(), brRect.centerY() + boxTextHeight, textPaint);
+            } else {
+                canvas.drawText(String.format(Locale.US, "%.1f km/h", mTopSpeed), mrRect.centerX(), mrRect.centerY() + boxTextHeight, textPaint);
 
-            canvas.drawText(String.format(Locale.US, "%.0f km", mTotalDistance), brRect.centerX(), brRect.centerY() + boxTextHeight, textPaint);
+                if (mDistance < 1)
+                    canvas.drawText(String.format(Locale.US, "%.0f m", mDistance * 1000), blRect.centerX(), blRect.centerY() + boxTextHeight, textPaint);
+                else
+                    canvas.drawText(String.format(Locale.US, "%.2f km", mDistance), blRect.centerX(), blRect.centerY() + boxTextHeight, textPaint);
+
+                canvas.drawText(String.format(Locale.US, "%.0f km", mTotalDistance), brRect.centerX(), brRect.centerY() + boxTextHeight, textPaint);
+            }
         }
 
         refreshDisplay = currentSpeed != targetSpeed ||
@@ -460,5 +465,4 @@ public class WheelView extends View {
         textPaint.getTextBounds(text, 0, text.length(), textBounds);
         return result;
     }
-
 }

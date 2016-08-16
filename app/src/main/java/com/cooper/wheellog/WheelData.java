@@ -9,6 +9,8 @@ import android.content.Intent;
 
 import com.cooper.wheellog.utils.Constants;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.UUID;
@@ -17,6 +19,12 @@ import java.util.concurrent.TimeUnit;
 public class WheelData {
     private static WheelData mInstance;
     private static Context mContext;
+
+    private long graph_last_update_time;
+    private static final int GRAPH_UPDATE_INTERVAL = 500; // milliseconds
+    private ArrayList<String> xAxis = new ArrayList<>();
+    private ArrayList<Float> currentAxis = new ArrayList<>();
+    private ArrayList<Float> speedAxis = new ArrayList<>();
 
     private int mSpeed;
     private long mTotalDistance;
@@ -85,6 +93,10 @@ public class WheelData {
     public double getDistanceDouble() { return (mDistance+mLastDistance) / 1000.0; }
     public double getTotalDistanceDouble() { return mTotalDistance / 1000.0; }
 
+    public ArrayList<String> getXAxis() { return xAxis; }
+    public ArrayList<Float> getCurrentAxis() { return currentAxis; }
+    public ArrayList<Float> getSpeedAxis() { return speedAxis; }
+
     public void setConnectionState(boolean connected) { mConnectionState = connected ? 1 : 0; }
 
     private int byteArrayInt2(byte low, byte high) { return (low & 255) + ((high & 255) * 256); }
@@ -124,6 +136,20 @@ public class WheelData {
             decodeGotway(data);
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+
+        if (graph_last_update_time+GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
+            graph_last_update_time = Calendar.getInstance().getTimeInMillis();
+            intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
+            currentAxis.add((float) getCurrentDouble());
+            speedAxis.add((float) getSpeedDouble());
+            xAxis.add(new SimpleDateFormat("HH:mm:ss", Locale.US).format(Calendar.getInstance().getTime()));
+            if (speedAxis.size() > (3600000 / GRAPH_UPDATE_INTERVAL)) {
+                speedAxis.remove(0);
+                currentAxis.remove(0);
+                xAxis.remove(0);
+            }
+        }
+
         mContext.sendBroadcast(intent);
     }
 
@@ -270,6 +296,10 @@ public class WheelData {
         mSerialNumber = "";
         mWheelType = 0;
         rideStartTime = 0;
+
+        xAxis.clear();
+        speedAxis.clear();
+        currentAxis.clear();
     }
 
     public boolean detectWheel(BluetoothGatt gatt) {
@@ -313,7 +343,7 @@ public class WheelData {
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
                     mWheelType = Constants.WHEEL_TYPE_KINGSONG;
                     BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_NOTITY_CHARACTER_UUID));
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
                     gatt.setCharacteristicNotification(notifyCharacteristic, true);
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

@@ -22,7 +22,6 @@ public class Constants {
 
     public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
-    public static final String KINGSONG_NOTITY_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
 
     public static final String GOTWAY_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
@@ -37,6 +36,7 @@ public class Constants {
     public static final String INTENT_EXTRA_BLE_AUTO_CONNECT = "ble_auto_connect";
     public static final String INTENT_EXTRA_LOGGING_FILE_LOCATION = "logging_file_location";
     public static final String INTENT_EXTRA_IS_RUNNING = "is_running";
+    public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
 
     public static final int WHEEL_TYPE_KINGSONG = 1;
     public static final int WHEEL_TYPE_GOTWAY = 2;

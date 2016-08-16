@@ -48,12 +48,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.viewpagerindicator.LinePageIndicator;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Locale;
 
 import timber.log.Timber;
+
+import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -91,11 +91,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
     int viewPagerPage = 0;
-    private long graph_last_update_time;
-    private int graph_update_count = 0;
-    private ArrayList<String> graph_xaxis = new ArrayList<>();
+    private ArrayList<String> xaxis_labels = new ArrayList<>();
+    private boolean use_mph = false;
 
-    private static final int GRAPH_UPDATE_INTERVAL = 500; // milliseconds
     private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
     private static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     private static final int RESULT_REQUEST_ENABLE_BT = 30;
@@ -140,29 +138,14 @@ public class MainActivity extends AppCompatActivity {
                 Timber.d("Bluetooth disconnected");
                 setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
             } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
+
                 if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
                     if (WheelData.getInstance().getName().isEmpty())
                         sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
                     else if (WheelData.getInstance().getSerial().isEmpty())
                         sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                 }
-
-                if (graph_last_update_time+GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
-                    graph_last_update_time = Calendar.getInstance().getTimeInMillis();
-                    LineData data = chart1.getData();
-                    LineDataSet dataset_speed = (LineDataSet) data.getDataSetByLabel("speed", true);
-                    LineDataSet dataset_current = (LineDataSet) data.getDataSetByLabel("current", true);
-                    dataset_speed.addEntry(new Entry(graph_update_count, (float) WheelData.getInstance().getSpeedDouble()));
-                    dataset_current.addEntry(new Entry(graph_update_count, (float) WheelData.getInstance().getCurrentDouble()));
-                    graph_xaxis.add(new SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().getTime()));
-                    graph_update_count++;
-                    if (dataset_speed.getEntryCount() > (3600000 / GRAPH_UPDATE_INTERVAL)) {
-//                        graph_xaxis.remove(0);
-                        dataset_speed.removeFirst();
-                        dataset_current.removeFirst();
-                    }
-                }
-                updateScreen();
+                updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
 
             } else if (Constants.ACTION_PEBBLE_SERVICE_TOGGLED.equals(action)) {
                 setMenuIconStates();
@@ -362,8 +345,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateScreen() {
-        if (viewPagerPage == 0) {
+    private void updateScreen(boolean updateGraph) {
+        if (viewPagerPage == 0) { // GUI View
             wheelView.setSpeed(WheelData.getInstance().getSpeed());
             wheelView.setBattery(WheelData.getInstance().getBatteryLevel());
             wheelView.setTemperature(WheelData.getInstance().getTemperature());
@@ -373,29 +356,83 @@ public class MainActivity extends AppCompatActivity {
             wheelView.setTotalDistance(WheelData.getInstance().getTotalDistanceDouble());
             wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
             wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
-        } else if (viewPagerPage == 1) {
-            tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
+        } else if (viewPagerPage == 1) { // Text View
+
+            if (use_mph) {
+                tvSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getSpeedDouble())));
+                tvTopSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
+                tvDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getDistanceDouble())));
+                tvTotalDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
+            } else {
+                tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
+                tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
+                tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
+                tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
+            }
+
             tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
             tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
             tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
             tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
             tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
             tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? "Off" : "On");
-            tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
-            tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
-            tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
             tvVersion.setText(String.format(Locale.US, "%.2f", WheelData.getInstance().getVersion()/100.0));
             tvName.setText(WheelData.getInstance().getName());
             tvModel.setText(WheelData.getInstance().getModel());
             tvSerial.setText(WheelData.getInstance().getSerial());
             tvRideTime.setText(WheelData.getInstance().getCurrentTimeString());
             tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
-        } else if (viewPagerPage == 2) {
-            ((LineDataSet) chart1.getData().getDataSetByLabel("speed", true)).notifyDataSetChanged();
-            ((LineDataSet) chart1.getData().getDataSetByLabel("current", true)).notifyDataSetChanged();
-            chart1.getData().notifyDataChanged();
-            chart1.notifyDataSetChanged();
-            chart1.invalidate();
+        } else if (viewPagerPage == 2 && updateGraph) { // Graph  View
+            xaxis_labels = WheelData.getInstance().getXAxis();
+
+            if (xaxis_labels.size() > 0) {
+
+                LineDataSet dataSetSpeed;
+                LineDataSet dataSetCurrent;
+                
+                if (chart1.getData() == null) {
+                    dataSetSpeed = new LineDataSet(null, "speed");
+                    dataSetCurrent = new LineDataSet(null, "current");
+                    dataSetSpeed.setLineWidth(2);
+                    dataSetCurrent.setLineWidth(2);
+                    dataSetSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    dataSetCurrent.setAxisDependency(YAxis.AxisDependency.RIGHT);
+                    dataSetSpeed.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    dataSetCurrent.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    dataSetSpeed.setColor(getResources().getColor(android.R.color.white));
+                    dataSetCurrent.setColor(getResources().getColor(R.color.accent));
+                    dataSetSpeed.setDrawCircles(false);
+                    dataSetCurrent.setDrawCircles(false);
+                    dataSetSpeed.setDrawValues(false);
+                    dataSetCurrent.setDrawValues(false);
+                    LineData chart1_lineData = new LineData();
+                    chart1_lineData.addDataSet(dataSetCurrent);
+                    chart1_lineData.addDataSet(dataSetSpeed);
+                    chart1.setData(chart1_lineData);
+                } else {
+                    dataSetSpeed = (LineDataSet) chart1.getData().getDataSetByLabel("speed", true);
+                    dataSetCurrent = (LineDataSet) chart1.getData().getDataSetByLabel("current", true);
+                }
+
+                dataSetSpeed.clear();
+                dataSetCurrent.clear();
+
+                for (float d : WheelData.getInstance().getCurrentAxis())
+                    dataSetCurrent.addEntry(new Entry(dataSetCurrent.getEntryCount(), d));
+
+                for (float d : WheelData.getInstance().getSpeedAxis()) {
+                    if (use_mph)
+                        dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), (float) kmToMiles(d)));
+                    else
+                        dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), d));
+                }
+
+                dataSetCurrent.notifyDataSetChanged();
+                dataSetSpeed.notifyDataSetChanged();
+                chart1.getData().notifyDataChanged();
+                chart1.notifyDataSetChanged();
+                chart1.invalidate();
+            }
         }
     }
 
@@ -448,6 +485,7 @@ public class MainActivity extends AppCompatActivity {
         chart1.setHighlightPerTapEnabled(false);
         chart1.setHighlightPerDragEnabled(false);
         chart1.getLegend().setTextColor(getResources().getColor(android.R.color.white));
+        chart1.setNoDataTextColor(getResources().getColor(android.R.color.white));
 
         YAxis leftAxis = chart1.getAxisLeft();
         YAxis rightAxis = chart1.getAxisRight();
@@ -460,25 +498,6 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(getResources().getColor(android.R.color.white));
         xAxis.setValueFormatter(chartAxisValueFormatter);
-
-        LineDataSet dataset_speed = new LineDataSet(null, "speed");
-        LineDataSet dataset_current = new LineDataSet(null, "current");
-        dataset_speed.setLineWidth(2);
-        dataset_current.setLineWidth(2);
-        dataset_speed.setAxisDependency(YAxis.AxisDependency.LEFT);
-        dataset_current.setAxisDependency(YAxis.AxisDependency.RIGHT);
-        dataset_speed.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataset_current.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataset_speed.setColor(getResources().getColor(android.R.color.white));
-        dataset_current.setColor(getResources().getColor(R.color.accent));
-        dataset_speed.setDrawCircles(false);
-        dataset_current.setDrawCircles(false);
-        dataset_speed.setDrawValues(false);
-        dataset_current.setDrawValues(false);
-        LineData chart1_linedata = new LineData();
-        chart1_linedata.addDataSet(dataset_current);
-        chart1_linedata.addDataSet(dataset_speed);
-        chart1.setData(chart1_linedata);
 
         loadPreferences();
 
@@ -530,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
             configureDisplay(WheelData.getInstance().getWheelType());
 
         registerReceiver(mBluetoothUpdateReceiver, makeIntentFilter());
-        updateScreen();
+        updateScreen(true);
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -627,18 +646,18 @@ public class MainActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
             super.onPageSelected(position);
             viewPagerPage = position;
-            updateScreen();
+            updateScreen(true);
         }
     };
 
     private void loadPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        boolean use_mph = sharedPreferences.getBoolean("use_mph", false);
+        use_mph = sharedPreferences.getBoolean("use_mph", false);
         int max_speed = sharedPreferences.getInt("max_speed", 30) * 10;
         wheelView.setMaxSpeed(max_speed);
         wheelView.setUseMPH(use_mph);
         wheelView.invalidate();
-
+        updateScreen(true);
     }
 
     private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
@@ -721,7 +740,7 @@ public class MainActivity extends AppCompatActivity {
                     Timber.i("Device selected = %s", mDeviceAddress);
                     mBluetoothLeService.setDeviceAddress(mDeviceAddress);
                     WheelData.getInstance().reset();
-                    updateScreen();
+                    updateScreen(false);
                     setMenuIconStates();
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
@@ -754,7 +773,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return graph_xaxis.get((int) value);
+            return xaxis_labels.get((int) value);
         }
 
         // we don't draw numbers, so no decimal digits needed

@@ -57,13 +57,13 @@
                 style="@style/Stats" />
 
             <TextView
-                android:id="@+id/tvTitleDistance"
+                android:id="@+id/tvTitleTemperature"
                 android:visibility="gone"
                 style="@style/Stats.Title"
-                android:text="@string/distance"/>
+                android:text="@string/temperature"/>
 
             <TextView
-                android:id="@+id/tvDistance"
+                android:id="@+id/tvTemperature"
                 android:visibility="gone"
                 style="@style/Stats" />
 
@@ -75,6 +75,28 @@
 
             <TextView
                 android:id="@+id/tvRideTime"
+                android:visibility="gone"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleDistance"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/distance"/>
+
+            <TextView
+                android:id="@+id/tvDistance"
+                android:visibility="gone"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleTotalDistance"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/total_distance"/>
+
+            <TextView
+                android:id="@+id/tvTotalDistance"
                 android:visibility="gone"
                 style="@style/Stats" />
 
@@ -112,17 +134,6 @@
                 style="@style/Stats" />
 
             <TextView
-                android:id="@+id/tvTitleTemperature"
-                android:visibility="gone"
-                style="@style/Stats.Title"
-                android:text="@string/temperature"/>
-
-            <TextView
-                android:id="@+id/tvTemperature"
-                android:visibility="gone"
-                style="@style/Stats" />
-
-            <TextView
                 android:id="@+id/tvTitleFanStatus"
                 android:visibility="gone"
                 style="@style/Stats.Title"
@@ -141,17 +152,6 @@
 
             <TextView
                 android:id="@+id/tvMode"
-                android:visibility="gone"
-                style="@style/Stats" />
-
-            <TextView
-                android:id="@+id/tvTitleTotalDistance"
-                android:visibility="gone"
-                style="@style/Stats.Title"
-                android:text="@string/total_distance"/>
-
-            <TextView
-                android:id="@+id/tvTotalDistance"
                 android:visibility="gone"
                 style="@style/Stats" />
 
