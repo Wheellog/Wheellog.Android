@@ -35,9 +35,7 @@ public class LoggingService extends Service
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            final String action = intent.getAction();
-            if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action))
-                updateFile();
+            updateFile();
         }
     };
 
@@ -69,7 +67,7 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
             sendBroadcast(serviceIntent);
 
-            Timber.d("DataLogger Started");
+            Timber.i("DataLogger Started");
             return START_STICKY;
         }
         stopSelf();
@@ -83,7 +81,7 @@ public class LoggingService extends Service
         sendBroadcast(serviceIntent);
         instance = null;
         unregisterReceiver(mBluetoothUpdateReceiver);
-        Timber.d("DataLogger stopped");
+        Timber.i("DataLogger stopped");
     }
 
     /* Checks if external storage is available for read and write */
@@ -99,7 +97,7 @@ public class LoggingService extends Service
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    private void updateFile(){
+    private void updateFile() {
         FileUtil.writeLine(filename,
                 String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
                 sdf.format(new Date()),

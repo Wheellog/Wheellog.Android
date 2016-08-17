@@ -428,17 +428,25 @@ public class MainActivity extends AppCompatActivity {
                         dataSetSpeed.clear();
                         dataSetCurrent.clear();
 
-                        ArrayList<Float> currentAxis = WheelData.getInstance().getCurrentAxis();
-                        ArrayList<Float> speedAxis = WheelData.getInstance().getSpeedAxis();
+                        for (Float d : WheelData.getInstance().getCurrentAxis()) {
+                            float value = 0;
+                            if (d != null)
+                                value = d;
 
-                        for (int i = 0; i < currentAxis.size(); i++)
-                            dataSetCurrent.addEntry(new Entry(dataSetCurrent.getEntryCount(), currentAxis.get(i)));
+                            dataSetCurrent.addEntry(new Entry(dataSetCurrent.getEntryCount(), value));
+                        }
 
-                        for (int i = 0; i < speedAxis.size(); i++) {
+                        for (Float d : WheelData.getInstance().getSpeedAxis())
+                        {
+                            float value = 0;
+
+                            if (d != null)
+                                value = d;
+
                             if (use_mph)
-                                dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), (float) kmToMiles(speedAxis.get(i))));
+                                dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), kmToMiles(value)));
                             else
-                                dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), speedAxis.get(i)));
+                                dataSetSpeed.addEntry(new Entry(dataSetSpeed.getEntryCount(), value));
                         }
 
                         dataSetCurrent.notifyDataSetChanged();
@@ -508,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
         leftAxis.setDrawGridLines(false);
         rightAxis.setDrawGridLines(false);
         leftAxis.setTextColor(getResources().getColor(android.R.color.white));
-        rightAxis.setTextColor(getResources().getColor(R.color.accent));
+        rightAxis.setTextColor(getResources().getColor(android.R.color.white));
 
         XAxis xAxis = chart1.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);

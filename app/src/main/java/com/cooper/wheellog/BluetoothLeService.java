@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.NotificationUtil;
+import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.util.UUID;
 
@@ -48,56 +49,66 @@ public class BluetoothLeService extends Service {
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) {
-                mConnectionState = STATE_CONNECTED;
-                WheelData.getInstance().setConnectionState(true);
-            } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
-                mConnectionState = STATE_DISCONNECTED;
-                WheelData.getInstance().setConnectionState(false);
-            } else if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
-                WheelData.getInstance().setConnectionState(false);
-                mConnectionState = STATE_CONNECTING;
-            } else if (Constants.ACTION_REQUEST_KINGSONG_NAME_DATA.equals(action)) {
-                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
-                    byte[] data = new byte[20];
-                    data[0] = (byte) -86;
-                    data[1] = (byte) 85;
-                    data[16] = (byte) -101;
-                    data[17] = (byte) 20;
-                    data[18] = (byte) 90;
-                    data[19] = (byte) 90;
-                    writeBluetoothGattCharacteristic(data);
-                }
-            } else if (Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA.equals(action)) {
-                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
-                    byte[] data = new byte[20];
-                    data[0] = (byte) -86;
-                    data[1] = (byte) 85;
-                    data[16] = (byte) 99;
-                    data[17] = (byte) 20;
-                    data[18] = (byte) 90;
-                    data[19] = (byte) 90;
-                    writeBluetoothGattCharacteristic(data);
-                }
-            } else if (Constants.ACTION_REQUEST_KINGSONG_HORN.equals(action)) {
-                if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
-                    byte[] data = new byte[20];
-                    data[0] = (byte) -86;
-                    data[1] = (byte) 85;
-                    data[16] = (byte) -120;
-                    data[17] = (byte) 20;
-                    data[18] = (byte) 90;
-                    data[19] = (byte) 90;
-                    writeBluetoothGattCharacteristic(data);
-                }
-            } else if (Constants.ACTION_REQUEST_CONNECTION_TOGGLE.equals(action)) {
-                if (mConnectionState == STATE_DISCONNECTED)
-                    connect();
-                else {
-                    disconnect();
-                    close();
-                }
+
+            switch (intent.getAction()) {
+                case Constants.ACTION_BLUETOOTH_CONNECTED:
+                    mConnectionState = STATE_CONNECTED;
+                    WheelData.getInstance().setConnected(true);
+                    if (!LoggingService.isInstanceCreated() && SettingsUtil.getAutoLog(BluetoothLeService.this))
+                        startService(new Intent(getApplicationContext(), LoggingService.class));
+                    break;
+                case Constants.ACTION_BLUETOOTH_DISCONNECTED:
+                    mConnectionState = STATE_DISCONNECTED;
+                    WheelData.getInstance().setConnected(false);
+                    break;
+                case Constants.ACTION_BLUETOOTH_CONNECTING:
+                    WheelData.getInstance().setConnected(false);
+                    mConnectionState = STATE_CONNECTING;
+                    break;
+                case Constants.ACTION_REQUEST_KINGSONG_NAME_DATA:
+                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                        byte[] data = new byte[20];
+                        data[0] = (byte) -86;
+                        data[1] = (byte) 85;
+                        data[16] = (byte) -101;
+                        data[17] = (byte) 20;
+                        data[18] = (byte) 90;
+                        data[19] = (byte) 90;
+                        writeBluetoothGattCharacteristic(data);
+                    }
+                    break;
+                case Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA:
+                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                        byte[] data = new byte[20];
+                        data[0] = (byte) -86;
+                        data[1] = (byte) 85;
+                        data[16] = (byte) 99;
+                        data[17] = (byte) 20;
+                        data[18] = (byte) 90;
+                        data[19] = (byte) 90;
+                        writeBluetoothGattCharacteristic(data);
+                    }
+                    break;
+                case Constants.ACTION_REQUEST_KINGSONG_HORN:
+                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                        byte[] data = new byte[20];
+                        data[0] = (byte) -86;
+                        data[1] = (byte) 85;
+                        data[16] = (byte) -120;
+                        data[17] = (byte) 20;
+                        data[18] = (byte) 90;
+                        data[19] = (byte) 90;
+                        writeBluetoothGattCharacteristic(data);
+                    }
+                    break;
+                case Constants.ACTION_REQUEST_CONNECTION_TOGGLE:
+                    if (mConnectionState == STATE_DISCONNECTED)
+                        connect();
+                    else {
+                        disconnect();
+                        close();
+                    }
+                    break;
             }
         }
     };
@@ -168,14 +179,14 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            Timber.i("onCharacteristicRead called %s", characteristic.getUuid().toString());
+            Timber.d("onCharacteristicRead called %s", characteristic.getUuid().toString());
             readData(characteristic, status);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            Timber.i("onCharacteristicChanged called %s", characteristic.getUuid().toString());
+            Timber.d("onCharacteristicChanged called %s", characteristic.getUuid().toString());
             readData(characteristic, BluetoothGatt.GATT_SUCCESS);
         }
 
@@ -294,11 +305,8 @@ public class BluetoothLeService extends Service {
             return false;
         }
 
-        // Previously connected device.  Try to reconnect.
-//        if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
-//                && mBluetoothGatt != null) {
         if (mBluetoothGatt != null && mBluetoothGatt.getDevice().getAddress().equals(mBluetoothDeviceAddress)) {
-            Timber.d("Trying to use an existing mBluetoothGatt for connection.");
+            Timber.i("Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
                 broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING);
@@ -314,8 +322,7 @@ public class BluetoothLeService extends Service {
             return false;
         }
         mBluetoothGatt = device.connectGatt(this, autoConnect, mGattCallback);
-        Timber.d("Trying to create a new connection.");
-//        mBluetoothDeviceAddress = address;
+        Timber.i("Trying to create a new connection.");
         mConnectionState = STATE_CONNECTING;
         broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING);
         return true;

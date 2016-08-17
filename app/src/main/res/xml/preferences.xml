@@ -9,12 +9,12 @@
         <CheckBoxPreference
             android:key="use_mph"
             android:title="Use MPH"
-            android:summary="Show speed in miles per hour rather than kilometers per hour" />
+            android:summary="Show speed in miles rather than kilometers" />
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="max_speed"
             android:title="Max Speed"
-            android:summary=""
+            android:summary="The maximum speed shown on the outer dial"
             android:enabled="true"
             android:defaultValue="30"
 
@@ -23,6 +23,11 @@
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="km/h"
             sample:msbp_dialogEnabled="true"/>
+
+        <CheckBoxPreference
+            android:key="auto_log"
+            android:title="Auto Log"
+            android:summary="Start logging automatically when a wheel is connected" />
 
     </PreferenceCategory>
 

@@ -67,9 +67,9 @@ public class PebbleService extends Service {
                 outgoing.addInt32(KEY_FAN_STATE, lastFanStatus);
             }
 
-            if (lastBluetooth != WheelData.getInstance().getConnectionState())
+            if (lastBluetooth != WheelData.getInstance().getConnected())
             {
-                lastBluetooth = WheelData.getInstance().getConnectionState();
+                lastBluetooth = WheelData.getInstance().getConnected();
                 outgoing.addInt32(KEY_BT_STATE, lastBluetooth);
             }
 
@@ -132,7 +132,7 @@ public class PebbleService extends Service {
         mHandler.removeCallbacksAndMessages(null);
 //        unregisterReceiver(ackReceiver);
         unregisterReceiver(nackReceiver);
-        Timber.d("PebbleConnectivity Stopped");
+        Timber.i("PebbleConnectivity Stopped");
     }
 
     private PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {

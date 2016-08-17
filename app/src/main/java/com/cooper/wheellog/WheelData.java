@@ -65,7 +65,7 @@ public class WheelData {
     public int getTemperature() { return mTemperature / 100; }
     public int getBatteryLevel() { return mBattery; }
     public int getFanStatus() { return mFanStatus; }
-    public int getConnectionState() { return mConnectionState; }
+    public int getConnected() { return mConnectionState; }
 //    public int getTopSpeed() { return mTopSpeed; }
     public int getVersion() { return mVersion; }
 //    public int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
@@ -97,7 +97,7 @@ public class WheelData {
     public ArrayList<Float> getCurrentAxis() { return currentAxis; }
     public ArrayList<Float> getSpeedAxis() { return speedAxis; }
 
-    public void setConnectionState(boolean connected) { mConnectionState = connected ? 1 : 0; }
+    public void setConnected(boolean connected) { mConnectionState = connected ? 1 : 0; }
 
     private int byteArrayInt2(byte low, byte high) { return (low & 255) + ((high & 255) * 256); }
 

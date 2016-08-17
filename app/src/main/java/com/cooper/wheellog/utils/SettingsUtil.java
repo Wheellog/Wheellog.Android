@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
 
 import timber.log.Timber;
 
@@ -33,5 +34,10 @@ public class SettingsUtil {
 
         pref.edit().putBoolean("first_run", false).apply();
         return true;
+    }
+
+    public static boolean getAutoLog(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("auto_log", false);
     }
 }
