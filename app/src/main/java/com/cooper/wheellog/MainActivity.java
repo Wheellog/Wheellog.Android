@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
-                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                         if (WheelData.getInstance().getName().isEmpty())
                             sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
                         else if (WheelData.getInstance().getSerial().isEmpty())
@@ -237,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     
-    private void configureDisplay(int wheelType) {
+    private void configureDisplay(WHEEL_TYPE wheelType) {
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
         TextView tvTitleSpeed = (TextView) findViewById(R.id.tvTitleSpeed);
         TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleTopSpeed);
@@ -257,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         TextView tvTitleSerial = (TextView) findViewById(R.id.tvTitleSerial);
 
         switch (wheelType) {
-            case Constants.WHEEL_TYPE_KINGSONG:
+            case KINGSONG:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
                 tvSpeed.setVisibility(View.VISIBLE);
@@ -292,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                 tvTitleSerial.setVisibility(View.VISIBLE);
                 tvSerial.setVisibility(View.VISIBLE);
                 break;
-            case Constants.WHEEL_TYPE_GOTWAY:
+            case GOTWAY:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
                 tvSpeed.setVisibility(View.VISIBLE);
@@ -428,7 +429,10 @@ public class MainActivity extends AppCompatActivity {
                         dataSetSpeed.clear();
                         dataSetCurrent.clear();
 
-                        for (Float d : WheelData.getInstance().getCurrentAxis()) {
+                        ArrayList<Float> currentAxis = new ArrayList<>(WheelData.getInstance().getCurrentAxis());
+                        ArrayList<Float> speedAxis = new ArrayList<>(WheelData.getInstance().getSpeedAxis());
+
+                        for (Float d : currentAxis) {
                             float value = 0;
                             if (d != null)
                                 value = d;
@@ -436,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
                             dataSetCurrent.addEntry(new Entry(dataSetCurrent.getEntryCount(), value));
                         }
 
-                        for (Float d : WheelData.getInstance().getSpeedAxis())
+                        for (Float d : speedAxis)
                         {
                             float value = 0;
 
@@ -513,6 +517,8 @@ public class MainActivity extends AppCompatActivity {
 
         YAxis leftAxis = chart1.getAxisLeft();
         YAxis rightAxis = chart1.getAxisRight();
+        leftAxis.setAxisMinValue(0f);
+        rightAxis.setAxisMinValue(0f);
         leftAxis.setDrawGridLines(false);
         rightAxis.setDrawGridLines(false);
         leftAxis.setTextColor(getResources().getColor(android.R.color.white));
@@ -569,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
 
-        if (WheelData.getInstance().getWheelType() > 0)
+        if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown)
             configureDisplay(WheelData.getInstance().getWheelType());
 
         registerReceiver(mBluetoothUpdateReceiver, makeIntentFilter());
@@ -797,7 +803,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return xAxis_labels.get((int) value);
+            if (value < xAxis_labels.size())
+                return xAxis_labels.get((int) value);
+            else
+                return "";
         }
 
         // we don't draw numbers, so no decimal digits needed

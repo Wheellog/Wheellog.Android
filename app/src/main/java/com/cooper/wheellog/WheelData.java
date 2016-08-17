@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class WheelData {
     private String mModel = "";
     private int mVersion;
     private String mSerialNumber = "";
-    private int mWheelType;
+    private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
 
     private WheelData(){
@@ -70,7 +71,7 @@ public class WheelData {
     public int getVersion() { return mVersion; }
 //    public int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
     public int getMode() { return mMode; }
-    public int getWheelType() { return mWheelType; }
+    public WHEEL_TYPE getWheelType() { return mWheelType; }
 
     public String getName() { return mName; }
     public String getModel() { return mModel; }
@@ -130,9 +131,9 @@ public class WheelData {
 //        Timber.i("OUTPUT", stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
 
-        if (mWheelType == Constants.WHEEL_TYPE_KINGSONG)
+        if (mWheelType == WHEEL_TYPE.KINGSONG)
             decodeKingSong(data);
-        else if (mWheelType == Constants.WHEEL_TYPE_GOTWAY)
+        else if (mWheelType == WHEEL_TYPE.GOTWAY)
             decodeGotway(data);
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
@@ -294,7 +295,7 @@ public class WheelData {
         mModel = "";
         mVersion = 0;
         mSerialNumber = "";
-        mWheelType = 0;
+        mWheelType = WHEEL_TYPE.Unknown;
         rideStartTime = 0;
 
         xAxis.clear();
@@ -341,7 +342,7 @@ public class WheelData {
 
             if (detected_wheel) {
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
-                    mWheelType = Constants.WHEEL_TYPE_KINGSONG;
+                    mWheelType = WHEEL_TYPE.KINGSONG;
                     BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
                     gatt.setCharacteristicNotification(notifyCharacteristic, true);
@@ -349,7 +350,7 @@ public class WheelData {
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     gatt.writeDescriptor(descriptor);
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
-                    mWheelType = Constants.WHEEL_TYPE_GOTWAY;
+                    mWheelType = WHEEL_TYPE.GOTWAY;
                     BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     gatt.setCharacteristicNotification(notifyCharacteristic, true);

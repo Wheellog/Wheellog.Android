@@ -19,6 +19,7 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
@@ -66,7 +67,7 @@ public class BluetoothLeService extends Service {
                     mConnectionState = STATE_CONNECTING;
                     break;
                 case Constants.ACTION_REQUEST_KINGSONG_NAME_DATA:
-                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                         byte[] data = new byte[20];
                         data[0] = (byte) -86;
                         data[1] = (byte) 85;
@@ -78,7 +79,7 @@ public class BluetoothLeService extends Service {
                     }
                     break;
                 case Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA:
-                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                         byte[] data = new byte[20];
                         data[0] = (byte) -86;
                         data[1] = (byte) 85;
@@ -90,7 +91,7 @@ public class BluetoothLeService extends Service {
                     }
                     break;
                 case Constants.ACTION_REQUEST_KINGSONG_HORN:
-                    if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                         byte[] data = new byte[20];
                         data[0] = (byte) -86;
                         data[1] = (byte) 85;
@@ -144,13 +145,18 @@ public class BluetoothLeService extends Service {
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
-                if (!disconnectRequested && !autoConnect &&
+                if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
-                    autoConnect = true;
-                    mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
-//                    Notifications.updateNotification(BluetoothLeService.this, R.string.wheel_searching, mConnectionState);
-                    broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
+                    Timber.i("Trying to reconnect");
+                    if (!autoConnect) {
+                        autoConnect = true;
+                        mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
+                        broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
+                    } else {
+                        broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
+                    }
                 } else {
+                    Timber.i("Disconnected");
                     mConnectionState = STATE_DISCONNECTED;
                     broadcastUpdate(Constants.ACTION_BLUETOOTH_DISCONNECTED);
                 }
@@ -179,34 +185,34 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            Timber.d("onCharacteristicRead called %s", characteristic.getUuid().toString());
+            Timber.v("onCharacteristicRead called %s", characteristic.getUuid().toString());
             readData(characteristic, status);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            Timber.d("onCharacteristicChanged called %s", characteristic.getUuid().toString());
+            Timber.v("onCharacteristicChanged called %s", characteristic.getUuid().toString());
             readData(characteristic, BluetoothGatt.GATT_SUCCESS);
         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
-            Timber.i("onDescriptorWrite %d", status);
+            Timber.v("onDescriptorWrite %d", status);
         }
     };
 
     private void readData(BluetoothGattCharacteristic characteristic, int status) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                 if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
                     byte[] value = characteristic.getValue();
                     WheelData.getInstance().decodeResponse(value);
                 }
             }
 
-            if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_GOTWAY) {
+            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY) {
                 byte[] value = characteristic.getValue();
                 WheelData.getInstance().decodeResponse(value);
             }
@@ -394,20 +400,20 @@ public class BluetoothLeService extends Service {
             return false;
         }
 
-        if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE_KINGSONG) {
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
 
             BluetoothGattService service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
             if (service == null) {
-                Timber.i("writeBluetoothGattCharacteristic service == null");
+                Timber.v("writeBluetoothGattCharacteristic service == null");
                 return false;
             }
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
             if (characteristic == null) {
-                Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                Timber.v("writeBluetoothGattCharacteristic characteristic == null");
                 return false;
             }
             characteristic.setValue(cmd);
-            Timber.i("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
+            Timber.v("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
             characteristic.setWriteType(1);
             return this.mBluetoothGatt.writeCharacteristic(characteristic);
         }

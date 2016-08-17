@@ -38,8 +38,11 @@ public class Constants {
     public static final String INTENT_EXTRA_IS_RUNNING = "is_running";
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
 
-    public static final int WHEEL_TYPE_KINGSONG = 1;
-    public static final int WHEEL_TYPE_GOTWAY = 2;
+    public enum WHEEL_TYPE {
+        Unknown,
+        KINGSONG,
+        GOTWAY
+    }
 
     public static final int NOTIFICATION_ID = 1;
 }
