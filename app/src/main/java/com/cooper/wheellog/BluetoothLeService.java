@@ -23,6 +23,8 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -38,6 +40,7 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+    private Date mDisconnectTime;
 
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
@@ -140,21 +143,23 @@ public class BluetoothLeService extends Service {
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Timber.i("Connected to GATT server.");
+                mDisconnectTime = null;
                 // Attempts to discover services after successful connection.
                 Timber.i("Attempting to start service discovery:%b",
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
+                mDisconnectTime = Calendar.getInstance().getTime();
                 if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     Timber.i("Trying to reconnect");
                     if (!autoConnect) {
                         autoConnect = true;
+                        mBluetoothGatt.close();
                         mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
                         broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
-                    } else {
+                    } else
                         broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
-                    }
                 } else {
                     Timber.i("Disconnected");
                     mConnectionState = STATE_DISCONNECTED;
@@ -305,6 +310,7 @@ public class BluetoothLeService extends Service {
     public boolean connect() { //final String address) {
         disconnectRequested = false;
         autoConnect = false;
+        mDisconnectTime = null;
 
         if (mBluetoothAdapter == null || mBluetoothDeviceAddress == null || mBluetoothDeviceAddress.isEmpty()) {
             Timber.w("BluetoothAdapter not initialized or unspecified address.");
@@ -418,6 +424,10 @@ public class BluetoothLeService extends Service {
             return this.mBluetoothGatt.writeCharacteristic(characteristic);
         }
         return false;
+    }
+
+    public Date getDisconnectTime() {
+        return mDisconnectTime;
     }
     
     /**

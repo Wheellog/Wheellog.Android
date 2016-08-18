@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Vibrator;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -20,6 +21,10 @@ import java.util.concurrent.TimeUnit;
 public class WheelData {
     private static WheelData mInstance;
     private static Context mContext;
+
+    private enum AlarmType {
+        speed
+    }
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 500; // milliseconds
@@ -48,14 +53,16 @@ public class WheelData {
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
 
-    private WheelData(){
-    }
+    private boolean mAlarmsEnabled = false;
+    private int mSpeedAlarmSpeed = 0;
+    private boolean mSpeedAlarmExecuted = false;
     
     public static void initiate(Context context) {
         if(mInstance == null)
             mInstance = new WheelData();
 
         mContext = context.getApplicationContext();
+        mInstance.reset();
     }
 
     public static WheelData getInstance(){
@@ -99,6 +106,8 @@ public class WheelData {
     public ArrayList<Float> getSpeedAxis() { return speedAxis; }
 
     public void setConnected(boolean connected) { mConnectionState = connected ? 1 : 0; }
+    public void setAlarmsEnabled(boolean enabled) { mAlarmsEnabled = enabled; }
+    public void setSpeedAlarmSpeed(int speed) { mSpeedAlarmSpeed = speed * 100; }
 
     private int byteArrayInt2(byte low, byte high) { return (low & 255) + ((high & 255) * 256); }
 
@@ -121,6 +130,31 @@ public class WheelData {
     private void setTopSpeed(int topSpeed) {
         if (topSpeed > mTopSpeed)
             mTopSpeed = topSpeed;
+    }
+
+    private void checkAlarmStatus() {
+        if (!mSpeedAlarmExecuted && mSpeedAlarmSpeed > 0 && mSpeed >= mSpeedAlarmSpeed) {
+            mSpeedAlarmExecuted = true;
+            vibrate(AlarmType.speed);
+        } else if (mSpeedAlarmExecuted && mSpeed < mSpeedAlarmSpeed)
+            mSpeedAlarmExecuted = false;
+    }
+
+    private void vibrate(AlarmType alarmType) {
+        Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+
+        if (!v.hasVibrator())
+            return;
+
+        long[] pattern = {0};
+
+        switch (alarmType) {
+            case speed:
+                pattern = new long[] { 0, 300, 150, 300, 150, 500 };
+                break;
+        }
+
+        v.vibrate(pattern, -1);
     }
 
     public void decodeResponse(byte[] data) {
@@ -150,6 +184,9 @@ public class WheelData {
                 xAxis.remove(0);
             }
         }
+
+        if (mAlarmsEnabled)
+            checkAlarmStatus();
 
         mContext.sendBroadcast(intent);
     }

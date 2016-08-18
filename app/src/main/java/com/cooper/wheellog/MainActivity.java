@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -36,6 +35,7 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.PermissionsUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -49,6 +49,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -177,10 +178,19 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothLeService.STATE_CONNECTED:
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
                     SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
+                hideSnackBar();
                 break;
             case BluetoothLeService.STATE_CONNECTING:
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING)
                     showSnackBar(R.string.bluetooth_direct_connect_failed);
+                else {
+                    if (mBluetoothLeService.getDisconnectTime() != null) {
+                        showSnackBar(
+                                getString(R.string.connection_lost_at,
+                                        new SimpleDateFormat("HH:mm:ss", Locale.US).format(mBluetoothLeService.getDisconnectTime())),
+                                Snackbar.LENGTH_INDEFINITE);
+                    }
+                }
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
                 break;
@@ -608,7 +618,6 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
-        WheelData.getInstance().reset();
     }
 
     @Override
@@ -632,7 +641,7 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkExternalFilePermission())
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionsUtil.checkExternalFilePermission(this))
                     requestExternalFilePermission();
                 else
                 {
@@ -687,6 +696,16 @@ public class MainActivity extends AppCompatActivity {
         wheelView.setMaxSpeed(max_speed);
         wheelView.setUseMPH(use_mph);
         wheelView.invalidate();
+
+        boolean alarms_enabled = sharedPreferences.getBoolean("alarms_enabled", false);
+        WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
+
+        if (alarms_enabled) {
+            int speedAlarmSpeed = sharedPreferences.getInt("alarm_speed", 0);
+            WheelData.getInstance().setSpeedAlarmSpeed(speedAlarmSpeed);
+        }
+
+
         updateScreen(true);
     }
 
@@ -698,10 +717,17 @@ public class MainActivity extends AppCompatActivity {
             snackbar = Snackbar
                     .make(mainView, "", Snackbar.LENGTH_LONG);
             snackbar.getView().setBackgroundResource(R.color.primary_dark);
-            snackbar.setDuration(timeout);
         }
+        snackbar.setDuration(timeout);
         snackbar.setText(msg);
         snackbar.show();
+    }
+
+    private void hideSnackBar() {
+        if (snackbar == null)
+            return;
+
+        snackbar.dismiss();
     }
 
 
@@ -732,11 +758,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void toggleConnectToWheel() {
         sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
-    }
-
-    private boolean checkExternalFilePermission(){
-        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return result == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestExternalFilePermission(){

@@ -57,4 +57,5 @@
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
+    <string name="connection_lost_at">Connection lost at %1s</string>
 </resources>

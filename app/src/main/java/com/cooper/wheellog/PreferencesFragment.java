@@ -20,7 +20,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     public void onResume() {
         super.onResume();
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-
+        hideShowSeekBars();
     }
 
     @Override
@@ -30,7 +30,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if ("alarms_enabled".equals(key))
+            hideShowSeekBars();
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+    }
+
+    private void hideShowSeekBars() {
+        boolean alarms_enabled = getPreferenceManager().getSharedPreferences().getBoolean("alarms_enabled", false);
+        findPreference("alarm_speed").setEnabled(alarms_enabled);
     }
 }

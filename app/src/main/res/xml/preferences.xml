@@ -30,5 +30,26 @@
             android:summary="Start logging automatically when a wheel is connected" />
 
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Alarm Settings">
+
+        <CheckBoxPreference
+            android:key="alarms_enabled"
+            android:title="Enable Alarms"
+            android:summary="Allow the phone to vibrate as a warning" />
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="alarm_speed"
+            android:title="Speed Alarm"
+            android:summary="Set the speed which triggers the phone to vibrate"
+            android:defaultValue="29"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="50"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="km/h"
+            sample:msbp_dialogEnabled="true"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

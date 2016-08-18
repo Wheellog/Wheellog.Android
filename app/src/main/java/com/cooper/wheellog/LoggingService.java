@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
+import com.cooper.wheellog.utils.PermissionsUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -51,7 +52,8 @@ public class LoggingService extends Service
         sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
         registerReceiver(mBluetoothUpdateReceiver, new IntentFilter(Constants.ACTION_WHEEL_DATA_AVAILABLE));
 
-        if (isExternalStorageReadable() && isExternalStorageWritable()) {
+        if (PermissionsUtil.checkExternalFilePermission(this) &&
+                isExternalStorageReadable() && isExternalStorageWritable()) {
 
             SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
             filename = sdFormatter.format(new Date()) + ".csv";
