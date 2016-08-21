@@ -6,16 +6,20 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
+        android:id="@+id/leftAxisLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dp"
         android:layout_alignParentTop="true"
         android:textColor="@android:color/white"
         android:text="km/h"/>
     <TextView
+        android:id="@+id/rightAxisLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_alignParentRight="true"
         android:layout_marginRight="5dp"
         android:layout_alignParentTop="true"

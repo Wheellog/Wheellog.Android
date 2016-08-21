@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
 
 import com.cooper.wheellog.R;
@@ -50,6 +49,7 @@ public class WheelView extends View {
     private int mMaxSpeed = 300;
     private boolean mUseMPH = false;
     private int mSpeed = 0;
+    private int mWarningSpeed = 0;
     private int mBattery = 0;
     private int mTemperature = 0;
     private String mCurrentTime = "00:00:00";
@@ -140,6 +140,10 @@ public class WheelView extends View {
 
         targetSpeed = Math.round(((float) speed / mMaxSpeed) * 112);
         refreshDrawableState();
+    }
+
+    public void setWarningSpeed(int speed) {
+        mWarningSpeed = speed*10;
     }
 
     public void setBattery(int battery) {
@@ -354,7 +358,7 @@ public class WheelView extends View {
         //################# DRAW SPEED TEXT ##################
         //####################################################
 
-        int speed = mUseMPH ? (int) Math.round(kmToMiles(mSpeed)) : mSpeed;
+        int speed = mUseMPH ? Math.round(kmToMiles(mSpeed)) : mSpeed;
 
         String speedString;
         if (speed < 100)
@@ -362,7 +366,11 @@ public class WheelView extends View {
         else
             speedString = String.format(Locale.US, "%02d", Math.round(speed/10.0));
 
-        textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_text));
+        if (mWarningSpeed > 0 && mSpeed >= mWarningSpeed)
+            textPaint.setColor(getContext().getResources().getColor(R.color.accent));
+        else
+            textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_text));
+
         textPaint.setTextSize(speedTextSize);
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY()+(speedTextRect.height()/2), textPaint);
         textPaint.setTextSize(speedTextKPHSize);

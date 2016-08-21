@@ -40,4 +40,14 @@ public class SettingsUtil {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean("auto_log", false);
     }
+
+    public static boolean getLogLocation(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("log_location_data", false);
+    }
+
+    public static boolean getUseGPS(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("use_gps", false);
+    }
 }

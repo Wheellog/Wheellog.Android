@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="ninebot_services">
+        <item>00001800_0000_1000_8000_00805f9b34fb</item>
+        <item>00001801_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffe0_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="ninebot_00001800_0000_1000_8000_00805f9b34fb">
+        <item>00002a00_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a01_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a02_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a03_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a04_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    
+    <string-array name="ninebot_00001801_0000_1000_8000_00805f9b34fb">
+        <item>00002a05_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    
+    <string-array name="ninebot_0000ffe0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffe1_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+</resources>

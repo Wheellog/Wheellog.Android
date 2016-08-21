@@ -25,6 +25,7 @@ import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -176,7 +177,7 @@ public class BluetoothLeService extends Service {
             Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
-                boolean recognisedWheel = WheelData.getInstance().detectWheel(gatt);
+                boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this);
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTED);
@@ -391,14 +392,14 @@ public class BluetoothLeService extends Service {
 //     * @param characteristic Characteristic to act on.
 //     * @param enabled If true, enable notification.  False otherwise.
 //     */
-//    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-//                                              boolean enabled) {
-//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-//            Timber.w(TAG, "BluetoothAdapter not initialized");
-//            return;
-//        }
-//        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-//    }
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
+                                              boolean enabled) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Timber.w("BluetoothAdapter not initialized");
+            return;
+        }
+        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+    }
 
 
     public boolean writeBluetoothGattCharacteristic(byte[] cmd) {
@@ -406,22 +407,36 @@ public class BluetoothLeService extends Service {
             return false;
         }
 
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-
-            BluetoothGattService service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
-            if (service == null) {
-                Timber.v("writeBluetoothGattCharacteristic service == null");
-                return false;
-            }
-            BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
-            if (characteristic == null) {
-                Timber.v("writeBluetoothGattCharacteristic characteristic == null");
-                return false;
-            }
-            characteristic.setValue(cmd);
-            Timber.v("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
-            characteristic.setWriteType(1);
-            return this.mBluetoothGatt.writeCharacteristic(characteristic);
+        switch (WheelData.getInstance().getWheelType()) {
+            case KINGSONG:
+                BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                if (ks_service == null) {
+                    Timber.v("writeBluetoothGattCharacteristic service == null");
+                    return false;
+                }
+                BluetoothGattCharacteristic ks_characteristic = ks_service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
+                if (ks_characteristic == null) {
+                    Timber.v("writeBluetoothGattCharacteristic characteristic == null");
+                    return false;
+                }
+                ks_characteristic.setValue(cmd);
+                Timber.v("writeBluetoothGattCharacteristic writeType = %d", ks_characteristic.getWriteType());
+                ks_characteristic.setWriteType(1);
+                return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
+            case GOTWAY:
+                BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                if (gw_service == null) {
+                    Timber.v("writeBluetoothGattCharacteristic service == null");
+                    return false;
+                }
+                BluetoothGattCharacteristic characteristic = gw_service.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
+                if (characteristic == null) {
+                    Timber.v("writeBluetoothGattCharacteristic characteristic == null");
+                    return false;
+                }
+                characteristic.setValue(cmd);
+                Timber.v("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
+                return this.mBluetoothGatt.writeCharacteristic(characteristic);
         }
         return false;
     }
@@ -436,9 +451,13 @@ public class BluetoothLeService extends Service {
      *
      * @return A {@code List} of supported services.
      */
-//    public List<BluetoothGattService> getSupportedGattServices() {
-//        if (mBluetoothGatt == null) return null;
-//
-//        return mBluetoothGatt.getServices();
-//    }
+    public List<BluetoothGattService> getSupportedGattServices() {
+        if (mBluetoothGatt == null) return null;
+
+        return mBluetoothGatt.getServices();
+    }
+
+    public BluetoothGattService getGattService(UUID service_id) {
+        return mBluetoothGatt.getService(service_id);
+    }
 }

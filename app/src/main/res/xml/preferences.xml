@@ -29,6 +29,18 @@
             android:title="Auto Log"
             android:summary="Start logging automatically when a wheel is connected" />
 
+        <CheckBoxPreference
+            android:key="log_location_data"
+            android:title="Log location"
+            android:summary="Include location data within the logs" />
+
+
+        <CheckBoxPreference
+            android:key="use_gps"
+            android:dependency="log_location_data"
+            android:title="Use GPS for location"
+            android:summary="Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power" />
+
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Alarm Settings">

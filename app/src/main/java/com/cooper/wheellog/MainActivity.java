@@ -431,6 +431,8 @@ public class MainActivity extends AppCompatActivity {
                             chart1_lineData.addDataSet(dataSetCurrent);
                             chart1_lineData.addDataSet(dataSetSpeed);
                             chart1.setData(chart1_lineData);
+                            findViewById(R.id.leftAxisLabel).setVisibility(View.VISIBLE);
+                            findViewById(R.id.rightAxisLabel).setVisibility(View.VISIBLE);
                         } else {
                             dataSetSpeed = (LineDataSet) chart1.getData().getDataSetByLabel("speed", true);
                             dataSetCurrent = (LineDataSet) chart1.getData().getDataSetByLabel("current", true);
@@ -641,8 +643,10 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionsUtil.checkExternalFilePermission(this))
-                    requestExternalFilePermission();
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                        !PermissionsUtil.checkExternalFilePermission(this) &&
+                        !PermissionsUtil.checkLocationPermission(this))
+                    requestLoggingFilePermissions();
                 else
                 {
                     if (!LoggingService.isInstanceCreated())
@@ -698,13 +702,25 @@ public class MainActivity extends AppCompatActivity {
         wheelView.invalidate();
 
         boolean alarms_enabled = sharedPreferences.getBoolean("alarms_enabled", false);
+
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {
             int speedAlarmSpeed = sharedPreferences.getInt("alarm_speed", 0);
             WheelData.getInstance().setSpeedAlarmSpeed(speedAlarmSpeed);
+            wheelView.setWarningSpeed(speedAlarmSpeed);
+        } else {
+            WheelData.getInstance().setSpeedAlarmSpeed(0);
+            wheelView.setWarningSpeed(0);
         }
 
+        boolean auto_log = sharedPreferences.getBoolean("auto_log", false);
+
+        if (auto_log) {
+            if (!PermissionsUtil.checkExternalFilePermission(this) ||
+                    !PermissionsUtil.checkLocationPermission(this))
+                requestLoggingFilePermissions();
+        }
 
         updateScreen(true);
     }
@@ -717,6 +733,10 @@ public class MainActivity extends AppCompatActivity {
             snackbar = Snackbar
                     .make(mainView, "", Snackbar.LENGTH_LONG);
             snackbar.getView().setBackgroundResource(R.color.primary_dark);
+            snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {}
+            });
         }
         snackbar.setDuration(timeout);
         snackbar.setText(msg);
@@ -760,11 +780,12 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
     }
 
-    private void requestExternalFilePermission(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-            Toast.makeText(this, "External write permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+    private void requestLoggingFilePermissions(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+            Toast.makeText(this, "External write and location permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, RESULT_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION}, RESULT_PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -773,10 +794,8 @@ public class MainActivity extends AppCompatActivity {
         Timber.i("onRequestPermissionsResult");
         switch (requestCode) {
             case RESULT_PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    startLoggingService();
-                else
-                    Toast.makeText(this, "External write permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Toast.makeText(this, "External write and location permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
                 break;
         }
     }

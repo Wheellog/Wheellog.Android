@@ -1,6 +1,5 @@
 package com.cooper.wheellog;
 
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -25,6 +24,8 @@ public class WheelData {
     private enum AlarmType {
         speed
     }
+
+    private BluetoothLeService mBluetoothLeService;
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 500; // milliseconds
@@ -107,7 +108,7 @@ public class WheelData {
 
     public void setConnected(boolean connected) { mConnectionState = connected ? 1 : 0; }
     public void setAlarmsEnabled(boolean enabled) { mAlarmsEnabled = enabled; }
-    public void setSpeedAlarmSpeed(int speed) { mSpeedAlarmSpeed = speed * 100; }
+    public void setSpeedAlarmSpeed(int speed) { mSpeedAlarmSpeed = speed*100; }
 
     private int byteArrayInt2(byte low, byte high) { return (low & 255) + ((high & 255) * 256); }
 
@@ -169,6 +170,8 @@ public class WheelData {
             decodeKingSong(data);
         else if (mWheelType == WHEEL_TYPE.GOTWAY)
             decodeGotway(data);
+        else if (mWheelType == WHEEL_TYPE.NINEBOT)
+              decodeNinebot(data);
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 
@@ -250,9 +253,6 @@ public class WheelData {
                 } catch (Exception ignored) {
                 }
 
-                if (mSerialNumber.isEmpty())
-                    mContext.sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
-
             } else if ((data[16] & 255) == 179) { // Serial Number
                 byte[] sndata = new byte[18];
                 System.arraycopy(data, 2, sndata, 0, 14);
@@ -314,7 +314,11 @@ public class WheelData {
         }
     }
 
+    private void decodeNinebot(byte[] data) {
+    }
+
     public void reset() {
+        mBluetoothLeService = null;
         mSpeed = 0;
         mTotalDistance = 0;
         mCurrent = 0;
@@ -340,7 +344,9 @@ public class WheelData {
         currentAxis.clear();
     }
 
-    public boolean detectWheel(BluetoothGatt gatt) {
+    public boolean detectWheel(BluetoothLeService bluetoothService) {
+        mBluetoothLeService = bluetoothService;
+
         Class<R.array> res = R.array.class;
         String wheel_types[] = mContext.getResources().getStringArray(R.array.wheel_types);
         for (String wheel_Type : wheel_types) {
@@ -353,9 +359,12 @@ public class WheelData {
 
             String services[] = mContext.getResources().getStringArray(services_res_id);
 
+            if (services.length != mBluetoothLeService.getSupportedGattServices().size())
+                continue;
+
             for (String service_uuid : services) {
                 UUID s_uuid = UUID.fromString(service_uuid.replace("_", "-"));
-                BluetoothGattService service = gatt.getService(s_uuid);
+                BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
                 if (service != null) {
                     java.lang.reflect.Field characteristic_res = null;
                     try { characteristic_res = res.getField(wheel_Type+"_"+service_uuid); } catch (Exception ignored) {}
@@ -380,22 +389,22 @@ public class WheelData {
             if (detected_wheel) {
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.KINGSONG;
-                    BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
-                    gatt.setCharacteristicNotification(notifyCharacteristic, true);
+                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    gatt.writeDescriptor(descriptor);
+//                    mBluetoothLeService.writeDescriptor(descriptor);
+                    return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.GOTWAY;
-                    BluetoothGattService targetService = gatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
-                    gatt.setCharacteristicNotification(notifyCharacteristic, true);
+                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     // Let the user know it's working by making the wheel beep
-                    notifyCharacteristic.setValue("b".getBytes());
-                    gatt.writeCharacteristic(notifyCharacteristic);
+                    mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    return true;
                 }
-                return true;
             }
         }
         return false;

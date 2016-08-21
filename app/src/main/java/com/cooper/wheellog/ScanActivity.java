@@ -27,6 +27,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cooper.wheellog.utils.PermissionsUtil;
+import com.cooper.wheellog.utils.SettingsUtil;
+
 import timber.log.Timber;
 
 public class ScanActivity extends AppCompatActivity {
@@ -74,7 +77,7 @@ public class ScanActivity extends AppCompatActivity {
                 });
         alertDialog.show();
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkPermission())
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionsUtil.checkLocationPermission(this))
             requestPermission();
 
         if (!isLocationEnabled(this)) {
@@ -93,8 +96,10 @@ public class ScanActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (checkPermission())
+        if (PermissionsUtil.checkLocationPermission(this))
             scanLeDevice(true);
+        else
+            finish();
     }
 
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
@@ -152,11 +157,6 @@ public class ScanActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkPermission(){
-        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        return result == PackageManager.PERMISSION_GRANTED;
-    }
-
     private void requestPermission(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             Toast.makeText(this, "Location permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
@@ -173,7 +173,7 @@ public class ScanActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     scanLeDevice(true);
                 } else {
-                    Toast.makeText(this, "Locatiom permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Location permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
                 }
                 break;
         }

@@ -41,7 +41,8 @@ public class Constants {
     public enum WHEEL_TYPE {
         Unknown,
         KINGSONG,
-        GOTWAY
+        GOTWAY,
+        NINEBOT
     }
 
     public static final int NOTIFICATION_ID = 1;

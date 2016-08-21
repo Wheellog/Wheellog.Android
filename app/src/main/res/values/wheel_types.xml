@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="wheel_types">
-        <item>@string/kingsong</item>
+        <item>@string/ninebot</item>
         <item>@string/gotway</item>
+        <item>@string/kingsong</item>
     </string-array>
 
     <string name="kingsong">kingsong</string>
     <string name="gotway">gotway</string>
+    <string name="ninebot">ninebot</string>
 </resources>
