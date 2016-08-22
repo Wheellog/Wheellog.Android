@@ -19,6 +19,8 @@ android {
     }
 }
 
+apply plugin: 'android-apt'
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.getpebble:pebblekit:3.0.0'
@@ -28,4 +30,6 @@ dependencies {
     compile 'com.jakewharton.timber:timber:4.2.0'
     compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+    compile "com.github.hotchemi:permissionsdispatcher:2.1.3"
+    apt "com.github.hotchemi:permissionsdispatcher-processor:2.1.3"
 }

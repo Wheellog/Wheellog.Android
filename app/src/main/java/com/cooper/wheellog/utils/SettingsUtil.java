@@ -41,9 +41,19 @@ public class SettingsUtil {
         return sharedPreferences.getBoolean("auto_log", false);
     }
 
+    public static void setAutoLog(Context context, boolean enabled) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putBoolean("auto_log", enabled).apply();
+    }
+
     public static boolean getLogLocation(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean("log_location_data", false);
+    }
+
+    public static void setLogLocation(Context context, boolean enabled) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putBoolean("log_location_data", enabled).apply();
     }
 
     public static boolean getUseGPS(Context context) {

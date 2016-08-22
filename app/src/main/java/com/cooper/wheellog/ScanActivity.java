@@ -25,10 +25,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.cooper.wheellog.utils.PermissionsUtil;
-import com.cooper.wheellog.utils.SettingsUtil;
 
 import timber.log.Timber;
 
@@ -42,7 +38,6 @@ public class ScanActivity extends AppCompatActivity {
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
-    private static final int PERMISSION_REQUEST_CODE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +72,6 @@ public class ScanActivity extends AppCompatActivity {
                 });
         alertDialog.show();
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !PermissionsUtil.checkLocationPermission(this))
-            requestPermission();
-
         if (!isLocationEnabled(this)) {
             Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(myIntent);
@@ -96,10 +88,7 @@ public class ScanActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (PermissionsUtil.checkLocationPermission(this))
-            scanLeDevice(true);
-        else
-            finish();
+        scanLeDevice(true);
     }
 
     private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
@@ -154,28 +143,6 @@ public class ScanActivity extends AppCompatActivity {
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
             pb.setVisibility(View.GONE);
             scanTitle.setText(R.string.devices);
-        }
-    }
-
-    private void requestPermission(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Toast.makeText(this, "Location permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    scanLeDevice(true);
-                } else {
-                    Toast.makeText(this, "Location permission allows scanning of bluetooth devices. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-                }
-                break;
         }
     }
 

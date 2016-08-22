@@ -58,4 +58,11 @@
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
     <string name="connection_lost_at">Connection lost at %1s</string>
+
+    <string name="logging_error_no_storage_permission">No permission to write to external storage. Logging cancelled.</string>
+    <string name="logging_error_storage_unavailable">External storage is unavailable. Logging cancelled.</string>
+    <string name="logging_error_no_location_permission">Log location was requested but no permission to location data was provided. No location data will be logged.</string>
+    <string name="logging_error_gps_disabled">Location logging using GPS was requested but GPS is disabled. Location will be logged using Network data.</string>
+    <string name="logging_error_network_disabled">Location logging using GSM Network was requested but this location provider is disabled. No location data will be logged.</string>
+    <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
 </resources>

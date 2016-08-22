@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
@@ -56,26 +57,32 @@ public class LoggingService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        instance = this;
+        registerReceiver(mBluetoothUpdateReceiver, new IntentFilter(Constants.ACTION_WHEEL_DATA_AVAILABLE));
+
         if (!PermissionsUtil.checkExternalFilePermission(this)) {
+            showToast(R.string.logging_error_no_storage_permission);
             stopSelf();
             return START_STICKY;
         }
 
         if (!isExternalStorageReadable() || !isExternalStorageWritable()) {
+            showToast(R.string.logging_error_storage_unavailable);
             stopSelf();
             return START_STICKY;
         }
 
         logLocationData = SettingsUtil.getLogLocation(this);
 
-        if (logLocationData && !PermissionsUtil.checkLocationPermission(this))
+        if (logLocationData && !PermissionsUtil.checkLocationPermission(this)) {
+            showToast(R.string.logging_error_no_location_permission);
             logLocationData = false;
+        }
 
-        instance = this;
         sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
-        registerReceiver(mBluetoothUpdateReceiver, new IntentFilter(Constants.ACTION_WHEEL_DATA_AVAILABLE));
 
         SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
+
         filename = sdFormatter.format(new Date()) + ".csv";
         File file = FileUtil.getFile(filename);
         if (file == null) {
@@ -86,25 +93,28 @@ public class LoggingService extends Service
         if (logLocationData) {
             mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-            // Getting GPS status
+            // Getting GPS Provider status
             boolean isGPSEnabled = mLocationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            // Getting network status
+            // Getting Network Provider status
             boolean isNetworkEnabled = mLocationManager
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             // Getting if the users wants to use GPS
             boolean useGPS = SettingsUtil.getUseGPS(this);
 
-            if (!isGPSEnabled) {
-                if (useGPS)
-                    useGPS = false;
-
-                if (!isNetworkEnabled) {
-                    logLocationData = false;
-                    mLocationManager = null;
-                }
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                logLocationData = false;
+                mLocationManager = null;
+                showToast(R.string.logging_error_all_location_providers_disabled);
+            } else if (useGPS && !isGPSEnabled) {
+                useGPS = false;
+                showToast(R.string.logging_error_gps_disabled);
+            } else if (!useGPS && !isNetworkEnabled) {
+                logLocationData = false;
+                mLocationManager = null;
+                showToast(R.string.logging_error_network_disabled);
             }
 
             if (logLocationData) {
@@ -200,6 +210,7 @@ public class LoggingService extends Service
         public void onProviderDisabled(String provider) {}
     };
 
+    @SuppressWarnings("MissingPermission")
     private Location getLastBestLocation() {
 
         Location locationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -220,5 +231,10 @@ public class LoggingService extends Service
         else {
             return locationNet;
         }
+    }
+
+    private void showToast(int message_id) {
+        for (int i = 0; i <= 3; i++)
+            Toast.makeText(this, message_id, Toast.LENGTH_LONG).show();
     }
 }

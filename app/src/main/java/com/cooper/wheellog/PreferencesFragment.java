@@ -3,9 +3,12 @@ package com.cooper.wheellog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.SettingsUtil;
 
 public class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override
@@ -34,6 +37,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         if ("alarms_enabled".equals(key))
             hideShowSeekBars();
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+    }
+
+    public void refreshLogSettings() {
+        if (!SettingsUtil.getAutoLog(getActivity()))
+            ((CheckBoxPreference) findPreference("auto_log")).setChecked(false);
+
+        if (!SettingsUtil.getLogLocation(getActivity()))
+            ((CheckBoxPreference) findPreference("log_location_data")).setChecked(false);
     }
 
     private void hideShowSeekBars() {

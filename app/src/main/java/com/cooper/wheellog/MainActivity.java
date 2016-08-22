@@ -13,12 +13,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -35,7 +33,6 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.PermissionsUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -53,10 +50,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
+@RuntimePermissions
 public class MainActivity extends AppCompatActivity {
 
     Menu mMenu;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
 
-    private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
+//    private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
     private static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     private static final int RESULT_REQUEST_ENABLE_BT = 30;
 
@@ -609,11 +610,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (PebbleService.isInstanceCreated())
-            stopPebbleService();
-
-        if (LoggingService.isInstanceCreated())
-            stopService(new Intent(getApplicationContext(), LoggingService.class));
+        stopPebbleService();
+        stopLoggingService();
 
         if (mBluetoothLeService != null) {
             unbindService(mServiceConnection);
@@ -637,29 +635,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miSearch:
-                startActivityForResult(new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST);
+                MainActivityPermissionsDispatcher.startScanActivityWithCheck(this);
                 return true;
             case R.id.miWheel:
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                        !PermissionsUtil.checkExternalFilePermission(this) &&
-                        !PermissionsUtil.checkLocationPermission(this))
-                    requestLoggingFilePermissions();
-                else
-                {
-                    if (!LoggingService.isInstanceCreated())
-                        startLoggingService();
-                    else
-                        stopLoggingService();
-                }
+                MainActivityPermissionsDispatcher.toggleLoggingServiceWithCheck(this);
                 return true;
             case R.id.miWatch:
-                if (!PebbleService.isInstanceCreated())
-                    startPebbleService();
-                else
-                    stopPebbleService();
+                togglePebbleService();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -715,14 +700,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
         boolean auto_log = sharedPreferences.getBoolean("auto_log", false);
+        boolean log_location = sharedPreferences.getBoolean("log_location_data", false);
 
-        if (auto_log) {
-            if (!PermissionsUtil.checkExternalFilePermission(this) ||
-                    !PermissionsUtil.checkLocationPermission(this))
-                requestLoggingFilePermissions();
-        }
+        if (auto_log && !log_location)
+            MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
+        else if (auto_log)
+            MainActivityPermissionsDispatcher.acquireStoragePlusLocationPermissionWithCheck(this);
+        else if (log_location)
+            MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
 
         updateScreen(true);
+    }
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void acquireStoragePermission() {}
+
+    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    void acquireLocationPermission() {}
+
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION})
+    void acquireStoragePlusLocationPermission() {}
+
+    @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void storagePermissionDenied() {
+        SettingsUtil.setAutoLog(this, false);
+        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshLogSettings();
+    }
+
+    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
+    void locationPermissionDenied() {
+        SettingsUtil.setLogLocation(this, false);
+        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshLogSettings();
     }
 
     private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
@@ -750,24 +758,30 @@ public class MainActivity extends AppCompatActivity {
         snackbar.dismiss();
     }
 
-
-    private void stopLoggingService() { startLoggingService(false); }
-    private void startLoggingService() { startLoggingService(true); }
-    private void startLoggingService(boolean start) {
-        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
-        if (start)
-            startService(dataLoggerServiceIntent);
-        else
-            stopService(dataLoggerServiceIntent);
+    private void stopLoggingService() {
+        if (LoggingService.isInstanceCreated())
+            toggleLoggingService();
     }
-    private void stopPebbleService() { startPebbleService(false);}
-    private void startPebbleService() { startPebbleService(true);}
-    private void startPebbleService(boolean start) {
-        Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleService.class);
-        if (start)
-            startService(pebbleServiceIntent);
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void toggleLoggingService() {
+        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
+
+        if (LoggingService.isInstanceCreated())
+            stopService(dataLoggerServiceIntent);
         else
+            startService(dataLoggerServiceIntent);
+    }
+
+    private void stopPebbleService() {
+        if (PebbleService.isInstanceCreated())
+            togglePebbleService();
+    }
+    private void togglePebbleService() {
+        Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleService.class);
+        if (PebbleService.isInstanceCreated())
             stopService(pebbleServiceIntent);
+        else
+            startService(pebbleServiceIntent);
     }
 
     private void startBluetoothService() {
@@ -780,24 +794,16 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
     }
 
-    private void requestLoggingFilePermissions(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-            Toast.makeText(this, "External write and location permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION}, RESULT_PERMISSION_REQUEST_CODE);
-        }
+    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    void startScanActivity() {
+        startActivityForResult(new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        Timber.i("onRequestPermissionsResult");
-        switch (requestCode) {
-            case RESULT_PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED)
-                    Toast.makeText(this, "External write and location permission is required to write logs. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-                break;
-        }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @Override

@@ -4,7 +4,7 @@
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="Settings">
+        android:title="Speed Settings">
 
         <CheckBoxPreference
             android:key="use_mph"
@@ -23,6 +23,10 @@
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="km/h"
             sample:msbp_dialogEnabled="true"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Log Settings">
 
         <CheckBoxPreference
             android:key="auto_log"
