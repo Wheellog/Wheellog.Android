@@ -97,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
 
-//    private static final int RESULT_PERMISSION_REQUEST_CODE = 10;
     private static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     private static final int RESULT_REQUEST_ENABLE_BT = 30;
 

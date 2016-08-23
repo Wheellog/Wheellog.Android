@@ -118,7 +118,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                FileUtil.writeLine(filename, "date,time,latitude,longitude,speed,voltage,current,power,battery_level,distance,temperature,fan_status");
+                FileUtil.writeLine(filename, "date,time,latitude,longitude,speed,voltage,current,power,battery_level,distance,temperature");
                 mLocation = getLastBestLocation();
                 String locationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -126,7 +126,7 @@ public class LoggingService extends Service
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(locationProvider, 100, 0, locationListener);
             } else
-                FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature,fan_status");
+                FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature");
         }
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
@@ -166,23 +166,28 @@ public class LoggingService extends Service
 
     private void updateFile() {
         if (logLocationData) {
+            String longitude = "";
+            String latitude = "";
+            if (mLocation != null) {
+                longitude = String.valueOf(mLocation.getLongitude());
+                latitude = String.valueOf(mLocation.getLatitude());
+            }
             FileUtil.writeLine(filename,
-                    String.format(Locale.US, "%s,%f,%f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
+                    String.format(Locale.US, "%s,%s,%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d",
                             sdf.format(new Date()),
-                            mLocation.getLatitude(),
-                            mLocation.getLongitude(),
+                            latitude,
+                            longitude,
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
                             WheelData.getInstance().getCurrentDouble(),
                             WheelData.getInstance().getPowerDouble(),
                             WheelData.getInstance().getBatteryLevel(),
                             WheelData.getInstance().getDistanceDouble(),
-                            WheelData.getInstance().getTemperature(),
-                            WheelData.getInstance().getFanStatus()
+                            WheelData.getInstance().getTemperature()
                     ));
         } else {
             FileUtil.writeLine(filename,
-                    String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d,%d",
+                    String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d",
                             sdf.format(new Date()),
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
@@ -190,8 +195,7 @@ public class LoggingService extends Service
                             WheelData.getInstance().getPowerDouble(),
                             WheelData.getInstance().getBatteryLevel(),
                             WheelData.getInstance().getDistanceDouble(),
-                            WheelData.getInstance().getTemperature(),
-                            WheelData.getInstance().getFanStatus()
+                            WheelData.getInstance().getTemperature()
                     ));
         }
     }
