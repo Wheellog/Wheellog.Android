@@ -124,7 +124,7 @@ public class LoggingService extends Service
                 if (useGPS)
                     locationProvider = LocationManager.GPS_PROVIDER;
                 // Acquire a reference to the system Location Manager
-                mLocationManager.requestLocationUpdates(locationProvider, 100, 0, locationListener);
+                mLocationManager.requestLocationUpdates(locationProvider, 250, 0, locationListener);
             } else
                 FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature");
         }
@@ -139,6 +139,7 @@ public class LoggingService extends Service
         return START_STICKY;
     }
 
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
@@ -146,7 +147,7 @@ public class LoggingService extends Service
         sendBroadcast(serviceIntent);
         instance = null;
         unregisterReceiver(mBluetoothUpdateReceiver);
-        if (mLocationManager != null && PermissionsUtil.checkLocationPermission(this))
+        if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
         Timber.i("DataLogger stopped");
     }
