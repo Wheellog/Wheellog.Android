@@ -617,6 +617,7 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
+        WheelData.getInstance().reset();
     }
 
     @Override
@@ -814,8 +815,8 @@ public class MainActivity extends AppCompatActivity {
                     mDeviceAddress = data.getStringExtra("MAC");
                     Timber.i("Device selected = %s", mDeviceAddress);
                     mBluetoothLeService.setDeviceAddress(mDeviceAddress);
-                    WheelData.getInstance().reset();
-                    updateScreen(false);
+                    WheelData.getInstance().full_reset();
+                    updateScreen(true);
                     setMenuIconStates();
                     mBluetoothLeService.close();
                     toggleConnectToWheel();

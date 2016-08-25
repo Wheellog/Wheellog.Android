@@ -18,6 +18,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class WheelData {
+    private static final int DISTANCE_BUFFER = 10;
+    private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
     private static Context mContext;
 
@@ -63,7 +65,7 @@ public class WheelData {
             mInstance = new WheelData();
 
         mContext = context.getApplicationContext();
-        mInstance.reset();
+        mInstance.full_reset();
     }
 
     public static WheelData getInstance(){
@@ -117,13 +119,13 @@ public class WheelData {
     }
 
     private void setDistance(long distance) {
-        if (mDistance > distance)
+        if (mDistance > (distance+DISTANCE_BUFFER))
             mLastDistance += mDistance;
         mDistance = distance;
     }
 
     private void setCurrentTime(int currentTime) {
-        if (mCurrentTime > currentTime)
+        if (mCurrentTime > (currentTime+TIME_BUFFER))
             mLastCurrentTime += mCurrentTime;
         mCurrentTime = currentTime;
     }
@@ -166,12 +168,16 @@ public class WheelData {
 //        Timber.i("OUTPUT", stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
 
+        boolean new_data = false;
         if (mWheelType == WHEEL_TYPE.KINGSONG)
-            decodeKingSong(data);
+            new_data = decodeKingSong(data);
         else if (mWheelType == WHEEL_TYPE.GOTWAY)
-            decodeGotway(data);
+            new_data = decodeGotway(data);
         else if (mWheelType == WHEEL_TYPE.NINEBOT)
-              decodeNinebot(data);
+            new_data = decodeNinebot(data);
+
+        if (!new_data)
+            return;
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 
@@ -194,13 +200,13 @@ public class WheelData {
         mContext.sendBroadcast(intent);
     }
 
-    private void decodeKingSong(byte[] data) {
+    private boolean decodeKingSong(byte[] data) {
 
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
             if (a1 != 170 || a2 != 85) {
-                return;
+                return false;
             }
             if ((data[16] & 255) == 169) { // Live data
                 mVoltage = byteArrayInt2(data[2], data[3]);
@@ -225,6 +231,7 @@ public class WheelData {
                 } else {
                     mBattery = (mVoltage - 5000) / 16;
                 }
+                return true;
             } else if ((data[16] & 255) == 185) { // Distance/Time/Fan Data
                 long distance = byteArrayInt4(data[2], data[3], data[4], data[5]);
                 setDistance(distance);
@@ -261,9 +268,10 @@ public class WheelData {
                 mSerialNumber = new String(sndata);
             }
         }
+        return false;
     }
 
-    private void decodeGotway(byte[] data) {
+    private boolean decodeGotway(byte[] data) {
         if (rideStartTime == 0)
             rideStartTime = Calendar.getInstance().getTimeInMillis();
 
@@ -272,7 +280,7 @@ public class WheelData {
             int a2 = data[1] & 255;
             int a19 = data[18] & 255;
             if (a1 != 85 || a2 != 170 || a19 != 0) {
-                return;
+                return false;
             }
 
             if (data[5] >= 0)
@@ -302,23 +310,34 @@ public class WheelData {
             int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
             setCurrentTime(currentTime);
 
+            return true;
         } else if (data.length >= 10) {
             int a1 = data[0];
             int a5 = data[4] & 255;
             int a6 = data[5] & 255;
             if (a1 != 90 || a5 != 85 || a6 != 170) {
-                return;
+                return false;
             }
 
             mTotalDistance = ((((data[6] * 256) + data[7]) * 65536) + (((data[8] & 255) * 256) + (data[9] & 255)));
         }
+        return false;
     }
 
-    private void decodeNinebot(byte[] data) {
+    private boolean decodeNinebot(byte[] data) {
+        return false;
+    }
+
+    public void full_reset() {
+        mBluetoothLeService = null;
+        mWheelType = WHEEL_TYPE.Unknown;
+        xAxis.clear();
+        speedAxis.clear();
+        currentAxis.clear();
+        reset();
     }
 
     public void reset() {
-        mBluetoothLeService = null;
         mSpeed = 0;
         mTotalDistance = 0;
         mCurrent = 0;
@@ -336,12 +355,7 @@ public class WheelData {
         mModel = "";
         mVersion = 0;
         mSerialNumber = "";
-        mWheelType = WHEEL_TYPE.Unknown;
         rideStartTime = 0;
-
-        xAxis.clear();
-        speedAxis.clear();
-        currentAxis.clear();
     }
 
     public boolean detectWheel(BluetoothLeService bluetoothService) {

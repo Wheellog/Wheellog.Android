@@ -32,6 +32,8 @@ public class LoggingService extends Service
     SimpleDateFormat sdf;
     private String filename;
     private Location mLocation;
+    private Location mLastLocation;
+    private Double mLocationDistance;
     private LocationManager mLocationManager;
     private boolean logLocationData = false;
 
@@ -118,7 +120,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                FileUtil.writeLine(filename, "date,time,latitude,longitude,speed,voltage,current,power,battery_level,distance,temperature");
+                FileUtil.writeLine(filename, "date,time,latitude,longitude,location_distance,speed,voltage,current,power,battery_level,distance,temperature");
                 mLocation = getLastBestLocation();
                 String locationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -172,12 +174,18 @@ public class LoggingService extends Service
             if (mLocation != null) {
                 longitude = String.valueOf(mLocation.getLongitude());
                 latitude = String.valueOf(mLocation.getLatitude());
+
+                if (mLastLocation != null)
+                    mLocationDistance += mLastLocation.distanceTo(mLocation) / 1000.0;
+
+                mLastLocation = mLocation;
             }
             FileUtil.writeLine(filename,
-                    String.format(Locale.US, "%s,%s,%s,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d",
+                    String.format(Locale.US, "%s,%s,%s,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%d",
                             sdf.format(new Date()),
                             latitude,
                             longitude,
+                            mLocationDistance,
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
                             WheelData.getInstance().getCurrentDouble(),
