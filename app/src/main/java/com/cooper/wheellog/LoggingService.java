@@ -33,7 +33,7 @@ public class LoggingService extends Service
     private String filename;
     private Location mLocation;
     private Location mLastLocation;
-    private Double mLocationDistance;
+    private double mLocationDistance;
     private LocationManager mLocationManager;
     private boolean logLocationData = false;
 
