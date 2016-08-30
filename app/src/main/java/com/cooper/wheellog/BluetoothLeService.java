@@ -56,19 +56,24 @@ public class BluetoothLeService extends Service {
         public void onReceive(Context context, Intent intent) {
 
             switch (intent.getAction()) {
-                case Constants.ACTION_BLUETOOTH_CONNECTED:
-                    mConnectionState = STATE_CONNECTED;
-                    WheelData.getInstance().setConnected(true);
-                    if (!LoggingService.isInstanceCreated() && SettingsUtil.getAutoLog(BluetoothLeService.this))
-                        startService(new Intent(getApplicationContext(), LoggingService.class));
-                    break;
-                case Constants.ACTION_BLUETOOTH_DISCONNECTED:
-                    mConnectionState = STATE_DISCONNECTED;
-                    WheelData.getInstance().setConnected(false);
-                    break;
-                case Constants.ACTION_BLUETOOTH_CONNECTING:
-                    WheelData.getInstance().setConnected(false);
-                    mConnectionState = STATE_CONNECTING;
+                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
+                    int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, STATE_DISCONNECTED);
+                    switch (connectionState) {
+                        case STATE_CONNECTED:
+                            mConnectionState = STATE_CONNECTED;
+                            WheelData.getInstance().setConnected(true);
+                            if (!LoggingService.isInstanceCreated() && SettingsUtil.getAutoLog(BluetoothLeService.this))
+                                startService(new Intent(getApplicationContext(), LoggingService.class));
+                            break;
+                        case STATE_DISCONNECTED:
+                            mConnectionState = STATE_DISCONNECTED;
+                            WheelData.getInstance().setConnected(false);
+                            break;
+                        case STATE_CONNECTING:
+                            WheelData.getInstance().setConnected(false);
+                            mConnectionState = STATE_CONNECTING;
+                            break;
+                    }
                     break;
                 case Constants.ACTION_REQUEST_KINGSONG_NAME_DATA:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
@@ -120,9 +125,7 @@ public class BluetoothLeService extends Service {
 
     private IntentFilter makeIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTING);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_DISCONNECTED);
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_HORN);
@@ -158,13 +161,13 @@ public class BluetoothLeService extends Service {
                         autoConnect = true;
                         mBluetoothGatt.close();
                         mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
-                        broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
+                        broadcastConnectionUpdate(STATE_CONNECTING, true);
                     } else
-                        broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING, Constants.INTENT_EXTRA_BLE_AUTO_CONNECT);
+                        broadcastConnectionUpdate(STATE_CONNECTING, true);
                 } else {
                     Timber.i("Disconnected");
                     mConnectionState = STATE_DISCONNECTED;
-                    broadcastUpdate(Constants.ACTION_BLUETOOTH_DISCONNECTED);
+                    broadcastConnectionUpdate(STATE_DISCONNECTED);
                 }
             }
             else
@@ -180,7 +183,7 @@ public class BluetoothLeService extends Service {
                 boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this);
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
-                    broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTED);
+                    broadcastConnectionUpdate(mConnectionState);
                 } else
                     disconnect();
                 return;
@@ -225,14 +228,15 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    private void broadcastUpdate(final String action) {
-        final Intent intent = new Intent(action);
-        sendBroadcast(intent);
+    private void broadcastConnectionUpdate(int connectionState) {
+        broadcastConnectionUpdate(connectionState, false);
     }
 
-    private void broadcastUpdate(final String action, final String extra) {
-        final Intent intent = new Intent(action);
-        intent.putExtra(extra, true);
+        private void broadcastConnectionUpdate(int connectionState, boolean auto_connect) {
+        final Intent intent = new Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
+        intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState);
+        if (auto_connect)
+            intent.putExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT, true);
         sendBroadcast(intent);
     }
 
@@ -322,7 +326,7 @@ public class BluetoothLeService extends Service {
             Timber.i("Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
-                broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING);
+                broadcastConnectionUpdate(mConnectionState);
                 return true;
             } else {
                 return false;
@@ -337,7 +341,7 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt = device.connectGatt(this, autoConnect, mGattCallback);
         Timber.i("Trying to create a new connection.");
         mConnectionState = STATE_CONNECTING;
-        broadcastUpdate(Constants.ACTION_BLUETOOTH_CONNECTING);
+        broadcastConnectionUpdate(mConnectionState);
         return true;
     }
 
@@ -356,7 +360,7 @@ public class BluetoothLeService extends Service {
         if (mConnectionState != STATE_CONNECTED)
             mConnectionState = STATE_DISCONNECTED;
         mBluetoothGatt.disconnect();
-        broadcastUpdate(Constants.ACTION_BLUETOOTH_DISCONNECTED);
+        broadcastConnectionUpdate(STATE_DISCONNECTED);
     }
 
     /**

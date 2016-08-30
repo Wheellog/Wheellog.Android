@@ -34,10 +34,14 @@
             android:summary="Start logging automatically when a wheel is connected" />
 
         <CheckBoxPreference
+            android:key="auto_upload"
+            android:title="Auto Upload Logs"
+            android:summary="Upload log files to Google Drive automatically." />
+
+        <CheckBoxPreference
             android:key="log_location_data"
             android:title="Log location"
             android:summary="Include location data within the logs" />
-
 
         <CheckBoxPreference
             android:key="use_gps"

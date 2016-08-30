@@ -37,27 +37,30 @@ public class SettingsUtil {
     }
 
     public static boolean getAutoLog(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean("auto_log", false);
+        return getSharedPreferences(context).getBoolean("auto_log", false);
     }
 
     public static void setAutoLog(Context context, boolean enabled) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        sharedPreferences.edit().putBoolean("auto_log", enabled).apply();
+        getSharedPreferences(context).edit().putBoolean("auto_log", enabled).apply();
     }
 
     public static boolean getLogLocation(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean("log_location_data", false);
+        return getSharedPreferences(context).getBoolean("log_location_data", false);
     }
 
     public static void setLogLocation(Context context, boolean enabled) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        sharedPreferences.edit().putBoolean("log_location_data", enabled).apply();
+        getSharedPreferences(context).edit().putBoolean("log_location_data", enabled).apply();
     }
 
     public static boolean getUseGPS(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean("use_gps", false);
+        return getSharedPreferences(context).getBoolean("use_gps", false);
+    }
+
+    public static boolean getAutoUpload(Context context) {
+        return getSharedPreferences(context).getBoolean("auto_upload", false);
+    }
+    
+    private static SharedPreferences getSharedPreferences(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }

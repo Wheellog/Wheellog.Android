@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class WheelData {
-    private static final int DISTANCE_BUFFER = 10;
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
     private static Context mContext;
@@ -43,7 +42,6 @@ public class WheelData {
     private int mBattery;
     private int mVoltage;
     private long mDistance;
-    private long mLastDistance;
     private int mCurrentTime;
     private int mLastCurrentTime;
     private int mTopSpeed;
@@ -55,6 +53,7 @@ public class WheelData {
     private String mSerialNumber = "";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
+    private long mStartTotalDistance;
 
     private boolean mAlarmsEnabled = false;
     private int mSpeedAlarmSpeed = 0;
@@ -101,7 +100,8 @@ public class WheelData {
     public double getPowerDouble() { return (mCurrent*mVoltage)/10000.0; }
     public double getCurrentDouble() { return mCurrent/100.0; }
     public double getTopSpeedDouble() { return mTopSpeed / 100.0; }
-    public double getDistanceDouble() { return (mDistance+mLastDistance) / 1000.0; }
+    public double getRawDistanceDouble() { return mDistance / 1000.0; }
+    public double getDistanceDouble() { return (mTotalDistance - mStartTotalDistance) / 1000.0; }
     public double getTotalDistanceDouble() { return mTotalDistance / 1000.0; }
 
     public ArrayList<String> getXAxis() { return xAxis; }
@@ -119,8 +119,9 @@ public class WheelData {
     }
 
     private void setDistance(long distance) {
-        if (mDistance > (distance+DISTANCE_BUFFER))
-            mLastDistance += mDistance;
+        if (mStartTotalDistance == 0 && mTotalDistance != 0)
+            mStartTotalDistance = mTotalDistance - distance;
+
         mDistance = distance;
     }
 
@@ -346,7 +347,6 @@ public class WheelData {
         mBattery = 0;
         mVoltage = 0;
         mDistance = 0;
-        mLastDistance = 0;
         mCurrentTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
@@ -356,6 +356,7 @@ public class WheelData {
         mVersion = 0;
         mSerialNumber = "";
         rideStartTime = 0;
+        mStartTotalDistance = 0;
     }
 
     public boolean detectWheel(BluetoothLeService bluetoothService) {

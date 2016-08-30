@@ -4,9 +4,7 @@ import java.util.UUID;
 
 public class Constants {
 
-    public static final String ACTION_BLUETOOTH_CONNECTING = "com.cooper.wheellog.bluetoothConnecting";
-    public static final String ACTION_BLUETOOTH_CONNECTED = "com.cooper.wheellog.bluetoothConnected";
-    public static final String ACTION_BLUETOOTH_DISCONNECTED = "com.cooper.wheellog.bluetoothDisconnected";
+    public static final String ACTION_BLUETOOTH_CONNECTION_STATE = "com.cooper.wheellog.bluetoothConnectionState";
     public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.cooper.wheelTimber.wheelDataAvailable";
     public static final String ACTION_REQUEST_KINGSONG_SERIAL_DATA = "com.cooper.wheellog.requestSerialData";
     public static final String ACTION_REQUEST_KINGSONG_NAME_DATA = "com.cooper.wheellog.requestNameData";
@@ -37,6 +35,7 @@ public class Constants {
     public static final String INTENT_EXTRA_LOGGING_FILE_LOCATION = "logging_file_location";
     public static final String INTENT_EXTRA_IS_RUNNING = "is_running";
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
+    public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";
 
     public enum WHEEL_TYPE {
         Unknown,

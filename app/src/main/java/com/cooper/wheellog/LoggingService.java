@@ -35,18 +35,35 @@ public class LoggingService extends Service
     private Location mLastLocation;
     private double mLocationDistance;
     private LocationManager mLocationManager;
+    private String mLocationProvider = LocationManager.NETWORK_PROVIDER;
     private boolean logLocationData = false;
 
     public static boolean isInstanceCreated() {
         return instance != null;
     }
 
+    @SuppressWarnings("MissingPermission")
     private final BroadcastReceiver mBluetoothUpdateReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            updateFile();
+            String action = intent.getAction();
+            switch (action) {
+                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
+                    if (mLocationManager != null && logLocationData) {
+                        int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
+                        if (connectionState == BluetoothLeService.STATE_CONNECTED) {
+                            mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
+                        } else {
+                            mLocationManager.removeUpdates(locationListener);
+                        }
+                    }
+                    break;
+                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                    updateFile();
+                    break;
+            }
         }
     };
 
@@ -60,7 +77,10 @@ public class LoggingService extends Service
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         instance = this;
-        registerReceiver(mBluetoothUpdateReceiver, new IntentFilter(Constants.ACTION_WHEEL_DATA_AVAILABLE));
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
+        registerReceiver(mBluetoothUpdateReceiver, intentFilter);
 
         if (!PermissionsUtil.checkExternalFilePermission(this)) {
             showToast(R.string.logging_error_no_storage_permission);
@@ -122,11 +142,11 @@ public class LoggingService extends Service
             if (logLocationData) {
                 FileUtil.writeLine(filename, "date,time,latitude,longitude,location_distance,speed,voltage,current,power,battery_level,distance,temperature");
                 mLocation = getLastBestLocation();
-                String locationProvider = LocationManager.NETWORK_PROVIDER;
+                mLocationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
-                    locationProvider = LocationManager.GPS_PROVIDER;
+                    mLocationProvider = LocationManager.GPS_PROVIDER;
                 // Acquire a reference to the system Location Manager
-                mLocationManager.requestLocationUpdates(locationProvider, 250, 0, locationListener);
+                mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             } else
                 FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature");
         }

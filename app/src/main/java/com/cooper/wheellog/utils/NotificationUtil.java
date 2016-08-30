@@ -16,8 +16,6 @@ import com.cooper.wheellog.PebbleService;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 
-import java.util.Locale;
-
 public class NotificationUtil {
 
     private Context mContext;
@@ -36,37 +34,46 @@ public class NotificationUtil {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (Constants.ACTION_BLUETOOTH_CONNECTED.equals(action)) {
-                mConnectionState = BluetoothLeService.STATE_CONNECTED;
-                notificationMessageId = R.string.connected;
-                updateNotification();
-            } else if (Constants.ACTION_BLUETOOTH_DISCONNECTED.equals(action)) {
-                mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
-                notificationMessageId = R.string.disconnected;
-                updateNotification();
-            } else if (Constants.ACTION_BLUETOOTH_CONNECTING.equals(action)) {
-                mConnectionState = BluetoothLeService.STATE_CONNECTING;
-                if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT))
-                    notificationMessageId = R.string.searching;
-                else
-                    notificationMessageId = R.string.connecting;
-                updateNotification();
-            } else if (Constants.ACTION_WHEEL_DATA_AVAILABLE.equals(action)) {
-                int batteryLevel = WheelData.getInstance().getBatteryLevel();
-                int temperature = WheelData.getInstance().getTemperature();
-                double distance = (double) Math.round(WheelData.getInstance().getDistanceDouble() * 10) / 10;
 
-                if (mBatteryLevel != batteryLevel ||
-                        mDistance != distance ||
-                        mTemperature != temperature) {
-                    mBatteryLevel = batteryLevel;
-                    mTemperature = temperature;
-                    mDistance = distance;
+            switch (action) {
+                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
+                    mConnectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
+                    switch (mConnectionState) {
+                        case BluetoothLeService.STATE_CONNECTED:
+                            notificationMessageId = R.string.connected;
+                            break;
+                        case BluetoothLeService.STATE_DISCONNECTED:
+                            notificationMessageId = R.string.disconnected;
+                            break;
+                        case BluetoothLeService.STATE_CONNECTING:
+                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT))
+                                notificationMessageId = R.string.searching;
+                            else
+                                notificationMessageId = R.string.connecting;
+                            break;
+                    }
                     updateNotification();
-                }
-            } else if (Constants.ACTION_PEBBLE_SERVICE_TOGGLED.equals(action) ||
-                    Constants.ACTION_LOGGING_SERVICE_TOGGLED.equals(action)) {
-                updateNotification();
+                    break;
+                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                    int batteryLevel = WheelData.getInstance().getBatteryLevel();
+                    int temperature = WheelData.getInstance().getTemperature();
+                    double distance = (double) Math.round(WheelData.getInstance().getDistanceDouble() * 10) / 10;
+
+                    if (mBatteryLevel != batteryLevel ||
+                            mDistance != distance ||
+                            mTemperature != temperature) {
+                        mBatteryLevel = batteryLevel;
+                        mTemperature = temperature;
+                        mDistance = distance;
+                        updateNotification();
+                    }
+                    break;
+                case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
+                    updateNotification();
+                    break;
+                case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
+                    updateNotification();
+                    break;
             }
         }
     };
@@ -143,9 +150,7 @@ public class NotificationUtil {
 
     private IntentFilter makeIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTING);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_DISCONNECTED);
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);

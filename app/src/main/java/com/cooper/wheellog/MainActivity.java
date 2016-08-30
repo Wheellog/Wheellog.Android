@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -23,6 +25,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
@@ -44,6 +47,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.AxisValueFormatter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
@@ -58,7 +65,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     Menu mMenu;
     MenuItem miSearch;
@@ -75,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tvFanStatus;
     TextView tvTopSpeed;
     TextView tvDistance;
+    TextView tvRawDistance;
     TextView tvModel;
     TextView tvName;
     TextView tvVersion;
@@ -96,9 +104,12 @@ public class MainActivity extends AppCompatActivity {
     int viewPagerPage = 0;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
+    private GoogleApiClient mGoogleApiClient;
+    private DrawerLayout mDrawer;
 
-    private static final int RESULT_DEVICE_SCAN_REQUEST = 20;
-    private static final int RESULT_REQUEST_ENABLE_BT = 30;
+    protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
+    protected static final int RESULT_REQUEST_ENABLE_BT = 30;
+    protected static final int REQUEST_CODE_RESOLUTION = 40;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -130,18 +141,10 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
 
             switch (intent.getAction()) {
-                case Constants.ACTION_BLUETOOTH_CONNECTING:
-                    Timber.d("Bluetooth Connecting");
-                    setConnectionState(BluetoothLeService.STATE_CONNECTING);
-                    break;
-                case Constants.ACTION_BLUETOOTH_CONNECTED:
-                    Timber.d("Bluetooth connected");
-                    configureDisplay(WheelData.getInstance().getWheelType());
-                    setConnectionState(BluetoothLeService.STATE_CONNECTED);
-                    break;
-                case Constants.ACTION_BLUETOOTH_DISCONNECTED:
-                    Timber.d("Bluetooth disconnected");
-                    setConnectionState(BluetoothLeService.STATE_DISCONNECTED);
+                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
+                    int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
+                    Timber.d("Bluetooth state = %d", connectionState);
+                    setConnectionState(connectionState);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
@@ -176,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
+                configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
                     SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
                 hideSnackBar();
@@ -254,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleTopSpeed);
         TextView tvTitleBattery = (TextView) findViewById(R.id.tvTitleBattery);
         TextView tvTitleDistance = (TextView) findViewById(R.id.tvTitleDistance);
+        TextView tvTitleRawDistance = (TextView) findViewById(R.id.tvTitleRawDistance);
         TextView tvTitleRideTime = (TextView) findViewById(R.id.tvTitleRideTime);
         TextView tvTitleVoltage = (TextView) findViewById(R.id.tvTitleVoltage);
         TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
@@ -278,6 +283,8 @@ public class MainActivity extends AppCompatActivity {
                 tvBattery.setVisibility(View.VISIBLE);
                 tvTitleDistance.setVisibility(View.VISIBLE);
                 tvDistance.setVisibility(View.VISIBLE);
+                tvTitleRawDistance.setVisibility(View.VISIBLE);
+                tvRawDistance.setVisibility(View.VISIBLE);
                 tvTitleRideTime.setVisibility(View.VISIBLE);
                 tvRideTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
@@ -313,6 +320,8 @@ public class MainActivity extends AppCompatActivity {
                 tvBattery.setVisibility(View.VISIBLE);
                 tvTitleDistance.setVisibility(View.VISIBLE);
                 tvDistance.setVisibility(View.VISIBLE);
+                tvTitleRawDistance.setVisibility(View.VISIBLE);
+                tvRawDistance.setVisibility(View.VISIBLE);
                 tvTitleRideTime.setVisibility(View.VISIBLE);
                 tvRideTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
@@ -336,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
                 tvBattery.setVisibility(View.GONE);
                 tvTitleDistance.setVisibility(View.GONE);
                 tvDistance.setVisibility(View.GONE);
+                tvTitleRawDistance.setVisibility(View.GONE);
+                tvRawDistance.setVisibility(View.GONE);
                 tvTitleRideTime.setVisibility(View.GONE);
                 tvRideTime.setVisibility(View.GONE);
                 tvTitleVoltage.setVisibility(View.GONE);
@@ -382,11 +393,13 @@ public class MainActivity extends AppCompatActivity {
                     tvSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getSpeedDouble())));
                     tvTopSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
                     tvDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getDistanceDouble())));
+                    tvRawDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getRawDistanceDouble())));
                     tvTotalDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
                 } else {
                     tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
                     tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
                     tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
+                    tvRawDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getRawDistanceDouble()));
                     tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
@@ -504,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
         tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
         tvDistance = (TextView) findViewById(R.id.tvDistance);
+        tvRawDistance = (TextView) findViewById(R.id.tvRawDistance);
         tvTotalDistance = (TextView) findViewById(R.id.tvTotalDistance);
         tvModel = (TextView) findViewById(R.id.tvModel);
         tvName = (TextView) findViewById(R.id.tvName);
@@ -512,6 +526,8 @@ public class MainActivity extends AppCompatActivity {
         tvRideTime = (TextView) findViewById(R.id.tvRideTime);
         tvMode = (TextView) findViewById(R.id.tvMode);
         wheelView = (WheelView) findViewById(R.id.wheelView);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         Typeface typefacePrime = Typefaces.get(this, "fonts/prime.otf");
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
@@ -547,7 +563,6 @@ public class MainActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    DrawerLayout mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     mDrawer.openDrawer(GravityCompat.START, true);                }
             }, 1000);
         }
@@ -583,6 +598,10 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
+
+        if (SettingsUtil.getAutoUpload(this))
+            getGoogleApiClient().connect();
+
         if (mBluetoothLeService != null &&
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
@@ -603,6 +622,8 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mBluetoothUpdateReceiver);
+        if (SettingsUtil.getAutoUpload(this))
+            getGoogleApiClient().disconnect();
     }
 
     @Override
@@ -651,22 +672,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            finish();
-            return;
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MENU:
+                View settings_layout = findViewById(R.id.settings_layout);
+                if (mDrawer.isDrawerOpen(settings_layout)) {
+                    mDrawer.closeDrawers();
+                } else {
+                    mDrawer.openDrawer(GravityCompat.START, true);
+                }
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                if (doubleBackToExitPressedOnce) {
+                    finish();
+                    return true;
+                }
+
+                doubleBackToExitPressedOnce = true;
+                showSnackBar(R.string.back_to_exit);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce=false;
+                    }
+                }, 2000);
+                return true;
+            default:
+                return super.onKeyDown(keyCode, event);
         }
-
-        doubleBackToExitPressedOnce = true;
-        showSnackBar(R.string.back_to_exit);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
     }
 
     ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener(){
@@ -701,6 +735,7 @@ public class MainActivity extends AppCompatActivity {
 
         boolean auto_log = sharedPreferences.getBoolean("auto_log", false);
         boolean log_location = sharedPreferences.getBoolean("log_location_data", false);
+        boolean auto_upload = sharedPreferences.getBoolean("auto_upload", false);
 
         if (auto_log && !log_location)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -708,6 +743,9 @@ public class MainActivity extends AppCompatActivity {
             MainActivityPermissionsDispatcher.acquireStoragePlusLocationPermissionWithCheck(this);
         else if (log_location)
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
+
+        if (auto_upload)
+            getGoogleApiClient().connect();
 
         updateScreen(true);
     }
@@ -830,14 +868,16 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 break;
+            case REQUEST_CODE_RESOLUTION:
+                if (resultCode == RESULT_OK)
+                    getGoogleApiClient().connect();
+                break;
         }
     }
 
     private IntentFilter makeIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTING);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTED);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_DISCONNECTED);
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
@@ -859,4 +899,41 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getDecimalDigits() {  return 0; }
     };
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Toast.makeText(this, "Drive connected", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Drive Connection Suspended", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Timber.i("GoogleApiClient connection failed: %s", connectionResult.toString());
+        if (!connectionResult.hasResolution()) {
+            // show the localized error dialog.
+            GoogleApiAvailability.getInstance().getErrorDialog(this, connectionResult.getErrorCode(), 0).show();
+            return;
+        }
+        try {
+            connectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
+        } catch (IntentSender.SendIntentException e) {
+            Timber.e("Exception while starting resolution activity");
+        }
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API)
+                    .addScope(Drive.SCOPE_FILE)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+        return mGoogleApiClient;
+    }
 }

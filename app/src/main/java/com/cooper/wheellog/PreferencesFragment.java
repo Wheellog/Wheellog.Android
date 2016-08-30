@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
-import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.SettingsUtil;
@@ -34,8 +33,11 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ("alarms_enabled".equals(key))
-            hideShowSeekBars();
+        switch (key) {
+            case "alarms_enabled":
+                hideShowSeekBars();
+                break;
+        }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
 
