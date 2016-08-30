@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -160,12 +161,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-                    if (running) {
-                        if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                            String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                        String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        if (running) {
                             showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
+                        } else {
+                            Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
+                            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, filePath);
+                            startService(uploadIntent);
                         }
                     }
+
                     setMenuIconStates();
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
@@ -592,6 +598,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         } else {
             startBluetoothService();
         }
+
+        Button test = (Button) findViewById(R.id.testButton);
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startService(new Intent(getApplicationContext(), GoogleDriveService.class));
+            }
+        });
     }
 
     @Override

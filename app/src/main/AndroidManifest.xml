@@ -2,54 +2,65 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cooper.wheellog">
 
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".WheelLog"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
         android:resizeableActivity="false"
-        android:supportsPictureInPicture="false">
+        android:supportsPictureInPicture="false"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScanActivity"
-            android:theme="@style/AppTheme.Transparent"
-            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ScanActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Transparent" />
+
         <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
         <service android:name=".LoggingService" />
+        <service android:name=".GoogleDriveService" />
 
         <receiver
-            android:name="PebbleBroadcastReceiver"
+            android:name=".PebbleBroadcastReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.getpebble.action.app.RECEIVE"/>
-                <action android:name="com.getpebble.action.app.RECEIVE_ACK"/>
-                <action android:name="com.getpebble.action.app.RECEIVE_NACK"/>
+                <action android:name="com.getpebble.action.app.RECEIVE" />
+                <action android:name="com.getpebble.action.app.RECEIVE_ACK" />
+                <action android:name="com.getpebble.action.app.RECEIVE_NACK" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".utils.NotificationUtil$notificationButtonListener" android:exported="false">
+        <receiver
+            android:name=".utils.NotificationUtil$notificationButtonListener"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.cooper.wheellog.notificationConnectionButton" />
                 <action android:name="com.cooper.wheellog.notificationLoggingButton" />
                 <action android:name="com.cooper.wheellog.notificationWatchButton" />
             </intent-filter>
         </receiver>
+
     </application>
+
 </manifest>

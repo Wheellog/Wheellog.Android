@@ -37,6 +37,7 @@ public class LoggingService extends Service
     private LocationManager mLocationManager;
     private String mLocationProvider = LocationManager.NETWORK_PROVIDER;
     private boolean logLocationData = false;
+    private File file;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -106,7 +107,7 @@ public class LoggingService extends Service
         SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
 
         filename = sdFormatter.format(new Date()) + ".csv";
-        File file = FileUtil.getFile(filename);
+        file = FileUtil.getFile(filename);
         if (file == null) {
             stopSelf();
             return START_STICKY;
@@ -165,6 +166,7 @@ public class LoggingService extends Service
     @Override
     public void onDestroy() {
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+        serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
         sendBroadcast(serviceIntent);
         instance = null;
