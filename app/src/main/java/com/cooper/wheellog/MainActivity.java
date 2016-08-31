@@ -17,7 +17,6 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -30,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +64,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     Menu mMenu;
     MenuItem miSearch;
@@ -162,14 +160,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                        String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
-                        if (running) {
-                            showSnackBar(getResources().getString(R.string.started_logging) + filePath, 5000);
-                        } else {
-                            Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
-                            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, filePath);
-                            startService(uploadIntent);
-                        }
+                        String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        if (running)
+                            showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
                     }
 
                     setMenuIconStates();
@@ -598,14 +591,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         } else {
             startBluetoothService();
         }
-
-        Button test = (Button) findViewById(R.id.testButton);
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startService(new Intent(getApplicationContext(), GoogleDriveService.class));
-            }
-        });
     }
 
     @Override
@@ -613,7 +598,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onResume();
 
 
-        if (SettingsUtil.getAutoUpload(this))
+        if (SettingsUtil.isAutoUploadEnabled(this))
             getGoogleApiClient().connect();
 
         if (mBluetoothLeService != null &&
@@ -636,7 +621,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onPause() {
         super.onPause();
         unregisterReceiver(mBluetoothUpdateReceiver);
-        if (SettingsUtil.getAutoUpload(this))
+        if (SettingsUtil.isAutoUploadEnabled(this))
             getGoogleApiClient().disconnect();
     }
 
@@ -776,13 +761,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
         SettingsUtil.setAutoLog(this, false);
-        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshLogSettings();
+        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
-        SettingsUtil.setLogLocation(this, false);
-        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshLogSettings();
+        SettingsUtil.setLogLocationEnabled(this, false);
+        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
@@ -915,21 +900,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     };
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Toast.makeText(this, "Drive connected", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Toast.makeText(this, "Drive Connection Suspended", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Timber.i("GoogleApiClient connection failed: %s", connectionResult.toString());
         if (!connectionResult.hasResolution()) {
             // show the localized error dialog.
             GoogleApiAvailability.getInstance().getErrorDialog(this, connectionResult.getErrorCode(), 0).show();
+            SettingsUtil.setAutoUploadEnabled(this, false);
+            ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
             return;
         }
         try {
@@ -944,7 +921,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(Drive.API)
                     .addScope(Drive.SCOPE_FILE)
-                    .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
         }

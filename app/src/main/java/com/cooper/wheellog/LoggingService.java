@@ -95,7 +95,7 @@ public class LoggingService extends Service
             return START_STICKY;
         }
 
-        logLocationData = SettingsUtil.getLogLocation(this);
+        logLocationData = SettingsUtil.isLogLocationEnabled(this);
 
         if (logLocationData && !PermissionsUtil.checkLocationPermission(this)) {
             showToast(R.string.logging_error_no_location_permission);
@@ -125,7 +125,7 @@ public class LoggingService extends Service
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             // Getting if the users wants to use GPS
-            boolean useGPS = SettingsUtil.getUseGPS(this);
+            boolean useGPS = SettingsUtil.isUseGPSEnabled(this);
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 logLocationData = false;
@@ -173,7 +173,14 @@ public class LoggingService extends Service
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
-        Timber.i("DataLogger stopped");
+
+        if (SettingsUtil.isAutoLogEnabled(this)) {
+            Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
+            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+            startService(uploadIntent);
+        }
+
+        Timber.i("DataLogger Stopped");
     }
 
     /* Checks if external storage is available for read and write */

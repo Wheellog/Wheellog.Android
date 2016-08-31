@@ -44,5 +44,6 @@ public class Constants {
         NINEBOT
     }
 
-    public static final int NOTIFICATION_ID = 1;
+    public static final int MAIN_NOTIFICATION_ID = 10;
+    public static final int DRIVE_UPLOAD_NOTIFICATION_ID = 20;
 }

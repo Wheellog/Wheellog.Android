@@ -36,7 +36,7 @@ public class SettingsUtil {
         return true;
     }
 
-    public static boolean getAutoLog(Context context) {
+    public static boolean isAutoLogEnabled(Context context) {
         return getSharedPreferences(context).getBoolean("auto_log", false);
     }
 
@@ -44,20 +44,24 @@ public class SettingsUtil {
         getSharedPreferences(context).edit().putBoolean("auto_log", enabled).apply();
     }
 
-    public static boolean getLogLocation(Context context) {
+    public static boolean isLogLocationEnabled(Context context) {
         return getSharedPreferences(context).getBoolean("log_location_data", false);
     }
 
-    public static void setLogLocation(Context context, boolean enabled) {
+    public static void setLogLocationEnabled(Context context, boolean enabled) {
         getSharedPreferences(context).edit().putBoolean("log_location_data", enabled).apply();
     }
 
-    public static boolean getUseGPS(Context context) {
+    public static boolean isUseGPSEnabled(Context context) {
         return getSharedPreferences(context).getBoolean("use_gps", false);
     }
 
-    public static boolean getAutoUpload(Context context) {
+    public static boolean isAutoUploadEnabled(Context context) {
         return getSharedPreferences(context).getBoolean("auto_upload", false);
+    }
+
+    public static void setAutoUploadEnabled(Context context, boolean enabled) {
+        getSharedPreferences(context).edit().putBoolean("auto_upload", enabled).apply();
     }
     
     private static SharedPreferences getSharedPreferences(Context context) {

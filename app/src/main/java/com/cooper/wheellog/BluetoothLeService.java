@@ -62,7 +62,7 @@ public class BluetoothLeService extends Service {
                         case STATE_CONNECTED:
                             mConnectionState = STATE_CONNECTED;
                             WheelData.getInstance().setConnected(true);
-                            if (!LoggingService.isInstanceCreated() && SettingsUtil.getAutoLog(BluetoothLeService.this))
+                            if (!LoggingService.isInstanceCreated() && SettingsUtil.isAutoLogEnabled(BluetoothLeService.this))
                                 startService(new Intent(getApplicationContext(), LoggingService.class));
                             break;
                         case STATE_DISCONNECTED:
@@ -255,7 +255,7 @@ public class BluetoothLeService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mNotificationHandler = new NotificationUtil(this);
         registerReceiver(messageReceiver, makeIntentFilter());
-        startForeground(Constants.NOTIFICATION_ID, mNotificationHandler.buildNotification());
+        startForeground(Constants.MAIN_NOTIFICATION_ID, mNotificationHandler.buildNotification());
 
         return START_STICKY;
     }

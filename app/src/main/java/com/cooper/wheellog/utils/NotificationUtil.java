@@ -141,7 +141,7 @@ public class NotificationUtil {
     private void updateNotification() {
         Notification notification = buildNotification();
         android.app.NotificationManager mNotificationManager = (android.app.NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(Constants.NOTIFICATION_ID, notification);
+        mNotificationManager.notify(Constants.MAIN_NOTIFICATION_ID, notification);
     }
 
     public void unregisterReceiver() {

@@ -41,12 +41,10 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
 
-    public void refreshLogSettings() {
-        if (!SettingsUtil.getAutoLog(getActivity()))
-            ((CheckBoxPreference) findPreference("auto_log")).setChecked(false);
-
-        if (!SettingsUtil.getLogLocation(getActivity()))
-            ((CheckBoxPreference) findPreference("log_location_data")).setChecked(false);
+    public void refreshVolatileSettings() {
+        ((CheckBoxPreference) findPreference("auto_log")).setChecked(SettingsUtil.isAutoLogEnabled(getActivity()));
+        ((CheckBoxPreference) findPreference("log_location_data")).setChecked(SettingsUtil.isLogLocationEnabled(getActivity()));
+        ((CheckBoxPreference) findPreference("auto_upload")).setChecked(SettingsUtil.isAutoUploadEnabled(getActivity()));
     }
 
     private void hideShowSeekBars() {

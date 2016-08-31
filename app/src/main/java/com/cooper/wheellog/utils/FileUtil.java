@@ -39,13 +39,12 @@ public class FileUtil {
             f.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Timber.i("******* File not found. Did you add a WRITE_EXTERNAL_STORAGE permission to the manifest?");
+            Timber.e("File not found.");
             return false;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        Timber.i("File written to %s", file.toString());
 
         return true;
     }
