@@ -41,12 +41,12 @@ public class WheelData {
     private int mMode;
     private int mBattery;
     private int mVoltage;
-    private long mDistance;
+//    private long mDistance;
     private int mCurrentTime;
     private int mLastCurrentTime;
     private int mTopSpeed;
     private int mFanStatus;
-    private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
+    private boolean mConnectionState = false;
     private String mName = "";
     private String mModel = "";
     private int mVersion;
@@ -75,7 +75,7 @@ public class WheelData {
     public int getTemperature() { return mTemperature / 100; }
     public int getBatteryLevel() { return mBattery; }
     public int getFanStatus() { return mFanStatus; }
-    public int getConnected() { return mConnectionState; }
+    public boolean isConnected() { return mConnectionState; }
 //    public int getTopSpeed() { return mTopSpeed; }
     public int getVersion() { return mVersion; }
 //    public int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
@@ -100,7 +100,6 @@ public class WheelData {
     public double getPowerDouble() { return (mCurrent*mVoltage)/10000.0; }
     public double getCurrentDouble() { return mCurrent/100.0; }
     public double getTopSpeedDouble() { return mTopSpeed / 100.0; }
-    public double getRawDistanceDouble() { return mDistance / 1000.0; }
     public double getDistanceDouble() { return (mTotalDistance - mStartTotalDistance) / 1000.0; }
     public double getTotalDistanceDouble() { return mTotalDistance / 1000.0; }
 
@@ -108,7 +107,7 @@ public class WheelData {
     public ArrayList<Float> getCurrentAxis() { return currentAxis; }
     public ArrayList<Float> getSpeedAxis() { return speedAxis; }
 
-    public void setConnected(boolean connected) { mConnectionState = connected ? 1 : 0; }
+    public void setConnected(boolean connected) { mConnectionState = connected; }
     public void setAlarmsEnabled(boolean enabled) { mAlarmsEnabled = enabled; }
     public void setSpeedAlarmSpeed(int speed) { mSpeedAlarmSpeed = speed*100; }
 
@@ -122,7 +121,7 @@ public class WheelData {
         if (mStartTotalDistance == 0 && mTotalDistance != 0)
             mStartTotalDistance = mTotalDistance - distance;
 
-        mDistance = distance;
+//        mDistance = distance;
     }
 
     private void setCurrentTime(int currentTime) {
@@ -346,11 +345,10 @@ public class WheelData {
         mMode = 0;
         mBattery = 0;
         mVoltage = 0;
-        mDistance = 0;
+//        mDistance = 0;
         mCurrentTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
-        mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
         mName = "";
         mModel = "";
         mVersion = 0;

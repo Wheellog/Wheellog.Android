@@ -90,17 +90,6 @@
                 style="@style/Stats" />
 
             <TextView
-                android:id="@+id/tvTitleRawDistance"
-                android:visibility="gone"
-                style="@style/Stats.Title"
-                android:text="@string/raw_distance"/>
-
-            <TextView
-                android:id="@+id/tvRawDistance"
-                android:visibility="gone"
-                style="@style/Stats" />
-
-            <TextView
                 android:id="@+id/tvTitleTotalDistance"
                 android:visibility="gone"
                 style="@style/Stats.Title"

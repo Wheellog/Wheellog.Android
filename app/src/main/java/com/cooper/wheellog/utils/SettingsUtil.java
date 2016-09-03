@@ -36,6 +36,10 @@ public class SettingsUtil {
         return true;
     }
 
+    public static boolean getBoolean(Context context, String preference) {
+        return getSharedPreferences(context).getBoolean(preference, false);
+    }
+
     public static boolean isAutoLogEnabled(Context context) {
         return getSharedPreferences(context).getBoolean("auto_log", false);
     }

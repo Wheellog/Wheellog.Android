@@ -15,7 +15,8 @@ public class FileUtil {
     public static File getFile(String filename) {
         // Get the directory for the user's public pictures directory.
         File dir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "wheelLog");
+                Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
+
         if (!dir.mkdirs())
             Timber.i("Directory not created");
 
@@ -25,8 +26,10 @@ public class FileUtil {
     public static boolean writeLine(String filename, String line) {
         File file = getFile(filename);
 
-        if (file == null)
+        if (file == null) {
+            Timber.e("Write failed. File is null");
             return false;
+        }
 
         try {
             FileOutputStream f = new FileOutputStream(file, true);
@@ -38,14 +41,14 @@ public class FileUtil {
             pw.close();
             f.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             Timber.e("File not found.");
+            e.printStackTrace();
             return false;
         } catch (IOException e) {
+            Timber.e("IOException");
             e.printStackTrace();
             return false;
         }
-
         return true;
     }
 }

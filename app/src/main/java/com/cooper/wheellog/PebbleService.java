@@ -1,11 +1,12 @@
 package com.cooper.wheellog;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.cooper.wheellog.utils.Constants;
 import com.getpebble.android.kit.PebbleKit;
@@ -32,7 +33,9 @@ public class PebbleService extends Service {
     int lastBattery = 0;
     int lastTemperature = 0;
     int lastFanStatus = 0;
-    int lastBluetooth = 0;
+    boolean lastConnectionState = false;
+    boolean message_pending = false;
+    boolean data_available = false;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -67,39 +70,32 @@ public class PebbleService extends Service {
                 outgoing.addInt32(KEY_FAN_STATE, lastFanStatus);
             }
 
-            if (lastBluetooth != WheelData.getInstance().getConnected())
+            if (lastConnectionState != WheelData.getInstance().isConnected())
             {
-                lastBluetooth = WheelData.getInstance().getConnected();
-                outgoing.addInt32(KEY_BT_STATE, lastBluetooth);
+                lastConnectionState = !lastConnectionState;
+                outgoing.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
             }
 
             if (outgoing.size() > 0)
             {
+                message_pending = true;
                 PebbleKit.sendDataToPebble(getApplicationContext(), APP_UUID, outgoing);
             }
-            mHandler.postDelayed(mSendPebbleData, 100);
+            data_available = false;
         }
     };
 
-/*
-    private void sendPebbleAlert(final String text) {
-        // Push a notification
-        final Intent i = new Intent("com.getpebble.action.SEND_NOTIFICATION");
+    private final BroadcastReceiver mBreadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
-        final Map data = new HashMap();
-        data.put("title", "Test Message");
-        data.put("body", text);
-        final JSONObject jsonData = new JSONObject(data);
-        final String notificationData = new JSONArray().put(jsonData).toString();
+            if (message_pending)
+                data_available = true;
+            else
+                mHandler.post(mSendPebbleData);
+        }
+    };
 
-        i.putExtra("messageType", "PEBBLE_ALERT");
-        i.putExtra("sender", "PebbleKit Android");
-        i.putExtra("notificationData", notificationData);
-        sendBroadcast(i);
-    }
-*/
-
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -108,15 +104,20 @@ public class PebbleService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
-//        PebbleKit.registerReceivedAckHandler(this, ackReceiver);
+        PebbleKit.registerReceivedAckHandler(this, ackReceiver);
         PebbleKit.registerReceivedNackHandler(this, nackReceiver);
 
         PebbleKit.startAppOnPebble(this, APP_UUID);
-        mHandler.post(mSendPebbleData);
 
-        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        registerReceiver(mBreadcastReceiver, intentFilter);
+
+        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
+                .putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceStartedIntent);
+        mHandler.post(mSendPebbleData);
 
         Timber.d("PebbleConnectivity Started");
         return START_STICKY;
@@ -124,16 +125,30 @@ public class PebbleService extends Service {
 
     @Override
     public void onDestroy() {
+        unregisterReceiver(mBreadcastReceiver);
+        unregisterReceiver(ackReceiver);
+        unregisterReceiver(nackReceiver);
+        mHandler.removeCallbacksAndMessages(null);
+
+        instance = null;
+        PebbleKit.closeAppOnPebble(this, APP_UUID);
+
         Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
         sendBroadcast(serviceStartedIntent);
-        instance = null;
-        PebbleKit.closeAppOnPebble(this, APP_UUID);
-        mHandler.removeCallbacksAndMessages(null);
-//        unregisterReceiver(ackReceiver);
-        unregisterReceiver(nackReceiver);
+
         Timber.i("PebbleConnectivity Stopped");
     }
+
+    private PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {
+        @Override
+        public void receiveAck(Context context, int transactionId) {
+            if (data_available)
+                mHandler.post(mSendPebbleData);
+            else
+                message_pending = false;
+        }
+    };
 
     private PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {
         @Override
@@ -141,8 +156,9 @@ public class PebbleService extends Service {
             lastSpeed = -1;
             lastBattery = -1;
             lastTemperature = -1;
-            lastBluetooth = -1;
+            lastConnectionState = false;
             lastFanStatus = -1;
+            mHandler.post(mSendPebbleData);
         }
     };
 }

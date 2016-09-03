@@ -108,6 +108,7 @@ public class LoggingService extends Service
 
         filename = sdFormatter.format(new Date()) + ".csv";
         file = FileUtil.getFile(filename);
+
         if (file == null) {
             stopSelf();
             return START_STICKY;
@@ -151,6 +152,8 @@ public class LoggingService extends Service
             } else
                 FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature");
         }
+        else
+            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,temperature");
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
@@ -174,7 +177,7 @@ public class LoggingService extends Service
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
 
-        if (SettingsUtil.isAutoLogEnabled(this)) {
+        if (SettingsUtil.isAutoUploadEnabled(this)) {
             Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
             uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
             startService(uploadIntent);

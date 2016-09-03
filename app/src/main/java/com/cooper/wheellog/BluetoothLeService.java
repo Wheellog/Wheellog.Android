@@ -61,16 +61,13 @@ public class BluetoothLeService extends Service {
                     switch (connectionState) {
                         case STATE_CONNECTED:
                             mConnectionState = STATE_CONNECTED;
-                            WheelData.getInstance().setConnected(true);
                             if (!LoggingService.isInstanceCreated() && SettingsUtil.isAutoLogEnabled(BluetoothLeService.this))
                                 startService(new Intent(getApplicationContext(), LoggingService.class));
                             break;
                         case STATE_DISCONNECTED:
                             mConnectionState = STATE_DISCONNECTED;
-                            WheelData.getInstance().setConnected(false);
                             break;
                         case STATE_CONNECTING:
-                            WheelData.getInstance().setConnected(false);
                             mConnectionState = STATE_CONNECTING;
                             break;
                     }
@@ -232,7 +229,8 @@ public class BluetoothLeService extends Service {
         broadcastConnectionUpdate(connectionState, false);
     }
 
-        private void broadcastConnectionUpdate(int connectionState, boolean auto_connect) {
+    private void broadcastConnectionUpdate(int connectionState, boolean auto_connect) {
+        WheelData.getInstance().setConnected(connectionState == STATE_CONNECTED);
         final Intent intent = new Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState);
         if (auto_connect)

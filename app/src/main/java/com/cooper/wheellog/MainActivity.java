@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView tvFanStatus;
     TextView tvTopSpeed;
     TextView tvDistance;
-    TextView tvRawDistance;
     TextView tvModel;
     TextView tvName;
     TextView tvVersion;
@@ -257,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleTopSpeed);
         TextView tvTitleBattery = (TextView) findViewById(R.id.tvTitleBattery);
         TextView tvTitleDistance = (TextView) findViewById(R.id.tvTitleDistance);
-        TextView tvTitleRawDistance = (TextView) findViewById(R.id.tvTitleRawDistance);
         TextView tvTitleRideTime = (TextView) findViewById(R.id.tvTitleRideTime);
         TextView tvTitleVoltage = (TextView) findViewById(R.id.tvTitleVoltage);
         TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
@@ -282,8 +280,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvBattery.setVisibility(View.VISIBLE);
                 tvTitleDistance.setVisibility(View.VISIBLE);
                 tvDistance.setVisibility(View.VISIBLE);
-                tvTitleRawDistance.setVisibility(View.VISIBLE);
-                tvRawDistance.setVisibility(View.VISIBLE);
                 tvTitleRideTime.setVisibility(View.VISIBLE);
                 tvRideTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
@@ -319,8 +315,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvBattery.setVisibility(View.VISIBLE);
                 tvTitleDistance.setVisibility(View.VISIBLE);
                 tvDistance.setVisibility(View.VISIBLE);
-                tvTitleRawDistance.setVisibility(View.VISIBLE);
-                tvRawDistance.setVisibility(View.VISIBLE);
                 tvTitleRideTime.setVisibility(View.VISIBLE);
                 tvRideTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
@@ -344,8 +338,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvBattery.setVisibility(View.GONE);
                 tvTitleDistance.setVisibility(View.GONE);
                 tvDistance.setVisibility(View.GONE);
-                tvTitleRawDistance.setVisibility(View.GONE);
-                tvRawDistance.setVisibility(View.GONE);
                 tvTitleRideTime.setVisibility(View.GONE);
                 tvRideTime.setVisibility(View.GONE);
                 tvTitleVoltage.setVisibility(View.GONE);
@@ -392,13 +384,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     tvSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getSpeedDouble())));
                     tvTopSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
                     tvDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getDistanceDouble())));
-                    tvRawDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getRawDistanceDouble())));
                     tvTotalDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
                 } else {
                     tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
                     tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
                     tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
-                    tvRawDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getRawDistanceDouble()));
                     tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
@@ -516,7 +506,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
         tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
         tvDistance = (TextView) findViewById(R.id.tvDistance);
-        tvRawDistance = (TextView) findViewById(R.id.tvRawDistance);
         tvTotalDistance = (TextView) findViewById(R.id.tvTotalDistance);
         tvModel = (TextView) findViewById(R.id.tvModel);
         tvName = (TextView) findViewById(R.id.tvName);
