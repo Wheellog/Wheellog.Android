@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             switch (intent.getAction()) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
-                    Timber.d("Bluetooth state = %d", connectionState);
+                    Timber.i("Bluetooth state = %d", connectionState);
                     setConnectionState(connectionState);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
@@ -586,7 +586,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onResume() {
         super.onResume();
 
-
         if (SettingsUtil.isAutoUploadEnabled(this))
             getGoogleApiClient().connect();
 
@@ -859,6 +858,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             case REQUEST_CODE_RESOLUTION:
                 if (resultCode == RESULT_OK)
                     getGoogleApiClient().connect();
+                else {
+                    SettingsUtil.setAutoUploadEnabled(this, false);
+                    ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
+                }
                 break;
         }
     }

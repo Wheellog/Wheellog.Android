@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -39,8 +42,9 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
     }
 
     private GoogleApiClient mGoogleApiClient;
-    private String filePath;
     private DriveId folderDriveId;
+    File file;
+    int notification_id = 0;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -51,11 +55,15 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
     public int onStartCommand(Intent intent, int flags, int startId) {
         updateNotification("Log upload started");
         if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-            filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
-            getGoogleApiClient().connect();
-        } else {
-            stopSelf();
-        }
+            String filePath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+            file = new File(filePath);
+            if (file.exists())
+                getGoogleApiClient().connect();
+            else
+                exitUploadFailed();
+        } else
+            exitUploadFailed();
+
         return START_STICKY;
     }
 
@@ -73,11 +81,13 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
 
     private Notification buildNotification(String text, boolean complete) {
         int icon = complete ? R.drawable.ic_stat_cloud_done : R.drawable.ic_stat_cloud_upload;
+        String contentText = file == null ? "" : file.getName();
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         return new NotificationCompat.Builder(this)
                 .setSmallIcon(icon)
                 .setContentTitle(text)
+                .setContentText(contentText)
                 .setContentIntent(pendingIntent)
                 .build();
     }
@@ -88,9 +98,11 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
 
     private void updateNotification(String text, boolean complete) {
         Notification notification = buildNotification(text, complete);
+        if (notification_id == 0)
+            notification_id = createID();
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(Constants.DRIVE_UPLOAD_NOTIFICATION_ID, notification);
+        mNotificationManager.notify(notification_id, notification);
     }
 
     @Override
@@ -112,7 +124,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
     private void createLogInFolder() {
         // create new contents resource
         if (folderDriveId == null)
-            stopSelf();
+            exitUploadFailed();
         else
             Drive.DriveApi.newDriveContents(getGoogleApiClient())
                     .setResultCallback(createLogInFolderCallback);
@@ -124,7 +136,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
                     if (!result.getStatus().isSuccess()) {
                         Timber.i("Problem while retrieving files");
-                        stopSelf();
+                        exitUploadFailed();
                         return;
                     }
                     for (Metadata m: result.getMetadataBuffer()) {
@@ -155,7 +167,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 public void onResult(@NonNull DriveFolder.DriveFolderResult result) {
                     if (!result.getStatus().isSuccess()) {
                         Timber.i("Error while trying to create the folder");
-                        stopSelf();
+                        exitUploadFailed();
                         return;
                     }
                     Timber.i("Created a folder: %s", result.getDriveFolder().getDriveId());
@@ -170,19 +182,18 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 public void onResult(@NonNull DriveApi.DriveContentsResult result) {
                     if (!result.getStatus().isSuccess()) {
                         Timber.i("Error while trying to create new file contents");
-                        stopSelf();
+                        exitUploadFailed();
                         return;
                     }
                     final DriveContents driveContents = result.getDriveContents();
 
-                    File sourceLogFile = new File(filePath);
-                    updateNotification("Uploading file " + sourceLogFile.getName());
+                    updateNotification("Uploading file " + file.getName());
                     // write content to DriveContents
                     OutputStream outputStream = driveContents.getOutputStream();
                     Writer writer = new OutputStreamWriter(outputStream);
 
                     try {
-                        BufferedReader br = new BufferedReader(new FileReader(sourceLogFile));
+                        BufferedReader br = new BufferedReader(new FileReader(file));
                         String line;
 
                         while ((line = br.readLine()) != null)
@@ -195,7 +206,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                     }
 
                     MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                            .setTitle(sourceLogFile.getName())
+                            .setTitle(file.getName())
                             .setMimeType("text/plain")
                             .setStarred(true).build();
 
@@ -212,8 +223,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 public void onResult(@NonNull DriveFolder.DriveFileResult result) {
                     if (!result.getStatus().isSuccess()) {
                         Timber.i("Error while trying to create the file");
-                        updateNotification("Upload failed");
-                        stopSelf();
+                        exitUploadFailed();
                         return;
                     }
                     Timber.i("Created a file with content: %s", result.getDriveFile().getDriveId());
@@ -222,12 +232,21 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 }
             };
 
+    private void exitUploadFailed() {
+        updateNotification("Upload failed");
+        stopSelf();
+    }
+
     @Override
     public void onConnectionSuspended(int i) {
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        stopSelf();
+        exitUploadFailed();
+    }
+
+    public int createID(){
+        return Integer.parseInt(new SimpleDateFormat("ddHHmmss",  Locale.US).format(new Date()));
     }
 }
