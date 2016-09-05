@@ -1,75 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sample="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="Speed Settings">
+    <Preference
+        android:key="speed_preferences"
+        android:title="Speed Settings"
+        android:icon="@drawable/ic_speedometer_white_24dp"/>
 
-        <CheckBoxPreference
-            android:key="use_mph"
-            android:title="Use MPH"
-            android:summary="Show speed in miles rather than kilometers" />
+    <Preference
+        android:key="log_preferences"
+        android:title="Log Settings"
+        android:icon="@drawable/ic_show_chart_white_24dp"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="max_speed"
-            android:title="Max Speed"
-            android:summary="The maximum speed shown on the outer dial"
-            android:enabled="true"
-            android:defaultValue="30"
-
-            sample:msbp_minValue="10"
-            sample:msbp_maxValue="50"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="km/h"
-            sample:msbp_dialogEnabled="true"/>
-
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:title="Log Settings">
-
-        <CheckBoxPreference
-            android:key="auto_log"
-            android:title="Auto Log"
-            android:summary="Start logging automatically when a wheel is connected" />
-
-        <CheckBoxPreference
-            android:key="auto_upload"
-            android:title="Auto Upload Logs"
-            android:summary="Automatically upload log files to Google Drive" />
-
-        <CheckBoxPreference
-            android:key="log_location_data"
-            android:title="Log location"
-            android:summary="Include location data within the logs" />
-
-        <CheckBoxPreference
-            android:key="use_gps"
-            android:dependency="log_location_data"
-            android:title="Use GPS for location"
-            android:summary="Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power" />
-
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:title="Alarm Settings">
-
-        <CheckBoxPreference
-            android:key="alarms_enabled"
-            android:title="Enable Alarms"
-            android:summary="Allow the phone to vibrate as a warning" />
-
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="alarm_speed"
-            android:title="Speed Alarm"
-            android:summary="Set the speed which triggers the phone to vibrate"
-            android:defaultValue="29"
-            sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="50"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="km/h"
-            sample:msbp_dialogEnabled="true"/>
-
-    </PreferenceCategory>
+    <Preference
+        android:key="alarm_preferences"
+        android:title="Alarm Settings"
+        android:icon="@drawable/ic_vibration_white_24dp"/>
 
 </PreferenceScreen>

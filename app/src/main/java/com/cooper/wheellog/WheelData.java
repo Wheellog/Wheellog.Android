@@ -56,8 +56,14 @@ public class WheelData {
     private long mStartTotalDistance;
 
     private boolean mAlarmsEnabled = false;
-    private int mSpeedAlarmSpeed = 0;
-    private boolean mSpeedAlarmExecuted = false;
+    private int mAlarm1Speed = 0;
+    private int mAlarm2Speed = 0;
+    private int mAlarm3Speed = 0;
+    private int mAlarm1Battery = 0;
+    private int mAlarm2Battery = 0;
+    private int mAlarm3Battery = 0;
+
+    private boolean mAlarmExecuted = false;
     
     public static void initiate(Context context) {
         if(mInstance == null)
@@ -109,7 +115,16 @@ public class WheelData {
 
     public void setConnected(boolean connected) { mConnectionState = connected; }
     public void setAlarmsEnabled(boolean enabled) { mAlarmsEnabled = enabled; }
-    public void setSpeedAlarmSpeed(int speed) { mSpeedAlarmSpeed = speed*100; }
+    public void setSpeedAlarmSpeed(int alarm1Speed, int alarm1Battery,
+                                   int alarm2Speed, int alarm2Battery,
+                                   int alarm3Speed, int alarm3Battery) {
+        mAlarm1Speed = alarm1Speed*100;
+        mAlarm2Speed = alarm2Speed*100;
+        mAlarm3Speed = alarm3Speed*100;
+        mAlarm1Battery = alarm1Battery;
+        mAlarm2Battery = alarm2Battery;
+        mAlarm3Battery = alarm3Battery;
+    }
 
     private int byteArrayInt2(byte low, byte high) { return (low & 255) + ((high & 255) * 256); }
 
@@ -136,11 +151,30 @@ public class WheelData {
     }
 
     private void checkAlarmStatus() {
-        if (!mSpeedAlarmExecuted && mSpeedAlarmSpeed > 0 && mSpeed >= mSpeedAlarmSpeed) {
-            mSpeedAlarmExecuted = true;
-            vibrate(AlarmType.speed);
-        } else if (mSpeedAlarmExecuted && mSpeed < mSpeedAlarmSpeed)
-            mSpeedAlarmExecuted = false;
+        if (!mAlarmExecuted) {
+            if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
+                    mBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
+                vibrate(AlarmType.speed);
+            else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
+                    mBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
+                vibrate(AlarmType.speed);
+            else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
+                    mBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
+                vibrate(AlarmType.speed);
+        } else {
+            boolean alarm_required = false;
+            if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
+                    mBattery > mAlarm1Battery && mSpeed < mAlarm1Speed)
+                alarm_required = true;
+            else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
+                    mBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
+                alarm_required = true;
+            else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
+                    mBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
+                alarm_required = true;
+
+            mAlarmExecuted = alarm_required;
+        }
     }
 
     private void vibrate(AlarmType alarmType) {
@@ -154,6 +188,7 @@ public class WheelData {
         switch (alarmType) {
             case speed:
                 pattern = new long[] { 0, 300, 150, 300, 150, 500 };
+                mAlarmExecuted = true;
                 break;
         }
 

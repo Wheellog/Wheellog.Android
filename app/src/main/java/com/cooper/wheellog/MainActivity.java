@@ -516,6 +516,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         wheelView = (WheelView) findViewById(R.id.wheelView);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).show_main_menu();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
         Typeface typefacePrime = Typefaces.get(this, "fonts/prime.otf");
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
@@ -660,9 +679,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        View settings_layout = findViewById(R.id.settings_layout);
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
-                View settings_layout = findViewById(R.id.settings_layout);
                 if (mDrawer.isDrawerOpen(settings_layout)) {
                     mDrawer.closeDrawers();
                 } else {
@@ -670,20 +689,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
                 return true;
             case KeyEvent.KEYCODE_BACK:
-                if (doubleBackToExitPressedOnce) {
-                    finish();
-                    return true;
-                }
-
-                doubleBackToExitPressedOnce = true;
-                showSnackBar(R.string.back_to_exit);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        doubleBackToExitPressedOnce=false;
+                if (mDrawer.isDrawerOpen(settings_layout)) {
+                    if (!((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).show_main_menu())
+                        mDrawer.closeDrawer(GravityCompat.START, true);
+                } else {
+                    if (doubleBackToExitPressedOnce) {
+                        finish();
+                        return true;
                     }
-                }, 2000);
+
+                    doubleBackToExitPressedOnce = true;
+                    showSnackBar(R.string.back_to_exit);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            doubleBackToExitPressedOnce = false;
+                        }
+                    }, 2000);
+                }
                 return true;
             default:
                 return super.onKeyDown(keyCode, event);
@@ -712,23 +736,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {
-            int speedAlarmSpeed = sharedPreferences.getInt("alarm_speed", 0);
-            WheelData.getInstance().setSpeedAlarmSpeed(speedAlarmSpeed);
-            wheelView.setWarningSpeed(speedAlarmSpeed);
-        } else {
-            WheelData.getInstance().setSpeedAlarmSpeed(0);
+            int alarm1Speed = sharedPreferences.getInt("alarm_1_speed", 0);
+            int alarm2Speed = sharedPreferences.getInt("alarm_2_speed", 0);
+            int alarm3Speed = sharedPreferences.getInt("alarm_3_speed", 0);
+            int alarm1Battery = sharedPreferences.getInt("alarm_1_battery", 0);
+            int alarm2Battery = sharedPreferences.getInt("alarm_2_battery", 0);
+            int alarm3Battery = sharedPreferences.getInt("alarm_3_battery", 0);
+
+            WheelData.getInstance().setSpeedAlarmSpeed(
+                    alarm1Speed, alarm1Battery,
+                    alarm2Speed, alarm2Battery,
+                    alarm3Speed, alarm3Battery);
+            wheelView.setWarningSpeed(alarm1Speed);
+        } else
             wheelView.setWarningSpeed(0);
-        }
 
         boolean auto_log = sharedPreferences.getBoolean("auto_log", false);
         boolean log_location = sharedPreferences.getBoolean("log_location_data", false);
         boolean auto_upload = sharedPreferences.getBoolean("auto_upload", false);
 
-        if (auto_log && !log_location)
+        if (auto_log)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
-        else if (auto_log)
-            MainActivityPermissionsDispatcher.acquireStoragePlusLocationPermissionWithCheck(this);
-        else if (log_location)
+
+        if (log_location)
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
 
         if (auto_upload)
@@ -742,9 +772,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     void acquireLocationPermission() {}
-
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION})
-    void acquireStoragePlusLocationPermission() {}
 
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
@@ -787,6 +814,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (LoggingService.isInstanceCreated())
             toggleLoggingService();
     }
+
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);

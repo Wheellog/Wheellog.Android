@@ -12,6 +12,7 @@ import com.cooper.wheellog.utils.Constants;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
+import java.util.Calendar;
 import java.util.UUID;
 
 import timber.log.Timber;
@@ -19,6 +20,7 @@ import timber.log.Timber;
 public class PebbleService extends Service {
 
     private static final UUID APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
+    private static final int MESSAGE_TIMEOUT = 1000;
 
     static final int KEY_SPEED = 0;
     static final int KEY_BATTERY = 1;
@@ -28,6 +30,7 @@ public class PebbleService extends Service {
 
     private Handler mHandler = new Handler();
     private static PebbleService instance = null;
+    private long last_message_send_time;
 
     int lastSpeed = 0;
     int lastBattery = 0;
@@ -81,6 +84,7 @@ public class PebbleService extends Service {
                 message_pending = true;
                 PebbleKit.sendDataToPebble(getApplicationContext(), APP_UUID, outgoing);
             }
+            last_message_send_time = Calendar.getInstance().getTimeInMillis();
             data_available = false;
         }
     };
@@ -89,7 +93,7 @@ public class PebbleService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (message_pending)
+            if (message_pending && last_message_send_time + MESSAGE_TIMEOUT >= Calendar.getInstance().getTimeInMillis())
                 data_available = true;
             else
                 mHandler.post(mSendPebbleData);

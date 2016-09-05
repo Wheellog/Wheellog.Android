@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sample="http://schemas.android.com/apk/res-auto">
+
+    <CheckBoxPreference
+        android:key="use_mph"
+        android:title="Use MPH"
+        android:summary="Show speed in miles rather than kilometers" />
+
+    <com.pavelsikun.seekbarpreference.SeekBarPreference
+        android:key="max_speed"
+        android:title="Max Speed"
+        android:summary="The maximum speed shown on the outer dial"
+        android:enabled="true"
+        android:defaultValue="30"
+
+        sample:msbp_minValue="10"
+        sample:msbp_maxValue="50"
+        sample:msbp_interval="1"
+        sample:msbp_measurementUnit="km/h"
+        sample:msbp_dialogEnabled="true"/>
+
+</PreferenceScreen>
