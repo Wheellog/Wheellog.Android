@@ -168,10 +168,12 @@ public class LoggingService extends Service
     @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
-        Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-        sendBroadcast(serviceIntent);
+        if (file != null) {
+            Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+            sendBroadcast(serviceIntent);
+        }
         instance = null;
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
