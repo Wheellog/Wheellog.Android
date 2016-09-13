@@ -8,8 +8,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
         targetSdkVersion 24
-        versionCode 30
-        versionName "1.5.1"
+        versionCode 31
+        versionName "1.6.0"
     }
     buildTypes {
         release {

@@ -150,7 +150,8 @@ public class BluetoothLeService extends Service {
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
-                mDisconnectTime = Calendar.getInstance().getTime();
+                if (mConnectionState == STATE_CONNECTED)
+                    mDisconnectTime = Calendar.getInstance().getTime();
                 if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     Timber.i("Trying to reconnect");

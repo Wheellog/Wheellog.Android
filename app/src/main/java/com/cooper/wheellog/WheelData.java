@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Vibrator;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 
 import java.text.SimpleDateFormat;
@@ -21,10 +22,6 @@ public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
     private static Context mContext;
-
-    private enum AlarmType {
-        speed
-    }
 
     private BluetoothLeService mBluetoothLeService;
 
@@ -59,14 +56,17 @@ public class WheelData {
     private long mStartTotalDistance;
 
     private boolean mAlarmsEnabled = false;
+    private boolean mDisablePhoneVibrate = false;
     private int mAlarm1Speed = 0;
     private int mAlarm2Speed = 0;
     private int mAlarm3Speed = 0;
     private int mAlarm1Battery = 0;
     private int mAlarm2Battery = 0;
     private int mAlarm3Battery = 0;
+    private int mAlarmCurrent = 0;
 
-    private boolean mAlarmExecuted = false;
+    private boolean mSpeedAlarmExecuted = false;
+    private boolean mCurrentAlarmExecuted = false;
 
     public static void initiate(Context context) {
         if (mInstance == null)
@@ -90,10 +90,6 @@ public class WheelData {
 
     public int getBatteryLevel() {
         return mBattery;
-    }
-
-    public double getAverageBatteryLevel() {
-        return mAverageBattery;
     }
 
     public int getFanStatus() {
@@ -188,15 +184,18 @@ public class WheelData {
         mAlarmsEnabled = enabled;
     }
 
-    public void setSpeedAlarmSpeed(int alarm1Speed, int alarm1Battery,
+    public void setPreferences(int alarm1Speed, int alarm1Battery,
                                    int alarm2Speed, int alarm2Battery,
-                                   int alarm3Speed, int alarm3Battery) {
+                                   int alarm3Speed, int alarm3Battery,
+                                   int alarmCurrent, boolean disablePhoneVibrate) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
         mAlarm1Battery = alarm1Battery;
         mAlarm2Battery = alarm2Battery;
         mAlarm3Battery = alarm3Battery;
+        mAlarmCurrent = alarmCurrent*100;
+        mDisablePhoneVibrate = disablePhoneVibrate;
     }
 
     private int byteArrayInt2(byte low, byte high) {
@@ -235,48 +234,64 @@ public class WheelData {
     }
 
     private void checkAlarmStatus() {
-        if (!mAlarmExecuted) {
+        // SPEED ALARM
+        if (!mSpeedAlarmExecuted) {
             if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
                     mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
-                vibrate(AlarmType.speed);
+                raiseAlarm(ALARM_TYPE.SPEED);
             else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
                     mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-                vibrate(AlarmType.speed);
+                raiseAlarm(ALARM_TYPE.SPEED);
             else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
                     mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-                vibrate(AlarmType.speed);
+                raiseAlarm(ALARM_TYPE.SPEED);
         } else {
-            boolean alarm_required = false;
+            boolean alarm_finished = false;
             if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
                     mAverageBattery > mAlarm1Battery && mSpeed < mAlarm1Speed)
-                alarm_required = true;
+                alarm_finished = true;
             else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
                     mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-                alarm_required = true;
+                alarm_finished = true;
             else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
                     mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-                alarm_required = true;
+                alarm_finished = true;
 
-            mAlarmExecuted = alarm_required;
+            mSpeedAlarmExecuted = alarm_finished;
+        }
+
+        // CURRENT
+        if (!mCurrentAlarmExecuted) {
+            if (mAlarmCurrent > 0 &&
+                    mCurrent >= mAlarmCurrent) {
+                raiseAlarm(ALARM_TYPE.CURRENT);
+            }
+        } else {
+            if (mCurrent < mAlarmCurrent)
+                mCurrentAlarmExecuted = false;
         }
     }
 
-    private void vibrate(AlarmType alarmType) {
+    private void raiseAlarm(ALARM_TYPE alarmType) {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
 
-        if (!v.hasVibrator())
-            return;
-
         long[] pattern = {0};
+        Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
+        intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
 
         switch (alarmType) {
-            case speed:
+            case SPEED:
                 pattern = new long[]{0, 300, 150, 300, 150, 500};
-                mAlarmExecuted = true;
+                mSpeedAlarmExecuted = true;
+                break;
+            case CURRENT:
+                pattern = new long[]{0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
+                mCurrentAlarmExecuted = true;
                 break;
         }
-
-        v.vibrate(pattern, -1);
+        mContext.sendBroadcast(intent);
+        if (v.hasVibrator() && !mDisablePhoneVibrate)
+            v.vibrate(pattern, -1);
     }
 
     public void decodeResponse(byte[] data) {

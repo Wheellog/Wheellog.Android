@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.widget.Toast;
 
 import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.PebbleKit;
@@ -26,7 +27,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
             final String jsonData = intent.getStringExtra(Constants.MSG_DATA);
             try {
                 final PebbleDictionary data = PebbleDictionary.fromJson(jsonData);
-//                Toast.makeText(context,jsonData, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,jsonData, Toast.LENGTH_SHORT).show();
                 PebbleKit.sendAckToPebble(context, transactionId);
                 if (data.contains(com.cooper.wheellog.utils.Constants.PEBBLE_KEY_LAUNCH_APP) && !PebbleService.isInstanceCreated()) {
                     Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
