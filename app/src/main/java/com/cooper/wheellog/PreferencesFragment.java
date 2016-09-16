@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.SettingsUtil;
+import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
 public class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -20,7 +21,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         Main,
         Speed,
         Logs,
-        Alarms
+        Alarms,
+        Watch
     }
 
     private boolean mDataWarningDisplayed = false;
@@ -78,6 +80,13 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                             .show();
                 } else
                     mDataWarningDisplayed = false;
+                break;
+            case "use_mph":
+                getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
+                break;
+            case "max_mph":
+                getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
+                break;
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
@@ -102,6 +111,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 Preference speed_button = findPreference("speed_preferences");
                 Preference logs_button = findPreference("log_preferences");
                 Preference alarm_button = findPreference("alarm_preferences");
+                Preference watch_button = findPreference("watch_preferences");
 
                 if (speed_button != null) {
                     speed_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -139,6 +149,18 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         }
                     });
                 }
+                if (watch_button != null) {
+                    watch_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            currentScreen = SettingsScreen.Watch;
+                            getPreferenceScreen().removeAll();
+                            addPreferencesFromResource(R.xml.preferences_watch);
+                            setup_screen();
+                            return true;
+                        }
+                    });
+                }
                 break;
             case Speed:
                 tb.setTitle("Speed Settings");
@@ -149,6 +171,9 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
             case Alarms:
                 tb.setTitle("Alarm Settings");
                 hideShowSeekBars();
+                break;
+            case Watch:
+                tb.setTitle("Watch Settings");
                 break;
         }
     }
@@ -175,12 +200,20 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
     private void hideShowSeekBars() {
         boolean alarms_enabled = getPreferenceManager().getSharedPreferences().getBoolean("alarms_enabled", false);
-        findPreference("alarm_1_speed").setEnabled(alarms_enabled);
-        findPreference("alarm_2_speed").setEnabled(alarms_enabled);
-        findPreference("alarm_3_speed").setEnabled(alarms_enabled);
-        findPreference("alarm_1_battery").setEnabled(alarms_enabled);
-        findPreference("alarm_2_battery").setEnabled(alarms_enabled);
-        findPreference("alarm_3_battery").setEnabled(alarms_enabled);
+        String[] seekbar_preferences = {
+                "alarm_1_speed",
+                "alarm_2_speed",
+                "alarm_3_speed",
+                "alarm_1_battery",
+                "alarm_2_battery",
+                "alarm_3_battery",
+                "alarm_current"};
+
+        for (String preference : seekbar_preferences) {
+            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+            if (seekbar != null)
+                seekbar.setEnabled(alarms_enabled);
+        }
     }
 
     public boolean show_main_menu() {

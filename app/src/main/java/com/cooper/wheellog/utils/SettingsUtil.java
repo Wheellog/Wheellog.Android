@@ -71,4 +71,16 @@ public class SettingsUtil {
     private static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
+
+    public static boolean isUseMPH(Context context) {
+        return getSharedPreferences(context).getBoolean("use_mph", false);
+    }
+
+    public static int getMaxSpeed(Context context) {
+        return getSharedPreferences(context).getInt("max_speed", 30);
+    }
+
+    public static int getHornMode(Context context) {
+        return Integer.parseInt(getSharedPreferences(context).getString("horn_mode", "0"));
+    }
 }

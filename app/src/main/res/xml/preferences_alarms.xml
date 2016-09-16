@@ -12,8 +12,7 @@
         android:key="disable_phone_vibrate"
         android:dependency="alarms_enabled"
         android:title="Disable Phone Vibration"
-        android:summary="Phone will not vibrate but the alarm will be passed
-         to a connected Pebble Watch" />
+        android:summary="Phone will not vibrate but the alarm will be passed to a connected Pebble Watch" />
 
     <PreferenceCategory
         android:title="Speed Alarm 1">

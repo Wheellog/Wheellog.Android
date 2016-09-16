@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.IBinder;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.SettingsUtil;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -28,19 +29,24 @@ public class PebbleService extends Service {
     static final int KEY_FAN_STATE = 3;
     static final int KEY_BT_STATE = 4;
     static final int KEY_VIBE_ALERT = 5;
+    static final int KEY_USE_MPH = 6;
+    static final int KEY_MAX_SPEED = 7;
 
     private Handler mHandler = new Handler();
     private static PebbleService instance = null;
     private long last_message_send_time;
+    PebbleDictionary outgoingDictionary = new PebbleDictionary();
 
     int lastSpeed = 0;
     int lastBattery = 0;
     int lastTemperature = 0;
     int lastFanStatus = 0;
     boolean lastConnectionState = false;
+    int vibe_alarm = -1;
+    boolean refreshAll = true;
+
     boolean message_pending = false;
     boolean data_available = false;
-    int vibe_alarm = -1;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -49,62 +55,76 @@ public class PebbleService extends Service {
     private Runnable mSendPebbleData = new Runnable() {
         @Override
         public void run() {
-            PebbleDictionary outgoing = new PebbleDictionary();
 
-            if (lastSpeed != WheelData.getInstance().getSpeed())
+            if (refreshAll) {
+                outgoingDictionary.addInt32(KEY_USE_MPH, SettingsUtil.isUseMPH(PebbleService.this) ? 1 : 0);
+                outgoingDictionary.addInt32(KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(PebbleService.this));
+            }
+
+            if (refreshAll || lastSpeed != WheelData.getInstance().getSpeed())
             {
                 lastSpeed = WheelData.getInstance().getSpeed();
-                outgoing.addInt32(KEY_SPEED, lastSpeed);
+                outgoingDictionary.addInt32(KEY_SPEED, lastSpeed);
             }
 
-            if (lastBattery != WheelData.getInstance().getBatteryLevel())
+            if (refreshAll || lastBattery != WheelData.getInstance().getBatteryLevel())
             {
                 lastBattery = WheelData.getInstance().getBatteryLevel();
-                outgoing.addInt32(KEY_BATTERY, lastBattery);
+                outgoingDictionary.addInt32(KEY_BATTERY, lastBattery);
             }
 
-            if (lastTemperature != WheelData.getInstance().getTemperature())
+            if (refreshAll || lastTemperature != WheelData.getInstance().getTemperature())
             {
                 lastTemperature = WheelData.getInstance().getTemperature();
-                outgoing.addInt32(KEY_TEMPERATURE, lastTemperature);
+                outgoingDictionary.addInt32(KEY_TEMPERATURE, lastTemperature);
             }
 
-            if (lastFanStatus != WheelData.getInstance().getFanStatus())
+            if (refreshAll || lastFanStatus != WheelData.getInstance().getFanStatus())
             {
                 lastFanStatus = WheelData.getInstance().getFanStatus();
-                outgoing.addInt32(KEY_FAN_STATE, lastFanStatus);
+                outgoingDictionary.addInt32(KEY_FAN_STATE, lastFanStatus);
             }
 
-            if (lastConnectionState != WheelData.getInstance().isConnected())
+            if (refreshAll || lastConnectionState != WheelData.getInstance().isConnected())
             {
-                lastConnectionState = !lastConnectionState;
-                outgoing.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
+                lastConnectionState = WheelData.getInstance().isConnected();
+                outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
             }
 
             if (vibe_alarm >= 0) {
-                outgoing.addInt32(KEY_VIBE_ALERT, vibe_alarm);
+                outgoingDictionary.addInt32(KEY_VIBE_ALERT, vibe_alarm);
                 vibe_alarm = -1;
             }
 
-            if (outgoing.size() > 0)
-            {
+            if (outgoingDictionary.size() > 0) {
                 message_pending = true;
-                PebbleKit.sendDataToPebble(getApplicationContext(), APP_UUID, outgoing);
+                PebbleKit.sendDataToPebble(getApplicationContext(), APP_UUID, outgoingDictionary);
             }
-
             last_message_send_time = Calendar.getInstance().getTimeInMillis();
             data_available = false;
+            refreshAll = false;
         }
     };
 
-    private final BroadcastReceiver mBreadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Constants.ACTION_ALARM_TRIGGERED.equals(intent.getAction())) {
-                if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE))
-                    vibe_alarm = ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
+
+
+            switch (intent.getAction()) {
+                case Constants.ACTION_ALARM_TRIGGERED:
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE))
+                        vibe_alarm = ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
+                    break;
+                case Constants.ACTION_PEBBLE_APP_READY:
+                    refreshAll = true;
+                    break;
+                case Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED:
+                    refreshAll = true;
+                    break;
             }
 
+            // There's something new to send, start the check
             if (message_pending &&
                     last_message_send_time + MESSAGE_TIMEOUT >= Calendar.getInstance().getTimeInMillis())
                 data_available = true;
@@ -130,7 +150,9 @@ public class PebbleService extends Service {
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
-        registerReceiver(mBreadcastReceiver, intentFilter);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_APP_READY);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED);
+        registerReceiver(mBroadcastReceiver, intentFilter);
 
         Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
                 .putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
@@ -143,7 +165,7 @@ public class PebbleService extends Service {
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(mBreadcastReceiver);
+        unregisterReceiver(mBroadcastReceiver);
         unregisterReceiver(ackReceiver);
         unregisterReceiver(nackReceiver);
         mHandler.removeCallbacksAndMessages(null);
@@ -161,21 +183,17 @@ public class PebbleService extends Service {
     private PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {
         @Override
         public void receiveAck(Context context, int transactionId) {
+            outgoingDictionary = new PebbleDictionary();
+
             if (data_available)
                 mHandler.post(mSendPebbleData);
             else
-                message_pending = false;
-        }
+                message_pending = false;}
     };
 
     private PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {
         @Override
         public void receiveNack(Context context, int transactionId) {
-            lastSpeed = -1;
-            lastBattery = -1;
-            lastTemperature = -1;
-            lastConnectionState = false;
-            lastFanStatus = -1;
             mHandler.post(mSendPebbleData);
         }
     };

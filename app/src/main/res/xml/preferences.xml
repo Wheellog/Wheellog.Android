@@ -17,4 +17,9 @@
         android:title="Alarm Settings"
         android:icon="@drawable/ic_vibration_white_24dp"/>
 
+    <Preference
+        android:key="watch_preferences"
+        android:title="Watch Preferences"
+        android:icon="@drawable/ic_watch_white_24dp" />
+
 </PreferenceScreen>
