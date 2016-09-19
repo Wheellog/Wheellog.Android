@@ -725,25 +725,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void loadPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        use_mph = sharedPreferences.getBoolean("use_mph", false);
-        int max_speed = sharedPreferences.getInt("max_speed", 30) * 10;
+        use_mph = sharedPreferences.getBoolean(getString(R.string.use_mph), false);
+        int max_speed = sharedPreferences.getInt(getString(R.string.max_speed), 30) * 10;
         wheelView.setMaxSpeed(max_speed);
         wheelView.setUseMPH(use_mph);
         wheelView.invalidate();
 
-        boolean alarms_enabled = sharedPreferences.getBoolean("alarms_enabled", false);
+        boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
 
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {
-            int alarm1Speed = sharedPreferences.getInt("alarm_1_speed", 0);
-            int alarm2Speed = sharedPreferences.getInt("alarm_2_speed", 0);
-            int alarm3Speed = sharedPreferences.getInt("alarm_3_speed", 0);
-            int alarm1Battery = sharedPreferences.getInt("alarm_1_battery", 0);
-            int alarm2Battery = sharedPreferences.getInt("alarm_2_battery", 0);
-            int alarm3Battery = sharedPreferences.getInt("alarm_3_battery", 0);
-            int current_alarm = sharedPreferences.getInt("alarm_current", 0);
-            boolean disablePhoneVibrate = sharedPreferences.getBoolean("disable_phone_vibrate", false);
+            int alarm1Speed = sharedPreferences.getInt(getString(R.string.alarm_1_speed), 0);
+            int alarm2Speed = sharedPreferences.getInt(getString(R.string.alarm_2_speed), 0);
+            int alarm3Speed = sharedPreferences.getInt(getString(R.string.alarm_3_speed), 0);
+            int alarm1Battery = sharedPreferences.getInt(getString(R.string.alarm_1_battery), 0);
+            int alarm2Battery = sharedPreferences.getInt(getString(R.string.alarm_2_battery), 0);
+            int alarm3Battery = sharedPreferences.getInt(getString(R.string.alarm_3_battery), 0);
+            int current_alarm = sharedPreferences.getInt(getString(R.string.alarm_current), 0);
+            boolean disablePhoneVibrate = sharedPreferences.getBoolean(getString(R.string.disable_phone_vibrate), false);
 
             WheelData.getInstance().setPreferences(
                     alarm1Speed, alarm1Battery,
@@ -754,9 +754,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         } else
             wheelView.setWarningSpeed(0);
 
-        boolean auto_log = sharedPreferences.getBoolean("auto_log", false);
-        boolean log_location = sharedPreferences.getBoolean("log_location_data", false);
-        boolean auto_upload = sharedPreferences.getBoolean("auto_upload", false);
+        boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
+        boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
+        boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
 
         if (auto_log)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);

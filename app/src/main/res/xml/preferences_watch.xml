@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:key="horn_mode"
+        android:key="@string/horn_mode"
         android:title="Horn Mode"
         android:defaultValue="0"
         android:entries="@array/horn_modes"

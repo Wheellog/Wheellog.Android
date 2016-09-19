@@ -3,22 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        android:key="speed_preferences"
+        android:key="@string/speed_preferences"
         android:title="Speed Settings"
         android:icon="@drawable/ic_speedometer_white_24dp"/>
 
     <Preference
-        android:key="log_preferences"
+        android:key="@string/log_preferences"
         android:title="Log Settings"
         android:icon="@drawable/ic_show_chart_white_24dp"/>
 
     <Preference
-        android:key="alarm_preferences"
+        android:key="@string/alarm_preferences"
         android:title="Alarm Settings"
         android:icon="@drawable/ic_vibration_white_24dp"/>
 
     <Preference
-        android:key="watch_preferences"
+        android:key="@string/watch_preferences"
         android:title="Watch Preferences"
         android:icon="@drawable/ic_watch_white_24dp" />
 

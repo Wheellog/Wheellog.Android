@@ -66,4 +66,35 @@
     <string name="logging_error_network_disabled">Location logging using GSM Network was requested but this location provider is disabled. No location data will be logged.</string>
     <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
     <string name="raw_distance">Raw Distance</string>
+
+    // PREFERENCES
+    <string name="speed_preferences" translatable="false">speed_preferences</string>
+    <string name="log_preferences" translatable="false">log_preferences</string>
+    <string name="alarm_preferences" translatable="false">alarm_preferences</string>
+    <string name="watch_preferences" translatable="false">watch_preferences</string>
+
+    // ALARM PREFERENCES
+    <string name="alarms_enabled" translatable="false">alarms_enabled</string>
+    <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
+    <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
+    <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
+    <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
+    <string name="alarm_2_battery" translatable="false">alarm_2_battery</string>
+    <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
+    <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
+    <string name="alarm_current" translatable="false">alarm_current</string>
+
+    // LOG PREFERENCES
+    <string name="auto_log" translatable="false">auto_log</string>
+    <string name="auto_upload" translatable="false">auto_upload</string>
+    <string name="log_location_data" translatable="false">log_location_data</string>
+    <string name="use_gps" translatable="false">use_gps</string>
+
+    // SPEED PREFERENCES
+    <string name="use_mph" translatable="false">use_mph</string>
+    <string name="max_speed" translatable="false">max_speed</string>
+
+    // WATCH PREFERENCES
+    <string name="horn_mode" translatable="false">horn_mode</string>
+
 </resources>

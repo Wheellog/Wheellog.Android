@@ -84,7 +84,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
             case "use_mph":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
-            case "max_mph":
+            case "max_speed":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
         }
@@ -108,10 +108,10 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         switch (currentScreen) {
             case Main:
                 tb.setTitle("Settings");
-                Preference speed_button = findPreference("speed_preferences");
-                Preference logs_button = findPreference("log_preferences");
-                Preference alarm_button = findPreference("alarm_preferences");
-                Preference watch_button = findPreference("watch_preferences");
+                Preference speed_button = findPreference(getString(R.string.speed_preferences));
+                Preference logs_button = findPreference(getString(R.string.log_preferences));
+                Preference alarm_button = findPreference(getString(R.string.alarm_preferences));
+                Preference watch_button = findPreference(getString(R.string.watch_preferences));
 
                 if (speed_button != null) {
                     speed_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -180,9 +180,9 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
     public void refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
-            correctCheckState("auto_log");
-            correctCheckState("log_location_data");
-            correctCheckState("auto_upload");
+            correctCheckState(getString(R.string.auto_log));
+            correctCheckState(getString(R.string.log_location_data));
+            correctCheckState(getString(R.string.auto_upload));
         }
     }
 
@@ -199,15 +199,16 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     }
 
     private void hideShowSeekBars() {
-        boolean alarms_enabled = getPreferenceManager().getSharedPreferences().getBoolean("alarms_enabled", false);
+        boolean alarms_enabled = getPreferenceManager().getSharedPreferences()
+                .getBoolean(getString(R.string.alarms_enabled), false);
         String[] seekbar_preferences = {
-                "alarm_1_speed",
-                "alarm_2_speed",
-                "alarm_3_speed",
-                "alarm_1_battery",
-                "alarm_2_battery",
-                "alarm_3_battery",
-                "alarm_current"};
+                getString(R.string.alarm_1_speed),
+                getString(R.string.alarm_2_speed),
+                getString(R.string.alarm_3_speed),
+                getString(R.string.alarm_1_battery),
+                getString(R.string.alarm_2_battery),
+                getString(R.string.alarm_3_battery),
+                getString(R.string.alarm_current)};
 
         for (String preference : seekbar_preferences) {
             SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);

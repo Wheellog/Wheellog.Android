@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
 
-import timber.log.Timber;
+import com.cooper.wheellog.R;
 
 
 public class SettingsUtil {
@@ -41,31 +41,31 @@ public class SettingsUtil {
     }
 
     public static boolean isAutoLogEnabled(Context context) {
-        return getSharedPreferences(context).getBoolean("auto_log", false);
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_log), false);
     }
 
     public static void setAutoLog(Context context, boolean enabled) {
-        getSharedPreferences(context).edit().putBoolean("auto_log", enabled).apply();
+        getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_log), enabled).apply();
     }
 
     public static boolean isLogLocationEnabled(Context context) {
-        return getSharedPreferences(context).getBoolean("log_location_data", false);
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.log_location_data), false);
     }
 
     public static void setLogLocationEnabled(Context context, boolean enabled) {
-        getSharedPreferences(context).edit().putBoolean("log_location_data", enabled).apply();
+        getSharedPreferences(context).edit().putBoolean(context.getString(R.string.log_location_data), enabled).apply();
     }
 
     public static boolean isUseGPSEnabled(Context context) {
-        return getSharedPreferences(context).getBoolean("use_gps", false);
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.use_gps), false);
     }
 
     public static boolean isAutoUploadEnabled(Context context) {
-        return getSharedPreferences(context).getBoolean("auto_upload", false);
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_upload), false);
     }
 
     public static void setAutoUploadEnabled(Context context, boolean enabled) {
-        getSharedPreferences(context).edit().putBoolean("auto_upload", enabled).apply();
+        getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_upload), enabled).apply();
     }
     
     private static SharedPreferences getSharedPreferences(Context context) {
@@ -73,14 +73,14 @@ public class SettingsUtil {
     }
 
     public static boolean isUseMPH(Context context) {
-        return getSharedPreferences(context).getBoolean("use_mph", false);
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.use_mph), false);
     }
 
     public static int getMaxSpeed(Context context) {
-        return getSharedPreferences(context).getInt("max_speed", 30);
+        return getSharedPreferences(context).getInt(context.getString(R.string.max_speed), 30);
     }
 
     public static int getHornMode(Context context) {
-        return Integer.parseInt(getSharedPreferences(context).getString("horn_mode", "0"));
+        return Integer.parseInt(getSharedPreferences(context).getString(context.getString(R.string.horn_mode), "0"));
     }
 }
