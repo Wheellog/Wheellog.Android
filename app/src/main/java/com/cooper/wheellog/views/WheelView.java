@@ -221,16 +221,27 @@ public class WheelView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        boolean landscape = w > h;
 
         // Account for padding
         float xpad = (float) (getPaddingLeft() + getPaddingRight());
-        float ww = (float) w - xpad;
+        float ww;
+
+        if (landscape)
+            ww = (float) h - xpad;
+        else
+            ww = (float) w - xpad;
+
         float oaDiameter = ww - outerStrokeWidth;
         float oaRadius = oaDiameter / 2;
 
         float center_x = w / 2;
-        float center_y = (ww/2) + getPaddingTop();
+        float center_y;
 
+        if (landscape)
+            center_y = h / 2;
+        else
+            center_y = (ww/2) + getPaddingTop();
 
         float orLeft = center_x - oaRadius;
         float orTop = center_y - oaRadius;
@@ -291,33 +302,75 @@ public class WheelView extends View {
         innerArcTextSize = calculateFontSize(boundaryOfText, batteryTextRect, "88%", textPaint);
 
 
-        int tTop = (int) Math.round(outerArcRect.top+oaRadius+box_top_padding+(Math.cos(Math.toRadians(54)) * (oaRadius+(outerStrokeWidth/2))));
-        int height = Math.round((getHeight() - tTop - (box_inner_padding*2) - getPaddingBottom())/3);
-        int tBottom = tTop+height;
-        int mTop = Math.round(tBottom+box_inner_padding);
-        int mBottom = mTop + height;
-        int bTop = Math.round(mBottom+box_inner_padding);
-        int bBottom = bTop + height;
-        int lLeft = Math.round(getPaddingLeft());
-        int lRight = Math.round(center_y-(box_inner_padding/2));
-        int rLeft = Math.round(center_y + (box_inner_padding/2));
-        int rRight = getWidth()-getPaddingRight();
+        if (landscape) {
+            int tTop = getPaddingTop();
+            int height = Math.round((getHeight() - tTop - (box_inner_padding * 2) - getPaddingBottom()) / 3);
+            int tBottom = tTop + height;
+            int mTop = Math.round(tBottom + box_inner_padding);
+            int mBottom = mTop + height;
+            int bTop = Math.round(mBottom + box_inner_padding);
+            int bBottom = bTop + height;
 
-        tlRect.set(lLeft, tTop, lRight, tBottom);
-        trRect.set(rLeft, tTop, rRight, tBottom);
-        mlRect.set(lLeft, mTop, lRight, mBottom);
-        mrRect.set(rLeft, mTop, rRight, mBottom);
-        blRect.set(lLeft, bTop, lRight, bBottom);
-        brRect.set(rLeft, bTop, rRight, bBottom);
+            int lLeft = Math.round(getPaddingLeft());
+            int lRight = Math.round(((w - oaDiameter) / 2) - (outerStrokeWidth/2) - getPaddingLeft());// Math.round(center_y - (box_inner_padding / 2));
+            int rLeft = Math.round(w-lRight);
+            int rRight = rLeft + lRight  -getPaddingLeft();
 
-        Rect tempRect = new Rect(lLeft, tTop, lRight, tTop+(tlRect.height()/3));
-        boxTextSize = calculateFontSize(boundaryOfText, tempRect, getResources().getString(R.string.top_speed)+"W", textPaint);
-        boxTextHeight = boundaryOfText.height();
+            tlRect.set(lLeft, tTop, lRight, tBottom);
+            trRect.set(rLeft, tTop, rRight, tBottom);
+            mlRect.set(lLeft, mTop, lRight, mBottom);
+            mrRect.set(rLeft, mTop, rRight, mBottom);
+            blRect.set(lLeft, bTop, lRight, bBottom);
+            brRect.set(rLeft, bTop, rRight, bBottom);
+
+            Rect tempRect = new Rect(lLeft, tTop, lRight, tTop + (tlRect.height() / 3));
+            boxTextSize = calculateFontSize(boundaryOfText, tempRect, getResources().getString(R.string.top_speed) + "W", textPaint);
+            boxTextHeight = boundaryOfText.height();
+        } else {
+            int tTop = (int) Math.round(outerArcRect.top + oaRadius + box_top_padding + (Math.cos(Math.toRadians(54)) * (oaRadius + (outerStrokeWidth / 2))));
+            int height = Math.round((getHeight() - tTop - (box_inner_padding * 2) - getPaddingBottom()) / 3);
+            int tBottom = tTop + height;
+            int mTop = Math.round(tBottom + box_inner_padding);
+            int mBottom = mTop + height;
+            int bTop = Math.round(mBottom + box_inner_padding);
+            int bBottom = bTop + height;
+
+            int lLeft = Math.round(getPaddingLeft());
+            int lRight = Math.round(center_y - (box_inner_padding / 2));
+            int rLeft = Math.round(center_y + (box_inner_padding / 2));
+            int rRight = getWidth() - getPaddingRight();
+
+            tlRect.set(lLeft, tTop, lRight, tBottom);
+            trRect.set(rLeft, tTop, rRight, tBottom);
+            mlRect.set(lLeft, mTop, lRight, mBottom);
+            mrRect.set(rLeft, mTop, rRight, mBottom);
+            blRect.set(lLeft, bTop, lRight, bBottom);
+            brRect.set(rLeft, bTop, rRight, bBottom);
+
+            Rect tempRect = new Rect(lLeft, tTop, lRight, tTop + (tlRect.height() / 3));
+            boxTextSize = calculateFontSize(boundaryOfText, tempRect, getResources().getString(R.string.top_speed) + "W", textPaint);
+            boxTextHeight = boundaryOfText.height();
+        }
         refresh();
     }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (isInEditMode()) {
+            mMaxSpeed = 300;
+            mSpeed = 150;
+            targetSpeed = Math.round(((float) mSpeed / mMaxSpeed) * 112);
+            currentSpeed = targetSpeed;
+
+            mTemperature = 35;
+            targetTemperature = 112 - Math.round(((float) 40 / 80) * mTemperature);
+            currentTemperature = targetTemperature;
+
+            mBattery = 50;
+            targetBattery = Math.round(((float) 40 / 100) * mBattery);
+            currentBattery = targetBattery;
+        }
 
         currentSpeed = updateCurrentValue(targetSpeed, currentSpeed);
         currentTemperature = updateCurrentValue(targetTemperature, currentTemperature);
@@ -385,29 +438,36 @@ public class WheelView extends View {
         if (mTemperature > 0 && mBattery > 0) {
             textPaint.setTextSize(innerArcTextSize);
             canvas.save();
-            canvas.rotate((144 + (currentBattery * 2.25F) - 180), outerArcRect.centerY(), outerArcRect.centerX());
+            if (getWidth() > getHeight())
+                canvas.rotate((144 + (currentBattery * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
+            else
+                canvas.rotate((144 + (currentBattery * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
+
             String batteryString = String.format(Locale.US, "%02d%%", mBattery);
             canvas.drawText(batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
             canvas.restore();
             canvas.save();
-            canvas.rotate((143.5F + (currentTemperature * 2.25F)), outerArcRect.centerY(), outerArcRect.centerX());
+            if (getWidth() > getHeight())
+                canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
+            else
+                canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
             String temperatureString = String.format(Locale.US, "%02dC", mTemperature);
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
         }
 
-        if (getHeight() > getWidth()) {
+        if (getHeight() != getWidth()) {
 
             //####################################################
             //############# DRAW BOTTOM RECTANGLES ###############
             //####################################################
 
-            //        canvas.drawRect(tlRect,textPaint);
-            //        canvas.drawRect(trRect,textPaint);
-            //        canvas.drawRect(mlRect,textPaint);
-            //        canvas.drawRect(mrRect,textPaint);
-            //        canvas.drawRect(blRect,textPaint);
-            //        canvas.drawRect(brRect,textPaint);
+//            canvas.drawRect(tlRect,textPaint);
+//            canvas.drawRect(trRect,textPaint);
+//            canvas.drawRect(mlRect,textPaint);
+//            canvas.drawRect(mrRect,textPaint);
+//            canvas.drawRect(blRect,textPaint);
+//            canvas.drawRect(brRect,textPaint);
 
             //####################################################
             //############### DRAW RECTANGLE TEXT ################

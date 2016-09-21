@@ -17,10 +17,9 @@ public class Constants {
     public static final String ACTION_ALARM_TRIGGERED = "com.cooper.wheellog.alarmTriggered";
     public static final String ACTION_PEBBLE_APP_READY = "com.cooper.wheellog.pebbleAppReady";
 
-
-    public static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
-    public static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
-    public static final String NOTIFICATION_BUTTON_WATCH = "com.cooper.wheellog.notificationWatchButton";
+    static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
+    static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
+    static final String NOTIFICATION_BUTTON_WATCH = "com.cooper.wheellog.notificationWatchButton";
 
     public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
@@ -43,6 +42,8 @@ public class Constants {
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
     public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
+
+    public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
     public enum WHEEL_TYPE {
         Unknown,

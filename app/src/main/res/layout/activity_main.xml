@@ -71,12 +71,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:titleTextColor="@android:color/white" />
-        <fragment
-            android:id="@+id/settings_fragment"
-            android:name="com.cooper.wheellog.PreferencesFragment"
+        <FrameLayout
+            android:id="@+id/settings_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

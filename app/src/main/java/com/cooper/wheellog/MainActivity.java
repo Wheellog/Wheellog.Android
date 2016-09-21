@@ -1,6 +1,7 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -12,6 +13,7 @@ import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.IBinder;
@@ -479,10 +481,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateScreen(true);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WheelData.initiate(this);
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
+                .commit();
 
         ViewPageAdapter adapter = new ViewPageAdapter(this);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
@@ -527,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).show_main_menu();
+                ((PreferencesFragment) getPreferencesFragment()).show_main_menu();
             }
 
             @Override
@@ -690,7 +702,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (!((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).show_main_menu())
+                    if (!((PreferencesFragment) getPreferencesFragment()).show_main_menu())
                         mDrawer.closeDrawer(GravityCompat.START, true);
                 } else {
                     if (doubleBackToExitPressedOnce) {
@@ -779,13 +791,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
         SettingsUtil.setAutoLog(this, false);
-        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
+        ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         SettingsUtil.setLogLocationEnabled(this, false);
-        ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
+        ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) { showSnackBar(getString(msg)); }
@@ -891,7 +903,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     getGoogleApiClient().connect();
                 else {
                     SettingsUtil.setAutoUploadEnabled(this, false);
-                    ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
+                    ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
         }
@@ -929,7 +941,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             // show the localized error dialog.
             GoogleApiAvailability.getInstance().getErrorDialog(this, connectionResult.getErrorCode(), 0).show();
             SettingsUtil.setAutoUploadEnabled(this, false);
-            ((PreferencesFragment) getFragmentManager().findFragmentById(R.id.settings_fragment)).refreshVolatileSettings();
+            ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
             return;
         }
         try {
@@ -948,5 +960,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     .build();
         }
         return mGoogleApiClient;
+    }
+
+    private Fragment getPreferencesFragment() {
+        Fragment frag = getFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
+
+        if (frag == null)
+            frag = new PreferencesFragment();
+
+        return frag;
     }
 }
