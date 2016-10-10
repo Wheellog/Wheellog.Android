@@ -19,13 +19,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.cooper.wheellog.utils.Constants.ACTION_PEBBLE_APP_READY;
+import static com.cooper.wheellog.utils.Constants.ACTION_PEBBLE_APP_SCREEN;
 import static com.cooper.wheellog.utils.Constants.ACTION_REQUEST_KINGSONG_HORN;
 import static com.cooper.wheellog.utils.Constants.INTENT_EXTRA_LAUNCHED_FROM_PEBBLE;
 import static com.cooper.wheellog.utils.Constants.INTENT_EXTRA_PEBBLE_APP_VERSION;
+import static com.cooper.wheellog.utils.Constants.INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_UUID;
+import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_DISPLAYED_SCREEN;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_LAUNCH_APP;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_PLAY_HORN;
-import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_WATCH_READY;
+import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_READY;
 
 public class PebbleBroadcastReceiver extends BroadcastReceiver {
 
@@ -49,22 +52,28 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
             } catch (JSONException ex) {
                 return;
             }
-//                Toast.makeText(context,jsonData, Toast.LENGTH_SHORT).show();
+
+//            Toast.makeText(context,jsonData, Toast.LENGTH_SHORT).show();
+
             if (data.contains(PEBBLE_KEY_LAUNCH_APP) && !PebbleService.isInstanceCreated()) {
                 Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                 mainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mainActivityIntent.putExtra(INTENT_EXTRA_LAUNCHED_FROM_PEBBLE, true);
                 context.getApplicationContext().startActivity(mainActivityIntent);
-
                 Intent pebbleServiceIntent = new Intent(context.getApplicationContext(), PebbleService.class);
                 context.startService(pebbleServiceIntent);
-            } else if (data.contains(PEBBLE_KEY_WATCH_READY)) {
-                int watch_app_version = data.getInteger(PEBBLE_KEY_WATCH_READY).intValue();
+            } else if (data.contains(PEBBLE_KEY_READY)) {
+                int watch_app_version = data.getInteger(PEBBLE_KEY_READY).intValue();
                 if (watch_app_version < com.cooper.wheellog.utils.Constants.PEBBLE_APP_VERSION)
                     sendPebbleAlert(context, "A newer version of the app is available. Please upgrade to make sure the app works as expected.");
                 Intent pebbleReadyIntent = new Intent(ACTION_PEBBLE_APP_READY);
                 pebbleReadyIntent.putExtra(INTENT_EXTRA_PEBBLE_APP_VERSION, watch_app_version);
                 context.sendBroadcast(pebbleReadyIntent);
+            } else if (data.contains(PEBBLE_KEY_DISPLAYED_SCREEN)) {
+                int displayed_screen = data.getInteger(PEBBLE_KEY_DISPLAYED_SCREEN).intValue();
+                Intent pebbleScreenIntent = new Intent(ACTION_PEBBLE_APP_SCREEN);
+                pebbleScreenIntent.putExtra(INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, displayed_screen);
+                context.sendBroadcast(pebbleScreenIntent);
             } else if (data.contains(PEBBLE_KEY_PLAY_HORN)) {
                 int horn_mode = SettingsUtil.getHornMode(context);
                 if (horn_mode == 1) {

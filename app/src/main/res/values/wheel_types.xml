@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="wheel_types">
+        <item>@string/inmotion</item>
         <item>@string/ninebot</item>
         <item>@string/gotway</item>
         <item>@string/kingsong</item>
@@ -9,4 +10,5 @@
     <string name="kingsong">kingsong</string>
     <string name="gotway">gotway</string>
     <string name="ninebot">ninebot</string>
+    <string name="inmotion">inmotion</string>
 </resources>

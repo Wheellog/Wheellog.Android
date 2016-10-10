@@ -42,8 +42,8 @@ public class WheelData {
     private double mAverageBatteryCount;
     private int mVoltage;
     //    private long mDistance;
-    private int mCurrentTime;
-    private int mLastCurrentTime;
+    private int mRideTime;
+    private int mLastRideTime;
     private int mTopSpeed;
     private int mFanStatus;
     private boolean mConnectionState = false;
@@ -68,7 +68,7 @@ public class WheelData {
     private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
 
-    public static void initiate(Context context) {
+    static void initiate(Context context) {
         if (mInstance == null)
             mInstance = new WheelData();
 
@@ -80,7 +80,7 @@ public class WheelData {
         return mInstance;
     }
 
-    public int getSpeed() {
+    int getSpeed() {
         return mSpeed / 10;
     }
 
@@ -92,42 +92,44 @@ public class WheelData {
         return mBattery;
     }
 
-    public int getFanStatus() {
+    int getFanStatus() {
         return mFanStatus;
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return mConnectionState;
     }
 
-    //    public int getTopSpeed() { return mTopSpeed; }
-    public int getVersion() {
+    //    int getTopSpeed() { return mTopSpeed; }
+    int getVersion() {
         return mVersion;
     }
 
-    //    public int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
-    public int getMode() {
+    //    int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
+    int getMode() {
         return mMode;
     }
 
-    public WHEEL_TYPE getWheelType() {
+    WHEEL_TYPE getWheelType() {
         return mWheelType;
     }
 
-    public String getName() {
+    String getName() {
         return mName;
     }
 
-    public String getModel() {
+    String getModel() {
         return mModel;
     }
 
-    public String getSerial() {
+    String getSerial() {
         return mSerialNumber;
     }
 
-    public String getCurrentTimeString() {
-        int currentTime = mCurrentTime + mLastCurrentTime;
+    int getRideTime() { return mRideTime; }
+
+    String getRideTimeString() {
+        int currentTime = mRideTime + mLastRideTime;
         long hours = TimeUnit.SECONDS.toHours(currentTime);
         long minutes = TimeUnit.SECONDS.toMinutes(currentTime) -
                 TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(currentTime));
@@ -136,55 +138,59 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    public double getSpeedDouble() {
+    double getSpeedDouble() {
         return mSpeed / 100.0;
     }
 
-    public double getVoltageDouble() {
+    double getVoltageDouble() {
         return mVoltage / 100.0;
     }
 
-    public double getPowerDouble() {
+    double getPowerDouble() {
         return (mCurrent * mVoltage) / 10000.0;
     }
 
-    public double getCurrentDouble() {
+    double getCurrentDouble() {
         return mCurrent / 100.0;
     }
 
-    public double getTopSpeedDouble() {
+    int getTopSpeed() { return mTopSpeed; }
+
+    double getTopSpeedDouble() {
         return mTopSpeed / 100.0;
     }
+
+    int getDistance() { return (int) (mTotalDistance - mStartTotalDistance); }
 
     public double getDistanceDouble() {
         return (mTotalDistance - mStartTotalDistance) / 1000.0;
     }
 
-    public double getTotalDistanceDouble() {
+    double getTotalDistanceDouble() {
         return mTotalDistance / 1000.0;
     }
 
-    public ArrayList<String> getXAxis() {
+    ArrayList<String> getXAxis() {
         return xAxis;
     }
 
-    public ArrayList<Float> getCurrentAxis() {
+    ArrayList<Float> getCurrentAxis() {
         return currentAxis;
     }
 
-    public ArrayList<Float> getSpeedAxis() {
+    ArrayList<Float> getSpeedAxis() {
         return speedAxis;
     }
 
-    public void setConnected(boolean connected) {
+    void setConnected(boolean connected) {
         mConnectionState = connected;
     }
 
-    public void setAlarmsEnabled(boolean enabled) {
+    void setAlarmsEnabled(boolean enabled) {
         mAlarmsEnabled = enabled;
     }
 
-    public void setPreferences(int alarm1Speed, int alarm1Battery,
+    void setPreferences(int alarm1Speed, int alarm1Battery,
                                    int alarm2Speed, int alarm2Battery,
                                    int alarm3Speed, int alarm3Battery,
                                    int alarmCurrent, boolean disablePhoneVibrate) {
@@ -214,9 +220,9 @@ public class WheelData {
     }
 
     private void setCurrentTime(int currentTime) {
-        if (mCurrentTime > (currentTime + TIME_BUFFER))
-            mLastCurrentTime += mCurrentTime;
-        mCurrentTime = currentTime;
+        if (mRideTime > (currentTime + TIME_BUFFER))
+            mLastRideTime += mRideTime;
+        mRideTime = currentTime;
     }
 
     private void setTopSpeed(int topSpeed) {
@@ -274,7 +280,6 @@ public class WheelData {
 
     private void raiseAlarm(ALARM_TYPE alarmType) {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-
         long[] pattern = {0};
         Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
@@ -294,7 +299,7 @@ public class WheelData {
             v.vibrate(pattern, -1);
     }
 
-    public void decodeResponse(byte[] data) {
+    void decodeResponse(byte[] data) {
 
 //        StringBuilder stringBuilder = new StringBuilder(data.length);
 //        for (byte aData : data)
@@ -467,7 +472,7 @@ public class WheelData {
         return false;
     }
 
-    public void full_reset() {
+    void full_reset() {
         mBluetoothLeService = null;
         mWheelType = WHEEL_TYPE.Unknown;
         xAxis.clear();
@@ -476,7 +481,7 @@ public class WheelData {
         reset();
     }
 
-    public void reset() {
+    void reset() {
         mSpeed = 0;
         mTotalDistance = 0;
         mCurrent = 0;
@@ -486,8 +491,7 @@ public class WheelData {
         mAverageBatteryCount = 0;
         mAverageBattery = 0;
         mVoltage = 0;
-//        mDistance = 0;
-        mCurrentTime = 0;
+        mRideTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
         mName = "";
@@ -498,7 +502,7 @@ public class WheelData {
         mStartTotalDistance = 0;
     }
 
-    public boolean detectWheel(BluetoothLeService bluetoothService) {
+    boolean detectWheel(BluetoothLeService bluetoothService) {
         mBluetoothLeService = bluetoothService;
 
         Class<R.array> res = R.array.class;
@@ -560,7 +564,7 @@ public class WheelData {
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-//                    mBluetoothLeService.writeDescriptor(descriptor);
+                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.GOTWAY;

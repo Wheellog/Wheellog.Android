@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.IBinder;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -17,6 +18,9 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import timber.log.Timber;
+
+import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.DETAILS;
+import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.GUI;
 
 public class PebbleService extends Service {
 
@@ -31,6 +35,10 @@ public class PebbleService extends Service {
     static final int KEY_VIBE_ALERT = 5;
     static final int KEY_USE_MPH = 6;
     static final int KEY_MAX_SPEED = 7;
+    static final int KEY_RIDE_TIME = 8;
+    static final int KEY_DISTANCE = 9;
+    static final int KEY_TOP_SPEED = 10;
+    static final int KEY_READY = 11;
 
     private Handler mHandler = new Handler();
     private static PebbleService instance = null;
@@ -41,9 +49,15 @@ public class PebbleService extends Service {
     int lastBattery = 0;
     int lastTemperature = 0;
     int lastFanStatus = 0;
+    int lastRideTime = 0;
+    int lastDistance = 0;
+    int lastTopSpeed = 0;
+
     boolean lastConnectionState = false;
     int vibe_alarm = -1;
     boolean refreshAll = true;
+    PEBBLE_APP_SCREEN displayedScreen = GUI;
+    boolean ready = false;
 
     boolean message_pending = false;
     boolean data_available = false;
@@ -56,39 +70,67 @@ public class PebbleService extends Service {
         @Override
         public void run() {
 
+            if (!ready) {
+                outgoingDictionary.addInt32(KEY_READY, 0);
+                ready = true;
+            }
+
             if (refreshAll) {
                 outgoingDictionary.addInt32(KEY_USE_MPH, SettingsUtil.isUseMPH(PebbleService.this) ? 1 : 0);
                 outgoingDictionary.addInt32(KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(PebbleService.this));
             }
 
-            if (refreshAll || lastSpeed != WheelData.getInstance().getSpeed())
-            {
-                lastSpeed = WheelData.getInstance().getSpeed();
-                outgoingDictionary.addInt32(KEY_SPEED, lastSpeed);
-            }
+            switch (displayedScreen) {
+                case GUI:
+                    if (refreshAll || lastSpeed != WheelData.getInstance().getSpeed())
+                    {
+                        lastSpeed = WheelData.getInstance().getSpeed();
+                        outgoingDictionary.addInt32(KEY_SPEED, lastSpeed);
+                    }
 
-            if (refreshAll || lastBattery != WheelData.getInstance().getBatteryLevel())
-            {
-                lastBattery = WheelData.getInstance().getBatteryLevel();
-                outgoingDictionary.addInt32(KEY_BATTERY, lastBattery);
-            }
+                    if (refreshAll || lastBattery != WheelData.getInstance().getBatteryLevel())
+                    {
+                        lastBattery = WheelData.getInstance().getBatteryLevel();
+                        outgoingDictionary.addInt32(KEY_BATTERY, lastBattery);
+                    }
 
-            if (refreshAll || lastTemperature != WheelData.getInstance().getTemperature())
-            {
-                lastTemperature = WheelData.getInstance().getTemperature();
-                outgoingDictionary.addInt32(KEY_TEMPERATURE, lastTemperature);
-            }
+                    if (refreshAll || lastTemperature != WheelData.getInstance().getTemperature())
+                    {
+                        lastTemperature = WheelData.getInstance().getTemperature();
+                        outgoingDictionary.addInt32(KEY_TEMPERATURE, lastTemperature);
+                    }
 
-            if (refreshAll || lastFanStatus != WheelData.getInstance().getFanStatus())
-            {
-                lastFanStatus = WheelData.getInstance().getFanStatus();
-                outgoingDictionary.addInt32(KEY_FAN_STATE, lastFanStatus);
-            }
+                    if (refreshAll || lastFanStatus != WheelData.getInstance().getFanStatus())
+                    {
+                        lastFanStatus = WheelData.getInstance().getFanStatus();
+                        outgoingDictionary.addInt32(KEY_FAN_STATE, lastFanStatus);
+                    }
 
-            if (refreshAll || lastConnectionState != WheelData.getInstance().isConnected())
-            {
-                lastConnectionState = WheelData.getInstance().isConnected();
-                outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
+                    if (refreshAll || lastConnectionState != WheelData.getInstance().isConnected())
+                    {
+                        lastConnectionState = WheelData.getInstance().isConnected();
+                        outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
+                    }
+                    break;
+                case DETAILS:
+                    if (refreshAll || lastRideTime != WheelData.getInstance().getRideTime())
+                    {
+                        lastRideTime = WheelData.getInstance().getRideTime();
+                        outgoingDictionary.addInt32(KEY_RIDE_TIME, lastRideTime);
+                    }
+
+                    if (refreshAll || lastDistance != WheelData.getInstance().getDistance())
+                    {
+                        lastDistance = WheelData.getInstance().getDistance()/100;
+                        outgoingDictionary.addInt32(KEY_DISTANCE, lastDistance);
+                    }
+
+                    if (refreshAll || lastRideTime != WheelData.getInstance().getTopSpeed())
+                    {
+                        lastTopSpeed = WheelData.getInstance().getTopSpeed()/10;
+                        outgoingDictionary.addInt32(KEY_TOP_SPEED, lastTopSpeed);
+                    }
+                    break;
             }
 
             if (vibe_alarm >= 0) {
@@ -117,10 +159,23 @@ public class PebbleService extends Service {
                         vibe_alarm = ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
                     break;
                 case Constants.ACTION_PEBBLE_APP_READY:
+                    displayedScreen = GUI;
                     refreshAll = true;
                     break;
                 case Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED:
                     refreshAll = true;
+                    break;
+                case Constants.ACTION_PEBBLE_APP_SCREEN:
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN)) {
+                        int screen = intent.getIntExtra(Constants.INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, 0);
+
+                        if (screen == 0)
+                            displayedScreen = GUI;
+                        else if (screen == 1)
+                            displayedScreen = DETAILS;
+
+                        refreshAll = true;
+                    }
                     break;
             }
 
@@ -151,6 +206,7 @@ public class PebbleService extends Service {
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_APP_READY);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_APP_SCREEN);
         intentFilter.addAction(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED);
         registerReceiver(mBroadcastReceiver, intentFilter);
 

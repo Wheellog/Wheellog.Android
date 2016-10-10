@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="inmotion_services">
+        <item>0000180a_0000_1000_8000_00805f9b34fb</item>
+        <item>0000180f_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffe0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffe5_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffd0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffc0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffb0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffa0_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff90_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fc60_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fe00_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000180a_0000_1000_8000_00805f9b34fb">
+        <item>00002a23_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a26_0000_1000_8000_00805f9b34fb</item>
+        <item>00002a29_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000180f_0000_1000_8000_00805f9b34fb">
+        <item>00002a19_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ffe0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffe4_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ffe5_0000_1000_8000_00805f9b34fb">
+        <item>0000ffe9_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000fff0_0000_1000_8000_00805f9b34fb">
+        <item>0000fff1_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff2_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff3_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff4_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff5_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff6_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff7_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff8_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fff9_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ffd0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffd1_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffd2_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffd3_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffd4_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ffc0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffc1_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffc2_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ffb0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffb1_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffb2_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffb3_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffb4_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ffa0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffa2_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffa1_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000ff90_0000_1000_8000_00805f9b34fb">
+        <item>0000ff91_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff92_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff93_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff94_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff95_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff96_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff97_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff98_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff99_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ff9a_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_0000fc60_0000_1000_8000_00805f9b34fb">
+        <item>0000fc64_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+    
+    <string-array name="inmotion_0000fe00_0000_1000_8000_00805f9b34fb">
+        <item>0000fe01_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fe02_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fe03_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fe04_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fe05_0000_1000_8000_00805f9b34fb</item>
+        <item>0000fe06_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+</resources>

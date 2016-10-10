@@ -40,7 +40,6 @@
         </activity>
         <activity
             android:name=".ScanActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Transparent" />
 
         <service android:name=".PebbleService" />

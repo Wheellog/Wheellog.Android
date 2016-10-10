@@ -444,6 +444,10 @@ public class BluetoothLeService extends Service {
         return false;
     }
 
+    public void writeBluetoothGattDescriptor(BluetoothGattDescriptor descriptor) {
+        mBluetoothGatt.writeDescriptor(descriptor);
+    }
+
     public Date getDisconnectTime() {
         return mDisconnectTime;
     }

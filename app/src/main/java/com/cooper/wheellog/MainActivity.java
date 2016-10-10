@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 wheelView.setSpeed(WheelData.getInstance().getSpeed());
                 wheelView.setBattery(WheelData.getInstance().getBatteryLevel());
                 wheelView.setTemperature(WheelData.getInstance().getTemperature());
-                wheelView.setRideTime(WheelData.getInstance().getCurrentTimeString());
+                wheelView.setRideTime(WheelData.getInstance().getRideTimeString());
                 wheelView.setTopSpeed(WheelData.getInstance().getTopSpeedDouble());
                 wheelView.setDistance(WheelData.getInstance().getDistanceDouble());
                 wheelView.setTotalDistance(WheelData.getInstance().getTotalDistanceDouble());
@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvName.setText(WheelData.getInstance().getName());
                 tvModel.setText(WheelData.getInstance().getModel());
                 tvSerial.setText(WheelData.getInstance().getSerial());
-                tvRideTime.setText(WheelData.getInstance().getCurrentTimeString());
+                tvRideTime.setText(WheelData.getInstance().getRideTimeString());
                 tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
                 break;
             case 2: // Graph  View
