@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 34
         versionName "1.8.0"
     }
@@ -23,14 +23,14 @@ apply plugin: 'android-apt'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:gridlayout-v7:24.2.1'
+    compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:gridlayout-v7:25.0.0'
     compile 'com.google.android.gms:play-services-drive:9.6.1'
     compile 'com.getpebble:pebblekit:3.1.0'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.jakewharton.timber:timber:4.3.1'
     compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0'
     compile "com.github.hotchemi:permissionsdispatcher:2.2.0"
     apt "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
 }

@@ -42,12 +42,13 @@ import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.AxisValueFormatter;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -490,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WheelData.initiate(this);
+        WheelData.initiate();
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
@@ -555,7 +556,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         chart1 = (LineChart) findViewById(R.id.chart);
         chart1.setDrawGridBackground(false);
-        chart1.setDescription("");
+        chart1.getDescription().setEnabled(false);
         chart1.setHardwareAccelerationEnabled(true);
         chart1.setHighlightPerTapEnabled(false);
         chart1.setHighlightPerDragEnabled(false);
@@ -919,8 +920,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return intentFilter;
     }
 
-    AxisValueFormatter chartAxisValueFormatter = new AxisValueFormatter() {
-
+    IAxisValueFormatter chartAxisValueFormatter = new IAxisValueFormatter() {
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
             if (value < xAxis_labels.size())

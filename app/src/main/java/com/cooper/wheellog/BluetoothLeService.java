@@ -215,13 +215,13 @@ public class BluetoothLeService extends Service {
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                 if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
                     byte[] value = characteristic.getValue();
-                    WheelData.getInstance().decodeResponse(value);
+                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
                 }
             }
 
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY) {
                 byte[] value = characteristic.getValue();
-                WheelData.getInstance().decodeResponse(value);
+                WheelData.getInstance().decodeResponse(value, getApplicationContext());
             }
         }
     }

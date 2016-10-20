@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
-    private static Context mContext;
 
     private BluetoothLeService mBluetoothLeService;
 
@@ -68,11 +67,10 @@ public class WheelData {
     private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
 
-    static void initiate(Context context) {
+    static void initiate() {
         if (mInstance == null)
             mInstance = new WheelData();
 
-        mContext = context.getApplicationContext();
         mInstance.full_reset();
     }
 
@@ -239,18 +237,18 @@ public class WheelData {
         mAverageBattery += (battery - mAverageBattery) / mAverageBatteryCount;
     }
 
-    private void checkAlarmStatus() {
+    private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
         if (!mSpeedAlarmExecuted) {
             if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
                     mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
-                raiseAlarm(ALARM_TYPE.SPEED);
+                raiseAlarm(ALARM_TYPE.SPEED, mContext);
             else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
                     mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-                raiseAlarm(ALARM_TYPE.SPEED);
+                raiseAlarm(ALARM_TYPE.SPEED, mContext);
             else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
                     mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-                raiseAlarm(ALARM_TYPE.SPEED);
+                raiseAlarm(ALARM_TYPE.SPEED, mContext);
         } else {
             boolean alarm_finished = false;
             if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
@@ -270,7 +268,7 @@ public class WheelData {
         if (!mCurrentAlarmExecuted) {
             if (mAlarmCurrent > 0 &&
                     mCurrent >= mAlarmCurrent) {
-                raiseAlarm(ALARM_TYPE.CURRENT);
+                raiseAlarm(ALARM_TYPE.CURRENT, mContext);
             }
         } else {
             if (mCurrent < mAlarmCurrent)
@@ -278,7 +276,7 @@ public class WheelData {
         }
     }
 
-    private void raiseAlarm(ALARM_TYPE alarmType) {
+    private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0};
         Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
@@ -299,7 +297,7 @@ public class WheelData {
             v.vibrate(pattern, -1);
     }
 
-    void decodeResponse(byte[] data) {
+    void decodeResponse(byte[] data, Context mContext) {
 
 //        StringBuilder stringBuilder = new StringBuilder(data.length);
 //        for (byte aData : data)
@@ -334,7 +332,7 @@ public class WheelData {
         }
 
         if (mAlarmsEnabled)
-            checkAlarmStatus();
+            checkAlarmStatus(mContext);
 
         mContext.sendBroadcast(intent);
     }
@@ -504,6 +502,7 @@ public class WheelData {
 
     boolean detectWheel(BluetoothLeService bluetoothService) {
         mBluetoothLeService = bluetoothService;
+        Context mContext = bluetoothService.getApplicationContext();
 
         Class<R.array> res = R.array.class;
         String wheel_types[] = mContext.getResources().getStringArray(R.array.wheel_types);
