@@ -10,12 +10,10 @@ import android.os.Vibrator;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.InMotionAdapter;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class WheelData {
@@ -310,6 +308,8 @@ public class WheelData {
             new_data = decodeKingSong(data);
         else if (mWheelType == WHEEL_TYPE.GOTWAY)
             new_data = decodeGotway(data);
+        else if (mWheelType == WHEEL_TYPE.INMOTION)
+            new_data = decodeInmotion(data);
         else if (mWheelType == WHEEL_TYPE.NINEBOT)
             new_data = decodeNinebot(data);
 
@@ -470,6 +470,23 @@ public class WheelData {
         return false;
     }
 
+    private boolean decodeInmotion(byte[] data) {
+        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
+        for (InMotionAdapter.Status status: statuses) {
+            if (status instanceof InMotionAdapter.Infos) {
+                mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
+                mModel = ((InMotionAdapter.Infos) status).getModel().getValue();
+            } else {
+                mSpeed = (int) status.getSpeed();
+                mVoltage = (int) (status.getVoltage() * 100d);
+                mCurrent = (int) status.getCurrent();
+                setBatteryPercent((int) status.getBatt());
+                setDistance((long) status.getDistance());
+            }
+        }
+        return true;
+    }
+
     void full_reset() {
         mBluetoothLeService = null;
         mWheelType = WHEEL_TYPE.Unknown;
@@ -572,6 +589,15 @@ public class WheelData {
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     // Let the user know it's working by making the wheel beep
                     mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    return true;
+                } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {
+                    mWheelType = WHEEL_TYPE.INMOTION;
+                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_SERVICE_UUID));
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_READ_CHARACTER_UUID));
+                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     return true;
                 }
             }

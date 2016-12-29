@@ -4,6 +4,10 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
@@ -23,9 +27,9 @@ apply plugin: 'android-apt'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:gridlayout-v7:25.0.0'
-    compile 'com.google.android.gms:play-services-drive:9.6.1'
+    compile 'com.android.support:design:25.1.0'
+    compile 'com.android.support:gridlayout-v7:25.1.0'
+    compile 'com.google.android.gms:play-services-drive:10.0.1'
     compile 'com.getpebble:pebblekit:3.1.0'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.jakewharton.timber:timber:4.3.1'

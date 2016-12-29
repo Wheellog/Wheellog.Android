@@ -18,15 +18,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
-import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.NotificationUtil;
-import com.cooper.wheellog.utils.SettingsUtil;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 import timber.log.Timber;
 
@@ -50,6 +46,8 @@ public class BluetoothLeService extends Service {
     private boolean disconnectRequested = false;
     private boolean autoConnect = false;
     private NotificationUtil mNotificationHandler;
+
+    private Timer inMotionKeepAliveTimer = null;
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -150,6 +148,13 @@ public class BluetoothLeService extends Service {
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
+                if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                    if (inMotionKeepAliveTimer != null) {
+                        inMotionKeepAliveTimer.cancel();
+                        inMotionKeepAliveTimer = null;
+                    }
+                    InMotionAdapter.newInstance();
+                }
                 if (mConnectionState == STATE_CONNECTED)
                     mDisconnectTime = Calendar.getInstance().getTime();
                 if (!disconnectRequested &&
@@ -182,6 +187,28 @@ public class BluetoothLeService extends Service {
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                        try {
+                            writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        inMotionKeepAliveTimer = new Timer();
+                        inMotionKeepAliveTimer.scheduleAtFixedRate(new TimerTask() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if (!writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getFastData().writeBuffer())) {
+                                        System.out.println("Unable to send keep-alive message");
+                                    } else {
+                                        System.out.println("Sent keep-alive message");
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, 0, 500);
+                    }
                 } else
                     disconnect();
                 return;
@@ -222,6 +249,13 @@ public class BluetoothLeService extends Service {
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY) {
                 byte[] value = characteristic.getValue();
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());
+            }
+
+            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                byte[] value = characteristic.getValue();
+                if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
+                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
+                }
             }
         }
     }
@@ -440,6 +474,21 @@ public class BluetoothLeService extends Service {
                 characteristic.setValue(cmd);
                 Timber.v("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
                 return this.mBluetoothGatt.writeCharacteristic(characteristic);
+            case INMOTION:
+                BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID));
+                if (im_service == null) {
+                    Timber.v("writeBluetoothGattCharacteristic service == null");
+                    return false;
+                }
+                BluetoothGattCharacteristic im_characteristic = im_service.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID));
+                if (im_characteristic == null) {
+                    Timber.v("writeBluetoothGattCharacteristic characteristic == null");
+                    return false;
+                }
+                im_characteristic.setValue(cmd);
+                im_characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                Timber.v("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
+                return this.mBluetoothGatt.writeCharacteristic(im_characteristic);
         }
         return false;
     }

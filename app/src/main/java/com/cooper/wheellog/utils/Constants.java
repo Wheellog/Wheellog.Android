@@ -29,6 +29,12 @@ public class Constants {
     public static final String GOTWAY_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     public static final String GOTWAY_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
 
+    public static final String INMOTION_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
+    public static final String INMOTION_READ_CHARACTER_UUID = "0000ffe4-0000-1000-8000-00805f9b34fb";
+    public static final String INMOTION_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    public static final String INMOTION_WRITE_CHARACTER_UUID = "0000ffe9-0000-1000-8000-00805f9b34fb";
+    public static final String INMOTION_WRITE_SERVICE_UUID = "0000ffe5-0000-1000-8000-00805f9b34fb";
+
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
     public static final int PEBBLE_KEY_READY = 11;
     public static final int PEBBLE_KEY_LAUNCH_APP = 10012;
@@ -52,7 +58,8 @@ public class Constants {
         Unknown,
         KINGSONG,
         GOTWAY,
-        NINEBOT
+        NINEBOT,
+        INMOTION;
     }
 
     public enum PEBBLE_APP_SCREEN {

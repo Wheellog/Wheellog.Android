@@ -42,7 +42,6 @@ import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -309,6 +308,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvSerial.setVisibility(View.VISIBLE);
                 break;
             case GOTWAY:
+                tvWaitText.setVisibility(View.GONE);
+                tvTitleSpeed.setVisibility(View.VISIBLE);
+                tvSpeed.setVisibility(View.VISIBLE);
+                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
+                tvTopSpeed.setVisibility(View.VISIBLE);
+                tvTitleBattery.setVisibility(View.VISIBLE);
+                tvBattery.setVisibility(View.VISIBLE);
+                tvTitleDistance.setVisibility(View.VISIBLE);
+                tvDistance.setVisibility(View.VISIBLE);
+                tvTitleRideTime.setVisibility(View.VISIBLE);
+                tvRideTime.setVisibility(View.VISIBLE);
+                tvTitleVoltage.setVisibility(View.VISIBLE);
+                tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleCurrent.setVisibility(View.VISIBLE);
+                tvCurrent.setVisibility(View.VISIBLE);
+                tvTitlePower.setVisibility(View.VISIBLE);
+                tvPower.setVisibility(View.VISIBLE);
+                tvTitleTemperature.setVisibility(View.VISIBLE);
+                tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleTotalDistance.setVisibility(View.VISIBLE);
+                tvTotalDistance.setVisibility(View.VISIBLE);
+                break;
+            case INMOTION:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
                 tvSpeed.setVisibility(View.VISIBLE);
