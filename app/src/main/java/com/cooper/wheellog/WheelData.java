@@ -477,7 +477,7 @@ public class WheelData {
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
                 mModel = ((InMotionAdapter.Infos) status).getModel().getValue();
             } else {
-                mSpeed = (int) status.getSpeed();
+                mSpeed = (int) (status.getSpeed() / 10d);
                 mVoltage = (int) (status.getVoltage() * 100d);
                 mCurrent = (int) status.getCurrent();
                 setBatteryPercent((int) status.getBatt());
