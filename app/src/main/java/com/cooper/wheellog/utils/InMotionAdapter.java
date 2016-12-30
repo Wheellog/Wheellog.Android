@@ -772,7 +772,7 @@ public class InMotionAdapter {
             msg.len = 8;
             msg.id = IDValue.PinCode.getValue();
             msg.ch = 5;
-            msg.type = CanFrame.RemoteFrame.getValue();
+            msg.type = CanFrame.DataFrame.getValue();
             byte[] pass = password.getBytes();
             msg.data = new byte[]{pass[0], pass[1], pass[2], pass[3], pass[4], pass[5], 0, 0};
 

@@ -457,12 +457,25 @@ public class BluetoothLeService extends Service {
                     Timber.v("writeBluetoothGattCharacteristic characteristic == null");
                     return false;
                 }
-                for (int i = 0; i < cmd.length; i+=20) {
-                    int length = cmd.length - i > 20 ? 20 : cmd.length - i;
-                    im_characteristic.setValue(Arrays.copyOfRange(cmd, i, i + length));
-                    Timber.v("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
-                    this.mBluetoothGatt.writeCharacteristic(im_characteristic);
+                byte[] buf = new byte[20];
+                int i2 = cmd.length / 20;
+                int i3 = cmd.length - (i2 * 20);
+                for (int i4 = 0; i4 < i2; i4++) {
+                    System.arraycopy(cmd, i4 * 20, buf, 0, 20);
+                    im_characteristic.setValue(buf);
+                    if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic)) return false;
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+                if (i3 > 0) {
+                    System.arraycopy(cmd, i2 * 20, buf, 0, i3);
+                    im_characteristic.setValue(buf);
+                    if(!this.mBluetoothGatt.writeCharacteristic(im_characteristic)) return false;
+                }
+                Timber.v("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
                 return true;
         }
         return false;
