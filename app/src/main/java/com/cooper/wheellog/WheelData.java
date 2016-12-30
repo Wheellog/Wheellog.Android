@@ -471,7 +471,7 @@ public class WheelData {
     }
 
     private boolean decodeInmotion(byte[] data) {
-        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
+        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(mBluetoothLeService, data);
         for (InMotionAdapter.Status status: statuses) {
             if (status instanceof InMotionAdapter.Infos) {
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
@@ -598,6 +598,7 @@ public class WheelData {
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                    InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
                     return true;
                 }
             }

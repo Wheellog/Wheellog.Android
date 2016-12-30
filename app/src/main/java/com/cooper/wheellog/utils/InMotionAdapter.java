@@ -1,17 +1,22 @@
 package com.cooper.wheellog.utils;
 
+import com.cooper.wheellog.BluetoothLeService;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.L6;
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.R0;
+import static com.cooper.wheellog.utils.InMotionAdapter.Model.UNKNOWN;
 
 /**
  * Created by cedric on 29/12/2016.
  */
 public class InMotionAdapter {
     private static InMotionAdapter INSTANCE;
+    private Timer keepAliveTimer;
+    private boolean passwordSent = false;
 
     enum Mode {
         rookie(0),
@@ -97,17 +102,32 @@ public class InMotionAdapter {
         }
     }
 
-    Timer sendTimer;
-    int timerStep = 500;
-    String name = "InMotion";
-    String version = "0.0.0";
-    String serialNumber = "SN1";
-    boolean headerData = false;
     Model model = Model.UNKNOWN;
     InMotionUnpacker unpacker = new InMotionUnpacker();
-    Date lastDateSent = new Date();
 
-    static Mode IntToMode(int mode) {
+    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService) {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (!passwordSent) {
+                    if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword("005654").writeBuffer())) passwordSent = true;
+                    System.out.println("Sent password message");
+                } else if (model == UNKNOWN) {
+                    mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
+                    System.out.println("Sent infos message");
+                }
+                else if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
+                    System.out.println("Unable to send keep-alive message");
+                } else {
+                    System.out.println("Sent keep-alive message");
+                }
+            }
+        };
+        keepAliveTimer = new Timer();
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    static Mode intToMode(int mode) {
         if ((mode & 16) != 0) {
             return Mode.rookie;
         } else if ((mode & 32) != 0) {
@@ -120,7 +140,7 @@ public class InMotionAdapter {
     }
 
 
-    static Mode IntToModeWithL6(int mode) {
+    static Mode intToModeWithL6(int mode) {
         if ((mode & 15) != 0) {
             return Mode.bldc;
         } else {
@@ -137,7 +157,7 @@ public class InMotionAdapter {
     }
 
 
-    static WorkMode IntToWorkMode(int mode) {
+    static WorkMode intToWorkMode(int mode) {
 
         int v = mode & 0xF;
 
@@ -283,7 +303,7 @@ public class InMotionAdapter {
 
     static double batteryFromVoltage(double volts, Model model) {
 
-        double batt = 1.0;
+        double batt;
 
         if (isCarTypeBelongToInputType(model.getValue(), "1")) {
 
@@ -359,7 +379,7 @@ public class InMotionAdapter {
         private final double distance;
         private final double lock;
 
-        public Status() {
+        Status() {
             angle = 0;
             speed = 0;
             voltage = 0;
@@ -370,7 +390,7 @@ public class InMotionAdapter {
             lock = 0;
         }
 
-        public Status(double angle, double speed, double voltage, double batt, double current, double power, double distance, double lock) {
+        Status(double angle, double speed, double voltage, double batt, double current, double power, double distance, double lock) {
             this.angle = angle;
             this.speed = speed;
             this.voltage = voltage;
@@ -419,7 +439,7 @@ public class InMotionAdapter {
         private final Model model;
         private final String version;
 
-        public Infos(String serialNumber, Model model, String version) {
+        Infos(String serialNumber, Model model, String version) {
             super();
             this.serialNumber = serialNumber;
             this.model = model;
@@ -443,40 +463,76 @@ public class InMotionAdapter {
      * Created by cedric on 29/12/2016.
      */
     public static class CANMessage {
-        static final int CanStandardFormat = 0;
-        static final int CanExtendedFormat = 1;
+        enum CanFormat {
+            StandardFormat(0),
+            ExtendedFormat(1);
 
-        static final int CanDataFrame = 0;
-        static final int CanRemoteFrame = 1;
+            private int value;
 
-        static final int IDNoOp = 0;
-        static final int IDGetFastInfo = 0x0F550113;
-        static final int IDGetSlowInfo = 0x0F550114;
-        static final int IDRemoteControl = 0x0F550116;
+            CanFormat(int value) {
+                this.value = value;
+            }
 
+            public int getValue() {
+                return value;
+            }
+        }
 
-        int id = IDNoOp;
+        enum CanFrame {
+            DataFrame(0),
+            RemoteFrame(1);
+
+            private int value;
+
+            CanFrame(int value) {
+                this.value = value;
+            }
+
+            public int getValue() {
+                return value;
+            }
+        }
+
+        enum IDValue {
+            NoOp(0),
+            GetFastInfo(0x0F550113),
+            GetSlowInfo(0x0F550114),
+            RemoteControl(0x0F550116),
+            PinCode(0x0F550307);
+
+            private int value;
+
+            IDValue(int value) {
+                this.value = value;
+            }
+
+            public int getValue() {
+                return value;
+            }
+        }
+
+        int id = IDValue.NoOp.getValue();
         byte[] data = new byte[8];
         int len = 0;
         int ch = 0;
-        int format = CanStandardFormat;
-        int type = CanDataFrame;
+        int format = CanFormat.StandardFormat.getValue();
+        int type = CanFrame.DataFrame.getValue();
         byte[] ex_data;
 
-        public CANMessage(byte[] bArr) {
+        CANMessage(byte[] bArr) {
             if (bArr.length < 16) return;
             id = (((bArr[3] * 256) + bArr[2]) * 256 + bArr[1]) * 256 + bArr[0];
-            data = Arrays.copyOfRange(bArr, 4, 12);
+            data = Arrays.copyOfRange(bArr, 4, 11);
             len = bArr[12];
             ch = bArr[13];
-            format = bArr[14] == 0 ? CanStandardFormat : CanExtendedFormat;
-            type = bArr[15] == 0 ? CanDataFrame : CanRemoteFrame;
+            format = bArr[14] == 0 ? CanFormat.StandardFormat.getValue() : CanFormat.ExtendedFormat.getValue();
+            type = bArr[15] == 0 ? CanFrame.DataFrame.getValue() : CanFrame.RemoteFrame.getValue();
 
-            if (len == (byte)0xFE) {
+            if (len == (byte) 0xFE) {
                 int ldata = this.intFromBytes(data, 0);
 
-                if (ldata == bArr.length - 16 + 1) {
-                    ex_data = Arrays.copyOfRange(bArr, 16, 16 + ldata);
+                if (ldata == bArr.length - 16) {
+                    ex_data = Arrays.copyOfRange(bArr, 16, 15 + ldata);
                 }
             }
 
@@ -486,7 +542,7 @@ public class InMotionAdapter {
 
         }
 
-        public byte[] writeBuffer() throws IOException {
+        public byte[] writeBuffer() {
 
             byte[] canBuffer = getBytes();
             int check = computeCheck(canBuffer);
@@ -495,7 +551,11 @@ public class InMotionAdapter {
             out.write(0xAA);
             out.write(0xAA);
 
-            out.write(escape(canBuffer));
+            try {
+                out.write(escape(canBuffer));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             out.write(check);
             out.write(0x55);
             out.write(0x55);
@@ -527,10 +587,10 @@ public class InMotionAdapter {
                 e.printStackTrace();
             }
 
-            buff.write(format == CanStandardFormat ? 0 : 1);
-            buff.write(type == CanDataFrame ? 0 : 1);
+            buff.write(format == CanFormat.StandardFormat.getValue() ? 0 : 1);
+            buff.write(type == CanFrame.DataFrame.getValue() ? 0 : 1);
 
-            if (len == (byte)0xFE) {
+            if (len == (byte) 0xFE) {
                 try {
                     buff.write(ex_data);
                 } catch (IOException e) {
@@ -547,8 +607,8 @@ public class InMotionAdapter {
         private static int computeCheck(byte[] buffer) {
 
             int check = 0;
-            for (int c : buffer) {
-                check = (check + c) % 256;
+            for (byte c : buffer) {
+                check = (check + (int) c) % 256;
             }
             return check;
         }
@@ -592,9 +652,8 @@ public class InMotionAdapter {
 
                 long value = 0;
 
-                if (v >= 2147483648l) {        // No tinc clar que funcioni
-                    long v1 = v - 4294967295l - 1;
-                    value = v1;
+                if (v >= 2147483648L) {        // No tinc clar que funcioni
+                    value = v - 4294967295L - 1;
                 } else {
                     value = v;
                 }
@@ -607,16 +666,16 @@ public class InMotionAdapter {
 
         static CANMessage verify(byte[] buffer) {
 
-            if (buffer[0] != (byte)0xAA || buffer[1] != (byte)0xAA || buffer[buffer.length - 1] != (byte)0x55 || buffer[buffer.length - 2] != (byte)0x55) {
+            if (buffer[0] != (byte) 0xAA || buffer[1] != (byte) 0xAA || buffer[buffer.length - 1] != (byte) 0x55 || buffer[buffer.length - 2] != (byte) 0x55) {
                 return null;  // Header and tail not correct
             }
 
-            byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length - 4);
+            byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length - 3);
 
             dataBuffer = CANMessage.unescape(dataBuffer);
             int check = CANMessage.computeCheck(dataBuffer);
 
-            byte bufferCheck = buffer[buffer.length - 3];
+            int bufferCheck = buffer[buffer.length - 3];
 
             return (check == bufferCheck) ? new CANMessage(dataBuffer) : null;
         }
@@ -627,7 +686,7 @@ public class InMotionAdapter {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             for (int c : buffer) {
-                if (c == (byte)0xAA || c == (byte)0x55 || c == (byte)0xA5) {
+                if (c == (byte) 0xAA || c == (byte) 0x55 || c == (byte) 0xA5) {
                     out.write(0xA5);
                 }
                 out.write(c);
@@ -642,7 +701,7 @@ public class InMotionAdapter {
             int oldc = 0;
 
             for (int c : buffer) {
-                if (c != (byte)0xA5 || oldc == (byte)0xA5) {
+                if (c != (byte) 0xA5 || oldc == (byte) 0xA5) {
                     out.write(c);
                 }
                 oldc = c;
@@ -654,9 +713,9 @@ public class InMotionAdapter {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDGetFastInfo;
+            msg.id = IDValue.GetFastInfo.getValue();
             msg.ch = 5;
-            msg.data = new byte[]{24, 0, 1, 0, 0, 0, 0, 0};
+            msg.data = new byte[]{-1, -1, -1, -1, -1, -1, -1, -1};
             return msg;
         }
 
@@ -664,7 +723,7 @@ public class InMotionAdapter {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDGetFastInfo;
+            msg.id = IDValue.GetFastInfo.getValue();
             msg.ch = 5;
             msg.data = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
@@ -675,9 +734,9 @@ public class InMotionAdapter {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDGetSlowInfo;
+            msg.id = IDValue.GetSlowInfo.getValue();
             msg.ch = 5;
-            msg.type = CanRemoteFrame;
+            msg.type = CanFrame.RemoteFrame.getValue();
             msg.data = new byte[]{33, 0, 0, 2, 0, 0, 0, 0};
 
             return msg;
@@ -687,9 +746,9 @@ public class InMotionAdapter {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDGetSlowInfo;
+            msg.id = IDValue.GetSlowInfo.getValue();
             msg.ch = 5;
-            msg.type = CanRemoteFrame;
+            msg.type = CanFrame.RemoteFrame.getValue();
             msg.data = new byte[]{0, 0, 0, 15, 0, 0, 0, 0};
 
             return msg;
@@ -699,22 +758,23 @@ public class InMotionAdapter {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDGetSlowInfo;
+            msg.id = IDValue.GetSlowInfo.getValue();
             msg.ch = 5;
-            msg.type = CanRemoteFrame;
+            msg.type = CanFrame.RemoteFrame.getValue();
             msg.data = new byte[]{32, 0, 0, 0, 0, 0, 0, 0};
 
             return msg;
         }
 
-        public static CANMessage getSerialNumberdata() {
+        public static CANMessage getPassword(String password) {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDGetSlowInfo;
+            msg.id = IDValue.PinCode.getValue();
             msg.ch = 5;
-            msg.type = CanRemoteFrame;
-            msg.data = new byte[]{33, 0, 0, 2, 0, 0, 0, 0};
+            msg.type = CanFrame.RemoteFrame.getValue();
+            byte[] pass = password.getBytes();
+            msg.data = new byte[]{pass[0], pass[1], pass[2], pass[3], pass[4], pass[5], 0, 0};
 
             return msg;
         }
@@ -723,15 +783,15 @@ public class InMotionAdapter {
             CANMessage msg = new CANMessage();
 
             msg.len = 8;
-            msg.id = IDNoOp;
+            msg.id = IDValue.NoOp.getValue();
             msg.ch = 5;
-            msg.type = CanDataFrame;
+            msg.type = CanFrame.DataFrame.getValue();
             msg.data = new byte[]{(byte) 0xB2, 0, 0, 0, (byte) mode, 0, 0, 0};
 
             return msg;
         }
 
-        public Status parseFastInfoMessage(Model model) {
+        Status parseFastInfoMessage(Model model) {
             if (ex_data == null) return new Status(0, 0, 0, 0, 0, 0, 0, 0);
             // Angle
 
@@ -757,7 +817,7 @@ public class InMotionAdapter {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 5.711016379455429E4;
             }
 
-            WorkMode workMode = IntToWorkMode(this.intFromBytes(ex_data, 60));
+            WorkMode workMode = intToWorkMode(this.intFromBytes(ex_data, 60));
             double lock = 0.0;
             switch (workMode) {
 
@@ -774,7 +834,7 @@ public class InMotionAdapter {
 
         // Return SerialNumber, Model, Version
 
-        public Infos parseSlowInfoMessage() {
+        Infos parseSlowInfoMessage() {
             if (ex_data == null) return new Infos("", Model.UNKNOWN, "");
             String serialNumber = new String(Arrays.copyOfRange(ex_data, 0, 7));
             Model model = byteToModel(ex_data);  // CarType is just model.rawValue
@@ -812,8 +872,7 @@ public class InMotionAdapter {
         }
     }
 
-    public ArrayList<Status> charUpdated(byte[] data) {
-
+    public ArrayList<Status> charUpdated(BluetoothLeService mBluetoothLeService, byte[] data) {
         ArrayList<Status> outValues = new ArrayList<>();
         for (byte c : data) {
             if (unpacker.addChar(c)) {
@@ -821,20 +880,13 @@ public class InMotionAdapter {
                 CANMessage result = CANMessage.verify(unpacker.getBuffer());
 
                 if (result != null) { // data OK
-
-                    switch (result.id) {
-
-                        case CANMessage.IDGetFastInfo:
-
-                            Status vals = result.parseFastInfoMessage(model);
-                            outValues.add(vals);
-                        case CANMessage.IDGetSlowInfo:
-                            Infos infos = result.parseSlowInfoMessage();
-                            model = infos.getModel();
-                            outValues.add(infos);
-                        default:
-                            break;
-
+                    if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
+                        Status vals = result.parseFastInfoMessage(model);
+                        outValues.add(vals);
+                    } else {
+                        Infos infos = result.parseSlowInfoMessage();
+                        model = infos.getModel();
+                        outValues.add(infos);
                     }
                 }
             }
@@ -855,7 +907,7 @@ public class InMotionAdapter {
         int oldc = 0;
         UnpackerState state = UnpackerState.unknown;
 
-        public byte[] getBuffer() {
+        byte[] getBuffer() {
             return buffer.toByteArray();
         }
 
@@ -866,7 +918,7 @@ public class InMotionAdapter {
                 case collecting:
 
                     buffer.write(c);
-                    if (c == (byte)0x55 && oldc == (byte)0x55) {
+                    if (c == (byte) 0x55 && oldc == (byte) 0x55) {
                         state = UnpackerState.done;
                         oldc = c;
                         return true;
@@ -874,7 +926,7 @@ public class InMotionAdapter {
                     oldc = c;
 
                 default:
-                    if (c == (byte)0xAA && oldc == (byte)0xAA) {
+                    if (c == (byte) 0xAA && oldc == (byte) 0xAA) {
                         buffer = new ByteArrayOutputStream();
                         buffer.write(0xAA);
                         buffer.write(0xAA);
@@ -902,6 +954,10 @@ public class InMotionAdapter {
     }
 
     public static void newInstance() {
+        if (INSTANCE.keepAliveTimer != null) {
+            INSTANCE.keepAliveTimer.cancel();
+            INSTANCE.keepAliveTimer = null;
+        }
         INSTANCE = new InMotionAdapter();
     }
 }

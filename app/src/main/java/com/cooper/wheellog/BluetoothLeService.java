@@ -47,8 +47,6 @@ public class BluetoothLeService extends Service {
     private boolean autoConnect = false;
     private NotificationUtil mNotificationHandler;
 
-    private Timer inMotionKeepAliveTimer = null;
-
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -149,10 +147,6 @@ public class BluetoothLeService extends Service {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
                 if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                    if (inMotionKeepAliveTimer != null) {
-                        inMotionKeepAliveTimer.cancel();
-                        inMotionKeepAliveTimer = null;
-                    }
                     InMotionAdapter.newInstance();
                 }
                 if (mConnectionState == STATE_CONNECTED)
@@ -187,28 +181,6 @@ public class BluetoothLeService extends Service {
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                        try {
-                            writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        inMotionKeepAliveTimer = new Timer();
-                        inMotionKeepAliveTimer.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                try {
-                                    if (!writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getFastData().writeBuffer())) {
-                                        System.out.println("Unable to send keep-alive message");
-                                    } else {
-                                        System.out.println("Sent keep-alive message");
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }, 0, 500);
-                    }
                 } else
                     disconnect();
                 return;
@@ -485,10 +457,13 @@ public class BluetoothLeService extends Service {
                     Timber.v("writeBluetoothGattCharacteristic characteristic == null");
                     return false;
                 }
-                im_characteristic.setValue(cmd);
-                im_characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                Timber.v("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
-                return this.mBluetoothGatt.writeCharacteristic(im_characteristic);
+                for (int i = 0; i < cmd.length; i+=20) {
+                    int length = cmd.length - i > 20 ? 20 : cmd.length - i;
+                    im_characteristic.setValue(Arrays.copyOfRange(cmd, i, i + length));
+                    Timber.v("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
+                    this.mBluetoothGatt.writeCharacteristic(im_characteristic);
+                }
+                return true;
         }
         return false;
     }
