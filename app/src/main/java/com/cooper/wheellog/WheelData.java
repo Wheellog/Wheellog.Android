@@ -471,17 +471,26 @@ public class WheelData {
     }
 
     private boolean decodeInmotion(byte[] data) {
-        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(mBluetoothLeService, data);
+        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
+        if (rideStartTime == 0)
+            rideStartTime = Calendar.getInstance().getTimeInMillis();
         for (InMotionAdapter.Status status: statuses) {
+            System.out.println(status.toString());
             if (status instanceof InMotionAdapter.Infos) {
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
                 mModel = ((InMotionAdapter.Infos) status).getModel().getValue();
+                String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split(".");
+                mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
             } else {
-                mSpeed = (int) (status.getSpeed() / 10d);
+                mSpeed = (int) (status.getSpeed() * 1000d);
                 mVoltage = (int) (status.getVoltage() * 100d);
-                mCurrent = (int) status.getCurrent();
+                mCurrent = (int) (status.getCurrent() * 100d);
+
                 setBatteryPercent((int) status.getBatt());
                 setDistance((long) status.getDistance());
+                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+                setCurrentTime(currentTime);
+                setTopSpeed(mSpeed);
             }
         }
         return true;

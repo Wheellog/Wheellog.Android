@@ -6,9 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import static com.cooper.wheellog.utils.InMotionAdapter.Model.L6;
-import static com.cooper.wheellog.utils.InMotionAdapter.Model.R0;
-import static com.cooper.wheellog.utils.InMotionAdapter.Model.UNKNOWN;
+import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
 /**
  * Created by cedric on 29/12/2016.
@@ -41,38 +39,53 @@ public class InMotionAdapter {
 
     public enum Model {
 
-        R1N("0"),
-        R1S("1"),
-        R1AP("3"),
-        R1CF("2"),
-        R1EX("4"),
-        R1Sample("5"),
-        R1T("6"),
-        R10("7"),
-        V3("10"),
-        R2N("21"),
-        R2S("22"),
-        R2Sample("23"),
-        R2("20"),
-        R2EX("24"),
-        L6("60"),
-        V3C("11"),
-        V3S("13"),
-        V3PRO("12"),
-        R0("30"),
-        V5("50"),
-        V5PLUS("51"),
-        UNKNOWN("x");
+        R1N("0", 3812.0d),
+        R1S("1", 1000.0d),
+        R1CF("2", 3812.0d),
+        R1AP("3", 3812.0d),
+        R1EX("4", 3812.0d),
+        R1Sample("5", 1000.0d),
+        R1T("6", 3810.0d),
+        R10("7", 3812.0d),
+        V3("10", 3812.0d),
+        V3C("11", 3812.0d),
+        V3PRO("12", 3812.0d),
+        V3S("13", 3812.0d),
+        R2N("21", 3812.0d),
+        R2S("22", 3812.0d),
+        R2Sample("23", 3812.0d),
+        R2("20", 3812.0d),
+        R2EX("24", 3812.0d),
+        R0("30", 1000.0d),
+        L6("60", 3812.0d),
+        Lively("61", 3812.0d),
+        V5("50", 3812.0d),
+        V5PLUS("51", 3812.0d),
+        V8("80", 1000d),
+        UNKNOWN("x", 3812.0d);
 
         private String value;
+        private double speedCalculationFactor;
 
-        Model(String value) {
+        Model(String value, double speedCalculationFactor) {
             this.value = value;
+            this.speedCalculationFactor = speedCalculationFactor;
         }
 
         public String getValue() {
             return value;
         }
+
+        public double getSpeedCalculationFactor() {
+            return speedCalculationFactor;
+        }
+
+        public boolean belongToInputType(String type) {
+            if ("0".equals(type)) {
+                return value.length() == 1;
+            } else return value.substring(0, 1).equals(type) && value.length() == 2;
+        }
+
     }
 
 
@@ -289,6 +302,8 @@ public class InMotionAdapter {
             case 6:
                 return Model.L6;
 
+            case 7:
+                return Model.V8;
 
             default:
                 return Model.UNKNOWN;
@@ -296,57 +311,30 @@ public class InMotionAdapter {
         }
     }
 
-
-    static boolean isCarTypeBelongToInputType(String carType, String type) {
-        return type.equals("0") && carType.length() > 0 || carType.charAt(0) == type.charAt(0) && carType.length() == 2;
-    }
-
     static double batteryFromVoltage(double volts, Model model) {
 
         double batt;
 
-        if (isCarTypeBelongToInputType(model.getValue(), "1")) {
+        if (model.belongToInputType("1") || model == R0) {
 
-            if (volts >= 83.50) {
+            if (volts >= 82.50) {
                 batt = 1.0;
-            } else if (volts <= 68.5) {
-                batt = 0;
-            } else {
-                batt = (volts - 68.5) / 15.0;
-            }
-        } else if (isCarTypeBelongToInputType(model.getValue(), "5") || model == Model.UNKNOWN) {
-
-            if (volts >= 83.50) {
-                batt = 1.0;
-            } else if (volts > 80.0) {
-                batt = ((volts - 80.0) / 3.5) * 0.2 + 0.8;
-            } else if (volts > 77.0) {
-                batt = ((volts - 77.0) / 3.0) * 0.2 + 0.6;
-            } else if (volts > 74.0) {
-                batt = ((volts - 74.0) / 3.0) * 0.2 + 0.4;
-            } else if (volts > 71.0) {
-                batt = ((volts - 71.0) / 3.0) * 0.2 + 0.2;
-            } else if (volts > 55.0) {
-                batt = ((volts - 55.0) / 16.0) * 0.2;
+            } else if (volts > 68.0) {
+                batt = (volts - 68.0) / 14.50;
             } else {
                 batt = 0.0;
             }
-        } else if (model == Model.R0) {
-            if (volts >= 82.00) {
+        } else if (model.belongToInputType( "5") || model == Model.V8) {
+            if (volts > 82.50) {
                 batt = 1.0;
-            } else if (volts > 80.0) {
-                batt = ((volts - 80.0) / 2.0) * 0.25 + 0.75;
-            } else if (volts > 77.0) {
-                batt = ((volts - 77.0) / 3.0) * 0.25 + 0.5;
-            } else if (volts > 72.5) {
-                batt = ((volts - 72.50) / 5.2) * 0.25 + 0.25;
-            } else if (volts > 70.5) {
-                batt = ((volts - 70.5) / 2.0) * 0.25;
+            } else if (volts > 68.0) {
+                batt = (volts - 68.0) / 14.5;
             } else {
                 batt = 0.0;
             }
+        } else if (model.belongToInputType("6")) {
+            batt = 0.0;
         } else {
-
             if (volts >= 82.00) {
                 batt = 1.0;
             } else if (volts > 77.8) {
@@ -364,7 +352,6 @@ public class InMotionAdapter {
             }
 
         }
-
         return batt * 100.0;
 
     }
@@ -432,6 +419,20 @@ public class InMotionAdapter {
         public double getLock() {
             return lock;
         }
+
+        @Override
+        public String toString() {
+            return "Status{" +
+                    "angle=" + angle +
+                    ", speed=" + speed +
+                    ", voltage=" + voltage +
+                    ", batt=" + batt +
+                    ", current=" + current +
+                    ", power=" + power +
+                    ", distance=" + distance +
+                    ", lock=" + lock +
+                    '}';
+        }
     }
 
     public static class Infos extends Status {
@@ -456,6 +457,15 @@ public class InMotionAdapter {
 
         public String getVersion() {
             return version;
+        }
+
+        @Override
+        public String toString() {
+            return "Infos{" +
+                    "serialNumber='" + serialNumber + '\'' +
+                    ", model=" + model +
+                    ", version='" + version + '\'' +
+                    '}';
         }
     }
 
@@ -614,55 +624,32 @@ public class InMotionAdapter {
         }
 
         private int intFromBytes(byte[] bytes, int starting) {
-
             if (bytes.length >= starting + 4) {
-
-                return bytes[starting] + bytes[starting + 1] * 256 + bytes[starting + 2] * 256 * 256 + bytes[starting + 3] * 256 * 256 * 256;
-            } else {
-                return 0;
+                return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
             }
-
-
+            return 0;
         }
 
-        private int longFromBytes(byte[] bytes, int starting) {
-
+        private long longFromBytes(byte[] bytes, int starting) {
             if (bytes.length >= starting + 8) {
-
-                return bytes[starting] +
-                        bytes[starting + 1] * 256 +
-                        bytes[starting + 2] * 256 * 256 +
-                        bytes[starting + 3] * 256 * 256 * 256 +
-                        bytes[starting + 5] * 256 * 256 * 256 * 256 +
-                        bytes[starting + 6] * 256 * 256 * 256 * 256 * 256 +
-                        bytes[starting + 7] * 256 * 256 * 256 * 256 * 256 * 256;
-
-            } else {
-                return 0;
+                return ((((((((((((((((long) (bytes[starting + 7] & 255))) << 8) | ((long) (bytes[starting + 6] & 255))) << 8) | ((long) (bytes[starting + 5] & 255))) << 8) | ((long) (bytes[starting + 4] & 255))) << 8) | ((long) (bytes[starting + 3] & 255))) << 8) | ((long) (bytes[starting + 2] & 255))) << 8) | ((long) (bytes[starting + 1] & 255))) << 8) | ((long) (bytes[starting] & 255));
             }
-
-
+            return 0;
         }
 
         long signedIntFromBytes(byte[] bytes, int starting) {
-
             if (bytes.length >= starting + 4) {
-
-                long v = bytes[starting] + bytes[starting + 1] * 256 + bytes[starting + 2] * 256 * 256 + bytes[starting + 3] * 256 * 256 * 256;
-
-                long value = 0;
-
-                if (v >= 2147483648L) {        // No tinc clar que funcioni
-                    value = v - 4294967295L - 1;
-                } else {
-                    value = v;
-                }
-                return value;
-            } else {
-                return 0;
+                return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
             }
+            return 0;
         }
 
+        public static short shortFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 2) {
+                return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
+            }
+            return (short) 0;
+        }
 
         static CANMessage verify(byte[] buffer) {
 
@@ -792,29 +779,31 @@ public class InMotionAdapter {
         }
 
         Status parseFastInfoMessage(Model model) {
-            if (ex_data == null) return new Status(0, 0, 0, 0, 0, 0, 0, 0);
-            // Angle
-
-            Date d = new Date();
+            if (ex_data == null) return null;
             double angle = (double) (this.intFromBytes(ex_data, 0)) / 65536.0;
-            double speed = Math.abs(((double) (this.signedIntFromBytes(ex_data, 12)) + (double) (this.signedIntFromBytes(ex_data, 16))) / (3812.0 * 2.0));       // 3812.0 depen del tipus de vehicle
-            double voltage = (double) (this.intFromBytes(ex_data, 24)) / 100.0;  // Falta conversio a battery level
+            double speed = ((double) (this.signedIntFromBytes(ex_data, 12)) + (double) (this.signedIntFromBytes(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
+            if (model == R1S || model == R1Sample || model == R0 || model == V8) {
+                speed = Math.abs(speed);
+            }
+            double voltage = (double) (this.intFromBytes(ex_data, 24)) / 100.0;
             double current = (double) (this.signedIntFromBytes(ex_data, 20)) / 100.0;
+            double batt = batteryFromVoltage(voltage, model);
             double power = voltage * current;
 
             double distance;
 
-            if (isCarTypeBelongToInputType(model.getValue(), "1") ||
-                    isCarTypeBelongToInputType(model.getValue(), "5")) {
-                distance = (double) (this.longFromBytes(ex_data, 44));
+            if (model.belongToInputType( "1")
+                    || model.belongToInputType( "5")
+                    || model == V8) {
+                distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
             } else if (model == R0) {
-                distance = (double) (this.longFromBytes(ex_data, 44));
+                distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
 
             } else if (model == L6) {
-                distance = (double) (this.longFromBytes(ex_data, 44)) * 100.0;
+                distance = (double) (this.longFromBytes(ex_data, 44)) / 10.0;
 
             } else {
-                distance = (double) (this.longFromBytes(ex_data, 44)) / 5.711016379455429E4;
+                distance = (double) (this.longFromBytes(ex_data, 44)) / 5.711016379455429E7d;
             }
 
             WorkMode workMode = intToWorkMode(this.intFromBytes(ex_data, 60));
@@ -828,21 +817,23 @@ public class InMotionAdapter {
                     break;
             }
 
-            double batt = batteryFromVoltage(voltage, model);
             return new Status(angle, speed, voltage, batt, current, power, distance, lock);
         }
 
         // Return SerialNumber, Model, Version
 
         Infos parseSlowInfoMessage() {
-            if (ex_data == null) return new Infos("", Model.UNKNOWN, "");
-            String serialNumber = new String(Arrays.copyOfRange(ex_data, 0, 7));
+            if (ex_data == null) return null;
             Model model = byteToModel(ex_data);  // CarType is just model.rawValue
             int v = this.intFromBytes(ex_data, 24);
             int v0 = v / 0xFFFFFF;
             int v1 = (v - v0 * 0xFFFFFF) / 0xFFFF;
             int v2 = v - v0 * 0xFFFFFF - v1 * 0xFFFF;
             String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
+            String serialNumber = "";
+            for (int j = 0; j < 7; j++) {
+                serialNumber += String.format("%02X", ex_data[7 - j]);
+            }
             return new Infos(serialNumber, model, version);
         }
 
@@ -872,7 +863,7 @@ public class InMotionAdapter {
         }
     }
 
-    public ArrayList<Status> charUpdated(BluetoothLeService mBluetoothLeService, byte[] data) {
+    public ArrayList<Status> charUpdated(byte[] data) {
         ArrayList<Status> outValues = new ArrayList<>();
         for (byte c : data) {
             if (unpacker.addChar(c)) {
@@ -882,11 +873,14 @@ public class InMotionAdapter {
                 if (result != null) { // data OK
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
                         Status vals = result.parseFastInfoMessage(model);
-                        outValues.add(vals);
+                        if (vals != null)
+                            outValues.add(vals);
                     } else {
                         Infos infos = result.parseSlowInfoMessage();
-                        model = infos.getModel();
-                        outValues.add(infos);
+                        if (infos != null) {
+                            model = infos.getModel();
+                            outValues.add(infos);
+                        }
                     }
                 }
             }
