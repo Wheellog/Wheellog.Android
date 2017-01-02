@@ -482,7 +482,7 @@ public class WheelData {
                 String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split(".");
                 mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
             } else {
-                mSpeed = (int) (status.getSpeed() * 1000d);
+                mSpeed = (int) (status.getSpeed() * 360d);
                 mVoltage = (int) (status.getVoltage() * 100d);
                 mCurrent = (int) (status.getCurrent() * 100d);
 
