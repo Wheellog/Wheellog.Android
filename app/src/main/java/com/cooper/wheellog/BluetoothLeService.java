@@ -62,6 +62,9 @@ public class BluetoothLeService extends Service {
                             break;
                         case STATE_DISCONNECTED:
                             mConnectionState = STATE_DISCONNECTED;
+                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                                InMotionAdapter.newInstance();
+                            }
                             break;
                         case STATE_CONNECTING:
                             mConnectionState = STATE_CONNECTING;
@@ -146,9 +149,6 @@ public class BluetoothLeService extends Service {
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
-                if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                    InMotionAdapter.newInstance();
-                }
                 if (mConnectionState == STATE_CONNECTED)
                     mDisconnectTime = Calendar.getInstance().getTime();
                 if (!disconnectRequested &&
@@ -503,5 +503,9 @@ public class BluetoothLeService extends Service {
 
     public BluetoothGattService getGattService(UUID service_id) {
         return mBluetoothGatt.getService(service_id);
+    }
+
+    public String getBluetoothDeviceAddress() {
+        return mBluetoothDeviceAddress;
     }
 }

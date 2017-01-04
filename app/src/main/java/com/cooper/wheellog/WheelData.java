@@ -1,16 +1,21 @@
 package com.cooper.wheellog;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Vibrator;
 
+import android.text.InputType;
+import android.widget.EditText;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.InMotionAdapter;
+import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -479,7 +484,7 @@ public class WheelData {
             if (status instanceof InMotionAdapter.Infos) {
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
                 mModel = ((InMotionAdapter.Infos) status).getModel().getValue();
-                String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split(".");
+                String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split("\\.");
                 mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
             } else {
                 mSpeed = (int) (status.getSpeed() * 360d);
@@ -607,8 +612,12 @@ public class WheelData {
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
-                    return true;
+                    if (SettingsUtil.hasPasswordForWheel(mContext, mBluetoothLeService.getBluetoothDeviceAddress())) {
+                        String inmotionPassword = SettingsUtil.getPasswordForWheel(mBluetoothLeService.getApplicationContext(), mBluetoothLeService.getBluetoothDeviceAddress());
+                        InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
+                        return true;
+                    }
+                    return false;
                 }
             }
         }

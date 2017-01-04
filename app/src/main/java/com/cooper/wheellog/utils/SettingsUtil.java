@@ -83,4 +83,21 @@ public class SettingsUtil {
     public static int getHornMode(Context context) {
         return Integer.parseInt(getSharedPreferences(context).getString(context.getString(R.string.horn_mode), "0"));
     }
+
+    //Inmotion Specific, but can be the same for other wheels
+
+    public static boolean hasPasswordForWheel(Context context, String id) {
+        return getSharedPreferences(context).contains("inmotion_password_"+id);
+    }
+
+    public static String getPasswordForWheel(Context context, String id) {
+        return getSharedPreferences(context).getString("wheel_password_"+id, "000000");
+    }
+
+    public static void setPasswordForWheel(Context context, String id, String password) {
+        while (password.length() < 6) {
+            password = "0" + password;
+        }
+        getSharedPreferences(context).edit().putString("wheel_password_"+id, password).apply();
+    }
 }

@@ -61,6 +61,8 @@ public class InMotionAdapter {
         Lively("61", 3812.0d),
         V5("50", 3812.0d),
         V5PLUS("51", 3812.0d),
+        V5F("52", 3812.0d),
+        V5FPLUS("53", 3812.0d),
         V8("80", 1000d),
         UNKNOWN("x", 3812.0d);
 
@@ -86,6 +88,23 @@ public class InMotionAdapter {
             } else return value.substring(0, 1).equals(type) && value.length() == 2;
         }
 
+        public static Model findById(String id) {
+            for (Model m : Model.values()) {
+                if (m.getValue().equals(id)) return m;
+            }
+            return Model.UNKNOWN;
+        }
+
+        public static Model findByBytes(byte[] data) {
+            StringBuilder stringBuffer = new StringBuilder();
+            if (data.length >= 108) {
+                if (data[107] > (byte) 0) {
+                    stringBuffer.append(data[107]);
+                }
+                stringBuffer.append(data[104]);
+            }
+            return Model.findById(stringBuffer.toString());
+        }
     }
 
 
@@ -118,12 +137,12 @@ public class InMotionAdapter {
     Model model = Model.UNKNOWN;
     InMotionUnpacker unpacker = new InMotionUnpacker();
 
-    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService) {
+    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String inmotionPassword) {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (!passwordSent) {
-                    if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword("005654").writeBuffer())) passwordSent = true;
+                    if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) passwordSent = true;
                     System.out.println("Sent password message");
                 } else if (model == UNKNOWN) {
                     mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
@@ -213,102 +232,6 @@ public class InMotionAdapter {
                 return WorkMode.unknown;
         }
 
-    }
-
-    static Model byteToModel(byte[] data) {
-
-        if (data.length < 108) {
-            return Model.UNKNOWN;
-        }
-
-        switch (data[107]) {
-
-            case 0:     // Model R1
-                switch (data[104]) {
-
-                    case 0:
-                        return Model.R1N;
-
-                    case 1:
-                        return Model.R1S;
-
-                    case 2:
-                        return Model.R1CF;
-
-                    case 3:
-                        return Model.R1AP;
-
-                    case 4:
-                        return Model.R1EX;
-
-                    case 5:
-                        return Model.R1Sample;
-
-                    case 6:
-                        return Model.R1T;
-
-                    case 7:
-                        return Model.R10;
-
-                    default:
-                        return Model.UNKNOWN;
-
-                }
-
-            case 1:         // Model V3
-                switch (data[104]) {
-
-                    case 1:
-                        return Model.V3C;
-
-                    case 2:
-                        return Model.V3PRO;
-
-                    case 3:
-                        return Model.V3S;
-
-                    default:
-                        return Model.V3;
-
-
-                }
-
-            case 2:         // Model R2
-                switch (data[104]) {
-
-                    case 1:
-                        return Model.R2;
-
-                    case 4:
-                        return Model.R2EX;
-
-                    default:
-                        return Model.R2;
-
-                }
-
-            case 3:     // Model R0
-                return Model.R0;
-
-            case 5:     // Model V5
-                switch (data[104]) {
-                    case 1:
-                        return Model.V5PLUS;
-
-                    default:
-                        return Model.V5;
-                }
-
-            case 6:
-                return Model.L6;
-
-            case 7:
-                return Model.V8;
-
-            default:
-                return Model.UNKNOWN;
-
-        }
     }
 
     static double batteryFromVoltage(double volts, Model model) {
@@ -824,7 +747,7 @@ public class InMotionAdapter {
 
         Infos parseSlowInfoMessage() {
             if (ex_data == null) return null;
-            Model model = byteToModel(ex_data);  // CarType is just model.rawValue
+            Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
             int v = this.intFromBytes(ex_data, 24);
             int v0 = v / 0xFFFFFF;
             int v1 = (v - v0 * 0xFFFFFF) / 0xFFFF;
