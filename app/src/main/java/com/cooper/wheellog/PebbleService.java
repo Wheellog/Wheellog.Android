@@ -121,14 +121,14 @@ public class PebbleService extends Service {
 
                     if (refreshAll || lastDistance != WheelData.getInstance().getDistance())
                     {
-                        lastDistance = WheelData.getInstance().getDistance()/100;
-                        outgoingDictionary.addInt32(KEY_DISTANCE, lastDistance);
+                        lastDistance = WheelData.getInstance().getDistance();
+                        outgoingDictionary.addInt32(KEY_DISTANCE, lastDistance/100);
                     }
 
-                    if (refreshAll || lastRideTime != WheelData.getInstance().getTopSpeed())
+                    if (refreshAll || lastTopSpeed != WheelData.getInstance().getTopSpeed())
                     {
-                        lastTopSpeed = WheelData.getInstance().getTopSpeed()/10;
-                        outgoingDictionary.addInt32(KEY_TOP_SPEED, lastTopSpeed);
+                        lastTopSpeed = WheelData.getInstance().getTopSpeed();
+                        outgoingDictionary.addInt32(KEY_TOP_SPEED, lastTopSpeed/10);
                     }
                     break;
             }
