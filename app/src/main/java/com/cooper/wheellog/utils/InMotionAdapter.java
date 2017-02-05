@@ -871,7 +871,7 @@ public class InMotionAdapter {
     }
 
     public static void newInstance() {
-        if (INSTANCE.keepAliveTimer != null) {
+        if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
         }

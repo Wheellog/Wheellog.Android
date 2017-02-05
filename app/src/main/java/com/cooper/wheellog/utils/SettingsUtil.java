@@ -87,7 +87,7 @@ public class SettingsUtil {
     //Inmotion Specific, but can be the same for other wheels
 
     public static boolean hasPasswordForWheel(Context context, String id) {
-        return getSharedPreferences(context).contains("inmotion_password_"+id);
+        return getSharedPreferences(context).contains("wheel_password_"+id);
     }
 
     public static String getPasswordForWheel(Context context, String id) {
