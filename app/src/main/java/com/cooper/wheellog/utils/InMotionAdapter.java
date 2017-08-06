@@ -294,6 +294,7 @@ public class InMotionAdapter {
         private final double lock;
 		private final double temperature;
 		private final double temperature2;
+		private final int workModeInt;
 
         Status() {
             angle = 0;
@@ -307,9 +308,10 @@ public class InMotionAdapter {
             lock = 0;
 			temperature = 0;
 			temperature2 = 0;
+			workModeInt=0;
         }
 
-        Status(double angle, double roll, double speed, double voltage, double batt, double current, double power, double distance, double lock, double temperature, double temperature2) {
+        Status(double angle, double roll, double speed, double voltage, double batt, double current, double power, double distance, double lock, double temperature, double temperature2, int workModeInt) {
             this.angle = angle;
 			this.roll = roll;
             this.speed = speed;
@@ -321,7 +323,8 @@ public class InMotionAdapter {
             this.lock = lock;
 			this.temperature = temperature;
 			this.temperature2 = temperature2;
-        }
+			this.workModeInt = workModeInt;
+        }	
 
         public double getAngle() {
             return angle;
@@ -364,6 +367,24 @@ public class InMotionAdapter {
 		public double getTemperature2() {
             return temperature2;
         }
+		public String getWorkModeString() {
+            switch(workModeInt) {
+				case 0: return "Idle";
+				case 1: return "Drive";
+				case 2: return "Zero";
+				case 3: return "LargeAngle";
+				case 4: return "Checkc";
+				case 5: return "Lock";
+				case 6: return "Error";
+				case 7: return "Carry";
+				case 8: return "RemoteControl";
+				case 9: return "Shutdown";
+				case 10: return "pomStop";
+				case 11: return "Unknown";
+				case 12: return "Unlock";
+				default: return "Unknown";
+			}
+        }
 
         @Override
         public String toString() {
@@ -379,6 +400,7 @@ public class InMotionAdapter {
                     ", lock=" + lock +
 					", temperature=" + temperature +
 					", temperature2=" + temperature2 +
+					", temperature2=" + workModeInt +
                     '}';
         }
     }
@@ -404,6 +426,37 @@ public class InMotionAdapter {
         public Model getModel() {
             return model;
         }
+		
+		public String getModelString() {
+            switch (model.getValue()) {
+				case "0": return "Inmotion R1N";
+				case "1": return "Inmotion R1S";
+				case "2": return "Inmotion R1CF";
+				case "3": return "Inmotion R1AP";
+				case "4": return "Inmotion R1EX";
+				case "5": return "Inmotion R1Sample";
+				case "6": return "Inmotion R1T";
+				case "7": return "Inmotion R10";
+				case "10": return "Inmotion V3";
+				case "11": return "Inmotion V3C";
+				case "12": return "Inmotion V3PRO";
+				case "13": return "Inmotion V3S";
+				case "21": return "Inmotion R2N";
+				case "22": return "Inmotion R2S";
+				case "23": return "Inmotion R2Sample";
+				case "20": return "Inmotion R2";
+				case "24": return "Inmotion R2EX";
+				case "30": return "Inmotion R0";
+				case "60": return "Inmotion L6";
+				case "61": return "Inmotion Lively";
+				case "50": return "Inmotion V5";
+				case "51": return "Inmotion V5PLUS";
+				case "52": return "Inmotion V5F";
+				case "53": return "Inmotion V5FPLUS";
+				case "80": return "Inmotion V8";
+				default: return "Unknown";
+			}
+        }
 
         public String getVersion() {
             return version;
@@ -418,6 +471,7 @@ public class InMotionAdapter {
                     '}';
         }
     }
+	
 
     /**
      * Created by cedric on 29/12/2016.
@@ -759,8 +813,8 @@ public class InMotionAdapter {
             } else {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 5.711016379455429E7d;
             }
-
-            WorkMode workMode = intToWorkMode(this.intFromBytes(ex_data, 60));
+			int workModeInt = this.intFromBytes(ex_data, 60)&0xF;
+            WorkMode workMode = intToWorkMode(workModeInt);
             double lock = 0.0;
             switch (workMode) {
 
@@ -771,7 +825,7 @@ public class InMotionAdapter {
                     break;
             }
 
-            return new Status(angle, roll, speed, voltage, batt, current, power, distance, lock, temperature, temperature2);
+            return new Status(angle, roll, speed, voltage, batt, current, power, distance, lock, temperature, temperature2, workModeInt);
         }
 
         // Return SerialNumber, Model, Version
@@ -839,8 +893,7 @@ public class InMotionAdapter {
                             outValues.add(infos);
                         }
                     }					
-                } else 
-					return null;
+                } 
             }
         }
         return outValues;

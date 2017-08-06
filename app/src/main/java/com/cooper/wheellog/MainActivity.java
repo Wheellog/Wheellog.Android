@@ -358,6 +358,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvTemperature.setVisibility(View.VISIBLE);
 				tvTitleTemperature2.setVisibility(View.VISIBLE);
                 tvTemperature2.setVisibility(View.VISIBLE);
+				tvTitleMode.setVisibility(View.VISIBLE);
+                tvMode.setVisibility(View.VISIBLE);
 				tvTitleAngle.setVisibility(View.VISIBLE);
                 tvAngle.setVisibility(View.VISIBLE);
 				tvTitleRoll.setVisibility(View.VISIBLE);
@@ -455,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvModel.setText(WheelData.getInstance().getModel());
                 tvSerial.setText(WheelData.getInstance().getSerial());
                 tvRideTime.setText(WheelData.getInstance().getRideTimeString());
-                tvMode.setText(getResources().getStringArray(R.array.modes)[WheelData.getInstance().getMode()]);
+                tvMode.setText(WheelData.getInstance().getModeStr());
                 break;
             case 2: // Graph  View
                 if (updateGraph) {

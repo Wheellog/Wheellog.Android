@@ -54,6 +54,7 @@ public class WheelData {
     private boolean mConnectionState = false;
     private String mName = "";
     private String mModel = "";
+	private String mModeStr = "";
     private int mVersion;
     private String mSerialNumber = "";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
@@ -136,6 +137,10 @@ public class WheelData {
 
     String getModel() {
         return mModel;
+    }
+	
+	String getModeStr() {
+        return mModeStr;
     }
 
     String getSerial() {
@@ -340,9 +345,10 @@ public class WheelData {
         if (!new_data)
 			return;
 
-        Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
+			Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
             currentAxis.add((float) getCurrentDouble());
@@ -353,12 +359,14 @@ public class WheelData {
                 currentAxis.remove(0);
                 xAxis.remove(0);
             }
+			if (mAlarmsEnabled)
+            checkAlarmStatus(mContext);
+			mContext.sendBroadcast(intent);
         }
 
-        if (mAlarmsEnabled)
-            checkAlarmStatus(mContext);
+       
 
-        mContext.sendBroadcast(intent);
+        
     }
 
     private boolean decodeKingSong(byte[] data) {
@@ -496,14 +504,13 @@ public class WheelData {
 
     private boolean decodeInmotion(byte[] data) {
         ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
-
         if (rideStartTime == 0)
             rideStartTime = Calendar.getInstance().getTimeInMillis();
         for (InMotionAdapter.Status status: statuses) {
             System.out.println(status.toString());
             if (status instanceof InMotionAdapter.Infos) {
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
-                mModel = ((InMotionAdapter.Infos) status).getModel().getValue();
+                mModel = ((InMotionAdapter.Infos) status).getModelString();
                 String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split("\\.");
                 mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
             } else {
@@ -515,6 +522,7 @@ public class WheelData {
 				mTotalDistance = (long) (status.getDistance()*1000d);
 				mAngle = (double) (status.getAngle()); 
 				mRoll = (double) (status.getRoll()); 
+				mModeStr = status.getWorkModeString();
                 setBatteryPercent((int) status.getBatt());
                 setDistance((long) status.getDistance());
 				
@@ -553,6 +561,7 @@ public class WheelData {
         mFanStatus = 0;
         mName = "";
         mModel = "";
+		mModeStr = "";
         mVersion = 0;
         mSerialNumber = "";
         rideStartTime = 0;
