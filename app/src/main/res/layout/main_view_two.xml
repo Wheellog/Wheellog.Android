@@ -66,7 +66,40 @@
                 android:id="@+id/tvTemperature"
                 android:visibility="gone"
                 style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleTemperature2"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/temperature2"/>
 
+            <TextView
+                android:id="@+id/tvTemperature2"
+                android:visibility="gone"
+                style="@style/Stats" />
+
+			<TextView
+                android:id="@+id/tvTitleAngle"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/angle"/>
+
+            <TextView
+                android:id="@+id/tvAngle"
+                android:visibility="gone"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleRoll"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/roll"/>
+
+            <TextView
+                android:id="@+id/tvRoll"
+                android:visibility="gone"
+                style="@style/Stats" />
+				
             <TextView
                 android:id="@+id/tvTitleRideTime"
                 android:visibility="gone"

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
 /**
@@ -63,7 +64,7 @@ public class InMotionAdapter {
         V5PLUS("51", 3812.0d),
         V5F("52", 3812.0d),
         V5FPLUS("53", 3812.0d),
-        V8("80", 1000d),
+        V8("80", 3812.0d),
         UNKNOWN("x", 3812.0d);
 
         private String value;
@@ -156,7 +157,7 @@ public class InMotionAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 1000);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 100);
     }
 
     static Mode intToMode(int mode) {
@@ -279,8 +280,11 @@ public class InMotionAdapter {
 
     }
 
+
+	
     public static class Status {
         private final double angle;
+		private final double roll;
         private final double speed;
         private final double voltage;
         private final double batt;
@@ -288,9 +292,12 @@ public class InMotionAdapter {
         private final double power;
         private final double distance;
         private final double lock;
+		private final double temperature;
+		private final double temperature2;
 
         Status() {
             angle = 0;
+			roll = 0;
             speed = 0;
             voltage = 0;
             batt = 0;
@@ -298,10 +305,13 @@ public class InMotionAdapter {
             power = 0;
             distance = 0;
             lock = 0;
+			temperature = 0;
+			temperature2 = 0;
         }
 
-        Status(double angle, double speed, double voltage, double batt, double current, double power, double distance, double lock) {
+        Status(double angle, double roll, double speed, double voltage, double batt, double current, double power, double distance, double lock, double temperature, double temperature2) {
             this.angle = angle;
+			this.roll = roll;
             this.speed = speed;
             this.voltage = voltage;
             this.batt = batt;
@@ -309,10 +319,16 @@ public class InMotionAdapter {
             this.power = power;
             this.distance = distance;
             this.lock = lock;
+			this.temperature = temperature;
+			this.temperature2 = temperature2;
         }
 
         public double getAngle() {
             return angle;
+        }
+		
+        public double getRoll() {
+            return roll;
         }
 
         public double getSpeed() {
@@ -342,11 +358,18 @@ public class InMotionAdapter {
         public double getLock() {
             return lock;
         }
+		public double getTemperature() {
+            return temperature;
+        }
+		public double getTemperature2() {
+            return temperature2;
+        }
 
         @Override
         public String toString() {
             return "Status{" +
                     "angle=" + angle +
+					", roll=" + roll +
                     ", speed=" + speed +
                     ", voltage=" + voltage +
                     ", batt=" + batt +
@@ -354,10 +377,14 @@ public class InMotionAdapter {
                     ", power=" + power +
                     ", distance=" + distance +
                     ", lock=" + lock +
+					", temperature=" + temperature +
+					", temperature2=" + temperature2 +
                     '}';
         }
     }
+	
 
+	
     public static class Infos extends Status {
         private final String serialNumber;
         private final Model model;
@@ -431,7 +458,8 @@ public class InMotionAdapter {
             GetFastInfo(0x0F550113),
             GetSlowInfo(0x0F550114),
             RemoteControl(0x0F550116),
-            PinCode(0x0F550307);
+            PinCode(0x0F550307),
+			Alert(0x0F780101);
 
             private int value;
 
@@ -704,12 +732,15 @@ public class InMotionAdapter {
         Status parseFastInfoMessage(Model model) {
             if (ex_data == null) return null;
             double angle = (double) (this.intFromBytes(ex_data, 0)) / 65536.0;
+			double roll = (double) (this.intFromBytes(ex_data, 72)) / 90.0;
             double speed = ((double) (this.signedIntFromBytes(ex_data, 12)) + (double) (this.signedIntFromBytes(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
             if (model == R1S || model == R1Sample || model == R0 || model == V8) {
                 speed = Math.abs(speed);
             }
             double voltage = (double) (this.intFromBytes(ex_data, 24)) / 100.0;
             double current = (double) (this.signedIntFromBytes(ex_data, 20)) / 100.0;
+			double temperature = ex_data[32] & 0xff;
+			double temperature2 = ex_data[34] & 0xff;
             double batt = batteryFromVoltage(voltage, model);
             double power = voltage * current;
 
@@ -740,7 +771,7 @@ public class InMotionAdapter {
                     break;
             }
 
-            return new Status(angle, speed, voltage, batt, current, power, distance, lock);
+            return new Status(angle, roll, speed, voltage, batt, current, power, distance, lock, temperature, temperature2);
         }
 
         // Return SerialNumber, Model, Version
@@ -754,7 +785,7 @@ public class InMotionAdapter {
             int v2 = v - v0 * 0xFFFFFF - v1 * 0xFFFF;
             String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
             String serialNumber = "";
-            for (int j = 0; j < 7; j++) {
+            for (int j = 0; j < 8; j++) {
                 serialNumber += String.format("%02X", ex_data[7 - j]);
             }
             return new Infos(serialNumber, model, version);
@@ -788,6 +819,7 @@ public class InMotionAdapter {
 
     public ArrayList<Status> charUpdated(byte[] data) {
         ArrayList<Status> outValues = new ArrayList<>();
+
         for (byte c : data) {
             if (unpacker.addChar(c)) {
 
@@ -798,14 +830,17 @@ public class InMotionAdapter {
                         Status vals = result.parseFastInfoMessage(model);
                         if (vals != null)
                             outValues.add(vals);
-                    } else {
+					
+                   
+					} else {
                         Infos infos = result.parseSlowInfoMessage();
                         if (infos != null) {
                             model = infos.getModel();
                             outValues.add(infos);
                         }
-                    }
-                }
+                    }					
+                } else 
+					return null;
             }
         }
         return outValues;

@@ -44,7 +44,10 @@
     <string name="voltage">Voltage</string>
     <string name="current">Current</string>
     <string name="power">Power</string>
-    <string name="temperature">Temperature</string>
+    <string name="temperature">Battery temp</string>
+	<string name="temperature2">System temp</string>
+	<string name="angle">Angle</string>
+	<string name="roll">Roll</string>
     <string name="fan_status">Fan Status</string>
     <string name="mode">Mode</string>
     <string name="total_distance">Total Distance</string>

@@ -28,7 +28,7 @@ public class WheelData {
     private BluetoothLeService mBluetoothLeService;
 
     private long graph_last_update_time;
-    private static final int GRAPH_UPDATE_INTERVAL = 500; // milliseconds
+    private static final int GRAPH_UPDATE_INTERVAL = 100; // milliseconds
     private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
@@ -38,6 +38,9 @@ public class WheelData {
     private long mTotalDistance;
     private int mCurrent;
     private int mTemperature;
+	private int mTemperature2;
+	private double mAngle;
+	private double mRoll;
     private int mMode;
     private int mBattery;
     private double mAverageBattery;
@@ -88,7 +91,19 @@ public class WheelData {
     public int getTemperature() {
         return mTemperature / 100;
     }
-
+	
+    public int getTemperature2() {
+        return mTemperature2 / 100;
+    }
+	
+	public double getAngle() {
+        return mAngle;
+    }
+	
+	public double getRoll() {
+        return mRoll;
+    }
+	
     public int getBatteryLevel() {
         return mBattery;
     }
@@ -170,6 +185,10 @@ public class WheelData {
     double getTotalDistanceDouble() {
         return mTotalDistance / 1000.0;
     }
+	
+	long getTotalDistance() {
+        return mTotalDistance;
+    }
 
     ArrayList<String> getXAxis() {
         return xAxis;
@@ -215,7 +234,7 @@ public class WheelData {
 
     private void setDistance(long distance) {
         if (mStartTotalDistance == 0 && mTotalDistance != 0)
-            mStartTotalDistance = mTotalDistance - distance;
+            mStartTotalDistance = mTotalDistance;
 
 //        mDistance = distance;
     }
@@ -319,7 +338,7 @@ public class WheelData {
             new_data = decodeNinebot(data);
 
         if (!new_data)
-            return;
+			return;
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 
@@ -477,6 +496,7 @@ public class WheelData {
 
     private boolean decodeInmotion(byte[] data) {
         ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
+
         if (rideStartTime == 0)
             rideStartTime = Calendar.getInstance().getTimeInMillis();
         for (InMotionAdapter.Status status: statuses) {
@@ -490,9 +510,14 @@ public class WheelData {
                 mSpeed = (int) (status.getSpeed() * 360d);
                 mVoltage = (int) (status.getVoltage() * 100d);
                 mCurrent = (int) (status.getCurrent() * 100d);
-
+				mTemperature = (int) (status.getTemperature() * 100d);
+				mTemperature2 = (int) (status.getTemperature2() * 100d);
+				mTotalDistance = (long) (status.getDistance()*1000d);
+				mAngle = (double) (status.getAngle()); 
+				mRoll = (double) (status.getRoll()); 
                 setBatteryPercent((int) status.getBatt());
                 setDistance((long) status.getDistance());
+				
                 int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);
                 setTopSpeed(mSpeed);
@@ -515,6 +540,9 @@ public class WheelData {
         mTotalDistance = 0;
         mCurrent = 0;
         mTemperature = 0;
+		mTemperature2 = 0;
+		mAngle = 0;
+		mRoll = 0;
         mMode = 0;
         mBattery = 0;
         mAverageBatteryCount = 0;

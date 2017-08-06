@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     TextView tvSpeed;
     TextView tvTemperature;
+	TextView tvTemperature2;
+	TextView tvAngle;
+	TextView tvRoll;
     TextView tvCurrent;
     TextView tvPower;
     TextView tvVoltage;
@@ -263,6 +266,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
         TextView tvTitlePower = (TextView) findViewById(R.id.tvTitlePower);
         TextView tvTitleTemperature = (TextView) findViewById(R.id.tvTitleTemperature);
+		TextView tvTitleTemperature2 = (TextView) findViewById(R.id.tvTitleTemperature2);
+		TextView tvTitleAngle = (TextView) findViewById(R.id.tvTitleAngle);
+		TextView tvTitleRoll = (TextView) findViewById(R.id.tvTitleRoll);
         TextView tvTitleFanStatus = (TextView) findViewById(R.id.tvTitleFanStatus);
         TextView tvTitleMode = (TextView) findViewById(R.id.tvTitleMode);
         TextView tvTitleTotalDistance = (TextView) findViewById(R.id.tvTitleTotalDistance);
@@ -350,8 +356,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvPower.setVisibility(View.VISIBLE);
                 tvTitleTemperature.setVisibility(View.VISIBLE);
                 tvTemperature.setVisibility(View.VISIBLE);
+				tvTitleTemperature2.setVisibility(View.VISIBLE);
+                tvTemperature2.setVisibility(View.VISIBLE);
+				tvTitleAngle.setVisibility(View.VISIBLE);
+                tvAngle.setVisibility(View.VISIBLE);
+				tvTitleRoll.setVisibility(View.VISIBLE);
+                tvRoll.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
+				tvTitleModel.setVisibility(View.VISIBLE);
+                tvModel.setVisibility(View.VISIBLE);
+                tvTitleVersion.setVisibility(View.VISIBLE);
+                tvVersion.setVisibility(View.VISIBLE);
+                tvTitleSerial.setVisibility(View.VISIBLE);
+                tvSerial.setVisibility(View.VISIBLE);
                 break;
             default:
                 tvWaitText.setVisibility(View.VISIBLE);
@@ -373,6 +391,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvPower.setVisibility(View.GONE);
                 tvTitleTemperature.setVisibility(View.GONE);
                 tvTemperature.setVisibility(View.GONE);
+				tvTitleTemperature2.setVisibility(View.GONE);
+                tvTemperature2.setVisibility(View.GONE);
+				tvTitleAngle.setVisibility(View.GONE);
+                tvAngle.setVisibility(View.GONE);
+				tvTitleRoll.setVisibility(View.GONE);
+                tvRoll.setVisibility(View.GONE);
                 tvTitleFanStatus.setVisibility(View.GONE);
                 tvFanStatus.setVisibility(View.GONE);
                 tvTitleMode.setVisibility(View.GONE);
@@ -419,6 +443,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
                 tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
+				tvTemperature2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
+				tvAngle.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
+				tvRoll.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getRoll()));
                 tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
                 tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
                 tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
@@ -536,6 +563,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         tvCurrent = (TextView) findViewById(R.id.tvCurrent);
         tvPower = (TextView) findViewById(R.id.tvPower);
         tvTemperature = (TextView) findViewById(R.id.tvTemperature);
+		tvTemperature2 = (TextView) findViewById(R.id.tvTemperature2);
+		tvAngle = (TextView) findViewById(R.id.tvAngle);
+		tvRoll = (TextView) findViewById(R.id.tvRoll);
         tvVoltage = (TextView) findViewById(R.id.tvVoltage);
         tvBattery = (TextView) findViewById(R.id.tvBattery);
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
