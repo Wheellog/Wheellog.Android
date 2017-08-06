@@ -1,6 +1,6 @@
 # WheelLogAndroid
 
-One more try for make it working on Inmotion V8
+One more try to make it working with Inmotion V8
 
 
 Pebble app code
