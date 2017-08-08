@@ -148,6 +148,7 @@ public class InMotionAdapter {
                 } else if (model == UNKNOWN) {
                     mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
                     System.out.println("Sent infos message");
+					//model = V8;
                 }
                 else if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
                     System.out.println("Unable to send keep-alive message");
@@ -405,7 +406,38 @@ public class InMotionAdapter {
         }
     }
 	
+	public static class Alert extends Status {
+		private final int alertId;
+		private final double alertValue;
+		private final double alertValue2;
+		private final String fullText;
 
+		
+		Alert() {
+			super();
+			alertId = 0;
+			alertValue = 0;
+			alertValue2 = 0;
+			fullText = "";
+	
+		}
+		
+		Alert(int alertId, double alertValue, double alertValue2, String fullText) {
+			super();
+			this.alertId = alertId;
+			this.alertValue = alertValue;
+			this.alertValue2 = alertValue2;
+			this.fullText = fullText;
+
+		}
+		
+		public String getfullText() {
+			return fullText;
+			
+        }
+		
+		
+	}
 	
     public static class Infos extends Status {
         private final String serialNumber;
@@ -623,9 +655,10 @@ public class InMotionAdapter {
 
             int check = 0;
             for (byte c : buffer) {
-                check = (check + (int) c) % 256;
+                check = (check + (int) c);
+				//check = (check + (int) c) % 256;
             }
-            return check;
+            return (check & 0xFF);
         }
 
         private int intFromBytes(byte[] bytes, int starting) {
@@ -656,6 +689,7 @@ public class InMotionAdapter {
             return (short) 0;
         }
 
+
         static CANMessage verify(byte[] buffer) {
 
             if (buffer[0] != (byte) 0xAA || buffer[1] != (byte) 0xAA || buffer[buffer.length - 1] != (byte) 0x55 || buffer[buffer.length - 2] != (byte) 0x55) {
@@ -667,9 +701,10 @@ public class InMotionAdapter {
             dataBuffer = CANMessage.unescape(dataBuffer);
             int check = CANMessage.computeCheck(dataBuffer);
 
-            int bufferCheck = buffer[buffer.length - 3];
+            int bufferCheck = buffer[buffer.length - 3] & 0xFF;
 
             return (check == bufferCheck) ? new CANMessage(dataBuffer) : null;
+
         }
 
 
@@ -729,7 +764,7 @@ public class InMotionAdapter {
             msg.id = IDValue.GetSlowInfo.getValue();
             msg.ch = 5;
             msg.type = CanFrame.RemoteFrame.getValue();
-            msg.data = new byte[]{33, 0, 0, 2, 0, 0, 0, 0};
+            msg.data = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
             return msg;
         }
@@ -829,10 +864,52 @@ public class InMotionAdapter {
         }
 
         // Return SerialNumber, Model, Version
-
+		Alert parseAlertInfoMessage() {
+			int alertId = (int)data[0];
+			double alertValue = (double)((data[3] * 256) | (data[2] & 0xFF));
+			//double alertValue2 = (double)(this.intFromBytes(data, 4));
+			double alertValue2 = (double)(((data[6])*256*256) | ((data[5]&0xFF)*256) | (data[4]&0xFF));
+			double a_speed = Math.abs((alertValue2/3812.0) * 3.6);
+			String fullText = "";
+			
+			String hex = "[";
+            for (int c : data) {
+                hex += String.format("%02X", (c & 0xFF));             
+            }
+			hex +="]";
+			
+			switch (alertId) {
+				
+				case 0x05:  
+					fullText = String.format(Locale.ENGLISH, "Start from angle %.2f at speed %.2f %s", (alertValue/100.0), a_speed, hex);
+					break;
+				case 0x06:
+					fullText = String.format(Locale.ENGLISH, "Lift pedals at speed %.2f at limit %.2f %s", a_speed, (alertValue/1000.0), hex);
+					break;
+				case 0x19:
+					fullText = String.format(Locale.ENGLISH, "Fall Down %s", hex);
+					break;
+				case 0x20:
+					fullText = String.format(Locale.ENGLISH, "Low battery at voltage %.2f %s", (alertValue2/100.0), hex);
+					break;
+				case 0x21:
+					fullText = String.format(Locale.ENGLISH, "Speed cut off at speed %.2f and current %.2f %s", a_speed, (alertValue/10.0), hex);
+					break;
+				case 0x26:
+					fullText = String.format(Locale.ENGLISH, "High load at speed %.2f and current %.2f %s", a_speed, (alertValue/1000.0), hex);
+					break;
+				default: 
+					fullText = String.format(Locale.ENGLISH, "Unknown Alert %.2f %.2f hex", alertValue, alertValue2, hex);
+			}
+			return new Alert(alertId, alertValue, alertValue2, fullText);
+			
+		}
+		
+		
         Infos parseSlowInfoMessage() {
             if (ex_data == null) return null;
             Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
+			//model = V8;
             int v = this.intFromBytes(ex_data, 24);
             int v0 = v / 0xFFFFFF;
             int v1 = (v - v0 * 0xFFFFFF) / 0xFFFF;
@@ -876,17 +953,21 @@ public class InMotionAdapter {
 
         for (byte c : data) {
             if (unpacker.addChar(c)) {
-
-                CANMessage result = CANMessage.verify(unpacker.getBuffer());
-
+                
+				CANMessage result = CANMessage.verify(unpacker.getBuffer());
+				
                 if (result != null) { // data OK
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
-                        Status vals = result.parseFastInfoMessage(model);
+						Status vals = result.parseFastInfoMessage(model);
                         if (vals != null)
                             outValues.add(vals);
-					
-                   
-					} else {
+						
+					} else if (result.id == CANMessage.IDValue.Alert.getValue()){
+						Alert alert = result.parseAlertInfoMessage();
+						if (alert != null)
+							outValues.add(alert);
+						
+					} else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()){
                         Infos infos = result.parseSlowInfoMessage();
                         if (infos != null) {
                             model = infos.getModel();

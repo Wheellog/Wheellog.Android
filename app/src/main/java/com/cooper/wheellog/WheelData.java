@@ -55,6 +55,9 @@ public class WheelData {
     private String mName = "";
     private String mModel = "";
 	private String mModeStr = "";
+	
+	private String mAlert = "";
+
     private int mVersion;
     private String mSerialNumber = "";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
@@ -142,7 +145,13 @@ public class WheelData {
 	String getModeStr() {
         return mModeStr;
     }
-
+	
+	String getAlert() {
+		String nAlert = mAlert;
+		mAlert = "";
+        return nAlert;
+    }
+	
     String getSerial() {
         return mSerialNumber;
     }
@@ -339,16 +348,16 @@ public class WheelData {
             new_data = decodeGotway(data);
         else if (mWheelType == WHEEL_TYPE.INMOTION)
             new_data = decodeInmotion(data);
+			
         else if (mWheelType == WHEEL_TYPE.NINEBOT)
             new_data = decodeNinebot(data);
 
         if (!new_data)
 			return;
 
-        
+		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
-			Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
             currentAxis.add((float) getCurrentDouble());
@@ -359,11 +368,12 @@ public class WheelData {
                 currentAxis.remove(0);
                 xAxis.remove(0);
             }
-			if (mAlarmsEnabled)
-            checkAlarmStatus(mContext);
-			mContext.sendBroadcast(intent);
+			
         }
-
+		if (mAlarmsEnabled) 
+			checkAlarmStatus(mContext);
+		mContext.sendBroadcast(intent);
+        
        
 
         
@@ -504,6 +514,7 @@ public class WheelData {
 
     private boolean decodeInmotion(byte[] data) {
         ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
+		if (statuses.size() < 1) return false;
         if (rideStartTime == 0)
             rideStartTime = Calendar.getInstance().getTimeInMillis();
         for (InMotionAdapter.Status status: statuses) {
@@ -513,7 +524,10 @@ public class WheelData {
                 mModel = ((InMotionAdapter.Infos) status).getModelString();
                 String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split("\\.");
                 mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
-            } else {
+            } else if (status instanceof InMotionAdapter.Alert){
+				mAlert = ((InMotionAdapter.Alert) status).getfullText();
+
+			} else {
                 mSpeed = (int) (status.getSpeed() * 360d);
                 mVoltage = (int) (status.getVoltage() * 100d);
                 mCurrent = (int) (status.getCurrent() * 100d);
