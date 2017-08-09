@@ -355,9 +355,12 @@ public class WheelData {
         if (!new_data)
 			return;
 
-		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
+		//Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
+			
+			Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
+			
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
             currentAxis.add((float) getCurrentDouble());
@@ -369,10 +372,15 @@ public class WheelData {
                 xAxis.remove(0);
             }
 			
-        }
-		if (mAlarmsEnabled) 
+			if (mAlarmsEnabled) 
 			checkAlarmStatus(mContext);
-		mContext.sendBroadcast(intent);
+			mContext.sendBroadcast(intent);
+			
+        }
+
+		//if (mAlarmsEnabled) 
+			//checkAlarmStatus(mContext);
+			//mContext.sendBroadcast(intent);
         
        
 

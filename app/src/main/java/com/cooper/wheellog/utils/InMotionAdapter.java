@@ -545,6 +545,7 @@ public class InMotionAdapter {
             GetSlowInfo(0x0F550114),
             RemoteControl(0x0F550116),
             PinCode(0x0F550307),
+			Light(0x0F55010D),  
 			Alert(0x0F780101);
 
             private int value;
@@ -766,6 +767,22 @@ public class InMotionAdapter {
             msg.type = CanFrame.RemoteFrame.getValue();
             msg.data = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
+            return msg;
+        }
+		
+        public static CANMessage setLightOn(boolean on) {
+            CANMessage msg = new CANMessage();
+
+            msg.len = 8;
+            msg.id = IDValue.Light.getValue();
+            msg.ch = 5;
+            //msg.type = CanFrame.DataFrame.getValue();
+			if (on) {
+				msg.data = new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+			} else {
+				msg.data = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+			}
+			
             return msg;
         }
 
