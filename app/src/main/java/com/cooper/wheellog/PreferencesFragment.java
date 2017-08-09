@@ -22,7 +22,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         Speed,
         Logs,
         Alarms,
-        Watch
+        Watch,
+		Wheel
     }
 
     private boolean mDataWarningDisplayed = false;
@@ -112,6 +113,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 Preference logs_button = findPreference(getString(R.string.log_preferences));
                 Preference alarm_button = findPreference(getString(R.string.alarm_preferences));
                 Preference watch_button = findPreference(getString(R.string.watch_preferences));
+				Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 
                 if (speed_button != null) {
                     speed_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -161,6 +163,19 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         }
                     });
                 }
+		        if (wheel_button != null) {
+                    wheel_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            currentScreen = SettingsScreen.Wheel;
+                            getPreferenceScreen().removeAll();
+                            addPreferencesFromResource(R.xml.preferences_inmotionwheel);
+                            setup_screen();
+                            return true;
+                        }
+                    });
+                }
+				
                 break;
             case Speed:
                 tb.setTitle("Speed Settings");
@@ -174,6 +189,9 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 break;
             case Watch:
                 tb.setTitle("Watch Settings");
+                break;
+			case Wheel:
+                tb.setTitle("Wheel Settings");
                 break;
         }
     }

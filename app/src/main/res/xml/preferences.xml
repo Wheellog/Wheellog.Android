@@ -22,4 +22,10 @@
         android:title="Watch Preferences"
         android:icon="@drawable/ic_watch_white_24dp" />
 
+    <Preference
+        android:visible="false"
+        android:key="@string/wheel_settings"
+        android:title="Wheel Settings"
+        android:icon="@drawable/ic_action_wheel_white" />
+
 </PreferenceScreen>

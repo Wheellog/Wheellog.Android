@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sample="http://schemas.android.com/apk/res-auto">
+
+    <CheckBoxPreference
+        android:key="@string/light_enabled"
+        android:title="Switch on the light"
+        android:summary="Activate headlight" />
+
+    <CheckBoxPreference
+        android:key="@string/illumination_enabled"
+        android:title="Switch on wheel illumination"
+        android:summary="Activate leds on the sides" />
+
+    <CheckBoxPreference
+        android:key="@string/handle_button_disabled"
+        android:title="Disable handle button"
+        android:summary="Wheel will not disable when you press the button on the handle" />
+
+
+    <com.pavelsikun.seekbarpreference.SeekBarPreference
+        android:key="@string/max_wheel_speed"
+        android:title="Wheel speed limit"
+        android:summary="The speed at which the pedals go up"
+        android:defaultValue="25"
+        sample:msbp_minValue="3"
+        sample:msbp_maxValue="35"
+        sample:msbp_interval="1"
+        sample:msbp_measurementUnit="km/h"
+        sample:msbp_dialogEnabled="true"/>
+
+    <com.pavelsikun.seekbarpreference.SeekBarPreference
+        android:key="@string/speaker_volume"
+        android:title="Speaker volume"
+        android:summary="Change built-in speaker volume"
+        android:defaultValue="100"
+        sample:msbp_minValue="0"
+        sample:msbp_maxValue="100"
+        sample:msbp_interval="1"
+        sample:msbp_measurementUnit="%"
+        sample:msbp_dialogEnabled="true"/>
+
+</PreferenceScreen>

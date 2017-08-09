@@ -75,6 +75,7 @@
     <string name="log_preferences" translatable="false">log_preferences</string>
     <string name="alarm_preferences" translatable="false">alarm_preferences</string>
     <string name="watch_preferences" translatable="false">watch_preferences</string>
+    <string name="wheel_settings" translatable="false">wheel_settings</string>
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
@@ -86,6 +87,13 @@
     <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
+
+    // WHEEL SETTINGS
+    <string name="light_enabled" translatable="false">light_enabled</string>
+    <string name="illumination_enabled" translatable="false">illumination_enabled</string>
+    <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
+    <string name="max_wheel_speed" translatable="false">max_wheel_speed</string>
+    <string name="speaker_volume" translatable="false">speaker_volume</string>
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
