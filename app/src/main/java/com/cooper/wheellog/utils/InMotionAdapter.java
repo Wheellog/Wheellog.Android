@@ -16,6 +16,7 @@ public class InMotionAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
     private boolean passwordSent = false;
+	private boolean needSlowData = true;
 
     enum Mode {
         rookie(0),
@@ -145,7 +146,7 @@ public class InMotionAdapter {
                 if (!passwordSent) {
                     if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) passwordSent = true;
                     System.out.println("Sent password message");
-                } else if (model == UNKNOWN) {
+                } else if ((model == UNKNOWN) | needSlowData ) {
                     mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
                     System.out.println("Sent infos message");
 					//model = V8;
@@ -160,6 +161,19 @@ public class InMotionAdapter {
         keepAliveTimer = new Timer();
         keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 100);
     }
+	
+	public void setLightState(final BluetoothLeService mBluetoothLeService, final boolean lightEnable) {
+		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer());
+		
+	}
+	public void setLedState(final BluetoothLeService mBluetoothLeService, final boolean ledEnable) {
+		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLed(ledEnable).writeBuffer());
+		
+	}
+	public void setHandleButtonState(final BluetoothLeService mBluetoothLeService, final boolean handleButtonEnable) {
+		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer());
+		
+	}
 
     static Mode intToMode(int mode) {
         if ((mode & 16) != 0) {
@@ -543,9 +557,13 @@ public class InMotionAdapter {
             NoOp(0),
             GetFastInfo(0x0F550113),
             GetSlowInfo(0x0F550114),
-            RemoteControl(0x0F550116),
+            //RemoteControl(0x0F550116),
             PinCode(0x0F550307),
 			Light(0x0F55010D),  
+			Led(0x0F550116),  
+			HandleButton(0x0F55012E),  
+			MaxSpeed(0x0F550115),  
+			SpeakerVolume(0x0F55010A),  
 			Alert(0x0F780101);
 
             private int value;
@@ -770,22 +788,51 @@ public class InMotionAdapter {
             return msg;
         }
 		
-        public static CANMessage setLightOn(boolean on) {
+        public static CANMessage setLight(boolean on) {
             CANMessage msg = new CANMessage();
-
-            msg.len = 8;
+			byte enable = 0;
+			if (on) {
+				enable = 1;
+			}
+		    msg.len = 8;
             msg.id = IDValue.Light.getValue();
             msg.ch = 5;
-            //msg.type = CanFrame.DataFrame.getValue();
+            msg.type = CanFrame.DataFrame.getValue();
+			msg.data = new byte[]{enable, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+			
+            return msg;
+        }
+		
+		public static CANMessage setLed(boolean on) {
+            CANMessage msg = new CANMessage();
+			byte enable = 0x10;
 			if (on) {
-				msg.data = new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-			} else {
-				msg.data = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+				enable = 0x0F;
 			}
+		    msg.len = 8;
+            msg.id = IDValue.Led.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+			msg.data = new byte[]{(byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00, enable, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 			
             return msg;
         }
 
+		public static CANMessage setHandleButton(boolean on) {
+            CANMessage msg = new CANMessage();
+			byte enable = 1;
+			if (on) {
+				enable = 0;
+			}
+		    msg.len = 8;
+            msg.id = IDValue.HandleButton.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+			msg.data = new byte[]{enable, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+			
+            return msg;
+        }
+		
         public static CANMessage getBatteryLevelsdata() {
             CANMessage msg = new CANMessage();
 
@@ -901,7 +948,7 @@ public class InMotionAdapter {
 					fullText = String.format(Locale.ENGLISH, "Start from angle %.2f at speed %.2f %s", (alertValue/100.0), a_speed, hex);
 					break;
 				case 0x06:
-					fullText = String.format(Locale.ENGLISH, "Lift pedals at speed %.2f at limit %.2f %s", a_speed, (alertValue/1000.0), hex);
+					fullText = String.format(Locale.ENGLISH, "Titlback at speed %.2f at limit %.2f %s", a_speed, (alertValue/1000.0), hex);
 					break;
 				case 0x19:
 					fullText = String.format(Locale.ENGLISH, "Fall Down %s", hex);
@@ -987,6 +1034,7 @@ public class InMotionAdapter {
 					} else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()){
                         Infos infos = result.parseSlowInfoMessage();
                         if (infos != null) {
+							needSlowData = false;
                             model = infos.getModel();
                             outValues.add(infos);
                         }

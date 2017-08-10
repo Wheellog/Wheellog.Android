@@ -88,6 +88,21 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
             case "max_speed":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
+			case "light_enabled":
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				break;
+			case "led_enabled":
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				break;
+			case "handle_button_disabled":
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				break;
+			case "wheel_max_speed":
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				break;
+			case "speaker_volume":
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				break;
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }

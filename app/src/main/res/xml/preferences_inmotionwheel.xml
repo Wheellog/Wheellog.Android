@@ -9,7 +9,7 @@
         android:summary="Activate headlight" />
 
     <CheckBoxPreference
-        android:key="@string/illumination_enabled"
+        android:key="@string/led_enabled"
         android:title="Switch on wheel illumination"
         android:summary="Activate leds on the sides" />
 
@@ -20,9 +20,9 @@
 
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/max_wheel_speed"
+        android:key="@string/wheel_max_speed"
         android:title="Wheel speed limit"
-        android:summary="The speed at which the pedals go up"
+        android:summary="Tiltback speed"
         android:defaultValue="25"
         sample:msbp_minValue="3"
         sample:msbp_maxValue="35"
@@ -34,7 +34,7 @@
         android:key="@string/speaker_volume"
         android:title="Speaker volume"
         android:summary="Change built-in speaker volume"
-        android:defaultValue="100"
+        android:defaultValue="50"
         sample:msbp_minValue="0"
         sample:msbp_maxValue="100"
         sample:msbp_interval="1"

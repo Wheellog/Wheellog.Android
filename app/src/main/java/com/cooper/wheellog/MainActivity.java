@@ -65,6 +65,7 @@ import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
+
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -161,6 +162,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
                     break;
+				case Constants.ACTION_WHEEL_SETTING_CHANGED:
+					applyWheelSettings();
+					break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
@@ -205,7 +209,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mConnectionState = connectionState;
         setMenuIconStates();
     }
-
+	
+	private void applyWheelSettings() {
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), true);
+		boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), true);
+		boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), true);
+		int max_speed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
+		int speaker_volume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
+		WheelData.getInstance().updateLight(ligth_enabled);
+		WheelData.getInstance().updateLed(led_enabled);
+		WheelData.getInstance().updateHandleButton(handle_button_disabled);
+		WheelData.getInstance().updateMaxSpeed(max_speed);
+		WheelData.getInstance().updateSpeakerVolume(speaker_volume);
+		//byte[] raw_m = new byte[]{(byte) 0xAA, (byte) 0xAA, (byte) 0x0D,(byte) 0x01,(byte) 0xA5,(byte) 0x55,(byte) 0x0F,(byte) 0x01,0,0,0,0,0,0,0,(byte) 0x08,(byte) 0x05,(byte) 0x00,(byte) 0x00,(byte) 0x80,(byte) 0x55,(byte) 0x55};
+		//byte[] raw_m = new byte[]{(byte) 0xAA, (byte) 0xAA, (byte) 0x15,(byte) 0x01,(byte) 0xA5,(byte) 0x55,(byte) 0x0F,(byte) 0x01,0,0,0,(byte) 0xB8,(byte) 0x88,0,0,(byte) 0x08,(byte) 0x05,(byte) 0x00,(byte) 0x00,(byte) 0xC8,(byte) 0x55,(byte) 0x55};
+		//mBluetoothLeService.writeBluetoothGattCharacteristic(raw_m);
+		
+		
+		
+	}
+	
     private void setMenuIconStates() {
         if (mMenu == null)
             return;
@@ -971,6 +995,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
+		intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         return intentFilter;
     }
 

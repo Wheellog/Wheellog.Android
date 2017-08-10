@@ -28,7 +28,7 @@ public class WheelData {
     private BluetoothLeService mBluetoothLeService;
 
     private long graph_last_update_time;
-    private static final int GRAPH_UPDATE_INTERVAL = 100; // milliseconds
+    private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
     private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
@@ -63,7 +63,13 @@ public class WheelData {
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
     private long mStartTotalDistance;
-
+	/// Wheel Settings
+	private boolean mWheelLightEnabled = false;
+	private boolean mWheelLedEnabled = false;
+	private boolean mWheelButtonDisabled = false;
+	private int mWheelMaxSpeed = 25;
+	private int mWheelSpeakerVolume = 50;
+	
     private boolean mAlarmsEnabled = false;
     private boolean mDisablePhoneVibrate = false;
     private int mAlarm1Speed = 0;
@@ -73,8 +79,8 @@ public class WheelData {
     private int mAlarm2Battery = 0;
     private int mAlarm3Battery = 0;
     private int mAlarmCurrent = 0;
-
-    private boolean mSpeedAlarmExecuted = false;
+	
+	private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
 
     static void initiate() {
@@ -91,7 +97,36 @@ public class WheelData {
     int getSpeed() {
         return mSpeed / 10;
     }
+	
+    public void updateLight(boolean enabledLight) {
+		if (mWheelLightEnabled != enabledLight) {
+			mWheelLightEnabled = enabledLight;
+			InMotionAdapter.getInstance().setLightState(mBluetoothLeService, mWheelLightEnabled);
+		}
+    }
+	
+	public void updateLed(boolean enabledLed) {
+		if (mWheelLedEnabled != enabledLed) {
+			mWheelLedEnabled = enabledLed;
+			InMotionAdapter.getInstance().setLedState(mBluetoothLeService, mWheelLedEnabled);
+		}
+    }
 
+	public void updateHandleButton(boolean enabledButton) {
+		if (mWheelButtonDisabled != enabledButton) {
+			mWheelButtonDisabled = enabledButton;			
+			InMotionAdapter.getInstance().setHandleButtonState(mBluetoothLeService, mWheelButtonDisabled);
+		}
+    }
+
+	public void updateMaxSpeed(int wheelMaxSpeed) {
+        //InMotionAdapter.getInstance().setLight(mBluetoothLeService, enabled);
+    }
+	
+	public void updateSpeakerVolume(int speakerVolume) {
+        //InMotionAdapter.getInstance().setLight(mBluetoothLeService, enabled);
+    }
+	
     public int getTemperature() {
         return mTemperature / 100;
     }
@@ -355,11 +390,11 @@ public class WheelData {
         if (!new_data)
 			return;
 
-		//Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
+		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
 			
-			Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
+			//Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
 			
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
@@ -372,15 +407,15 @@ public class WheelData {
                 xAxis.remove(0);
             }
 			
-			if (mAlarmsEnabled) 
-			checkAlarmStatus(mContext);
-			mContext.sendBroadcast(intent);
+			//if (mAlarmsEnabled) 
+			//checkAlarmStatus(mContext);
+			//mContext.sendBroadcast(intent);
 			
         }
 
-		//if (mAlarmsEnabled) 
-			//checkAlarmStatus(mContext);
-			//mContext.sendBroadcast(intent);
+		if (mAlarmsEnabled) 
+			checkAlarmStatus(mContext);
+			mContext.sendBroadcast(intent);
         
        
 
@@ -533,7 +568,7 @@ public class WheelData {
                 String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split("\\.");
                 mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
             } else if (status instanceof InMotionAdapter.Alert){
-				mAlert = ((InMotionAdapter.Alert) status).getfullText();
+				mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getfullText();
 
 			} else {
                 mSpeed = (int) (status.getSpeed() * 360d);
