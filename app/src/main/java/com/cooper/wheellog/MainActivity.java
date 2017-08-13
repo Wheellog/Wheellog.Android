@@ -157,13 +157,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         else if (WheelData.getInstance().getSerial().isEmpty())
                             sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                     }
+					if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS)) {
+						setWheelPreferences();						
+					}
                     updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
                     break;
 				case Constants.ACTION_WHEEL_SETTING_CHANGED:
-					applyWheelSettings();
+					if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH)) {
+						setWheelPreferences();
+					} else applyWheelSettings();
 					break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
@@ -212,9 +217,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 	
 	private void applyWheelSettings() {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), true);
-		boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), true);
-		boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), true);
+		boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
+		boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
+		boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), false);
 		int max_speed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
 		int speaker_volume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
 		WheelData.getInstance().updateLight(ligth_enabled);
@@ -228,6 +233,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 		
 		
 		
+	}
+	
+	private void setWheelPreferences() {
+		//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		//SharedPreferences.Editor editor = sharedPreferences.edit();
+		//boolean ligth_enabled = WheelData.getInstance().getWheelLight();
+		//boolean led_enabled = WheelData.getInstance().getWheelLed();
+		//boolean handle_button_disabled = WheelData.getInstance().getWheelHandleButton();
+		//int max_speed = WheelData.getInstance().getWheelMaxSpeed();
+		//int speaker_volume = WheelData.getInstance().getSpeakerVolume();
+		
+		//editor.putBoolean(getString(R.string.light_enabled), ligth_enabled);
+		//editor.putBoolean(getString(R.string.led_enabled), led_enabled);
+		//editor.putBoolean(getString(R.string.handle_button_disabled), handle_button_disabled);
+		//editor.putInt(getString(R.string.wheel_max_speed), max_speed);
+		//editor.putInt(getString(R.string.speaker_volume), speaker_volume);
+		((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(), 
+																				WheelData.getInstance().getWheelLed(), 
+																				WheelData.getInstance().getWheelHandleButton(), 
+																				WheelData.getInstance().getWheelMaxSpeed(), 
+																				WheelData.getInstance().getSpeakerVolume());
 	}
 	
     private void setMenuIconStates() {

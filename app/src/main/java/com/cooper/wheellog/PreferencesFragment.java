@@ -89,19 +89,34 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
 			case "light_enabled":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LIGHT, true));
 				break;
 			case "led_enabled":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LED, true));
 				break;
 			case "handle_button_disabled":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_BUTTON, true));
 				break;
 			case "wheel_max_speed":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				new AlertDialog.Builder(getActivity())
+                            .setTitle("Are you sure?")
+                            .setMessage("Setting a speed limit higher than 30 km/h is unsafe, this is an undocumented feature, USE IT ON YOUR OWN RISK. Neither the Inmotion Company nor the developers of this application are liable for any damages to your health, EUC or third party resulting by using of this feature.")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .show();
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
 				break;
 			case "speaker_volume":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED));
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_SPEAKER_VOLUME, true));
 				break;
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
@@ -207,6 +222,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 break;
 			case Wheel:
                 tb.setTitle("Wheel Settings");
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
                 break;
         }
     }
@@ -217,6 +233,36 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
             correctCheckState(getString(R.string.log_location_data));
             correctCheckState(getString(R.string.auto_upload));
         }
+    }
+	
+    public void refreshWheelSettings(boolean isLight, boolean isLed, boolean isButton, int maxSpeed, int speakerVolume) {
+        correctWheelCheckState(getString(R.string.light_enabled), isLight);
+        correctWheelCheckState(getString(R.string.led_enabled), isLed);
+        correctWheelCheckState(getString(R.string.handle_button_disabled), isButton);
+        correctWheelBarState(getString(R.string.wheel_max_speed), maxSpeed);
+		correctWheelBarState(getString(R.string.speaker_volume), speakerVolume);
+
+    }	
+	
+	private void correctWheelCheckState(String preference, boolean state) {
+        CheckBoxPreference cb_preference = (CheckBoxPreference) findPreference(preference);
+        if (cb_preference == null)
+            return;
+
+        boolean check_state = cb_preference.isChecked();
+
+        if (state != check_state)
+            cb_preference.setChecked(state);
+    }
+	
+	private void correctWheelBarState(String preference, int state) {
+        SeekBarPreference sb_preference = (SeekBarPreference) findPreference(preference);
+		if (sb_preference == null)
+			return;
+		int sb_value = sb_preference.getCurrentValue();
+		if (state != sb_value)
+			sb_preference.setCurrentValue(state);
+			
     }
 
     private void correctCheckState(String preference) {

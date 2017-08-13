@@ -159,7 +159,7 @@ public class InMotionAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 1000);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 125);
     }
 	
 	public void setLightState(final BluetoothLeService mBluetoothLeService, final boolean lightEnable) {
@@ -1033,7 +1033,7 @@ public class InMotionAdapter {
 					fullText = String.format(Locale.ENGLISH, "Low battery at voltage %.2f %s", (alertValue2/100.0), hex);
 					break;
 				case 0x21:
-					fullText = String.format(Locale.ENGLISH, "Speed cut-off at speed %.2f and current %.2f %s", a_speed, (alertValue/10.0), hex);
+					fullText = String.format(Locale.ENGLISH, "Speed cut-off at speed %.2f and something %.2f %s", a_speed, (alertValue/10.0), hex);
 					break;
 				case 0x26:
 					fullText = String.format(Locale.ENGLISH, "High load at speed %.2f and current %.2f %s", a_speed, (alertValue/1000.0), hex);
