@@ -52,14 +52,15 @@ public class WheelData {
     private int mTopSpeed;
     private int mFanStatus;
     private boolean mConnectionState = false;
-    private String mName = "";
-    private String mModel = "";
-	private String mModeStr = "";
+	private boolean mNewWheelSettings = false;
+    private String mName = "Unknown";
+    private String mModel = "Unknown";
+	private String mModeStr = "Unknown";
 	
 	private String mAlert = "";
 
     private int mVersion;
-    private String mSerialNumber = "";
+    private String mSerialNumber = "Unknown";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
     private long mStartTotalDistance;
@@ -98,6 +99,27 @@ public class WheelData {
         return mSpeed / 10;
     }
 	
+	boolean getWheelLight() {
+        return mWheelLightEnabled;
+    }
+	
+	boolean getWheelLed() {
+        return mWheelLedEnabled;
+    }
+	
+	boolean getWheelHandleButton() {
+        return mWheelButtonDisabled;
+    }
+	
+    int getWheelMaxSpeed() {
+        return mWheelMaxSpeed;
+    }
+	
+	int getSpeakerVolume() {
+        return mWheelSpeakerVolume;
+    }
+	
+	
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
 			mWheelLightEnabled = enabledLight;
@@ -120,11 +142,17 @@ public class WheelData {
     }
 
 	public void updateMaxSpeed(int wheelMaxSpeed) {
-        //InMotionAdapter.getInstance().setLight(mBluetoothLeService, enabled);
+        if (mWheelMaxSpeed != wheelMaxSpeed) {
+			mWheelMaxSpeed = wheelMaxSpeed;			
+			InMotionAdapter.getInstance().setMaxSpeedState(mBluetoothLeService, mWheelMaxSpeed);
+		}
     }
 	
 	public void updateSpeakerVolume(int speakerVolume) {
-        //InMotionAdapter.getInstance().setLight(mBluetoothLeService, enabled);
+        if (mWheelSpeakerVolume != speakerVolume) {
+			mWheelSpeakerVolume = speakerVolume;			
+			InMotionAdapter.getInstance().setSpeakerVolumeState(mBluetoothLeService, mWheelSpeakerVolume);
+		}
     }
 	
     public int getTemperature() {
@@ -391,7 +419,12 @@ public class WheelData {
 			return;
 
 		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
-
+		
+		if (mNewWheelSettings) {
+			intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS, true);
+			mNewWheelSettings = false;
+		}
+		
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
 			
 			//Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
@@ -415,7 +448,7 @@ public class WheelData {
 
 		if (mAlarmsEnabled) 
 			checkAlarmStatus(mContext);
-			mContext.sendBroadcast(intent);
+		mContext.sendBroadcast(intent);
         
        
 
@@ -563,10 +596,16 @@ public class WheelData {
         for (InMotionAdapter.Status status: statuses) {
             System.out.println(status.toString());
             if (status instanceof InMotionAdapter.Infos) {
+				mWheelLightEnabled = ((InMotionAdapter.Infos) status).getLightState();
+				mWheelLedEnabled = ((InMotionAdapter.Infos) status).getLedState();
+				mWheelButtonDisabled = ((InMotionAdapter.Infos) status).getHandleButtonState();
+				mWheelMaxSpeed = ((InMotionAdapter.Infos) status).getMaxSpeedState();
+				mWheelSpeakerVolume = ((InMotionAdapter.Infos) status).getSpeakerVolumeState();
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
                 mModel = ((InMotionAdapter.Infos) status).getModelString();
                 String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split("\\.");
                 mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
+				mNewWheelSettings = true;
             } else if (status instanceof InMotionAdapter.Alert){
 				mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getfullText();
 

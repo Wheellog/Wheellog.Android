@@ -159,19 +159,32 @@ public class InMotionAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 100);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 	
 	public void setLightState(final BluetoothLeService mBluetoothLeService, final boolean lightEnable) {
+		needSlowData = true;
 		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer());
 		
 	}
 	public void setLedState(final BluetoothLeService mBluetoothLeService, final boolean ledEnable) {
+		needSlowData = true;
 		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLed(ledEnable).writeBuffer());
 		
 	}
 	public void setHandleButtonState(final BluetoothLeService mBluetoothLeService, final boolean handleButtonEnable) {
+		needSlowData = true;
 		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer());
+		
+	}
+	public void setMaxSpeedState(final BluetoothLeService mBluetoothLeService, final int maxSpeed) {
+		needSlowData = true;
+		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer());
+		
+	}
+	public void setSpeakerVolumeState(final BluetoothLeService mBluetoothLeService, final int speakerVolume) {
+		needSlowData = true;
+		mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setSpeakerVolume(speakerVolume).writeBuffer());
 		
 	}
 
@@ -457,14 +470,45 @@ public class InMotionAdapter {
         private final String serialNumber;
         private final Model model;
         private final String version;
+		private final boolean light;
+		private final boolean led;
+		private final boolean handleButtonDisabled;
+		private final int maxSpeed;
+		private final int speakerVolume;
+		
 
-        Infos(String serialNumber, Model model, String version) {
+        Infos(String serialNumber, Model model, String version, boolean light, boolean led, boolean handleButtonDisabled, int maxSpeed, int speakerVolume) {
             super();
             this.serialNumber = serialNumber;
             this.model = model;
             this.version = version;
+			this.light = light;
+			this.led = led;
+			this.handleButtonDisabled = handleButtonDisabled;
+			this.maxSpeed = maxSpeed;
+			this.speakerVolume = speakerVolume;
         }
 
+		public boolean getLightState() {
+            return light;
+        }
+		
+		public boolean getLedState() {
+            return led;
+        }
+		
+		public boolean getHandleButtonState() {
+            return handleButtonDisabled;
+        }
+		
+		public int getMaxSpeedState() {
+            return maxSpeed;
+        }
+		
+		public int getSpeakerVolumeState() {
+            return speakerVolume;
+        }
+		
         public String getSerialNumber() {
             return serialNumber;
         }
@@ -514,6 +558,11 @@ public class InMotionAdapter {
                     "serialNumber='" + serialNumber + '\'' +
                     ", model=" + model +
                     ", version='" + version + '\'' +
+                    ", light='" + light + '\'' +
+                    ", led='" + led + '\'' +
+                    ", handleButton='" + handleButtonDisabled + '\'' +
+                    ", maxspeed='" + maxSpeed + '\'' +
+                    ", speakervolume='" + speakerVolume + '\'' +
                     '}';
         }
     }
@@ -563,7 +612,7 @@ public class InMotionAdapter {
 			Led(0x0F550116),  
 			HandleButton(0x0F55012E),  
 			MaxSpeed(0x0F550115),  
-			SpeakerVolume(0x0F55010A),  
+			SpeakerVolume(0x0F55060A),  
 			Alert(0x0F780101);
 
             private int value;
@@ -588,7 +637,7 @@ public class InMotionAdapter {
         CANMessage(byte[] bArr) {
             if (bArr.length < 16) return;
             id = (((bArr[3] * 256) + bArr[2]) * 256 + bArr[1]) * 256 + bArr[0];
-            data = Arrays.copyOfRange(bArr, 4, 11);
+            data = Arrays.copyOfRange(bArr, 4, 12);
             len = bArr[12];
             ch = bArr[13];
             format = bArr[14] == 0 ? CanFormat.StandardFormat.getValue() : CanFormat.ExtendedFormat.getValue();
@@ -598,7 +647,7 @@ public class InMotionAdapter {
                 int ldata = this.intFromBytes(data, 0);
 
                 if (ldata == bArr.length - 16) {
-                    ex_data = Arrays.copyOfRange(bArr, 16, 15 + ldata);
+                    ex_data = Arrays.copyOfRange(bArr, 16, 16 + ldata);
                 }
             }
 
@@ -714,7 +763,7 @@ public class InMotionAdapter {
             if (buffer[0] != (byte) 0xAA || buffer[1] != (byte) 0xAA || buffer[buffer.length - 1] != (byte) 0x55 || buffer[buffer.length - 2] != (byte) 0x55) {
                 return null;  // Header and tail not correct
             }
-
+			System.out.println(CANMessage.toHexString(buffer));
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length - 3);
 
             dataBuffer = CANMessage.unescape(dataBuffer);
@@ -833,6 +882,33 @@ public class InMotionAdapter {
             return msg;
         }
 		
+		public static CANMessage setMaxSpeed(int maxSpeed) {
+            CANMessage msg = new CANMessage();
+			int lowByte = (maxSpeed * 1000)&0xFF;
+			int highByte = ((maxSpeed * 1000)/0x100)&0xFF;
+		    msg.len = 8;
+            msg.id = IDValue.MaxSpeed.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+			msg.data = new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) lowByte, (byte) highByte, (byte) 0x00, (byte) 0x00};
+			
+            return msg;
+        }
+		
+		public static CANMessage setSpeakerVolume(int speakerVolume) {
+            CANMessage msg = new CANMessage();
+			int lowByte = (speakerVolume * 100)&0xFF;
+			int highByte = ((speakerVolume * 100)/0x100)&0xFF;
+		    msg.len = 8;
+            msg.id = IDValue.SpeakerVolume.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+			msg.data = new byte[]{(byte) lowByte, (byte) highByte, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+			
+            return msg;
+        }
+		
+		
         public static CANMessage getBatteryLevelsdata() {
             CANMessage msg = new CANMessage();
 
@@ -930,7 +1006,7 @@ public class InMotionAdapter {
         // Return SerialNumber, Model, Version
 		Alert parseAlertInfoMessage() {
 			int alertId = (int)data[0];
-			double alertValue = (double)((data[3] * 256) | (data[2] & 0xFF));
+			double alertValue = (double)(((data[3]&0xFF) * 256) | (data[2] & 0xFF));
 			//double alertValue2 = (double)(this.intFromBytes(data, 4));
 			double alertValue2 = (double)(((data[6])*256*256) | ((data[5]&0xFF)*256) | (data[4]&0xFF));
 			double a_speed = Math.abs((alertValue2/3812.0) * 3.6);
@@ -957,7 +1033,7 @@ public class InMotionAdapter {
 					fullText = String.format(Locale.ENGLISH, "Low battery at voltage %.2f %s", (alertValue2/100.0), hex);
 					break;
 				case 0x21:
-					fullText = String.format(Locale.ENGLISH, "Speed cut off at speed %.2f and current %.2f %s", a_speed, (alertValue/10.0), hex);
+					fullText = String.format(Locale.ENGLISH, "Speed cut-off at speed %.2f and current %.2f %s", a_speed, (alertValue/10.0), hex);
 					break;
 				case 0x26:
 					fullText = String.format(Locale.ENGLISH, "High load at speed %.2f and current %.2f %s", a_speed, (alertValue/1000.0), hex);
@@ -980,10 +1056,23 @@ public class InMotionAdapter {
             int v2 = v - v0 * 0xFFFFFF - v1 * 0xFFFF;
             String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
             String serialNumber = "";
+			System.out.println(CANMessage.toHexString(ex_data));
+			int maxspeed = 0;
+			int speakervolume = 0;
+			boolean light = false;
+			boolean led = false;
+			boolean handlebutton = false;
+			if (ex_data.length > 129) {
+				maxspeed = (((ex_data[61]&0xFF)*256) | (ex_data[60]&0xFF))/1000;
+				speakervolume = (((ex_data[126]&0xFF)*256) | (ex_data[125]&0xFF))/100;
+				light = (ex_data[80] == 1) ? true : false;
+				led = (ex_data[130] == 1) ? true : false;
+				handlebutton = (ex_data[129] == 1) ? false : true;
+			}
             for (int j = 0; j < 8; j++) {
                 serialNumber += String.format("%02X", ex_data[7 - j]);
             }
-            return new Infos(serialNumber, model, version);
+            return new Infos(serialNumber, model, version, light, led, handlebutton, maxspeed, speakervolume);
         }
 
         public byte[] getData() {
@@ -1002,8 +1091,8 @@ public class InMotionAdapter {
                     str += ", ";
                 }
 
-                str += String.format("%02X", c);
-                comma = true;
+                str += String.format("%02X", (c & 0xFF));
+                //comma = true;
             }
 
             str += "]";
@@ -1021,6 +1110,7 @@ public class InMotionAdapter {
 				CANMessage result = CANMessage.verify(unpacker.getBuffer());
 				
                 if (result != null) { // data OK
+					
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
 						Status vals = result.parseFastInfoMessage(model);
                         if (vals != null)

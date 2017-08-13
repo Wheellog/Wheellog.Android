@@ -52,6 +52,7 @@ public class Constants {
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
     public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
+	public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
 
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
