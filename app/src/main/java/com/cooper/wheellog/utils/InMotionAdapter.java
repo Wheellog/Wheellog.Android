@@ -1006,9 +1006,9 @@ public class InMotionAdapter {
         // Return SerialNumber, Model, Version
 		Alert parseAlertInfoMessage() {
 			int alertId = (int)data[0];
-			double alertValue = (double)(((data[3]&0xFF) * 256) | (data[2] & 0xFF));
+			double alertValue = (double)((data[3] * 256) | (data[2] & 0xFF));
 			//double alertValue2 = (double)(this.intFromBytes(data, 4));
-			double alertValue2 = (double)(((data[6])*256*256) | ((data[5]&0xFF)*256) | (data[4]&0xFF));
+			double alertValue2 = (double)((data[7]*256*256*256) | ((data[6]&0xFF)*256*256) | ((data[5]&0xFF)*256) | (data[4]&0xFF));
 			double a_speed = Math.abs((alertValue2/3812.0) * 3.6);
 			String fullText = "";
 			
@@ -1021,7 +1021,7 @@ public class InMotionAdapter {
 			switch (alertId) {
 				
 				case 0x05:  
-					fullText = String.format(Locale.ENGLISH, "Start from angle %.2f at speed %.2f %s", (alertValue/100.0), a_speed, hex);
+					fullText = String.format(Locale.ENGLISH, "Start from tilt angle %.2f at speed %.2f %s", (alertValue/100.0), a_speed, hex);
 					break;
 				case 0x06:
 					fullText = String.format(Locale.ENGLISH, "Titlback at speed %.2f at limit %.2f %s", a_speed, (alertValue/1000.0), hex);
@@ -1050,10 +1050,10 @@ public class InMotionAdapter {
             if (ex_data == null) return null;
             Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
 			//model = V8;
-            int v = this.intFromBytes(ex_data, 24);
-            int v0 = v / 0xFFFFFF;
-            int v1 = (v - v0 * 0xFFFFFF) / 0xFFFF;
-            int v2 = v - v0 * 0xFFFFFF - v1 * 0xFFFF;
+            //int v = this.intFromBytes(ex_data, 24);
+            int v0 = ex_data[27]&0xFF;
+            int v1 = ex_data[26]&0xFF;
+            int v2 = ((ex_data[25]&0xFF)*256) | (ex_data[24]&0xFF);
             String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
             String serialNumber = "";
 			System.out.println(CANMessage.toHexString(ex_data));

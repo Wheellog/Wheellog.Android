@@ -59,7 +59,8 @@ public class WheelData {
 	
 	private String mAlert = "";
 
-    private int mVersion;
+//    private int mVersion; # sorry King, but INT not good for Inmo
+	private String mVersion = "";
     private String mSerialNumber = "Unknown";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
@@ -184,7 +185,7 @@ public class WheelData {
     }
 
     //    int getTopSpeed() { return mTopSpeed; }
-    int getVersion() {
+    String getVersion() {
         return mVersion;
     }
 
@@ -514,7 +515,7 @@ public class WheelData {
                     mModel += ss[i];
                 }
                 try {
-                    mVersion = Integer.parseInt(ss[ss.length - 1]);
+                    //mVersion = Integer.parseInt(ss[ss.length - 1]);
                 } catch (Exception ignored) {
                 }
 
@@ -603,12 +604,14 @@ public class WheelData {
 				mWheelSpeakerVolume = ((InMotionAdapter.Infos) status).getSpeakerVolumeState();
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
                 mModel = ((InMotionAdapter.Infos) status).getModelString();
-                String[] versionSplitted = ((InMotionAdapter.Infos) status).getVersion().split("\\.");
-                mVersion = (Integer.parseInt(versionSplitted[0]) * 10000) + (Integer.parseInt(versionSplitted[1]) * 1000) + Integer.parseInt(versionSplitted[2]);
+                mVersion = ((InMotionAdapter.Infos) status).getVersion();
 				mNewWheelSettings = true;
             } else if (status instanceof InMotionAdapter.Alert){
-				mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getfullText();
-
+				if (mAlert == "") {
+					mAlert = ((InMotionAdapter.Alert) status).getfullText();
+				} else {
+					mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getfullText();
+				}
 			} else {
                 mSpeed = (int) (status.getSpeed() * 360d);
                 mVoltage = (int) (status.getVoltage() * 100d);
@@ -658,7 +661,7 @@ public class WheelData {
         mName = "";
         mModel = "";
 		mModeStr = "";
-        mVersion = 0;
+        mVersion = "";
         mSerialNumber = "";
         rideStartTime = 0;
         mStartTotalDistance = 0;

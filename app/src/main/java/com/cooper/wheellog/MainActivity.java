@@ -489,8 +489,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 } else {
                     tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
                     tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
-                    tvDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getDistanceDouble()));
-                    tvTotalDistance.setText(String.format(Locale.US, "%.2f km", WheelData.getInstance().getTotalDistanceDouble()));
+                    tvDistance.setText(String.format(Locale.US, "%.3f km", WheelData.getInstance().getDistanceDouble()));
+                    tvTotalDistance.setText(String.format(Locale.US, "%.3f km", WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
                 tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
@@ -502,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
                 tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
                 tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? "Off" : "On");
-                tvVersion.setText(String.format(Locale.US, "%.2f", WheelData.getInstance().getVersion()/100.0));
+                tvVersion.setText(String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
                 tvName.setText(WheelData.getInstance().getName());
                 tvModel.setText(WheelData.getInstance().getModel());
                 tvSerial.setText(WheelData.getInstance().getSerial());
