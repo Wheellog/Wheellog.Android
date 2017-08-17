@@ -1024,7 +1024,7 @@ public class InMotionAdapter {
 					fullText = String.format(Locale.ENGLISH, "Start from tilt angle %.2f at speed %.2f %s", (alertValue/100.0), a_speed, hex);
 					break;
 				case 0x06:
-					fullText = String.format(Locale.ENGLISH, "Titlback at speed %.2f at limit %.2f %s", a_speed, (alertValue/1000.0), hex);
+					fullText = String.format(Locale.ENGLISH, "Tiltback at speed %.2f at limit %.2f %s", a_speed, (alertValue/1000.0), hex);
 					break;
 				case 0x19:
 					fullText = String.format(Locale.ENGLISH, "Fall Down %s", hex);
