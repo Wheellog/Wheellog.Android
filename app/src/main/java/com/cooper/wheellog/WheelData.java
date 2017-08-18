@@ -123,36 +123,31 @@ public class WheelData {
 	
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
-			mWheelLightEnabled = enabledLight;
-			InMotionAdapter.getInstance().setLightState(mBluetoothLeService, mWheelLightEnabled);
+			InMotionAdapter.getInstance().setLightState(mBluetoothLeService, enabledLight);
 		}
     }
 	
 	public void updateLed(boolean enabledLed) {
 		if (mWheelLedEnabled != enabledLed) {
-			mWheelLedEnabled = enabledLed;
-			InMotionAdapter.getInstance().setLedState(mBluetoothLeService, mWheelLedEnabled);
+			InMotionAdapter.getInstance().setLedState(mBluetoothLeService, enabledLed);
 		}
     }
 
 	public void updateHandleButton(boolean enabledButton) {
 		if (mWheelButtonDisabled != enabledButton) {
-			mWheelButtonDisabled = enabledButton;			
-			InMotionAdapter.getInstance().setHandleButtonState(mBluetoothLeService, mWheelButtonDisabled);
+			InMotionAdapter.getInstance().setHandleButtonState(mBluetoothLeService, enabledButton);
 		}
     }
 
 	public void updateMaxSpeed(int wheelMaxSpeed) {
         if (mWheelMaxSpeed != wheelMaxSpeed) {
-			mWheelMaxSpeed = wheelMaxSpeed;			
-			InMotionAdapter.getInstance().setMaxSpeedState(mBluetoothLeService, mWheelMaxSpeed);
+			InMotionAdapter.getInstance().setMaxSpeedState(mBluetoothLeService, wheelMaxSpeed);
 		}
     }
 	
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
-			mWheelSpeakerVolume = speakerVolume;			
-			InMotionAdapter.getInstance().setSpeakerVolumeState(mBluetoothLeService, mWheelSpeakerVolume);
+			InMotionAdapter.getInstance().setSpeakerVolumeState(mBluetoothLeService, speakerVolume);
 		}
     }
 	

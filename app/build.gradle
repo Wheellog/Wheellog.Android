@@ -33,7 +33,7 @@ dependencies {
     compile 'com.getpebble:pebblekit:3.1.0'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.jakewharton.timber:timber:4.3.1'
-    compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
+    compile 'com.pavelsikun:material-seekbar-preference:2.3.0+'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.0'
     compile "com.github.hotchemi:permissionsdispatcher:2.2.0"
     apt "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"

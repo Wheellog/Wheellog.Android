@@ -98,22 +98,28 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_BUTTON, true));
 				break;
 			case "wheel_max_speed":
-//				new AlertDialog.Builder(getActivity())
-//                            .setTitle("Are you sure?")
-//                            .setMessage("Setting a speed limit higher than 30 km/h is unsafe, this is an undocumented feature, USE IT ON YOUR OWN RISK. Neither the Inmotion Company nor the developers of this application are liable for any damages to your health, EUC or third party resulting by using of this feature.")
-//                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
-//                                }
-//                            })
-//                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
-//                                }
-//                            })
-//                            .setIcon(android.R.drawable.ic_dialog_info)
-//                            .show();
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
+				SeekBarPreference sb_preference = (SeekBarPreference) findPreference("wheel_max_speed");
+				int maxSpeedDialog = sb_preference.getCurrentValue();
+				if (maxSpeedDialog > 30)  {
+					new AlertDialog.Builder(getActivity())
+                        .setTitle("Are you sure?")
+                        .setMessage("Setting a speed limit higher than 30 km/h is unsafe, this is an undocumented feature. \n\nUSE IT ON YOUR OWN RISK! \n\nNeither the Inmotion Company nor the developers of this application are liable for any damages to your health, EUC or third party resulting by using of this feature.")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+				} else {
+					getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
+				}
 				break;
 			case "speaker_volume":
 				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_SPEAKER_VOLUME, true));
@@ -121,6 +127,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
+	
+
 
     private void setup_screen() {
         Toolbar tb = (Toolbar) getActivity().findViewById(R.id.preference_toolbar);
@@ -135,6 +143,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 }
             });
         }
+		
 
         switch (currentScreen) {
             case Main:
@@ -239,8 +248,11 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         correctWheelCheckState(getString(R.string.light_enabled), isLight);
         correctWheelCheckState(getString(R.string.led_enabled), isLed);
         correctWheelCheckState(getString(R.string.handle_button_disabled), isButton);
+
         correctWheelBarState(getString(R.string.wheel_max_speed), maxSpeed);
 		correctWheelBarState(getString(R.string.speaker_volume), speakerVolume);
+
+		
 
     }	
 	
@@ -253,15 +265,22 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
         if (state != check_state)
             cb_preference.setChecked(state);
+
     }
 	
-	private void correctWheelBarState(String preference, int state) {
+	private void correctWheelBarState(String preference, int stateInt) {
         SeekBarPreference sb_preference = (SeekBarPreference) findPreference(preference);
 		if (sb_preference == null)
 			return;
 		int sb_value = sb_preference.getCurrentValue();
-		if (state != sb_value)
-			sb_preference.setCurrentValue(state);
+		if (stateInt != sb_value) {
+			sb_preference.setCurrentValue(stateInt);
+			/// Work around, seekbar doesn't want to update view
+            getPreferenceScreen().removeAll();
+            addPreferencesFromResource(R.xml.preferences_inmotionwheel);
+            setup_screen();
+
+		}
 			
     }
 
