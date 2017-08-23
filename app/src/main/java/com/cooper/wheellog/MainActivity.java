@@ -222,38 +222,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 		boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), false);
 		int max_speed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
 		int speaker_volume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
+		int pedals_adjustment = sharedPreferences.getInt(getString(R.string.pedals_adjustment), 0);
 		WheelData.getInstance().updateLight(ligth_enabled);
 		WheelData.getInstance().updateLed(led_enabled);
 		WheelData.getInstance().updateHandleButton(handle_button_disabled);
 		WheelData.getInstance().updateMaxSpeed(max_speed);
 		WheelData.getInstance().updateSpeakerVolume(speaker_volume);
-		//byte[] raw_m = new byte[]{(byte) 0xAA, (byte) 0xAA, (byte) 0x0D,(byte) 0x01,(byte) 0xA5,(byte) 0x55,(byte) 0x0F,(byte) 0x01,0,0,0,0,0,0,0,(byte) 0x08,(byte) 0x05,(byte) 0x00,(byte) 0x00,(byte) 0x80,(byte) 0x55,(byte) 0x55};
-		//byte[] raw_m = new byte[]{(byte) 0xAA, (byte) 0xAA, (byte) 0x15,(byte) 0x01,(byte) 0xA5,(byte) 0x55,(byte) 0x0F,(byte) 0x01,0,0,0,(byte) 0xB8,(byte) 0x88,0,0,(byte) 0x08,(byte) 0x05,(byte) 0x00,(byte) 0x00,(byte) 0xC8,(byte) 0x55,(byte) 0x55};
-		//mBluetoothLeService.writeBluetoothGattCharacteristic(raw_m);
+		WheelData.getInstance().updatePedals(pedals_adjustment);
 		
 		
 		
 	}
 	
 	private void setWheelPreferences() {
-		//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		//SharedPreferences.Editor editor = sharedPreferences.edit();
-		//boolean ligth_enabled = WheelData.getInstance().getWheelLight();
-		//boolean led_enabled = WheelData.getInstance().getWheelLed();
-		//boolean handle_button_disabled = WheelData.getInstance().getWheelHandleButton();
-		//int max_speed = WheelData.getInstance().getWheelMaxSpeed();
-		//int speaker_volume = WheelData.getInstance().getSpeakerVolume();
 		
-		//editor.putBoolean(getString(R.string.light_enabled), ligth_enabled);
-		//editor.putBoolean(getString(R.string.led_enabled), led_enabled);
-		//editor.putBoolean(getString(R.string.handle_button_disabled), handle_button_disabled);
-		//editor.putInt(getString(R.string.wheel_max_speed), max_speed);
-		//editor.putInt(getString(R.string.speaker_volume), speaker_volume);
 		((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(), 
 																				WheelData.getInstance().getWheelLed(), 
 																				WheelData.getInstance().getWheelHandleButton(), 
 																				WheelData.getInstance().getWheelMaxSpeed(), 
-																				WheelData.getInstance().getSpeakerVolume());
+																				WheelData.getInstance().getSpeakerVolume(),
+																				WheelData.getInstance().getPedalsPosition());
 	}
 	
     private void setMenuIconStates() {

@@ -59,6 +59,7 @@ public class Constants {
 	public static final String INTENT_EXTRA_WHEEL_MAX_SPEED= "wheel_max_speed";
 	public static final String INTENT_EXTRA_WHEEL_SPEAKER_VOLUME = "wheel_speaker_volume";
 	public static final String INTENT_EXTRA_WHEEL_REFRESH = "wheel_refresh";
+	public static final String INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT = "pedals_adjustment";
 
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 

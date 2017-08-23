@@ -59,6 +59,10 @@ public class BluetoothLeService extends Service {
                             mConnectionState = STATE_CONNECTED;
                             if (!LoggingService.isInstanceCreated() && SettingsUtil.isAutoLogEnabled(BluetoothLeService.this))
                                 startService(new Intent(getApplicationContext(), LoggingService.class));
+							if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
+                                Timber.i("Sending King Name request");
+								sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
+                            }
                             break;
                         case STATE_DISCONNECTED:
                             mConnectionState = STATE_DISCONNECTED;
@@ -415,7 +419,11 @@ public class BluetoothLeService extends Service {
         if (this.mBluetoothGatt == null) {
             return false;
         }
-
+		StringBuilder stringBuilder = new StringBuilder(cmd.length);
+        for (byte aData : cmd)
+            stringBuilder.append(String.format(Locale.US, "%02X", aData));
+        Timber.i("Transmitted: " + stringBuilder.toString());
+		
         switch (WheelData.getInstance().getWheelType()) {
             case KINGSONG:
                 BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));

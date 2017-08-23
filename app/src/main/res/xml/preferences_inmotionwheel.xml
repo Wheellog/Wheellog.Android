@@ -41,4 +41,15 @@
         sample:msbp_measurementUnit="%"
         sample:msbp_dialogEnabled="false"/>
 
+    <com.pavelsikun.seekbarpreference.SeekBarPreference
+        android:key="@string/pedals_adjustment"
+        android:title="Pedals"
+        android:summary="Horizontal pedals adjustment"
+        android:defaultValue="0"
+        sample:msbp_minValue="-80"
+        sample:msbp_maxValue="80"
+        sample:msbp_interval="1"
+        sample:msbp_measurementUnit="x 0.1°"
+        sample:msbp_dialogEnabled="false"/>
+		
 </PreferenceScreen>

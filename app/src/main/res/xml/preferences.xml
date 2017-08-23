@@ -25,6 +25,7 @@
     <Preference
         android:visible="false"
         android:key="@string/wheel_settings"
+		android:enabled="true"
         android:title="Wheel Settings"
         android:icon="@drawable/ic_action_wheel_white" />
 

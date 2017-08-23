@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
@@ -124,6 +125,9 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 			case "speaker_volume":
 				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_SPEAKER_VOLUME, true));
 				break;
+			case "pedals_adjustment":
+				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT, true));
+				break;
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
@@ -153,6 +157,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 Preference alarm_button = findPreference(getString(R.string.alarm_preferences));
                 Preference watch_button = findPreference(getString(R.string.watch_preferences));
 				Preference wheel_button = findPreference(getString(R.string.wheel_settings));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING).putExtra(Constants.INTENT_EXTRA_WHEEL_UPDATE_SCALE, 1));
 
                 if (speed_button != null) {
                     speed_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -244,13 +249,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         }
     }
 	
-    public void refreshWheelSettings(boolean isLight, boolean isLed, boolean isButton, int maxSpeed, int speakerVolume) {
+    public void refreshWheelSettings(boolean isLight, boolean isLed, boolean isButton, int maxSpeed, int speakerVolume, int pedals) {
         correctWheelCheckState(getString(R.string.light_enabled), isLight);
         correctWheelCheckState(getString(R.string.led_enabled), isLed);
         correctWheelCheckState(getString(R.string.handle_button_disabled), isButton);
 
         correctWheelBarState(getString(R.string.wheel_max_speed), maxSpeed);
 		correctWheelBarState(getString(R.string.speaker_volume), speakerVolume);
+		correctWheelBarState(getString(R.string.pedals_adjustment), pedals);
 
 		
 

@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import timber.log.Timber;
+
 public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
@@ -41,6 +43,7 @@ public class WheelData {
 	private int mTemperature2;
 	private double mAngle;
 	private double mRoll;
+
     private int mMode;
     private int mBattery;
     private double mAverageBattery;
@@ -71,6 +74,7 @@ public class WheelData {
 	private boolean mWheelButtonDisabled = false;
 	private int mWheelMaxSpeed = 25;
 	private int mWheelSpeakerVolume = 50;
+	private int mWheelTiltHorizon = 0;
 	
     private boolean mAlarmsEnabled = false;
     private boolean mDisablePhoneVibrate = false;
@@ -120,6 +124,10 @@ public class WheelData {
         return mWheelSpeakerVolume;
     }
 	
+	int getPedalsPosition() {
+        return mWheelTiltHorizon;
+    }
+	
 	
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
@@ -148,6 +156,12 @@ public class WheelData {
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
 			InMotionAdapter.getInstance().setSpeakerVolumeState(mBluetoothLeService, speakerVolume);
+		}
+    }
+	
+	public void updatePedals(int pedalAdjustment) {
+        if (mWheelTiltHorizon != pedalAdjustment) {
+			InMotionAdapter.getInstance().setTiltHorizon(mBluetoothLeService, pedalAdjustment);
 		}
     }
 	
@@ -394,10 +408,10 @@ public class WheelData {
 
     void decodeResponse(byte[] data, Context mContext) {
 
-//        StringBuilder stringBuilder = new StringBuilder(data.length);
-//        for (byte aData : data)
-//            stringBuilder.append(String.format(Locale.US, "%02d ", aData));
-//        Timber.i("OUTPUT", stringBuilder.toString());
+        StringBuilder stringBuilder = new StringBuilder(data.length);
+        for (byte aData : data)
+            stringBuilder.append(String.format(Locale.US, "%02X", aData));
+        Timber.i("Received: " + stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
 
         boolean new_data = false;
@@ -597,6 +611,7 @@ public class WheelData {
 				mWheelButtonDisabled = ((InMotionAdapter.Infos) status).getHandleButtonState();
 				mWheelMaxSpeed = ((InMotionAdapter.Infos) status).getMaxSpeedState();
 				mWheelSpeakerVolume = ((InMotionAdapter.Infos) status).getSpeakerVolumeState();
+				mWheelTiltHorizon = ((InMotionAdapter.Infos) status).getTiltHorizon(); 
                 mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
                 mModel = ((InMotionAdapter.Infos) status).getModelString();
                 mVersion = ((InMotionAdapter.Infos) status).getVersion();
@@ -616,6 +631,7 @@ public class WheelData {
 				mTotalDistance = (long) (status.getDistance()*1000d);
 				mAngle = (double) (status.getAngle()); 
 				mRoll = (double) (status.getRoll()); 
+				
 				mModeStr = status.getWorkModeString();
                 setBatteryPercent((int) status.getBatt());
                 setDistance((long) status.getDistance());
@@ -660,6 +676,13 @@ public class WheelData {
         mSerialNumber = "";
         rideStartTime = 0;
         mStartTotalDistance = 0;
+		mWheelTiltHorizon = 0;
+		mWheelLightEnabled = false;
+		mWheelLedEnabled = false;
+		mWheelButtonDisabled = false;
+		mWheelMaxSpeed = 25;
+		mWheelSpeakerVolume = 50;
+	
     }
 
     boolean detectWheel(BluetoothLeService bluetoothService) {
@@ -726,6 +749,8 @@ public class WheelData {
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+					Timber.i("Sending King Name request");
+					mContext.sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.GOTWAY;

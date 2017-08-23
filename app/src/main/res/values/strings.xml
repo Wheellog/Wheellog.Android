@@ -94,6 +94,9 @@
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
+	<string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
+	
+	
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
