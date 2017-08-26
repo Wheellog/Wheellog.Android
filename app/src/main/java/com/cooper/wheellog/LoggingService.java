@@ -236,7 +236,7 @@ public class LoggingService extends Service
                     ));
         } else {
             FileUtil.writeLine(filename,
-                    String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+                    String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             sdf.format(new Date()),
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
