@@ -487,6 +487,7 @@ public class WheelData {
 
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
+					mModeStr = String.format(Locale.US, "%d", mMode);
                 }
 
                 int battery;
@@ -524,7 +525,7 @@ public class WheelData {
                     mModel += ss[i];
                 }
                 try {
-                    //mVersion = Integer.parseInt(ss[ss.length - 1]);
+                    mVersion = String.format(Locale.US, "%.2f", ((double)(Integer.parseInt(ss[ss.length - 1])/100.0)));
                 } catch (Exception ignored) {
                 }
 
