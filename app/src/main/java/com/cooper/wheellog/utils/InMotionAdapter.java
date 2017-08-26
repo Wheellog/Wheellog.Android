@@ -182,38 +182,38 @@ public class InMotionAdapter {
 		updateIntervalScale = scale;
 	}
 	
-	public void setLightState(final BluetoothLeService mBluetoothLeService, final boolean lightEnable) {
+	public void setLightState(final boolean lightEnable) {
 		settingCommandReady = true;
 		//needSlowData = true;
 		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer());
 		settingCommand = InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer();
 	}
-	public void setLedState(final BluetoothLeService mBluetoothLeService, final boolean ledEnable) {
+	public void setLedState(final boolean ledEnable) {
 		settingCommandReady = true;
 		//needSlowData = true;
 		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLed(ledEnable).writeBuffer());
 		settingCommand = InMotionAdapter.CANMessage.setLed(ledEnable).writeBuffer();
 	}
-	public void setHandleButtonState(final BluetoothLeService mBluetoothLeService, final boolean handleButtonEnable) {
+	public void setHandleButtonState(final boolean handleButtonEnable) {
 		settingCommandReady = true;
 		//needSlowData = true;
 		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer());
 		settingCommand = InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer();
 	}
-	public void setMaxSpeedState(final BluetoothLeService mBluetoothLeService, final int maxSpeed) {
+	public void setMaxSpeedState(final int maxSpeed) {
 		settingCommandReady = true;
 		//needSlowData = true;
 		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer());
 		settingCommand = InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer();
 	}
-	public void setSpeakerVolumeState(final BluetoothLeService mBluetoothLeService, final int speakerVolume) {
+	public void setSpeakerVolumeState(final int speakerVolume) {
 		settingCommandReady = true;
 		//needSlowData = true;
 		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setSpeakerVolume(speakerVolume).writeBuffer());
 		settingCommand = InMotionAdapter.CANMessage.setSpeakerVolume(speakerVolume).writeBuffer();
 	}
 	
-	public void setTiltHorizon(final BluetoothLeService mBluetoothLeService, final int tiltHorizon) {
+	public void setTiltHorizon(final int tiltHorizon) {
 		settingCommandReady = true;
 		//needSlowData = true;
 		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setTiltHorizon(tiltHorizon).writeBuffer());

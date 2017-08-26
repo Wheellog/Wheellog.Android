@@ -131,37 +131,37 @@ public class WheelData {
 	
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
-			InMotionAdapter.getInstance().setLightState(mBluetoothLeService, enabledLight);
+			InMotionAdapter.getInstance().setLightState(enabledLight);
 		}
     }
 	
 	public void updateLed(boolean enabledLed) {
 		if (mWheelLedEnabled != enabledLed) {
-			InMotionAdapter.getInstance().setLedState(mBluetoothLeService, enabledLed);
+			InMotionAdapter.getInstance().setLedState(enabledLed);
 		}
     }
 
 	public void updateHandleButton(boolean enabledButton) {
 		if (mWheelButtonDisabled != enabledButton) {
-			InMotionAdapter.getInstance().setHandleButtonState(mBluetoothLeService, enabledButton);
+			InMotionAdapter.getInstance().setHandleButtonState(enabledButton);
 		}
     }
 
 	public void updateMaxSpeed(int wheelMaxSpeed) {
         if (mWheelMaxSpeed != wheelMaxSpeed) {
-			InMotionAdapter.getInstance().setMaxSpeedState(mBluetoothLeService, wheelMaxSpeed);
+			InMotionAdapter.getInstance().setMaxSpeedState(wheelMaxSpeed);
 		}
     }
 	
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
-			InMotionAdapter.getInstance().setSpeakerVolumeState(mBluetoothLeService, speakerVolume);
+			InMotionAdapter.getInstance().setSpeakerVolumeState(speakerVolume);
 		}
     }
 	
 	public void updatePedals(int pedalAdjustment) {
         if (mWheelTiltHorizon != pedalAdjustment) {
-			InMotionAdapter.getInstance().setTiltHorizon(mBluetoothLeService, pedalAdjustment);
+			InMotionAdapter.getInstance().setTiltHorizon(pedalAdjustment);
 		}
     }
 	
@@ -749,8 +749,7 @@ public class WheelData {
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-					Timber.i("Sending King Name request");
-					mContext.sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
+					
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.GOTWAY;

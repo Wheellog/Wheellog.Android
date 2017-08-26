@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 	
 	private void applyWheelSettings() {
+		Timber.i("Apply new wheel settings");
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
 		boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
@@ -235,7 +236,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 	}
 	
 	private void setWheelPreferences() {
-		
+		Timber.i("SetWheelPreferences");
+		//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
 		((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(), 
 																				WheelData.getInstance().getWheelLed(), 
 																				WheelData.getInstance().getWheelHandleButton(), 

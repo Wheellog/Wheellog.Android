@@ -275,18 +275,23 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     }
 	
 	private void correctWheelBarState(String preference, int stateInt) {
+
         SeekBarPreference sb_preference = (SeekBarPreference) findPreference(preference);
 		if (sb_preference == null)
 			return;
 		int sb_value = sb_preference.getCurrentValue();
 		if (stateInt != sb_value) {
 			sb_preference.setCurrentValue(stateInt);
-			/// Work around, seekbar doesn't want to update view
+			/// Workaround, seekbar doesn't want to update view
             getPreferenceScreen().removeAll();
             addPreferencesFromResource(R.xml.preferences_inmotionwheel);
             setup_screen();
 
 		}
+        SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(preference, stateInt);
+        editor.commit();
 			
     }
 
