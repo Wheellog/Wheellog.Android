@@ -560,6 +560,7 @@ public class WheelData {
             setTopSpeed(mSpeed);
 
             mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
+			mTemperature2 = mTemperature;
 
             long distance = byteArrayInt2(data[9], data[8]);
             setDistance(distance);

@@ -237,8 +237,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 	
 	private void setWheelPreferences() {
 		Timber.i("SetWheelPreferences");
-		//SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
 		((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(), 
 																				WheelData.getInstance().getWheelLed(), 
 																				WheelData.getInstance().getWheelHandleButton(), 
@@ -372,8 +370,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
                 tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature.setVisibility(View.VISIBLE);
-                tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleTemperature2.setVisibility(View.VISIBLE);
+                tvTemperature2.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
                 break;
