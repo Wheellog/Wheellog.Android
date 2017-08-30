@@ -16,6 +16,8 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
+import timber.log.Timber;
+
 public class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     enum SettingsScreen {
@@ -26,6 +28,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         Watch,
 		Wheel
     }
+	
+	WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
 
     private boolean mDataWarningDisplayed = false;
     private SettingsScreen currentScreen = SettingsScreen.Main;
@@ -43,6 +47,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         super.onResume();
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         setup_screen();
+
     }
 
     @Override
@@ -159,6 +164,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING).putExtra(Constants.INTENT_EXTRA_WHEEL_UPDATE_SCALE, 1));
 
+				
                 if (speed_button != null) {
                     speed_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
@@ -212,7 +218,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Wheel;
-                            getPreferenceScreen().removeAll();
+                            getPreferenceScreen().removeAll();							
                             addPreferencesFromResource(R.xml.preferences_inmotionwheel);
                             setup_screen();
                             return true;
@@ -327,10 +333,18 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     }
 
     public boolean show_main_menu() {
-        if (currentScreen == SettingsScreen.Main)
-            return false;
+        //if (currentScreen == SettingsScreen.Main)
+        //    return false;
         getPreferenceScreen().removeAll();
+
         addPreferencesFromResource(R.xml.preferences);
+		System.out.println("ShowMainMenuRecognized");
+		Preference wheel_button = findPreference(getString(R.string.wheel_settings));
+		mWheelType = WheelData.getInstance().getWheelType();
+		if (mWheelType == WHEEL_TYPE.INMOTION) {
+			wheel_button.setEnabled(true);
+		}
+		
         currentScreen = SettingsScreen.Main;
         setup_screen();
         return true;

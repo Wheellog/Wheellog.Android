@@ -18,6 +18,7 @@ public class Constants {
     public static final String ACTION_ALARM_TRIGGERED = "com.cooper.wheellog.alarmTriggered";
     public static final String ACTION_PEBBLE_APP_READY = "com.cooper.wheellog.pebbleAppReady";
     public static final String ACTION_PEBBLE_APP_SCREEN = "com.cooper.wheellog.pebbleAppScreen";
+	public static final String ACTION_WHEEL_TYPE_RECOGNIZED = "com.cooper.wheellog.wheelTypeRecognized";
 
     static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
     static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
@@ -60,6 +61,7 @@ public class Constants {
 	public static final String INTENT_EXTRA_WHEEL_SPEAKER_VOLUME = "wheel_speaker_volume";
 	public static final String INTENT_EXTRA_WHEEL_REFRESH = "wheel_refresh";
 	public static final String INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT = "pedals_adjustment";
+//	public static final String INTENT_EXTRA_WHEEL_TYPE = "wheel_type";
 
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 

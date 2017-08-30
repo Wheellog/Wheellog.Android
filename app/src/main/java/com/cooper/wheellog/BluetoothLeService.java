@@ -185,6 +185,7 @@ public class BluetoothLeService extends Service {
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
+
                 } else
                     disconnect();
                 return;

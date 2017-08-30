@@ -183,6 +183,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 case Constants.ACTION_PREFERENCE_CHANGED:
                     loadPreferences();
                     break;
+				case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
+					System.out.println("WheelRecognizedMain");
+					((PreferencesFragment) getPreferencesFragment()).show_main_menu();
+					break;
             }
         }
     };
@@ -1011,6 +1015,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
 		intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
+		intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);		
         return intentFilter;
     }
 

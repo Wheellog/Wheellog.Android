@@ -477,7 +477,7 @@ public class WheelData {
                 mVoltage = byteArrayInt2(data[2], data[3]);
                 mSpeed = byteArrayInt2(data[4], data[5]);
                 mTotalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
-                mCurrent = byteArrayInt2(data[10], data[11]);
+                mCurrent = ((data[10]&0xFF) + (data[11]<<8));
                 if (mCurrent > 7000) {
                     mCurrent = 7000;
                 } else if (mCurrent < 0) {
@@ -743,6 +743,9 @@ public class WheelData {
             }
 
             if (detected_wheel) {
+				final Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED); // update preferences
+				mContext.sendBroadcast(intent);
+				System.out.println("WheelRecognizedWD");
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.KINGSONG;
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
