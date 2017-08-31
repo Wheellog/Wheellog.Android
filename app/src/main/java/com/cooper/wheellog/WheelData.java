@@ -437,7 +437,6 @@ public class WheelData {
 		
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
 			
-			//Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
 			
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
@@ -449,10 +448,6 @@ public class WheelData {
                 currentAxis.remove(0);
                 xAxis.remove(0);
             }
-			
-			//if (mAlarmsEnabled) 
-			//checkAlarmStatus(mContext);
-			//mContext.sendBroadcast(intent);
 			
         }
 
@@ -478,12 +473,8 @@ public class WheelData {
                 mSpeed = byteArrayInt2(data[4], data[5]);
                 mTotalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
                 mCurrent = ((data[10]&0xFF) + (data[11]<<8));
-                if (mCurrent > 7000) {
-                    mCurrent = 7000;
-                } else if (mCurrent < 0) {
-                    mCurrent = 0;
-                }
-                mTemperature = byteArrayInt2(data[12], data[13]);
+ 
+				mTemperature = byteArrayInt2(data[12], data[13]);
 
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
@@ -745,7 +736,7 @@ public class WheelData {
             if (detected_wheel) {
 				final Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED); // update preferences
 				mContext.sendBroadcast(intent);
-				System.out.println("WheelRecognizedWD");
+				//System.out.println("WheelRecognizedWD");
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.KINGSONG;
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));

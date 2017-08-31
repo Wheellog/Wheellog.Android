@@ -338,7 +338,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         getPreferenceScreen().removeAll();
 
         addPreferencesFromResource(R.xml.preferences);
-		System.out.println("ShowMainMenuRecognized");
+		//System.out.println("ShowMainMenuRecognized");
 		Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 		mWheelType = WheelData.getInstance().getWheelType();
 		if (mWheelType == WHEEL_TYPE.INMOTION) {

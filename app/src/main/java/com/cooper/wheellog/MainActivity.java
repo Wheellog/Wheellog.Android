@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     loadPreferences();
                     break;
 				case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
-					System.out.println("WheelRecognizedMain");
+					//System.out.println("WheelRecognizedMain");
 					((PreferencesFragment) getPreferencesFragment()).show_main_menu();
 					break;
             }
