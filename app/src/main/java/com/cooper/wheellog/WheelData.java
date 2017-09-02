@@ -131,36 +131,42 @@ public class WheelData {
 	
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
+			mWheelLightEnabled = enabledLight;
 			InMotionAdapter.getInstance().setLightState(enabledLight);
 		}
     }
 	
 	public void updateLed(boolean enabledLed) {
 		if (mWheelLedEnabled != enabledLed) {
+			mWheelLedEnabled = enabledLed;
 			InMotionAdapter.getInstance().setLedState(enabledLed);
 		}
     }
 
 	public void updateHandleButton(boolean enabledButton) {
 		if (mWheelButtonDisabled != enabledButton) {
+			mWheelButtonDisabled = enabledButton;
 			InMotionAdapter.getInstance().setHandleButtonState(enabledButton);
 		}
     }
 
 	public void updateMaxSpeed(int wheelMaxSpeed) {
         if (mWheelMaxSpeed != wheelMaxSpeed) {
+			mWheelMaxSpeed = wheelMaxSpeed;
 			InMotionAdapter.getInstance().setMaxSpeedState(wheelMaxSpeed);
 		}
     }
 	
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
+			mWheelSpeakerVolume = speakerVolume;
 			InMotionAdapter.getInstance().setSpeakerVolumeState(speakerVolume);
 		}
     }
 	
 	public void updatePedals(int pedalAdjustment) {
         if (mWheelTiltHorizon != pedalAdjustment) {
+			mWheelTiltHorizon = pedalAdjustment;
 			InMotionAdapter.getInstance().setTiltHorizon(pedalAdjustment);
 		}
     }

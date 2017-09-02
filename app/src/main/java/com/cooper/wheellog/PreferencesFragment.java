@@ -32,6 +32,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 	WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
 
     private boolean mDataWarningDisplayed = false;
+	private boolean mSpeedWarningDisplayed = false;
     private SettingsScreen currentScreen = SettingsScreen.Main;
 
     @Override
@@ -95,43 +96,60 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
 			case "light_enabled":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LIGHT, true));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LIGHT, true));
+				boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
+				WheelData.getInstance().updateLight(ligth_enabled);
 				break;
 			case "led_enabled":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LED, true));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LED, true));
+				boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
+				WheelData.getInstance().updateLed(led_enabled);
 				break;
 			case "handle_button_disabled":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_BUTTON, true));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_BUTTON, true));
+				boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), false);
+				WheelData.getInstance().updateHandleButton(handle_button_disabled);
 				break;
 			case "wheel_max_speed":
-				SeekBarPreference sb_preference = (SeekBarPreference) findPreference("wheel_max_speed");
-				int maxSpeedDialog = sb_preference.getCurrentValue();
-				if (maxSpeedDialog > 30)  {
-					new AlertDialog.Builder(getActivity())
-                        .setTitle("Are you sure?")
-                        .setMessage("Setting a speed limit higher than 30 km/h is unsafe, this is an undocumented feature. \n\nUSE IT ON YOUR OWN RISK! \n\nNeither the Inmotion Company nor the developers of this application are liable for any damages to your health, EUC or third party resulting by using of this feature.")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-
-				} else {
-					getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
-				}
+				if (!mSpeedWarningDisplayed) {
+					final int max_speed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
+					if (max_speed > 30)  {
+						new AlertDialog.Builder(getActivity())
+							.setTitle("Are you sure?")
+							.setMessage("Setting a speed limit higher than 30 km/h is unsafe, this is an undocumented feature. \n\nUSE IT ON YOUR OWN RISK! \n\nNeither the Inmotion Company nor the developers of this application are liable for any damages to your health, EUC or third party resulting by using of this feature.")
+							.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
+									WheelData.getInstance().updateMaxSpeed(max_speed);
+								}
+							})
+							.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int which) {
+									//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
+									mSpeedWarningDisplayed = true;
+									correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
+									
+								}
+							})
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.show();
+	
+					} else {
+						//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
+						WheelData.getInstance().updateMaxSpeed(max_speed);
+					}
+				} else mSpeedWarningDisplayed = false;
+				
 				break;
 			case "speaker_volume":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_SPEAKER_VOLUME, true));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_SPEAKER_VOLUME, true));
+				int speaker_volume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
+				WheelData.getInstance().updateSpeakerVolume(speaker_volume);
 				break;
 			case "pedals_adjustment":
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT, true));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT, true));
+				int pedals_adjustment = sharedPreferences.getInt(getString(R.string.pedals_adjustment), 0);
+				WheelData.getInstance().updatePedals(pedals_adjustment);
 				break;
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
