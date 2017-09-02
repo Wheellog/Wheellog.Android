@@ -802,6 +802,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (mDrawer.isDrawerOpen(settings_layout)) {
                     if (((PreferencesFragment) getPreferencesFragment()).is_main_menu())
                         mDrawer.closeDrawer(GravityCompat.START, true);
+					else ((PreferencesFragment) getPreferencesFragment()).show_main_menu();
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
