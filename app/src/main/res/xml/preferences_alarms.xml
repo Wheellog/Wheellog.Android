@@ -111,7 +111,7 @@
             android:defaultValue="35"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
-            sample:msbp_maxValue="50"
+            sample:msbp_maxValue="150"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="A"
             sample:msbp_dialogEnabled="true"/>
