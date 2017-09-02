@@ -800,7 +800,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (!((PreferencesFragment) getPreferencesFragment()).show_main_menu())
+                    if (((PreferencesFragment) getPreferencesFragment()).is_main_menu())
                         mDrawer.closeDrawer(GravityCompat.START, true);
                 } else {
                     if (doubleBackToExitPressedOnce) {

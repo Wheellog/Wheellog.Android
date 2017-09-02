@@ -331,6 +331,12 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 seekbar.setEnabled(alarms_enabled);
         }
     }
+	
+	public boolean is_main_menu() {
+        if (currentScreen == SettingsScreen.Main)
+            return true;
+		else return false;		
+	}
 
     public boolean show_main_menu() {
         //if (currentScreen == SettingsScreen.Main)
