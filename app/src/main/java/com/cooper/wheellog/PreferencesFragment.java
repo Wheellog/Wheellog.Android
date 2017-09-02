@@ -151,6 +151,11 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				int pedals_adjustment = sharedPreferences.getInt(getString(R.string.pedals_adjustment), 0);
 				WheelData.getInstance().updatePedals(pedals_adjustment);
 				break;
+			case "pedals_mode":
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT, true));
+				int pedals_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.pedals_mode), "0"));
+				WheelData.getInstance().updatePedalsMode(pedals_mode);
+				break;
         }
         getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
@@ -236,8 +241,10 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Wheel;
-                            getPreferenceScreen().removeAll();							
-                            addPreferencesFromResource(R.xml.preferences_inmotionwheel);
+                            getPreferenceScreen().removeAll();	
+							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
+							if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
+							if (mWheelType == WHEEL_TYPE.GOTWAY) addPreferencesFromResource(R.xml.preferences_gotway);
                             setup_screen();
                             return true;
                         }
@@ -308,7 +315,10 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 			sb_preference.setCurrentValue(stateInt);
 			/// Workaround, seekbar doesn't want to update view
             getPreferenceScreen().removeAll();
-            addPreferencesFromResource(R.xml.preferences_inmotionwheel);
+			if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
+			if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
+			if (mWheelType == WHEEL_TYPE.GOTWAY) addPreferencesFromResource(R.xml.preferences_gotway);
+            //addPreferencesFromResource(R.xml.preferences_inmotion);
             setup_screen();
 
 		}
@@ -365,7 +375,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 		//System.out.println("ShowMainMenuRecognized");
 		Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 		mWheelType = WheelData.getInstance().getWheelType();
-		if (mWheelType == WHEEL_TYPE.INMOTION) {
+		if ((mWheelType == WHEEL_TYPE.INMOTION) | (mWheelType == WHEEL_TYPE.KINGSONG) | (mWheelType == WHEEL_TYPE.GOTWAY) ) {
 			wheel_button.setEnabled(true);
 		}
 		

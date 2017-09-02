@@ -142,6 +142,36 @@ public class WheelData {
 			InMotionAdapter.getInstance().setLedState(enabledLed);
 		}
     }
+	
+	public void updatePedalsMode(int pedalsMode) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+			switch (pedalsMode) {
+				case 0:
+					mBluetoothLeService.writeBluetoothGattCharacteristic("h".getBytes());
+					break;
+				case 1: 
+					mBluetoothLeService.writeBluetoothGattCharacteristic("f".getBytes());
+					break;
+				case 2: 
+					mBluetoothLeService.writeBluetoothGattCharacteristic("s".getBytes());
+					break;	
+			}			
+		}
+		
+		if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            byte[] data = new byte[20];
+            data[0] = (byte) 0xAA;
+            data[1] = (byte) 0x55;
+			data[2] = (byte) pedalsMode;
+			data[3] = (byte) 0xE0;
+            data[16] = (byte) 0x87;
+            data[17] = (byte) 0x15;
+            data[18] = (byte) 0x5A;
+            data[19] = (byte) 0x5A;
+            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+		}
+	
+    }
 
 	public void updateHandleButton(boolean enabledButton) {
 		if (mWheelButtonDisabled != enabledButton) {

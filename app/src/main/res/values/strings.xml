@@ -95,7 +95,11 @@
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
 	<string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
-	
+	<string name="pedals_mode" translatable="false">pedals_mode</string>
+	<string name="light_mode" translatable="false">light_mode</string>
+	<string name="strobe_mode" translatable="false">strobe_mode</string>
+	<string name="led_mode" translatable="false">led_mode</string>
+
 	
 
     // LOG PREFERENCES
