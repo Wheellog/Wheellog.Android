@@ -12,6 +12,17 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- Permissions needed for Samsung Gear watches -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-feature android:name="android.hardware.location.gps" />  <!-- Desde API21 es necesario -->
+    <uses-permission android:name="com.samsung.wmanager.APP" />
+    <uses-permission android:name="com.samsung.wmanager.ENABLE_NOTIFICATION" />
+    <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK"/>
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
+    <uses-permission android:name="android.permission.SET_DEBUG_APP" />
+    <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Companion" />
+
+
     <supports-screens
         android:smallScreens="true"
         android:normalScreens="true"
@@ -46,6 +57,8 @@
         <service android:name=".BluetoothLeService" />
         <service android:name=".LoggingService" />
         <service android:name=".GoogleDriveService" />
+        <!-- Services needed for Samsung Gear watches -->
+        <service android:name="com.cooper.wheellog.GearService"  />
 
         <receiver
             android:name=".PebbleBroadcastReceiver"
@@ -65,6 +78,19 @@
                 <action android:name="com.cooper.wheellog.notificationWatchButton" />
             </intent-filter>
         </receiver>
+        <!-- Receivers needed for Samsung Gear watches -->
+        <receiver android:name = "com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.samsung.accessory.action.SERVICE_CONNECTION_REQUESTED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name = "com.samsung.android.sdk.accessory.RegisterUponInstallReceiver">
+            <intent-filter>
+                <action android:name="com.samsung.accessory.action.REGISTER_AGENT" />
+            </intent-filter>
+        </receiver>
+        <meta-data android:name="AccessoryServicesLocation" android:value="/res/xml/sapservices.xml" />
+        <meta-data android:name="GearAppType" android:value="wgt" />
 
     </application>
 
