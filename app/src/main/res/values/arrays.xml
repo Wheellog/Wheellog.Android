@@ -29,11 +29,30 @@
         <item>2</item>
     </string-array>
 	
-	<string-array name="light_mode">
+	<string-array name="light_mode_ks">
         <item>Off</item>
         <item>On</item>
         <item>Auto</item>
     </string-array>
+	
+	
+	<string-array name="light_mode_gw">
+        <item>Off</item>
+        <item>On</item>
+        <item>Strobe</item>
+    </string-array>
+	
+	<string-array name="alarm_mode_gw">
+        <item>Turn off level 1 alarm</item>
+        <item>Turn off level 2 alarm</item>
+        <item>Turn on alarm</item>
+    </string-array>
+	
+	<string-array name="alarm_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>	
 	
 	<string-array name="light_mode_values">
         <item>0</item>
@@ -41,7 +60,7 @@
         <item>2</item>
     </string-array>	
 	
-	<string-array name="strobe_mode">
+	<string-array name="strobe_mode_ks">
         <item>Off</item>
         <item>On</item>        
     </string-array>
@@ -57,7 +76,7 @@
     </string-array>
 	
 	<string-array name="led_mode_values">
-        <item>0</item>
-        <item>1</item>        
+        <item>1</item>
+        <item>0</item>        
     </string-array>	
 </resources>

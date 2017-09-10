@@ -4,6 +4,25 @@
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
+        android:key="@string/light_mode"
+        android:title="Light Mode"
+        android:defaultValue="0"
+		android:enabled="true"
+        android:entries="@array/light_mode_gw"
+        android:entryValues="@array/light_mode_values"
+        android:summary="Off/On/Strobe" />	
+			
+			
+    <ListPreference
+        android:key="@string/alarm_mode"
+        android:title="Alarm Mode"
+        android:defaultValue="0"
+		android:enabled="true"
+        android:entries="@array/alarm_mode_gw"
+        android:entryValues="@array/alarm_mode_values"
+        android:summary="Alarm settings" />	
+	
+    <ListPreference
         android:key="@string/pedals_mode"
         android:title="Pedals Mode"
         android:defaultValue="1"
@@ -15,13 +34,19 @@
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/wheel_max_speed"
         android:title="Wheel speed limit"
-        android:summary="Tiltback speed"
+        android:summary="Tiltback speed, 0=disabled"
         android:defaultValue="25"
-		android:enabled="false"
-        sample:msbp_minValue="1"
+		android:enabled="true"
+        sample:msbp_minValue="0"
         sample:msbp_maxValue="50"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="km/h"
         sample:msbp_dialogEnabled="false"/>
+
+		
+	<Preference
+        android:key="@string/start_calibration"
+		android:enabled="false"
+        android:title="Calibration"/>
 
 </PreferenceScreen>

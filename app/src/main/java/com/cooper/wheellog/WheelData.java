@@ -49,7 +49,7 @@ public class WheelData {
     private double mAverageBattery;
     private double mAverageBatteryCount;
     private int mVoltage;
-    //    private long mDistance;
+    private long mDistance;
     private int mRideTime;
     private int mLastRideTime;
     private int mTopSpeed;
@@ -148,12 +148,15 @@ public class WheelData {
 			switch (pedalsMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("h".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 					break;
 				case 1: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("f".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 					break;
 				case 2: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("s".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 					break;	
 			}			
 		}
@@ -172,6 +175,100 @@ public class WheelData {
 		}
 	
     }
+	
+	public void updateLightMode(int lightMode) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+			switch (lightMode) {
+				case 0:
+					mBluetoothLeService.writeBluetoothGattCharacteristic("E".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+					break;
+				case 1: 
+					mBluetoothLeService.writeBluetoothGattCharacteristic("Q".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+					break;
+				case 2: 
+					mBluetoothLeService.writeBluetoothGattCharacteristic("T".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+					break;	
+			}			
+		}
+		
+		if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            byte[] data = new byte[20];
+            data[0] = (byte) 0xAA;
+            data[1] = (byte) 0x55;
+			data[2] = (byte) (lightMode + 0x12);
+			data[3] = (byte) 0x01;
+            data[16] = (byte) 0x73;
+            data[17] = (byte) 0x14;
+            data[18] = (byte) 0x5A;
+            data[19] = (byte) 0x5A;
+            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+		}
+	
+    }
+
+	public void updateStrobe(int strobeMode) {
+		if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            byte[] data = new byte[20];
+            data[0] = (byte) 0xAA;
+            data[1] = (byte) 0x55;
+			data[2] = (byte) strobeMode;
+            data[16] = (byte) 0x53;
+            data[17] = (byte) 0x14;
+            data[18] = (byte) 0x5A;
+            data[19] = (byte) 0x5A;
+            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+		}
+		
+    }
+	
+	public void updateLedMode(int ledMode) {
+		if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            byte[] data = new byte[20];
+            data[0] = (byte) 0xAA;
+            data[1] = (byte) 0x55;
+			data[2] = (byte) ledMode;
+            data[16] = (byte) 0x6C;
+            data[17] = (byte) 0x14;
+            data[18] = (byte) 0x5A;
+            data[19] = (byte) 0x5A;
+            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+		}
+		
+    }
+	
+	
+	public void updateAlarmMode(int alarmMode) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+			switch (alarmMode) {
+				case 0:
+					mBluetoothLeService.writeBluetoothGattCharacteristic("u".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+					break;
+				case 1: 
+					mBluetoothLeService.writeBluetoothGattCharacteristic("i".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+					break;
+				case 2: 
+					mBluetoothLeService.writeBluetoothGattCharacteristic("o".getBytes());
+					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+					break;	
+			}			
+		}
+		
+    }
+	
+	public void updateCalibration() {
+		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
+			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());			
+		}
+		
+		
+    }
+
 
 	public void updateHandleButton(boolean enabledButton) {
 		if (mWheelButtonDisabled != enabledButton) {
@@ -181,11 +278,48 @@ public class WheelData {
     }
 
 	public void updateMaxSpeed(int wheelMaxSpeed) {
-        if (mWheelMaxSpeed != wheelMaxSpeed) {
-			mWheelMaxSpeed = wheelMaxSpeed;
-			InMotionAdapter.getInstance().setMaxSpeedState(wheelMaxSpeed);
+		if (mWheelType == WHEEL_TYPE.INMOTION) {
+			if (mWheelMaxSpeed != wheelMaxSpeed) {
+				mWheelMaxSpeed = wheelMaxSpeed;
+				InMotionAdapter.getInstance().setMaxSpeedState(wheelMaxSpeed);
+			}
 		}
-    }
+		System.out.println(String.format("Speed %02X", (byte)((wheelMaxSpeed/10)+0x30)));
+		System.out.println(String.format("Speed %02X", (byte)((wheelMaxSpeed%10)+0x30)));
+		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+			byte[] data = new byte[1];
+			if (wheelMaxSpeed != 0) {
+				mBluetoothLeService.writeBluetoothGattCharacteristic("W".getBytes());
+				mBluetoothLeService.writeBluetoothGattCharacteristic("Y".getBytes());
+				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+
+				data[0] = (byte)((wheelMaxSpeed/10)+0x30);
+				mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+				data[0] = (byte)((wheelMaxSpeed%10)+0x30);
+				mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+			} else {
+				data[0] = 0x22;
+				mBluetoothLeService.writeBluetoothGattCharacteristic(data); // "
+				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());			
+			}
+		}
+		if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            byte[] data = new byte[20];
+            data[0] = (byte) 0xAA;
+            data[1] = (byte) 0x55;
+			data[6] = (byte) 0x1F;
+			data[8] = (byte) wheelMaxSpeed;
+            data[16] = (byte) 0x85;
+            data[17] = (byte) 0x14;
+            data[18] = (byte) 0x5A;
+            data[19] = (byte) 0x5A;
+            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+		}
+		
+	}
 	
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
@@ -300,6 +434,47 @@ public class WheelData {
     }
 
     int getDistance() { return (int) (mTotalDistance - mStartTotalDistance); }
+	
+	long getWheelDistance() { 
+		return mDistance; 
+	}
+	
+	public double getWheelDistanceDouble() {
+        return mDistance / 1000.0;
+    }
+	
+	long getUserDistance() { 
+		Context mContext = mBluetoothLeService.getApplicationContext();
+		long userDistance = SettingsUtil.getUserDistance(mContext);
+		if (userDistance == 0 && mTotalDistance != 0)  {
+			SettingsUtil.setUserDistance(mContext, mTotalDistance);
+			userDistance = mTotalDistance;
+		}
+		return (mTotalDistance - userDistance); 
+	}
+	
+	public double getUserDistanceDouble() {
+		Context mContext = mBluetoothLeService.getApplicationContext();
+		long userDistance = SettingsUtil.getUserDistance(mContext);
+		if (userDistance == 0 && mTotalDistance != 0)  {
+			SettingsUtil.setUserDistance(mContext, mTotalDistance);
+			userDistance = mTotalDistance;
+		}
+		return (mTotalDistance - userDistance)/1000.0; 
+    }
+	
+	public void resetUserDistance() {
+		Context mContext = mBluetoothLeService.getApplicationContext();
+		if (mTotalDistance != 0)  {
+			SettingsUtil.setUserDistance(mContext, mTotalDistance);			
+		}
+
+    }
+	
+	public void resetTopSpeed() {
+		mTopSpeed = 0;
+    }
+	
 
     public double getDistanceDouble() {
         return (mTotalDistance - mStartTotalDistance) / 1000.0;
@@ -359,7 +534,7 @@ public class WheelData {
         if (mStartTotalDistance == 0 && mTotalDistance != 0)
             mStartTotalDistance = mTotalDistance;
 
-//        mDistance = distance;
+        mDistance = distance;
     }
 
     private void setCurrentTime(int currentTime) {
@@ -618,7 +793,7 @@ public class WheelData {
                 return false;
             }
 
-            mTotalDistance = ((((data[6] * 256) + data[7]) * 65536) + (((data[8] & 255) * 256) + (data[9] & 255)));
+            mTotalDistance = ((data[6]&0xFF) <<24) + ((data[7]&0xFF) << 16) + ((data[8] & 0xFF) <<8) + (data[9] & 0xFF);
         }
         return false;
     }
@@ -698,6 +873,7 @@ public class WheelData {
         mRideTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
+		mDistance = 0;
         mName = "";
         mModel = "";
 		mModeStr = "";
