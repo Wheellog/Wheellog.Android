@@ -163,9 +163,6 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				int alarm_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.alarm_mode), "0"));
 				WheelData.getInstance().updateAlarmMode(alarm_mode);
 				break;
-			case "start_calibration":
-				WheelData.getInstance().updateCalibration();
-				break;
 			case "strobe_mode":
 				int strobe_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.strobe_mode), "0"));
 				WheelData.getInstance().updateStrobe(strobe_mode);
@@ -270,7 +267,19 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                             getPreferenceScreen().removeAll();	
 							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 							if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
-							if (mWheelType == WHEEL_TYPE.GOTWAY) addPreferencesFromResource(R.xml.preferences_gotway);
+							if (mWheelType == WHEEL_TYPE.GOTWAY) {
+								addPreferencesFromResource(R.xml.preferences_gotway);
+								Preference start_calibration_button = findPreference(getString(R.string.start_calibration));
+								if (start_calibration_button != null) {
+									start_calibration_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+										@Override
+										public boolean onPreferenceClick(Preference preference) {                            
+											WheelData.getInstance().updateCalibration();
+											return true;
+										}
+									});
+								}
+							}
 							//addPreferencesFromResource(R.xml.preferences_gotway);
 							
                             setup_screen();
@@ -313,7 +322,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 break;
 			case Wheel:
                 tb.setTitle("Wheel Settings");
-				getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
+				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
                 break;
         }
     }
@@ -376,7 +385,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(preference, stateInt);
-        editor.commit();
+        //editor.commit();
+        editor.apply();
 			
     }
 

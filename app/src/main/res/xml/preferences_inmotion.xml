@@ -28,7 +28,7 @@
         sample:msbp_maxValue="35"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="km/h"
-        sample:msbp_dialogEnabled="false"/>
+        sample:msbp_dialogEnabled="true"/>
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/speaker_volume"
@@ -39,7 +39,7 @@
         sample:msbp_maxValue="100"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="%"
-        sample:msbp_dialogEnabled="false"/>
+        sample:msbp_dialogEnabled="true"/>
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/pedals_adjustment"
@@ -50,6 +50,6 @@
         sample:msbp_maxValue="80"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="x 0.1°"
-        sample:msbp_dialogEnabled="false"/>
+        sample:msbp_dialogEnabled="true"/>
 		
 </PreferenceScreen>

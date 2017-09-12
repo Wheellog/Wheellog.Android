@@ -118,5 +118,21 @@
 
     </PreferenceCategory>
 
+	<PreferenceCategory
+        android:title="Temperature Alarm">
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/alarm_temperature"
+            android:title="Temperature"
+            android:summary="Temperature that triggers the alarm"
+            android:defaultValue="60"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="20"
+            sample:msbp_maxValue="100"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="°"
+            sample:msbp_dialogEnabled="true"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

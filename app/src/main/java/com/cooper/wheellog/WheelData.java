@@ -50,6 +50,7 @@ public class WheelData {
     private double mAverageBatteryCount;
     private int mVoltage;
     private long mDistance;
+	private long mUserDistance;
     private int mRideTime;
     private int mLastRideTime;
     private int mTopSpeed;
@@ -85,9 +86,11 @@ public class WheelData {
     private int mAlarm2Battery = 0;
     private int mAlarm3Battery = 0;
     private int mAlarmCurrent = 0;
+	private int mAlarmTemperature = 0;
 	
 	private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
+	private boolean mTemperatureAlarmExecuted = false;
 
     static void initiate() {
         if (mInstance == null)
@@ -443,30 +446,23 @@ public class WheelData {
         return mDistance / 1000.0;
     }
 	
-	long getUserDistance() { 
-		Context mContext = mBluetoothLeService.getApplicationContext();
-		long userDistance = SettingsUtil.getUserDistance(mContext);
-		if (userDistance == 0 && mTotalDistance != 0)  {
-			SettingsUtil.setUserDistance(mContext, mTotalDistance);
-			userDistance = mTotalDistance;
-		}
-		return (mTotalDistance - userDistance); 
-	}
 	
 	public double getUserDistanceDouble() {
-		Context mContext = mBluetoothLeService.getApplicationContext();
-		long userDistance = SettingsUtil.getUserDistance(mContext);
-		if (userDistance == 0 && mTotalDistance != 0)  {
+		//Context mContext = mBluetoothLeService.getApplicationContext();
+		//long userDistance = SettingsUtil.getUserDistance(mContext);
+		if (mUserDistance == 0 && mTotalDistance != 0 )  {
+			Context mContext = mBluetoothLeService.getApplicationContext();
 			SettingsUtil.setUserDistance(mContext, mTotalDistance);
-			userDistance = mTotalDistance;
+			mUserDistance = mTotalDistance;
 		}
-		return (mTotalDistance - userDistance)/1000.0; 
+		return (mTotalDistance - mUserDistance)/1000.0; 
     }
 	
-	public void resetUserDistance() {
-		Context mContext = mBluetoothLeService.getApplicationContext();
+	public void resetUserDistance() {		
 		if (mTotalDistance != 0)  {
-			SettingsUtil.setUserDistance(mContext, mTotalDistance);			
+			Context mContext = mBluetoothLeService.getApplicationContext();
+			SettingsUtil.setUserDistance(mContext, mTotalDistance);		
+			mUserDistance = mTotalDistance;
 		}
 
     }
@@ -503,6 +499,10 @@ public class WheelData {
     void setConnected(boolean connected) {
         mConnectionState = connected;
     }
+	
+	void setUserDistance(long userDistance) {
+        mUserDistance = userDistance;
+    }
 
     void setAlarmsEnabled(boolean enabled) {
         mAlarmsEnabled = enabled;
@@ -511,7 +511,7 @@ public class WheelData {
     void setPreferences(int alarm1Speed, int alarm1Battery,
                                    int alarm2Speed, int alarm2Battery,
                                    int alarm3Speed, int alarm3Battery,
-                                   int alarmCurrent, boolean disablePhoneVibrate) {
+                                   int alarmCurrent,int alarmTemperature, boolean disablePhoneVibrate) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -519,6 +519,7 @@ public class WheelData {
         mAlarm2Battery = alarm2Battery;
         mAlarm3Battery = alarm3Battery;
         mAlarmCurrent = alarmCurrent*100;
+		mAlarmTemperature = alarmTemperature*100;
         mDisablePhoneVibrate = disablePhoneVibrate;
     }
 
@@ -594,6 +595,17 @@ public class WheelData {
             if (mCurrent < mAlarmCurrent)
                 mCurrentAlarmExecuted = false;
         }
+		
+		// TEMP
+		if (!mTemperatureAlarmExecuted) {
+            if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature) {
+                raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
+            }
+        } else {
+            if (mTemperature < mAlarmTemperature)
+                mTemperatureAlarmExecuted = false;
+        }
+		
     }
 
     private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
@@ -609,6 +621,10 @@ public class WheelData {
                 break;
             case CURRENT:
                 pattern = new long[]{0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
+                mCurrentAlarmExecuted = true;
+                break;
+			case TEMPERATURE:
+                pattern = new long[]{0, 500, 100, 100, 100, 500, 100, 100, 100, 500, 100, 100, 100};
                 mCurrentAlarmExecuted = true;
                 break;
         }
@@ -874,6 +890,7 @@ public class WheelData {
         mTopSpeed = 0;
         mFanStatus = 0;
 		mDistance = 0;
+		mUserDistance = 0;
         mName = "";
         mModel = "";
 		mModeStr = "";
