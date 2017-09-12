@@ -40,6 +40,8 @@
     <string name="top_speed">Top Speed</string>
     <string name="battery">Battery</string>
     <string name="distance">Distance</string>
+	<string name="wheel_distance">Wheel Distance</string>
+	<string name="user_distance">User Distance</string>
     <string name="ride_time">Ride Time</string>
     <string name="voltage">Voltage</string>
     <string name="current">Current</string>
@@ -75,7 +77,9 @@
     <string name="log_preferences" translatable="false">log_preferences</string>
     <string name="alarm_preferences" translatable="false">alarm_preferences</string>
     <string name="watch_preferences" translatable="false">watch_preferences</string>
-    <string name="wheel_settings" translatable="false">wheel_settings</string>
+    <string name="wheel_settings" translatable="false">wheel_settings</string> 
+	<string name="trip_settings" translatable="false">trip_settings</string>
+
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
@@ -87,7 +91,8 @@
     <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
-
+	<string name="alarm_temperature" translatable="false">alarm_temperature</string>
+	
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
@@ -95,7 +100,12 @@
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
 	<string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
-	
+	<string name="pedals_mode" translatable="false">pedals_mode</string>
+	<string name="light_mode" translatable="false">light_mode</string>
+	<string name="strobe_mode" translatable="false">strobe_mode</string>
+	<string name="led_mode" translatable="false">led_mode</string>
+	<string name="start_calibration" translatable="false">start_calibration</string>
+	<string name="alarm_mode" translatable="false">alarm_mode</string>
 	
 
     // LOG PREFERENCES
@@ -111,4 +121,9 @@
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
 
+	
+	// TRIP PREFERENCES
+	<string name="reset_top_speed" translatable="false">reset_top_speed</string>
+	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
+	
 </resources>

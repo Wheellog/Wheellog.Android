@@ -25,6 +25,20 @@ public class SettingsUtil {
         editor.putString("last_mac", address);
         editor.apply();
     }
+	
+	public static void setUserDistance(Context context, long distance) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(key, Context.MODE_PRIVATE).edit();
+        editor.putLong("user_distance", distance);
+        editor.apply();
+    }
+	
+	public static long getUserDistance(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(key, Context.MODE_PRIVATE);
+        if (pref.contains("user_distance")) {
+            return pref.getLong("user_distance", 0);
+        }
+        return 0;
+    }
 
     public static boolean isFirstRun(Context context) {
         SharedPreferences pref = context.getSharedPreferences(key, Context.MODE_PRIVATE);

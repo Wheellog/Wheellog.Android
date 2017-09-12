@@ -1121,13 +1121,18 @@ public class InMotionAdapter {
 			boolean led = false;
 			boolean handlebutton = false;
 			int pedals = (int)(Math.round((this.intFromBytes(ex_data, 56)) / 6553.6));
-			if (ex_data.length > 129) {
-				maxspeed = (((ex_data[61]&0xFF)*256) | (ex_data[60]&0xFF))/1000;
-				speakervolume = (((ex_data[126]&0xFF)*256) | (ex_data[125]&0xFF))/100;
-				light = (ex_data[80] == 1) ? true : false;
-				led = (ex_data[130] == 1) ? true : false;
-				handlebutton = (ex_data[129] == 1) ? false : true;
+			maxspeed = (((ex_data[61]&0xFF)*256) | (ex_data[60]&0xFF))/1000;
+			light = (ex_data[80] == 1) ? true : false;
+			if (ex_data.length > 126) {
+				speakervolume = (((ex_data[126]&0xFF)*256) | (ex_data[125]&0xFF))/100;				
 			}
+			if (ex_data.length > 130) {
+				led = (ex_data[130] == 1) ? true : false;				
+			}
+			if (ex_data.length > 129) {
+				handlebutton = (ex_data[129] == 1) ? false : true;	
+			}				
+			
             for (int j = 0; j < 8; j++) {
                 serialNumber += String.format("%02X", ex_data[7 - j]);
             }

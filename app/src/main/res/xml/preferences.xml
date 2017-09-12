@@ -27,5 +27,15 @@
 		android:enabled="false"
         android:title="Wheel Settings"
         android:icon="@drawable/ic_action_wheel_white" />
+	
+	<Preference
+        android:key="@string/reset_top_speed"
+		android:enabled="true"
+        android:title="Reset top speed" />
+
+	<Preference
+        android:key="@string/reset_user_distance"
+		android:enabled="true"
+        android:title="Reset user distance" />
 
 </PreferenceScreen>

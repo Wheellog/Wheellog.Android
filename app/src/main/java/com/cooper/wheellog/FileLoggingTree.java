@@ -31,7 +31,7 @@ public class FileLoggingTree extends Timber.DebugTree {
                 direct.mkdir();
             }
 
-            String fileNameTimeStamp = new SimpleDateFormat("dd-MM-yyyy", Locale.US).format(new Date());
+            String fileNameTimeStamp = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
             String logTimeStamp = new SimpleDateFormat("E MMM dd yyyy 'at' hh:mm:ss:SSS aaa", Locale.US).format(new Date
                     ());
 

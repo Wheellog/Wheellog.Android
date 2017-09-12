@@ -121,6 +121,28 @@
                 android:id="@+id/tvDistance"
                 android:visibility="gone"
                 style="@style/Stats" />
+				
+            <TextView
+                android:id="@+id/tvTitleWheelDistance"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/wheel_distance"/>
+
+            <TextView
+                android:id="@+id/tvWheelDistance"
+                android:visibility="gone"
+                style="@style/Stats" />
+				
+            <TextView
+                android:id="@+id/tvTitleUserDistance"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/user_distance"/>
+
+            <TextView
+                android:id="@+id/tvUserDistance"
+                android:visibility="gone"
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleTotalDistance"

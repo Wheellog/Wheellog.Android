@@ -16,4 +16,67 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+	
+	<string-array name="pedals_mode">
+        <item>Hard</item>
+        <item>Medium</item>
+        <item>Soft</item>
+    </string-array>
+	
+	<string-array name="pedals_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+	
+	<string-array name="light_mode_ks">
+        <item>Off</item>
+        <item>On</item>
+        <item>Auto</item>
+    </string-array>
+	
+	
+	<string-array name="light_mode_gw">
+        <item>Off</item>
+        <item>On</item>
+        <item>Strobe</item>
+    </string-array>
+	
+	<string-array name="alarm_mode_gw">
+        <item>Turn off level 1 alarm</item>
+        <item>Turn off level 2 alarm</item>
+        <item>Turn on alarm</item>
+    </string-array>
+	
+	<string-array name="alarm_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>	
+	
+	<string-array name="light_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>	
+	
+	<string-array name="strobe_mode_ks">
+        <item>Off</item>
+        <item>On</item>        
+    </string-array>
+	
+	<string-array name="strobe_mode_values">
+        <item>0</item>
+        <item>1</item>        
+    </string-array>	
+	
+	<string-array name="led_mode">
+        <item>Off</item>
+        <item>On</item>        
+    </string-array>
+	
+	<string-array name="led_mode_values">
+        <item>1</item>
+        <item>0</item>        
+    </string-array>	
 </resources>

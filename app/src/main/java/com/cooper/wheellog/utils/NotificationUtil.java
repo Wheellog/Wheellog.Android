@@ -30,6 +30,10 @@ public class NotificationUtil {
         context.registerReceiver(messageReceiver, makeIntentFilter());
     }
 
+//    public Context getInstance() {
+//        return mContext;
+//    }
+
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

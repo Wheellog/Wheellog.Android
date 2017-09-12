@@ -91,7 +91,9 @@ public class Constants {
 
     public enum ALARM_TYPE {
         SPEED(0),
-        CURRENT(1);
+        CURRENT(1),
+		TEMPERATURE(2);
+		
 
         private final int value;
 
