@@ -44,6 +44,28 @@
                 android:id="@+id/tvTopSpeed"
                 android:visibility="gone"
                 style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleAverageSpeed"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/average_speed"/>
+
+            <TextView
+                android:id="@+id/tvAverageSpeed"
+                android:visibility="gone"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleAverageRidingSpeed"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/average_riding_speed"/>
+
+            <TextView
+                android:id="@+id/tvAverageRidingSpeed"
+                android:visibility="gone"
+                style="@style/Stats" />
 
             <TextView
                 android:id="@+id/tvTitleBattery"
@@ -108,6 +130,17 @@
 
             <TextView
                 android:id="@+id/tvRideTime"
+                android:visibility="gone"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleRidingTime"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/riding_time"/>
+
+            <TextView
+                android:id="@+id/tvRidingTime"
                 android:visibility="gone"
                 style="@style/Stats" />
 

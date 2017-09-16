@@ -153,7 +153,7 @@ public class LoggingService extends Service
                 FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,battery_temp,system_temp,tilt,roll,mode,alert");
         }
         else
-            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,battery_temp,system_temp,tilt,roll,mode,alert");
+            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,battery_temp,system_temp,tilt,roll,mode,alert");
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());

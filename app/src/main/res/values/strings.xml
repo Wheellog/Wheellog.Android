@@ -37,12 +37,15 @@
     <string name="mode_ride">Normal</string>
     <string name="waiting_for_wheel">Waiting for wheel…</string>
     <string name="speed">Speed</string>
+	<string name="average_speed">Avg Speed</string>
+	<string name="average_riding_speed">Avg Riding Speed</string>
     <string name="top_speed">Top Speed</string>
     <string name="battery">Battery</string>
     <string name="distance">Distance</string>
 	<string name="wheel_distance">Wheel Distance</string>
 	<string name="user_distance">User Distance</string>
-    <string name="ride_time">Ride Time</string>
+    <string name="ride_time">Journey Time</string>
+	<string name="riding_time">Ride Time</string>
     <string name="voltage">Voltage</string>
     <string name="current">Current</string>
     <string name="power">Power</string>

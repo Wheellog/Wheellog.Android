@@ -30,8 +30,8 @@
     </string-array>
 	
 	<string-array name="light_mode_ks">
-        <item>Off</item>
         <item>On</item>
+        <item>Off</item>
         <item>Auto</item>
     </string-array>
 	

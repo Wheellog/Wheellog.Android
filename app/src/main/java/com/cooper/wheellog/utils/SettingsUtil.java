@@ -26,16 +26,16 @@ public class SettingsUtil {
         editor.apply();
     }
 	
-	public static void setUserDistance(Context context, long distance) {
+	public static void setUserDistance(Context context, String id, long distance) {
         SharedPreferences.Editor editor = context.getSharedPreferences(key, Context.MODE_PRIVATE).edit();
-        editor.putLong("user_distance", distance);
+        editor.putLong("user_distance_"+id, distance);
         editor.apply();
     }
 	
-	public static long getUserDistance(Context context) {
+	public static long getUserDistance(Context context, String id) {
         SharedPreferences pref = context.getSharedPreferences(key, Context.MODE_PRIVATE);
-        if (pref.contains("user_distance")) {
-            return pref.getLong("user_distance", 0);
+        if (pref.contains("user_distance_"+id)) {
+            return pref.getLong("user_distance_"+id, 0);
         }
         return 0;
     }

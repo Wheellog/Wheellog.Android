@@ -268,6 +268,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 							if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
 							if (mWheelType == WHEEL_TYPE.GOTWAY) {
+							//if (mWheelType == WHEEL_TYPE.INMOTION) {
 								addPreferencesFromResource(R.xml.preferences_gotway);
 								Preference start_calibration_button = findPreference(getString(R.string.start_calibration));
 								if (start_calibration_button != null) {

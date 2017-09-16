@@ -26,12 +26,14 @@ import timber.log.Timber;
 public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
+	private Timer ridingTimerControl;
 
     private BluetoothLeService mBluetoothLeService;
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
     private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
+	private static final int RIDING_SPEED = 200; // 2km/h
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
     private ArrayList<Float> speedAxis = new ArrayList<>();
@@ -52,6 +54,7 @@ public class WheelData {
     private long mDistance;
 	private long mUserDistance;
     private int mRideTime;
+	private int mRidingTime;
     private int mLastRideTime;
     private int mTopSpeed;
     private int mFanStatus;
@@ -97,6 +100,19 @@ public class WheelData {
             mInstance = new WheelData();
 
         mInstance.full_reset();
+		mInstance.startRidingTimerControl();
+    }
+	
+	
+	public void startRidingTimerControl() {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (mSpeed > RIDING_SPEED) mRidingTime += 1;
+            }
+        };
+        ridingTimerControl = new Timer();
+        ridingTimerControl.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 
     public static WheelData getInstance() {
@@ -265,8 +281,13 @@ public class WheelData {
 	
 	public void updateCalibration() {
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+			mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());			
+			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());
+			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
+			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());	
+			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
+			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());	
 		}
 		
 		
@@ -404,6 +425,20 @@ public class WheelData {
 
     int getRideTime() { return mRideTime; }
 
+    double getAverageSpeedDouble() {
+		if (mTotalDistance!=0 && mRideTime !=0) {
+			return (((mTotalDistance - mStartTotalDistance)*3.6)/(mRideTime + mLastRideTime));
+		}
+		else return 0.0;
+	}
+	
+	double getAverageRidingSpeedDouble() {
+		if (mTotalDistance!=0 && mRidingTime !=0) {
+			return (((mTotalDistance - mStartTotalDistance)*3.6)/mRidingTime);
+		}
+		else return 0.0;
+	}
+	
     String getRideTimeString() {
         int currentTime = mRideTime + mLastRideTime;
         long hours = TimeUnit.SECONDS.toHours(currentTime);
@@ -414,6 +449,15 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+	String getRidingTimeString() {
+        long hours = TimeUnit.SECONDS.toHours(mRidingTime);
+        long minutes = TimeUnit.SECONDS.toMinutes(mRidingTime) -
+                TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(mRidingTime));
+        long seconds = TimeUnit.SECONDS.toSeconds(mRidingTime) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(mRidingTime));
+        return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
+    }
+	
     double getSpeedDouble() {
         return mSpeed / 100.0;
     }
@@ -448,12 +492,13 @@ public class WheelData {
 	
 	
 	public double getUserDistanceDouble() {
-		//Context mContext = mBluetoothLeService.getApplicationContext();
-		//long userDistance = SettingsUtil.getUserDistance(mContext);
 		if (mUserDistance == 0 && mTotalDistance != 0 )  {
 			Context mContext = mBluetoothLeService.getApplicationContext();
-			SettingsUtil.setUserDistance(mContext, mTotalDistance);
-			mUserDistance = mTotalDistance;
+			mUserDistance = SettingsUtil.getUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress());
+			if (mUserDistance == 0) {
+				SettingsUtil.setUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress(),mTotalDistance);
+				mUserDistance = mTotalDistance;
+			}
 		}
 		return (mTotalDistance - mUserDistance)/1000.0; 
     }
@@ -461,7 +506,7 @@ public class WheelData {
 	public void resetUserDistance() {		
 		if (mTotalDistance != 0)  {
 			Context mContext = mBluetoothLeService.getApplicationContext();
-			SettingsUtil.setUserDistance(mContext, mTotalDistance);		
+			SettingsUtil.setUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);		
 			mUserDistance = mTotalDistance;
 		}
 
@@ -500,9 +545,9 @@ public class WheelData {
         mConnectionState = connected;
     }
 	
-	void setUserDistance(long userDistance) {
-        mUserDistance = userDistance;
-    }
+//	void setUserDistance(long userDistance) {
+//        mUserDistance = userDistance;
+//    }
 
     void setAlarmsEnabled(boolean enabled) {
         mAlarmsEnabled = enabled;
@@ -887,6 +932,7 @@ public class WheelData {
         mAverageBattery = 0;
         mVoltage = 0;
         mRideTime = 0;
+		mRidingTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
 		mDistance = 0;

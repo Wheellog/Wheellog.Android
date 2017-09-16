@@ -175,7 +175,7 @@ public class InMotionAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 125);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 200);
     }
 	
 	public void setScale(int scale) {
@@ -1097,7 +1097,7 @@ public class InMotionAdapter {
 					fullText = String.format(Locale.ENGLISH, "High load at speed %.2f and current %.2f %s", a_speed, (alertValue/1000.0), hex);
 					break;
 				default: 
-					fullText = String.format(Locale.ENGLISH, "Unknown Alert %.2f %.2f hex", alertValue, alertValue2, hex);
+					fullText = String.format(Locale.ENGLISH, "Unknown Alert %.2f %.2f hex %s", alertValue, alertValue2, hex);					
 			}
 			return new Alert(alertId, alertValue, alertValue2, fullText);
 			
