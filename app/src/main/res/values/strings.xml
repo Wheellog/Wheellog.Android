@@ -120,6 +120,7 @@
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
     <string name="max_speed" translatable="false">max_speed</string>
+	<string name="use_ratio" translatable="false">use_ratio</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>

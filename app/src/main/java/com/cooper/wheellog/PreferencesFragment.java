@@ -91,7 +91,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 break;
             case "use_mph":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
-                break;
+                break;			
             case "max_speed":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
@@ -413,7 +413,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 getString(R.string.alarm_1_battery),
                 getString(R.string.alarm_2_battery),
                 getString(R.string.alarm_3_battery),
-                getString(R.string.alarm_current)};
+                getString(R.string.alarm_current),
+				getString(R.string.alarm_temperature)};
 
         for (String preference : seekbar_preferences) {
             SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);

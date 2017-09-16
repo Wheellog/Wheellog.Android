@@ -908,8 +908,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         wheelView.invalidate();
 
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
-		//long userDistance = SettingsUtil.getUserDistance(this);
-		//WheelData.getInstance().setUserDistance(userDistance);
+		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
+		WheelData.getInstance().setUseRatio(use_ratio);
 		WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {

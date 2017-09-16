@@ -34,6 +34,7 @@ public class WheelData {
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
     private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
 	private static final int RIDING_SPEED = 200; // 2km/h
+	private static final double RATIO_GW = 0.875;
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
     private ArrayList<Float> speedAxis = new ArrayList<>();
@@ -91,6 +92,7 @@ public class WheelData {
     private int mAlarmCurrent = 0;
 	private int mAlarmTemperature = 0;
 	
+	private boolean mUseRatio = false;
 	private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
 	private boolean mTemperatureAlarmExecuted = false;
@@ -313,14 +315,16 @@ public class WheelData {
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
 			byte[] data = new byte[1];
 			if (wheelMaxSpeed != 0) {
+				int wheelMaxSpeed2 = wheelMaxSpeed;
+				if (mUseRatio) wheelMaxSpeed2 = (int)Math.round(wheelMaxSpeed2/RATIO_GW);
 				mBluetoothLeService.writeBluetoothGattCharacteristic("W".getBytes());
 				mBluetoothLeService.writeBluetoothGattCharacteristic("Y".getBytes());
 				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-
-				data[0] = (byte)((wheelMaxSpeed/10)+0x30);
+				
+				data[0] = (byte)((wheelMaxSpeed2/10)+0x30);
 				mBluetoothLeService.writeBluetoothGattCharacteristic(data);
 				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-				data[0] = (byte)((wheelMaxSpeed%10)+0x30);
+				data[0] = (byte)((wheelMaxSpeed2%10)+0x30);
 				mBluetoothLeService.writeBluetoothGattCharacteristic(data);
 				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
@@ -551,6 +555,10 @@ public class WheelData {
 
     void setAlarmsEnabled(boolean enabled) {
         mAlarmsEnabled = enabled;
+    }
+	
+	void setUseRatio(boolean enabled) {
+        mUseRatio = enabled;
     }
 
     void setPreferences(int alarm1Speed, int alarm1Battery,
@@ -819,13 +827,14 @@ public class WheelData {
                 mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
             else
                 mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
-
+			if (mUseRatio) mSpeed = (int)Math.round(mSpeed * RATIO_GW);
             setTopSpeed(mSpeed);
 
             mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
 			mTemperature2 = mTemperature;
 
             long distance = byteArrayInt2(data[9], data[8]);
+			if (mUseRatio) distance = Math.round(distance * RATIO_GW);
             setDistance(distance);
 
             mVoltage = (data[2] * 256) + (data[3] & 255);
@@ -853,8 +862,8 @@ public class WheelData {
             if (a1 != 90 || a5 != 85 || a6 != 170) {
                 return false;
             }
-
             mTotalDistance = ((data[6]&0xFF) <<24) + ((data[7]&0xFF) << 16) + ((data[8] & 0xFF) <<8) + (data[9] & 0xFF);
+			if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
         }
         return false;
     }
