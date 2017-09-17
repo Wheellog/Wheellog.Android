@@ -741,7 +741,10 @@ public class WheelData {
     }
 
     private boolean decodeKingSong(byte[] data) {
-
+        if (rideStartTime == 0) {
+            rideStartTime = Calendar.getInstance().getTimeInMillis();
+			mRidingTime = 0;
+		}
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
@@ -775,7 +778,8 @@ public class WheelData {
             } else if ((data[16] & 255) == 185) { // Distance/Time/Fan Data
                 long distance = byteArrayInt4(data[2], data[3], data[4], data[5]);
                 setDistance(distance);
-                int currentTime = byteArrayInt2(data[6], data[7]);
+                //int currentTime = byteArrayInt2(data[6], data[7]);
+	            int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);
                 setTopSpeed(byteArrayInt2(data[8], data[9]));
                 mFanStatus = data[12];
@@ -812,9 +816,10 @@ public class WheelData {
     }
 
     private boolean decodeGotway(byte[] data) {
-        if (rideStartTime == 0)
+        if (rideStartTime == 0) {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
-
+			mRidingTime = 0;
+		}
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
@@ -875,8 +880,10 @@ public class WheelData {
     private boolean decodeInmotion(byte[] data) {
         ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
 		if (statuses.size() < 1) return false;
-        if (rideStartTime == 0)
+        if (rideStartTime == 0) {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
+			mRidingTime = 0;
+		}		
         for (InMotionAdapter.Status status: statuses) {
             System.out.println(status.toString());
             if (status instanceof InMotionAdapter.Infos) {

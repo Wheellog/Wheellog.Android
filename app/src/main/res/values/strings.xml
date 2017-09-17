@@ -38,7 +38,7 @@
     <string name="waiting_for_wheel">Waiting for wheel…</string>
     <string name="speed">Speed</string>
 	<string name="average_speed">Avg Speed</string>
-	<string name="average_riding_speed">Avg Riding Speed</string>
+	<string name="average_riding_speed">Avg Riding</string>
     <string name="top_speed">Top Speed</string>
     <string name="battery">Battery</string>
     <string name="distance">Distance</string>
