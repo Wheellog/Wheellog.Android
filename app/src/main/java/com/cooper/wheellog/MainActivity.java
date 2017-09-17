@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
 //import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.Typefaces;
@@ -193,6 +194,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 					//System.out.println("WheelRecognizedMain");
 					((PreferencesFragment) getPreferencesFragment()).show_main_menu();
 					break;
+				case Constants.ACTION_ALARM_TRIGGERED:					
+					int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
+					if (alarmType == 0 ) {
+						showSnackBar(getResources().getString(R.string.alarm_text_speed), 3000);						
+					}
+					if (alarmType == 1 ) {
+						showSnackBar(getResources().getString(R.string.alarm_text_current), 3000);						
+					}
+					if (alarmType == 2 ) {
+						showSnackBar(getResources().getString(R.string.alarm_text_temperature), 3000);						
+					}
+					break;
             }
         }
     };
@@ -225,25 +238,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         setMenuIconStates();
     }
 	
-//	private void applyWheelSettings() {
-//		Timber.i("Apply new wheel settings");
-//		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//		boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
-//		boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
-//		boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), false);
-//		int max_speed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
-//		int speaker_volume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
-//		int pedals_adjustment = sharedPreferences.getInt(getString(R.string.pedals_adjustment), 0);
-//		WheelData.getInstance().updateLight(ligth_enabled);
-//		WheelData.getInstance().updateLed(led_enabled);
-//		WheelData.getInstance().updateHandleButton(handle_button_disabled);
-//		WheelData.getInstance().updateMaxSpeed(max_speed);
-///		WheelData.getInstance().updateSpeakerVolume(speaker_volume);
-//		WheelData.getInstance().updatePedals(pedals_adjustment);
-//		
-//		
-//		
-//	}
 	
 	private void setWheelPreferences() {
 		Timber.i("SetWheelPreferences");
@@ -1083,7 +1077,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
 		intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
-		intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);		
+		intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);	
+		intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);			
         return intentFilter;
     }
 

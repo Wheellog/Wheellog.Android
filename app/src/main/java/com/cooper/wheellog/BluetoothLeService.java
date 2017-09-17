@@ -162,6 +162,9 @@ public class BluetoothLeService extends Service {
                         autoConnect = true;
                         mBluetoothGatt.close();
                         mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
+						if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                                InMotionAdapter.getInstance().resetConnection();
+                        }
                         broadcastConnectionUpdate(STATE_CONNECTING, true);
                     } else
                         broadcastConnectionUpdate(STATE_CONNECTING, true);

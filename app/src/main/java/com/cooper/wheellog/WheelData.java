@@ -100,6 +100,12 @@ public class WheelData {
     static void initiate() {
         if (mInstance == null)
             mInstance = new WheelData();
+		else {
+			if (mInstance.ridingTimerControl != null) {
+				mInstance.ridingTimerControl.cancel();
+				mInstance.ridingTimerControl = null;
+			}
+		}
 
         mInstance.full_reset();
 		mInstance.startRidingTimerControl();
@@ -110,7 +116,7 @@ public class WheelData {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (mSpeed > RIDING_SPEED) mRidingTime += 1;
+                if (mConnectionState && (mSpeed > RIDING_SPEED)) mRidingTime += 1;
             }
         };
         ridingTimerControl = new Timer();
@@ -545,8 +551,10 @@ public class WheelData {
         return speedAxis;
     }
 
-    void setConnected(boolean connected) {
+    void setConnected(boolean connected) {		
         mConnectionState = connected;
+		
+		if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().resetConnection();
     }
 	
 //	void setUserDistance(long userDistance) {

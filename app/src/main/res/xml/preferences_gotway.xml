@@ -48,5 +48,10 @@
         android:key="@string/start_calibration"
 		android:enabled="true"
         android:title="Calibration"/>
+		
+	<CheckBoxPreference
+        android:key="@string/use_ratio"
+        android:title="My Wheel is Gotway MCM "
+        android:summary="If you wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal" />
 
 </PreferenceScreen>

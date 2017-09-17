@@ -7,11 +7,6 @@
         android:key="@string/use_mph"
         android:title="Use MPH"
         android:summary="Show speed in miles rather than kilometers" />
-	
-	<CheckBoxPreference
-        android:key="@string/use_ratio"
-        android:title="My Wheel is Gotway MCM "
-        android:summary="If you wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal" />
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/max_speed"

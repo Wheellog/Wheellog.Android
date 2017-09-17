@@ -75,6 +75,11 @@
     <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
     <string name="raw_distance">Raw Distance</string>
 
+	<string name="alarm_text_speed">Speed alarm triggered</string>
+	<string name="alarm_text_current">Current alarm triggered</string>
+	<string name="alarm_text_temperature">Temperature alarm triggered</string>
+	
+	
     // PREFERENCES
     <string name="speed_preferences" translatable="false">speed_preferences</string>
     <string name="log_preferences" translatable="false">log_preferences</string>

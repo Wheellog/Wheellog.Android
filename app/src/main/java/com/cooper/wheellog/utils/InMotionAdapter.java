@@ -175,11 +175,15 @@ public class InMotionAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 200);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 125);
     }
 	
 	public void setScale(int scale) {
 		updateIntervalScale = scale;
+	}
+	
+	public void resetConnection() {
+		passwordSent = false;
 	}
 	
 	public void setLightState(final boolean lightEnable) {
