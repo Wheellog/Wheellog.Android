@@ -1025,9 +1025,9 @@ public class InMotionAdapter {
             double angle = (double) (this.intFromBytes(ex_data, 0)) / 65536.0;
 			double roll = (double) (this.intFromBytes(ex_data, 72)) / 90.0;
             double speed = ((double) (this.signedIntFromBytes(ex_data, 12)) + (double) (this.signedIntFromBytes(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
-            if (model == R1S || model == R1Sample || model == R0 || model == V8) {
-                speed = Math.abs(speed);
-            }
+            //if (model == R1S || model == R1Sample || model == R0 || model == V8) {
+            speed = Math.abs(speed);
+            //}
             double voltage = (double) (this.intFromBytes(ex_data, 24)) / 100.0;
             double current = (double) (this.signedIntFromBytes(ex_data, 20)) / 100.0;
 			double temperature = ex_data[32] & 0xff;

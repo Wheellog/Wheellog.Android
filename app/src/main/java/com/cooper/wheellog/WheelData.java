@@ -93,6 +93,7 @@ public class WheelData {
 	private int mAlarmTemperature = 0;
 	
 	private boolean mUseRatio = false;
+	private boolean mGotway84V = false;
 	private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
 	private boolean mTemperatureAlarmExecuted = false;
@@ -567,6 +568,11 @@ public class WheelData {
 	
 	void setUseRatio(boolean enabled) {
         mUseRatio = enabled;
+		reset();
+    }
+	
+	void setGotway84V(boolean enabled) {
+        mGotway84V = enabled;
     }
 
     void setPreferences(int alarm1Speed, int alarm1Battery,
@@ -863,7 +869,9 @@ public class WheelData {
                 battery = (mVoltage - 5290) / 13;
             }
             setBatteryPercent(battery);
-
+			if (mGotway84V) {
+				mVoltage = (int)Math.round(mVoltage / 0.8);
+			}
             int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
             setCurrentTime(currentTime);
 
