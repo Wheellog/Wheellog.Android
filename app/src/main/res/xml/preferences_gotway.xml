@@ -57,6 +57,6 @@
 	<CheckBoxPreference
         android:key="@string/gotway_84v"
         android:title="My Wheel is a Gotway with 84V battery"
-        android:summary="Set if your wheel is Gotway with 20S (84V) battery" />
+        android:summary="If your wheel is Gotway with 20S (84V) battery" />
 		
 </PreferenceScreen>
