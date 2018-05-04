@@ -51,12 +51,12 @@
 		
 	<CheckBoxPreference
         android:key="@string/use_ratio"
-        android:title="My Wheel is Gotway MCM "
-        android:summary="If you wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal" />
+        android:title="My Wheel is a Gotway MCM "
+        android:summary="If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal" />
 
 	<CheckBoxPreference
         android:key="@string/gotway_84v"
-        android:title="My Wheel is Gotway with 84V battery"
-        android:summary="If you wheel is Gotway with 20S (84V) battery" />
+        android:title="My Wheel is a Gotway with 84V battery"
+        android:summary="Set if your wheel is Gotway with 20S (84V) battery" />
 		
 </PreferenceScreen>

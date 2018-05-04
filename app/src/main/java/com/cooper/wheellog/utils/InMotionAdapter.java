@@ -767,7 +767,7 @@ public class InMotionAdapter {
 
             int check = 0;
             for (byte c : buffer) {
-                check = (check + (int) c);
+                check = (check + ((int) c) & 0xFF);
 				//check = (check + (int) c) % 256;
             }
             return (check & 0xFF);
