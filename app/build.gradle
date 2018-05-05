@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion '27.0.3'
 
     lintOptions {
         abortOnError false
@@ -13,7 +13,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 25
         versionCode 34
-        versionName "2.0.6"
+        versionName "2.0.7"
     }
     buildTypes {
         release {
@@ -23,18 +23,18 @@ android {
     }
 }
 
-apply plugin: 'android-apt'
+//apply plugin: 'android-apt'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:gridlayout-v7:25.1.0'
-    compile 'com.google.android.gms:play-services-drive:10.0.1'
-    compile 'com.getpebble:pebblekit:3.1.0'
-    compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
-    compile 'com.jakewharton.timber:timber:4.3.1'
-    compile 'com.pavelsikun:material-seekbar-preference:2.3.0+'
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0'
-    compile "com.github.hotchemi:permissionsdispatcher:2.2.0"
-    apt "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:design:25.1.0'
+    implementation 'com.android.support:gridlayout-v7:25.1.0'
+    implementation 'com.google.android.gms:play-services-drive:10.0.1'
+    implementation 'com.getpebble:pebblekit:3.1.0'
+    implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
+    implementation 'com.jakewharton.timber:timber:4.3.1'
+    implementation 'com.pavelsikun:material-seekbar-preference:2.3.0+'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.0'
+    implementation "com.github.hotchemi:permissionsdispatcher:2.2.0"
+    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
 }

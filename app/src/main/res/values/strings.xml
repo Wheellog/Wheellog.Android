@@ -49,8 +49,8 @@
     <string name="voltage">Voltage</string>
     <string name="current">Current</string>
     <string name="power">Power</string>
-    <string name="temperature">Battery temp</string>
-	<string name="temperature2">System temp</string>
+    <string name="temperature">System temp</string>
+	<string name="temperature2">CPU(?) temp</string>
 	<string name="angle">Tilt</string>
 	<string name="roll">Roll</string>
     <string name="fan_status">Fan Status</string>

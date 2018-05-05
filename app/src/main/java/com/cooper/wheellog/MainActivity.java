@@ -399,8 +399,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
                 tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature2.setVisibility(View.VISIBLE);
-                tvTemperature2.setVisibility(View.VISIBLE);
+                tvTitleTemperature.setVisibility(View.VISIBLE);
+                tvTemperature.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
                 break;
