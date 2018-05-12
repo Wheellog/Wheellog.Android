@@ -10,6 +10,9 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.*;
+import android.text.InputType;
+import android.text.TextUtils;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -208,6 +211,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 				Preference reset_top_button = findPreference(getString(R.string.reset_top_speed));
 				Preference reset_user_distance_button = findPreference(getString(R.string.reset_user_distance));
+                Preference last_mac_button = findPreference(getString(R.string.last_mac));
 				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING).putExtra(Constants.INTENT_EXTRA_WHEEL_UPDATE_SCALE, 1));
 
 				
@@ -306,7 +310,73 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         }
                     });
                 }
-				
+
+                if (last_mac_button != null) {
+                    last_mac_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("MAC Edit");
+
+                            final EditText input = new EditText(getActivity());
+                            input.setInputType(InputType.TYPE_CLASS_TEXT);
+                            input.setText(SettingsUtil.getLastAddress(getActivity()));
+                            builder.setView(input);
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final String deviceAddress = input.getText().toString();
+                                    SettingsUtil.setLastAddress(getActivity(), deviceAddress);
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                                    builder1.setTitle("Wheel Password ( InMotion only )");
+
+                                    final EditText input1 = new EditText(getActivity());
+                                    input1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                    builder1.setView(input1);
+                                    builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String password = input1.getText().toString();
+                                            //System.out.println("Set password ");
+                                            //System.out.println(password);
+                                            SettingsUtil.setPasswordForWheel(getActivity(), deviceAddress, password);
+                                            password = SettingsUtil.getPasswordForWheel(getActivity(),deviceAddress);
+                                            //System.out.println("Set password ");
+                                            //System.out.println(password);
+                                            //finish();
+                                        }
+                                    });
+                                    builder1.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                            //finish();
+                                        }
+                                    });
+                                    builder1.show();
+
+
+
+                                    //SettingsUtil.setPasswordForWheel(getActivity(), deviceAddress, "000000");
+                                    //finish();
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                    //finish();
+                                }
+                            });
+                            builder.show();
+
+
+                            return true;
+                        }
+
+                    });
+                }
+
                 break;
             case Speed:
                 tb.setTitle("Speed Settings");

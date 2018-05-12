@@ -38,4 +38,8 @@
 		android:enabled="true"
         android:title="Reset user distance" />
 
+    <Preference
+        android:key="@string/last_mac"
+        android:enabled="true"
+        android:title="Edit MAC address" />
 </PreferenceScreen>
