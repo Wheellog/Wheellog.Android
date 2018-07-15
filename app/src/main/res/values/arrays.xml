@@ -78,5 +78,19 @@
 	<string-array name="led_mode_values">
         <item>1</item>
         <item>0</item>        
-    </string-array>	
+    </string-array>
+
+    <string-array name="gotway_voltage">
+        <item>67 V</item>
+        <item>84 V</item>
+        <item>100 V</item>
+    </string-array>
+
+    <string-array name="gotway_voltage_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+
 </resources>

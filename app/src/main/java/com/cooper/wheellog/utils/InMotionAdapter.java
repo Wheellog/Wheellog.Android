@@ -71,6 +71,7 @@ public class InMotionAdapter {
         V5FPLUS("53", 3812.0d),
         V8("80", 3812.0d),
         V10("A0", 3812.0d),
+        V10F("A1", 3812.0d),
         UNKNOWN("x", 3812.0d);
 
         private String value;
@@ -314,7 +315,7 @@ public class InMotionAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10) {
+        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10 || model == Model.V10F) {
             if (volts > 82.50) {
                 batt = 1.0;
             } else if (volts > 68.0) {
@@ -589,6 +590,7 @@ public class InMotionAdapter {
 				case "53": return "Inmotion V5FPLUS";
 				case "80": return "Inmotion V8";
                 case "A0": return "Inmotion V10";
+                case "A1": return "Inmotion V10F";
 				default: return "Unknown";
 			}
         }
@@ -1041,7 +1043,7 @@ public class InMotionAdapter {
 
             if (model.belongToInputType( "1")
                     || model.belongToInputType( "5")
-                    || model == V8 || model == V10) {
+                    || model == V8 || model == V10 || model == V10F) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;

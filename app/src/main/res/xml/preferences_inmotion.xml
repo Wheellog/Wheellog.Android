@@ -25,7 +25,7 @@
         android:summary="Tiltback speed"
         android:defaultValue="25"
         sample:msbp_minValue="3"
-        sample:msbp_maxValue="35"
+        sample:msbp_maxValue="45"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="km/h"
         sample:msbp_dialogEnabled="true"/>

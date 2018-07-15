@@ -91,9 +91,11 @@ public class WheelData {
     private int mAlarm3Battery = 0;
     private int mAlarmCurrent = 0;
 	private int mAlarmTemperature = 0;
-	
+    private int mGotwayVoltageScaler = 0;
+
+
 	private boolean mUseRatio = false;
-	private boolean mGotway84V = false;
+	//private boolean mGotway84V = false;
 	private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
 	private boolean mTemperatureAlarmExecuted = false;
@@ -571,8 +573,8 @@ public class WheelData {
 		reset();
     }
 	
-	void setGotway84V(boolean enabled) {
-        mGotway84V = enabled;
+	void setGotwayVoltage(int voltage) {
+        mGotwayVoltageScaler = voltage;
     }
 
     void setPreferences(int alarm1Speed, int alarm1Battery,
@@ -786,6 +788,16 @@ public class WheelData {
                 } else {
                     battery = (mVoltage - 5000) / 16;
                 }
+
+                if (mModel == "KS-18L") {
+                    if (mVoltage > 8300) {
+                        battery = 100;
+                    } else if (mVoltage > 6000) {
+                        battery = (mVoltage - 6000) / 23;
+                    } else {
+                        battery = 0;
+                    }
+                }
                 setBatteryPercent(battery);
 
                 return true;
@@ -869,9 +881,10 @@ public class WheelData {
                 battery = (mVoltage - 5290) / 13;
             }
             setBatteryPercent(battery);
-			if (mGotway84V) {
-				mVoltage = (int)Math.round(mVoltage / 0.8);
-			}
+//			if (mGotway84V) {
+//				mVoltage = (int)Math.round(mVoltage / 0.8);
+//			}
+            mVoltage = mVoltage + (int)Math.round(mVoltage*0.25*mGotwayVoltageScaler);
             int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
             setCurrentTime(currentTime);
 

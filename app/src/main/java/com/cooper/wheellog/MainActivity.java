@@ -904,8 +904,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
 		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
 		WheelData.getInstance().setUseRatio(use_ratio);
-        boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
-        WheelData.getInstance().setGotway84V(gotway_84v);
+
+        int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "0"));
+        WheelData.getInstance().setGotwayVoltage(gotway_voltage);
+
+        //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
+        //WheelData.getInstance().setGotway84V(gotway_84v);
 		WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {
