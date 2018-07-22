@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Html;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -17,7 +18,10 @@ import android.text.TextUtils;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
+import com.cooper.wheellog.BuildConfig;
 import com.pavelsikun.seekbarpreference.SeekBarPreference;
+
+
 
 import timber.log.Timber;
 
@@ -212,6 +216,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				Preference reset_top_button = findPreference(getString(R.string.reset_top_speed));
 				Preference reset_user_distance_button = findPreference(getString(R.string.reset_user_distance));
                 Preference last_mac_button = findPreference(getString(R.string.last_mac));
+                Preference about_button = findPreference(getString(R.string.about));
 				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING).putExtra(Constants.INTENT_EXTRA_WHEEL_UPDATE_SCALE, 1));
 
 				
@@ -310,6 +315,28 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         }
                     });
                 }
+                if (about_button != null) {
+                    about_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            String versionName = BuildConfig.VERSION_NAME;
+                            String buildTime = BuildConfig.BUILD_TIME;
+                            new AlertDialog.Builder(getActivity())
+                                    .setTitle("About WheelLog")
+                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Palachzzz</i> <br><a href=\"palachzzz.wl@gmail.com\">palachzzz.wl@gmail.com</a>", versionName, buildTime)))
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_info)
+                                    .show();
+                            return true;
+                        }
+                    });
+                }
+
+
 
                 if (last_mac_button != null) {
                     last_mac_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

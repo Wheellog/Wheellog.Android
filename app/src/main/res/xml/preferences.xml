@@ -42,4 +42,9 @@
         android:key="@string/last_mac"
         android:enabled="true"
         android:title="Edit MAC address" />
+
+    <Preference
+        android:key="@string/about"
+        android:enabled="true"
+        android:title="About WheelLog" />
 </PreferenceScreen>

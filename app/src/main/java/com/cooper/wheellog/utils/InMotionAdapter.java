@@ -717,7 +717,7 @@ public class InMotionAdapter {
         public byte[] writeBuffer() {
 
             byte[] canBuffer = getBytes();
-            int check = computeCheck(canBuffer);
+            byte check = computeCheck(canBuffer);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(0xAA);
@@ -776,14 +776,14 @@ public class InMotionAdapter {
             data = new byte[data.length];
         }
 
-        private static int computeCheck(byte[] buffer) {
+        private static byte computeCheck(byte[] buffer) {
 
-            byte check = 0;
+            int check = 0;
             for (byte c : buffer) {
-                check = (check + c) & 0xFF);
+                check = (check + c) & 0xFF;
 				//check = (check + (int) c) % 256;
             }
-            return (check & 0xFF);
+            return (byte) check;
         }
 
         private int intFromBytes(byte[] bytes, int starting) {
@@ -824,9 +824,9 @@ public class InMotionAdapter {
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length - 3);
 
             dataBuffer = CANMessage.unescape(dataBuffer);
-            int check = CANMessage.computeCheck(dataBuffer);
+            byte check = CANMessage.computeCheck(dataBuffer);
 
-            int bufferCheck = buffer[buffer.length - 3] & 0xFF;
+            byte bufferCheck = buffer[buffer.length - 3];
 
             return (check == bufferCheck) ? new CANMessage(dataBuffer) : null;
 

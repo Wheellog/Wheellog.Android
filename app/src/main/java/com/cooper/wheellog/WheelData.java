@@ -785,10 +785,12 @@ public class WheelData {
 
                 if (mModel.compareTo("KS-18L") == 0) {
 
-                    if (mVoltage > 8300) {
+                    if (mVoltage > 8350) {
                         battery = 100;
-                    } else if (mVoltage > 6000) {
-                        battery = (mVoltage - 6000) / 23;
+                    } else if (mVoltage > 6800) {
+                        battery = (mVoltage - 6650) / 17;
+                    } else if (mVoltage > 6400){
+                        battery = (mVoltage - 6400) / 45;
                     } else {
                         battery = 0;
                     }
