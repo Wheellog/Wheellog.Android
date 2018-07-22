@@ -319,8 +319,7 @@ public class WheelData {
 				InMotionAdapter.getInstance().setMaxSpeedState(wheelMaxSpeed);
 			}
 		}
-		System.out.println(String.format("Speed %02X", (byte)((wheelMaxSpeed/10)+0x30)));
-		System.out.println(String.format("Speed %02X", (byte)((wheelMaxSpeed%10)+0x30)));
+
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
 			byte[] data = new byte[1];
 			if (wheelMaxSpeed != 0) {
@@ -920,7 +919,7 @@ public class WheelData {
 			mRidingTime = 0;
 		}		
         for (InMotionAdapter.Status status: statuses) {
-            System.out.println(status.toString());
+            Timber.i(status.toString());
             if (status instanceof InMotionAdapter.Infos) {
 				mWheelLightEnabled = ((InMotionAdapter.Infos) status).getLightState();
 				mWheelLedEnabled = ((InMotionAdapter.Infos) status).getLedState();

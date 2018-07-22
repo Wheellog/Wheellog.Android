@@ -473,7 +473,7 @@ public class InMotionAdapter {
                     ", lock=" + lock +
 					", temperature=" + temperature +
 					", temperature2=" + temperature2 +
-					", temperature2=" + workModeInt +
+					", workmode=" + workModeInt +
                     '}';
         }
     }
@@ -820,14 +820,19 @@ public class InMotionAdapter {
             if (buffer[0] != (byte) 0xAA || buffer[1] != (byte) 0xAA || buffer[buffer.length - 1] != (byte) 0x55 || buffer[buffer.length - 2] != (byte) 0x55) {
                 return null;  // Header and tail not correct
             }
-			System.out.println(CANMessage.toHexString(buffer));
+            Timber.i("Before escape %s", CANMessage.toHexString(buffer));
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length - 3);
 
             dataBuffer = CANMessage.unescape(dataBuffer);
+            Timber.i("After escape %s", CANMessage.toHexString(dataBuffer));
             byte check = CANMessage.computeCheck(dataBuffer);
 
             byte bufferCheck = buffer[buffer.length - 3];
-
+            if (check == bufferCheck) {
+                Timber.i("Check OK");
+            } else {
+                Timber.i("Check FALSE, calc: %02X, packet: %02X",check, bufferCheck);
+            }
             return (check == bufferCheck) ? new CANMessage(dataBuffer) : null;
 
         }
@@ -991,9 +996,7 @@ public class InMotionAdapter {
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) llowByte, (byte) lhighByte, (byte) hlowByte, (byte) hhighByte};
-			System.out.println(String.format("%08X", tiltHorizon));
-			System.out.println(String.format("%08X", tilt));
-			System.out.println(CANMessage.toHexString(msg.data));
+
             return msg;
         }
 		
@@ -1149,7 +1152,7 @@ public class InMotionAdapter {
             int v2 = ((ex_data[25]&0xFF)*256) | (ex_data[24]&0xFF);
             String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
             String serialNumber = "";
-			System.out.println(CANMessage.toHexString(ex_data));
+			//System.out.println(CANMessage.toHexString(ex_data));
 			int maxspeed = 0;
 			int speakervolume = 0;
 			boolean light = false;
