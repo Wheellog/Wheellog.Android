@@ -781,21 +781,25 @@ public class WheelData {
                 }
 
                 int battery;
-                if (mVoltage < 5000) {
-                    battery = 0;
-                } else if (mVoltage >= 6600) {
-                    battery = 100;
-                } else {
-                    battery = (mVoltage - 5000) / 16;
-                }
 
-                if (mModel == "KS-18L") {
+
+                if (mModel.compareTo("KS-18L") == 0) {
+
                     if (mVoltage > 8300) {
                         battery = 100;
                     } else if (mVoltage > 6000) {
                         battery = (mVoltage - 6000) / 23;
                     } else {
                         battery = 0;
+                    }
+                } else {
+
+                    if (mVoltage < 5000) {
+                        battery = 0;
+                    } else if (mVoltage >= 6600) {
+                        battery = 100;
+                    } else {
+                        battery = (mVoltage - 5000) / 16;
                     }
                 }
                 setBatteryPercent(battery);

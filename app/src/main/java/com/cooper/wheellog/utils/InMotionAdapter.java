@@ -5,7 +5,7 @@ import com.cooper.wheellog.BluetoothLeService;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
-
+import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
@@ -70,8 +70,10 @@ public class InMotionAdapter {
         V5F("52", 3812.0d),
         V5FPLUS("53", 3812.0d),
         V8("80", 3812.0d),
-        V10("A0", 3812.0d),
-        V10F("A1", 3812.0d),
+        V10_test("100", 3812.0d),
+        V10F_test("101", 3812.0d),
+        V10("140", 3812.0d),
+        V10F("141", 3812.0d),
         UNKNOWN("x", 3812.0d);
 
         private String value;
@@ -97,6 +99,7 @@ public class InMotionAdapter {
         }
 
         public static Model findById(String id) {
+            Timber.i("Model %s", id);
             for (Model m : Model.values()) {
                 if (m.getValue().equals(id)) return m;
             }
@@ -108,9 +111,12 @@ public class InMotionAdapter {
             if (data.length >= 108) {
                 if (data[107] > (byte) 0) {
                     stringBuffer.append(data[107]);
+                    //stringBuffer.append(0x0a);
                 }
                 stringBuffer.append(data[104]);
+                //stringBuffer.append(0x01);
             }
+
             return Model.findById(stringBuffer.toString());
         }
     }
@@ -177,7 +183,7 @@ public class InMotionAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 125);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 250);
     }
 	
 	public void setScale(int scale) {
@@ -315,7 +321,7 @@ public class InMotionAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10 || model == Model.V10F) {
+        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
             if (volts > 82.50) {
                 batt = 1.0;
             } else if (volts > 68.0) {
@@ -589,8 +595,10 @@ public class InMotionAdapter {
 				case "52": return "Inmotion V5F";
 				case "53": return "Inmotion V5FPLUS";
 				case "80": return "Inmotion V8";
-                case "A0": return "Inmotion V10";
-                case "A1": return "Inmotion V10F";
+                case "100": return "Inmotion V10 test";
+                case "101": return "Inmotion V10F test";
+                case "140": return "Inmotion V10";
+                case "141": return "Inmotion V10F";
 				default: return "Unknown";
 			}
         }
@@ -655,6 +663,7 @@ public class InMotionAdapter {
             GetFastInfo(0x0F550113),
             GetSlowInfo(0x0F550114),
             //RemoteControl(0x0F550116),
+            RideMode(0x0F550115),
             PinCode(0x0F550307),
 			Light(0x0F55010D),  
 			Led(0x0F550116),  
@@ -769,9 +778,9 @@ public class InMotionAdapter {
 
         private static int computeCheck(byte[] buffer) {
 
-            int check = 0;
+            byte check = 0;
             for (byte c : buffer) {
-                check = (check + ((int) c) & 0xFF);
+                check = (check + c) & 0xFF);
 				//check = (check + (int) c) % 256;
             }
             return (check & 0xFF);
@@ -828,7 +837,7 @@ public class InMotionAdapter {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            for (int c : buffer) {
+            for (byte c : buffer) {
                 if (c == (byte) 0xAA || c == (byte) 0x55 || c == (byte) 0xA5) {
                     out.write(0xA5);
                 }
@@ -841,13 +850,15 @@ public class InMotionAdapter {
         private static byte[] unescape(byte[] buffer) {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            int oldc = 0;
+            boolean oldca5 = false;
 
-            for (int c : buffer) {
-                if (c != (byte) 0xA5 || oldc == (byte) 0xA5) {
+            for (byte c : buffer) {
+                if (c != (byte) 0xA5 || oldca5)  {
                     out.write(c);
+                    oldca5=false;
+                } else {
+                    oldca5 = true;
                 }
-                oldc = c;
             }
             return out.toByteArray();
         }
@@ -940,6 +951,18 @@ public class InMotionAdapter {
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) lowByte, (byte) highByte, (byte) 0x00, (byte) 0x00};
 			
+            return msg;
+        }
+
+        public static CANMessage setRideMode(int rideMode) {
+            /// rideMode =0 -Comfort, =1 -Classic
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.RideMode.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) rideMode, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
+
             return msg;
         }
 		
@@ -1043,7 +1066,7 @@ public class InMotionAdapter {
 
             if (model.belongToInputType( "1")
                     || model.belongToInputType( "5")
-                    || model == V8 || model == V10 || model == V10F) {
+                    || model == V8 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
@@ -1104,8 +1127,11 @@ public class InMotionAdapter {
 				case 0x26:
 					fullText = String.format(Locale.ENGLISH, "High load at speed %.2f and current %.2f %s", a_speed, (alertValue/1000.0), hex);
 					break;
+                case 0x1d:
+                    fullText = String.format(Locale.ENGLISH, "Please repair: bad battery cell found. At voltage %.2f %s", (alertValue2/100.0), hex);
+                    break;
 				default: 
-					fullText = String.format(Locale.ENGLISH, "Unknown Alert %.2f %.2f hex %s", alertValue, alertValue2, hex);					
+					fullText = String.format(Locale.ENGLISH, "Unknown Alert %.2f %.2f, please contact palachzzz, hex %s", alertValue, alertValue2, hex);
 			}
 			return new Alert(alertId, alertValue, alertValue2, fullText);
 			
@@ -1115,6 +1141,7 @@ public class InMotionAdapter {
         Infos parseSlowInfoMessage() {
             if (ex_data == null) return null;
             Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
+
 			//model = V8;
             //int v = this.intFromBytes(ex_data, 24);
             int v0 = ex_data[27]&0xFF;
