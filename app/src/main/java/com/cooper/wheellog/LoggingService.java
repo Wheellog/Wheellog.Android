@@ -142,7 +142,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                FileUtil.writeLine(filename, "date,time,latitude,longitude,location_distance,speed,voltage,current,power,battery_level,distance,totaldistance,battery_temp,system_temp,tilt,roll,mode,alert");
+                FileUtil.writeLine(filename, "date,time,latitude,longitude,location_distance,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
                 mLocation = getLastBestLocation();
                 mLocationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -150,10 +150,10 @@ public class LoggingService extends Service
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             } else
-                FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,battery_temp,system_temp,tilt,roll,mode,alert");
+                FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
         }
         else
-            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,battery_temp,system_temp,tilt,roll,mode,alert");
+            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
