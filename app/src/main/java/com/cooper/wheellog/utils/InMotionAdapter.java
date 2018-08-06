@@ -1067,9 +1067,8 @@ public class InMotionAdapter {
 
             double distance;
 
-            if (model.belongToInputType( "1")
-                    || model.belongToInputType( "5")
-                    || model == V8 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
+            if (model.belongToInputType( "1") || model.belongToInputType( "5") ||
+                    model == V8 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
@@ -1267,7 +1266,7 @@ public class InMotionAdapter {
                         return true;
                     }
                     oldc = c;
-
+                    break;
                 default:
                     if (c == (byte) 0xAA && oldc == (byte) 0xAA) {
                         buffer = new ByteArrayOutputStream();
