@@ -13,7 +13,7 @@ public class WheelLog extends Application {
         //Timber.plant(new FileLoggingTree(getApplicationContext()));
         //Timber.plant(new Timber.DebugTree());
         if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
+            //Timber.plant(new Timber.DebugTree());
         }
     }
 

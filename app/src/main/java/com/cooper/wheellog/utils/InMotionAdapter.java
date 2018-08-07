@@ -18,8 +18,7 @@ public class InMotionAdapter {
     private boolean passwordSent = false;
 	private boolean needSlowData = true;
 	private boolean settingCommandReady = false;
-	private int updateIntervalScale = 1;
-	private int updateStep = 0;
+	private static int updateStep = 0;
 	private byte[] settingCommand;
 
     enum Mode {
@@ -155,41 +154,45 @@ public class InMotionAdapter {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (!passwordSent) {
-                    if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) passwordSent = true;
-                    System.out.println("Sent password message");
-                } else if ((model == UNKNOWN) | needSlowData ) {
-                    mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer());
-                    System.out.println("Sent infos message");
-                }
-                else if (settingCommandReady){
-					needSlowData = true;
-					settingCommandReady = false;
-					mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand);
-                    System.out.println("Sent command message");
+                if (updateStep == 0) {
+                    if (!passwordSent) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
+                            passwordSent = true;
+                            Timber.i("Sent password message");
+                        } else updateStep = 39;
+
+                    } else if ((model == UNKNOWN) | needSlowData ) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
+                            Timber.i("Sent infos message");
+                        } else updateStep = 39;
+
+                    } else if (settingCommandReady) {
+    					if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
+                            needSlowData = true;
+                            settingCommandReady = false;
+                            Timber.i("Sent command message");
+                        } else updateStep = 39; // after +1 and %10 = 0
+    				}
+    				else {
+                        if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
+                            Timber.i("Unable to send keep-alive message");
+                            updateStep = 39;
+    					} else {
+                            Timber.i("Sent keep-alive message");
+    					}
+                    }
+
 				}
-				else {
-					if (updateStep == updateIntervalScale) {
-						if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
-							System.out.println("Unable to send keep-alive message");
-						} else {
-							System.out.println("Sent keep-alive message");
-						}
-						updateStep = 1;
-					} else {
-						updateStep += 1;
-					}
-				}
+                updateStep += 1;
+                updateStep %= 40;
+                Timber.i("Step: %d", updateStep);
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 250);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
 	
-	public void setScale(int scale) {
-		updateIntervalScale = scale;
-	}
-	
+
 	public void resetConnection() {
 		passwordSent = false;
 	}
@@ -322,10 +325,10 @@ public class InMotionAdapter {
                 batt = 0.0;
             }
         } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
-            if (volts > 82.50) {
+            if (volts > 84.00) {
                 batt = 1.0;
-            } else if (volts > 68.0) {
-                batt = (volts - 68.0) / 14.5;
+            } else if (volts > 68.5) {
+                batt = (volts - 68.5) / 15.5;
             } else {
                 batt = 0.0;
             }
@@ -1069,7 +1072,7 @@ public class InMotionAdapter {
 
             if (model.belongToInputType( "1") || model.belongToInputType( "5") ||
                     model == V8 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
-                distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
+                distance = (double) (this.intFromBytes(ex_data, 44)) / 1000.0d; ///// V10F 48 byte - trip distance
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
 
@@ -1262,7 +1265,9 @@ public class InMotionAdapter {
                     buffer.write(c);
                     if (c == (byte) 0x55 && oldc == (byte) 0x55) {
                         state = UnpackerState.done;
+                        updateStep = 0;
                         oldc = c;
+                        Timber.i("Step reset");
                         return true;
                     }
                     oldc = c;
@@ -1302,4 +1307,13 @@ public class InMotionAdapter {
         }
         INSTANCE = new InMotionAdapter();
     }
+
+    public static void stopTimer() {
+        if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
+            INSTANCE.keepAliveTimer.cancel();
+            INSTANCE.keepAliveTimer = null;
+        }
+        INSTANCE = null;
+    }
+
 }

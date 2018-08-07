@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.IBinder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -803,17 +804,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         stopPebbleService();
         stopLoggingService();
-
+        WheelData.getInstance().full_reset();
         if (mBluetoothLeService != null) {
             unbindService(mServiceConnection);
             stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
-        WheelData.getInstance().reset();
+        super.onDestroy();
+        new CountDownTimer(500, 100) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // do something after 1s
+            }
+
+            @Override
+            public void onFinish() {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                // do something end times 5s
+            }
+
+        }.start();
+
     }
 
     @Override

@@ -555,7 +555,7 @@ public class WheelData {
 
     void setConnected(boolean connected) {		
         mConnectionState = connected;
-		
+
 		if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().resetConnection();
     }
 	
@@ -793,14 +793,16 @@ public class WheelData {
                     } else {
                         battery = 0;
                     }
-                } else {
 
-                    if (mVoltage < 5000) {
-                        battery = 0;
-                    } else if (mVoltage >= 6600) {
+                } else {
+                    if (mVoltage > 6680) {
                         battery = 100;
+                    } else if (mVoltage > 5440) {
+                        battery = (int)Math.round((mVoltage - 5320) / 13.6);
+                    } else if (mVoltage > 5120){
+                        battery = (mVoltage - 5120) / 36;
                     } else {
-                        battery = (mVoltage - 5000) / 16;
+                        battery = 0;
                     }
                 }
                 setBatteryPercent(battery);
@@ -878,13 +880,23 @@ public class WheelData {
             mCurrent = Math.abs((data[10] * 256) + data[11]);
 
             int battery;
-            if (mVoltage <= 5290) {
-                battery = 0;
-            } else if (mVoltage >= 6580) {
+
+            if (mVoltage > 6680) {
                 battery = 100;
+            } else if (mVoltage > 5440) {
+                battery = (mVoltage - 5380) / 13;
+            } else if (mVoltage > 5290){
+                battery = (int)Math.round((mVoltage - 5290) / 32.5);
             } else {
-                battery = (mVoltage - 5290) / 13;
+                battery = 0;
             }
+//            if (mVoltage <= 5290) {
+//                battery = 0;
+//            } else if (mVoltage >= 6580) {
+//                battery = 100;
+//            } else {
+//                battery = (mVoltage - 5290) / 13;
+//            }
             setBatteryPercent(battery);
 //			if (mGotway84V) {
 //				mVoltage = (int)Math.round(mVoltage / 0.8);
@@ -960,6 +972,7 @@ public class WheelData {
     }
 
     void full_reset() {
+        if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
         mBluetoothLeService = null;
         mWheelType = WHEEL_TYPE.Unknown;
         xAxis.clear();
