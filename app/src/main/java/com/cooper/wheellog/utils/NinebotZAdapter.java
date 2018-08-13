@@ -22,8 +22,8 @@ public class NinebotZAdapter {
 
 
 
-    NinebotUnpacker unpacker = new NinebotUnpacker();
-
+    NinebotZUnpacker unpacker = new NinebotZUnpacker();
+/*
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword) {
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -65,7 +65,7 @@ public class NinebotZAdapter {
         keepAliveTimer = new Timer();
         keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
-	
+*/
 
 	public void resetConnection() {
 		passwordSent = false;
@@ -79,50 +79,7 @@ public class NinebotZAdapter {
 //	}
 
 
-    static double batteryFromVoltage(double volts, Model model) {
 
-        double batt;
-
-        if (model.belongToInputType("1") || model == R0) {
-
-            if (volts >= 82.50) {
-                batt = 1.0;
-            } else if (volts > 68.0) {
-                batt = (volts - 68.0) / 14.50;
-            } else {
-                batt = 0.0;
-            }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
-            if (volts > 84.00) {
-                batt = 1.0;
-            } else if (volts > 68.5) {
-                batt = (volts - 68.5) / 15.5;
-            } else {
-                batt = 0.0;
-            }
-        } else if (model.belongToInputType("6")) {
-            batt = 0.0;
-        } else {
-            if (volts >= 82.00) {
-                batt = 1.0;
-            } else if (volts > 77.8) {
-                batt = ((volts - 77.8) / 4.2) * 0.2 + 0.8;
-            } else if (volts > 74.8) {
-                batt = ((volts - 74.8) / 3.0) * 0.2 + 0.6;
-            } else if (volts > 71.8) {
-                batt = ((volts - 71.8) / 3.0) * 0.2 + 0.4;
-            } else if (volts > 70.3) {
-                batt = ((volts - 70.3) / 1.5) * 0.2 + 0.2;
-            } else if (volts > 68.0) {
-                batt = ((volts - 68.0) / 2.3) * 0.2;
-            } else {
-                batt = 0.0;
-            }
-
-        }
-        return batt * 100.0;
-
-    }
 
 
 	
@@ -249,10 +206,10 @@ public class NinebotZAdapter {
         }
     }
 	
-
+/*
     public static class Infos extends Status {
         private final String serialNumber;
-        private final Model model;
+        //private final Model model;
         private final String version;
 		private final boolean light;
 		private final boolean led;
@@ -261,31 +218,31 @@ public class NinebotZAdapter {
 		private final int speakerVolume;
 		private final int tiltHorizon;
 		
-
-        Infos(String serialNumber, Model model, String version, boolean light, boolean led, boolean handleButtonDisabled, int maxSpeed, int speakerVolume, int tiltHorizon) {
-            super();
-            this.serialNumber = serialNumber;
-            this.model = model;
-            this.version = version;
-			this.light = light;
-			this.led = led;
-			this.handleButtonDisabled = handleButtonDisabled;
-			this.maxSpeed = maxSpeed;
-			this.speakerVolume = speakerVolume;
-			this.tiltHorizon = tiltHorizon;
-        }
+*/
+//        Infos(String serialNumber, Model model, String version, boolean light, boolean led, boolean handleButtonDisabled, int maxSpeed, int speakerVolume, int tiltHorizon) {
+//            super();
+//            this.serialNumber = serialNumber;
+//            this.model = model;
+//            this.version = version;
+//			this.light = light;
+//			this.led = led;
+//			this.handleButtonDisabled = handleButtonDisabled;
+//			this.maxSpeed = maxSpeed;
+//			this.speakerVolume = speakerVolume;
+//			this.tiltHorizon = tiltHorizon;
+  //      }
 
 
 //		public boolean getLedState() {
 //            return led;
 //        }
 		
-
+/*
         @Override
         public String toString() {
             return "Infos{" +
                     "serialNumber='" + serialNumber + '\'' +
-                    ", model=" + model +
+//                    ", model=" + model +
                     ", version='" + version + '\'' +
                     ", light='" + light + '\'' +
                     ", led='" + led + '\'' +
@@ -296,7 +253,7 @@ public class NinebotZAdapter {
                     '}';
         }
     }
-	
+*/
 
     /**
      * Created by cedric on 29/12/2016.
@@ -362,7 +319,7 @@ public class NinebotZAdapter {
         int source = 0;
         int destination = 0;
         int command = 0;
-        int parameter = 0
+        int parameter = 0;
         byte[] data;
         int crc = 0;
         int something = 0;
@@ -446,7 +403,7 @@ public class NinebotZAdapter {
         }
 
 
-
+/*
 
         public static CANMessage getSerialNumber() {
             CANMessage msg = new CANMessage();
@@ -631,6 +588,8 @@ public class NinebotZAdapter {
             return msg;
         }
 
+*/
+/*
         Status parseFastInfoMessage(Model model) {
             if (ex_data == null) return null;
             double angle = (double) (this.intFromBytes(ex_data, 0)) / 65536.0;
@@ -674,9 +633,9 @@ public class NinebotZAdapter {
 
             return new Status(angle, roll, speed, voltage, batt, current, power, distance, lock, temperature, temperature2, workModeInt);
         }
-
+*/
         // Return SerialNumber, Model, Version
-
+/*
         Infos parseSlowInfoMessage() {
             if (ex_data == null) return null;
             Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
@@ -712,7 +671,7 @@ public class NinebotZAdapter {
             }
             return new Infos(serialNumber, model, version, light, led, handlebutton, maxspeed, speakervolume, pedals);
         }
-
+*/
         public byte[] getData() {
             return data;
         }
@@ -748,7 +707,7 @@ public class NinebotZAdapter {
 				CANMessage result = CANMessage.verify(unpacker.getBuffer());
 				
                 if (result != null) { // data OK
-					
+					/*
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
 						Status vals = result.parseFastInfoMessage(model);
                         if (vals != null)
@@ -766,7 +725,8 @@ public class NinebotZAdapter {
                             model = infos.getModel();
                             outValues.add(infos);
                         }
-                    }					
+                    }
+                    */
                 } 
             }
         }
