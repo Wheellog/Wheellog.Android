@@ -37,6 +37,11 @@ public class Constants {
     public static final String INMOTION_WRITE_CHARACTER_UUID = "0000ffe9-0000-1000-8000-00805f9b34fb";
     public static final String INMOTION_WRITE_SERVICE_UUID = "0000ffe5-0000-1000-8000-00805f9b34fb";
 
+    public static final String NINEBOT_Z_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    public static final String NINEBOT_Z_WRITE_CHARACTER_UUID = "96e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    public static final String NINEBOT_Z_READ_CHARACTER_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
+
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
     public static final int PEBBLE_KEY_READY = 11;
     public static final int PEBBLE_KEY_LAUNCH_APP = 10012;
@@ -53,7 +58,7 @@ public class Constants {
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
     public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
-	public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
+    public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
 	public static final String INTENT_EXTRA_WHEEL_LIGHT = "wheel_light";
 	public static final String INTENT_EXTRA_WHEEL_LED = "wheel_led";
 	public static final String INTENT_EXTRA_WHEEL_BUTTON = "wheel_button";
@@ -61,7 +66,7 @@ public class Constants {
 	public static final String INTENT_EXTRA_WHEEL_SPEAKER_VOLUME = "wheel_speaker_volume";
 	public static final String INTENT_EXTRA_WHEEL_REFRESH = "wheel_refresh";
 	public static final String INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT = "pedals_adjustment";
-//	public static final String INTENT_EXTRA_WHEEL_TYPE = "wheel_type";
+	public static final String INTENT_EXTRA_WHEEL_TYPE = "wheel_type";
 
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
@@ -70,6 +75,7 @@ public class Constants {
         KINGSONG,
         GOTWAY,
         NINEBOT,
+        NINEBOT_Z,
         INMOTION;
     }
 

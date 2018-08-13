@@ -15,6 +15,7 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.InMotionAdapter;
+import com.cooper.wheellog.utils.NinebotZAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.text.SimpleDateFormat;
@@ -1073,6 +1074,7 @@ public class WheelData {
 
             if (detected_wheel) {
 				final Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED); // update preferences
+                intent.putExtra(Constants.INTENT_EXTRA_WHEEL_TYPE, wheel_Type);
 				mContext.sendBroadcast(intent);
 				//System.out.println("WheelRecognizedWD");
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {

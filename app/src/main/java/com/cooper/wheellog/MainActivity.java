@@ -193,7 +193,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     break;
 				case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
 					//System.out.println("WheelRecognizedMain");
-					((PreferencesFragment) getPreferencesFragment()).show_main_menu();
+                    String wheel_type = intent.getStringExtra(Constants.INTENT_EXTRA_WHEEL_TYPE);
+                    showSnackBar(getResources().getString(R.string.wheel_type_recognized, wheel_type), 5000);
+					//((PreferencesFragment) getPreferencesFragment()).show_main_menu();
 					break;
 				case Constants.ACTION_ALARM_TRIGGERED:					
 					int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
