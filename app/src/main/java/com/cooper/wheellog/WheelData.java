@@ -1076,6 +1076,7 @@ public class WheelData {
 				final Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED); // update preferences
                 intent.putExtra(Constants.INTENT_EXTRA_WHEEL_TYPE, wheel_Type);
 				mContext.sendBroadcast(intent);
+				Timber.i("Protocol Recognized as %s", wheel_Type);
 				//System.out.println("WheelRecognizedWD");
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.KINGSONG;
@@ -1109,6 +1110,16 @@ public class WheelData {
                         return true;
                     }
                     return false;
+                } else if (mContext.getResources().getString(R.string.ninebot_z).equals(wheel_Type)) {
+                    mWheelType = WHEEL_TYPE.NINEBOT_Z;
+                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
+                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                    NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"");
+                    return true;
                 }
             }
         }

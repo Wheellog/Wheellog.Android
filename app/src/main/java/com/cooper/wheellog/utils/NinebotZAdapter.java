@@ -23,32 +23,32 @@ public class NinebotZAdapter {
 
 
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
-/*
+
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword) {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (updateStep == 0) {
                     if (!passwordSent) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
+                        if (true) {//(mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getPassword(ninebotPassword).writeBuffer())) {
                             passwordSent = true;
                             Timber.i("Sent password message");
                         } else updateStep = 39;
 
-                    } else if ((model == UNKNOWN) | needSlowData ) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
+                    } else if (true) {//((model == UNKNOWN) | needSlowData ) {
+                        if (true) {//(mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
                         } else updateStep = 39;
 
                     } else if (settingCommandReady) {
     					if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
-                            needSlowData = true;
+                            //needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
                         } else updateStep = 39; // after +1 and %10 = 0
     				}
     				else {
-                        if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
+                        if (true) {//!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
                             updateStep = 39;
     					} else {
@@ -65,7 +65,7 @@ public class NinebotZAdapter {
         keepAliveTimer = new Timer();
         keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
-*/
+
 
 	public void resetConnection() {
 		passwordSent = false;
@@ -260,13 +260,14 @@ public class NinebotZAdapter {
      */
     public static class CANMessage {
 
-        enum CanFormat {
-            StandardFormat(0),
-            ExtendedFormat(1);
+        enum Addr {
+            Controller(0x14),
+            Controller2(0x16),
+            App(0x3e);
 
             private int value;
 
-            CanFormat(int value) {
+            Addr(int value) {
                 this.value = value;
             }
 
@@ -275,13 +276,14 @@ public class NinebotZAdapter {
             }
         }
 
-        enum CanFrame {
-            DataFrame(0),
-            RemoteFrame(1);
+        enum Comm {
+            Read(0x01),
+            Write(0x03),
+            Get(0x04);
 
             private int value;
 
-            CanFrame(int value) {
+            Comm(int value) {
                 this.value = value;
             }
 
@@ -290,23 +292,15 @@ public class NinebotZAdapter {
             }
         }
 
-        enum IDValue {
-            NoOp(0),
-            GetFastInfo(0x0F550113),
-            GetSlowInfo(0x0F550114),
-            //RemoteControl(0x0F550116),
-            RideMode(0x0F550115),
-            PinCode(0x0F550307),
-			Light(0x0F55010D),  
-			Led(0x0F550116),  
-			HandleButton(0x0F55012E),  
-			MaxSpeed(0x0F550115),  
-			SpeakerVolume(0x0F55060A),  
-			Alert(0x0F780101);
+        enum Param {
+            SerialNumber(0x10),
+            Firmware(0x1a),
+            Angles(0x61),
+            BatteryLevel(0x22);
 
             private int value;
 
-            IDValue(int value) {
+            Param(int value) {
                 this.value = value;
             }
 

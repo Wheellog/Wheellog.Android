@@ -40,7 +40,7 @@ public class Constants {
     public static final String NINEBOT_Z_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     public static final String NINEBOT_Z_WRITE_CHARACTER_UUID = "96e400002-b5a3-f393-e0a9-e50e24dcca9e";
     public static final String NINEBOT_Z_READ_CHARACTER_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-
+    public static final String NINEBOT_Z_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
 
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
     public static final int PEBBLE_KEY_READY = 11;
