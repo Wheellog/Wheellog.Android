@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 				case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
 					//System.out.println("WheelRecognizedMain");
                     String wheel_type = intent.getStringExtra(Constants.INTENT_EXTRA_WHEEL_TYPE);
-                    showSnackBar(getResources().getString(R.string.wheel_type_recognized, wheel_type), 5000);
+                    //showSnackBar(getResources().getString(R.string.wheel_type_recognized, wheel_type), 5000);
 					//((PreferencesFragment) getPreferencesFragment()).show_main_menu();
 					break;
 				case Constants.ACTION_ALARM_TRIGGERED:					
@@ -446,6 +446,52 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
 				tvTitleModel.setVisibility(View.VISIBLE);
+                tvModel.setVisibility(View.VISIBLE);
+                tvTitleVersion.setVisibility(View.VISIBLE);
+                tvVersion.setVisibility(View.VISIBLE);
+                tvTitleSerial.setVisibility(View.VISIBLE);
+                tvSerial.setVisibility(View.VISIBLE);
+                break;
+
+            case NINEBOT_Z:
+                tvWaitText.setVisibility(View.GONE);
+                tvTitleSpeed.setVisibility(View.VISIBLE);
+                tvSpeed.setVisibility(View.VISIBLE);
+                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
+                tvTopSpeed.setVisibility(View.VISIBLE);
+                tvTitleAverageSpeed.setVisibility(View.VISIBLE);
+                tvAverageSpeed.setVisibility(View.VISIBLE);
+                tvTitleAverageRidingSpeed.setVisibility(View.VISIBLE);
+                tvAverageRidingSpeed.setVisibility(View.VISIBLE);
+                tvTitleBattery.setVisibility(View.VISIBLE);
+                tvBattery.setVisibility(View.VISIBLE);
+                tvTitleDistance.setVisibility(View.VISIBLE);
+                tvDistance.setVisibility(View.VISIBLE);
+                tvTitleUserDistance.setVisibility(View.VISIBLE);
+                tvUserDistance.setVisibility(View.VISIBLE);
+                tvTitleRideTime.setVisibility(View.VISIBLE);
+                tvRideTime.setVisibility(View.VISIBLE);
+                tvTitleRidingTime.setVisibility(View.VISIBLE);
+                tvRidingTime.setVisibility(View.VISIBLE);
+                tvTitleVoltage.setVisibility(View.VISIBLE);
+                tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleCurrent.setVisibility(View.VISIBLE);
+                tvCurrent.setVisibility(View.VISIBLE);
+                tvTitlePower.setVisibility(View.VISIBLE);
+                tvPower.setVisibility(View.VISIBLE);
+                tvTitleTemperature.setVisibility(View.VISIBLE);
+                tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleTemperature2.setVisibility(View.GONE);
+                tvTemperature2.setVisibility(View.GONE);
+                tvTitleMode.setVisibility(View.VISIBLE);
+                tvMode.setVisibility(View.VISIBLE);
+                tvTitleAngle.setVisibility(View.VISIBLE);
+                tvAngle.setVisibility(View.VISIBLE);
+                tvTitleRoll.setVisibility(View.VISIBLE);
+                tvRoll.setVisibility(View.VISIBLE);
+                tvTitleTotalDistance.setVisibility(View.VISIBLE);
+                tvTotalDistance.setVisibility(View.VISIBLE);
+                tvTitleModel.setVisibility(View.VISIBLE);
                 tvModel.setVisibility(View.VISIBLE);
                 tvTitleVersion.setVisibility(View.VISIBLE);
                 tvVersion.setVisibility(View.VISIBLE);

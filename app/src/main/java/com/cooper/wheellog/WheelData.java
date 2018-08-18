@@ -921,7 +921,33 @@ public class WheelData {
     }
 
     private boolean decodeNinebot(byte[] data) {
-        return false;
+        ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
+        if (statuses.size() < 1) return false;
+        for (NinebotZAdapter.Status status: statuses) {
+            Timber.i(status.toString());
+            if (status instanceof NinebotZAdapter.serialNumberStatus) {
+                mSerialNumber = ((NinebotZAdapter.serialNumberStatus) status).getSerialNumber();
+                mModel = "Ninebot Z";
+            } else if (status instanceof NinebotZAdapter.versionStatus){
+                mVersion = ((NinebotZAdapter.versionStatus) status).getVersion();
+            } else {
+                mSpeed = (int) (status.getSpeed());
+                mVoltage = (int) (status.getVoltage());
+                mBattery = (int) (status.getBatt());
+                mCurrent = (int) (status.getCurrent());
+                mTotalDistance = (long) (status.getDistance());
+                mTemperature = (int) (status.getTemperature()*10);
+
+
+                setDistance((long) status.getDistance());
+                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+                setCurrentTime(currentTime);
+                setTopSpeed(mSpeed);
+            }
+
+
+        }
+        return true;
     }
 
     private boolean decodeInmotion(byte[] data) {

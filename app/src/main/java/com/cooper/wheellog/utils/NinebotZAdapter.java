@@ -15,29 +15,43 @@ import timber.log.Timber;
 public class NinebotZAdapter {
     private static NinebotZAdapter INSTANCE;
     private Timer keepAliveTimer;
-    private boolean passwordSent = false;
 	private boolean settingCommandReady = false;
 	private static int updateStep = 0;
 	private byte[] settingCommand;
-
+	private static byte[] gamma = new byte[16];
+    private static int stateCon = 0;
 
 
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
 
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword) {
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (updateStep == 0) {
-                    if (!passwordSent) {
-                        if (true) {//(mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getPassword(ninebotPassword).writeBuffer())) {
-                            passwordSent = true;
-                            Timber.i("Sent password message");
+                    if (stateCon == 0) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.startCommunication().writeBuffer())) {
+                            stateCon +=1;
+                            Timber.i("Sent start message");
                         } else updateStep = 39;
 
-                    } else if (true) {//((model == UNKNOWN) | needSlowData ) {
-                        if (true) {//(mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getSlowData().writeBuffer())) {
-                            Timber.i("Sent infos message");
+                    } else if (stateCon == 1) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getKey().writeBuffer())) {
+                            stateCon +=1;
+                            Timber.i("Sent getkey message");
+                        } else updateStep = 39;
+
+                    } else if (stateCon == 2) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getSerialNumber().writeBuffer())) {
+                            stateCon +=1;
+                            Timber.i("Sent serial number message");
+                        } else updateStep = 39;
+
+                    } else if (stateCon == 3) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getVersion().writeBuffer())) {
+                            stateCon +=1;
+                            Timber.i("Sent serial version message");
                         } else updateStep = 39;
 
                     } else if (settingCommandReady) {
@@ -48,7 +62,7 @@ public class NinebotZAdapter {
                         } else updateStep = 39; // after +1 and %10 = 0
     				}
     				else {
-                        if (true) {//!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
+                        if (!mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getLiveData().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
                             updateStep = 39;
     					} else {
@@ -68,15 +82,11 @@ public class NinebotZAdapter {
 
 
 	public void resetConnection() {
-		passwordSent = false;
+        stateCon = 0;
 	}
 	
-//	public void setLightState(final boolean lightEnable) {
-//		settingCommandReady = true;
-		//needSlowData = true;
-		//mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer());
-//		settingCommand = InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer();
-//	}
+
+
 
 
 
@@ -84,177 +94,137 @@ public class NinebotZAdapter {
 
 	
     public static class Status {
-        private final double angle;
-		private final double roll;
-        private final double speed;
-        private final double voltage;
-        private final double batt;
-        private final double current;
-        private final double power;
-        private final double distance;
-        private final double lock;
-		private final double temperature;
-		private final double temperature2;
-		private final int workModeInt;
+
+        private final int speed;
+        private final int voltage;
+        private final int batt;
+        private final int current;
+        private final int power;
+        private final int distance;
+		private final int temperature;
+
 
         Status() {
-            angle = 0;
-			roll = 0;
+
             speed = 0;
             voltage = 0;
             batt = 0;
             current = 0;
             power = 0;
             distance = 0;
-            lock = 0;
 			temperature = 0;
-			temperature2 = 0;
-			workModeInt=0;
+
         }
 
-        Status(double angle, double roll, double speed, double voltage, double batt, double current, double power, double distance, double lock, double temperature, double temperature2, int workModeInt) {
-            this.angle = angle;
-			this.roll = roll;
+        Status(int speed, int voltage, int batt, int current, int power, int distance,  int temperature) {
+
             this.speed = speed;
             this.voltage = voltage;
             this.batt = batt;
             this.current = current;
             this.power = power;
             this.distance = distance;
-            this.lock = lock;
 			this.temperature = temperature;
-			this.temperature2 = temperature2;
-			this.workModeInt = workModeInt;
-        }	
 
-        public double getAngle() {
-            return angle;
-        }
-		
-        public double getRoll() {
-            return roll;
         }
 
-        public double getSpeed() {
+        public int getSpeed() {
             return speed;
         }
 
-        public double getVoltage() {
+        public int getVoltage() {
             return voltage;
         }
 
-        public double getBatt() {
+        public int getBatt() {
             return batt;
         }
 
-        public double getCurrent() {
+        public int getCurrent() {
             return current;
         }
 
-        public double getPower() {
+        public int getPower() {
             return power;
         }
 
-        public double getDistance() {
+        public int getDistance() {
             return distance;
         }
 
-        public double getLock() {
-            return lock;
-        }
-		public double getTemperature() {
+		public int getTemperature() {
             return temperature;
         }
-		public double getTemperature2() {
-            return temperature2;
-        }
-		public String getWorkModeString() {
-            switch(workModeInt) {
-				case 0: return "Idle";
-				case 1: return "Drive";
-				case 2: return "Zero";
-				case 3: return "LargeAngle";
-				case 4: return "Checkc";
-				case 5: return "Lock";
-				case 6: return "Error";
-				case 7: return "Carry";
-				case 8: return "RemoteControl";
-				case 9: return "Shutdown";
-				case 10: return "pomStop";
-				case 11: return "Unknown";
-				case 12: return "Unlock";
-				default: return "Unknown";
-			}
-        }
+
+
 
         @Override
         public String toString() {
             return "Status{" +
-                    "angle=" + angle +
-					", roll=" + roll +
-                    ", speed=" + speed +
+                    "speed=" + speed +
                     ", voltage=" + voltage +
                     ", batt=" + batt +
                     ", current=" + current +
                     ", power=" + power +
                     ", distance=" + distance +
-                    ", lock=" + lock +
 					", temperature=" + temperature +
-					", temperature2=" + temperature2 +
-					", workmode=" + workModeInt +
+
                     '}';
         }
     }
 	
-/*
-    public static class Infos extends Status {
+
+    public static class serialNumberStatus extends Status {
         private final String serialNumber;
-        //private final Model model;
-        private final String version;
-		private final boolean light;
-		private final boolean led;
-		private final boolean handleButtonDisabled;
-		private final int maxSpeed;
-		private final int speakerVolume;
-		private final int tiltHorizon;
-		
-*/
-//        Infos(String serialNumber, Model model, String version, boolean light, boolean led, boolean handleButtonDisabled, int maxSpeed, int speakerVolume, int tiltHorizon) {
-//            super();
-//            this.serialNumber = serialNumber;
-//            this.model = model;
-//            this.version = version;
-//			this.light = light;
-//			this.led = led;
-//			this.handleButtonDisabled = handleButtonDisabled;
-//			this.maxSpeed = maxSpeed;
-//			this.speakerVolume = speakerVolume;
-//			this.tiltHorizon = tiltHorizon;
-  //      }
+
+        serialNumberStatus(String serialNumber) {
+            super();
+            this.serialNumber = serialNumber;
+      }
+
+      public String getSerialNumber() {
+            return serialNumber;
+      }
 
 
-//		public boolean getLedState() {
-//            return led;
-//        }
-		
-/*
         @Override
         public String toString() {
             return "Infos{" +
                     "serialNumber='" + serialNumber + '\'' +
-//                    ", model=" + model +
-                    ", version='" + version + '\'' +
-                    ", light='" + light + '\'' +
-                    ", led='" + led + '\'' +
-                    ", handleButton='" + handleButtonDisabled + '\'' +
-                    ", maxspeed='" + maxSpeed + '\'' +
-                    ", speakervolume='" + speakerVolume + '\'' +
-					", pedals='" + tiltHorizon + '\'' +
+
                     '}';
         }
     }
-*/
 
+    public static class versionStatus extends Status {
+        private final String version;
+
+        versionStatus(String version) {
+            super();
+            this.version = version;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        @Override
+        public String toString() {
+            return "Infos{" +
+                    "version='" + version + '\'' +
+                    '}';
+        }
+    }
+
+    private static String toHexString(byte[] buffer){
+        String str = "[";
+
+        for (int c : buffer) {
+            str += String.format("%02X", (c & 0xFF));
+        }
+        str += "]";
+        return str;
+    }
     /**
      * Created by cedric on 29/12/2016.
      */
@@ -262,7 +232,7 @@ public class NinebotZAdapter {
 
         enum Addr {
             Controller(0x14),
-            Controller2(0x16),
+            KeyGenerator(0x16),
             App(0x3e);
 
             private int value;
@@ -279,7 +249,8 @@ public class NinebotZAdapter {
         enum Comm {
             Read(0x01),
             Write(0x03),
-            Get(0x04);
+            Get(0x04),
+            GetKey(0x5b);
 
             private int value;
 
@@ -293,10 +264,14 @@ public class NinebotZAdapter {
         }
 
         enum Param {
+            GetKey(0x00),
+            Start(0x68),
             SerialNumber(0x10),
             Firmware(0x1a),
             Angles(0x61),
-            BatteryLevel(0x22);
+            BatteryLevel(0x22),
+            LiveData(0xb0);
+
 
             private int value;
 
@@ -316,18 +291,18 @@ public class NinebotZAdapter {
         int parameter = 0;
         byte[] data;
         int crc = 0;
-        int something = 0;
+
 
         CANMessage(byte[] bArr) {
-            if (bArr.length < 6) return;
+            if (bArr.length < 7) return;
             len = bArr[0];
             source = bArr[1];
             destination = bArr[2];
             command = bArr[3];
             parameter = bArr[4];
             data = Arrays.copyOfRange(bArr, 5, bArr.length-2);
-            crc = bArr[bArr.length-2];
-            something = bArr[bArr.length-1];
+            crc = bArr[bArr.length-1] << 8 + bArr[bArr.length-2];
+
         }
 
         private CANMessage() {
@@ -337,7 +312,6 @@ public class NinebotZAdapter {
         public byte[] writeBuffer() {
 
             byte[] canBuffer = getBytes();
-            //byte check = computeCheck(canBuffer);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             out.write(0x5A);
@@ -367,305 +341,180 @@ public class NinebotZAdapter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            buff.write(crc);
-            buff.write(something);
-
-            return buff.toByteArray();
+            crc = computeCheck(buff.toByteArray());
+            buff.write(crc&0xff);
+            buff.write((crc>>8)&0xff);
+            byte[] cryptedBuffer = crypto(buff.toByteArray());
+            return cryptedBuffer;
         }
 
         public void clearData() {
             data = new byte[data.length];
         }
 
-        private static byte computeCheck(byte[] buffer) {
+        private static int computeCheck(byte[] buffer) {
 
             int check = 0;
             for (byte c : buffer) {
-                check = (check + c) & 0xFF;
+                check = (check + c);
 				//check = (check + (int) c) % 256;
             }
-            return (byte) check;
-        }
+            check ^= 0xFFFF;
+            check &= 0xFFFF;
 
+            return check;
+        }
+/////////////// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< fix ME
         static CANMessage verify(byte[] buffer) {
 
 
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length);
+            dataBuffer = crypto(dataBuffer);
 
             return new CANMessage(dataBuffer);
 
         }
 
+        static byte[] crypto(byte[] buffer) {
 
-/*
+            byte[] dataBuffer = Arrays.copyOfRange(buffer, 0, buffer.length);
+            //String crypto_text = "";
+            //for (int j = 0; j < dataBuffer.length; j++) {
+            //    crypto_text += String.format("%02X", dataBuffer[j]);
+            //}
+            //Timber.i("Initial packet: %s", crypto_text);
+            Timber.i("Initial packet: %s", toHexString(dataBuffer));
+            for (int j = 1; j < dataBuffer.length; j++) {
+                dataBuffer[j] ^= gamma[(j-1)%16];
+            }
+            //crypto_text = "";
+            //for (int j = 0; j < dataBuffer.length; j++) {
+            //    crypto_text += String.format("%02X", dataBuffer[j]);
+            //}
+            //Timber.i("Decrypted packet: %s", crypto_text);
+            Timber.i("Initial packet: %s", toHexString(dataBuffer));
+
+
+            return dataBuffer;
+
+        }
+
+        private int intFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 4) {
+                return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
+            }
+            return 0;
+        }
+
+        public int shortFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 2) {
+                return (((bytes[starting + 1] & 255) << 8) | (bytes[starting] & 255));
+            }
+            return 0;
+        }
+
+        public static CANMessage startCommunication() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.Start.getValue();
+            msg.data = new byte[]{0x02};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getKey() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.KeyGenerator.getValue();
+            msg.command = Comm.GetKey.getValue();
+            msg.parameter = Param.GetKey.getValue();
+            msg.data = new byte[]{};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
 
         public static CANMessage getSerialNumber() {
             CANMessage msg = new CANMessage();
-            msg.source = 0x3e;
-            msg.destination = 0x14;
-            msg.len = 8;
-            msg.id = IDValue.GetFastInfo.getValue();
-            msg.ch = 5;
-            msg.data = new byte[]{-1, -1, -1, -1, -1, -1, -1, -1};
-            return msg;
-        }
-
-        public static CANMessage getFastData() {
-            CANMessage msg = new CANMessage();
-
-            msg.len = 8;
-            msg.id = IDValue.GetFastInfo.getValue();
-            msg.ch = 5;
-            msg.data = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-
-            return msg;
-        }
-
-        public static CANMessage getSlowData() {
-            CANMessage msg = new CANMessage();
-
-            msg.len = 8;
-            msg.id = IDValue.GetSlowInfo.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.RemoteFrame.getValue();
-            msg.data = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-
-            return msg;
-        }
-		
-        public static CANMessage setLight(boolean on) {
-            CANMessage msg = new CANMessage();
-			byte enable = 0;
-			if (on) {
-				enable = 1;
-			}
-		    msg.len = 8;
-            msg.id = IDValue.Light.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{enable, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-			
-            return msg;
-        }
-		
-		public static CANMessage setLed(boolean on) {
-            CANMessage msg = new CANMessage();
-			byte enable = 0x10;
-			if (on) {
-				enable = 0x0F;
-			}
-		    msg.len = 8;
-            msg.id = IDValue.Led.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{(byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00, enable, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-			
-            return msg;
-        }
-
-		public static CANMessage setHandleButton(boolean on) {
-            CANMessage msg = new CANMessage();
-			byte enable = 1;
-			if (on) {
-				enable = 0;
-			}
-		    msg.len = 8;
-            msg.id = IDValue.HandleButton.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{enable, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-			
-            return msg;
-        }
-		
-		public static CANMessage setMaxSpeed(int maxSpeed) {
-            CANMessage msg = new CANMessage();
-			int lowByte = (maxSpeed * 1000)&0xFF;
-			int highByte = ((maxSpeed * 1000)/0x100)&0xFF;
-		    msg.len = 8;
-            msg.id = IDValue.MaxSpeed.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) lowByte, (byte) highByte, (byte) 0x00, (byte) 0x00};
-			
-            return msg;
-        }
-
-        public static CANMessage setRideMode(int rideMode) {
-            /// rideMode =0 -Comfort, =1 -Classic
-            CANMessage msg = new CANMessage();
-            msg.len = 8;
-            msg.id = IDValue.RideMode.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) rideMode, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
-
-            return msg;
-        }
-		
-		public static CANMessage setSpeakerVolume(int speakerVolume) {
-            CANMessage msg = new CANMessage();
-			int lowByte = (speakerVolume * 100)&0xFF;
-			int highByte = ((speakerVolume * 100)/0x100)&0xFF;
-		    msg.len = 8;
-            msg.id = IDValue.SpeakerVolume.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{(byte) lowByte, (byte) highByte, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-			
-            return msg;
-        }
-		
-		public static CANMessage setTiltHorizon(int tiltHorizon) {
-            CANMessage msg = new CANMessage();
-			int tilt = (tiltHorizon * 65536)/10;
-			int llowByte = (tilt)&0xFF;
-			int lhighByte = (tilt >> 8)&0xFF;
-			int hlowByte = (tilt >> 16)&0xFF;
-			int hhighByte = (tilt >> 24)&0xFF;
-		    msg.len = 8;
-            msg.id = IDValue.MaxSpeed.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) llowByte, (byte) lhighByte, (byte) hlowByte, (byte) hhighByte};
-
-            return msg;
-        }
-		
-		
-        public static CANMessage getBatteryLevelsdata() {
-            CANMessage msg = new CANMessage();
-
-            msg.len = 8;
-            msg.id = IDValue.GetSlowInfo.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.RemoteFrame.getValue();
-            msg.data = new byte[]{0, 0, 0, 15, 0, 0, 0, 0};
-
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.SerialNumber.getValue();
+            msg.data = new byte[]{0x0e};
+            msg.len = msg.data.length;
+            msg.crc = 0;
             return msg;
         }
 
         public static CANMessage getVersion() {
             CANMessage msg = new CANMessage();
-
-            msg.len = 8;
-            msg.id = IDValue.GetSlowInfo.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.RemoteFrame.getValue();
-            msg.data = new byte[]{32, 0, 0, 0, 0, 0, 0, 0};
-
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.Firmware.getValue();
+            msg.data = new byte[]{0x02};
+            msg.len = msg.data.length;
+            msg.crc = 0;
             return msg;
         }
 
-        public static CANMessage getPassword(String password) {
+        public static CANMessage getLiveData() {
             CANMessage msg = new CANMessage();
-
-            msg.len = 8;
-            msg.id = IDValue.PinCode.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-            byte[] pass = password.getBytes();
-            msg.data = new byte[]{pass[0], pass[1], pass[2], pass[3], pass[4], pass[5], 0, 0};
-
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.LiveData.getValue();
+            msg.data = new byte[]{0x20};
+            msg.len = msg.data.length;
+            msg.crc = 0;
             return msg;
         }
 
-        public static CANMessage setMode(int mode) {
-            CANMessage msg = new CANMessage();
 
-            msg.len = 8;
-            msg.id = IDValue.NoOp.getValue();
-            msg.ch = 5;
-            msg.type = CanFrame.DataFrame.getValue();
-            msg.data = new byte[]{(byte) 0xB2, 0, 0, 0, (byte) mode, 0, 0, 0};
 
-            return msg;
+
+        private byte[] parseKey() {
+            byte [] gammaTemp = Arrays.copyOfRange(data, 0, data.length);
+            String gamma_text = "";
+            for (int j = 0; j < data.length; j++) {
+                gamma_text += String.format("%02X", data[j]);
+            }
+            Timber.i("New key: %s", gamma_text);
+            return gammaTemp;
         }
 
-*/
-/*
-        Status parseFastInfoMessage(Model model) {
-            if (ex_data == null) return null;
-            double angle = (double) (this.intFromBytes(ex_data, 0)) / 65536.0;
-			double roll = (double) (this.intFromBytes(ex_data, 72)) / 90.0;
-            double speed = ((double) (this.signedIntFromBytes(ex_data, 12)) + (double) (this.signedIntFromBytes(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
-            //if (model == R1S || model == R1Sample || model == R0 || model == V8) {
-            speed = Math.abs(speed);
-            //}
-            double voltage = (double) (this.intFromBytes(ex_data, 24)) / 100.0;
-            double current = (double) (this.signedIntFromBytes(ex_data, 20)) / 100.0;
-			double temperature = ex_data[32] & 0xff;
-			double temperature2 = ex_data[34] & 0xff;
-            double batt = batteryFromVoltage(voltage, model);
-            double power = voltage * current;
-
-            double distance;
-
-            if (model.belongToInputType( "1") || model.belongToInputType( "5") ||
-                    model == V8 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
-                distance = (double) (this.intFromBytes(ex_data, 44)) / 1000.0d; ///// V10F 48 byte - trip distance
-            } else if (model == R0) {
-                distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
-
-            } else if (model == L6) {
-                distance = (double) (this.longFromBytes(ex_data, 44)) / 10.0;
-
-            } else {
-                distance = (double) (this.longFromBytes(ex_data, 44)) / 5.711016379455429E7d;
-            }
-			int workModeInt = this.intFromBytes(ex_data, 60)&0xF;
-            WorkMode workMode = intToWorkMode(workModeInt);
-            double lock = 0.0;
-            switch (workMode) {
-
-                case lock:
-                    lock = 1.0;
-
-                default:
-                    break;
-            }
-
-            return new Status(angle, roll, speed, voltage, batt, current, power, distance, lock, temperature, temperature2, workModeInt);
-        }
-*/
-        // Return SerialNumber, Model, Version
-/*
-        Infos parseSlowInfoMessage() {
-            if (ex_data == null) return null;
-            Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
-
-			//model = V8;
-            //int v = this.intFromBytes(ex_data, 24);
-            int v0 = ex_data[27]&0xFF;
-            int v1 = ex_data[26]&0xFF;
-            int v2 = ((ex_data[25]&0xFF)*256) | (ex_data[24]&0xFF);
-            String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
+        serialNumberStatus parseSerialNumber() {
             String serialNumber = "";
-			//System.out.println(CANMessage.toHexString(ex_data));
-			int maxspeed = 0;
-			int speakervolume = 0;
-			boolean light = false;
-			boolean led = false;
-			boolean handlebutton = false;
-			int pedals = (int)(Math.round((this.intFromBytes(ex_data, 56)) / 6553.6));
-			maxspeed = (((ex_data[61]&0xFF)*256) | (ex_data[60]&0xFF))/1000;
-			light = (ex_data[80] == 1) ? true : false;
-			if (ex_data.length > 126) {
-				speakervolume = (((ex_data[126]&0xFF)*256) | (ex_data[125]&0xFF))/100;				
-			}
-			if (ex_data.length > 130) {
-				led = (ex_data[130] == 1) ? true : false;				
-			}
-			if (ex_data.length > 129) {
-				handlebutton = (ex_data[129] == 1) ? false : true;	
-			}				
-			
-            for (int j = 0; j < 8; j++) {
-                serialNumber += String.format("%02X", ex_data[7 - j]);
+            for (int j = 0; j < data.length; j++) {
+                serialNumber += String.format("%02X", data[j]);
             }
-            return new Infos(serialNumber, model, version, light, led, handlebutton, maxspeed, speakervolume, pedals);
+            return new serialNumberStatus(serialNumber);
         }
-*/
+
+        versionStatus parseVersionNumber() {
+            String versionNumber = "";
+            for (int j = 0; j < data.length; j++) {
+                versionNumber += String.format("%02X", data[j]);
+            }
+            return new versionStatus(versionNumber);
+        }
+
+        Status parseLiveData() {
+            int batt = this.shortFromBytes(data, 8);
+            int speed = this.shortFromBytes(data, 10);
+            int distance = this.intFromBytes(data,14);
+            int temperature = this.shortFromBytes(data,22);
+            int voltage = this.shortFromBytes(data, 24);
+            int current = this.shortFromBytes(data, 26);
+            int power = voltage*current;
+
+
+           return new Status(speed, voltage, batt, current, power, distance, temperature);
+        }
+
         public byte[] getData() {
             return data;
         }
@@ -701,26 +550,39 @@ public class NinebotZAdapter {
 				CANMessage result = CANMessage.verify(unpacker.getBuffer());
 				
                 if (result != null) { // data OK
-					/*
-                    if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
-						Status vals = result.parseFastInfoMessage(model);
-                        if (vals != null)
-                            outValues.add(vals);
+
+                    if (result.command == CANMessage.Param.Start.getValue()) {
+						Timber.i("Get start answer");
 						
-					} else if (result.id == CANMessage.IDValue.Alert.getValue()){
-						Alert alert = result.parseAlertInfoMessage();
-						if (alert != null)
-							outValues.add(alert);
+					} else if (result.command == CANMessage.Param.GetKey.getValue()){
+                        Timber.i("Get encryption key");
+                        gamma = result.parseKey();
+						//Alert alert = result.parseAlertInfoMessage();
+						//if (alert != null)
+						//	outValues.add(alert);
 						
-					} else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()){
-                        Infos infos = result.parseSlowInfoMessage();
-                        if (infos != null) {
-							needSlowData = false;
-                            model = infos.getModel();
+					} else if (result.command == CANMessage.Param.SerialNumber.getValue()){
+                        Timber.i("Get serial number");
+                        serialNumberStatus infos = result.parseSerialNumber();
+                        //Alert alert = result.parseAlertInfoMessage();
+                        if (infos != null)
+                        	outValues.add(infos);
+
+                    } else if (result.command == CANMessage.Param.Firmware.getValue()){
+                        Timber.i("Get version number");
+                        versionStatus infos = result.parseVersionNumber();
+                        //Alert alert = result.parseAlertInfoMessage();
+                        if (infos != null)
                             outValues.add(infos);
+
+                    } else if (result.command == CANMessage.Param.LiveData.getValue()){
+                        Timber.i("Get life data");
+                        Status status = result.parseLiveData();
+                        if (status != null) {
+                            outValues.add(status);
                         }
                     }
-                    */
+
                 } 
             }
         }
@@ -756,6 +618,7 @@ public class NinebotZAdapter {
                     Timber.i("buffer size %d", buffer.size());
                     if (buffer.size() == len+9) {
                         state = UnpackerState.done;
+                        updateStep = 0;
                         Timber.i("Step reset");
                         return true;
                     }
@@ -767,6 +630,7 @@ public class NinebotZAdapter {
                     len = c & 0xff;
                     Timber.i("Len %d", len);
                     state = UnpackerState.collecting;
+
                     break;
 
                 default:
@@ -801,6 +665,7 @@ public class NinebotZAdapter {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
+
         }
         INSTANCE = new NinebotZAdapter();
     }
