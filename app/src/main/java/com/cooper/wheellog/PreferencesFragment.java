@@ -273,7 +273,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Wheel;
-                            getPreferenceScreen().removeAll();	
+                            getPreferenceScreen().removeAll();
+                            if (mWheelType == WHEEL_TYPE.NINEBOT_Z) addPreferencesFromResource(R.xml.preferences_ninebot_z);
 							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 							if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
 							if (mWheelType == WHEEL_TYPE.GOTWAY) {
@@ -468,8 +469,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 			sb_preference.setCurrentValue(stateInt);
 			/// Workaround, seekbar doesn't want to update view
             getPreferenceScreen().removeAll();
-			
-			
+
+            if (mWheelType == WHEEL_TYPE.NINEBOT_Z) addPreferencesFromResource(R.xml.preferences_ninebot_z);
 			if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 			if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
 			if (mWheelType == WHEEL_TYPE.GOTWAY) addPreferencesFromResource(R.xml.preferences_gotway);
@@ -535,7 +536,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 		//System.out.println("ShowMainMenuRecognized");
 		Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 		mWheelType = WheelData.getInstance().getWheelType();
-		if ((mWheelType == WHEEL_TYPE.INMOTION) | (mWheelType == WHEEL_TYPE.KINGSONG) | (mWheelType == WHEEL_TYPE.GOTWAY) ) {
+		if ((mWheelType == WHEEL_TYPE.INMOTION) | (mWheelType == WHEEL_TYPE.KINGSONG) | (mWheelType == WHEEL_TYPE.GOTWAY)  | (mWheelType == WHEEL_TYPE.NINEBOT_Z)) {
 			wheel_button.setEnabled(true);
 		}
 		

@@ -117,6 +117,7 @@
 	<string name="alarm_mode" translatable="false">alarm_mode</string>
 	<string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
+    <string name="no_settings" translatable="false">no_settings</string>
 	
 
     // LOG PREFERENCES

@@ -25,32 +25,32 @@ public class NinebotZAdapter {
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
 
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword) {
-
+        Timber.i("Ninebot timer starting");
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (updateStep == 0) {
                     if (stateCon == 0) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.startCommunication().writeBuffer())) {
-                            stateCon +=1;
+                            //stateCon +=1;
                             Timber.i("Sent start message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 1) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getKey().writeBuffer())) {
-                            stateCon +=1;
+                            //stateCon +=1;
                             Timber.i("Sent getkey message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 2) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getSerialNumber().writeBuffer())) {
-                            stateCon +=1;
+                            //stateCon +=1;
                             Timber.i("Sent serial number message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 3) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getVersion().writeBuffer())) {
-                            stateCon +=1;
+                            //stateCon +=1;
                             Timber.i("Sent serial version message");
                         } else updateStep = 39;
 
@@ -76,6 +76,7 @@ public class NinebotZAdapter {
                 Timber.i("Step: %d", updateStep);
             }
         };
+        Timber.i("Ninebot timer started");
         keepAliveTimer = new Timer();
         keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
@@ -216,6 +217,27 @@ public class NinebotZAdapter {
         }
     }
 
+
+    public static class activationStatus extends Status {
+        private final String activationDate;
+
+        activationStatus(String activationDate) {
+            super();
+            this.activationDate = activationDate;
+        }
+
+        public String getVersion() {
+            return activationDate;
+        }
+
+        @Override
+        public String toString() {
+            return "Infos{" +
+                    "activation='" + activationDate + '\'' +
+                    '}';
+        }
+    }
+
     private static String toHexString(byte[] buffer){
         String str = "[";
 
@@ -270,6 +292,7 @@ public class NinebotZAdapter {
             Firmware(0x1a),
             Angles(0x61),
             BatteryLevel(0x22),
+            ActivationDate(0x69),
             LiveData(0xb0);
 
 
@@ -392,7 +415,7 @@ public class NinebotZAdapter {
             //    crypto_text += String.format("%02X", dataBuffer[j]);
             //}
             //Timber.i("Decrypted packet: %s", crypto_text);
-            Timber.i("Initial packet: %s", toHexString(dataBuffer));
+            Timber.i("En/Decrypted packet: %s", toHexString(dataBuffer));
 
 
             return dataBuffer;
@@ -461,6 +484,18 @@ public class NinebotZAdapter {
             return msg;
         }
 
+        public static CANMessage getActivationDate() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.ActivationDate.getValue();
+            msg.data = new byte[]{0x02};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
         public static CANMessage getLiveData() {
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
@@ -487,10 +522,11 @@ public class NinebotZAdapter {
         }
 
         serialNumberStatus parseSerialNumber() {
-            String serialNumber = "";
+            String serialNumber = new String (data);//"";
+            /*
             for (int j = 0; j < data.length; j++) {
                 serialNumber += String.format("%02X", data[j]);
-            }
+            }*/
             return new serialNumberStatus(serialNumber);
         }
 
@@ -500,6 +536,16 @@ public class NinebotZAdapter {
                 versionNumber += String.format("%02X", data[j]);
             }
             return new versionStatus(versionNumber);
+        }
+
+        activationStatus parseActivationDate() {
+
+            int activationDate = this.shortFromBytes(data, 0);
+            int year = activationDate>>9;
+            int mounth = (activationDate>>5) & 0x0f;
+            int day = activationDate & 0x1f;
+            String activationDateStr = String.format("%02d.%02d.20%02d", day, mounth,year);
+            return new activationStatus(activationDateStr);
         }
 
         Status parseLiveData() {
@@ -553,10 +599,12 @@ public class NinebotZAdapter {
 
                     if (result.command == CANMessage.Param.Start.getValue()) {
 						Timber.i("Get start answer");
+						stateCon = 1;
 						
 					} else if (result.command == CANMessage.Param.GetKey.getValue()){
                         Timber.i("Get encryption key");
                         gamma = result.parseKey();
+                        stateCon = 2;
 						//Alert alert = result.parseAlertInfoMessage();
 						//if (alert != null)
 						//	outValues.add(alert);
@@ -564,6 +612,7 @@ public class NinebotZAdapter {
 					} else if (result.command == CANMessage.Param.SerialNumber.getValue()){
                         Timber.i("Get serial number");
                         serialNumberStatus infos = result.parseSerialNumber();
+                        stateCon = 3;
                         //Alert alert = result.parseAlertInfoMessage();
                         if (infos != null)
                         	outValues.add(infos);
@@ -571,6 +620,7 @@ public class NinebotZAdapter {
                     } else if (result.command == CANMessage.Param.Firmware.getValue()){
                         Timber.i("Get version number");
                         versionStatus infos = result.parseVersionNumber();
+                        stateCon = 4;
                         //Alert alert = result.parseAlertInfoMessage();
                         if (infos != null)
                             outValues.add(infos);
