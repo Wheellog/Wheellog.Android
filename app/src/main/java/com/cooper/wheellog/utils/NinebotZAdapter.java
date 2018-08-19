@@ -318,11 +318,11 @@ public class NinebotZAdapter {
 
         CANMessage(byte[] bArr) {
             if (bArr.length < 7) return;
-            len = bArr[0];
-            source = bArr[1];
-            destination = bArr[2];
-            command = bArr[3];
-            parameter = bArr[4];
+            len = bArr[0] & 0xff;
+            source = bArr[1] & 0xff;
+            destination = bArr[2] & 0xff;
+            command = bArr[3] & 0xff;
+            parameter = bArr[4] & 0xff;
             data = Arrays.copyOfRange(bArr, 5, bArr.length-2);
             crc = bArr[bArr.length-1] << 8 + bArr[bArr.length-2];
 
@@ -379,7 +379,7 @@ public class NinebotZAdapter {
 
             int check = 0;
             for (byte c : buffer) {
-                check = (check + c);
+                check = check + ((int)c & 0xff);
 				//check = (check + (int) c) % 256;
             }
             check ^= 0xFFFF;
@@ -390,11 +390,21 @@ public class NinebotZAdapter {
 /////////////// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< fix ME
         static CANMessage verify(byte[] buffer) {
 
-
+            Timber.i("Verifying");
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length);
             dataBuffer = crypto(dataBuffer);
 
-            return new CANMessage(dataBuffer);
+            int check = (dataBuffer[dataBuffer.length-1]<<8 | ((dataBuffer[dataBuffer.length-2]) & 0xff)) & 0xffff;
+            byte [] dataBufferCheck = Arrays.copyOfRange(dataBuffer, 0, dataBuffer.length-2);
+            int checkBuffer = computeCheck(dataBufferCheck);
+            if (check == checkBuffer) {
+                Timber.i("Check OK");
+            } else {
+                Timber.i("Check FALSE, packet: %02X, calc: %02X",check, checkBuffer);
+            }
+            return (check == checkBuffer) ? new CANMessage(dataBuffer) : null;
+
+            //return new CANMessage(dataBuffer);
 
         }
 
@@ -434,6 +444,13 @@ public class NinebotZAdapter {
                 return (((bytes[starting + 1] & 255) << 8) | (bytes[starting] & 255));
             }
             return 0;
+        }
+
+        public short signedShortFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 2) {
+                return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
+            }
+            return (short) 0;
         }
 
         public static CANMessage startCommunication() {
@@ -554,7 +571,7 @@ public class NinebotZAdapter {
             int distance = this.intFromBytes(data,14);
             int temperature = this.shortFromBytes(data,22);
             int voltage = this.shortFromBytes(data, 24);
-            int current = this.shortFromBytes(data, 26);
+            int current = this.signedShortFromBytes(data, 26);
             int power = voltage*current;
 
 
@@ -592,16 +609,16 @@ public class NinebotZAdapter {
 
         for (byte c : data) {
             if (unpacker.addChar(c)) {
-                
+                Timber.i("Starting verification");
 				CANMessage result = CANMessage.verify(unpacker.getBuffer());
 				
                 if (result != null) { // data OK
-
-                    if (result.command == CANMessage.Param.Start.getValue()) {
+                    Timber.i("Verification successful, command %02X", result.parameter);
+                    if (result.parameter == CANMessage.Param.Start.getValue()) {
 						Timber.i("Get start answer");
 						stateCon = 1;
 						
-					} else if (result.command == CANMessage.Param.GetKey.getValue()){
+					} else if (result.parameter == CANMessage.Param.GetKey.getValue()){
                         Timber.i("Get encryption key");
                         gamma = result.parseKey();
                         stateCon = 2;
@@ -609,7 +626,7 @@ public class NinebotZAdapter {
 						//if (alert != null)
 						//	outValues.add(alert);
 						
-					} else if (result.command == CANMessage.Param.SerialNumber.getValue()){
+					} else if (result.parameter == CANMessage.Param.SerialNumber.getValue()){
                         Timber.i("Get serial number");
                         serialNumberStatus infos = result.parseSerialNumber();
                         stateCon = 3;
@@ -617,7 +634,7 @@ public class NinebotZAdapter {
                         if (infos != null)
                         	outValues.add(infos);
 
-                    } else if (result.command == CANMessage.Param.Firmware.getValue()){
+                    } else if (result.parameter == CANMessage.Param.Firmware.getValue()){
                         Timber.i("Get version number");
                         versionStatus infos = result.parseVersionNumber();
                         stateCon = 4;
@@ -625,7 +642,7 @@ public class NinebotZAdapter {
                         if (infos != null)
                             outValues.add(infos);
 
-                    } else if (result.command == CANMessage.Param.LiveData.getValue()){
+                    } else if (result.parameter == CANMessage.Param.LiveData.getValue()){
                         Timber.i("Get life data");
                         Status status = result.parseLiveData();
                         if (status != null) {
@@ -665,10 +682,10 @@ public class NinebotZAdapter {
                 case collecting:
 
                     buffer.write(c);
-                    Timber.i("buffer size %d", buffer.size());
                     if (buffer.size() == len+9) {
                         state = UnpackerState.done;
                         updateStep = 0;
+                        Timber.i("Len %d", len);
                         Timber.i("Step reset");
                         return true;
                     }
@@ -678,13 +695,13 @@ public class NinebotZAdapter {
 
                     buffer.write(c);
                     len = c & 0xff;
-                    Timber.i("Len %d", len);
                     state = UnpackerState.collecting;
 
                     break;
 
                 default:
-                    if (c == (byte) 0x5A && oldc == (byte) 0xA5) {
+                    if (c == (byte) 0xA5 && oldc == (byte) 0x5A) {
+                        Timber.i("Find start");
                         buffer = new ByteArrayOutputStream();
                         buffer.write(0x5A);
                         buffer.write(0xA5);

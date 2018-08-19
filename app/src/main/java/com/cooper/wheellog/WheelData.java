@@ -718,9 +718,12 @@ public class WheelData {
             new_data = decodeGotway(data);
         else if (mWheelType == WHEEL_TYPE.INMOTION)
             new_data = decodeInmotion(data);
-			
-        else if (mWheelType == WHEEL_TYPE.NINEBOT_Z)
+        else if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
+            Timber.i("Ninebot_z decoding");
             new_data = decodeNinebot(data);
+
+        }
+
 
         if (!new_data)
 			return;
@@ -924,6 +927,10 @@ public class WheelData {
     private boolean decodeNinebot(byte[] data) {
         ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
+        if (rideStartTime == 0) {
+            rideStartTime = Calendar.getInstance().getTimeInMillis();
+            mRidingTime = 0;
+        }
         for (NinebotZAdapter.Status status: statuses) {
             Timber.i(status.toString());
             if (status instanceof NinebotZAdapter.serialNumberStatus) {
