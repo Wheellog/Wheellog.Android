@@ -1110,8 +1110,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (resultCode == RESULT_OK) {
                     mDeviceAddress = data.getStringExtra("MAC");
                     Timber.i("Device selected = %s", mDeviceAddress);
+                    String mDeviceName = data.getStringExtra("NAME");
+                    Timber.i("Device selected = %s", mDeviceName);
                     mBluetoothLeService.setDeviceAddress(mDeviceAddress);
                     WheelData.getInstance().full_reset();
+                    WheelData.getInstance().setBtName(mDeviceName);
                     updateScreen(true);
                     setMenuIconStates();
                     mBluetoothLeService.close();

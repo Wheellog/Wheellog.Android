@@ -65,6 +65,7 @@ public class WheelData {
     private String mName = "Unknown";
     private String mModel = "Unknown";
 	private String mModeStr = "Unknown";
+	private String mBtName = "";
 	
 	private String mAlert = "";
 
@@ -158,8 +159,11 @@ public class WheelData {
 	int getPedalsPosition() {
         return mWheelTiltHorizon;
     }
-	
-	
+
+    public void setBtName(String btName) {
+        mBtName = btName;
+    }
+
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
 			mWheelLightEnabled = enabledLight;
@@ -556,9 +560,10 @@ public class WheelData {
 
     void setConnected(boolean connected) {		
         mConnectionState = connected;
+        Timber.i("State %b", connected);
 
-		if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().resetConnection();
-        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.getInstance().resetConnection();
+		//if (mWheelType == WHEEL_TYPE.INMOTION || !mConnectionState) InMotionAdapter.getInstance().stopTimer();
+        //if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.getInstance().resetConnection();
     }
 	
 //	void setUserDistance(long userDistance) {
@@ -787,7 +792,7 @@ public class WheelData {
                 int battery;
 
 
-                if (mModel.compareTo("KS-18L") == 0) {
+                if ((mModel.compareTo("KS-18L") == 0) || (mBtName.compareTo("RW") == 0 )) {
 
                     if (mVoltage > 8350) {
                         battery = 100;
@@ -1041,6 +1046,7 @@ public class WheelData {
 		mModeStr = "";
         mVersion = "";
         mSerialNumber = "";
+        mBtName = "";
         rideStartTime = 0;
         mStartTotalDistance = 0;
 		mWheelTiltHorizon = 0;
@@ -1113,6 +1119,10 @@ public class WheelData {
 				mContext.sendBroadcast(intent);
 				Timber.i("Protocol recognized as %s", wheel_Type);
 				//System.out.println("WheelRecognizedWD");
+                if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW"))) {
+                    Timber.i("It seems to be RochWheel, force to Kingsong proto");
+                    wheel_Type = mContext.getResources().getString(R.string.kingsong);
+                }
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.KINGSONG;
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));

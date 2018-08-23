@@ -161,13 +161,23 @@ public class BluetoothLeService extends Service {
                 if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     Timber.i("Trying to reconnect");
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                                InMotionAdapter.getInstance().stopTimer();
+                        }
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+                        NinebotZAdapter.getInstance().resetConnection();
+                    }
+
                     if (!autoConnect) {
                         autoConnect = true;
                         mBluetoothGatt.close();
                         mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
-						if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                                InMotionAdapter.getInstance().resetConnection();
-                        }
+						//if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+                        //        InMotionAdapter.getInstance().resetConnection();
+                        //}
+                        //if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+                        //    NinebotZAdapter.getInstance().resetConnection();
+                        //}
                         broadcastConnectionUpdate(STATE_CONNECTING, true);
                     } else
                         broadcastConnectionUpdate(STATE_CONNECTING, true);

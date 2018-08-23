@@ -26,6 +26,8 @@ public class NinebotZAdapter {
 
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword) {
         Timber.i("Ninebot timer starting");
+        updateStep = 0;
+        stateCon = 0;
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -84,6 +86,9 @@ public class NinebotZAdapter {
 
 	public void resetConnection() {
         stateCon = 0;
+        updateStep = 0;
+        gamma = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        stopTimer();
 	}
 	
 
@@ -722,7 +727,9 @@ public class NinebotZAdapter {
     }
 
     public static NinebotZAdapter getInstance() {
+        Timber.i("Get instance");
         if (INSTANCE == null) {
+            Timber.i("New instance");
             INSTANCE = new NinebotZAdapter();
         }
         return INSTANCE;
@@ -734,6 +741,7 @@ public class NinebotZAdapter {
             INSTANCE.keepAliveTimer = null;
 
         }
+        Timber.i("New instance");
         INSTANCE = new NinebotZAdapter();
     }
 
@@ -742,6 +750,7 @@ public class NinebotZAdapter {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
         }
+        Timber.i("Kill instance, stop timer");
         INSTANCE = null;
     }
 

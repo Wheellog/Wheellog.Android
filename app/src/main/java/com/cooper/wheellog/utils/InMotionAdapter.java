@@ -1295,8 +1295,10 @@ public class InMotionAdapter {
 
     public static InMotionAdapter getInstance() {
         if (INSTANCE == null) {
+            Timber.i("New instance");
             INSTANCE = new InMotionAdapter();
         }
+        Timber.i("Get instance");
         return INSTANCE;
     }
 
@@ -1305,6 +1307,7 @@ public class InMotionAdapter {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
         }
+        Timber.i("New instance");
         INSTANCE = new InMotionAdapter();
     }
 
@@ -1313,6 +1316,7 @@ public class InMotionAdapter {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
         }
+        Timber.i("Kill instance, stop timer");
         INSTANCE = null;
     }
 

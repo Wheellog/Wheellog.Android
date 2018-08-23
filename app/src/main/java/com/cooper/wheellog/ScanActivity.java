@@ -94,9 +94,12 @@ public class ScanActivity extends AppCompatActivity {
                 scanLeDevice(false);
             mHandler.removeCallbacksAndMessages(null);
             final String deviceAddress = mDeviceListAdapter.getDevice(i).getAddress();
+            final String deviceName = mDeviceListAdapter.getDevice(i).getName();
             Timber.i("Device selected = %s", deviceAddress);
+            Timber.i("Device selected = %s", deviceName);
             Intent intent = new Intent();
             intent.putExtra("MAC", deviceAddress);
+            intent.putExtra("NAME", deviceName);
             setResult(RESULT_OK, intent);
             //Ask for inmotion password
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
