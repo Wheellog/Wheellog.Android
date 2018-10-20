@@ -326,14 +326,21 @@ public class InMotionAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
-            if (volts > 84.00) {
+        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {//            if (volts > 84.00) {
+            if (volts > 82.50) {
                 batt = 1.0;
-            } else if (volts > 68.5) {
-                batt = (volts - 68.5) / 15.5;
+            } else if (volts > 68.0) {
+                batt = (volts - 68.0) / 14.5;
             } else {
                 batt = 0.0;
             }
+
+//                batt = 1.0;
+//            } else if (volts > 68.5) {
+//                batt = (volts - 68.5) / 15.5;
+//            } else {
+//                batt = 0.0;
+//            }
         } else if (model.belongToInputType("6")) {
             batt = 0.0;
         } else {
