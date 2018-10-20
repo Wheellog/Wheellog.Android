@@ -69,6 +69,7 @@ public class InMotionAdapter {
         V5F("52", 3812.0d),
         V5FPLUS("53", 3812.0d),
         V8("80", 3812.0d),
+        Glide3("85", 3812.0d),
         V10_test("100", 3812.0d),
         V10F_test("101", 3812.0d),
         V10("140", 3812.0d),
@@ -103,6 +104,7 @@ public class InMotionAdapter {
                 if (m.getValue().equals(id)) return m;
             }
             return Model.UNKNOWN;
+            //return Model.V8;
         }
 
         public static Model findByBytes(byte[] data) {
@@ -324,7 +326,7 @@ public class InMotionAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
+        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
             if (volts > 84.00) {
                 batt = 1.0;
             } else if (volts > 68.5) {
@@ -598,6 +600,7 @@ public class InMotionAdapter {
 				case "52": return "Inmotion V5F";
 				case "53": return "Inmotion V5FPLUS";
 				case "80": return "Inmotion V8";
+                case "85": return "Solowheel Glide 3";
                 case "100": return "Inmotion V10 test";
                 case "101": return "Inmotion V10F test";
                 case "140": return "Inmotion V10";
@@ -1071,7 +1074,7 @@ public class InMotionAdapter {
             double distance;
 
             if (model.belongToInputType( "1") || model.belongToInputType( "5") ||
-                    model == V8 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
+                    model == V8 || model == Glide3 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
                 distance = (double) (this.intFromBytes(ex_data, 44)) / 1000.0d; ///// V10F 48 byte - trip distance
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
