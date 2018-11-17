@@ -861,7 +861,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mBluetoothLeService = null;
         }
         super.onDestroy();
-        new CountDownTimer(500, 100) {
+        new CountDownTimer(60000, 100) {
 
             @Override
             public void onTick(long millisUntilFinished) {
