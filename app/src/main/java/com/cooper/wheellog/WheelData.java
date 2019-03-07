@@ -18,7 +18,6 @@ import com.cooper.wheellog.utils.InMotionAdapter;
 import com.cooper.wheellog.utils.NinebotZAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
-import com.cooper.wheellog.PreferencesFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -913,6 +912,11 @@ public class WheelData {
                 mKSAlarm1Speed = (data[4] & 255);
 
                 // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
+                if((data[16] & 255) == 164)
+                {
+                    data[16] = (byte)0x98;
+                    mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                }
 
             }
         }
