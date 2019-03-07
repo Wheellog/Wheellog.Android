@@ -118,7 +118,11 @@
 	<string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
     <string name="no_settings" translatable="false">no_settings</string>
-	
+    <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
+    <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
+    <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
+
+
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
@@ -140,9 +144,6 @@
 	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
     <string name="last_mac" translatable="false">last_mac</string>
     <string name="about" translatable="false">about</string>
-    <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
-    <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
-    <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
 
 
 </resources>
