@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+	xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
-    <ListPreference
+	<ListPreference
         android:key="@string/light_mode"
         android:title="Light Mode"
         android:defaultValue="0"
 		android:enabled="true"
         android:entries="@array/light_mode_ks"
         android:entryValues="@array/light_mode_values"
-        android:summary="On/Off/Auto" />	
-		
+        android:summary="On/Off/Auto" />
+
 	<ListPreference
         android:key="@string/strobe_mode"
         android:title="Strobe Mode"
@@ -28,9 +28,9 @@
         android:defaultValue="1"
         android:entries="@array/led_mode"
         android:entryValues="@array/led_mode_values"
-        android:summary="On/Off" />	
+        android:summary="On/Off" />
 
-		
+
 	<ListPreference
         android:key="@string/pedals_mode"
         android:title="Pedals Mode"
@@ -40,15 +40,48 @@
         android:summary="Soft/Medium/Hard" />
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/wheel_max_speed"
+        android:key="wheel_max_speed"
         android:title="Wheel speed limit"
         android:summary="Tiltback speed"
 		android:enabled="true"
-        android:defaultValue="25"
-        sample:msbp_minValue="1"
+        android:defaultValue="0"
+        sample:msbp_minValue="0"
         sample:msbp_maxValue="50"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="km/h"
         sample:msbp_dialogEnabled="true"/>
-		
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="wheel_ks_alarm3"
+		android:summary="Alarm 3 speed"
+		android:title="Wheel alarm3 speed"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="km/h"
+		sample:msbp_minValue="0" />
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="wheel_ks_alarm2"
+		android:summary="Alarm 2 speed"
+		android:title="Wheel alarm2 speed"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="km/h"
+		sample:msbp_minValue="0" />
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="wheel_ks_alarm1"
+		android:summary="Alarm 1 speed"
+		android:title="Wheel alarm1 speed"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="km/h"
+		sample:msbp_minValue="0" />
+
 </PreferenceScreen>

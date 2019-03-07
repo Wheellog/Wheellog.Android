@@ -140,6 +140,9 @@
 	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
     <string name="last_mac" translatable="false">last_mac</string>
     <string name="about" translatable="false">about</string>
+    <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
+    <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
+    <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
 
-	
+
 </resources>

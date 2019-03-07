@@ -178,6 +178,18 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				int led_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.led_mode), "0"));
 				WheelData.getInstance().updateLedMode(led_mode);
 				break;
+            case "wheel_ks_alarm3":
+                final int alert3 = sharedPreferences.getInt("wheel_ks_alarm3", 0);
+                WheelData.getInstance().updateKSAlarm3(alert3);
+                break;
+            case "wheel_ks_alarm2":
+                final int alert2 = sharedPreferences.getInt("wheel_ks_alarm2", 0);
+                WheelData.getInstance().updateKSAlarm2(alert2);
+                break;
+            case "wheel_ks_alarm1":
+                final int alert1 = sharedPreferences.getInt("wheel_ks_alarm1", 0);
+                WheelData.getInstance().updateKSAlarm1(alert1);
+                break;
 //			case "reset_user_trip":				
 //				WheelData.getInstance().resetUserDistance();
 //				break;
