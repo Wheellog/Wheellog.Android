@@ -18,6 +18,8 @@ import com.cooper.wheellog.utils.InMotionAdapter;
 import com.cooper.wheellog.utils.NinebotZAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
+import com.cooper.wheellog.PreferencesFragment;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -368,6 +370,11 @@ public class WheelData {
         data[6] = (byte) mKSAlarm3Speed;
         data[8] = (byte) mWheelMaxSpeed;
         data[16] = (byte) 0x85;
+
+        if((mWheelMaxSpeed | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0){
+            data[16] = (byte) 0x98; // request speed & alarm values from wheel
+        }
+
         data[17] = (byte) 0x14;
         data[18] = (byte) 0x5A;
         data[19] = (byte) 0x5A;
@@ -904,7 +911,7 @@ public class WheelData {
                 mKSAlarm3Speed = (data[8] & 255);
                 mKSAlarm2Speed = (data[6] & 255);
                 mKSAlarm1Speed = (data[4] & 255);
-                // TODO update SeekBarPreference
+
                 // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
 
             }

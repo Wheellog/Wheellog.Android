@@ -39,21 +39,21 @@
         android:entryValues="@array/pedals_mode_values"
         android:summary="Soft/Medium/Hard" />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="wheel_max_speed"
-        android:title="Wheel speed limit"
-        android:summary="Tiltback speed"
-		android:enabled="true"
-        android:defaultValue="0"
-        sample:msbp_minValue="0"
-        sample:msbp_maxValue="50"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="km/h"
-        sample:msbp_dialogEnabled="true"/>
 	<com.pavelsikun.seekbarpreference.SeekBarPreference
 		android:defaultValue="0"
 		android:enabled="true"
-		android:key="wheel_ks_alarm3"
+		android:key="@string/wheel_max_speed"
+		android:summary="Tiltback speed"
+		android:title="Wheel speed limit"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="km/h"
+		sample:msbp_minValue="0" />
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="@string/wheel_ks_alarm3"
 		android:summary="Alarm 3 speed"
 		android:title="Wheel alarm3 speed"
 		sample:msbp_dialogEnabled="true"
@@ -64,7 +64,7 @@
 	<com.pavelsikun.seekbarpreference.SeekBarPreference
 		android:defaultValue="0"
 		android:enabled="true"
-		android:key="wheel_ks_alarm2"
+		android:key="@string/wheel_ks_alarm2"
 		android:summary="Alarm 2 speed"
 		android:title="Wheel alarm2 speed"
 		sample:msbp_dialogEnabled="true"
@@ -75,7 +75,7 @@
 	<com.pavelsikun.seekbarpreference.SeekBarPreference
 		android:defaultValue="0"
 		android:enabled="true"
-		android:key="wheel_ks_alarm1"
+		android:key="@string/wheel_ks_alarm1"
 		android:summary="Alarm 1 speed"
 		android:title="Wheel alarm1 speed"
 		sample:msbp_dialogEnabled="true"
