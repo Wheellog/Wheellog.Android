@@ -288,7 +288,17 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                             getPreferenceScreen().removeAll();
                             if (mWheelType == WHEEL_TYPE.NINEBOT_Z) addPreferencesFromResource(R.xml.preferences_ninebot_z);
 							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
-							if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
+							if (mWheelType == WHEEL_TYPE.KINGSONG) {
+							    addPreferencesFromResource(R.xml.preferences_kingsong);
+							    if(WheelData.getInstance().is_pref_received()) {
+
+                                    correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
+                                    correctWheelBarState(getString(R.string.wheel_ks_alarm1), WheelData.getInstance().getKSAlarm1Speed());
+                                    correctWheelBarState(getString(R.string.wheel_ks_alarm2), WheelData.getInstance().getKSAlarm2Speed());
+                                    correctWheelBarState(getString(R.string.wheel_ks_alarm3), WheelData.getInstance().getKSAlarm3Speed());
+
+                                }
+                            }
 							if (mWheelType == WHEEL_TYPE.GOTWAY) {
 							//if (mWheelType == WHEEL_TYPE.INMOTION) {
 								addPreferencesFromResource(R.xml.preferences_gotway);

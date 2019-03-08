@@ -63,6 +63,7 @@ public class WheelData {
     private int mFanStatus;
     private boolean mConnectionState = false;
 	private boolean mNewWheelSettings = false;
+    private boolean mKSAlertsAndSpeedupdated = false;
     private String mName = "Unknown";
     private String mModel = "Unknown";
 	private String mModeStr = "Unknown";
@@ -80,7 +81,7 @@ public class WheelData {
 	private boolean mWheelLightEnabled = false;
 	private boolean mWheelLedEnabled = false;
 	private boolean mWheelButtonDisabled = false;
-	private int mWheelMaxSpeed = 25;
+	private int mWheelMaxSpeed = 0;
 	private int mWheelSpeakerVolume = 50;
 	private int mWheelTiltHorizon = 0;
 	
@@ -153,15 +154,35 @@ public class WheelData {
     }
 	
     int getWheelMaxSpeed() {
+
         return mWheelMaxSpeed;
     }
-	
+
+    int getKSAlarm1Speed() {
+
+        return mKSAlarm1Speed;
+    }
+
+    int getKSAlarm2Speed() {
+
+        return mKSAlarm2Speed;
+    }
+
+    int getKSAlarm3Speed() {
+
+        return mKSAlarm3Speed;
+    }
+
 	int getSpeakerVolume() {
         return mWheelSpeakerVolume;
     }
 	
 	int getPedalsPosition() {
         return mWheelTiltHorizon;
+    }
+
+    public boolean is_pref_received(){
+        return mKSAlertsAndSpeedupdated;
     }
 
     public void setBtName(String btName) {
@@ -904,13 +925,14 @@ public class WheelData {
                 System.arraycopy(data, 17, sndata, 14, 3);
                 sndata[17] = (byte) 0;
                 mSerialNumber = new String(sndata);
+                updateKSAlarmAndSpeed();
             }
             else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 mWheelMaxSpeed = (data[10] & 255);
                 mKSAlarm3Speed = (data[8] & 255);
                 mKSAlarm2Speed = (data[6] & 255);
                 mKSAlarm1Speed = (data[4] & 255);
-
+                mKSAlertsAndSpeedupdated = true;
                 // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
                 if((data[16] & 255) == 164)
                 {
@@ -1118,7 +1140,7 @@ public class WheelData {
 		mWheelLightEnabled = false;
 		mWheelLedEnabled = false;
 		mWheelButtonDisabled = false;
-		mWheelMaxSpeed = 25;
+		mWheelMaxSpeed = 0;
 		mWheelSpeakerVolume = 50;
 	
     }
