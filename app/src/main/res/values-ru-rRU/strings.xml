@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WheelLog</string>
-    <string name="alert1_ln">Предупреждение 1</string>
-    <string name="alert2_ln">Предупреждение 2</string>
-    <string name="alert3_ln">Предупреждение 3</string>
-    <string name="max_speed_ln">Подъем педалей</string>
+    <string name="alert1_title">Первое предупреждение</string>
+    <string name="alert2_title">Второе предупреждение</string>
+    <string name="alert3_title">Третье предупреждение</string>
+    <string name="max_speed_title">Подъем педалей</string>
     <string name="scan">Поиск</string>
     <string name="stop">Остановить</string>
     <string name="connect">Подключить</string>
@@ -41,5 +41,28 @@
     <string name="mph">миль/ч</string>
     <string name="km">км</string>
     <string name="milli">милли</string>
+    <string name="horn_mode_title">Настройка Сигнала</string>
+    <string name="tilt_back_description">Скорость подъема педалей</string>
+    <string name="alarm3_description">4 звуковых сигнала</string>
+    <string name="alarm2_description">3 звуковых сигнала</string>
+    <string name="alarm1_description">2 звуковых сигнала</string>
+    <string name="horn_mode_description">Подать звуковой сингнал при нажатии на кнопку часов Pebble</string>
+    <string name="pedals_mode_title">Настройка педалей</string>
+    <string name="led_mode_title">Режим светодиодов</string>
+    <string name="strobe_mode_title">Режим стробоскопа</string>
+    <string name="light_mode_title">Режим фары</string>
+    <string name="on_off">Вкл./Выкл.</string>
+    <string name="on_off_auto">Вкл./Выкл./Авто</string>
+    <string name="on">Вкл.</string>
+    <string name="off">Выкл.</string>
+    <string name="auto">Авто</string>
+    <string name="strobe">Строб</string>
+    <string name="disabled">Отключено</string>
+    <string name="enabled">Включено</string>
+    <string name="hard">Жесткие</string>
+    <string name="medium">Средние</string>
+    <string name="soft">Мягкие</string>
+    <string name="on_board_horn_ks">Встроенный (KingSong)</string>
+    <string name="bluetooth_audio_horn">через блютуз</string>
 
 </resources>

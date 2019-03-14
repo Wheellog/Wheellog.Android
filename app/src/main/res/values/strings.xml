@@ -148,6 +148,33 @@
     <string name="mph">mph</string>
     <string name="km">km</string>
     <string name="milli">mi</string>
+    <string name="horn_mode_title">Horn Mode</string>
+    <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
+    <string name="tilt_back_description" >Tiltback speed</string>
+    <string name="max_speed_title">Wheel speed limit</string>
+    <string name="alert1_title">1st Alert Speed</string>
+    <string name="alert2_title">2nd Alert Speed</string>
+    <string name="alert3_title">3rd Alert Speed</string>
+    <string name="alarm3_description">4 beeps alarm</string>
+    <string name="alarm2_description">3 beeps alarm</string>
+    <string name="alarm1_description">2 beeps alarm</string>
+    <string name="pedals_mode_title">Pedals Mode</string>
+    <string name="led_mode_title">Leds mode</string>
+    <string name="strobe_mode_title">Strobe Mode</string>
+    <string name="light_mode_title">Light Mode</string>
+    <string name="on_off">On/Off</string>
+    <string name="on_off_auto">On/Off/Auto</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="auto">Auto</string>
+    <string name="strobe">Strobe</string>
+    <string name="disabled">Disabled</string>
+    <string name="enabled">Enabled</string>
+    <string name="hard">Hard</string>
+    <string name="medium">Medium</string>
+    <string name="soft">Soft</string>
+    <string name="on_board_horn_ks">On-board (KingSong)</string>
+    <string name="bluetooth_audio_horn">via bluetooth audio</string>
 
 
 </resources>
