@@ -293,7 +293,7 @@ public class WheelView extends View {
                 Math.round(center_x + (speedTextKPHRectSize/2)),
                 Math.round(center_y + (speedTextKPHRectSize/2)));
 
-        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, "km/h", textPaint);
+        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, getResources().getString(R.string.kmh), textPaint);
         speedTextKPHHeight = boundaryOfText.height();
 
 
@@ -437,7 +437,7 @@ public class WheelView extends View {
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY()+(speedTextRect.height()/2), textPaint);
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        String metric = mUseMPH ? "mph" : "km/h";
+        String metric = mUseMPH ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
         canvas.drawText(metric, outerArcRect.centerX(),speedTextRect.bottom+(speedTextKPHHeight*1.25F), textPaint);
 
         //####################################################
@@ -500,8 +500,8 @@ public class WheelView extends View {
                 canvas.drawText(String.format(Locale.US, "%.0f mi", kmToMiles(mTotalDistance)), brRect.centerX(), brRect.centerY() + boxTextHeight, textPaint);
 				canvas.drawText(String.format(Locale.US, "%.1f mph", kmToMiles(mAverageSpeed)), trRect.centerX(), trRect.centerY() + boxTextHeight, textPaint);
             } else {
-                canvas.drawText(String.format(Locale.US, "%.1f km/h", mTopSpeed), mrRect.centerX(), mrRect.centerY() + boxTextHeight, textPaint);
-				canvas.drawText(String.format(Locale.US, "%.1f km/h", mAverageSpeed), trRect.centerX(), trRect.centerY() + boxTextHeight, textPaint);
+                canvas.drawText(String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mTopSpeed), mrRect.centerX(), mrRect.centerY() + boxTextHeight, textPaint);
+				canvas.drawText(String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mAverageSpeed), trRect.centerX(), trRect.centerY() + boxTextHeight, textPaint);
                 if (mDistance < 1)
                     canvas.drawText(String.format(Locale.US, "%.0f m", mDistance * 1000), blRect.centerX(), blRect.centerY() + boxTextHeight, textPaint);
                 else

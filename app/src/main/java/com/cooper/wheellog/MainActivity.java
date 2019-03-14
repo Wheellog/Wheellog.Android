@@ -568,23 +568,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 break;
             case 1: // Text View
                 if (use_mph) {
-                    tvSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getSpeedDouble())));
-                    tvTopSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
-					tvAverageSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getAverageSpeedDouble())));
-					tvAverageRidingSpeed.setText(String.format(Locale.US, "%.1f mph", kmToMiles(WheelData.getInstance().getAverageRidingSpeedDouble())));
-                    tvDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getDistanceDouble())));
-					tvWheelDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getWheelDistanceDouble())));
-					tvUserDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getUserDistanceDouble())));
-                    tvTotalDistance.setText(String.format(Locale.US, "%.2f mi", kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
+                    tvSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getSpeedDouble())));
+                    tvTopSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
+					tvAverageSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble())));
+					tvAverageRidingSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageRidingSpeedDouble())));
+                    tvDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getDistanceDouble())));
+					tvWheelDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble())));
+					tvUserDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getUserDistanceDouble())));
+                    tvTotalDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
                 } else {
-                    tvSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getSpeedDouble()));
-                    tvTopSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getTopSpeedDouble()));
-					tvAverageSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getAverageSpeedDouble()));
-					tvAverageRidingSpeed.setText(String.format(Locale.US, "%.1f km/h", WheelData.getInstance().getAverageRidingSpeedDouble()));
-                    tvDistance.setText(String.format(Locale.US, "%.3f km", WheelData.getInstance().getDistanceDouble()));
-					tvWheelDistance.setText(String.format(Locale.US, "%.3f km", WheelData.getInstance().getWheelDistanceDouble()));
-					tvUserDistance.setText(String.format(Locale.US, "%.3f km", WheelData.getInstance().getUserDistanceDouble()));
-                    tvTotalDistance.setText(String.format(Locale.US, "%.3f km", WheelData.getInstance().getTotalDistanceDouble()));
+                    tvSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getSpeedDouble()));
+                    tvTopSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getTopSpeedDouble()));
+					tvAverageSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble()));
+					tvAverageRidingSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageRidingSpeedDouble()));
+                    tvDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getDistanceDouble()));
+					tvWheelDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble()));
+					tvUserDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getUserDistanceDouble()));
+                    tvTotalDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
                 tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
