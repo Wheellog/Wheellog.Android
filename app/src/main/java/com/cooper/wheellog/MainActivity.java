@@ -614,8 +614,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         LineDataSet dataSetCurrent;
 
                         if (chart1.getData() == null) {
-                            dataSetSpeed = new LineDataSet(null, "speed");
-                            dataSetCurrent = new LineDataSet(null, "current");
+                            dataSetSpeed = new LineDataSet(null, getString(R.string.speed_axis));
+                            dataSetCurrent = new LineDataSet(null, getString(R.string.current_axis));
                             dataSetSpeed.setLineWidth(2);
                             dataSetCurrent.setLineWidth(2);
                             dataSetSpeed.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -635,8 +635,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             findViewById(R.id.leftAxisLabel).setVisibility(View.VISIBLE);
                             findViewById(R.id.rightAxisLabel).setVisibility(View.VISIBLE);
                         } else {
-                            dataSetSpeed = (LineDataSet) chart1.getData().getDataSetByLabel("speed", true);
-                            dataSetCurrent = (LineDataSet) chart1.getData().getDataSetByLabel("current", true);
+                            dataSetSpeed = (LineDataSet) chart1.getData().getDataSetByLabel(getString(R.string.speed_axis), true);
+                            dataSetCurrent = (LineDataSet) chart1.getData().getDataSetByLabel(getString(R.string.current_axis), true);
                         }
 
                         dataSetSpeed.clear();
@@ -765,6 +765,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         chart1.setHighlightPerTapEnabled(false);
         chart1.setHighlightPerDragEnabled(false);
         chart1.getLegend().setTextColor(getResources().getColor(android.R.color.white));
+        chart1.setNoDataText(getString(R.string.no_chart_data));
         chart1.setNoDataTextColor(getResources().getColor(android.R.color.white));
 
         YAxis leftAxis = chart1.getAxisLeft();

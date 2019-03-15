@@ -5,34 +5,34 @@
 
     <CheckBoxPreference
         android:key="@string/alarms_enabled"
-        android:title="Enable Alarms"
-        android:summary="Allow the phone to vibrate as a warning" />
+        android:title="@string/enable_alarms_title"
+        android:summary="@string/enable_alarms_description" />
 
     <CheckBoxPreference
         android:key="@string/disable_phone_vibrate"
         android:dependency="alarms_enabled"
-        android:title="Disable Phone Vibration"
-        android:summary="Phone will not vibrate but the alarm will be passed to a connected Pebble Watch" />
+        android:title="@string/disable_phone_vibrate_title"
+        android:summary="@string/disable_phone_vibration_description" />
 
     <PreferenceCategory
-        android:title="Speed Alarm 1">
+        android:title="@string/speed_alarm1_phone_title">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_1_speed"
-            android:title="Speed"
-            android:summary="Speed that triggers the alarm"
+            android:title="@string/speed"
+            android:summary="@string/speed_trigger_description"
             android:defaultValue="29"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
             sample:msbp_maxValue="50"
             sample:msbp_interval="1"
-            sample:msbp_measurementUnit="km/h"
+            sample:msbp_measurementUnit="@string/kmh"
             sample:msbp_dialogEnabled="true"/>
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_1_battery"
-            android:title="Battery Percent"
-            android:summary="Battery percent that activates the alarm"
+            android:title="@string/alarm_1_battery_title"
+            android:summary="@string/alarm_1_battery_description"
             android:defaultValue="100"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
@@ -44,24 +44,24 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Speed Alarm 2">
+        android:title="@string/speed_alarm2_phone_title">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_2_speed"
-            android:title="Speed"
-            android:summary="Speed that triggers the alarm"
+            android:title="@string/speed"
+            android:summary="@string/speed_trigger_description"
             android:defaultValue="0"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
             sample:msbp_maxValue="50"
             sample:msbp_interval="1"
-            sample:msbp_measurementUnit="km/h"
+            sample:msbp_measurementUnit="@string/kmh"
             sample:msbp_dialogEnabled="true"/>
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_2_battery"
-            android:title="Battery Percent"
-            android:summary="Battery percent that activates the alarm"
+            android:title="@string/alarm_2_battery_title"
+            android:summary="@string/alarm_1_battery_description"
             android:defaultValue="0"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
@@ -73,24 +73,24 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Speed Alarm 3">
+        android:title="@string/speed_alarm3_phone_title">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_3_speed"
-            android:title="Speed"
-            android:summary="Speed that triggers the alarm"
+            android:title="@string/speed"
+            android:summary="@string/speed_trigger_description"
             android:defaultValue="0"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
             sample:msbp_maxValue="50"
             sample:msbp_interval="1"
-            sample:msbp_measurementUnit="km/h"
+            sample:msbp_measurementUnit="@string/kmh"
             sample:msbp_dialogEnabled="true"/>
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_3_battery"
-            android:title="Battery Percent"
-            android:summary="Battery percent that activates the alarm"
+            android:title="@string/alarm_3_battery_title"
+            android:summary="@string/alarm_1_battery_description"
             android:defaultValue="0"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
@@ -102,29 +102,29 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Current Alarm">
+        android:title="@string/current_alarm_title">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_current"
-            android:title="Current"
-            android:summary="Current that triggers the alarm"
+            android:title="@string/current_title"
+            android:summary="@string/alarm_current_description"
             android:defaultValue="35"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
             sample:msbp_maxValue="150"
             sample:msbp_interval="1"
-            sample:msbp_measurementUnit="A"
+            sample:msbp_measurementUnit="@string/amp"
             sample:msbp_dialogEnabled="true"/>
 
     </PreferenceCategory>
 
 	<PreferenceCategory
-        android:title="Temperature Alarm">
+        android:title="@string/temperature_alarm_title">
 
         <com.pavelsikun.seekbarpreference.SeekBarPreference
             android:key="@string/alarm_temperature"
-            android:title="Temperature"
-            android:summary="Temperature that triggers the alarm"
+            android:title="@string/temperature_title"
+            android:summary="@string/alarm_temperature_description"
             android:defaultValue="60"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="20"

@@ -13,17 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.*;
 import android.text.InputType;
-import android.text.TextUtils;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
-import com.cooper.wheellog.BuildConfig;
 import com.pavelsikun.seekbarpreference.SeekBarPreference;
-
-
-
-import timber.log.Timber;
 
 public class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -219,7 +213,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
         switch (currentScreen) {
             case Main:
-                tb.setTitle("Settings");
+                tb.setTitle(getText(R.string.settings_title));
                 Preference speed_button = findPreference(getString(R.string.speed_preferences));
                 Preference logs_button = findPreference(getString(R.string.log_preferences));
                 Preference alarm_button = findPreference(getString(R.string.alarm_preferences));
@@ -345,9 +339,9 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                             String versionName = BuildConfig.VERSION_NAME;
                             String buildTime = BuildConfig.BUILD_TIME;
                             new AlertDialog.Builder(getActivity())
-                                    .setTitle("About WheelLog")
+                                    .setTitle(R.string.about_app_title)
                                     .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Palachzzz</i> <br><a href=\"palachzzz.wl@gmail.com\">palachzzz.wl@gmail.com</a>", versionName, buildTime)))
-                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
 
                                         }
@@ -366,24 +360,24 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("MAC Edit");
+                            builder.setTitle(getText(R.string.edit_mac_addr_title));
 
                             final EditText input = new EditText(getActivity());
                             input.setInputType(InputType.TYPE_CLASS_TEXT);
                             input.setText(SettingsUtil.getLastAddress(getActivity()));
                             builder.setView(input);
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     final String deviceAddress = input.getText().toString();
                                     SettingsUtil.setLastAddress(getActivity(), deviceAddress);
                                     AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-                                    builder1.setTitle("Wheel Password ( InMotion only )");
+                                    builder1.setTitle(getText(R.string.wheel_pass_imotion));
 
                                     final EditText input1 = new EditText(getActivity());
                                     input1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                     builder1.setView(input1);
-                                    builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             String password = input1.getText().toString();
@@ -396,7 +390,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                                             //finish();
                                         }
                                     });
-                                    builder1.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             dialog.cancel();
@@ -411,7 +405,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                                     //finish();
                                 }
                             });
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.cancel();
@@ -429,20 +423,20 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
                 break;
             case Speed:
-                tb.setTitle("Speed Settings");
+                tb.setTitle(getText(R.string.speed_settings_title));
                 break;
             case Logs:
-                tb.setTitle("Log Settings");
+                tb.setTitle(getText(R.string.logs_settings_title));
                 break;
             case Alarms:
-                tb.setTitle("Alarm Settings");
+                tb.setTitle(getText(R.string.alarm_settings_title));
                 hideShowSeekBars();
                 break;
             case Watch:
-                tb.setTitle("Watch Settings");
+                tb.setTitle(getText(R.string.watch_settings_title));
                 break;
 			case Wheel:
-                tb.setTitle("Wheel Settings");
+                tb.setTitle(getText(R.string.wheel_settings_title));
 				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
                 break;
         }

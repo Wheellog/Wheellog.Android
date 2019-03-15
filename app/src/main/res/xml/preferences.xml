@@ -4,47 +4,47 @@
 
     <Preference
         android:key="@string/speed_preferences"
-        android:title="Speed Settings"
+        android:title="@string/speed_settings_title"
         android:icon="@drawable/ic_speedometer_white_24dp"/>
 
     <Preference
         android:key="@string/log_preferences"
-        android:title="Log Settings"
+        android:title="@string/logs_settings_title"
         android:icon="@drawable/ic_show_chart_white_24dp"/>
 
     <Preference
         android:key="@string/alarm_preferences"
-        android:title="Alarm Settings"
+        android:title="@string/alarm_settings_title"
         android:icon="@drawable/ic_vibration_white_24dp"/>
 
     <Preference
         android:key="@string/watch_preferences"
-        android:title="Watch Preferences"
+        android:title="@string/watch_settings_title"
         android:icon="@drawable/ic_watch_white_24dp" />
 
     <Preference
         android:key="@string/wheel_settings"
 		android:enabled="false"
-        android:title="Wheel Settings"
+        android:title="@string/wheel_settings_title"
         android:icon="@drawable/ic_action_wheel_white" />
 	
 	<Preference
         android:key="@string/reset_top_speed"
 		android:enabled="true"
-        android:title="Reset top speed" />
+        android:title="@string/reset_top_spped_title" />
 
 	<Preference
         android:key="@string/reset_user_distance"
 		android:enabled="true"
-        android:title="Reset user distance" />
+        android:title="@string/reset_user_distance_title" />
 
     <Preference
         android:key="@string/last_mac"
         android:enabled="true"
-        android:title="Edit MAC address" />
+        android:title="@string/edit_mac_addr_title" />
 
     <Preference
         android:key="@string/about"
         android:enabled="true"
-        android:title="About WheelLog" />
+        android:title="@string/about_app_title" />
 </PreferenceScreen>
