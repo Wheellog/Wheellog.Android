@@ -121,4 +121,5 @@
     <string name="off_level_1_alarm">Отключить первое предупреждение.</string>
     <string name="off_level_2_alarm">Отключить второе предупреждение.</string>
     <string name="on_level_alarm">Включить предупреждения</string>
+    <string name="metre">м</string>
 </resources>

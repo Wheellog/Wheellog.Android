@@ -232,5 +232,6 @@
     <string name="off_level_1_alarm">Turn off level 1 alarm</string>
     <string name="off_level_2_alarm">Turn off level 2 alarm</string>
     <string name="on_level_alarm">Turn on alarm</string>
+    <string name="metre">m</string>
 
 </resources>

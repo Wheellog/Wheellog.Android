@@ -595,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
                 tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
                 tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
-                tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? "Off" : "On");
+                tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
                 tvVersion.setText(String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
                 tvName.setText(WheelData.getInstance().getName());
                 tvModel.setText(WheelData.getInstance().getModel());
