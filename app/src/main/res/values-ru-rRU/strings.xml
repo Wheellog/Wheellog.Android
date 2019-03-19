@@ -122,4 +122,14 @@
     <string name="off_level_2_alarm">Отключить второе предупреждение.</string>
     <string name="on_level_alarm">Включить предупреждения</string>
     <string name="metre">м</string>
+    <string name="on_headlight_title">Включение фонаря</string>
+    <string name="on_headlight_description">Включает передний фонарь для освещения дороги.</string>
+    <string name="leds_settings_title">Включает светодиодную подсветку</string>
+    <string name="leds_settings_description">Включает бугущие огни светодиодов по бокам.</string>
+    <string name="disable_handle_button_title">Отключить кнопку на ручке</string>
+    <string name="disable_handle_button_description">Колесо больше не будет отключаться когда кнопка на ручке будет нажата.</string>
+    <string name="speaker_volume_title">Уровень звука</string>
+    <string name="speaker_volume_description">Регулировка уровня громкости встроенных колонок.</string>
+    <string name="pedal_horizont_title">Уровень наклона педалей</string>
+    <string name="pedal_horizont_description">Изменение угла тангажа (вниз/вверх) педалей.</string>
 </resources>

@@ -233,5 +233,15 @@
     <string name="off_level_2_alarm">Turn off level 2 alarm</string>
     <string name="on_level_alarm">Turn on alarm</string>
     <string name="metre">m</string>
+    <string name="on_headlight_title">Switch on the light</string>
+    <string name="on_headlight_description">Activate headlight</string>
+    <string name="leds_settings_title">Switch on wheel illumination</string>
+    <string name="leds_settings_description">Activate leds on the sides</string>
+    <string name="disable_handle_button_title">Disable handle button</string>
+    <string name="disable_handle_button_description">Wheel will not disable when you press the button on the handle</string>
+    <string name="speaker_volume_title">Speaker volume</string>
+    <string name="speaker_volume_description">Change built-in speaker volume</string>
+    <string name="pedal_horizont_title">Pedals</string>
+    <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
 
 </resources>
