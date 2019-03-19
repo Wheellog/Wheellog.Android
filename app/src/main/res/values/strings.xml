@@ -244,5 +244,7 @@
     <string name="pedal_horizont_title">Pedals</string>
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
+    <string name="volt">V</string>
+    <string name="watt">W</string>
 
 </resources>

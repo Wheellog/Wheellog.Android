@@ -587,13 +587,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     tvTotalDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
-                tvVoltage.setText(String.format(Locale.US, "%.2fV", WheelData.getInstance().getVoltageDouble()));
+                tvVoltage.setText(String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageDouble()));
                 tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
 				tvTemperature2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
 				tvAngle.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
 				tvRoll.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getRoll()));
-                tvCurrent.setText(String.format(Locale.US, "%.2fA", WheelData.getInstance().getCurrentDouble()));
-                tvPower.setText(String.format(Locale.US, "%.2fW", WheelData.getInstance().getPowerDouble()));
+                tvCurrent.setText(String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentDouble()));
+                tvPower.setText(String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
                 tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
                 tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
                 tvVersion.setText(String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));

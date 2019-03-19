@@ -11,7 +11,7 @@
     <string name="connecting">Подключение</string>
     <string name="top_speed">Макс. скорость</string>
     <string name="battery">Батарея</string>
-    <string name="distance">Дистанция</string>
+    <string name="distance">Расстояние</string>
     <string name="wheel_distance">Поездка</string>
     <string name="user_distance">Мой пробег</string>
     <string name="ride_time">Время работы</string>
@@ -20,11 +20,11 @@
     <string name="current">Ток</string>
     <string name="power">Мощность</string>
     <string name="temperature">Температура</string>
-    <string name="total">Пройдено</string>
+    <string name="total">Пробег</string>
     <string name="average_speed">Сред. скорость</string>
     <string name="average_riding_speed">Сред. движения</string>
     <string name="temperature2">Темп. процессора</string>
-    <string name="total_distance">Полный пробег</string>
+    <string name="total_distance">Пробег</string>
     <string name="name">Название</string>
     <string name="model">Модель</string>
     <string name="version">Версия</string>
@@ -133,4 +133,6 @@
     <string name="pedal_horizont_title">Уровень наклона педалей</string>
     <string name="pedal_horizont_description">Изменение угла тангажа (вниз/вверх) педалей.</string>
     <string name="ninebotz_settings_title">К сожалению настройки для вашего колеса пока не доступны.</string>
+    <string name="volt">В</string>
+    <string name="watt">Вт</string>
 </resources>
