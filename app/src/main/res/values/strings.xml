@@ -243,5 +243,6 @@
     <string name="speaker_volume_description">Change built-in speaker volume</string>
     <string name="pedal_horizont_title">Pedals</string>
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
+    <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
 
 </resources>

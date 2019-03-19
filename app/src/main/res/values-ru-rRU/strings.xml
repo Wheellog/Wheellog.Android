@@ -132,4 +132,5 @@
     <string name="speaker_volume_description">Регулировка уровня громкости встроенных колонок.</string>
     <string name="pedal_horizont_title">Уровень наклона педалей</string>
     <string name="pedal_horizont_description">Изменение угла тангажа (вниз/вверх) педалей.</string>
+    <string name="ninebotz_settings_title">К сожалению настройки для вашего колеса пока не доступны.</string>
 </resources>
