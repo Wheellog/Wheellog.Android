@@ -37,7 +37,7 @@
         android:defaultValue="1"
         android:entries="@array/pedals_mode"
         android:entryValues="@array/pedals_mode_values"
-        android:summary="Soft/Medium/Hard" />
+        android:summary="@string/soft_medium_hard" />
 
 	<com.pavelsikun.seekbarpreference.SeekBarPreference
 		android:defaultValue="0"

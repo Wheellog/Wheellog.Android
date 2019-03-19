@@ -220,5 +220,17 @@
     <string name="log_location_decription">Include location data within the logs</string>
     <string name="use_gps_title">Use GPS for location</string>
     <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
+    <string name="on_off_strobe">Off/On/Strobe</string>
+    <string name="soft_medium_hard">Soft/Medium/Hard</string>
+    <string name="alarm_settings_description">Alarm settings</string>
+    <string name="alarm_mode_title">Alarm Mode</string>
+    <string name="calibration_title">Calibration</string>
+    <string name="is_gotway_mcm_title">My Wheel is a Gotway MCM</string>
+    <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
+    <string name="battery_voltage_title">Battery voltage</string>
+    <string name="battary_voltage_description">67V/84V/100V</string>
+    <string name="off_level_1_alarm">Turn off level 1 alarm</string>
+    <string name="off_level_2_alarm">Turn off level 2 alarm</string>
+    <string name="on_level_alarm">Turn on alarm</string>
 
 </resources>

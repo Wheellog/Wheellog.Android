@@ -109,4 +109,16 @@
     <string name="log_location_decription">Добавить текущую позицию в лог.</string>
     <string name="use_gps_title">Использование GPS</string>
     <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, если параметр отключен используются даенные сотовой связи.</string>
+    <string name="on_off_strobe">Выкл./Вкл./Строб</string>
+    <string name="soft_medium_hard">Мягкие/Средние/Жесткие</string>
+    <string name="alarm_mode_title">Режим предупреждения</string>
+    <string name="alarm_settings_description">Настроить передупреждения.</string>
+    <string name="calibration_title">Калибровка</string>
+    <string name="is_gotway_mcm_title">У меня Gotway MCM</string>
+    <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
+    <string name="battery_voltage_title">Напряжение батареи</string>
+    <string name="battary_voltage_description">67В/84В/100В</string>
+    <string name="off_level_1_alarm">Отключить первое предупреждение.</string>
+    <string name="off_level_2_alarm">Отключить второе предупреждение.</string>
+    <string name="on_level_alarm">Включить предупреждения</string>
 </resources>
