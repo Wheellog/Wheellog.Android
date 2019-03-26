@@ -40,7 +40,7 @@
     <string name="kmh">км/ч</string>
     <string name="mph">миль/ч</string>
     <string name="km">км</string>
-    <string name="milli">милли</string>
+    <string name="milli">мили</string>
     <string name="horn_mode_title">Настройка Сигнала</string>
     <string name="tilt_back_description">Скорость подъема педалей</string>
     <string name="alarm3_description">4 звуковых сигнала</string>
@@ -78,8 +78,8 @@
     <string name="amp">А</string>
     <string name="max_speed_dial_title">Максимальная скорость</string>
     <string name="max_speed_dial_description">Ограничение спидометра на главном экране.</string>
-    <string name="use_mph_title">Использовать милли</string>
-    <string name="use_mph_description">Показывать милли вместо киллометров.</string>
+    <string name="use_mph_title">Использовать мили</string>
+    <string name="use_mph_description">Показывать мили вместо километров.</string>
     <string name="enable_alarms_title">Включить предупреждения</string>
     <string name="enable_alarms_description">Телефон будет вибрировать во время предупреждения.</string>
     <string name="disable_phone_vibrate_title">Отключить вибросигнал</string>
@@ -108,7 +108,7 @@
     <string name="log_location_title">Местоположение</string>
     <string name="log_location_decription">Добавить текущую позицию в лог.</string>
     <string name="use_gps_title">Использование GPS</string>
-    <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, если параметр отключен используются даенные сотовой связи.</string>
+    <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, а если параметр отключен, используются данные сотовой связи.</string>
     <string name="on_off_strobe">Выкл./Вкл./Строб</string>
     <string name="soft_medium_hard">Мягкие/Средние/Жесткие</string>
     <string name="alarm_mode_title">Режим предупреждения</string>
