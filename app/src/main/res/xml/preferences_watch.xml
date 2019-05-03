@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:key="@string/horn_mode"
-        android:title="Horn Mode"
         android:defaultValue="0"
         android:entries="@array/horn_modes"
         android:entryValues="@array/horn_mode_values"
-        android:summary="Executed when the select button on the Pebble watch is pressed" />
+        android:key="@string/horn_mode"
+        android:summary="@string/horn_mode_description"
+        android:title="@string/horn_mode_title" />
 
 </PreferenceScreen>

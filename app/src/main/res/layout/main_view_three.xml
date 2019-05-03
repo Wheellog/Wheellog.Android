@@ -14,7 +14,7 @@
         android:layout_marginLeft="5dp"
         android:layout_alignParentTop="true"
         android:textColor="@android:color/white"
-        android:text="km/h"/>
+        android:text="@string/kmh"/>
     <TextView
         android:id="@+id/rightAxisLabel"
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_marginRight="5dp"
         android:layout_alignParentTop="true"
         android:textColor="@android:color/white"
-        android:text="A"/>
+        android:text="@string/amp"/>
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="match_parent"

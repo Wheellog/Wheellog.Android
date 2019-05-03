@@ -62,7 +62,7 @@
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
-    <string name="notification_text">%1$d%% • %2$d°C • %3$.1f km</string>
+    <string name="notification_text" translatable="false">%1$d%% • %2$d°C • %3$.1f km</string>
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
@@ -118,7 +118,11 @@
 	<string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
     <string name="no_settings" translatable="false">no_settings</string>
-	
+    <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
+    <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
+    <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
+
+
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
@@ -140,6 +144,107 @@
 	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
     <string name="last_mac" translatable="false">last_mac</string>
     <string name="about" translatable="false">about</string>
+    <string name="kmh">km/h</string>
+    <string name="mph">mph</string>
+    <string name="km">km</string>
+    <string name="milli">mi</string>
+    <string name="horn_mode_title">Horn Mode</string>
+    <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
+    <string name="tilt_back_description" >Tiltback speed</string>
+    <string name="max_speed_title">Wheel speed limit</string>
+    <string name="alert1_title">1st Alert Speed</string>
+    <string name="alert2_title">2nd Alert Speed</string>
+    <string name="alert3_title">3rd Alert Speed</string>
+    <string name="alarm3_description">4 beeps alarm</string>
+    <string name="alarm2_description">3 beeps alarm</string>
+    <string name="alarm1_description">2 beeps alarm</string>
+    <string name="pedals_mode_title">Pedals Mode</string>
+    <string name="led_mode_title">Leds mode</string>
+    <string name="strobe_mode_title">Strobe Mode</string>
+    <string name="light_mode_title">Light Mode</string>
+    <string name="on_off">On/Off</string>
+    <string name="on_off_auto">On/Off/Auto</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="auto">Auto</string>
+    <string name="strobe">Strobe</string>
+    <string name="disabled">Disabled</string>
+    <string name="enabled">Enabled</string>
+    <string name="hard">Hard</string>
+    <string name="medium">Medium</string>
+    <string name="soft">Soft</string>
+    <string name="on_board_horn_ks">On-board (KingSong)</string>
+    <string name="bluetooth_audio_horn">via bluetooth audio</string>
+    <string name="speed_settings_title">Speed Settings</string>
+    <string name="logs_settings_title">Log Settings</string>
+    <string name="alarm_settings_title">Alarm Settings</string>
+    <string name="watch_settings_title">Watch Preferences</string>
+    <string name="wheel_settings_title">Wheel Settings</string>
+    <string name="reset_top_spped_title">Reset top speed</string>
+    <string name="reset_user_distance_title">Reset user distance</string>
+    <string name="edit_mac_addr_title">Edit MAC address</string>
+    <string name="about_app_title">About WheelLog</string>
+    <string name="settings_title">Settings</string>
+    <string name="wheel_pass_imotion">Wheel Password ( InMotion only )</string>
+    <string name="amp">A</string>
+    <string name="max_speed_dial_title">Max Speed</string>
+    <string name="max_speed_dial_description">The maximum speed shown on the outer dial</string>
+    <string name="use_mph_title">Use MPH</string>
+    <string name="use_mph_description">Show speed in miles rather than kilometers</string>
+    <string name="enable_alarms_title">Enable Alarms</string>
+    <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
+    <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>
+    <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
+    <string name="speed_trigger_description">Speed that triggers the alarm</string>
+    <string name="speed_alarm2_phone_title">Speed Alarm 2</string>
+    <string name="speed_alarm3_phone_title">Speed Alarm 3</string>
+    <string name="alarm_1_battery_title">Battery Percent</string>
+    <string name="alarm_1_battery_description">Battery percent that activates the alarm</string>
+    <string name="alarm_2_battery_title">Battery Percent</string>
+    <string name="alarm_3_battery_title">Battery Percent</string>
+    <string name="current_alarm_title">Current Alarm</string>
+    <string name="current_title">Current</string>
+    <string name="alarm_current_description">Current that triggers the alarm</string>
+    <string name="temperature_alarm_title">Temperature Alarm</string>
+    <string name="temperature_title">Temperature</string>
+    <string name="alarm_temperature_description">Temperature that triggers the alarm</string>
+    <string name="speed_axis">speed</string>
+    <string name="current_axis">current</string>
+    <string name="no_chart_data">No data available</string>
+    <string name="auto_log_title">Auto Log</string>
+    <string name="auto_log_description">Start logging automatically when a wheel is connected</string>
+    <string name="auto_upload_log_title">Auto Upload Logs</string>
+    <string name="auto_upload_log_description">Automatically upload log files to Google Drive</string>
+    <string name="log_location_title">Log location</string>
+    <string name="log_location_decription">Include location data within the logs</string>
+    <string name="use_gps_title">Use GPS for location</string>
+    <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
+    <string name="on_off_strobe">Off/On/Strobe</string>
+    <string name="soft_medium_hard">Soft/Medium/Hard</string>
+    <string name="alarm_settings_description">Alarm settings</string>
+    <string name="alarm_mode_title">Alarm Mode</string>
+    <string name="calibration_title">Calibration</string>
+    <string name="is_gotway_mcm_title">My Wheel is a Gotway MCM</string>
+    <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
+    <string name="battery_voltage_title">Battery voltage</string>
+    <string name="battary_voltage_description">67V/84V/100V</string>
+    <string name="off_level_1_alarm">Turn off level 1 alarm</string>
+    <string name="off_level_2_alarm">Turn off level 2 alarm</string>
+    <string name="on_level_alarm">Turn on alarm</string>
+    <string name="metre">m</string>
+    <string name="on_headlight_title">Switch on the light</string>
+    <string name="on_headlight_description">Activate headlight</string>
+    <string name="leds_settings_title">Switch on wheel illumination</string>
+    <string name="leds_settings_description">Activate leds on the sides</string>
+    <string name="disable_handle_button_title">Disable handle button</string>
+    <string name="disable_handle_button_description">Wheel will not disable when you press the button on the handle</string>
+    <string name="speaker_volume_title">Speaker volume</string>
+    <string name="speaker_volume_description">Change built-in speaker volume</string>
+    <string name="pedal_horizont_title">Pedals</string>
+    <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
+    <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
+    <string name="volt">V</string>
+    <string name="watt">W</string>
 
-	
 </resources>

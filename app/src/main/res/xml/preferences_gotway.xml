@@ -5,63 +5,63 @@
 
     <ListPreference
         android:key="@string/light_mode"
-        android:title="Light Mode"
+        android:title="@string/light_mode_title"
         android:defaultValue="0"
 		android:enabled="true"
         android:entries="@array/light_mode_gw"
         android:entryValues="@array/light_mode_values"
-        android:summary="Off/On/Strobe" />	
+        android:summary="@string/on_off_strobe" />
 			
 			
     <ListPreference
         android:key="@string/alarm_mode"
-        android:title="Alarm Mode"
+        android:title="@string/alarm_mode_title"
         android:defaultValue="0"
 		android:enabled="true"
         android:entries="@array/alarm_mode_gw"
         android:entryValues="@array/alarm_mode_values"
-        android:summary="Alarm settings" />	
+        android:summary="@string/alarm_settings_title" />
 	
     <ListPreference
         android:key="@string/pedals_mode"
-        android:title="Pedals Mode"
+        android:title="@string/pedals_mode_title"
         android:defaultValue="1"
         android:entries="@array/pedals_mode"
         android:entryValues="@array/pedals_mode_values"
-        android:summary="Soft/Medium/Hard" />
+        android:summary="@string/soft_medium_hard" />
 
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/wheel_max_speed"
-        android:title="Wheel speed limit"
-        android:summary="Tiltback speed, 0=disabled"
+        android:title="@string/max_speed_title"
+        android:summary="@string/tilt_back_description"
         android:defaultValue="25"
 		android:enabled="true"
         sample:msbp_minValue="0"
         sample:msbp_maxValue="50"
         sample:msbp_interval="1"
-        sample:msbp_measurementUnit="km/h"
+        sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>
 
 		
 	<Preference
         android:key="@string/start_calibration"
 		android:enabled="true"
-        android:title="Calibration"/>
+        android:title="@string/calibration_title"/>
 		
 	<CheckBoxPreference
         android:key="@string/use_ratio"
-        android:title="My Wheel is a Gotway MCM "
-        android:summary="If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal" />
+        android:title="@string/is_gotway_mcm_title"
+        android:summary="@string/is_gotway_mcm_description" />
 
 	<ListPreference
-		android:key="@string/gotway_voltage"
-		android:title="Battery voltage"
-		android:enabled="true"
 		android:defaultValue="0"
+		android:enabled="true"
 		android:entries="@array/gotway_voltage"
-		android:entryValues="@array/gotway_voltage_values"
-		android:summary="67V/84V/100V" />
+		android:entryValues="@array/gotway_voltage"
+		android:key="@string/gotway_voltage"
+		android:summary="@string/battary_voltage_description"
+		android:title="@string/battery_voltage_title" />
 
 
 </PreferenceScreen>

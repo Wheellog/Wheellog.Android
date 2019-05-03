@@ -6,9 +6,9 @@
     </string-array>
 
     <string-array name="horn_modes">
-        <item>Disabled</item>
-        <item>On-board (KingSong)</item>
-        <item>via bluetooth audio</item>
+        <item>@string/disabled</item>
+        <item>@string/on_board_horn_ks</item>
+        <item>@string/bluetooth_audio_horn</item>
     </string-array>
 
     <string-array name="horn_mode_values">
@@ -18,9 +18,9 @@
     </string-array>
 	
 	<string-array name="pedals_mode">
-        <item>Hard</item>
-        <item>Medium</item>
-        <item>Soft</item>
+        <item>@string/hard</item>
+        <item>@string/medium</item>
+        <item>@string/soft</item>
     </string-array>
 	
 	<string-array name="pedals_mode_values">
@@ -30,22 +30,22 @@
     </string-array>
 	
 	<string-array name="light_mode_ks">
-        <item>On</item>
-        <item>Off</item>
-        <item>Auto</item>
+        <item>@string/on</item>
+        <item>@string/off</item>
+        <item>@string/auto</item>
     </string-array>
 	
 	
 	<string-array name="light_mode_gw">
-        <item>Off</item>
-        <item>On</item>
-        <item>Strobe</item>
+        <item>@string/off</item>
+        <item>@string/on</item>
+        <item>@string/strobe</item>
     </string-array>
 	
 	<string-array name="alarm_mode_gw">
-        <item>Turn off level 1 alarm</item>
-        <item>Turn off level 2 alarm</item>
-        <item>Turn on alarm</item>
+        <item>@string/off_level_1_alarm</item>
+        <item>@string/off_level_2_alarm</item>
+        <item>@string/on_level_alarm</item>
     </string-array>
 	
 	<string-array name="alarm_mode_values">
@@ -61,8 +61,8 @@
     </string-array>	
 	
 	<string-array name="strobe_mode_ks">
-        <item>Off</item>
-        <item>On</item>        
+        <item>@string/off</item>
+        <item>@string/on</item>
     </string-array>
 	
 	<string-array name="strobe_mode_values">
@@ -71,8 +71,8 @@
     </string-array>	
 	
 	<string-array name="led_mode">
-        <item>Off</item>
-        <item>On</item>        
+        <item>@string/off</item>
+        <item>@string/on</item>
     </string-array>
 	
 	<string-array name="led_mode_values">

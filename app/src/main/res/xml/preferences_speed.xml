@@ -5,19 +5,19 @@
 
     <CheckBoxPreference
         android:key="@string/use_mph"
-        android:title="Use MPH"
-        android:summary="Show speed in miles rather than kilometers" />
+        android:title="@string/use_mph_title"
+        android:summary="@string/use_mph_description" />
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/max_speed"
-        android:title="Max Speed"
-        android:summary="The maximum speed shown on the outer dial"
+        android:title="@string/max_speed_dial_title"
+        android:summary="@string/max_speed_dial_description"
         android:enabled="true"
         android:defaultValue="30"
         sample:msbp_minValue="10"
         sample:msbp_maxValue="50"
         sample:msbp_interval="1"
-        sample:msbp_measurementUnit="km/h"
+        sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>
 
 </PreferenceScreen>

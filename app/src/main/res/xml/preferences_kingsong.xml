@@ -1,54 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+	xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
-    <ListPreference
+	<ListPreference
         android:key="@string/light_mode"
-        android:title="Light Mode"
+        android:title="@string/light_mode_title"
         android:defaultValue="0"
 		android:enabled="true"
         android:entries="@array/light_mode_ks"
         android:entryValues="@array/light_mode_values"
-        android:summary="On/Off/Auto" />	
-		
+        android:summary="@string/on_off_auto" />
+
 	<ListPreference
         android:key="@string/strobe_mode"
-        android:title="Strobe Mode"
+        android:title="@string/strobe_mode_title"
 		android:enabled="true"
         android:defaultValue="0"
         android:entries="@array/strobe_mode_ks"
         android:entryValues="@array/strobe_mode_values"
-        android:summary="On/Off" />
+        android:summary="@string/on_off" />
 
 	<ListPreference
         android:key="@string/led_mode"
-        android:title="Led Mode"
+        android:title="@string/led_mode_title"
 		android:enabled="true"
         android:defaultValue="1"
         android:entries="@array/led_mode"
         android:entryValues="@array/led_mode_values"
-        android:summary="On/Off" />	
+        android:summary="@string/on_off" />
 
-		
+
 	<ListPreference
         android:key="@string/pedals_mode"
-        android:title="Pedals Mode"
+        android:title="@string/pedals_mode_title"
         android:defaultValue="1"
         android:entries="@array/pedals_mode"
         android:entryValues="@array/pedals_mode_values"
-        android:summary="Soft/Medium/Hard" />
+        android:summary="@string/soft_medium_hard" />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/wheel_max_speed"
-        android:title="Wheel speed limit"
-        android:summary="Tiltback speed"
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
 		android:enabled="true"
-        android:defaultValue="25"
-        sample:msbp_minValue="1"
-        sample:msbp_maxValue="50"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="km/h"
-        sample:msbp_dialogEnabled="true"/>
-		
+		android:key="@string/wheel_max_speed"
+		android:summary="@string/tilt_back_description"
+		android:title="@string/max_speed_title"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="@string/kmh"
+		sample:msbp_minValue="0" />
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="@string/wheel_ks_alarm3"
+		android:summary="@string/alarm3_description"
+		android:title="@string/alert3_title"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="@string/kmh"
+		sample:msbp_minValue="0" />
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="@string/wheel_ks_alarm2"
+		android:summary="@string/alarm2_description"
+		android:title="@string/alert2_title"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="@string/kmh"
+		sample:msbp_minValue="0" />
+	<com.pavelsikun.seekbarpreference.SeekBarPreference
+		android:defaultValue="0"
+		android:enabled="true"
+		android:key="@string/wheel_ks_alarm1"
+		android:summary="@string/alarm1_description"
+		android:title="@string/alert1_title"
+		sample:msbp_dialogEnabled="true"
+		sample:msbp_interval="1"
+		sample:msbp_maxValue="50"
+		sample:msbp_measurementUnit="@string/kmh"
+		sample:msbp_minValue="0" />
+
 </PreferenceScreen>

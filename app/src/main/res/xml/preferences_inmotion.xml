@@ -5,35 +5,35 @@
 
     <CheckBoxPreference
         android:key="@string/light_enabled"
-        android:title="Switch on the light"
-        android:summary="Activate headlight" />
+        android:title="@string/on_headlight_title"
+        android:summary="@string/on_headlight_description" />
 
     <CheckBoxPreference
         android:key="@string/led_enabled"
         android:title="Switch on wheel illumination"
-        android:summary="Activate leds on the sides" />
+        android:summary="@string/leds_settings_description" />
 
     <CheckBoxPreference
         android:key="@string/handle_button_disabled"
-        android:title="Disable handle button"
-        android:summary="Wheel will not disable when you press the button on the handle" />
+        android:title="@string/disable_handle_button_title"
+        android:summary="@string/disable_handle_button_description" />
 
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/wheel_max_speed"
-        android:title="Wheel speed limit"
-        android:summary="Tiltback speed"
+        android:title="@string/max_speed_title"
+        android:summary="@string/tilt_back_description"
         android:defaultValue="25"
         sample:msbp_minValue="3"
         sample:msbp_maxValue="45"
         sample:msbp_interval="1"
-        sample:msbp_measurementUnit="km/h"
+        sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/speaker_volume"
-        android:title="Speaker volume"
-        android:summary="Change built-in speaker volume"
+        android:title="@string/speaker_volume_description"
+        android:summary="@string/speaker_volume_description"
         android:defaultValue="50"
         sample:msbp_minValue="0"
         sample:msbp_maxValue="100"
@@ -43,8 +43,8 @@
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/pedals_adjustment"
-        android:title="Pedals"
-        android:summary="Horizontal pedals adjustment"
+        android:title="@string/pedal_horizont_title"
+        android:summary="@string/pedal_horizont_description"
         android:defaultValue="0"
         sample:msbp_minValue="-80"
         sample:msbp_maxValue="80"

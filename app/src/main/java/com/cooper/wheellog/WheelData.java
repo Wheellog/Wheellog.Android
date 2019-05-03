@@ -18,6 +18,7 @@ import com.cooper.wheellog.utils.InMotionAdapter;
 import com.cooper.wheellog.utils.NinebotZAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +63,7 @@ public class WheelData {
     private int mFanStatus;
     private boolean mConnectionState = false;
 	private boolean mNewWheelSettings = false;
+    private boolean mKSAlertsAndSpeedupdated = false;
     private String mName = "Unknown";
     private String mModel = "Unknown";
 	private String mModeStr = "Unknown";
@@ -79,7 +81,7 @@ public class WheelData {
 	private boolean mWheelLightEnabled = false;
 	private boolean mWheelLedEnabled = false;
 	private boolean mWheelButtonDisabled = false;
-	private int mWheelMaxSpeed = 25;
+	private int mWheelMaxSpeed = 0;
 	private int mWheelSpeakerVolume = 50;
 	private int mWheelTiltHorizon = 0;
 	
@@ -88,6 +90,9 @@ public class WheelData {
     private int mAlarm1Speed = 0;
     private int mAlarm2Speed = 0;
     private int mAlarm3Speed = 0;
+    private int mKSAlarm1Speed = 0;
+    private int mKSAlarm2Speed = 0;
+    private int mKSAlarm3Speed = 0;
     private int mAlarm1Battery = 0;
     private int mAlarm2Battery = 0;
     private int mAlarm3Battery = 0;
@@ -149,15 +154,35 @@ public class WheelData {
     }
 	
     int getWheelMaxSpeed() {
+
         return mWheelMaxSpeed;
     }
-	
+
+    int getKSAlarm1Speed() {
+
+        return mKSAlarm1Speed;
+    }
+
+    int getKSAlarm2Speed() {
+
+        return mKSAlarm2Speed;
+    }
+
+    int getKSAlarm3Speed() {
+
+        return mKSAlarm3Speed;
+    }
+
 	int getSpeakerVolume() {
         return mWheelSpeakerVolume;
     }
 	
 	int getPedalsPosition() {
         return mWheelTiltHorizon;
+    }
+
+    public boolean is_pref_received(){
+        return mKSAlertsAndSpeedupdated;
     }
 
     public void setBtName(String btName) {
@@ -348,19 +373,57 @@ public class WheelData {
 			}
 		}
 		if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            byte[] data = new byte[20];
-            data[0] = (byte) 0xAA;
-            data[1] = (byte) 0x55;
-			data[6] = (byte) 0x1F;
-			data[8] = (byte) wheelMaxSpeed;
-            data[16] = (byte) 0x85;
-            data[17] = (byte) 0x14;
-            data[18] = (byte) 0x5A;
-            data[19] = (byte) 0x5A;
-            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+            if (mWheelMaxSpeed != wheelMaxSpeed) {
+                mWheelMaxSpeed = wheelMaxSpeed;
+                updateKSAlarmAndSpeed();
+            }
 		}
 		
 	}
+
+    public void updateKSAlarmAndSpeed() {
+        byte[] data = new byte[20];
+        data[0] = (byte) 0xAA;
+        data[1] = (byte) 0x55;
+        data[2] = (byte) mKSAlarm1Speed;
+        data[4] = (byte) mKSAlarm2Speed;
+        data[6] = (byte) mKSAlarm3Speed;
+        data[8] = (byte) mWheelMaxSpeed;
+        data[16] = (byte) 0x85;
+
+        if((mWheelMaxSpeed | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0){
+            data[16] = (byte) 0x98; // request speed & alarm values from wheel
+        }
+
+        data[17] = (byte) 0x14;
+        data[18] = (byte) 0x5A;
+        data[19] = (byte) 0x5A;
+        mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+
+    }
+    public void updateKSAlarm1(int wheelKSAlarm1) {
+        if (mKSAlarm1Speed != wheelKSAlarm1) {
+            mKSAlarm1Speed = wheelKSAlarm1;
+            updateKSAlarmAndSpeed();
+        }
+
+    }
+
+    public void updateKSAlarm2(int wheelKSAlarm2) {
+        if (mKSAlarm2Speed != wheelKSAlarm2) {
+            mKSAlarm2Speed = wheelKSAlarm2;
+            updateKSAlarmAndSpeed();
+        }
+
+    }
+
+    public void updateKSAlarm3(int wheelKSAlarm3) {
+        if (mKSAlarm3Speed != wheelKSAlarm3) {
+            mKSAlarm3Speed = wheelKSAlarm3;
+            updateKSAlarmAndSpeed();
+        }
+
+    }
 	
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
@@ -862,6 +925,21 @@ public class WheelData {
                 System.arraycopy(data, 17, sndata, 14, 3);
                 sndata[17] = (byte) 0;
                 mSerialNumber = new String(sndata);
+                updateKSAlarmAndSpeed();
+            }
+            else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
+                mWheelMaxSpeed = (data[10] & 255);
+                mKSAlarm3Speed = (data[8] & 255);
+                mKSAlarm2Speed = (data[6] & 255);
+                mKSAlarm1Speed = (data[4] & 255);
+                mKSAlertsAndSpeedupdated = true;
+                // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
+                if((data[16] & 255) == 164)
+                {
+                    data[16] = (byte)0x98;
+                    mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+                }
+
             }
         }
         return false;
@@ -1062,7 +1140,7 @@ public class WheelData {
 		mWheelLightEnabled = false;
 		mWheelLedEnabled = false;
 		mWheelButtonDisabled = false;
-		mWheelMaxSpeed = 25;
+		mWheelMaxSpeed = 0;
 		mWheelSpeakerVolume = 50;
 	
     }
