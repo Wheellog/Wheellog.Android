@@ -17,8 +17,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 36
-        versionName "2.0.19"
+        versionCode 37
+        versionName "2.0.19_KS_RE"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
     }
     buildTypes {

@@ -6,6 +6,6 @@
 	<Preference
 		android:key="@string/no_settings"
 		android:enabled="false"
-		android:title="Wheel settings for Ninebot Z not available yet"/>
+		android:title="@string/ninebotz_settings_title"/>
 		
 </PreferenceScreen>

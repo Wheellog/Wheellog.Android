@@ -3,23 +3,23 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
         android:key="@string/auto_log"
-        android:title="Auto Log"
-        android:summary="Start logging automatically when a wheel is connected" />
+        android:title="@string/auto_log_title"
+        android:summary="@string/auto_log_description" />
 
     <CheckBoxPreference
         android:key="@string/auto_upload"
-        android:title="Auto Upload Logs"
-        android:summary="Automatically upload log files to Google Drive" />
+        android:title="@string/auto_upload_log_title"
+        android:summary="@string/auto_upload_log_description" />
 
     <CheckBoxPreference
         android:key="@string/log_location_data"
-        android:title="Log location"
-        android:summary="Include location data within the logs" />
+        android:title="@string/log_location_title"
+        android:summary="@string/log_location_decription" />
 
     <CheckBoxPreference
         android:key="@string/use_gps"
         android:dependency="log_location_data"
-        android:title="Use GPS for location"
-        android:summary="Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power" />
+        android:title="@string/use_gps_title"
+        android:summary="@string/use_gps_description" />
 
 </PreferenceScreen>
