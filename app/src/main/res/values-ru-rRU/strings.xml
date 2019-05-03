@@ -23,6 +23,8 @@
     <string name="total">Пробег</string>
     <string name="average_speed">Сред. скорость</string>
     <string name="average_riding_speed">Сред. движения</string>
+    <string name="angle">Наклон вперед</string>
+    <string name="roll">Наклон в бок</string>
     <string name="temperature2">Темп. процессора</string>
     <string name="total_distance">Пробег</string>
     <string name="name">Название</string>
@@ -135,4 +137,9 @@
     <string name="ninebotz_settings_title">К сожалению настройки для вашего колеса пока не доступны.</string>
     <string name="volt">В</string>
     <string name="watt">Вт</string>
+    <string name="enable_auto_upload_title">Включить автозагрузку?</string>
+    <string name="enable_auto_upload_descriprion">Автоматическая загрузка будет потреблять ваши мобильные данные, за это может взиматься дополнительная плата вашим мобильным оператором</string>
+
+
+
 </resources>

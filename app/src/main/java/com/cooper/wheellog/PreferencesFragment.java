@@ -68,8 +68,8 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 if (SettingsUtil.isAutoUploadEnabled(getActivity()) && !mDataWarningDisplayed) {
                     SettingsUtil.setAutoUploadEnabled(getActivity(), false);
                     new AlertDialog.Builder(getActivity())
-                            .setTitle("Enable Auto Upload?")
-                            .setMessage("Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.")
+                            .setTitle(getString(R.string.enable_auto_upload_title))  // ("Enable Auto Upload?")
+                            .setMessage(getString(R.string.enable_auto_upload_descriprion))
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     mDataWarningDisplayed = true;
@@ -340,7 +340,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                             String buildTime = BuildConfig.BUILD_TIME;
                             new AlertDialog.Builder(getActivity())
                                     .setTitle(R.string.about_app_title)
-                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Palachzzz</i> <br><a href=\"palachzzz.wl@gmail.com\">palachzzz.wl@gmail.com</a>", versionName, buildTime)))
+                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Palachzzz</i> <br><a href=\"palachzzz.wl@gmail.com\">palachzzz.wl@gmail.com</a> <br> Thanks to:<br>JumpMaster - project initiator<br>cedbossneo - Inmotion support<br>juliomap - Tizen support<br>MacPara - some improvements<br>datarsoja - KS alerts<br>and others!", versionName, buildTime)))
                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
 

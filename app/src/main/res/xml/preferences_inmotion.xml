@@ -10,7 +10,7 @@
 
     <CheckBoxPreference
         android:key="@string/led_enabled"
-        android:title="Switch on wheel illumination"
+        android:title="@string/leds_settings_title"
         android:summary="@string/leds_settings_description" />
 
     <CheckBoxPreference
@@ -23,7 +23,7 @@
         android:key="@string/wheel_max_speed"
         android:title="@string/max_speed_title"
         android:summary="@string/tilt_back_description"
-        android:defaultValue="25"
+        android:defaultValue="0"
         sample:msbp_minValue="3"
         sample:msbp_maxValue="45"
         sample:msbp_interval="1"

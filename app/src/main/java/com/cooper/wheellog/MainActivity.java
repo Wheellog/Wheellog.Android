@@ -968,7 +968,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
 		WheelData.getInstance().setUseRatio(use_ratio);
 
-        int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "0"));
+        int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
         //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
@@ -1204,4 +1204,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         return frag;
     }
+
+
 }

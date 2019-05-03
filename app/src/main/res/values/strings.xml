@@ -68,6 +68,9 @@
     <string name="icon_connection">Connection Icon</string>
     <string name="connection_lost_at">Connection lost at %1s</string>
 
+    <string name="enable_auto_upload_title">Enable Auto Upload?</string>
+    <string name="enable_auto_upload_descriprion">Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.</string>
+
     <string name="logging_error_no_storage_permission">No permission to write to external storage. Logging cancelled.</string>
     <string name="logging_error_storage_unavailable">External storage is unavailable. Logging cancelled.</string>
     <string name="logging_error_no_location_permission">Log location was requested but no permission to location data was provided. No location data will be logged.</string>

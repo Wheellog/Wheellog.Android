@@ -35,11 +35,11 @@
         android:key="@string/wheel_max_speed"
         android:title="@string/max_speed_title"
         android:summary="@string/tilt_back_description"
-        android:defaultValue="25"
+        android:defaultValue="30"
 		android:enabled="true"
         sample:msbp_minValue="0"
-        sample:msbp_maxValue="50"
-        sample:msbp_interval="1"
+        sample:msbp_maxValue="48"
+        sample:msbp_interval="3"
         sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>
 
@@ -55,7 +55,7 @@
         android:summary="@string/is_gotway_mcm_description" />
 
 	<ListPreference
-		android:defaultValue="0"
+		android:defaultValue="1"
 		android:enabled="true"
 		android:entries="@array/gotway_voltage"
 		android:entryValues="@array/gotway_voltage"
