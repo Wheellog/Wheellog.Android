@@ -197,7 +197,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                         String line;
 
                         while ((line = br.readLine()) != null)
-                            writer.append(line).append('\r');
+                            writer.append(line).append('\n');
 
                         br.close();
                         writer.close();
