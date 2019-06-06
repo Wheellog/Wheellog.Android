@@ -859,7 +859,7 @@ public class WheelData {
                 int battery;
 
 
-                if ((mModel.compareTo("KS-18L") == 0) || (mBtName.compareTo("RW") == 0 )) {
+                if ((mModel.compareTo("KS-18L") == 0) || (mBtName.compareTo("RW") == 0) || (mName.startsWith("ROCKW"))) {
 
                     if (mVoltage > 8350) {
                         battery = 100;
@@ -1210,7 +1210,7 @@ public class WheelData {
 				mContext.sendBroadcast(intent);
 				Timber.i("Protocol recognized as %s", wheel_Type);
 				//System.out.println("WheelRecognizedWD");
-                if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW"))) {
+                if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
                     Timber.i("It seems to be RochWheel, force to Kingsong proto");
                     wheel_Type = mContext.getResources().getString(R.string.kingsong);
                 }
