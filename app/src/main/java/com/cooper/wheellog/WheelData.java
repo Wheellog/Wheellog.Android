@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Vibrator;
+import android.media.ToneGenerator;
+import android.media.AudioManager;
 
 import android.text.InputType;
 import android.widget.EditText;
@@ -769,6 +771,8 @@ public class WheelData {
         mContext.sendBroadcast(intent);
         if (v.hasVibrator() && !mDisablePhoneVibrate)
             v.vibrate(pattern, -1);
+        ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
     }
 
     void decodeResponse(byte[] data, Context mContext) {

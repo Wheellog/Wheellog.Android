@@ -24,7 +24,7 @@
             android:defaultValue="29"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
-            sample:msbp_maxValue="50"
+            sample:msbp_maxValue="100"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="@string/kmh"
             sample:msbp_dialogEnabled="true"/>
@@ -53,7 +53,7 @@
             android:defaultValue="0"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
-            sample:msbp_maxValue="50"
+            sample:msbp_maxValue="100"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="@string/kmh"
             sample:msbp_dialogEnabled="true"/>
@@ -82,7 +82,7 @@
             android:defaultValue="0"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
-            sample:msbp_maxValue="50"
+            sample:msbp_maxValue="100"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="@string/kmh"
             sample:msbp_dialogEnabled="true"/>
@@ -111,7 +111,7 @@
             android:defaultValue="35"
             sample:dependency="alarms_enabled"
             sample:msbp_minValue="0"
-            sample:msbp_maxValue="150"
+            sample:msbp_maxValue="200"
             sample:msbp_interval="1"
             sample:msbp_measurementUnit="@string/amp"
             sample:msbp_dialogEnabled="true"/>
