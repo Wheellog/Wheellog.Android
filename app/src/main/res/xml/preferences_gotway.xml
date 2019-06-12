@@ -58,7 +58,7 @@
 		android:defaultValue="1"
 		android:enabled="true"
 		android:entries="@array/gotway_voltage"
-		android:entryValues="@array/gotway_voltage"
+		android:entryValues="@array/gotway_voltage_values"
 		android:key="@string/gotway_voltage"
 		android:summary="@string/battary_voltage_description"
 		android:title="@string/battery_voltage_title" />

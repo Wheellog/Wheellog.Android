@@ -756,15 +756,15 @@ public class WheelData {
 
         switch (alarmType) {
             case SPEED:
-                pattern = new long[]{0, 300, 150, 300, 150, 500};
+                pattern = new long[]{0, 100, 100};
                 mSpeedAlarmExecuted = true;
                 break;
             case CURRENT:
-                pattern = new long[]{0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
+                pattern = new long[]{0, 50, 50, 50, 50};
                 mCurrentAlarmExecuted = true;
                 break;
 			case TEMPERATURE:
-                pattern = new long[]{0, 500, 100, 100, 100, 500, 100, 100, 100, 500, 100, 100, 100};
+                pattern = new long[]{0, 500, 500};
                 mCurrentAlarmExecuted = true;
                 break;
         }
@@ -859,7 +859,7 @@ public class WheelData {
                 int battery;
 
 
-                if ((mModel.compareTo("KS-18L") == 0) || (mBtName.compareTo("RW") == 0) || (mName.startsWith("ROCKW"))) {
+                if ((mModel.compareTo("KS-18L") == 0) || (mModel.compareTo("KS-16X") == 0) ||(mBtName.compareTo("RW") == 0) || (mName.startsWith("ROCKW"))) {
 
                     if (mVoltage > 8350) {
                         battery = 100;
