@@ -98,6 +98,10 @@ public class SettingsUtil {
         return Integer.parseInt(getSharedPreferences(context).getString(context.getString(R.string.horn_mode), "0"));
     }
 
+    public static boolean getGarminConnectIQEnable(Context context) {
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.garmin_connectiq_enable), false);
+    }
+
     //Inmotion Specific, but can be the same for other wheels
 
     public static boolean hasPasswordForWheel(Context context, String id) {

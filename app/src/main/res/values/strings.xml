@@ -140,8 +140,14 @@
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
+    <string name="garmin_connectiq_enable" translatable="false">garmin_connectiq_enable</string>
+    <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
+    <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
 
-	
+    // Garmin ConnectIQ dialogs
+    <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
+    <string name="garmin_connectiq_service_unavailable_message">The ConnectIQ service is unavailable.</string>
+
 	// TRIP PREFERENCES
 	<string name="reset_top_speed" translatable="false">reset_top_speed</string>
 	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
