@@ -854,6 +854,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onDestroy() {
         stopPebbleService();
+        stopGarminConnectIQ();
         stopLoggingService();
         WheelData.getInstance().full_reset();
         if (mBluetoothLeService != null) {
@@ -904,6 +905,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 return true;
             case R.id.miWatch:
                 togglePebbleService();
+                if (SettingsUtil.getGarminConnectIQEnable(this))
+                    toggleGarminConnectIQ();
+                else
+                    stopGarminConnectIQ();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1079,6 +1084,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             stopService(pebbleServiceIntent);
         else
             startService(pebbleServiceIntent);
+    }
+
+    private void stopGarminConnectIQ() {
+        if (GarminConnectIQ.isInstanceCreated())
+            toggleGarminConnectIQ();
+    }
+    private void toggleGarminConnectIQ() {
+        Intent garminConnectIQIntent = new Intent(getApplicationContext(), GarminConnectIQ.class);
+        if (GarminConnectIQ.isInstanceCreated())
+            stopService(garminConnectIQIntent);
+        else
+            startService(garminConnectIQIntent);
     }
 
     private void startBluetoothService() {
