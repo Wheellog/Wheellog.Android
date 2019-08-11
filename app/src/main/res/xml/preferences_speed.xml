@@ -4,9 +4,15 @@
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
+        android:key="@string/use_eng"
+        android:title="@string/use_eng_title"
+        android:summary="@string/use_eng_description" />
+
+    <CheckBoxPreference
         android:key="@string/use_mph"
         android:title="@string/use_mph_title"
         android:summary="@string/use_mph_description" />
+
 
     <com.pavelsikun.seekbarpreference.SeekBarPreference
         android:key="@string/max_speed"
@@ -15,7 +21,7 @@
         android:enabled="true"
         android:defaultValue="30"
         sample:msbp_minValue="10"
-        sample:msbp_maxValue="50"
+        sample:msbp_maxValue="100"
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>

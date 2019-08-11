@@ -66,7 +66,7 @@
     <string name="soft">Мягкие</string>
     <string name="on_board_horn_ks">Встроенный (KingSong)</string>
     <string name="bluetooth_audio_horn">через блютуз</string>
-    <string name="speed_settings_title">Настройки скорости</string>
+    <string name="speed_settings_title">Настройки приложения</string>
     <string name="logs_settings_title">Настройки логирования</string>
     <string name="alarm_settings_title">Настройки сигналов</string>
     <string name="watch_settings_title">Настройки часов</string>

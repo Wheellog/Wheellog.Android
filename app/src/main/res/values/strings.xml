@@ -135,6 +135,7 @@
 
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
+    <string name="use_eng" translatable="false">use_eng</string>
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
 
@@ -184,7 +185,7 @@
     <string name="soft">Soft</string>
     <string name="on_board_horn_ks">On-board (KingSong)</string>
     <string name="bluetooth_audio_horn">via bluetooth audio</string>
-    <string name="speed_settings_title">Speed Settings</string>
+    <string name="speed_settings_title">Application Settings</string>
     <string name="logs_settings_title">Log Settings</string>
     <string name="alarm_settings_title">Alarm Settings</string>
     <string name="watch_settings_title">Watch Preferences</string>
@@ -200,6 +201,8 @@
     <string name="max_speed_dial_description">The maximum speed shown on the outer dial</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
+    <string name="use_eng_title">English</string>
+    <string name="use_eng_description">Use English language instead of Android system language</string>
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
     <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>

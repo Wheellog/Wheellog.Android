@@ -36,6 +36,8 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
@@ -71,7 +73,10 @@ import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
-
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(WheelLog.localeManager.setLocale(base));
+    }
     Menu mMenu;
     MenuItem miSearch;
     MenuItem miWheel;
@@ -124,6 +129,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected static final int REQUEST_CODE_RESOLUTION = 40;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
+
+
+
+
+
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -792,6 +802,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }, 1000);
         }
 
+//        if (SettingsUtil.isUseENG(this)) {
+  //          if WheelLog.localeManager.getLocale(this, language);
+//            setNewLocale("en",false);
+//        }
+
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -1221,6 +1236,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         return frag;
     }
+
+
 
 
 }

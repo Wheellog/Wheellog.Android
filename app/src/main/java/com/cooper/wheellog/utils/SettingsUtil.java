@@ -90,6 +90,10 @@ public class SettingsUtil {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.use_mph), false);
     }
 
+    public static boolean isUseENG(Context context) {
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.use_eng), false);
+    }
+
     public static int getMaxSpeed(Context context) {
         return getSharedPreferences(context).getInt(context.getString(R.string.max_speed), 30);
     }

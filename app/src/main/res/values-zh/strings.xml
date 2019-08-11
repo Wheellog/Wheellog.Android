@@ -18,7 +18,7 @@
     <string name="connection_failed">连接失败</string>
     <string name="disconnect">断开</string>
     <string name="connect_to_wheel">连接到轮子</string>
-    <string name="disconnect_from_wheel">断开车轮</string>
+    <string name="disconnect_from_wheel">断开轮子</string>
     <string name="wheel_disconnected">轮子断开</string>
     <string name="wheel_connecting">连接轮子中…</string>
     <string name="wheel_searching">搜索轮子中…</string>
@@ -36,12 +36,12 @@
     <string name="mode_learn">新手</string>
     <string name="mode_play">专家</string>
     <string name="mode_ride">一般</string>
-    <string name="waiting_for_wheel">等待轮子…</string>
-    <string name="speed">速度</string>
+    <string name="waiting_for_wheel">等待连接轮子中…</string>
+    <string name="speed">当前速度</string>
 	<string name="average_speed">平均速度</string>
 	<string name="average_riding_speed">骑行均速</string>
     <string name="top_speed">最高速度</string>
-    <string name="battery">电量</string>
+    <string name="battery">当前电量</string>
     <string name="distance">本次距离</string>
 	<string name="wheel_distance">轮子距离</string>
 	<string name="user_distance">用户距离</string>
@@ -51,7 +51,7 @@
     <string name="current">当前电流</string>
     <string name="power">当前功率</string>
     <string name="temperature">系统温度</string>
-	<string name="temperature2">CPU(?) temp</string>
+	<string name="temperature2">CPU(?) 温度</string>
 	<string name="angle">倾斜角度</string>
 	<string name="roll">Roll</string>
     <string name="fan_status">风扇状态</string>
@@ -62,7 +62,7 @@
     <string name="model">型号</string>
     <string name="version">版本</string>
     <string name="serial_number">序列号</string>
-    <string name="notification_text" translatable="false">%1$d%% • %2$d°C • %3$.1f km</string>
+
     <string name="icon_watch">手表图标</string>
     <string name="icon_logging">日志图标</string>
     <string name="icon_connection">连接图标</string>
@@ -83,7 +83,7 @@
 	<string name="alarm_text_current">电流警报触发</string>
 	<string name="alarm_text_temperature">温度报警触发</string>
 	
-
+ 
     <string name="kmh">km/h</string>
     <string name="mph">mph</string>
     <string name="km">km</string>
@@ -115,7 +115,7 @@
     <string name="soft">软</string>
     <string name="on_board_horn_ks">On-board (KingSong)</string>
     <string name="bluetooth_audio_horn">通过蓝牙音频</string>
-    <string name="speed_settings_title">速度设置</string>
+    <string name="speed_settings_title">应用设置</string>
     <string name="logs_settings_title">日志设置</string>
     <string name="alarm_settings_title">报警设置</string>
     <string name="watch_settings_title">手表设置</string>
