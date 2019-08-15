@@ -641,7 +641,7 @@ public class WheelData {
 	
 	void setUseRatio(boolean enabled) {
         mUseRatio = enabled;
-		reset();
+		//reset();
     }
 	
 	void setGotwayVoltage(int voltage) {
@@ -1002,7 +1002,7 @@ public class WheelData {
 //			if (mGotway84V) {
 //				mVoltage = (int)Math.round(mVoltage / 0.8);
 //			}
-            mVoltage = mVoltage + (int)Math.round(mVoltage*0.25*mGotwayVoltageScaler);
+            mVoltage = (int)Math.round(mVoltage*(1+(0.25*mGotwayVoltageScaler)));
             int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
             setCurrentTime(currentTime);
 

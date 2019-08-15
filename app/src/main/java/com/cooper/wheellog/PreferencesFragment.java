@@ -92,7 +92,21 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 break;
             case "use_mph":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
-                break;			
+                break;
+
+            case "use_eng":
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.use_eng_alert_title)
+                        .setMessage(R.string.use_eng_alert_description)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show();
+                break;
+
             case "max_speed":
                 getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;

@@ -136,6 +136,8 @@
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
     <string name="use_eng" translatable="false">use_eng</string>
+
+
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
 
@@ -201,6 +203,8 @@
     <string name="max_speed_dial_description">The maximum speed shown on the outer dial</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
+    <string name="use_eng_alert_title">Restart required</string>
+    <string name="use_eng_alert_description">Please restart the application to apply the language change</string>
     <string name="use_eng_title">English</string>
     <string name="use_eng_description">Use English language instead of Android system language</string>
     <string name="enable_alarms_title">Enable Alarms</string>
@@ -258,5 +262,7 @@
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
+
+
 
 </resources>
