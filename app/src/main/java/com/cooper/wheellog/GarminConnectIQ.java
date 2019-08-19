@@ -45,6 +45,10 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     public static final String TAG = GarminConnectIQ.class.getSimpleName();
     public static final String APP_ID = "df8bf0ab-1828-4037-a328-ee86d29d0501";
 
+    // This will require Garmin Connect V4.22
+    // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
+    public static final boolean FEATURE_FLAG_NANOHTTPD = false;
+
     public enum MessageType {
         EUC_DATA,
         PLAY_HORN,
@@ -340,13 +344,17 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
                 // Disabled the push method for now until a dev from garmin can shed some light on the
                 // intermittent FAILURE_DURING_TRANSFER that we have seen. This is documented here:
                 // https://forums.garmin.com/developer/connect-iq/f/legacy-bug-reports/5144/failure_during_transfer-issue-again-now-using-comm-sample
-                // startRefreshTimer();
+                if (!FEATURE_FLAG_NANOHTTPD) {
+                    startRefreshTimer();
+                }
 
                 // As a workaround, start a nanohttpd server that will listen for data requests from the watch. This is
                 // also documented on the link above and is apparently a good workaround for the meantime. In our implementation
                 // we instanciate the httpd server on an ephemeral port and send a message to the watch to tell it on which port
                 // it can request its data.
-                startWebServer();
+                if (FEATURE_FLAG_NANOHTTPD) {
+                    startWebServer();
+                }
                 break;
             case "NOT_PAIRED":
             case "NOT_CONNECTED":
