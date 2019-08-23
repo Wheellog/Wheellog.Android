@@ -47,7 +47,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
     // This will require Garmin Connect V4.22
     // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
-    public static final boolean FEATURE_FLAG_NANOHTTPD = false;
+    public static final boolean FEATURE_FLAG_NANOHTTPD = true;
 
     public enum MessageType {
         EUC_DATA,
