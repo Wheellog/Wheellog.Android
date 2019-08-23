@@ -495,7 +495,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
 class GarminConnectIQWebServer extends NanoHTTPD {
     public GarminConnectIQWebServer()throws IOException {
-        super("localhost", 0); // 0 to automatically find an available ephemeral port
+        super("127.0.0.1", 0); // 0 to automatically find an available ephemeral port
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
     }
 
