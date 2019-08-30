@@ -45,4 +45,5 @@ dependencies {
     implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
     implementation files('libs/connectiq.jar')
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
 }

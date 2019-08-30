@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -32,6 +33,11 @@ import com.garmin.android.connectiq.exception.InvalidStateException;
 import com.garmin.android.connectiq.exception.ServiceUnavailableException;
 import com.garmin.monkeybrains.serialization.MonkeyHash;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import fi.iki.elonen.NanoHTTPD;
+
 import static com.cooper.wheellog.utils.Constants.ACTION_REQUEST_KINGSONG_HORN;
 
 
@@ -39,26 +45,36 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     public static final String TAG = GarminConnectIQ.class.getSimpleName();
     public static final String APP_ID = "df8bf0ab-1828-4037-a328-ee86d29d0501";
 
+    // This will require Garmin Connect V4.22
+    // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
+    public static final boolean FEATURE_FLAG_NANOHTTPD = true;
+
     public enum MessageType {
         EUC_DATA,
         PLAY_HORN,
+        HTTP_READY,
     }
 
-    public static final int MESSAGE_KEY_MSG_TYPE    = -2;
-    public static final int MESSAGE_KEY_MSG_DATA    = -1;
-    public static final int MESSAGE_KEY_SPEED       = 0;
-    public static final int MESSAGE_KEY_BATTERY     = 1;
-    public static final int MESSAGE_KEY_TEMPERATURE = 2;
-    public static final int MESSAGE_KEY_FAN_STATE   = 3;
-    public static final int MESSAGE_KEY_BT_STATE    = 4;
-    public static final int MESSAGE_KEY_VIBE_ALERT  = 5;
-    public static final int MESSAGE_KEY_USE_MPH     = 6;
-    public static final int MESSAGE_KEY_MAX_SPEED   = 7;
-    public static final int MESSAGE_KEY_RIDE_TIME   = 8;
-    public static final int MESSAGE_KEY_DISTANCE    = 9;
-    public static final int MESSAGE_KEY_TOP_SPEED   = 10;
-    public static final int MESSAGE_KEY_READY       = 11;
-    public static final int MESSAGE_KEY_POWER       = 12;
+    public static final int MESSAGE_KEY_MSG_TYPE     = -2;
+    public static final int MESSAGE_KEY_MSG_DATA     = -1;
+    public static final int MESSAGE_KEY_SPEED        = 0;
+    public static final int MESSAGE_KEY_BATTERY      = 1;
+    public static final int MESSAGE_KEY_TEMPERATURE  = 2;
+    public static final int MESSAGE_KEY_FAN_STATE    = 3;
+    public static final int MESSAGE_KEY_BT_STATE     = 4;
+    public static final int MESSAGE_KEY_VIBE_ALERT   = 5;
+    public static final int MESSAGE_KEY_USE_MPH      = 6;
+    public static final int MESSAGE_KEY_MAX_SPEED    = 7;
+    public static final int MESSAGE_KEY_RIDE_TIME    = 8;
+    public static final int MESSAGE_KEY_DISTANCE     = 9;
+    public static final int MESSAGE_KEY_TOP_SPEED    = 10;
+    public static final int MESSAGE_KEY_READY        = 11;
+    public static final int MESSAGE_KEY_POWER        = 12;
+    public static final int MESSAGE_KEY_ALARM1_SPEED = 13;
+    public static final int MESSAGE_KEY_ALARM2_SPEED = 14;
+    public static final int MESSAGE_KEY_ALARM3_SPEED = 15;
+
+    public static final int MESSAGE_KEY_HTTP_PORT    = 99;
 
     int lastSpeed = 0;
     int lastBattery = 0;
@@ -81,8 +97,14 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     private IQDevice mDevice;
     private IQApp mMyApp;
 
+    private GarminConnectIQWebServer mWebServer;
+
     public static boolean isInstanceCreated() {
         return instance != null;
+    }
+
+    public static GarminConnectIQ instance() {
+        return instance;
     }
 
     @Override
@@ -120,6 +142,8 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
             // This is usually because the SDK was already shut down
             // so no worries.
         }
+
+        stopWebServer();
 
         instance = null;
     }
@@ -239,7 +263,6 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
             lastConnectionState = WheelData.getInstance().isConnected();
             data.put(MESSAGE_KEY_BT_STATE, lastConnectionState);
 
-            // TODO: hey I should actually make the watch vibrate at a certain speed!
             data.put(MESSAGE_KEY_VIBE_ALERT, false);
             data.put(MESSAGE_KEY_USE_MPH, SettingsUtil.isUseMPH(GarminConnectIQ.this));
             data.put(MESSAGE_KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(GarminConnectIQ.this));
@@ -318,18 +341,28 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
         switch(status.name()) {
             case "CONNECTED":
-                startRefreshTimer();
+                // Disabled the push method for now until a dev from garmin can shed some light on the
+                // intermittent FAILURE_DURING_TRANSFER that we have seen. This is documented here:
+                // https://forums.garmin.com/developer/connect-iq/f/legacy-bug-reports/5144/failure_during_transfer-issue-again-now-using-comm-sample
+                if (!FEATURE_FLAG_NANOHTTPD) {
+                    startRefreshTimer();
+                }
+
+                // As a workaround, start a nanohttpd server that will listen for data requests from the watch. This is
+                // also documented on the link above and is apparently a good workaround for the meantime. In our implementation
+                // we instanciate the httpd server on an ephemeral port and send a message to the watch to tell it on which port
+                // it can request its data.
+                if (FEATURE_FLAG_NANOHTTPD) {
+                    startWebServer();
+                }
                 break;
             case "NOT_PAIRED":
             case "NOT_CONNECTED":
             case "UNKNOWN":
                 cancelRefreshTimer();
+                stopWebServer();
         }
-
-        // TODO: make sure the device passed matches the one that's selected
-        // mStatusText.setText(status.name());
     }
-
 
     // IQApplicationEventListener
     @Override
@@ -407,6 +440,103 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
                     mp.release();
                 }
             });
+        }
+    }
+
+    public void startWebServer() {
+        Log.d(TAG,"startWebServer");
+
+        if (mWebServer != null)
+            return;
+
+        try {
+            mWebServer = new GarminConnectIQWebServer();
+            Log.d(TAG, "port is:" + mWebServer.getListeningPort());
+
+            HashMap<Object, Object> data = new HashMap<Object, Object>();
+            data.put(MESSAGE_KEY_HTTP_PORT, mWebServer.getListeningPort());
+
+            HashMap<Object, Object> message = new HashMap<Object, Object>();
+            message.put(MESSAGE_KEY_MSG_TYPE, MessageType.HTTP_READY.ordinal());
+            message.put(MESSAGE_KEY_MSG_DATA, new MonkeyHash(data));
+
+            try {
+                mConnectIQ.sendMessage(mDevice, mMyApp, message, new IQSendMessageListener() {
+
+                    @Override
+                    public void onMessageStatus(IQDevice device, IQApp app, IQMessageStatus status) {
+                        Log.d(TAG, "message status: " + status.name());
+
+                        if (status.name() != "SUCCESS")
+                            Toast.makeText(GarminConnectIQ.this, status.name(), Toast.LENGTH_LONG).show();
+                    }
+
+                });
+            } catch (InvalidStateException e) {
+                Log.e(TAG, "ConnectIQ is not in a valid state");
+                Toast.makeText(this, "ConnectIQ is not in a valid state", Toast.LENGTH_LONG).show();
+            } catch (ServiceUnavailableException e) {
+                Log.e(TAG, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?");
+                Toast.makeText(this, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (IOException e) {
+        }
+    }
+
+    public void stopWebServer() {
+        Log.d(TAG,"stopWebServer");
+        if (mWebServer != null) {
+            mWebServer.stop();
+            mWebServer = null;
+        }
+    }
+}
+
+class GarminConnectIQWebServer extends NanoHTTPD {
+    public GarminConnectIQWebServer()throws IOException {
+        super("127.0.0.1", 0); // 0 to automatically find an available ephemeral port
+        start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+    }
+
+    @Override
+    public Response serve(IHTTPSession session)
+    {
+        if (session.getMethod() == Method.GET && session.getUri().equals("/data")) {
+            return handleData();
+        }
+
+        return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Error 404, file not found.");
+    }
+
+    private Response handleData() {
+        Log.d("GarminConnectIQWebSe...","handleData");
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_SPEED, WheelData.getInstance().getSpeed() / 10); // Convert to km/h
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_BATTERY, WheelData.getInstance().getBatteryLevel());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_TEMPERATURE, WheelData.getInstance().getTemperature());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_FAN_STATE, WheelData.getInstance().getFanStatus());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_BT_STATE, WheelData.getInstance().isConnected());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_VIBE_ALERT, false);
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_USE_MPH, SettingsUtil.isUseMPH(GarminConnectIQ.instance()));
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(GarminConnectIQ.instance()));
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_RIDE_TIME, WheelData.getInstance().getRideTime());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_DISTANCE, WheelData.getInstance().getDistance() / 100);
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_TOP_SPEED, WheelData.getInstance().getTopSpeed() / 10);
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_POWER, (int) WheelData.getInstance().getPowerDouble());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, WheelData.getInstance().getKSAlarm1Speed());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, WheelData.getInstance().getKSAlarm2Speed());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, WheelData.getInstance().getKSAlarm3Speed());
+
+            JSONObject message = new JSONObject();
+            message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_TYPE, GarminConnectIQ.MessageType.EUC_DATA.ordinal());
+            message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_DATA, data);
+
+            return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString());
+        } catch (JSONException e) {
+            return newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, "text/plain", "");
         }
     }
 }
