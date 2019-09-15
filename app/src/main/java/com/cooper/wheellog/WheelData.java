@@ -18,6 +18,7 @@ import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.InMotionAdapter;
 import com.cooper.wheellog.utils.NinebotZAdapter;
+import com.cooper.wheellog.utils.NinebotAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
 
@@ -792,6 +793,10 @@ public class WheelData {
             new_data = decodeInmotion(data);
         else if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
             Timber.i("Ninebot_z decoding");
+            new_data = decodeNinebotZ(data);
+        }
+        else if (mWheelType == WHEEL_TYPE.NINEBOT) {
+            Timber.i("Ninebot_decoding");
             new_data = decodeNinebot(data);
 
         }
@@ -1020,7 +1025,7 @@ public class WheelData {
         return false;
     }
 
-    private boolean decodeNinebot(byte[] data) {
+    private boolean decodeNinebotZ(byte[] data) {
         ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
         if (rideStartTime == 0) {
@@ -1034,6 +1039,40 @@ public class WheelData {
                 mModel = "Ninebot Z";
             } else if (status instanceof NinebotZAdapter.versionStatus){
                 mVersion = ((NinebotZAdapter.versionStatus) status).getVersion();
+            } else {
+                mSpeed = (int) (status.getSpeed());
+                mVoltage = (int) (status.getVoltage());
+                mBattery = (int) (status.getBatt());
+                mCurrent = (int) (status.getCurrent());
+                mTotalDistance = (long) (status.getDistance());
+                mTemperature = (int) (status.getTemperature()*10);
+
+
+                setDistance((long) status.getDistance());
+                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+                setCurrentTime(currentTime);
+                setTopSpeed(mSpeed);
+            }
+
+
+        }
+        return true;
+    }
+
+    private boolean decodeNinebot(byte[] data) {
+        ArrayList<NinebotAdapter.Status> statuses = NinebotAdapter.getInstance().charUpdated(data);
+        if (statuses.size() < 1) return false;
+        if (rideStartTime == 0) {
+            rideStartTime = Calendar.getInstance().getTimeInMillis();
+            mRidingTime = 0;
+        }
+        for (NinebotAdapter.Status status: statuses) {
+            Timber.i(status.toString());
+            if (status instanceof NinebotAdapter.serialNumberStatus) {
+                mSerialNumber = ((NinebotAdapter.serialNumberStatus) status).getSerialNumber();
+                mModel = "Ninebot";
+            } else if (status instanceof NinebotAdapter.versionStatus){
+                mVersion = ((NinebotAdapter.versionStatus) status).getVersion();
             } else {
                 mSpeed = (int) (status.getSpeed());
                 mVoltage = (int) (status.getVoltage());
@@ -1105,6 +1144,7 @@ public class WheelData {
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.getInstance().stopTimer();
+        if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.getInstance().stopTimer();
         mBluetoothLeService = null;
         mWheelType = WHEEL_TYPE.Unknown;
         xAxis.clear();
@@ -1247,7 +1287,7 @@ public class WheelData {
                     }
                     return false;
                 } else if (mContext.getResources().getString(R.string.ninebot_z).equals(wheel_Type)) {
-                    Timber.i("Trying to start Ninebot");
+                    Timber.i("Trying to start Ninebot Z");
                     mWheelType = WHEEL_TYPE.NINEBOT_Z;
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
                     Timber.i("service UUID");
@@ -1271,6 +1311,32 @@ public class WheelData {
                     Timber.i("starting ninebot adapter");
                     return true;
                 }
+                else if (mContext.getResources().getString(R.string.ninebot).equals(wheel_Type)) {
+                    Timber.i("Trying to start Ninebot");
+                    mWheelType = WHEEL_TYPE.NINEBOT;
+                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
+                    Timber.i("service UUID");
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_READ_CHARACTER_UUID));
+                    Timber.i("read UUID");
+                    if (notifyCharacteristic == null) {
+                        Timber.i("it seems that RX UUID doesn't exist");
+                    }
+                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                    Timber.i("notify UUID");
+                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_DESCRIPTER_UUID));
+                    Timber.i("descr UUID");
+                    if (descriptor == null) {
+                        Timber.i("it seems that descr UUID doesn't exist");
+                    }
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    Timber.i("enable notify UUID");
+                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                    Timber.i("write notify");
+                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"");
+                    Timber.i("starting ninebot adapter");
+                    return true;
+                }
+
             }
         }
         return false;

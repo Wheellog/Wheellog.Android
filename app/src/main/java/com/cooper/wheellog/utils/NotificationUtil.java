@@ -1,7 +1,13 @@
 package com.cooper.wheellog.utils;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
+import android.app.NotificationManager;
+
+import android.os.Build;
+import java.lang.String;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +22,8 @@ import com.cooper.wheellog.PebbleService;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 
+
+
 public class NotificationUtil {
 
     private Context mContext;
@@ -24,10 +32,12 @@ public class NotificationUtil {
     private int mBatteryLevel = 0;
     private double mDistance = 0;
     private int mTemperature = 0;
+    public static final String CHANNEL_ID = "com.cooper.wheellog.Default_Channel";
 
     public NotificationUtil(Context context) {
         mContext = context;
         context.registerReceiver(messageReceiver, makeIntentFilter());
+        createNotificationChannel();
     }
 
 //    public Context getInstance() {
@@ -82,6 +92,23 @@ public class NotificationUtil {
         }
     };
 
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = mContext.getResources().getString(R.string.notification_channel_name);
+            String description = mContext.getResources().getString(R.string.notification_channel_description);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager =  mContext.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     public Notification buildNotification() {
         Intent notificationIntent = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
@@ -135,10 +162,11 @@ public class NotificationUtil {
         else
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
-        return new NotificationCompat.Builder(mContext)
+        return new Notification.Builder(mContext, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
     }
 

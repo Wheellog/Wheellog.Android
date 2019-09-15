@@ -63,6 +63,10 @@
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
     <string name="notification_text" translatable="false">%1$d%% • %2$d°C • %3$.1f km</string>
+    <string name="notification_channel_name" translatable="false">Notify</string>
+    <string name="notification_channel_description" translatable="false">Default Notify</string>
+
+
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
@@ -136,7 +140,8 @@
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
     <string name="use_eng" translatable="false">use_eng</string>
-
+    <string name="use_better_percents" translatable="false">use_better_percents</string>
+    <string name="use_pip_mode" translatable="false">use_pip_mode</string>
 
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
@@ -207,6 +212,12 @@
     <string name="use_eng_alert_description">Please restart the application to apply the language change</string>
     <string name="use_eng_title">English</string>
     <string name="use_eng_description">Use English language instead of Android system language</string>
+    <string name="use_better_percents_title">Better percents</string>
+    <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
+    <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
+    <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
+
+
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
     <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>

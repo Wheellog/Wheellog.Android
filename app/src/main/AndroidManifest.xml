@@ -34,21 +34,29 @@
         android:name=".WheelLog"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:resizeableActivity="false"
-        android:supportsPictureInPicture="false"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_scheme">
+
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="smallestScreenSize|screenLayout|orientation|keyboardHidden|screenSize"
+            android:supportsPictureInPicture="true"
             android:launchMode="singleTask">
+            <layout android:defaultHeight="670dp"
+                android:defaultWidth="360dp"
+                android:gravity="top|end"
+                android:minHeight="220dp"
+                android:minWidth="220dp" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity>so
         <activity
             android:name=".ScanActivity"
             android:theme="@style/AppTheme.Transparent" />
