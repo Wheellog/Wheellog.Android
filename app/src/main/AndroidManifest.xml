@@ -56,7 +56,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>so
+        </activity>
         <activity
             android:name=".ScanActivity"
             android:theme="@style/AppTheme.Transparent" />

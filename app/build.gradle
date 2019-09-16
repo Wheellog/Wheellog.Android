@@ -17,8 +17,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
         targetSdkVersion 27
-        versionCode 47
-        versionName "2.0.27"
+        versionCode 48
+        versionName "2.0.28"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
     }
     buildTypes {
@@ -46,4 +46,5 @@ dependencies {
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
     implementation files('libs/connectiq.jar')
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'com.android.support:support-v4:26.+'
 }
