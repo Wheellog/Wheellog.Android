@@ -115,6 +115,11 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
 				WheelData.getInstance().updateLight(ligth_enabled);
 				break;
+            case "use_better_percents":
+                //getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LIGHT, true));
+                boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
+                WheelData.getInstance().refreshBetterPercents(betterPercents);
+                break;
 			case "led_enabled":
 				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LED, true));
 				boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);

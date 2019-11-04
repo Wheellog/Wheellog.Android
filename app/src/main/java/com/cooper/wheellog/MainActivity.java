@@ -120,16 +120,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onUserLeaveHint () {
         if (SettingsUtil.isUsePipMode(this)) {
-            Rational rational = new Rational(wheelView.getWidth(),
-                    wheelView.getHeight());
+
+            Rational rational = new Rational(90,160);
 
             PictureInPictureParams mParams =
-                    new PictureInPictureParams.Builder()
-                            .setAspectRatio(rational)
-                            .build();
+                  new PictureInPictureParams.Builder()
+                          .setAspectRatio(rational)
+                          .build();
 
-            enterPictureInPictureMode();
-            //enterPictureInPictureMode(mParams);
+            //enterPictureInPictureMode();
+            enterPictureInPictureMode(mParams);
 
   //      if (true){
 
@@ -1058,7 +1058,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
 		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
 		WheelData.getInstance().setUseRatio(use_ratio);
-
+		boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
+        WheelData.getInstance().refreshBetterPercents(betterPercents);
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 

@@ -43,15 +43,15 @@
 
         <activity
             android:name=".MainActivity"
-            android:configChanges="smallestScreenSize|screenLayout|orientation|keyboardHidden|screenSize"
+            android:configChanges="smallestScreenSize|screenLayout|orientation|screenSize"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask">
-            <layout android:defaultHeight="670dp"
-                android:defaultWidth="360dp"
+ <!--           <layout android:defaultHeight="400dp"
+                android:defaultWidth="200dp"
                 android:gravity="top|end"
-                android:minHeight="220dp"
-                android:minWidth="220dp" />
-
+                android:minHeight="160dp"
+                android:minWidth="90dp" />
+-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

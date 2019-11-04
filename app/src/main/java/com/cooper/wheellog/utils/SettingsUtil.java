@@ -58,6 +58,7 @@ public class SettingsUtil {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_log), false);
     }
 
+
     public static void setAutoLog(Context context, boolean enabled) {
         getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_log), enabled).apply();
     }

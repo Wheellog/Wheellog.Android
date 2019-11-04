@@ -105,6 +105,7 @@ public class WheelData {
 
 
 	private boolean mUseRatio = false;
+    private boolean mBetterPercents = false;
 	//private boolean mGotway84V = false;
 	private boolean mSpeedAlarmExecuted = false;
     private boolean mCurrentAlarmExecuted = false;
@@ -598,7 +599,10 @@ public class WheelData {
 	public void resetTopSpeed() {
 		mTopSpeed = 0;
     }
-	
+
+    public void refreshBetterPercents(boolean betterPercents) {
+        mBetterPercents = betterPercents;
+    }
 
     public double getDistanceDouble() {
         return (mTotalDistance - mStartTotalDistance) / 1000.0;
@@ -693,10 +697,11 @@ public class WheelData {
     private void setBatteryPercent(int battery) {
         mBattery = battery;
 
-        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
-                mAverageBatteryCount + 1 : MAX_BATTERY_AVERAGE_COUNT;
-
-        mAverageBattery += (battery - mAverageBattery) / mAverageBatteryCount;
+//        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
+//                mAverageBatteryCount + 1 : MAX_BATTERY_AVERAGE_COUNT;
+//
+//        mAverageBattery += (battery - mAverageBattery) / mAverageBatteryCount;
+        mAverageBattery = battery;
     }
 
     private void checkAlarmStatus(Context mContext) {
@@ -865,33 +870,44 @@ public class WheelData {
 
 
                 if ((mModel.compareTo("KS-18L") == 0) || (mModel.compareTo("KS-16X") == 0) ||(mBtName.compareTo("RW") == 0) || (mName.startsWith("ROCKW"))) {
-
-                    if (mVoltage > 8350) {
-                        battery = 100;
-                    } else if (mVoltage > 6800) {
-                        battery = (mVoltage - 6650) / 17;
-                    } else if (mVoltage > 6400){
-                        battery = (mVoltage - 6400) / 45;
+                    if (mBetterPercents) {
+                        if (mVoltage > 8350) {
+                            battery = 100;
+                        } else if (mVoltage > 6800) {
+                            battery = (mVoltage - 6650) / 17;
+                        } else if (mVoltage > 6400) {
+                            battery = (mVoltage - 6400) / 45;
+                        } else {
+                            battery = 0;
+                        }
                     } else {
-                        battery = 0;
+                        if (mVoltage < 6250) {
+                            battery = 0;
+                        } else if (mVoltage >= 8250) {
+                            battery = 100;
+                        } else {
+                            battery = (mVoltage - 6250) / 16;
+                        }
                     }
-
                 } else {
-//                    if (mVoltage > 6680) {
-//                        battery = 100;
-//                    } else if (mVoltage > 5440) {
-//                        battery = (int)Math.round((mVoltage - 5320) / 13.6);
-//                    } else if (mVoltage > 5120){
-//                        battery = (mVoltage - 5120) / 36;
-//                    } else {
-//                        battery = 0;
-//                    }
-                    if (mVoltage < 5000) {
-                        battery = 0;
-                    } else if (mVoltage >= 6600) {
-                        battery = 100;
+                    if (mBetterPercents) {
+                        if (mVoltage > 6680) {
+                            battery = 100;
+                        } else if (mVoltage > 5440) {
+                            battery = (int) Math.round((mVoltage - 5320) / 13.6);
+                        } else if (mVoltage > 5120) {
+                            battery = (mVoltage - 5120) / 36;
+                        } else {
+                            battery = 0;
+                        }
                     } else {
-                        battery = (mVoltage - 5000) / 16;
+                        if (mVoltage < 5000) {
+                            battery = 0;
+                        } else if (mVoltage >= 6600) {
+                            battery = 100;
+                        } else {
+                            battery = (mVoltage - 5000) / 16;
+                        }
                     }
 
                 }
@@ -986,22 +1002,24 @@ public class WheelData {
             mCurrent = Math.abs((data[10] * 256) + data[11]);
 
             int battery;
-
-//            if (mVoltage > 6680) {
-//                battery = 100;
-//            } else if (mVoltage > 5440) {
-//                battery = (mVoltage - 5380) / 13;
-//            } else if (mVoltage > 5290){
-//                battery = (int)Math.round((mVoltage - 5290) / 32.5);
-//            } else {
-//                battery = 0;
-//            }
-            if (mVoltage <= 5290) {
-                battery = 0;
-            } else if (mVoltage >= 6580) {
-                battery = 100;
+            if (mBetterPercents) {
+                if (mVoltage > 6680) {
+                    battery = 100;
+                } else if (mVoltage > 5440) {
+                    battery = (mVoltage - 5380) / 13;
+                } else if (mVoltage > 5290) {
+                    battery = (int) Math.round((mVoltage - 5290) / 32.5);
+                } else {
+                    battery = 0;
+                }
             } else {
-                battery = (mVoltage - 5290) / 13;
+                if (mVoltage <= 5290) {
+                    battery = 0;
+                } else if (mVoltage >= 6580) {
+                    battery = 100;
+                } else {
+                    battery = (mVoltage - 5290) / 13;
+                }
             }
           setBatteryPercent(battery);
 //			if (mGotway84V) {
