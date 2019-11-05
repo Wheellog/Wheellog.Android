@@ -600,8 +600,11 @@ public class WheelData {
 		mTopSpeed = 0;
     }
 
-    public void refreshBetterPercents(boolean betterPercents) {
+    public void setBetterPercents(boolean betterPercents) {
+
         mBetterPercents = betterPercents;
+        if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().setBetterPercents(betterPercents);
+
     }
 
     public double getDistanceDouble() {

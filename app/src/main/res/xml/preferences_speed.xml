@@ -11,8 +11,8 @@
     <CheckBoxPreference
         android:key="@string/use_better_percents"
         android:title="@string/use_better_percents_title"
-        android:enabled="false"
-        android:visible="false"
+        android:enabled="true"
+        android:visible="true"
         android:summary="@string/use_better_percents_description" />
 
     <CheckBoxPreference

@@ -20,7 +20,11 @@ public class InMotionAdapter {
 	private boolean settingCommandReady = false;
 	private static int updateStep = 0;
 	private byte[] settingCommand;
+    private static boolean mBetterPercents = false;
 
+    public static void setBetterPercents (boolean betterPercents) {
+        mBetterPercents = betterPercents;
+    }
     enum Mode {
         rookie(0),
         general(1),
@@ -326,8 +330,38 @@ public class InMotionAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
+        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 ) {
+            if (mBetterPercents) {
+                if (volts > 84.00) {
+                    batt = 1.0;
+                } else if (volts > 68.5) {
+                    batt = (volts - 68.5) / 15.5;
+                } else {
+                    batt = 0.0;
+                }
+            } else {
+                if (volts > 82.50) {
+                    batt = 1.0;
+                } else if (volts > 68.0) {
+                    batt = (volts - 68.0) / 14.5;
+                } else {
+                    batt = 0.0;
+                }
+            }
 
+
+        } else if (model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
+        if (mBetterPercents) {
+            if (volts > 8350) {
+                batt = 100;
+            } else if (volts > 6800) {
+                batt = (volts - 6650) / 17;
+            } else if (volts > 6400) {
+                batt = (volts - 6400) / 45;
+            } else {
+                batt = 0;
+            }
+        } else {
             if (volts > 82.50) {
                 batt = 1.0;
             } else if (volts > 68.0) {
@@ -335,14 +369,10 @@ public class InMotionAdapter {
             } else {
                 batt = 0.0;
             }
-//            if (volts > 84.00) {
-//                batt = 1.0;
-//            } else if (volts > 68.5) {
-//                batt = (volts - 68.5) / 15.5;
-//            } else {
-//                batt = 0.0;
-//            }
-        } else if (model.belongToInputType("6")) {
+        }
+
+
+    } else if (model.belongToInputType("6")) {
             batt = 0.0;
         } else {
             if (volts >= 82.00) {

@@ -1059,7 +1059,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
 		WheelData.getInstance().setUseRatio(use_ratio);
 		boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
-        WheelData.getInstance().refreshBetterPercents(betterPercents);
+        WheelData.getInstance().setBetterPercents(betterPercents);
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
