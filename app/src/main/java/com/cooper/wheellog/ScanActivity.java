@@ -3,7 +3,6 @@ package com.cooper.wheellog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.ScanRecord;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,9 +18,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import android.util.SparseArray;//<E>;
-//import com.cooper.wheellog.utils.InMotionAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
+import java.util.Arrays;
+
+
 import timber.log.Timber;
 
 public class ScanActivity extends AppCompatActivity {
@@ -134,14 +134,7 @@ public class ScanActivity extends AppCompatActivity {
 
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-
-                    String hexString = "";
-
-                    for(int i = 0; i < scanRecord.length; i++){
-                        String thisByte = "".format("%02x", scanRecord[i]);
-                        hexString += thisByte;
-                    }
-                    Timber.i("Adv_data: %s", hexString);
+                    findManufacturerData(scanRecord); // 4e421300000000ec
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -151,6 +144,41 @@ public class ScanActivity extends AppCompatActivity {
                     });
                 }
             };
+
+
+    public String findManufacturerData(byte[] scanRecord) {
+        int index = 0;
+        String result = "";
+        while (index < scanRecord.length) {
+            int length = scanRecord[index++];
+            //Done once we run out of records
+            if (length == 0) break;
+
+            int type = scanRecord[index];
+            //Done if our record isn't a valid type
+            if (type == 0) break;
+
+            byte[] data = Arrays.copyOfRange(scanRecord, index+1, index+length);
+
+            //Advance
+            index += length;
+            if (type == -1) {
+                result = ByteArrayToString(data);
+            }
+        }
+        Timber.i("Found data: " + result);
+        return result;
+    }
+
+    public static String ByteArrayToString(byte[] ba)
+    {
+        String hexString = "";
+        for(int i = 0; i < ba.length; i++){
+            String thisByte = "".format("%02x", ba[i]);
+            hexString += thisByte;
+        }
+        return hexString;
+    }
 
 
     private void scanLeDevice(final boolean enable) {

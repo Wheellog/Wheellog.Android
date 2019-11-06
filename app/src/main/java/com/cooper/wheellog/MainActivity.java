@@ -782,7 +782,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         LinePageIndicator titleIndicator = (LinePageIndicator)findViewById(R.id.indicator);
         titleIndicator.setViewPager(pager);
         pager.addOnPageChangeListener(pageChangeListener);
-   
+
         mDeviceAddress = SettingsUtil.getLastAddress(getApplicationContext());
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
