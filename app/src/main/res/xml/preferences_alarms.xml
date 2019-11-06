@@ -14,6 +14,13 @@
         android:title="@string/disable_phone_vibrate_title"
         android:summary="@string/disable_phone_vibration_description" />
 
+    <CheckBoxPreference
+        android:key="@string/disable_phone_beep"
+        android:dependency="alarms_enabled"
+        android:title="@string/disable_phone_beep_title"
+        android:summary="@string/disable_phone_beep_description" />
+
+
     <PreferenceCategory
         android:title="@string/speed_alarm1_phone_title">
 

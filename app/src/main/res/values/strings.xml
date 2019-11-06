@@ -100,6 +100,7 @@
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
+    <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
     <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
     <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
     <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
@@ -222,6 +223,9 @@
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
     <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="disable_phone_beep_title">Disable Phone Beep</string>
+    <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>
     <string name="speed_alarm2_phone_title">Speed Alarm 2</string>

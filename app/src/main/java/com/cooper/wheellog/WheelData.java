@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.os.Vibrator;
 import android.media.ToneGenerator;
 import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.AudioFormat;
 
 import android.text.InputType;
 import android.widget.EditText;
@@ -90,6 +92,7 @@ public class WheelData {
 	
     private boolean mAlarmsEnabled = false;
     private boolean mDisablePhoneVibrate = false;
+    private boolean mDisablePhoneBeep = false;
     private int mAlarm1Speed = 0;
     private int mAlarm2Speed = 0;
     private int mAlarm3Speed = 0;
@@ -111,6 +114,21 @@ public class WheelData {
     private boolean mCurrentAlarmExecuted = false;
 	private boolean mTemperatureAlarmExecuted = false;
 
+
+    private double duration = 0.1; // duration of sound
+    private int sampleRate = 22050; // Hz (maximum frequency is 7902.13Hz (B8))
+    private int numSamples = Math.round((int)(duration * sampleRate));
+    private double samples[] = new double[numSamples];
+    private short buffer[] = new short[numSamples];
+    private int sfreq = 440;
+    AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+            sampleRate, AudioFormat.CHANNEL_OUT_MONO,
+            AudioFormat.ENCODING_PCM_16BIT, buffer.length,
+            AudioTrack.MODE_STATIC);
+
+
+
+
     static void initiate() {
         if (mInstance == null)
             mInstance = new WheelData();
@@ -122,9 +140,24 @@ public class WheelData {
 		}
 
         mInstance.full_reset();
-		mInstance.startRidingTimerControl();
+        mInstance.prepareTone();
+
+
+        mInstance.startRidingTimerControl();
+
     }
-	
+
+    private void prepareTone(){
+        for (int i = 0; i < numSamples; ++i)
+        {
+            samples[i] = Math.sin(2 * Math.PI * i / ((double)sampleRate / sfreq)); // Sine wave 1kHz
+            buffer[i] = (short) (samples[i] * Short.MAX_VALUE);  // Higher amplitude increases volume
+        }
+        audioTrack.write(buffer, 0, buffer.length);
+
+
+    }
+
 	
 	public void startRidingTimerControl() {
         TimerTask timerTask = new TimerTask() {
@@ -659,7 +692,8 @@ public class WheelData {
     void setPreferences(int alarm1Speed, int alarm1Battery,
                                    int alarm2Speed, int alarm2Battery,
                                    int alarm3Speed, int alarm3Battery,
-                                   int alarmCurrent,int alarmTemperature, boolean disablePhoneVibrate) {
+                                   int alarmCurrent,int alarmTemperature,
+                                    boolean disablePhoneVibrate, boolean disablePhoneBeep) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -669,6 +703,7 @@ public class WheelData {
         mAlarmCurrent = alarmCurrent*100;
 		mAlarmTemperature = alarmTemperature*100;
         mDisablePhoneVibrate = disablePhoneVibrate;
+        mDisablePhoneBeep = disablePhoneBeep;
     }
 
     private int byteArrayInt2(byte low, byte high) {
@@ -780,8 +815,11 @@ public class WheelData {
         mContext.sendBroadcast(intent);
         if (v.hasVibrator() && !mDisablePhoneVibrate)
             v.vibrate(pattern, -1);
-        ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+        if (!mDisablePhoneBeep) {
+            audioTrack.play();
+            //ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+            //toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+        }
     }
 
     void decodeResponse(byte[] data, Context mContext) {
