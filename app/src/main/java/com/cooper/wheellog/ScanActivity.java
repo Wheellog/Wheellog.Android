@@ -3,6 +3,7 @@ package com.cooper.wheellog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.ScanRecord;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,8 +19,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-
-import com.cooper.wheellog.utils.InMotionAdapter;
+import android.util.SparseArray;//<E>;
+//import com.cooper.wheellog.utils.InMotionAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 import timber.log.Timber;
 
@@ -133,6 +134,14 @@ public class ScanActivity extends AppCompatActivity {
 
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+
+                    String hexString = "";
+
+                    for(int i = 0; i < scanRecord.length; i++){
+                        String thisByte = "".format("%02x", scanRecord[i]);
+                        hexString += thisByte;
+                    }
+                    Timber.i("Adv_data: %s", hexString);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

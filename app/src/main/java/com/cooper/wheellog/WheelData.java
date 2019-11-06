@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Vibrator;
-import android.media.ToneGenerator;
+//import android.media.ToneGenerator;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.AudioFormat;
@@ -34,12 +34,11 @@ public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
 	private Timer ridingTimerControl;
-
     private BluetoothLeService mBluetoothLeService;
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
-    private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
+ //   private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
 	private static final int RIDING_SPEED = 200; // 2km/h
 	private static final double RATIO_GW = 0.875;
     private ArrayList<String> xAxis = new ArrayList<>();
@@ -57,7 +56,7 @@ public class WheelData {
     private int mMode;
     private int mBattery;
     private double mAverageBattery;
-    private double mAverageBatteryCount;
+//    private double mAverageBatteryCount;
     private int mVoltage;
     private long mDistance;
 	private long mUserDistance;
@@ -115,18 +114,26 @@ public class WheelData {
 	private boolean mTemperatureAlarmExecuted = false;
 
 
-    private double duration = 0.1; // duration of sound
+    private int duration = 1; // duration of sound
     private int sampleRate = 22050; // Hz (maximum frequency is 7902.13Hz (B8))
-    private int numSamples = Math.round((int)(duration * sampleRate));
-    private double samples[] = new double[numSamples];
+    private int numSamples = duration * sampleRate;
+//    private double samples[] = new double[numSamples];
     private short buffer[] = new short[numSamples];
     private int sfreq = 440;
-    AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-            sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.ENCODING_PCM_16BIT, buffer.length,
-            AudioTrack.MODE_STATIC);
+
+    private static AudioTrack audioTrack = null;
 
 
+
+    void playBeep() {
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, buffer.length,
+                AudioTrack.MODE_STATIC);
+        audioTrack.write(buffer,sampleRate/2,sampleRate/10);
+        audioTrack.play();
+
+    }
 
 
     static void initiate() {
@@ -141,8 +148,6 @@ public class WheelData {
 
         mInstance.full_reset();
         mInstance.prepareTone();
-
-
         mInstance.startRidingTimerControl();
 
     }
@@ -150,11 +155,12 @@ public class WheelData {
     private void prepareTone(){
         for (int i = 0; i < numSamples; ++i)
         {
-            samples[i] = Math.sin(2 * Math.PI * i / ((double)sampleRate / sfreq)); // Sine wave 1kHz
-            buffer[i] = (short) (samples[i] * Short.MAX_VALUE);  // Higher amplitude increases volume
-        }
-        audioTrack.write(buffer, 0, buffer.length);
+            double originalWave = Math.sin(2 * Math.PI * sfreq * i / sampleRate);
+            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * sfreq * i / sampleRate);
+            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * sfreq * i / sampleRate);
 
+            buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*Short.MAX_VALUE);  // Higher amplitude increases volume
+        }
 
     }
 
@@ -169,6 +175,9 @@ public class WheelData {
         ridingTimerControl = new Timer();
         ridingTimerControl.scheduleAtFixedRate(timerTask, 0, 1000);
     }
+
+
+
 
     public static WheelData getInstance() {
         return mInstance;
@@ -816,7 +825,7 @@ public class WheelData {
         if (v.hasVibrator() && !mDisablePhoneVibrate)
             v.vibrate(pattern, -1);
         if (!mDisablePhoneBeep) {
-            audioTrack.play();
+            playBeep();
             //ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
             //toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
         }
@@ -1222,7 +1231,7 @@ public class WheelData {
 		mRoll = 0;
         mMode = 0;
         mBattery = 0;
-        mAverageBatteryCount = 0;
+        //mAverageBatteryCount = 0;
         mAverageBattery = 0;
         mVoltage = 0;
         mRideTime = 0;
@@ -1249,6 +1258,8 @@ public class WheelData {
     }
 
     boolean detectWheel(BluetoothLeService bluetoothService) {
+        //audioTrack.write(buffer, 20000, buffer.length);
+
         mBluetoothLeService = bluetoothService;
         Context mContext = bluetoothService.getApplicationContext();
 
