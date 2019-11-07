@@ -127,4 +127,12 @@ public class SettingsUtil {
         }
         getSharedPreferences(context).edit().putString("wheel_password_"+id, password).apply();
     }
+
+    public static void setAdvDataForWheel(Context context, String id, String advData) {
+        getSharedPreferences(context).edit().putString("wheel_adv_data_"+id, advData).apply();
+    }
+
+    public static String getAdvDataForWheel(Context context, String id) {
+        return getSharedPreferences(context).getString("wheel_adv_data_"+id, "");
+    }
 }

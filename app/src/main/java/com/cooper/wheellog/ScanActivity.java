@@ -96,11 +96,15 @@ public class ScanActivity extends AppCompatActivity {
             mHandler.removeCallbacksAndMessages(null);
             final String deviceAddress = mDeviceListAdapter.getDevice(i).getAddress();
             final String deviceName = mDeviceListAdapter.getDevice(i).getName();
-            Timber.i("Device selected = %s", deviceAddress);
-            Timber.i("Device selected = %s", deviceName);
+            final String advData = mDeviceListAdapter.getAdvData(i);
+            Timber.i("Device selected MAC = %s", deviceAddress);
+            Timber.i("Device selected Name = %s", deviceName);
+            Timber.i("Device selected Data = %s", advData);
             Intent intent = new Intent();
             intent.putExtra("MAC", deviceAddress);
             intent.putExtra("NAME", deviceName);
+            intent.putExtra("ADV", advData);
+            SettingsUtil.setAdvDataForWheel(view.getContext(), deviceAddress, advData);
             setResult(RESULT_OK, intent);
             //Ask for inmotion password
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -134,11 +138,11 @@ public class ScanActivity extends AppCompatActivity {
 
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
-                    findManufacturerData(scanRecord); // 4e421300000000ec
+                    final String manufacturerData = findManufacturerData(scanRecord); // 4e421300000000ec
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mDeviceListAdapter.addDevice(device);
+                            mDeviceListAdapter.addDevice(device, manufacturerData);
                             mDeviceListAdapter.notifyDataSetChanged();
                         }
                     });

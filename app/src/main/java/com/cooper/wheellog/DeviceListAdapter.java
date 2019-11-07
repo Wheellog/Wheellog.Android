@@ -13,6 +13,7 @@ import java.util.ArrayList;
 // Adapter for holding devices found through scanning.
 public class DeviceListAdapter extends BaseAdapter {
     private ArrayList<BluetoothDevice> mLeDevices;
+    private ArrayList<String> mLeAdvDatas;
     private LayoutInflater mInflator;
 
     static class ViewHolder {
@@ -23,12 +24,14 @@ public class DeviceListAdapter extends BaseAdapter {
     public DeviceListAdapter(AppCompatActivity appCompatActivity) {
         super();
         mLeDevices = new ArrayList<>();
+        mLeAdvDatas = new ArrayList<>();
         mInflator = appCompatActivity.getLayoutInflater();
     }
 
-    public void addDevice(BluetoothDevice device) {
+    public void addDevice(BluetoothDevice device, String advData) {
         if(!mLeDevices.contains(device)) {
             mLeDevices.add(device);
+            mLeAdvDatas.add(advData);
         }
     }
 
@@ -36,6 +39,9 @@ public class DeviceListAdapter extends BaseAdapter {
         return mLeDevices.get(position);
     }
 
+    public String getAdvData(int position) {
+        return mLeAdvDatas.get(position);
+    }
 //    public void clear() {
 //        mLeDevices.clear();
 //    }

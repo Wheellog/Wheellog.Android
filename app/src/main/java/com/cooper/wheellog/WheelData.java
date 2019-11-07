@@ -113,6 +113,7 @@ public class WheelData {
     private boolean mCurrentAlarmExecuted = false;
 	private boolean mTemperatureAlarmExecuted = false;
 
+    private String protoVer = "";
 
     private int duration = 1; // duration of sound
     private int sampleRate = 22050; // Hz (maximum frequency is 7902.13Hz (B8))
@@ -838,7 +839,7 @@ public class WheelData {
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
         Timber.i("Received: " + stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
-
+        Timber.i("Decode, proto: %s", protoVer);
         boolean new_data = false;
         if (mWheelType == WHEEL_TYPE.KINGSONG)
             new_data = decodeKingSong(data);
@@ -846,15 +847,15 @@ public class WheelData {
             new_data = decodeGotway(data);
         else if (mWheelType == WHEEL_TYPE.INMOTION)
             new_data = decodeInmotion(data);
+        else if (mWheelType == WHEEL_TYPE.NINEBOT || protoVer.compareTo("S2")==0) {
+            Timber.i("Ninebot_decoding");
+            new_data = decodeNinebot(data);
+        }
         else if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
             Timber.i("Ninebot_z decoding");
             new_data = decodeNinebotZ(data);
         }
-        else if (mWheelType == WHEEL_TYPE.NINEBOT) {
-            Timber.i("Ninebot_decoding");
-            new_data = decodeNinebot(data);
 
-        }
 
 
         if (!new_data)
@@ -1138,7 +1139,7 @@ public class WheelData {
             Timber.i(status.toString());
             if (status instanceof NinebotAdapter.serialNumberStatus) {
                 mSerialNumber = ((NinebotAdapter.serialNumberStatus) status).getSerialNumber();
-                mModel = "Ninebot";
+                mModel = "Ninebot"+" "+ protoVer;
             } else if (status instanceof NinebotAdapter.versionStatus){
                 mVersion = ((NinebotAdapter.versionStatus) status).getVersion();
             } else {
@@ -1254,14 +1255,22 @@ public class WheelData {
 		mWheelButtonDisabled = false;
 		mWheelMaxSpeed = 0;
 		mWheelSpeakerVolume = 50;
+
+		protoVer = "";
 	
     }
 
-    boolean detectWheel(BluetoothLeService bluetoothService) {
+    boolean detectWheel(BluetoothLeService bluetoothService, String deviceAddress) {
         //audioTrack.write(buffer, 20000, buffer.length);
 
         mBluetoothLeService = bluetoothService;
         Context mContext = bluetoothService.getApplicationContext();
+        String advData = SettingsUtil.getAdvDataForWheel(mContext,deviceAddress);
+         //String wheel_Type = "";
+        protoVer = "";
+        if (advData.compareTo("4e421300000000ec")==0) {
+            protoVer = "S2";
+        }
 
         Class<R.array> res = R.array.class;
         String wheel_types[] = mContext.getResources().getStringArray(R.array.wheel_types);
@@ -1377,7 +1386,12 @@ public class WheelData {
                     Timber.i("enable notify UUID");
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     Timber.i("write notify");
-                    NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"");
+                    if (protoVer.compareTo("S2")==0){
+                        NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
+                        //mWheelType = WHEEL_TYPE.NINEBOT;
+                    } else {
+                        NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, "");
+                    }
                     Timber.i("starting ninebot adapter");
                     return true;
                 }
@@ -1402,7 +1416,7 @@ public class WheelData {
                     Timber.i("enable notify UUID");
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     Timber.i("write notify");
-                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"");
+                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
                     Timber.i("starting ninebot adapter");
                     return true;
                 }

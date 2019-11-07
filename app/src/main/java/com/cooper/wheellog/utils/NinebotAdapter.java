@@ -20,12 +20,14 @@ public class NinebotAdapter {
 	private byte[] settingCommand;
 	private static byte[] gamma = new byte[16];
     private static int stateCon = 0;
+    private static byte protoVersion = 0;
 
 
     NinebotUnpacker unpacker = new NinebotUnpacker();
 
-    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword) {
+    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword, final String protoVer) {
         Timber.i("Ninebot timer starting");
+        if (protoVer.compareTo("S2")==0) protoVersion = 1;
         updateStep = 0;
         stateCon = 0;
         TimerTask timerTask = new TimerTask() {
@@ -62,13 +64,13 @@ public class NinebotAdapter {
 
 				}
                 updateStep += 1;
-                updateStep %= 40;
+                updateStep %= 5;
                 Timber.i("Step: %d", updateStep);
             }
         };
         Timber.i("Ninebot timer started");
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 100);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
 
 
@@ -246,20 +248,26 @@ public class NinebotAdapter {
     public static class CANMessage {
 
         enum Addr {
-            Controller(0x01),
-            KeyGenerator(0x16),
-            App(0x09);
+            Controller(0x01,0x01),
+            KeyGenerator(0x16,0x16),
+            App(0x09,0x11);
 
-            private int value;
-
-            Addr(int value) {
-                this.value = value;
-            }
-
+            private int value_def;
+            private int value_s2;
+            Addr(int value_def, int value_s2) {
+                    this.value_def = value_def;
+                    this.value_s2 = value_s2;
+                }
             public int getValue() {
-                return value;
+                if (protoVersion == 1) {
+                    return value_s2;
+                } else {
+                    return value_def;
+                }
             }
         }
+
+
 
         enum Comm {
             Read(0x01),
@@ -562,6 +570,7 @@ public class NinebotAdapter {
         Status parseLiveData() {
             int batt = this.shortFromBytes(data, 8);
             int speed = this.shortFromBytes(data, 10) / 10;
+            //12 -avg speed
             int distance = this.intFromBytes(data,14);
             int temperature = this.shortFromBytes(data,22);
             int voltage = this.shortFromBytes(data, 24);

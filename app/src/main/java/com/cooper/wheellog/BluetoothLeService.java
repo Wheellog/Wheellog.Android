@@ -202,7 +202,7 @@ public class BluetoothLeService extends Service {
             Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
-                boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this);
+                boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this, mBluetoothDeviceAddress);
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);

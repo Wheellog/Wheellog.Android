@@ -74,7 +74,7 @@ public class NinebotZAdapter {
 
 				}
                 updateStep += 1;
-                updateStep %= 40;
+                updateStep %= 5;
                 Timber.i("Step: %d", updateStep);
             }
         };
