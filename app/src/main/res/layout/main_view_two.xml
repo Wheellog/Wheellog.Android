@@ -200,6 +200,17 @@
                 style="@style/Stats" />
 
             <TextView
+                android:id="@+id/tvTitleVoltageSag"
+                android:visibility="gone"
+                style="@style/Stats.Title"
+                android:text="@string/voltage_sag"/>
+
+            <TextView
+                android:id="@+id/tvVoltageSag"
+                android:visibility="gone"
+                style="@style/Stats" />
+
+            <TextView
                 android:id="@+id/tvTitleCurrent"
                 android:visibility="gone"
                 style="@style/Stats.Title"

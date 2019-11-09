@@ -64,6 +64,7 @@ public class WheelData {
 	private int mRidingTime;
     private int mLastRideTime;
     private int mTopSpeed;
+    private int mVoltageSag;
     private int mFanStatus;
     private boolean mConnectionState = false;
 	private boolean mNewWheelSettings = false;
@@ -116,7 +117,7 @@ public class WheelData {
     private String protoVer = "";
 
     private int duration = 1; // duration of sound
-    private int sampleRate = 22050; // Hz (maximum frequency is 7902.13Hz (B8))
+    private int sampleRate = 44100;//22050; // Hz (maximum frequency is 7902.13Hz (B8))
     private int numSamples = duration * sampleRate;
 //    private double samples[] = new double[numSamples];
     private short buffer[] = new short[numSamples];
@@ -126,12 +127,18 @@ public class WheelData {
 
 
 
-    void playBeep() {
+    void playBeep(ALARM_TYPE type) {
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
-        audioTrack.write(buffer,sampleRate/2,sampleRate/10);
+        if (type.getValue()<4) {
+            audioTrack.write(buffer, sampleRate / 5, ((4-type.getValue())*sampleRate) / 20);
+        } else {
+            audioTrack.write(buffer, sampleRate *3 / 5, ((type.getValue()-3)*sampleRate) / 20);
+        }
+
+        //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
         audioTrack.play();
 
     }
@@ -148,21 +155,55 @@ public class WheelData {
 		}
 
         mInstance.full_reset();
-        mInstance.prepareTone();
+        mInstance.prepareTone(mInstance.sfreq);
         mInstance.startRidingTimerControl();
 
     }
 
-    private void prepareTone(){
+    private void prepareTone(int freq){
+
         for (int i = 0; i < numSamples; ++i)
         {
-            double originalWave = Math.sin(2 * Math.PI * sfreq * i / sampleRate);
-            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * sfreq * i / sampleRate);
-            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * sfreq * i / sampleRate);
+            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
+            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
+            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
+            double secondWave = Math.sin(2 * Math.PI * freq*1.34F * i / sampleRate);
+            if (i<numSamples/2) {
+                buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*(Short.MAX_VALUE)); //+ harmonic1 + harmonic2
+            } else {
+                buffer[i] = (short)((originalWave + secondWave)*(Short.MAX_VALUE));
+            }
 
-            buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*Short.MAX_VALUE);  // Higher amplitude increases volume
         }
 
+/*        for (int i = 0; i < 20*numSamples/50; ++i)
+        {
+            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
+            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
+            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
+            if ((i < 7*numSamples/50) || ((i > 9*numSamples/50) && (i < 11*numSamples/50)) || ((i > 15*numSamples/50) && (i < 16*numSamples/50)) || ((i > 17*numSamples/50) && (i < 18*numSamples/50)) || ((i > 19*numSamples/50) && (i < 20*numSamples/50))) {
+                buffer[i] = (short)((originalWave )*Short.MAX_VALUE); //+ harmonic1 + harmonic2
+            } else {buffer[i] = 0;}
+
+        }
+        for (int i = 20*numSamples/50; i < 25*numSamples/50; ++i)
+        {
+            if (i == 22*numSamples/50) {freq = (int)((double)freq * 1.5);};
+            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
+            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
+            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
+            buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*Short.MAX_VALUE);
+
+        }
+        for (int i = 25*numSamples/50; i < numSamples; ++i)
+        {
+            freq = freq +1;
+            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
+            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
+            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
+            buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*Short.MAX_VALUE);
+
+        }  */
     }
 
 	
@@ -593,6 +634,9 @@ public class WheelData {
         return mVoltage / 100.0;
     }
 
+    double getVoltageSagDouble() {
+        return mVoltageSag / 100.0;
+    }
     double getPowerDouble() {
         return (mCurrent * mVoltage) / 10000.0;
     }
@@ -642,7 +686,10 @@ public class WheelData {
 	public void resetTopSpeed() {
 		mTopSpeed = 0;
     }
-
+    public void resetVoltageSag() {
+        Timber.i("Sag WD");
+        mVoltageSag = 20000;
+    }
     public void setBetterPercents(boolean betterPercents) {
 
         mBetterPercents = betterPercents;
@@ -742,6 +789,11 @@ public class WheelData {
             mTopSpeed = topSpeed;
     }
 
+    private void setVoltageSag(int voltSag) {
+        if ((voltSag < mVoltageSag) && (voltSag > 0))
+            mVoltageSag = voltSag;
+    }
+
     private void setBatteryPercent(int battery) {
         mBattery = battery;
 
@@ -754,16 +806,36 @@ public class WheelData {
 
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
+        if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
+                mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
+            raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+        else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
+                mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
+            raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+        else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
+                mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
+            raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+
+
+        if (mAlarmCurrent > 0 &&
+                mCurrent >= mAlarmCurrent) {
+            raiseAlarm(ALARM_TYPE.CURRENT, mContext);
+        }
+                if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature) {
+        raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
+    }
+
+/*
         if (!mSpeedAlarmExecuted) {
             if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
                     mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
-                raiseAlarm(ALARM_TYPE.SPEED, mContext);
+                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
             else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
                     mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-                raiseAlarm(ALARM_TYPE.SPEED, mContext);
+                raiseAlarm(ALARM_TYPE.SPEED2, mContext);
             else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
                     mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-                raiseAlarm(ALARM_TYPE.SPEED, mContext);
+                raiseAlarm(ALARM_TYPE.SPEED3, mContext);
         } else {
             boolean alarm_finished = false;
             if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
@@ -799,7 +871,7 @@ public class WheelData {
             if (mTemperature < mAlarmTemperature)
                 mTemperatureAlarmExecuted = false;
         }
-		
+*/
     }
 
     private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
@@ -809,26 +881,33 @@ public class WheelData {
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
 
         switch (alarmType) {
-            case SPEED:
+            case SPEED1:
                 pattern = new long[]{0, 100, 100};
-                mSpeedAlarmExecuted = true;
+//                mSpeedAlarmExecuted = true;
                 break;
+            case SPEED2:
+                pattern = new long[]{0, 100, 100};
+//                mSpeedAlarmExecuted = true;
+                break;
+            case SPEED3:
+                pattern = new long[]{0, 100, 100};
+//                mSpeedAlarmExecuted = true;
+                break;
+
             case CURRENT:
                 pattern = new long[]{0, 50, 50, 50, 50};
-                mCurrentAlarmExecuted = true;
+//                mCurrentAlarmExecuted = true;
                 break;
 			case TEMPERATURE:
                 pattern = new long[]{0, 500, 500};
-                mCurrentAlarmExecuted = true;
+//                mCurrentAlarmExecuted = true;
                 break;
         }
         mContext.sendBroadcast(intent);
         if (v.hasVibrator() && !mDisablePhoneVibrate)
             v.vibrate(pattern, -1);
         if (!mDisablePhoneBeep) {
-            playBeep();
-            //ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-            //toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+            playBeep(alarmType);
         }
     }
 
@@ -911,7 +990,7 @@ public class WheelData {
                 mCurrent = ((data[10]&0xFF) + (data[11]<<8));
  
 				mTemperature = byteArrayInt2(data[12], data[13]);
-
+                setVoltageSag(mVoltage);
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
 					mModeStr = String.format(Locale.US, "%d", mMode);
@@ -1077,6 +1156,7 @@ public class WheelData {
 //				mVoltage = (int)Math.round(mVoltage / 0.8);
 //			}
             mVoltage = (int)Math.round(mVoltage*(1+(0.25*mGotwayVoltageScaler)));
+            setVoltageSag(mVoltage);
             int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
             setCurrentTime(currentTime);
 
@@ -1121,6 +1201,7 @@ public class WheelData {
                 int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);
                 setTopSpeed(mSpeed);
+                setVoltageSag(mVoltage);
             }
 
 
@@ -1155,6 +1236,7 @@ public class WheelData {
                 int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);
                 setTopSpeed(mSpeed);
+                setVoltageSag(mVoltage);
             }
 
 
@@ -1235,6 +1317,7 @@ public class WheelData {
         //mAverageBatteryCount = 0;
         mAverageBattery = 0;
         mVoltage = 0;
+        mVoltageSag = 20000;
         mRideTime = 0;
 		mRidingTime = 0;
         mTopSpeed = 0;

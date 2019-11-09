@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView tvCurrent;
     TextView tvPower;
     TextView tvVoltage;
+    TextView tvVoltageSag;
     TextView tvBattery;
     TextView tvFanStatus;
     TextView tvTopSpeed;
@@ -227,6 +228,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 case Constants.ACTION_PREFERENCE_CHANGED:
                     loadPreferences();
                     break;
+                case Constants.ACTION_PREFERENCE_RESET:
+                    wheelView.resetBatteryLowest();
+                    break;
+
 				case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
 					//System.out.println("WheelRecognizedMain");
                     String wheel_type = intent.getStringExtra(Constants.INTENT_EXTRA_WHEEL_TYPE);
@@ -235,13 +240,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 					break;
 				case Constants.ACTION_ALARM_TRIGGERED:					
 					int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
-					if (alarmType == 0 ) {
+					if (alarmType < 4 ) {
 						showSnackBar(getResources().getString(R.string.alarm_text_speed), 3000);						
 					}
-					if (alarmType == 1 ) {
+					if (alarmType == 4 ) {
 						showSnackBar(getResources().getString(R.string.alarm_text_current), 3000);						
 					}
-					if (alarmType == 2 ) {
+					if (alarmType == 5 ) {
 						showSnackBar(getResources().getString(R.string.alarm_text_temperature), 3000);						
 					}
 					break;
@@ -350,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         TextView tvTitleRideTime = (TextView) findViewById(R.id.tvTitleRideTime);
 		TextView tvTitleRidingTime = (TextView) findViewById(R.id.tvTitleRidingTime);
         TextView tvTitleVoltage = (TextView) findViewById(R.id.tvTitleVoltage);
+        TextView tvTitleVoltageSag = (TextView) findViewById(R.id.tvTitleVoltageSag);
         TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
         TextView tvTitlePower = (TextView) findViewById(R.id.tvTitlePower);
         TextView tvTitleTemperature = (TextView) findViewById(R.id.tvTitleTemperature);
@@ -389,6 +395,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvRidingTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
                 tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleVoltageSag.setVisibility(View.VISIBLE);
+                tvVoltageSag.setVisibility(View.VISIBLE);
                 tvTitleCurrent.setVisibility(View.VISIBLE);
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
@@ -434,6 +442,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvRidingTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
                 tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleVoltageSag.setVisibility(View.VISIBLE);
+                tvVoltageSag.setVisibility(View.VISIBLE);
                 tvTitleCurrent.setVisibility(View.VISIBLE);
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
@@ -465,6 +475,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvRidingTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
                 tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleVoltageSag.setVisibility(View.VISIBLE);
+                tvVoltageSag.setVisibility(View.VISIBLE);
                 tvTitleCurrent.setVisibility(View.VISIBLE);
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
@@ -512,6 +524,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvTitleVoltage.setVisibility(View.VISIBLE);
                 tvVoltage.setVisibility(View.VISIBLE);
                 tvTitleCurrent.setVisibility(View.VISIBLE);
+                tvTitleVoltageSag.setVisibility(View.VISIBLE);
+                tvVoltageSag.setVisibility(View.VISIBLE);
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
                 tvPower.setVisibility(View.VISIBLE);
@@ -556,6 +570,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvRidingTime.setVisibility(View.VISIBLE);
                 tvTitleVoltage.setVisibility(View.VISIBLE);
                 tvVoltage.setVisibility(View.VISIBLE);
+                tvTitleVoltageSag.setVisibility(View.VISIBLE);
+                tvVoltageSag.setVisibility(View.VISIBLE);
                 tvTitleCurrent.setVisibility(View.VISIBLE);
                 tvCurrent.setVisibility(View.VISIBLE);
                 tvTitlePower.setVisibility(View.VISIBLE);
@@ -603,6 +619,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 tvRidingTime.setVisibility(View.GONE);
                 tvTitleVoltage.setVisibility(View.GONE);
                 tvVoltage.setVisibility(View.GONE);
+                tvTitleVoltageSag.setVisibility(View.GONE);
+                tvVoltageSag.setVisibility(View.GONE);
                 tvTitleCurrent.setVisibility(View.GONE);
                 tvCurrent.setVisibility(View.GONE);
                 tvTitlePower.setVisibility(View.GONE);
@@ -669,6 +687,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
 
                 tvVoltage.setText(String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageDouble()));
+                tvVoltageSag.setText(String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageSagDouble()));
                 tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
 				tvTemperature2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
 				tvAngle.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
@@ -795,6 +814,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 		tvAngle = (TextView) findViewById(R.id.tvAngle);
 		tvRoll = (TextView) findViewById(R.id.tvRoll);
         tvVoltage = (TextView) findViewById(R.id.tvVoltage);
+        tvVoltageSag = (TextView) findViewById(R.id.tvVoltageSag);
         tvBattery = (TextView) findViewById(R.id.tvBattery);
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
         tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
@@ -1053,13 +1073,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         int max_speed = sharedPreferences.getInt(getString(R.string.max_speed), 30) * 10;
         wheelView.setMaxSpeed(max_speed);
         wheelView.setUseMPH(use_mph);
-        wheelView.invalidate();
+        //wheelView.invalidate();
+        //wheelView.resetBatteryLowest();
 
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
 		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
 		WheelData.getInstance().setUseRatio(use_ratio);
 		boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
         WheelData.getInstance().setBetterPercents(betterPercents);
+        wheelView.setBetterPercent(betterPercents);
+        boolean currentOnDial = sharedPreferences.getBoolean(getString(R.string.current_on_dial), false);
+        wheelView.setCurrentOnDial(currentOnDial);
+        wheelView.invalidate();
+
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
@@ -1253,6 +1279,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
+        intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
 		intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
 		intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);	
 		intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);			

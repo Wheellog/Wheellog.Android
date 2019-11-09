@@ -38,5 +38,11 @@
         sample:msbp_interval="1"
         sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>
+    <CheckBoxPreference
+        android:key="@string/current_on_dial"
+        android:title="@string/current_on_dial_title"
+        android:enabled="true"
+        android:summary="@string/current_on_dial_description" />
+
 
 </PreferenceScreen>

@@ -14,6 +14,7 @@ public class Constants {
     public static final String ACTION_LOGGING_SERVICE_TOGGLED = "com.cooper.wheellog.loggingServiceToggled";
     public static final String ACTION_REQUEST_CONNECTION_TOGGLE = "com.cooper.wheellog.requestConnectionToggle";
     public static final String ACTION_PREFERENCE_CHANGED = "com.cooper.wheellog.preferenceChanged";
+    public static final String ACTION_PREFERENCE_RESET = "com.cooper.wheellog.preferenceReset";
     public static final String ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED = "com.cooper.wheellog.pebblePreferenceChanged";
     public static final String ACTION_ALARM_TRIGGERED = "com.cooper.wheellog.alarmTriggered";
     public static final String ACTION_PEBBLE_APP_READY = "com.cooper.wheellog.pebbleAppReady";
@@ -73,7 +74,7 @@ public class Constants {
 	public static final String INTENT_EXTRA_WHEEL_REFRESH = "wheel_refresh";
 	public static final String INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT = "pedals_adjustment";
 	public static final String INTENT_EXTRA_WHEEL_TYPE = "wheel_type";
-
+    public static final String INTENT_EXTRA_RESET = "reset";
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
     public enum WHEEL_TYPE {
@@ -102,9 +103,12 @@ public class Constants {
         }
 
     public enum ALARM_TYPE {
-        SPEED(0),
-        CURRENT(1),
-		TEMPERATURE(2);
+        //SPEED(0),
+        CURRENT(4),
+		TEMPERATURE(5),
+        SPEED1(1),
+        SPEED2(2),
+        SPEED3(3);
 		
 
         private final int value;

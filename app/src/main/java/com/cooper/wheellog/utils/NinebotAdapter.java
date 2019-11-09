@@ -70,7 +70,7 @@ public class NinebotAdapter {
         };
         Timber.i("Ninebot timer started");
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 200);
     }
 
 

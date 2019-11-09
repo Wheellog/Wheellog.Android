@@ -19,6 +19,8 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
+import timber.log.Timber;
+
 public class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     enum SettingsScreen {
@@ -239,6 +241,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 Preference watch_button = findPreference(getString(R.string.watch_preferences));
 				Preference wheel_button = findPreference(getString(R.string.wheel_settings));
 				Preference reset_top_button = findPreference(getString(R.string.reset_top_speed));
+                Preference reset_lowest_battery_button = findPreference(getString(R.string.reset_lowest_battery));
 				Preference reset_user_distance_button = findPreference(getString(R.string.reset_user_distance));
                 Preference last_mac_button = findPreference(getString(R.string.last_mac));
                 Preference about_button = findPreference(getString(R.string.about));
@@ -338,6 +341,16 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
 							WheelData.getInstance().resetTopSpeed();
+                            return true;
+                        }
+                    });
+                }
+                if (reset_lowest_battery_button != null) {
+                    reset_lowest_battery_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(Preference preference) {
+                            WheelData.getInstance().resetVoltageSag();
+                            getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_RESET));
                             return true;
                         }
                     });

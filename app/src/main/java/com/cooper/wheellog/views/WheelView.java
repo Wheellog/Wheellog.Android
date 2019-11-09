@@ -47,10 +47,14 @@ public class WheelView extends View {
     float boxTextHeight;
 
     private int mMaxSpeed = 300;
+    private boolean mTrueBattery = false;
+    private boolean mCurrentOnDial = false;
+
     private boolean mUseMPH = false;
     private int mSpeed = 0;
     private int mWarningSpeed = 0;
     private int mBattery = 0;
+    private int mBatteryLowest = 101;
     private int mTemperature = 0;
     private String mCurrentTime = "00:00:00";
     private Double mDistance = 0.0;
@@ -74,10 +78,12 @@ public class WheelView extends View {
     boolean refreshDisplay = false;
 
     int targetSpeed = 0;
+    int targetCurrent = 0;
     int currentSpeed = 0;
     int targetTemperature = 112;
     int currentTemperature = 112;
     int targetBattery = 0;
+    int targetBatteryLowest = 0;
     int currentBattery = 0;
 
     private Handler refreshHandler = new Handler();
@@ -132,6 +138,16 @@ public class WheelView extends View {
         mUseMPH = use_mph;
     }
 
+    public void setBetterPercent(boolean betterPercent) {
+        mTrueBattery = betterPercent;
+    }
+
+    public void setCurrentOnDial(boolean currentOnDial) {
+        mCurrentOnDial = currentOnDial;
+    }
+    public void resetBatteryLowest() {
+        mBatteryLowest = 101;
+    }
     public void setSpeed(int speed) {
         if (mSpeed == speed)
             return;
@@ -153,10 +169,19 @@ public class WheelView extends View {
             return;
 
         mBattery = battery;
+
         mBattery = mBattery > 100 ? 100 : mBattery;
         mBattery = mBattery < 0 ? 0 : mBattery;
 
         targetBattery = Math.round(((float) 40 / 100) * mBattery);
+        if (mBattery > 0) {
+            mBatteryLowest = mBatteryLowest > mBattery ? mBattery : mBatteryLowest;
+            //mBatteryLowest = mBattery - 28;
+        } else {
+            mBatteryLowest = mBatteryLowest > 100 ? mBatteryLowest : mBattery;
+        }
+
+        targetBatteryLowest = Math.round(((float) 40 / 100) * mBatteryLowest);
         refresh();
     }
 
@@ -216,7 +241,16 @@ public class WheelView extends View {
         if (mCurrent.equals(current))
             return;
         mCurrent = current;
-        refresh();
+
+        current = Math.abs(current);
+        current = current > mMaxSpeed ? mMaxSpeed : current;
+
+
+        targetCurrent = (int) Math.round(( current /(10*mMaxSpeed)) * 112);
+
+        if (mCurrentOnDial)
+            refreshDrawableState();
+        else refresh();
     }
 
     private void refresh() {
@@ -380,8 +414,11 @@ public class WheelView extends View {
             targetBattery = Math.round(((float) 40 / 100) * mBattery);
             currentBattery = targetBattery;
         }
-
-        currentSpeed = updateCurrentValue(targetSpeed, currentSpeed);
+        if (mCurrentOnDial) {
+            currentSpeed = updateCurrentValue2(targetCurrent, currentSpeed);
+        } else {
+            currentSpeed = updateCurrentValue(targetSpeed, currentSpeed);
+        }
         currentTemperature = updateCurrentValue(targetTemperature, currentTemperature);
         currentBattery = updateCurrentValue(targetBattery, currentBattery);
 
@@ -393,6 +430,11 @@ public class WheelView extends View {
         canvas.drawArc(outerArcRect, 144, 252, false, outerArcPaint);
 
         outerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_dial));
+
+        //###########TEST purp
+        //currentSpeed = (int) Math.round(( mCurrent /(10*mMaxSpeed)) * 112);
+        //########### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,
+
         for (int i = 0; i < currentSpeed; i++) {
             float value = (float) (144+(i*2.25));
             canvas.drawArc(outerArcRect, value, 1.5F, false, outerArcPaint);
@@ -408,6 +450,8 @@ public class WheelView extends View {
 
         innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_battery_dial));
         for (int i = 0; i < 112; i++) {
+            if (i == targetBatteryLowest)
+                innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_battery_low_dial));
             if (i == currentTemperature)
                 innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_temperature_dial));
             if (i < currentBattery || i >= currentTemperature) {
@@ -444,7 +488,7 @@ public class WheelView extends View {
         //######## DRAW BATTERY AND TEMPERATURE TEXT #########
         //####################################################
 
-        if (mTemperature > 0 && mBattery > 0) {
+        if (mTemperature > 0 && mBattery > -1) {
             textPaint.setTextSize(innerArcTextSize);
             canvas.save();
             if (getWidth() > getHeight())
@@ -452,10 +496,24 @@ public class WheelView extends View {
             else
                 canvas.rotate((144 + (currentBattery * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
-            String batteryString = String.format(Locale.US, "%02d%%", mBattery);
-            canvas.drawText(batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
+            String bestbatteryString = String.format(Locale.US, "%02d%%", mBattery);
+            canvas.drawText(bestbatteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
             canvas.restore();
             canvas.save();
+/// true battery
+            if (mTrueBattery) {
+                if (getWidth() > getHeight())
+                    canvas.rotate((144 + (-3.3F * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
+                else
+                    canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
+
+                String batteryString = String.format(Locale.US, "%s", "true");
+                canvas.drawText(batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
+                canvas.restore();
+                canvas.save();
+            }
+/// <<<<
+
             if (getWidth() > getHeight())
                 canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
             else
@@ -519,6 +577,15 @@ public class WheelView extends View {
     private int updateCurrentValue(int target, int current) {
         if (target > current)
             return current+1;
+        else if (current > target)
+            return current-1;
+        else
+            return target;
+    }
+
+    private int updateCurrentValue2(int target, int current) {
+        if (target > current)
+            return target;
         else if (current > target)
             return current-1;
         else

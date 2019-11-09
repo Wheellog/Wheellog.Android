@@ -48,6 +48,7 @@
     <string name="ride_time">Journey Time</string>
 	<string name="riding_time">Ride Time</string>
     <string name="voltage">Voltage</string>
+    <string name="voltage_sag">Voltage Sag</string>
     <string name="current">Current</string>
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
@@ -143,6 +144,7 @@
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="use_better_percents" translatable="false">use_better_percents</string>
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
+    <string name="current_on_dial" translatable="false">current_on_dial</string>
 
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
@@ -160,6 +162,7 @@
 	// TRIP PREFERENCES
 	<string name="reset_top_speed" translatable="false">reset_top_speed</string>
 	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
+    <string name="reset_lowest_battery" translatable="false">reset_lowest_battery</string>
     <string name="last_mac" translatable="false">last_mac</string>
     <string name="about" translatable="false">about</string>
     <string name="kmh">km/h</string>
@@ -198,7 +201,8 @@
     <string name="alarm_settings_title">Alarm Settings</string>
     <string name="watch_settings_title">Watch Preferences</string>
     <string name="wheel_settings_title">Wheel Settings</string>
-    <string name="reset_top_spped_title">Reset top speed</string>
+    <string name="reset_top_speed_title">Reset top speed</string>
+    <string name="reset_lowest_battery_title">Reset battery sag</string>
     <string name="reset_user_distance_title">Reset user distance</string>
     <string name="edit_mac_addr_title">Edit MAC address</string>
     <string name="about_app_title">About WheelLog</string>
@@ -217,7 +221,8 @@
     <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
     <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
-
+    <string name="current_on_dial_title">Current on main dial</string>
+    <string name="current_on_dial_description">Draw current on main dial instead of speed</string>
 
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
