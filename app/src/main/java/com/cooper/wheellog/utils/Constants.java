@@ -25,6 +25,8 @@ public class Constants {
     static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
     static final String NOTIFICATION_BUTTON_WATCH = "com.cooper.wheellog.notificationWatchButton";
 
+    public static final String NOTIFICATION_CHANNEL_ID_NOTIFICATION = "com.cooper.wheellog.Channel_Notification";
+
     public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
     public static final String KINGSONG_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
@@ -124,6 +126,11 @@ public class Constants {
     }
 
     public static final int MAIN_NOTIFICATION_ID = 10;
-
+    public static final int NOTIFICATION_ID_LOGGING = 423412;
+    public static final int NOTIFICATION_ID_PEBBLE = 423413;
+    public static final int NOTIFICATION_ID_GARMIN_CONNECT = 423414;
+    public static final int NOTIFICATION_ID4 = 423415;
+    public static final int NOTIFICATION_ID_DRIVE = 423416;
+    public static final int NOTIFICATION_ID_GEAR = 423417;
     public static final String LOG_FOLDER_NAME = "WheelLog Logs";
 }

@@ -1,6 +1,7 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.accessory.SA;
 import com.samsung.android.sdk.accessory.SAAgent;
@@ -39,7 +42,7 @@ public class GearService extends SAAgent {
     LocationManager mLocationManager;
     boolean mIsListening = false;
     private Timer keepAliveTimer;
-
+    private Notification mNotification;
 
     public class GearBinder extends Binder {
         GearService getService() {
@@ -250,6 +253,7 @@ LocationListener locationListener = new LocationListener() {
 
     @Override
     public void onCreate() {
+      //  startForeground();
         super.onCreate();
         mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
@@ -263,6 +267,7 @@ LocationListener locationListener = new LocationListener() {
         catch(Exception exc) {
             Log.e(TAG, "initialization failed");
             exc.printStackTrace();
+            stopForeground(true);
             stopSelf();
         }
 
@@ -273,6 +278,11 @@ LocationListener locationListener = new LocationListener() {
         super.onStartCommand(intent, flags, startId);
         Toast.makeText(getBaseContext(), "Gear Service started", Toast.LENGTH_LONG).show();
         Log.i(TAG, "started");
+        mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_LOW)
+                .build();
+        startForeground(Constants.NOTIFICATION_ID_GEAR, mNotification);
         return START_STICKY;
     }
 
@@ -281,4 +291,12 @@ LocationListener locationListener = new LocationListener() {
         Log.i(TAG, "onBind");
         return mBinder;
     }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+        stopSelf();
+
+    }
+
 }

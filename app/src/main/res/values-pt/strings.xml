@@ -126,7 +126,7 @@
 	<string name="alarm_settings_title">Configurações dos alarmes</string>
 	<string name="watch_settings_title">Preferências do Relógio</string>
 	<string name="wheel_settings_title">Configuração do Monociclo</string>
-	<string name="reset_top_spped_title">Resetar Velocidade Máxima</string>
+	<string name="reset_top_speed_title">Resetar Velocidade Máxima</string>
 	<string name="reset_user_distance_title">Resetar Distância do Usuário</string>
 	<string name="edit_mac_addr_title">Editar MAC adress</string>
 	<string name="about_app_title">Sobre WheelLog</string>

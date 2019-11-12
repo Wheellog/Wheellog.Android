@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -43,6 +44,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
 
     private GoogleApiClient mGoogleApiClient;
     private DriveId folderDriveId;
+    private Notification mNotification;
     File file;
     int notification_id = 0;
 
@@ -63,7 +65,11 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 exitUploadFailed();
         } else
             exitUploadFailed();
-
+        mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_LOW)
+                .build();
+        startForeground(Constants.NOTIFICATION_ID_DRIVE, mNotification);
         return START_STICKY;
     }
 
@@ -228,12 +234,14 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                     }
                     Timber.i("Created a file with content: %s", result.getDriveFile().getDriveId());
                     updateNotification("Upload Complete", true);
+                    stopForeground(true);
                     stopSelf();
                 }
             };
 
     private void exitUploadFailed() {
         updateNotification("Upload failed");
+        stopForeground(true);
         stopSelf();
     }
 

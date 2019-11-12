@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
 import com.garmin.android.connectiq.ConnectIQ;
@@ -44,7 +47,7 @@ import static com.cooper.wheellog.utils.Constants.ACTION_REQUEST_KINGSONG_HORN;
 public class GarminConnectIQ extends Service implements IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     public static final String TAG = GarminConnectIQ.class.getSimpleName();
     public static final String APP_ID = "df8bf0ab-1828-4037-a328-ee86d29d0501";
-
+    private Notification mNotification;
     // This will require Garmin Connect V4.22
     // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
     public static final boolean FEATURE_FLAG_NANOHTTPD = true;
@@ -124,7 +127,11 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         mMyApp = new IQApp(APP_ID);
         mConnectIQ = ConnectIQ.getInstance(this, IQConnectType.WIRELESS);
         mConnectIQ.initialize(this, true, this);
-
+        mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_LOW)
+                .build();
+        startForeground(Constants.NOTIFICATION_ID_GARMIN_CONNECT, mNotification);
         return START_STICKY;
     }
 
@@ -144,7 +151,8 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         }
 
         stopWebServer();
-
+        stopForeground(true);
+        stopSelf();
         instance = null;
     }
 

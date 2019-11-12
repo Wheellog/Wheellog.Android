@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,10 +13,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
@@ -38,6 +42,7 @@ public class LoggingService extends Service
     private String mLocationProvider = LocationManager.NETWORK_PROVIDER;
     private boolean logLocationData = false;
     private File file;
+    private Notification mNotification;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -78,6 +83,13 @@ public class LoggingService extends Service
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         instance = this;
+        mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build();
+
+
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
@@ -159,7 +171,7 @@ public class LoggingService extends Service
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
-
+        startForeground(Constants.NOTIFICATION_ID_LOGGING, mNotification);
         Timber.i("DataLogger Started");
 
         return START_STICKY;
@@ -168,6 +180,7 @@ public class LoggingService extends Service
     @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
+
         if (file != null) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
@@ -182,9 +195,10 @@ public class LoggingService extends Service
         if (SettingsUtil.isAutoUploadEnabled(this)) {
             Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
             uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
-            startService(uploadIntent);
+            ContextCompat.startForegroundService(this, uploadIntent);
         }
-
+        stopForeground(true);
+        stopSelf();
         Timber.i("DataLogger Stopped");
     }
 

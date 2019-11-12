@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,9 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -39,7 +42,7 @@ public class PebbleService extends Service {
     static final int KEY_DISTANCE = 9;
     static final int KEY_TOP_SPEED = 10;
     static final int KEY_READY = 11;
-
+    private Notification mNotification;
     private Handler mHandler = new Handler();
     private static PebbleService instance = null;
     private long last_message_send_time;
@@ -196,6 +199,11 @@ public class PebbleService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
+        mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build();
+
         PebbleKit.registerReceivedAckHandler(this, ackReceiver);
         PebbleKit.registerReceivedNackHandler(this, nackReceiver);
 
@@ -214,13 +222,14 @@ public class PebbleService extends Service {
                 .putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceStartedIntent);
         mHandler.post(mSendPebbleData);
-
+        startForeground(Constants.NOTIFICATION_ID_PEBBLE, mNotification);
         Timber.d("PebbleConnectivity Started");
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
+
         unregisterReceiver(mBroadcastReceiver);
         unregisterReceiver(ackReceiver);
         unregisterReceiver(nackReceiver);
@@ -232,7 +241,8 @@ public class PebbleService extends Service {
         Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
         sendBroadcast(serviceStartedIntent);
-
+        stopForeground(true);
+        stopSelf();
         Timber.i("PebbleConnectivity Stopped");
     }
 

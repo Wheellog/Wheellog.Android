@@ -126,7 +126,7 @@
 	<string name="alarm_settings_title">Paramètres alarmes</string>
 	<string name="watch_settings_title">Préferences montre</string>
 	<string name="wheel_settings_title">Paramétrage de la roue</string>
-	<string name="reset_top_spped_title">Réinitialisation vitesse maximum</string>
+	<string name="reset_top_speed_title">Réinitialisation vitesse maximum</string>
 	<string name="reset_user_distance_title">Réinitialisation distance utilisateur</string>
 	<string name="edit_mac_addr_title">Edition addresse MAC</string>
 	<string name="about_app_title">A propos de WheelLog</string>

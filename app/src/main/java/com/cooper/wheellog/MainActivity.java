@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -229,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     loadPreferences();
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
+                    Timber.i("Reset battery lowest");
                     wheelView.resetBatteryLowest();
                     break;
 
@@ -1185,7 +1187,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (LoggingService.isInstanceCreated())
             stopService(dataLoggerServiceIntent);
         else
-            startService(dataLoggerServiceIntent);
+            ContextCompat.startForegroundService(this, dataLoggerServiceIntent);
     }
 
     private void stopPebbleService() {
@@ -1197,7 +1199,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (PebbleService.isInstanceCreated())
             stopService(pebbleServiceIntent);
         else
-            startService(pebbleServiceIntent);
+            ContextCompat.startForegroundService(this, pebbleServiceIntent);
     }
 
     private void stopGarminConnectIQ() {
@@ -1209,12 +1211,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (GarminConnectIQ.isInstanceCreated())
             stopService(garminConnectIQIntent);
         else
-            startService(garminConnectIQIntent);
+            ContextCompat.startForegroundService(this, garminConnectIQIntent);
     }
 
     private void startBluetoothService() {
         Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
-        startService(bluetoothServiceIntent);
+        ContextCompat.startForegroundService(this, bluetoothServiceIntent);
         bindService(bluetoothServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 

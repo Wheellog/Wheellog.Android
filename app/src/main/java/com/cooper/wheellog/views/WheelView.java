@@ -17,6 +17,8 @@ import com.cooper.wheellog.utils.Typefaces;
 
 import java.util.Locale;
 
+import timber.log.Timber;
+
 import static com.cooper.wheellog.utils.MathsUtil.dpToPx;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
@@ -80,6 +82,7 @@ public class WheelView extends View {
     int targetSpeed = 0;
     int targetCurrent = 0;
     int currentSpeed = 0;
+    int currentCurrent = 0;
     int targetTemperature = 112;
     int currentTemperature = 112;
     int targetBattery = 0;
@@ -143,10 +146,12 @@ public class WheelView extends View {
     }
 
     public void setCurrentOnDial(boolean currentOnDial) {
+        Timber.i("Change dial type to %b", currentOnDial);
         mCurrentOnDial = currentOnDial;
     }
     public void resetBatteryLowest() {
         mBatteryLowest = 101;
+        refresh();
     }
     public void setSpeed(int speed) {
         if (mSpeed == speed)
@@ -242,15 +247,12 @@ public class WheelView extends View {
             return;
         mCurrent = current;
 
-        current = Math.abs(current);
-        current = current > mMaxSpeed ? mMaxSpeed : current;
+        current = current/10;
+        current = Math.abs(current) > mMaxSpeed ? mMaxSpeed : current;
 
 
-        targetCurrent = (int) Math.round(( current /(10*mMaxSpeed)) * 112);
-
-        if (mCurrentOnDial)
-            refreshDrawableState();
-        else refresh();
+        targetCurrent = (int) Math.round(( current /(mMaxSpeed)) * 112);
+        refresh();
     }
 
     private void refresh() {
@@ -414,10 +416,13 @@ public class WheelView extends View {
             targetBattery = Math.round(((float) 40 / 100) * mBattery);
             currentBattery = targetBattery;
         }
+        int currentDial =0;
         if (mCurrentOnDial) {
-            currentSpeed = updateCurrentValue2(targetCurrent, currentSpeed);
+            currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent);
+            currentDial = currentCurrent;
         } else {
             currentSpeed = updateCurrentValue(targetSpeed, currentSpeed);
+            currentDial = currentSpeed;
         }
         currentTemperature = updateCurrentValue(targetTemperature, currentTemperature);
         currentBattery = updateCurrentValue(targetBattery, currentBattery);
@@ -428,14 +433,17 @@ public class WheelView extends View {
 
         outerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_arc_dim));
         canvas.drawArc(outerArcRect, 144, 252, false, outerArcPaint);
-
-        outerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_dial));
-
+        if (currentDial >= 0) {
+            outerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_main_positive_dial));
+        } else {
+            outerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_main_negative_dial));
+        }
+        currentDial = Math.abs(currentDial);
         //###########TEST purp
         //currentSpeed = (int) Math.round(( mCurrent /(10*mMaxSpeed)) * 112);
         //########### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,
 
-        for (int i = 0; i < currentSpeed; i++) {
+        for (int i = 0; i < currentDial; i++) {
             float value = (float) (144+(i*2.25));
             canvas.drawArc(outerArcRect, value, 1.5F, false, outerArcPaint);
         }
@@ -570,6 +578,7 @@ public class WheelView extends View {
         }
 
         refreshDisplay = currentSpeed != targetSpeed ||
+                currentCurrent != targetCurrent ||
                 currentBattery != targetBattery ||
                 currentTemperature != targetTemperature;
     }
@@ -584,12 +593,22 @@ public class WheelView extends View {
     }
 
     private int updateCurrentValue2(int target, int current) {
-        if (target > current)
-            return target;
-        else if (current > target)
-            return current-1;
-        else
-            return target;
+        if (target > 0) {
+            if (target > current)
+                return target;
+            else if (current > target)
+                return current - 1;
+            else
+                return target;
+        } else {
+            if (target < current)
+                return target;
+            else if (current > target)
+                return current + 1;
+            else
+                return target;
+        }
+
     }
 
     private float calculateFontSize(@NonNull Rect textBounds, @NonNull Rect textContainer, @NonNull String text, @NonNull Paint textPaint) {

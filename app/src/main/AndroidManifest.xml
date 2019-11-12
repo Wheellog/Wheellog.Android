@@ -21,7 +21,7 @@
     <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
     <uses-permission android:name="android.permission.SET_DEBUG_APP" />
     <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Companion" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <supports-screens
         android:smallScreens="true"

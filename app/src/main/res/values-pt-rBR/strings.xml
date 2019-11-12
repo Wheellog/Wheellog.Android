@@ -126,7 +126,7 @@
 	<string name="alarm_settings_title">Ustawienia alarmów</string>
 	<string name="watch_settings_title">Ustawienia zegarka</string>
 	<string name="wheel_settings_title">Ustawienia monocykla</string>
-	<string name="reset_top_spped_title">Zeruj prędkość maksymalną</string>
+	<string name="reset_top_speed_title">Zeruj prędkość maksymalną</string>
 	<string name="reset_user_distance_title">Zeruj dystans użytkownika</string>
 	<string name="edit_mac_addr_title">Edytuj adres MAC</string>
 	<string name="about_app_title">O programie</string>

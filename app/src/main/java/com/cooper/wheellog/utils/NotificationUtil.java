@@ -32,7 +32,6 @@ public class NotificationUtil {
     private int mBatteryLevel = 0;
     private double mDistance = 0;
     private int mTemperature = 0;
-    public static final String CHANNEL_ID = "com.cooper.wheellog.Default_Channel";
 
     public NotificationUtil(Context context) {
         mContext = context;
@@ -100,7 +99,7 @@ public class NotificationUtil {
             CharSequence name = mContext.getResources().getString(R.string.notification_channel_name);
             String description = mContext.getResources().getString(R.string.notification_channel_description);
             int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
@@ -162,7 +161,7 @@ public class NotificationUtil {
         else
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
-        return new NotificationCompat.Builder(mContext, CHANNEL_ID)
+        return new NotificationCompat.Builder(mContext, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)

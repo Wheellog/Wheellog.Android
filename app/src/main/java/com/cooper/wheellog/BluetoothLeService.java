@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import android.app.Notification;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
@@ -315,6 +317,7 @@ public class BluetoothLeService extends Service {
         mNotificationHandler.unregisterReceiver();
         unregisterReceiver(messageReceiver);
         stopForeground(true);
+        stopSelf();
     }
 
     private final IBinder mBinder = new LocalBinder();

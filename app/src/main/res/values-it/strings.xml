@@ -126,7 +126,7 @@
 	<string name="alarm_settings_title">Impostazioni allarmi</string>
 	<string name="watch_settings_title">Preferenze orologio</string>
 	<string name="wheel_settings_title">Impostazioni ruota</string>
-	<string name="reset_top_spped_title">Reset velocità massima</string>
+	<string name="reset_top_speed_title">Reset velocità massima</string>
 	<string name="reset_user_distance_title">Reset distanza utente</string>
 	<string name="edit_mac_addr_title">Imposta MAC address</string>
 	<string name="about_app_title">Informazioni su WheelLog</string>

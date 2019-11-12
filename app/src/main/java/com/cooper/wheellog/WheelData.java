@@ -1294,7 +1294,14 @@ public class WheelData {
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
-        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.getInstance().stopTimer();
+        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
+            if (protoVer.compareTo("S2")==0) {
+                Timber.i("Ninbot S2 stop!");
+                NinebotAdapter.getInstance().stopTimer();
+            } else {
+                NinebotZAdapter.getInstance().stopTimer();
+            }
+        }
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.getInstance().stopTimer();
         mBluetoothLeService = null;
         mWheelType = WHEEL_TYPE.Unknown;

@@ -70,7 +70,7 @@ public class NinebotAdapter {
         };
         Timber.i("Ninebot timer started");
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 200);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
 
 
@@ -456,7 +456,7 @@ public class NinebotAdapter {
 
         public int shortFromBytes(byte[] bytes, int starting) {
             if (bytes.length >= starting + 2) {
-                return (((bytes[starting + 1] & 255) << 8) | (bytes[starting] & 255));
+                return (((int)((bytes[starting + 1] & 255) << 8)) | (bytes[starting] & 255));
             }
             return 0;
         }
@@ -569,8 +569,10 @@ public class NinebotAdapter {
 
         Status parseLiveData() {
             int batt = this.shortFromBytes(data, 8);
-            int speed = this.shortFromBytes(data, 10) / 10;
+            //int speed = this.shortFromBytes(data, 10) / 10; //speed up to 32.000 km/h
+            int speed = this.shortFromBytes(data, 28); //speed up to 320.00 km/h
             //12 -avg speed
+            Timber.i("NINE ADAPTER Speed: %d, speed %04X", speed, speed);
             int distance = this.intFromBytes(data,14);
             int temperature = this.shortFromBytes(data,22);
             int voltage = this.shortFromBytes(data, 24);
