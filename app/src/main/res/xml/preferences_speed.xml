@@ -36,7 +36,7 @@
         sample:msbp_minValue="10"
         sample:msbp_maxValue="100"
         sample:msbp_interval="1"
-        sample:msbp_measurementUnit="@string/kmh"
+        sample:msbp_measurementUnit="@string/dial_measurements"
         sample:msbp_dialogEnabled="true"/>
     <CheckBoxPreference
         android:key="@string/current_on_dial"

@@ -129,7 +129,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         mConnectIQ.initialize(this, true, this);
         mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_LOW)
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
                 .build();
         startForeground(Constants.NOTIFICATION_ID_GARMIN_CONNECT, mNotification);
         return START_STICKY;

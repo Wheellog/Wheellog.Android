@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.os.Vibrator;
 //import android.media.ToneGenerator;
 import android.media.AudioManager;
@@ -73,7 +74,7 @@ public class WheelData {
     private String mModel = "Unknown";
 	private String mModeStr = "Unknown";
 	private String mBtName = "";
-	
+
 	private String mAlert = "";
 
 //    private int mVersion; # sorry King, but INT not good for Inmo
@@ -109,10 +110,9 @@ public class WheelData {
 
 	private boolean mUseRatio = false;
     private boolean mBetterPercents = false;
-	//private boolean mGotway84V = false;
-	private boolean mSpeedAlarmExecuted = false;
-    private boolean mCurrentAlarmExecuted = false;
-	private boolean mTemperatureAlarmExecuted = false;
+	private boolean mSpeedAlarmExecuting = false;
+    private boolean mCurrentAlarmExecuting = false;
+	private boolean mTemperatureAlarmExecuting = false;
 
     private String protoVer = "";
 
@@ -133,9 +133,16 @@ public class WheelData {
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
         if (type.getValue()<4) {
-            audioTrack.write(buffer, sampleRate / 5, ((4-type.getValue())*sampleRate) / 20);
+            audioTrack.write(buffer, sampleRate / 5, ((type.getValue())*sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
+
+        } else if (type == ALARM_TYPE.CURRENT) {
+            audioTrack.write(buffer, sampleRate *3 / 5, (2*sampleRate) / 20); //100 ms for current
+
         } else {
-            audioTrack.write(buffer, sampleRate *3 / 5, ((type.getValue()-3)*sampleRate) / 20);
+            audioTrack.write(buffer, sampleRate *3 / 5, (6*sampleRate) / 20); //300 ms temperature
+
+
+
         }
 
         //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
@@ -803,27 +810,78 @@ public class WheelData {
 //        mAverageBattery += (battery - mAverageBattery) / mAverageBatteryCount;
         mAverageBattery = battery;
     }
+    private void startSpeedAlarmCount() {
+        mSpeedAlarmExecuting = true;
+        TimerTask stopSpeedAlarmExecuring = new TimerTask() {
+            @Override
+            public void run() {
+                mSpeedAlarmExecuting = false;
+                Timber.i("Stop Speed <<<<<<<<<");
+            }
+        };
+        Timer timerCurrent = new Timer();
+        timerCurrent.schedule(stopSpeedAlarmExecuring, 170);
+
+    }
+
+    private void startTempAlarmCount() {
+        mTemperatureAlarmExecuting = true;
+        TimerTask stopTempAlarmExecuting = new TimerTask() {
+            @Override
+            public void run() {
+                mTemperatureAlarmExecuting = false;
+                Timber.i("Stop Temp <<<<<<<<<");
+            }
+        };
+        Timer timerTemp = new Timer();
+        timerTemp.schedule(stopTempAlarmExecuting, 570);
+    }
+    private void startCurrentAlarmCount() {
+        mCurrentAlarmExecuting = true;
+        TimerTask stopCurrentAlarmExecuring = new TimerTask() {
+            @Override
+            public void run() {
+                mCurrentAlarmExecuting = false;
+                Timber.i("Stop Curr <<<<<<<<<");
+            }
+
+        };
+        Timer timerCurrent = new Timer();
+        timerCurrent.schedule(stopCurrentAlarmExecuring, 170);
+    }
 
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
-        if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
-                mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
-            raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-        else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
-                mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-            raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-        else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
-                mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-            raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+        if (!mSpeedAlarmExecuting) {
+            if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
+                    mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+            }
+            else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
+                    mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed) {
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+            }
+            else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
+                    mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed) {
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+            }
 
+        }
 
         if (mAlarmCurrent > 0 &&
-                mCurrent >= mAlarmCurrent) {
+                mCurrent >= mAlarmCurrent && !mCurrentAlarmExecuting) {
+            startCurrentAlarmCount();
             raiseAlarm(ALARM_TYPE.CURRENT, mContext);
+
         }
-                if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature) {
-        raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
-    }
+        if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature && !mTemperatureAlarmExecuting) {
+            startTempAlarmCount();
+            raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
+
+        }
 
 /*
         if (!mSpeedAlarmExecuted) {
@@ -1200,6 +1258,7 @@ public class WheelData {
                 setDistance((long) status.getDistance());
                 int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);
+                setBatteryPercent(mBattery);
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
             }
@@ -1237,6 +1296,7 @@ public class WheelData {
                 setCurrentTime(currentTime);
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
+                setBatteryPercent(mBattery);
             }
 
 

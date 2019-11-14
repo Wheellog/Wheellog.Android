@@ -201,7 +201,7 @@ public class PebbleService extends Service {
         instance = this;
         mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
                 .build();
 
         PebbleKit.registerReceivedAckHandler(this, ackReceiver);

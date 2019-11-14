@@ -1187,7 +1187,7 @@ public class InMotionAdapter {
         Infos parseSlowInfoMessage() {
             if (ex_data == null) return null;
             Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
-
+            if (model == UNKNOWN) model = V8;
 			//model = V8;
             //int v = this.intFromBytes(ex_data, 24);
             int v0 = ex_data[27]&0xFF;

@@ -210,6 +210,7 @@
     <string name="wheel_pass_imotion">Wheel Password ( InMotion only )</string>
     <string name="amp">A</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
+    <string name="dial_measurements"></string>
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>

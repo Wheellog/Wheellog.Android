@@ -280,7 +280,7 @@ LocationListener locationListener = new LocationListener() {
         Log.i(TAG, "started");
         mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_LOW)
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
                 .build();
         startForeground(Constants.NOTIFICATION_ID_GEAR, mNotification);
         return START_STICKY;

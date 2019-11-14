@@ -67,7 +67,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
             exitUploadFailed();
         mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_LOW)
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
                 .build();
         startForeground(Constants.NOTIFICATION_ID_DRIVE, mNotification);
         return START_STICKY;
