@@ -1074,7 +1074,7 @@ public class WheelData {
                         } else if (mVoltage >= 8250) {
                             battery = 100;
                         } else {
-                            battery = (mVoltage - 6250) / 16;
+                            battery = (mVoltage - 6250) / 20;
                         }
                     }
                 } else {

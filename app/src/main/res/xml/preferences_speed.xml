@@ -41,7 +41,7 @@
     <CheckBoxPreference
         android:key="@string/current_on_dial"
         android:title="@string/current_on_dial_title"
-        android:enabled="true"
+        android:enabled="false"
         android:summary="@string/current_on_dial_description" />
 
 
