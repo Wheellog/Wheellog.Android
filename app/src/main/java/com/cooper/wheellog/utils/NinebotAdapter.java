@@ -28,6 +28,7 @@ public class NinebotAdapter {
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String ninebotPassword, final String protoVer) {
         Timber.i("Ninebot timer starting");
         if (protoVer.compareTo("S2")==0) protoVersion = 1;
+        if (protoVer.compareTo("Mini")==0) protoVersion = 2;
         updateStep = 0;
         stateCon = 0;
         TimerTask timerTask = new TimerTask() {
@@ -248,19 +249,23 @@ public class NinebotAdapter {
     public static class CANMessage {
 
         enum Addr {
-            Controller(0x01,0x01),
-            KeyGenerator(0x16,0x16),
-            App(0x09,0x11);
+            Controller(0x01,0x01, 0x01),
+            KeyGenerator(0x16,0x16, 0x16),
+            App(0x09,0x11,0x0A);
 
             private int value_def;
             private int value_s2;
-            Addr(int value_def, int value_s2) {
+            private int value_mini;
+            Addr(int value_def, int value_s2, int value_mini) {
                     this.value_def = value_def;
                     this.value_s2 = value_s2;
+                    this.value_mini = value_mini;
                 }
             public int getValue() {
                 if (protoVersion == 1) {
                     return value_s2;
+                } else if (protoVersion == 2) {
+                    return value_mini;
                 } else {
                     return value_def;
                 }

@@ -42,6 +42,7 @@ public class WheelData {
  //   private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
 	private static final int RIDING_SPEED = 200; // 2km/h
 	private static final double RATIO_GW = 0.875;
+    private static final double KS18L_SCALER = 0.83;
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
     private ArrayList<Float> speedAxis = new ArrayList<>();
@@ -109,6 +110,7 @@ public class WheelData {
 
 
 	private boolean mUseRatio = false;
+    private boolean m18Lkm = true;
     private boolean mBetterPercents = false;
 	private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
@@ -133,13 +135,13 @@ public class WheelData {
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
         if (type.getValue()<4) {
-            audioTrack.write(buffer, sampleRate / 5, ((type.getValue())*sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
+            audioTrack.write(buffer, sampleRate / 20, ((type.getValue())*sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
 
         } else if (type == ALARM_TYPE.CURRENT) {
-            audioTrack.write(buffer, sampleRate *3 / 5, (2*sampleRate) / 20); //100 ms for current
+            audioTrack.write(buffer, sampleRate *3 / 10, (2*sampleRate) / 20); //100 ms for current
 
         } else {
-            audioTrack.write(buffer, sampleRate *3 / 5, (6*sampleRate) / 20); //300 ms temperature
+            audioTrack.write(buffer, sampleRate *3 / 10, (6*sampleRate) / 10); //300 ms temperature
 
 
 
@@ -175,10 +177,14 @@ public class WheelData {
             double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
             double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
             double secondWave = Math.sin(2 * Math.PI * freq*1.34F * i / sampleRate);
-            if (i<numSamples/2) {
+            double thirdWave = Math.sin(2 * Math.PI * freq*2.0F * i / sampleRate);
+            double fourthWave = Math.sin(2 * Math.PI * freq*2.68F * i / sampleRate);
+            if (i<=(numSamples*3)/10) {
                 buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*(Short.MAX_VALUE)); //+ harmonic1 + harmonic2
-            } else {
+            } else if (i<(numSamples*3)/5) {
                 buffer[i] = (short)((originalWave + secondWave)*(Short.MAX_VALUE));
+            } else {
+                buffer[i] = (short)((thirdWave + fourthWave)*(Short.MAX_VALUE));
             }
 
         }
@@ -449,7 +455,7 @@ public class WheelData {
 			byte[] data = new byte[1];
 			if (wheelMaxSpeed != 0) {
 				int wheelMaxSpeed2 = wheelMaxSpeed;
-				if (mUseRatio) wheelMaxSpeed2 = (int)Math.round(wheelMaxSpeed2/RATIO_GW);
+				//if (mUseRatio) wheelMaxSpeed2 = (int)Math.round(wheelMaxSpeed2/RATIO_GW);
 				mBluetoothLeService.writeBluetoothGattCharacteristic("W".getBytes());
 				mBluetoothLeService.writeBluetoothGattCharacteristic("Y".getBytes());
 				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
@@ -587,13 +593,13 @@ public class WheelData {
 	String getModeStr() {
         return mModeStr;
     }
-	
+
 	String getAlert() {
 		String nAlert = mAlert;
 		mAlert = "";
         return nAlert;
     }
-	
+
     String getSerial() {
         return mSerialNumber;
     }
@@ -659,8 +665,23 @@ public class WheelData {
     }
 
     int getDistance() { return (int) (mTotalDistance - mStartTotalDistance); }
-	
-	long getWheelDistance() { 
+
+    int getAlarm() {
+        int alarm = 0;
+        if (mSpeedAlarmExecuting) {
+            alarm = alarm | 0x01;
+        }
+        if (mTemperatureAlarmExecuting) {
+            alarm = alarm | 0x04;
+        }
+        if (mCurrentAlarmExecuting) {
+            alarm = alarm | 0x02;
+        }
+        return alarm;
+    }
+
+
+    long getWheelDistance() {
 		return mDistance; 
 	}
 	
@@ -748,7 +769,15 @@ public class WheelData {
         mUseRatio = enabled;
 		//reset();
     }
-	
+
+    void set18Lkm(boolean enabled) {
+        m18Lkm = enabled;
+        if ((mModel.compareTo("KS-18L") == 0) && !m18Lkm) {
+            mTotalDistance = Math.round(mTotalDistance*KS18L_SCALER);
+        }
+        //reset();
+    }
+
 	void setGotwayVoltage(int voltage) {
         mGotwayVoltageScaler = voltage;
     }
@@ -984,7 +1013,7 @@ public class WheelData {
             new_data = decodeGotway(data);
         else if (mWheelType == WHEEL_TYPE.INMOTION)
             new_data = decodeInmotion(data);
-        else if (mWheelType == WHEEL_TYPE.NINEBOT || protoVer.compareTo("S2")==0) {
+        else if (mWheelType == WHEEL_TYPE.NINEBOT || protoVer.compareTo("S2")==0|| protoVer.compareTo("Mini")==0) {
             Timber.i("Ninebot_decoding");
             new_data = decodeNinebot(data);
         }
@@ -1045,6 +1074,9 @@ public class WheelData {
                 mVoltage = byteArrayInt2(data[2], data[3]);
                 mSpeed = byteArrayInt2(data[4], data[5]);
                 mTotalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
+                if ((mModel.compareTo("KS-18L") == 0) && !m18Lkm) {
+                    mTotalDistance = Math.round(mTotalDistance*KS18L_SCALER);
+                }
                 mCurrent = ((data[10]&0xFF) + (data[11]<<8));
  
 				mTemperature = byteArrayInt2(data[12], data[13]);
@@ -1356,9 +1388,13 @@ public class WheelData {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
             if (protoVer.compareTo("S2")==0) {
-                Timber.i("Ninbot S2 stop!");
+                Timber.i("Ninebot S2 stop!");
                 NinebotAdapter.getInstance().stopTimer();
-            } else {
+            } else if (protoVer.compareTo("Mini")==0) {
+                Timber.i("Ninebot Mini stop!");
+                NinebotAdapter.getInstance().stopTimer();
+            }   else {
+                Timber.i("Ninebot Z stop!");
                 NinebotZAdapter.getInstance().stopTimer();
             }
         }
@@ -1420,6 +1456,10 @@ public class WheelData {
         protoVer = "";
         if (advData.compareTo("4e421300000000ec")==0) {
             protoVer = "S2";
+        } else if ((advData.compareTo("4e421400000000eb")==0) || (advData.compareTo("4e422000000000df")==0) ||
+                (advData.compareTo("4e422200000000dd")==0) || (advData.compareTo("4e4230cf")==0)
+                || advData.startsWith("5600")) {
+            protoVer = "Mini";
         }
 
         Class<R.array> res = R.array.class;
@@ -1536,7 +1576,7 @@ public class WheelData {
                     Timber.i("enable notify UUID");
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     Timber.i("write notify");
-                    if (protoVer.compareTo("S2")==0){
+                    if (protoVer.compareTo("S2")==0 || protoVer.compareTo("Mini")==0){
                         NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
                         //mWheelType = WHEEL_TYPE.NINEBOT;
                     } else {

@@ -148,6 +148,7 @@
 
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
+    <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -264,6 +265,10 @@
     <string name="calibration_title">Calibration</string>
     <string name="is_gotway_mcm_title">My Wheel is a Gotway MCM</string>
     <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
+    <string name="ks18l_scaler_title">Wrong 18L distanse</string>
+    <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
+
+
     <string name="battery_voltage_title">Battery voltage</string>
     <string name="battary_voltage_description">67V/84V/100V</string>
     <string name="off_level_1_alarm">Turn off level 1 alarm</string>

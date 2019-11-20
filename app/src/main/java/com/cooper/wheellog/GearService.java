@@ -137,7 +137,7 @@ LocationListener locationListener = new LocationListener() {
                                     "\"voltage\":%.2f,\"current\":%.2f,\"power\":%.2f," +
                                     "\"batteryLevel\":%d,\"distance\":%d,\"totalDistance\":%d,\"temperature\":%d," +
                                     "\"temperature2\":%d," +
-                                    "\"angle\":%.2f,\"roll\":%.2f",
+                                    "\"angle\":%.2f,\"roll\":%.2f,\"isAlarmExecuting\":%d",
 //                        "\"mode\":%s,\"alert\":%s"+
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
@@ -149,7 +149,8 @@ LocationListener locationListener = new LocationListener() {
                             WheelData.getInstance().getTemperature(),
                             WheelData.getInstance().getTemperature2(),
                             WheelData.getInstance().getAngle(),
-                            WheelData.getInstance().getRoll()
+                            WheelData.getInstance().getRoll(),
+                            WheelData.getInstance().getAlarm()
 //                        WheelData.getInstance().getModeStr(),
 //                        WheelData.getInstance().getAlert()
                     );
@@ -168,7 +169,7 @@ LocationListener locationListener = new LocationListener() {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 500); //cada 500ms
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 200); //cada 500ms
     }
 
     public void removeConnection(GearSAPServiceProviderConnection connection) {

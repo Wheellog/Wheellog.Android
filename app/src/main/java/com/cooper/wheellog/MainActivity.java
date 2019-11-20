@@ -1081,6 +1081,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
 		boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
 		WheelData.getInstance().setUseRatio(use_ratio);
+        boolean ks18l_scaler = sharedPreferences.getBoolean(getString(R.string.ks18l_scaler), false);
+        WheelData.getInstance().set18Lkm(ks18l_scaler);
 		boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
         WheelData.getInstance().setBetterPercents(betterPercents);
         wheelView.setBetterPercent(betterPercents);

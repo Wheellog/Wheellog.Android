@@ -84,4 +84,9 @@
 		sample:msbp_measurementUnit="@string/kmh"
 		sample:msbp_minValue="0" />
 
+	<CheckBoxPreference
+		android:key="@string/ks18l_scaler"
+		android:title="@string/ks18l_scaler_title"
+		android:enabled="true"
+		android:summary="@string/ks18l_scaler_description" />
 </PreferenceScreen>
