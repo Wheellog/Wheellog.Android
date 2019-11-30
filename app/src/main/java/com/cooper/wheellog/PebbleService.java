@@ -199,11 +199,11 @@ public class PebbleService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
-        mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        /*mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .build();
-
+*/
         PebbleKit.registerReceivedAckHandler(this, ackReceiver);
         PebbleKit.registerReceivedNackHandler(this, nackReceiver);
 
@@ -222,7 +222,9 @@ public class PebbleService extends Service {
                 .putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceStartedIntent);
         mHandler.post(mSendPebbleData);
-        startForeground(Constants.NOTIFICATION_ID_PEBBLE, mNotification);
+
+        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.buildNotification());
+        //startForeground(Constants.NOTIFICATION_ID_PEBBLE, mNotification);
         Timber.d("PebbleConnectivity Started");
         return START_STICKY;
     }

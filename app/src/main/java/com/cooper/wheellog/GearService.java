@@ -279,11 +279,13 @@ LocationListener locationListener = new LocationListener() {
         super.onStartCommand(intent, flags, startId);
         Toast.makeText(getBaseContext(), "Gear Service started", Toast.LENGTH_LONG).show();
         Log.i(TAG, "started");
-        mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        /*mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
                 .build();
-        startForeground(Constants.NOTIFICATION_ID_GEAR, mNotification);
+        */
+        //startForeground(Constants.NOTIFICATION_ID_GEAR, mNotification);
+        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.buildNotification());
         return START_STICKY;
     }
 

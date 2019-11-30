@@ -575,12 +575,17 @@ public class NinebotAdapter {
         Status parseLiveData() {
             int batt = this.shortFromBytes(data, 8);
             //int speed = this.shortFromBytes(data, 10) / 10; //speed up to 32.000 km/h
-            int speed = this.shortFromBytes(data, 28); //speed up to 320.00 km/h
+            int speed =0;
+            if (protoVersion == 1) speed = this.shortFromBytes(data, 28); //speed up to 320.00 km/h
+            else speed = this.shortFromBytes(data, 10) / 10; //speed up to 32.000 km/h
             //12 -avg speed
-            Timber.i("NINE ADAPTER Speed: %d, speed %04X", speed, speed);
+            //Timber.i("NINE ADAPTER Speed: %d, speed %04X", speed, speed);
             int distance = this.intFromBytes(data,14);
             int temperature = this.shortFromBytes(data,22);
             int voltage = this.shortFromBytes(data, 24);
+            if (protoVersion == 2) {
+                voltage = voltage/10;
+            }
             int current = this.signedShortFromBytes(data, 26);
             int power = voltage*current;
             //speed = 10;

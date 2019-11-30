@@ -32,11 +32,17 @@ public class NotificationUtil {
     private int mBatteryLevel = 0;
     private double mDistance = 0;
     private int mTemperature = 0;
+    private static NotificationUtil mInstance = null;
+    private static NotificationCompat.Builder mNotification;
 
     public NotificationUtil(Context context) {
-        mContext = context;
-        context.registerReceiver(messageReceiver, makeIntentFilter());
-        createNotificationChannel();
+        if (mInstance == null) {
+            mContext = context;
+            context.registerReceiver(messageReceiver, makeIntentFilter());
+            createNotificationChannel();
+            mNotification = new NotificationCompat.Builder(mContext, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION);
+            mInstance = this;
+        }
     }
 
 //    public Context getInstance() {
@@ -111,8 +117,6 @@ public class NotificationUtil {
     public Notification buildNotification() {
         Intent notificationIntent = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
-
-
         RemoteViews notificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_base);
 
         PendingIntent pendingConnectionIntent = PendingIntent.getBroadcast(mContext, 0,
@@ -161,7 +165,7 @@ public class NotificationUtil {
         else
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
-        return new NotificationCompat.Builder(mContext, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        return mNotification
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)

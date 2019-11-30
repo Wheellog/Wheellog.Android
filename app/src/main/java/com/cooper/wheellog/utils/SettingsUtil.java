@@ -54,6 +54,10 @@ public class SettingsUtil {
         return getSharedPreferences(context).getBoolean(preference, false);
     }
 
+    public static boolean getBoolean(Context context, String id, String preference) {
+        return getSharedPreferences(context).getBoolean(preference+'_'+id, false);
+    }
+
     public static boolean isAutoLogEnabled(Context context) {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_log), false);
     }
@@ -102,11 +106,16 @@ public class SettingsUtil {
     public static int getMaxSpeed(Context context) {
         return getSharedPreferences(context).getInt(context.getString(R.string.max_speed), 30);
     }
+    public static int getMaxSpeed(Context context, String id) {
+        return getSharedPreferences(context).getInt(context.getString(R.string.max_speed)+'_'+id, 30);
+    }
 
     public static int getHornMode(Context context) {
         return Integer.parseInt(getSharedPreferences(context).getString(context.getString(R.string.horn_mode), "0"));
     }
-
+    public static int getHornMode(Context context, String id) {
+        return Integer.parseInt(getSharedPreferences(context).getString(context.getString(R.string.horn_mode)+"_"+id, "0"));
+    }
     public static boolean getGarminConnectIQEnable(Context context) {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.garmin_connectiq_enable), false);
     }

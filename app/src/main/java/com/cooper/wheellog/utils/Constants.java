@@ -125,12 +125,19 @@ public class Constants {
 
     }
 
-    public static final int MAIN_NOTIFICATION_ID = 10;
+    public static final int MAIN_NOTIFICATION_ID = 423411;
     public static final int NOTIFICATION_ID_LOGGING = 423412;
     public static final int NOTIFICATION_ID_PEBBLE = 423413;
     public static final int NOTIFICATION_ID_GARMIN_CONNECT = 423414;
     public static final int NOTIFICATION_ID4 = 423415;
     public static final int NOTIFICATION_ID_DRIVE = 423416;
     public static final int NOTIFICATION_ID_GEAR = 423417;
+/*    public static final int NOTIFICATION_ID_LOGGING = 10;
+    public static final int NOTIFICATION_ID_PEBBLE = 10;
+    public static final int NOTIFICATION_ID_GARMIN_CONNECT = 10;
+    public static final int NOTIFICATION_ID4 = 10;
+    public static final int NOTIFICATION_ID_DRIVE = 10;
+    public static final int NOTIFICATION_ID_GEAR = 10;
+*/
     public static final String LOG_FOLDER_NAME = "WheelLog Logs";
 }
