@@ -44,5 +44,11 @@
         android:enabled="true"
         android:summary="@string/current_on_dial_description" />
 
+    <CheckBoxPreference
+        android:key="@string/connection_sound"
+        android:title="@string/connection_sound_title"
+        android:enabled="true"
+        android:summary="@string/connection_sound_description" />
+
 
 </PreferenceScreen>

@@ -42,7 +42,7 @@ public class LoggingService extends Service
     private String mLocationProvider = LocationManager.NETWORK_PROVIDER;
     private boolean logLocationData = false;
     private File file;
-    //private Notification mNotification;
+    private Notification mNotification;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -171,7 +171,7 @@ public class LoggingService extends Service
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.buildNotification());
+        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
         //startForeground(Constants.NOTIFICATION_ID_LOGGING, mNotification);
         Timber.i("DataLogger Started");
 

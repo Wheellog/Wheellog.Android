@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -118,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     LineChart chart1;
 
     WheelView wheelView;
+
+    boolean mConnect_sound = false;
 
     @Override
     public void onUserLeaveHint () {
@@ -264,12 +267,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
                     SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
                 hideSnackBar();
+                if (mConnect_sound) {
+                    MediaPlayer mp1 = MediaPlayer.create(this, R.raw.sound_connect);
+                    mp1.start();
+                    mp1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp1) {
+                            mp1.release();
+                        }
+                    });
+                }
                 break;
             case BluetoothLeService.STATE_CONNECTING:
-                if (mConnectionState == BluetoothLeService.STATE_CONNECTING)
+                if (mConnectionState == BluetoothLeService.STATE_CONNECTING) {
                     showSnackBar(R.string.bluetooth_direct_connect_failed);
-                else {
+//                    MediaPlayer mp3 = MediaPlayer.create(this, R.raw.sound_disconnect);
+//                    mp3.start();
+//                    mp3.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                        @Override
+//                        public void onCompletion(MediaPlayer mp3) {
+//                            mp3.release();
+//                        }//                   });
+                } else {
                     if (mBluetoothLeService.getDisconnectTime() != null) {
+                        if (mConnect_sound) {
+                            MediaPlayer mp2 = MediaPlayer.create(this, R.raw.sound_disconnect);
+                            mp2.start();
+                            mp2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp2) {
+                                    mp2.release();
+                                }
+                            });
+                        }
                         showSnackBar(
                                 getString(R.string.connection_lost_at,
                                         new SimpleDateFormat("HH:mm:ss", Locale.US).format(mBluetoothLeService.getDisconnectTime())),
@@ -1089,7 +1119,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         boolean currentOnDial = sharedPreferences.getBoolean(getString(R.string.current_on_dial), false);
         wheelView.setCurrentOnDial(currentOnDial);
         wheelView.invalidate();
-
+        mConnect_sound = sharedPreferences.getBoolean(getString(R.string.connection_sound), false);
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 

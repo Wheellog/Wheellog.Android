@@ -70,7 +70,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                 .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
                 .build();
         */
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.buildNotification());
+        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
         //startForeground(Constants.NOTIFICATION_ID_DRIVE, mNotification);
         return START_STICKY;
     }
@@ -216,7 +216,7 @@ public class GoogleDriveService extends Service implements GoogleApiClient.Conne
                     MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
                             .setTitle(file.getName())
                             .setMimeType("text/plain")
-                            .setStarred(true).build();
+                            .setStarred(false).build();
 
                     // create a file in "WheelLog Logs" folder
                     folderDriveId.asDriveFolder()

@@ -1089,7 +1089,7 @@ public class WheelData {
                 int battery;
 
 
-                if ((mModel.compareTo("KS-18L") == 0) || (mModel.compareTo("KS-16X") == 0) ||(mBtName.compareTo("RW") == 0) || (mName.startsWith("ROCKW"))) {
+                if ((mModel.compareTo("KS-18L") == 0) || (mModel.compareTo("KS-16X") == 0) ||(mBtName.compareTo("RW") == 0) || (mModel.compareTo("KS-18LH") == 0) || (mName.startsWith("ROCKW"))) {
                     if (mBetterPercents) {
                         if (mVoltage > 8350) {
                             battery = 100;

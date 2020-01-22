@@ -194,6 +194,8 @@
     <string name="wheel_disconnected">Колесо отключено</string>
     <string name="wheel_searching">Поиск колеса...</string>
     <string name="max_speed_dial_description">Максимальное значение внешней шкалы (скорость или ток)</string>
+    <string name="connection_sound_description">Проигрывать звуки подключения и отключения колеса</string>
+    <string name="connection_sound_title">Звуки подключения колеса</string>
 
 
 </resources>

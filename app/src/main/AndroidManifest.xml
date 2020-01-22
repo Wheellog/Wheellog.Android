@@ -46,11 +46,11 @@
             android:configChanges="smallestScreenSize|screenLayout|orientation|screenSize"
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask">
-            <layout android:defaultHeight="700dp"
-                android:defaultWidth="350dp"
-                android:gravity="top|end"
-                android:minHeight="700dp"
-                android:minWidth="350dp" />
+            <layout android:defaultHeight="400dp"
+                android:defaultWidth="200dp"
+                android:gravity="top"
+                android:minHeight="200dp"
+                android:minWidth="200dp" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

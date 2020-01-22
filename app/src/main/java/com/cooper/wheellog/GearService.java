@@ -285,7 +285,7 @@ LocationListener locationListener = new LocationListener() {
                 .build();
         */
         //startForeground(Constants.NOTIFICATION_ID_GEAR, mNotification);
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.buildNotification());
+        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
         return START_STICKY;
     }
 

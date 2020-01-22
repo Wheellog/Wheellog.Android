@@ -25,15 +25,16 @@ import com.cooper.wheellog.WheelData;
 
 
 public class NotificationUtil {
-
+    private NotificationUtil mInstance;
     private Context mContext;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private int notificationMessageId = R.string.disconnected;
     private int mBatteryLevel = 0;
     private double mDistance = 0;
     private int mTemperature = 0;
-    private static NotificationUtil mInstance = null;
+
     private static NotificationCompat.Builder mNotification;
+    private static Notification pNotification;
 
     public NotificationUtil(Context context) {
         if (mInstance == null) {
@@ -45,9 +46,13 @@ public class NotificationUtil {
         }
     }
 
-//    public Context getInstance() {
-//        return mContext;
+//    public static NotificationUtil getInstance() {
+//        return mInstance;
 //    }
+
+    public static Notification getNotification() {
+        return pNotification;
+    }
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -165,16 +170,18 @@ public class NotificationUtil {
         else
             notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
-        return mNotification
+        pNotification = mNotification
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
+        return pNotification;
     }
 
     private void updateNotification() {
         Notification notification = buildNotification();
+        //pNotification = notification;
         android.app.NotificationManager mNotificationManager = (android.app.NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(Constants.MAIN_NOTIFICATION_ID, notification);
     }

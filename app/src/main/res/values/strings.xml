@@ -145,6 +145,8 @@
     <string name="use_better_percents" translatable="false">use_better_percents</string>
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
     <string name="current_on_dial" translatable="false">current_on_dial</string>
+    <string name="connection_sound" translatable="false">connection_sound</string>
+
 
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
@@ -225,6 +227,8 @@
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
     <string name="current_on_dial_title">Current on main dial</string>
     <string name="current_on_dial_description">Draw current on main dial instead of speed</string>
+    <string name="connection_sound_title">Connect sound</string>
+    <string name="connection_sound_description">Play sound when Wheel connects or disconnects</string>
 
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
