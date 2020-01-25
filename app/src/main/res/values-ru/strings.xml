@@ -196,6 +196,24 @@
     <string name="max_speed_dial_description">Максимальное значение внешней шкалы (скорость или ток)</string>
     <string name="connection_sound_description">Проигрывать звуки подключения и отключения колеса</string>
     <string name="connection_sound_title">Звуки подключения колеса</string>
+    <string name="sec">сек</string>
+    <string name="altered_alarms_title">Измененные предупреждения</string>
+    <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
+    <string name="altered_alarms_pref_title">Настройки для опции измененных предупреждений</string>
+    <string name="alarm_factor1_title">PWM первого предупреждения</string>
+    <string name="alarm_factor1_description">Рассчетный PWM срабатывания первого предупреждения</string>
+    <string name="alarm_factor2_title">PWM второго предупреждения</string>
+    <string name="alarm_factor2_description">Должен быть больше первого</string>
+    <string name="alarm_factor3_title">PWM третьего предупреждения</string>
+    <string name="alarm_factor3_description">Должен быть больше второго</string>
+    <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
+    <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
+    <string name="power_factor_description">Не меняйте если не знаете что это, 85 по дефолту</string>
+    <string name="power_factor_title">Фактор мощности</string>
+    <string name="rotation_speed_title">Скорость раскрутки</string>
+    <string name="rotation_speed_description">Измеренная на весу максимальная скорость вращения колеса</string>
+    <string name="rotation_voltage_title">Напряжение раскрутки</string>
+    <string name="rotation_voltage_description">Напряжение при котором измерялась скорость раскрутки</string>
 
 
 </resources>

@@ -49,6 +49,18 @@
         android:title="@string/connection_sound_title"
         android:enabled="true"
         android:summary="@string/connection_sound_description" />
+    <com.pavelsikun.seekbarpreference.SeekBarPreference
+        android:key="@string/no_connection_sound"
+        android:title="@string/no_connection_sound_title"
+        android:summary="@string/no_connection_sound_description"
+        android:enabled="true"
+        android:defaultValue="5"
+        sample:dependency="connection_sound"
+        sample:msbp_minValue="0"
+        sample:msbp_maxValue="60"
+        sample:msbp_interval="1"
+        sample:msbp_measurementUnit="@string/sec"
+        sample:msbp_dialogEnabled="true"/>
 
 
 </PreferenceScreen>

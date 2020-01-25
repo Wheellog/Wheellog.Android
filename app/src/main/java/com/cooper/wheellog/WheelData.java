@@ -108,7 +108,14 @@ public class WheelData {
 	private int mAlarmTemperature = 0;
     private int mGotwayVoltageScaler = 0;
 
+    private double mRotationSpeed = 70.0;
+    private double mRotationVoltage = 84.00;
+    private double mPowerFactor = 0.85;
+    private double mAlarmFactor1 = 0.80;
+    private double mAlarmFactor2 = 0.85;
+    private double mAlarmFactor3 = 0.90;
 
+    private boolean mAlteredAlarms = false;
 	private boolean mUseRatio = false;
     private boolean m18Lkm = true;
     private boolean mBetterPercents = false;
@@ -424,6 +431,7 @@ public class WheelData {
 	public void updateCalibration() {
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
 			mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+            mBluetoothLeService.writeBluetoothGattCharacteristic(",".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
@@ -786,7 +794,10 @@ public class WheelData {
                                    int alarm2Speed, int alarm2Battery,
                                    int alarm3Speed, int alarm3Battery,
                                    int alarmCurrent,int alarmTemperature,
-                                    boolean disablePhoneVibrate, boolean disablePhoneBeep) {
+                                    boolean disablePhoneVibrate, boolean disablePhoneBeep,
+                                    boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
+                                    int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3
+                                                                                                ) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -797,6 +808,13 @@ public class WheelData {
 		mAlarmTemperature = alarmTemperature*100;
         mDisablePhoneVibrate = disablePhoneVibrate;
         mDisablePhoneBeep = disablePhoneBeep;
+        mAlteredAlarms = alteredAlarms;
+        mRotationSpeed = (float)rotationSpeed/10.0;
+        mRotationVoltage = (float)rotationVoltage/10.0;
+        mPowerFactor = (float)powerFactor/100.0;
+        mAlarmFactor1 = (float)alarmFactor1/100.0;
+        mAlarmFactor2 = (float)alarmFactor2/100.0;
+        mAlarmFactor3 = (float)alarmFactor3/100.0;
     }
 
     private int byteArrayInt2(byte low, byte high) {
@@ -882,22 +900,34 @@ public class WheelData {
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
-            if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
-                    mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
-                startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-            }
-            else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
-                    mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed) {
-                startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-            }
-            else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
-                    mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed) {
-                startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-            }
+            if (mAlteredAlarms) {
+                double resultFactor = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * mVoltage * mPowerFactor);
+                if (resultFactor > mAlarmFactor3) {
+                    startSpeedAlarmCount();
+                    raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+                } else if (resultFactor > mAlarmFactor2) {
+                    startSpeedAlarmCount();
+                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+                } else if (resultFactor > mAlarmFactor1) {
+                    startSpeedAlarmCount();
+                    raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+                }
 
+            } else {
+                if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
+                        mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
+                    startSpeedAlarmCount();
+                    raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+                } else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
+                        mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed) {
+                    startSpeedAlarmCount();
+                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+                } else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
+                        mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed) {
+                    startSpeedAlarmCount();
+                    raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+                }
+            }
         }
 
         if (mAlarmCurrent > 0 &&

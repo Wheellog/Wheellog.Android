@@ -67,6 +67,10 @@ public class SettingsUtil {
         getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_log), enabled).apply();
     }
 
+    public static void setConnectionSound(Context context, boolean enabled) {
+        getSharedPreferences(context).edit().putBoolean(context.getString(R.string.connection_sound), enabled).apply();
+    }
+
     public static boolean isLogLocationEnabled(Context context) {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.log_location_data), false);
     }

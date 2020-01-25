@@ -110,7 +110,17 @@
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
 	<string name="alarm_temperature" translatable="false">alarm_temperature</string>
-	
+    <string name="altered_alarms" translatable="false">altered_alarms</string>
+    <string name="rotation_speed" translatable="false">rotation_speed</string>
+    <string name="rotation_voltage" translatable="false">rotation_voltage</string>
+    <string name="power_factor" translatable="false">power_factor</string>
+    <string name="alarm_factor1" translatable="false">alarm_factor1</string>
+    <string name="alarm_factor2" translatable="false">alarm_factor2</string>
+    <string name="alarm_factor3" translatable="false">alarm_factor3</string>
+
+
+
+
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
@@ -146,6 +156,7 @@
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
     <string name="current_on_dial" translatable="false">current_on_dial</string>
     <string name="connection_sound" translatable="false">connection_sound</string>
+    <string name="no_connection_sound" translatable="false">no_connection_sound</string>
 
 
     <string name="max_speed" translatable="false">max_speed</string>
@@ -171,6 +182,7 @@
     <string name="kmh">km/h</string>
     <string name="mph">mph</string>
     <string name="km">km</string>
+    <string name="sec">sec</string>
     <string name="milli">mi</string>
     <string name="horn_mode_title">Horn Mode</string>
     <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
@@ -229,6 +241,8 @@
     <string name="current_on_dial_description">Draw current on main dial instead of speed</string>
     <string name="connection_sound_title">Connect sound</string>
     <string name="connection_sound_description">Play sound when Wheel connects or disconnects</string>
+    <string name="no_connection_sound_title">Connection lost beeps period</string>
+    <string name="no_connection_sound_description">Period of beeps when connection lost, 0sec - no beeps</string>
 
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
@@ -236,6 +250,22 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+
+    <string name="altered_alarms_title">Altered alarms</string>
+    <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
+    <string name="altered_alarms_pref_title">Altered alarms options</string>
+    <string name="rotation_speed_title">Rotation speed</string>
+    <string name="rotation_speed_description">Rotation (lift-up) speed of your wheel</string>
+    <string name="rotation_voltage_title">Rotation voltage</string>
+    <string name="rotation_voltage_description">Voltage at which rotation speed was measured</string>
+    <string name="power_factor_title">Power factor</string>
+    <string name="power_factor_description">Don\'t change if you don\'t understand what is that, default=85</string>
+    <string name="alarm_factor1_title">First alarm PWM</string>
+    <string name="alarm_factor1_description">Calculated PWM on which first alarm should occur</string>
+    <string name="alarm_factor2_title">Second alarm PWM</string>
+    <string name="alarm_factor2_description">Should be higher than first alarm</string>
+    <string name="alarm_factor3_title">Third alarm PWM</string>
+    <string name="alarm_factor3_description">Should be higher than second alarm</string>
 
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>

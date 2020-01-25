@@ -1,6 +1,5 @@
 package com.cooper.wheellog;
 
-import android.app.Notification;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,15 +14,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 
-import java.io.IOException;
 import java.util.*;
 
 import timber.log.Timber;
@@ -48,6 +47,14 @@ public class BluetoothLeService extends Service {
     private boolean disconnectRequested = false;
     private boolean autoConnect = false;
     private NotificationUtil mNotificationHandler;
+
+    private Timer beepTimer;
+    private int mBeepPeriod = 5000;
+    private boolean mConnectSound = false;
+    private int timerTicks;
+    PowerManager mgr;
+    PowerManager.WakeLock wl;
+
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -131,6 +138,7 @@ public class BluetoothLeService extends Service {
         }
     };
 
+
     private IntentFilter makeIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
@@ -154,15 +162,40 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+
                 Timber.i("Connected to GATT server.");
+                if (mConnectSound) {
+                    if (mBeepPeriod>0) {
+                        stopBeepTimer();
+                    }
+                    if (wl != null) {
+                        wl.release();
+                        wl = null;
+                    }
+                    wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
+                    wl.acquire();
+                    playConnect();
+
+                }
                 mDisconnectTime = null;
                 // Attempts to discover services after successful connection.
                 Timber.i("Attempting to start service discovery:%b",
                         mBluetoothGatt.discoverServices());
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
-                if (mConnectionState == STATE_CONNECTED)
+                if (mConnectionState == STATE_CONNECTED) {
                     mDisconnectTime = Calendar.getInstance().getTime();
+                    if (mConnectSound) {
+                        playDisconnect();
+                        if (wl != null) {
+                            wl.release();
+                            wl = null;
+                        }
+                        if (mBeepPeriod>0) {
+                            startBeepTimer();
+                        }
+                    }
+                }
                 if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     Timber.i("Trying to reconnect");
@@ -303,6 +336,10 @@ public class BluetoothLeService extends Service {
         mNotificationHandler = new NotificationUtil(this);
         registerReceiver(messageReceiver, makeIntentFilter());
         startForeground(Constants.MAIN_NOTIFICATION_ID, mNotificationHandler.buildNotification());
+        mgr = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
+
+
+        //startBeepTimer(); //<<<<<<<<<<<<<<<<<
 
         return START_STICKY;
     }
@@ -310,6 +347,7 @@ public class BluetoothLeService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopBeepTimer();
         if (mBluetoothGatt != null &&
                 mConnectionState != STATE_DISCONNECTED)
             mBluetoothGatt.disconnect();
@@ -587,5 +625,77 @@ public class BluetoothLeService extends Service {
 
     public String getBluetoothDeviceAddress() {
         return mBluetoothDeviceAddress;
+    }
+
+    public void setConnectionSounds(boolean connectSound, int beepPeriod) {
+        mConnectSound = connectSound;
+        mBeepPeriod = beepPeriod;
+/*        if (mConnectSound) {
+            if (!wl.isHeld())
+                wl.acquire();
+        } else {
+            if (wl.isHeld())
+                wl.release();
+        }
+
+*/
+    }
+
+    private void startBeepTimer(){
+        //wl.acquire();
+        wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
+        wl.acquire(300000);
+        timerTicks = 0;
+        TimerTask beepTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                timerTicks +=1;
+                if (timerTicks*mBeepPeriod > 300000){
+                    stopBeepTimer();
+                }
+                MediaPlayer mp3 = MediaPlayer.create(getApplicationContext(), R.raw.sound_no_connection);
+                mp3.start();
+                mp3.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp3) {
+                        mp3.release();
+                    }
+                });
+
+            }
+        };
+        beepTimer = new Timer();
+        beepTimer.scheduleAtFixedRate(beepTimerTask, mBeepPeriod, mBeepPeriod);
+    }
+    private void stopBeepTimer(){
+        if (wl != null) {
+            wl.release();
+            wl = null;
+        }
+        if (beepTimer != null) {
+            beepTimer.cancel();
+            beepTimer = null;
+        }
+    }
+
+    private void playConnect(){
+        MediaPlayer mp1 = MediaPlayer.create(getApplicationContext(), R.raw.sound_connect);
+        mp1.start();
+        mp1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp1) {
+                mp1.release();
+            }
+        });
+    }
+    private void playDisconnect(){
+        MediaPlayer mp2 = MediaPlayer.create(getApplicationContext(), R.raw.sound_disconnect);
+        mp2.start();
+        mp2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp2) {
+                mp2.release();
+            }
+        });
     }
 }

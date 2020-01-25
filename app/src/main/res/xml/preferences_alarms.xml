@@ -20,6 +20,11 @@
         android:title="@string/disable_phone_beep_title"
         android:summary="@string/disable_phone_beep_description" />
 
+    <CheckBoxPreference
+        android:key="@string/altered_alarms"
+        android:dependency="alarms_enabled"
+        android:title="@string/altered_alarms_title"
+        android:summary="@string/altered_alarms_description" />
 
     <PreferenceCategory
         android:title="@string/speed_alarm1_phone_title">
@@ -107,6 +112,82 @@
             sample:msbp_dialogEnabled="true"/>
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/altered_alarms_pref_title">
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/rotation_speed"
+            android:title="@string/rotation_speed_title"
+            android:summary="@string/rotation_speed_description"
+            android:defaultValue="500"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="2000"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="0.1*Km/h"
+            sample:msbp_dialogEnabled="true"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/rotation_voltage"
+            android:title="@string/rotation_voltage_title"
+            android:summary="@string/rotation_voltage_description"
+            android:defaultValue="840"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="1200"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="0.1*V"
+            sample:msbp_dialogEnabled="true"/>
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/power_factor"
+            android:title="@string/power_factor_title"
+            android:summary="@string/power_factor_description"
+            android:defaultValue="85"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="100"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="%"
+            sample:msbp_dialogEnabled="true"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/alarm_factor1"
+            android:title="@string/alarm_factor1_title"
+            android:summary="@string/alarm_factor1_description"
+            android:defaultValue="80"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="100"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="%"
+            sample:msbp_dialogEnabled="true"/>
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/alarm_factor2"
+            android:title="@string/alarm_factor2_title"
+            android:summary="@string/alarm_factor2_description"
+            android:defaultValue="90"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="100"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="%"
+            sample:msbp_dialogEnabled="true"/>
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/alarm_factor3"
+            android:title="@string/alarm_factor3_title"
+            android:summary="@string/alarm_factor3_description"
+            android:defaultValue="95"
+            sample:dependency="alarms_enabled"
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="100"
+            sample:msbp_interval="1"
+            sample:msbp_measurementUnit="%"
+            sample:msbp_dialogEnabled="true"/>
+
+
+    </PreferenceCategory>
+
 
     <PreferenceCategory
         android:title="@string/current_alarm_title">

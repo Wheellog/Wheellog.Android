@@ -63,8 +63,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch (key) {
+            case "connection_sound":
+                hideShowSeekBars_app();
+                break;
             case "alarms_enabled":
-                hideShowSeekBars();
+                hideShowSeekBars_alarms();
+                break;
+            case "altered_alarms":
+                hideShowSeekBars_alarms();
                 break;
             case "auto_upload":
                 if (SettingsUtil.isAutoUploadEnabled(getActivity()) && !mDataWarningDisplayed) {
@@ -456,13 +462,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 break;
             case Speed:
                 tb.setTitle(getText(R.string.speed_settings_title));
+                hideShowSeekBars_app();
                 break;
             case Logs:
                 tb.setTitle(getText(R.string.logs_settings_title));
                 break;
             case Alarms:
                 tb.setTitle(getText(R.string.alarm_settings_title));
-                hideShowSeekBars();
+                hideShowSeekBars_alarms();
                 break;
             case Watch:
                 tb.setTitle(getText(R.string.watch_settings_title));
@@ -549,10 +556,12 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
             cb_preference.setChecked(setting_state);
     }
 
-    private void hideShowSeekBars() {
+    private void hideShowSeekBars_alarms() {
         boolean alarms_enabled = getPreferenceManager().getSharedPreferences()
                 .getBoolean(getString(R.string.alarms_enabled), false);
-        String[] seekbar_preferences = {
+        boolean altered_alarms = getPreferenceManager().getSharedPreferences()
+                .getBoolean(getString(R.string.altered_alarms), false);
+        String[] seekbar_preferences_normal = {
                 getString(R.string.alarm_1_speed),
                 getString(R.string.alarm_2_speed),
                 getString(R.string.alarm_3_speed),
@@ -560,15 +569,55 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 getString(R.string.alarm_2_battery),
                 getString(R.string.alarm_3_battery),
                 getString(R.string.alarm_current),
-				getString(R.string.alarm_temperature)};
+				getString(R.string.alarm_temperature)
+        };
 
-        for (String preference : seekbar_preferences) {
+        String[] seekbar_preferences_altered = {
+                getString(R.string.rotation_speed),
+                getString(R.string.rotation_voltage),
+                getString(R.string.power_factor),
+                getString(R.string.alarm_factor1),
+                getString(R.string.alarm_factor2),
+                getString(R.string.alarm_factor3),
+        };
+
+        String[] seekbar_preferences_common = {
+                getString(R.string.alarm_current),
+                getString(R.string.alarm_temperature)
+        };
+        for (String preference : seekbar_preferences_normal) {
+            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+            if (seekbar != null)
+                seekbar.setEnabled(alarms_enabled && !altered_alarms);
+        }
+        for (String preference : seekbar_preferences_altered) {
+            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+            if (seekbar != null)
+                seekbar.setEnabled(alarms_enabled && altered_alarms);
+        }
+
+        for (String preference : seekbar_preferences_common) {
             SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
             if (seekbar != null)
                 seekbar.setEnabled(alarms_enabled);
         }
     }
-	
+
+    private void hideShowSeekBars_app() {
+        boolean connect_sound = getPreferenceManager().getSharedPreferences()
+                .getBoolean(getString(R.string.connection_sound), false);
+
+        String[] seekbar_preferences = {
+                getString(R.string.no_connection_sound)
+        };
+
+        for (String preference : seekbar_preferences) {
+            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+            if (seekbar != null)
+                seekbar.setEnabled(connect_sound);
+        }
+    }
+
 	public boolean is_main_menu() {
         if (currentScreen == SettingsScreen.Main)
             return true;

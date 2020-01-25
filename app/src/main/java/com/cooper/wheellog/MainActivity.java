@@ -64,6 +64,8 @@ import com.viewpagerindicator.LinePageIndicator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.util.Rational;
 import android.app.PictureInPictureParams;
@@ -120,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     WheelView wheelView;
 
-    boolean mConnect_sound = false;
-
     @Override
     public void onUserLeaveHint () {
         if (SettingsUtil.isUsePipMode(this)) {
@@ -160,11 +160,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected static final int REQUEST_CODE_RESOLUTION = 40;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
-
-
-
-
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -259,6 +254,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     };
 
+
+
     private void setConnectionState(int connectionState) {
 
         switch (connectionState) {
@@ -267,39 +264,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
                     SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
                 hideSnackBar();
-                if (mConnect_sound) {
-                    MediaPlayer mp1 = MediaPlayer.create(this, R.raw.sound_connect);
-                    mp1.start();
-                    mp1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp1) {
-                            mp1.release();
-                        }
-                    });
-                }
                 break;
             case BluetoothLeService.STATE_CONNECTING:
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING) {
                     showSnackBar(R.string.bluetooth_direct_connect_failed);
-//                    MediaPlayer mp3 = MediaPlayer.create(this, R.raw.sound_disconnect);
-//                    mp3.start();
-//                    mp3.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                        @Override
-//                        public void onCompletion(MediaPlayer mp3) {
-//                            mp3.release();
-//                        }//                   });
+
                 } else {
                     if (mBluetoothLeService.getDisconnectTime() != null) {
-                        if (mConnect_sound) {
-                            MediaPlayer mp2 = MediaPlayer.create(this, R.raw.sound_disconnect);
-                            mp2.start();
-                            mp2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp2) {
-                                    mp2.release();
-                                }
-                            });
-                        }
                         showSnackBar(
                                 getString(R.string.connection_lost_at,
                                         new SimpleDateFormat("HH:mm:ss", Locale.US).format(mBluetoothLeService.getDisconnectTime())),
@@ -1010,6 +981,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onFinish() {
+
                 android.os.Process.killProcess(android.os.Process.myPid());
                 // do something end times 5s
             }
@@ -1119,7 +1091,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         boolean currentOnDial = sharedPreferences.getBoolean(getString(R.string.current_on_dial), false);
         wheelView.setCurrentOnDial(currentOnDial);
         wheelView.invalidate();
-        mConnect_sound = sharedPreferences.getBoolean(getString(R.string.connection_sound), false);
+        final boolean connectSound = sharedPreferences.getBoolean(getString(R.string.connection_sound), false);
+        final int beepPeriod = sharedPreferences.getInt(getString(R.string.no_connection_sound), 0) * 1000;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);                    }
+        }, 100);
+
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
@@ -1138,12 +1117,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 			int temperature_alarm = sharedPreferences.getInt(getString(R.string.alarm_temperature), 0);
             boolean disablePhoneVibrate = sharedPreferences.getBoolean(getString(R.string.disable_phone_vibrate), false);
             boolean disablePhoneBeep = sharedPreferences.getBoolean(getString(R.string.disable_phone_beep), false);
-
+            boolean alteredAlarms = sharedPreferences.getBoolean(getString(R.string.altered_alarms), false);
+            int rotationSpeed = sharedPreferences.getInt(getString(R.string.rotation_speed), 0);
+            int rotationVoltage = sharedPreferences.getInt(getString(R.string.rotation_voltage), 0);
+            int powerFactor = sharedPreferences.getInt(getString(R.string.power_factor), 0);
+            int alarmFactor1 = sharedPreferences.getInt(getString(R.string.alarm_factor1), 0);
+            int alarmFactor2 = sharedPreferences.getInt(getString(R.string.alarm_factor2), 0);
+            int alarmFactor3 = sharedPreferences.getInt(getString(R.string.alarm_factor3), 0);
             WheelData.getInstance().setPreferences(
                     alarm1Speed, alarm1Battery,
                     alarm2Speed, alarm2Battery,
                     alarm3Speed, alarm3Battery,
-                    current_alarm, temperature_alarm, disablePhoneVibrate,disablePhoneBeep);
+                    current_alarm, temperature_alarm, disablePhoneVibrate,disablePhoneBeep, alteredAlarms,
+                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3);
             wheelView.setWarningSpeed(alarm1Speed);
         } else
             wheelView.setWarningSpeed(0);
@@ -1157,7 +1143,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         if (log_location)
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
-
+//        if (mConnect_sound)
+//            MainActivityPermissionsDispatcher.acquireWakeLockPermissionWithCheck(this);
         if (auto_upload)
             getGoogleApiClient().connect();
 
@@ -1169,7 +1156,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     void acquireLocationPermission() {}
+/*
+    @NeedsPermission(Manifest.permission.WAKE_LOCK)
+    void acquireWakeLockPermission() {}
 
+    @OnPermissionDenied(Manifest.permission.WAKE_LOCK)
+    void wakeLockPermitionDenided(){
+        SettingsUtil.setConnectionSound(this, false);
+        ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+    }
+    */
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
         SettingsUtil.setAutoLog(this, false);
