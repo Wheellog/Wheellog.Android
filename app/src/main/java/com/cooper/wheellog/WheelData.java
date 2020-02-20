@@ -1249,7 +1249,7 @@ public class WheelData {
 
             mVoltage = (data[2] * 256) + (data[3] & 255);
 
-            mCurrent = Math.abs((data[10] * 256) + data[11]);
+            mCurrent = (data[10] * 256) + data[11];
 
             int battery;
             if (mBetterPercents) {
