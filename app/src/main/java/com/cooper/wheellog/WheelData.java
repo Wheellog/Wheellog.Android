@@ -901,7 +901,8 @@ public class WheelData {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
             if (mAlteredAlarms) {
-                double resultFactor = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * mVoltage * mPowerFactor);
+                double resultFactor = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * ((float)mVoltage/100.0) * mPowerFactor);
+
                 if (resultFactor > mAlarmFactor3) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED3, mContext);
@@ -1249,7 +1250,7 @@ public class WheelData {
 
             mVoltage = (data[2] * 256) + (data[3] & 255);
 
-            mCurrent = (data[10] * 256) + data[11];
+            mCurrent = -((data[10] * 256) + data[11]);
 
             int battery;
             if (mBetterPercents) {
