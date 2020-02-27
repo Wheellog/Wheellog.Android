@@ -709,8 +709,12 @@ public class WheelData {
 		}
 		return (mTotalDistance - mUserDistance)/1000.0; 
     }
-	
-	public void resetUserDistance() {		
+
+    public String getMac() {
+        return mBluetoothLeService.getBluetoothDeviceAddress();
+    }
+
+    public void resetUserDistance() {
 		if (mTotalDistance != 0)  {
 			Context mContext = mBluetoothLeService.getApplicationContext();
 			SettingsUtil.setUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);		
@@ -1235,9 +1239,11 @@ public class WheelData {
             }
 
             if (data[5] >= 0)
-                mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
+                //mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
+                mSpeed = (int) -(((data[4] * 256.0) + data[5]) * 3.6);
             else
-                mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+                //mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+                mSpeed = (int) -((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
 			if (mUseRatio) mSpeed = (int)Math.round(mSpeed * RATIO_GW);
             setTopSpeed(mSpeed);
 

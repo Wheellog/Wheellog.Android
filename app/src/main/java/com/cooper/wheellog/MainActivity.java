@@ -126,15 +126,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onUserLeaveHint () {
         if (SettingsUtil.isUsePipMode(this)) {
 
-            Rational rational = new Rational(90,160);
+            //Rational rational = new Rational(90,160);
 
-            PictureInPictureParams mParams =
-                  new PictureInPictureParams.Builder()
-                          .setAspectRatio(rational)
-                          .build();
+            //PictureInPictureParams mParams =
+            //      new PictureInPictureParams.Builder()
+            //              .setAspectRatio(rational)
+            //              .build();
 
             //enterPictureInPictureMode();
-            enterPictureInPictureMode(mParams);
+            //enterPictureInPictureMode(mParams);
 
   //      if (true){
 

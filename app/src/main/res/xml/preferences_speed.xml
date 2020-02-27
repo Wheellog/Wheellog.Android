@@ -15,11 +15,6 @@
         android:visible="true"
         android:summary="@string/use_better_percents_description" />
 
-    <CheckBoxPreference
-        android:key="@string/use_pip_mode"
-        android:title="@string/use_pip_mode_title"
-        android:enabled="true"
-        android:summary="@string/use_pip_mode_description" />
 
     <CheckBoxPreference
         android:key="@string/use_mph"
