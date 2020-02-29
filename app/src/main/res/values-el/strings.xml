@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">WheelLog</string>
-	<string name="unknown_device">Άγνωστη συσκευή</string>
+    <string name="unknown_device">Άγνωστη συσκευή</string>
 	<string name="ble_not_supported">Το Bluetooth LE δεν υποστηρίζεται</string>
 	<string name="error_bluetooth_not_supported">Το Bluetooth δεν υποστηρίζεται από τη συσκευή σας.</string>
 	<string name="error_bluetooth_not_initialised">Αδύνατη αρχηκοποίηση του Bluetooth, έξοδος</string>

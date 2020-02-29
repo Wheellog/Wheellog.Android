@@ -34,7 +34,7 @@
             android:orientation="horizontal"
             >
             <TextView android:id="@+id/text_title"
-                android:textAppearance="@style/TextAppearance.StatusBar.EventContent.Title"
+                android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
@@ -52,7 +52,7 @@
             android:layout_marginStart="8dp"
             >
             <TextView android:id="@+id/text_message"
-                android:textAppearance="@style/TextAppearance.StatusBar.EventContent"
+                android:textAppearance="@style/TextAppearance.Compat.Notification"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

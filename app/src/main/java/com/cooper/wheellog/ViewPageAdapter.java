@@ -1,9 +1,10 @@
 package com.cooper.wheellog;
 
 import android.app.Activity;
-import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.viewpager.widget.PagerAdapter;
 
 class ViewPageAdapter extends PagerAdapter {
 

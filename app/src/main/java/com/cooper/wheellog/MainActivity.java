@@ -1,7 +1,6 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
-import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -20,15 +19,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +26,16 @@ import android.view.View;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
@@ -55,6 +55,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
+import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
@@ -274,10 +275,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         setMenuIconStates();
     }
 
-
     private void setWheelPreferences() {
         Timber.i("SetWheelPreferences");
-        ((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
+        ((MainPreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
                 WheelData.getInstance().getWheelLed(),
                 WheelData.getInstance().getWheelHandleButton(),
                 WheelData.getInstance().getWheelMaxSpeed(),
@@ -780,7 +780,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
                 .commit();
 
@@ -836,7 +836,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                ((PreferencesFragment) getPreferencesFragment()).show_main_menu();
+                ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
             }
 
             @Override
@@ -1026,9 +1026,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (((PreferencesFragment) getPreferencesFragment()).is_main_menu())
+                    if (((MainPreferencesFragment) getPreferencesFragment()).isMainMenu())
                         mDrawer.closeDrawer(GravityCompat.START, true);
-                    else ((PreferencesFragment) getPreferencesFragment()).show_main_menu();
+                    else ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
@@ -1159,13 +1159,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
         SettingsUtil.setAutoLog(this, false);
-        ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         SettingsUtil.setLogLocationEnabled(this, false);
-        ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1265,6 +1265,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         Timber.i("onActivityResult");
         switch (requestCode) {
             case RESULT_DEVICE_SCAN_REQUEST:
@@ -1295,7 +1296,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     getGoogleApiClient().connect();
                 else {
                     SettingsUtil.setAutoUploadEnabled(this, false);
-                    ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
         }
@@ -1338,7 +1339,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             // show the localized error dialog.
             GoogleApiAvailability.getInstance().getErrorDialog(this, connectionResult.getErrorCode(), 0).show();
             SettingsUtil.setAutoUploadEnabled(this, false);
-            ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+            ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
             return;
         }
         try {
@@ -1360,11 +1361,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private Fragment getPreferencesFragment() {
-        Fragment frag = getFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-
-        if (frag == null)
-            frag = new PreferencesFragment();
-
+        Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
+        if (frag == null) {
+            return new MainPreferencesFragment();
+        }
         return frag;
     }
 

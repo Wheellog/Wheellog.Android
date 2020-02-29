@@ -11,9 +11,10 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.NotificationUtil;

@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">WheelLog</string>
-
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>
@@ -322,7 +320,6 @@
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
-
 
 
 </resources>
