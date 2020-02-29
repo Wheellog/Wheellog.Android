@@ -16,10 +16,10 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
-import android.media.MediaPlayer;
-import android.os.IBinder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -32,19 +32,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.os.Handler;
 import android.view.View;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-
 import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
+import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
-//import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -64,11 +60,6 @@ import com.viewpagerindicator.LinePageIndicator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import android.util.Rational;
-import android.app.PictureInPictureParams;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -76,6 +67,8 @@ import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
+
+//import com.cooper.wheellog.utils.NotificationUtil;
 
 
 @RuntimePermissions
@@ -170,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 finish();
             }
 
+            loadPreferences();
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);
@@ -202,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                     }
 					if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS)) {
-						setWheelPreferences();						
+						setWheelPreferences();
 					}
                     updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
@@ -212,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 				//case Constants.ACTION_WHEEL_SETTING_CHANGED:
 				//	if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH)) {
 				//		setWheelPreferences();
-				//	} 
+				//	}
 				//	break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
@@ -238,16 +232,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     //showSnackBar(getResources().getString(R.string.wheel_type_recognized, wheel_type), 5000);
 					//((PreferencesFragment) getPreferencesFragment()).show_main_menu();
 					break;
-				case Constants.ACTION_ALARM_TRIGGERED:					
+				case Constants.ACTION_ALARM_TRIGGERED:
 					int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
 					if (alarmType < 4 ) {
-						showSnackBar(getResources().getString(R.string.alarm_text_speed), 3000);						
+						showSnackBar(getResources().getString(R.string.alarm_text_speed), 3000);
 					}
 					if (alarmType == 4 ) {
-						showSnackBar(getResources().getString(R.string.alarm_text_current), 3000);						
+						showSnackBar(getResources().getString(R.string.alarm_text_current), 3000);
 					}
 					if (alarmType == 5 ) {
-						showSnackBar(getResources().getString(R.string.alarm_text_temperature), 3000);						
+						showSnackBar(getResources().getString(R.string.alarm_text_temperature), 3000);
 					}
 					break;
             }
@@ -284,18 +278,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mConnectionState = connectionState;
         setMenuIconStates();
     }
-	
-	
+
+
 	private void setWheelPreferences() {
 		Timber.i("SetWheelPreferences");
-		((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(), 
-																				WheelData.getInstance().getWheelLed(), 
-																				WheelData.getInstance().getWheelHandleButton(), 
-																				WheelData.getInstance().getWheelMaxSpeed(), 
+		((PreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
+																				WheelData.getInstance().getWheelLed(),
+																				WheelData.getInstance().getWheelHandleButton(),
+																				WheelData.getInstance().getWheelMaxSpeed(),
 																				WheelData.getInstance().getSpeakerVolume(),
 																				WheelData.getInstance().getPedalsPosition());
 	}
-	
+
     private void setMenuIconStates() {
         if (mMenu == null)
             return;
@@ -344,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             miLogging.setIcon(R.drawable.ic_action_logging_white);
         }
     }
-    
+
     private void configureDisplay(WHEEL_TYPE wheelType) {
         TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
         TextView tvTitleSpeed = (TextView) findViewById(R.id.tvTitleSpeed);
@@ -1093,15 +1087,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         wheelView.invalidate();
         final boolean connectSound = sharedPreferences.getBoolean(getString(R.string.connection_sound), false);
         final int beepPeriod = sharedPreferences.getInt(getString(R.string.no_connection_sound), 0) * 1000;
-        if (connectSound) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);
-                }
-            }, 500);
-
+        if (mBluetoothLeService != null) {
+            mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);
         }
+
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
@@ -1314,8 +1303,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
 		intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
-		intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);	
-		intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);			
+		intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
+		intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         return intentFilter;
     }
 
