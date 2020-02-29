@@ -1093,12 +1093,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         wheelView.invalidate();
         final boolean connectSound = sharedPreferences.getBoolean(getString(R.string.connection_sound), false);
         final int beepPeriod = sharedPreferences.getInt(getString(R.string.no_connection_sound), 0) * 1000;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);                    }
-        }, 100);
+        if (connectSound) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);
+                }
+            }, 500);
 
+        }
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
