@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">WheelLog</string>
 
     <string name="unknown_device">未知设备</string>
     <string name="ble_not_supported">不支持蓝牙LE</string>

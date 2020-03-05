@@ -12,10 +12,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;

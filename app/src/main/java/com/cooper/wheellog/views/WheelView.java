@@ -8,9 +8,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.utils.Typefaces;

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">WheelLog</string>
 	<string name="unknown_device">Непознато Устройство</string>
 	<string name="ble_not_supported">Bluetooth LE не се поддържа</string>
 	<string name="error_bluetooth_not_supported">Bluetooth не се поддържа от вашето устройство.</string>

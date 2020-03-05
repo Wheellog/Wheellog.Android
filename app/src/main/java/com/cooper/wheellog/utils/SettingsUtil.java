@@ -2,7 +2,8 @@ package com.cooper.wheellog.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import com.cooper.wheellog.R;
 

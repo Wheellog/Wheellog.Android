@@ -1,48 +1,35 @@
 package com.cooper.wheellog;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Html;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.*;
 import android.text.InputType;
+import android.view.View;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentActivity;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
-import timber.log.Timber;
+public class MainPreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-public class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    enum SettingsScreen {
-        Main,
-        Speed,
-        Logs,
-        Alarms,
-        Watch,
-		Wheel
-    }
-	
-	WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
-
+	private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private boolean mDataWarningDisplayed = false;
-	private boolean mSpeedWarningDisplayed = false;
     private SettingsScreen currentScreen = SettingsScreen.Main;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Load the preferences from an XML resource
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences);
     }
 
@@ -50,8 +37,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
     public void onResume() {
         super.onResume();
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        setup_screen();
-
+        setupScreen();
     }
 
     @Override
@@ -62,20 +48,23 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        final Context context = getContext();
+        if (context == null) {
+            return;
+        }
+
         switch (key) {
             case "connection_sound":
-                hideShowSeekBars_app();
+                hideShowSeekBarsApp();
                 break;
             case "alarms_enabled":
-                hideShowSeekBars_alarms();
-                break;
             case "altered_alarms":
-                hideShowSeekBars_alarms();
+                hideShowSeekBarsAlarms();
                 break;
             case "auto_upload":
                 if (SettingsUtil.isAutoUploadEnabled(getActivity()) && !mDataWarningDisplayed) {
                     SettingsUtil.setAutoUploadEnabled(getActivity(), false);
-                    new AlertDialog.Builder(getActivity())
+                    new AlertDialog.Builder(context)
                             .setTitle(getString(R.string.enable_auto_upload_title))  // ("Enable Auto Upload?")
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -83,14 +72,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                                     mDataWarningDisplayed = true;
                                     SettingsUtil.setAutoUploadEnabled(getActivity(), true);
                                     refreshVolatileSettings();
-                                    getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+                                    context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     mDataWarningDisplayed = false;
                                     refreshVolatileSettings();
-                                    getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+                                    context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                                 }
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
@@ -98,12 +87,12 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 } else
                     mDataWarningDisplayed = false;
                 break;
+            case "max_speed":
             case "use_mph":
-                getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
+                context.sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
-
             case "use_eng":
-                new AlertDialog.Builder(getActivity())
+                new AlertDialog.Builder(context)
                         .setTitle(R.string.use_eng_alert_title)
                         .setMessage(R.string.use_eng_alert_description)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -114,86 +103,49 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .show();
                 break;
-
-            case "max_speed":
-                getActivity().sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
-                break;
-			case "light_enabled":
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LIGHT, true));
-				boolean ligth_enabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
-				WheelData.getInstance().updateLight(ligth_enabled);
+            case "light_enabled":
+				boolean ligthEnabled = sharedPreferences.getBoolean(getString(R.string.light_enabled), false);
+				WheelData.getInstance().updateLight(ligthEnabled);
 				break;
             case "use_better_percents":
-                //getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LIGHT, true));
                 boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
                 WheelData.getInstance().setBetterPercents(betterPercents);
                 break;
 			case "led_enabled":
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_LED, true));
-				boolean led_enabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
-				WheelData.getInstance().updateLed(led_enabled);
+				boolean ledEnabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
+				WheelData.getInstance().updateLed(ledEnabled);
 				break;
 			case "handle_button_disabled":
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_BUTTON, true));
-				boolean handle_button_disabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), false);
-				WheelData.getInstance().updateHandleButton(handle_button_disabled);
+				boolean handleButtonDisabled = sharedPreferences.getBoolean(getString(R.string.handle_button_disabled), false);
+				WheelData.getInstance().updateHandleButton(handleButtonDisabled);
 				break;
 			case "wheel_max_speed":
-				//if (!mSpeedWarningDisplayed) {
-				final int max_speed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
-				WheelData.getInstance().updateMaxSpeed(max_speed);
-				//	if (max_speed > 30)  {
-				//		new AlertDialog.Builder(getActivity())
-				//			.setTitle("Are you sure?")
-				//			.setMessage("Setting a speed limit higher than 30 km/h is unsafe, this is an undocumented feature. \n\nUSE IT ON YOUR OWN RISK! \n\nNeither the Inmotion Company nor the developers of this application are liable for any damages to your health, EUC or third party resulting by using of this feature.")
-				//			.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				//				public void onClick(DialogInterface dialog, int which) {									
-				//					WheelData.getInstance().updateMaxSpeed(max_speed);
-				//				}
-				//			})
-				//			.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-				//				public void onClick(DialogInterface dialog, int which) {									
-				//					mSpeedWarningDisplayed = true;
-				//					correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
-				//					
-				//				}
-				//			})
-				//			.setIcon(android.R.drawable.ic_dialog_alert)
-				//			.show();
-	
-				//	} else {
-				//		//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_MAX_SPEED, true));
-				//		WheelData.getInstance().updateMaxSpeed(max_speed);
-				//	}
-				//} else mSpeedWarningDisplayed = false;
-				
+				final int maxSpeed = sharedPreferences.getInt(getString(R.string.wheel_max_speed), 0);
+				WheelData.getInstance().updateMaxSpeed(maxSpeed);
 				break;
 			case "speaker_volume":
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_SPEAKER_VOLUME, true));
-				int speaker_volume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
-				WheelData.getInstance().updateSpeakerVolume(speaker_volume);
+				int speakerVolume = sharedPreferences.getInt(getString(R.string.speaker_volume), 0);
+				WheelData.getInstance().updateSpeakerVolume(speakerVolume);
 				break;
 			case "pedals_adjustment":
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT, true));
-				int pedals_adjustment = sharedPreferences.getInt(getString(R.string.pedals_adjustment), 0);
-				WheelData.getInstance().updatePedals(pedals_adjustment);
+				int pedalsAdjustment = sharedPreferences.getInt(getString(R.string.pedals_adjustment), 0);
+				WheelData.getInstance().updatePedals(pedalsAdjustment);
 				break;
 			case "pedals_mode":
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT, true));
-				int pedals_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.pedals_mode), "0"));
-				WheelData.getInstance().updatePedalsMode(pedals_mode);
+				int pedalsMode = Integer.parseInt(sharedPreferences.getString(getString(R.string.pedals_mode), "0"));
+				WheelData.getInstance().updatePedalsMode(pedalsMode);
 				break;
 			case "light_mode":
-				int light_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.light_mode), "0"));
-				WheelData.getInstance().updateLightMode(light_mode);
+				int lightMode = Integer.parseInt(sharedPreferences.getString(getString(R.string.light_mode), "0"));
+				WheelData.getInstance().updateLightMode(lightMode);
 				break;
 			case "alarm_mode":
-				int alarm_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.alarm_mode), "0"));
-				WheelData.getInstance().updateAlarmMode(alarm_mode);
+				int alarmMode = Integer.parseInt(sharedPreferences.getString(getString(R.string.alarm_mode), "0"));
+				WheelData.getInstance().updateAlarmMode(alarmMode);
 				break;
 			case "strobe_mode":
-				int strobe_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.strobe_mode), "0"));
-				WheelData.getInstance().updateStrobe(strobe_mode);
+				int strobeMode = Integer.parseInt(sharedPreferences.getString(getString(R.string.strobe_mode), "0"));
+				WheelData.getInstance().updateStrobe(strobeMode);
 				break;
 			case "led_mode":
 				int led_mode = Integer.parseInt(sharedPreferences.getString(getString(R.string.led_mode), "0"));
@@ -211,20 +163,17 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 final int alert1 = sharedPreferences.getInt("wheel_ks_alarm1", 0);
                 WheelData.getInstance().updateKSAlarm1(alert1);
                 break;
-//			case "reset_user_trip":				
-//				WheelData.getInstance().resetUserDistance();
-//				break;
-//			case "reset_max_speed":				
-//				WheelData.getInstance().resetTopSpeed();
-//				break;
         }
-        getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+        context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
-	
 
+    private void setupScreen() {
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
 
-    private void setup_screen() {
-        Toolbar tb = (Toolbar) getActivity().findViewById(R.id.preference_toolbar);
+        Toolbar tb = activity.findViewById(R.id.preference_toolbar);
         if (currentScreen == SettingsScreen.Main)
             tb.setNavigationIcon(null);
         else {
@@ -232,78 +181,75 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
             tb.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    show_main_menu();
+                    showMainMenu();
                 }
             });
         }
-		
 
         switch (currentScreen) {
             case Main:
                 tb.setTitle(getText(R.string.settings_title));
-                Preference speed_button = findPreference(getString(R.string.speed_preferences));
-                Preference logs_button = findPreference(getString(R.string.log_preferences));
-                Preference alarm_button = findPreference(getString(R.string.alarm_preferences));
-                Preference watch_button = findPreference(getString(R.string.watch_preferences));
-				Preference wheel_button = findPreference(getString(R.string.wheel_settings));
-				Preference reset_top_button = findPreference(getString(R.string.reset_top_speed));
-                Preference reset_lowest_battery_button = findPreference(getString(R.string.reset_lowest_battery));
-				Preference reset_user_distance_button = findPreference(getString(R.string.reset_user_distance));
-                Preference last_mac_button = findPreference(getString(R.string.last_mac));
-                Preference about_button = findPreference(getString(R.string.about));
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING).putExtra(Constants.INTENT_EXTRA_WHEEL_UPDATE_SCALE, 1));
+                Preference speedButton = findPreference(getString(R.string.speed_preferences));
+                Preference logsButton = findPreference(getString(R.string.log_preferences));
+                Preference alarmButton = findPreference(getString(R.string.alarm_preferences));
+                Preference watchButton = findPreference(getString(R.string.watch_preferences));
+				Preference wheelButton = findPreference(getString(R.string.wheel_settings));
+				Preference resetTopButton = findPreference(getString(R.string.reset_top_speed));
+                Preference resetLowestBatteryButton = findPreference(getString(R.string.reset_lowest_battery));
+				Preference resetUserDistanceButton = findPreference(getString(R.string.reset_user_distance));
+                Preference lastMacButton = findPreference(getString(R.string.last_mac));
+                Preference aboutButton = findPreference(getString(R.string.about));
 
-				
-                if (speed_button != null) {
-                    speed_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                if (speedButton != null) {
+                    speedButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Speed;
                             getPreferenceScreen().removeAll();
                             addPreferencesFromResource(R.xml.preferences_speed);
-                            setup_screen();
+                            setupScreen();
                             return true;
                         }
                     });
                 }
-                if (logs_button != null) {
-                    logs_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                if (logsButton != null) {
+                    logsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Logs;
                             getPreferenceScreen().removeAll();
                             addPreferencesFromResource(R.xml.preferences_logs);
-                            setup_screen();
+                            setupScreen();
                             return true;
                         }
                     });
                 }
-                if (alarm_button != null) {
-                    alarm_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                if (alarmButton != null) {
+                    alarmButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Alarms;
                             getPreferenceScreen().removeAll();
                             addPreferencesFromResource(R.xml.preferences_alarms);
-                            setup_screen();
+                            setupScreen();
                             return true;
                         }
                     });
                 }
-                if (watch_button != null) {
-                    watch_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                if (watchButton != null) {
+                    watchButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Watch;
                             getPreferenceScreen().removeAll();
                             addPreferencesFromResource(R.xml.preferences_watch);
-                            setup_screen();
+                            setupScreen();
                             return true;
                         }
                     });
                 }
-		        if (wheel_button != null) {
-                    wheel_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+		        if (wheelButton != null) {
+                    wheelButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Wheel;
@@ -312,7 +258,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 							if (mWheelType == WHEEL_TYPE.KINGSONG) {
 							    addPreferencesFromResource(R.xml.preferences_kingsong);
-							    if(WheelData.getInstance().is_pref_received()) {
+							    if(WheelData.getInstance().isPrefReceived()) {
 
                                     correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
                                     correctWheelBarState(getString(R.string.wheel_ks_alarm1), WheelData.getInstance().getKSAlarm1Speed());
@@ -322,11 +268,10 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                                 }
                             }
 							if (mWheelType == WHEEL_TYPE.GOTWAY) {
-							//if (mWheelType == WHEEL_TYPE.INMOTION) {
 								addPreferencesFromResource(R.xml.preferences_gotway);
-								Preference start_calibration_button = findPreference(getString(R.string.start_calibration));
-								if (start_calibration_button != null) {
-									start_calibration_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+								Preference startCalibrationButton = findPreference(getString(R.string.start_calibration));
+								if (startCalibrationButton != null) {
+									startCalibrationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 										@Override
 										public boolean onPreferenceClick(Preference preference) {                            
 											WheelData.getInstance().updateCalibration();
@@ -335,15 +280,14 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 									});
 								}
 							}
-							//addPreferencesFromResource(R.xml.preferences_gotway);
-							
-                            setup_screen();
+
+                            setupScreen();
                             return true;
                         }
                     });
                 }
-				if (reset_top_button != null) {
-                    reset_top_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				if (resetTopButton != null) {
+                    resetTopButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
 							WheelData.getInstance().resetTopSpeed();
@@ -351,18 +295,19 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         }
                     });
                 }
-                if (reset_lowest_battery_button != null) {
-                    reset_lowest_battery_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                if (resetLowestBatteryButton != null) {
+                    resetLowestBatteryButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             WheelData.getInstance().resetVoltageSag();
-                            getActivity().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_RESET));
+                            activity.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_RESET));
                             return true;
                         }
                     });
                 }
-				if (reset_user_distance_button != null) {
-                    reset_user_distance_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				if (resetUserDistanceButton != null) {
+                    resetUserDistanceButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {                            
 							WheelData.getInstance().resetUserDistance();
@@ -370,13 +315,13 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                         }
                     });
                 }
-                if (about_button != null) {
-                    about_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                if (aboutButton != null) {
+                    aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             String versionName = BuildConfig.VERSION_NAME;
                             String buildTime = BuildConfig.BUILD_TIME;
-                            new AlertDialog.Builder(getActivity())
+                            new AlertDialog.Builder(activity)
                                     .setTitle(R.string.about_app_title)
                                     .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Palachzzz</i> <br><a href=\"palachzzz.wl@gmail.com\">palachzzz.wl@gmail.com</a> <br> Thanks to:<br>JumpMaster - project initiator<br>cedbossneo - Inmotion support<br>juliomap - Tizen support<br>MacPara - some improvements<br>datarsoja - KS alerts<br>and others!", versionName, buildTime)))
                                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -391,97 +336,78 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                     });
                 }
 
-
-
-                if (last_mac_button != null) {
-                    last_mac_button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                if (lastMacButton != null) {
+                    lastMacButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                             builder.setTitle(getText(R.string.edit_mac_addr_title));
 
-                            final EditText input = new EditText(getActivity());
+                            final EditText input = new EditText(activity);
                             input.setInputType(InputType.TYPE_CLASS_TEXT);
-                            input.setText(SettingsUtil.getLastAddress(getActivity()));
+                            input.setText(SettingsUtil.getLastAddress(activity));
                             builder.setView(input);
                             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     final String deviceAddress = input.getText().toString();
-                                    SettingsUtil.setLastAddress(getActivity(), deviceAddress);
-                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                                    SettingsUtil.setLastAddress(activity, deviceAddress);
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
                                     builder1.setTitle(getText(R.string.wheel_pass_imotion));
 
-                                    final EditText input1 = new EditText(getActivity());
+                                    final EditText input1 = new EditText(activity);
                                     input1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                                     builder1.setView(input1);
                                     builder1.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             String password = input1.getText().toString();
-                                            //System.out.println("Set password ");
-                                            //System.out.println(password);
-                                            SettingsUtil.setPasswordForWheel(getActivity(), deviceAddress, password);
-                                            password = SettingsUtil.getPasswordForWheel(getActivity(),deviceAddress);
-                                            //System.out.println("Set password ");
-                                            //System.out.println(password);
-                                            //finish();
+                                            SettingsUtil.setPasswordForWheel(activity, deviceAddress, password);
                                         }
                                     });
                                     builder1.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             dialog.cancel();
-                                            //finish();
                                         }
                                     });
                                     builder1.show();
-
-
-
-                                    //SettingsUtil.setPasswordForWheel(getActivity(), deviceAddress, "000000");
-                                    //finish();
                                 }
                             });
                             builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.cancel();
-                                    //finish();
                                 }
                             });
                             builder.show();
-
-
                             return true;
                         }
 
                     });
                 }
-
                 break;
             case Speed:
                 tb.setTitle(getText(R.string.speed_settings_title));
-                hideShowSeekBars_app();
+                hideShowSeekBarsApp();
                 break;
             case Logs:
                 tb.setTitle(getText(R.string.logs_settings_title));
                 break;
             case Alarms:
                 tb.setTitle(getText(R.string.alarm_settings_title));
-                hideShowSeekBars_alarms();
+                hideShowSeekBarsAlarms();
                 break;
             case Watch:
                 tb.setTitle(getText(R.string.watch_settings_title));
                 break;
 			case Wheel:
                 tb.setTitle(getText(R.string.wheel_settings_title));
-				//getActivity().sendBroadcast(new Intent(Constants.ACTION_WHEEL_SETTING_CHANGED).putExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH, true));
                 break;
         }
     }
 
-    public void refreshVolatileSettings() {
+    void refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctCheckState(getString(R.string.auto_log));
             correctCheckState(getString(R.string.log_location_data));
@@ -489,39 +415,56 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
         }
     }
 	
-    public void refreshWheelSettings(boolean isLight, boolean isLed, boolean isButton, int maxSpeed, int speakerVolume, int pedals) {
+    void refreshWheelSettings(boolean isLight, boolean isLed, boolean isButton, int maxSpeed, int speakerVolume, int pedals) {
         correctWheelCheckState(getString(R.string.light_enabled), isLight);
         correctWheelCheckState(getString(R.string.led_enabled), isLed);
         correctWheelCheckState(getString(R.string.handle_button_disabled), isButton);
-
         correctWheelBarState(getString(R.string.wheel_max_speed), maxSpeed);
 		correctWheelBarState(getString(R.string.speaker_volume), speakerVolume);
 		correctWheelBarState(getString(R.string.pedals_adjustment), pedals);
+    }
 
-		
+    boolean isMainMenu() {
+        return currentScreen == SettingsScreen.Main;
+    }
 
-    }	
-	
-	private void correctWheelCheckState(String preference, boolean state) {
-        CheckBoxPreference cb_preference = (CheckBoxPreference) findPreference(preference);
-        if (cb_preference == null)
+    void showMainMenu() {
+        getPreferenceScreen().removeAll();
+        addPreferencesFromResource(R.xml.preferences);
+
+        Preference wheelButton = findPreference(getString(R.string.wheel_settings));
+        if (wheelButton == null) {
             return;
+        }
 
-        boolean check_state = cb_preference.isChecked();
+        mWheelType = WheelData.getInstance().getWheelType();
+        if (mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z) {
+            wheelButton.setEnabled(true);
+        }
 
-        if (state != check_state)
-            cb_preference.setChecked(state);
+        currentScreen = SettingsScreen.Main;
+        setupScreen();
+    }
 
+	private void correctWheelCheckState(String preference, boolean state) {
+        CheckBoxPreference cbPreference = findPreference(preference);
+        if (cbPreference == null) {
+            return;
+        }
+
+        boolean checkState = cbPreference.isChecked();
+        if (state != checkState) {
+            cbPreference.setChecked(state);
+        }
     }
 	
 	private void correctWheelBarState(String preference, int stateInt) {
-
-        SeekBarPreference sb_preference = (SeekBarPreference) findPreference(preference);
-		if (sb_preference == null)
+        SeekBarPreference sbPreference = findPreference(preference);
+		if (sbPreference == null)
 			return;
-		int sb_value = sb_preference.getCurrentValue();
-		if (stateInt != sb_value) {
-			sb_preference.setCurrentValue(stateInt);
+		int sbValue = sbPreference.getCurrentValue();
+		if (stateInt != sbValue) {
+			sbPreference.setCurrentValue(stateInt);
 			/// Workaround, seekbar doesn't want to update view
             getPreferenceScreen().removeAll();
 
@@ -529,39 +472,33 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 			if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 			if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
 			if (mWheelType == WHEEL_TYPE.GOTWAY) addPreferencesFromResource(R.xml.preferences_gotway);
-            
-			//addPreferencesFromResource(R.xml.preferences_gotway);
-			
-			//addPreferencesFromResource(R.xml.preferences_inmotion);
-            setup_screen();
-
+            setupScreen();
 		}
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(preference, stateInt);
-        //editor.commit();
         editor.apply();
-			
     }
 
     private void correctCheckState(String preference) {
-        boolean setting_state = SettingsUtil.getBoolean(getActivity(), preference);
-        CheckBoxPreference cb_preference = (CheckBoxPreference) findPreference(preference);
-        if (cb_preference == null)
+        boolean settingState = SettingsUtil.getBoolean(getActivity(), preference);
+        CheckBoxPreference checkBoxPreference = findPreference(preference);
+        if (checkBoxPreference == null) {
             return;
+        }
 
-        boolean check_state = cb_preference.isChecked();
-
-        if (setting_state != check_state)
-            cb_preference.setChecked(setting_state);
+        boolean checkState = checkBoxPreference.isChecked();
+        if (settingState != checkState) {
+            checkBoxPreference.setChecked(settingState);
+        }
     }
 
-    private void hideShowSeekBars_alarms() {
-        boolean alarms_enabled = getPreferenceManager().getSharedPreferences()
+    private void hideShowSeekBarsAlarms() {
+        boolean alarmsEnabled = getPreferenceManager().getSharedPreferences()
                 .getBoolean(getString(R.string.alarms_enabled), false);
-        boolean altered_alarms = getPreferenceManager().getSharedPreferences()
+        boolean alteredAlarms = getPreferenceManager().getSharedPreferences()
                 .getBoolean(getString(R.string.altered_alarms), false);
-        String[] seekbar_preferences_normal = {
+        String[] seekbarPreferencesNormal = {
                 getString(R.string.alarm_1_speed),
                 getString(R.string.alarm_2_speed),
                 getString(R.string.alarm_3_speed),
@@ -572,7 +509,7 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
 				getString(R.string.alarm_temperature)
         };
 
-        String[] seekbar_preferences_altered = {
+        String[] seekbarPreferencesAltered = {
                 getString(R.string.rotation_speed),
                 getString(R.string.rotation_voltage),
                 getString(R.string.power_factor),
@@ -581,64 +518,49 @@ public class PreferencesFragment extends PreferenceFragment implements SharedPre
                 getString(R.string.alarm_factor3),
         };
 
-        String[] seekbar_preferences_common = {
+        String[] seekbarPreferencesCommon = {
                 getString(R.string.alarm_current),
                 getString(R.string.alarm_temperature)
         };
-        for (String preference : seekbar_preferences_normal) {
-            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+        for (String preference : seekbarPreferencesNormal) {
+            SeekBarPreference seekbar = findPreference(preference);
             if (seekbar != null)
-                seekbar.setEnabled(alarms_enabled && !altered_alarms);
+                seekbar.setEnabled(alarmsEnabled && !alteredAlarms);
         }
-        for (String preference : seekbar_preferences_altered) {
-            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+        for (String preference : seekbarPreferencesAltered) {
+            SeekBarPreference seekbar = findPreference(preference);
             if (seekbar != null)
-                seekbar.setEnabled(alarms_enabled && altered_alarms);
+                seekbar.setEnabled(alarmsEnabled && alteredAlarms);
         }
 
-        for (String preference : seekbar_preferences_common) {
-            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+        for (String preference : seekbarPreferencesCommon) {
+            SeekBarPreference seekbar = findPreference(preference);
             if (seekbar != null)
-                seekbar.setEnabled(alarms_enabled);
+                seekbar.setEnabled(alarmsEnabled);
         }
     }
 
-    private void hideShowSeekBars_app() {
-        boolean connect_sound = getPreferenceManager().getSharedPreferences()
+    private void hideShowSeekBarsApp() {
+        boolean connectSound = getPreferenceManager().getSharedPreferences()
                 .getBoolean(getString(R.string.connection_sound), false);
 
-        String[] seekbar_preferences = {
+        String[] seekbarPreferences = {
                 getString(R.string.no_connection_sound)
         };
 
-        for (String preference : seekbar_preferences) {
-            SeekBarPreference seekbar = (SeekBarPreference) findPreference(preference);
+        for (String preference : seekbarPreferences) {
+            SeekBarPreference seekbar = findPreference(preference);
             if (seekbar != null)
-                seekbar.setEnabled(connect_sound);
+                seekbar.setEnabled(connectSound);
         }
     }
 
-	public boolean is_main_menu() {
-        if (currentScreen == SettingsScreen.Main)
-            return true;
-		else return false;		
-	}
-
-    public boolean show_main_menu() {
-        //if (currentScreen == SettingsScreen.Main)
-        //    return false;
-        getPreferenceScreen().removeAll();
-
-        addPreferencesFromResource(R.xml.preferences);
-		//System.out.println("ShowMainMenuRecognized");
-		Preference wheel_button = findPreference(getString(R.string.wheel_settings));
-		mWheelType = WheelData.getInstance().getWheelType();
-		if ((mWheelType == WHEEL_TYPE.INMOTION) | (mWheelType == WHEEL_TYPE.KINGSONG) | (mWheelType == WHEEL_TYPE.GOTWAY)  | (mWheelType == WHEEL_TYPE.NINEBOT_Z)) {
-			wheel_button.setEnabled(true);
-		}
-		
-        currentScreen = SettingsScreen.Main;
-        setup_screen();
-        return true;
+    private enum SettingsScreen {
+        Main,
+        Speed,
+        Logs,
+        Alarms,
+        Watch,
+        Wheel
     }
 }

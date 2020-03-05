@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">WheelLog</string>
-	<string name="unknown_device">Neznámé zařízení</string>
+    <string name="unknown_device">Neznámé zařízení</string>
 	<string name="ble_not_supported">Bluetooth LE není podporován</string>
 	<string name="error_bluetooth_not_supported">Bluetooth není na Vašem zařízení podporován</string>
 	<string name="error_bluetooth_not_initialised">Problém s inicilizací bluetooth, ukončuji</string>

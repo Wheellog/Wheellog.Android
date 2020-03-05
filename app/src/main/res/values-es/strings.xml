@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">WheelLog</string>
-	<string name="unknown_device">Equipo desconocido.</string>
+    <string name="unknown_device">Equipo desconocido.</string>
 	<string name="ble_not_supported">Bluetooth no es compatible.</string>
 	<string name="error_bluetooth_not_supported">Error bluetooth no es compatible.</string>
 	<string name="error_bluetooth_not_initialised">Bluetooth no se ha iniciado.</string>

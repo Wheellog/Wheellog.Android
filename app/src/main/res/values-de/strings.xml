@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">WheelLog</string>
-	<string name="unknown_device">Unbekanntes Gerät</string>
+    <string name="unknown_device">Unbekanntes Gerät</string>
 	<string name="ble_not_supported">Bluetooth LE wird nicht unterstützt</string>
 	<string name="error_bluetooth_not_supported">Bluetooth wird von ihrem Gerät nicht unterstützt.</string>
 	<string name="error_bluetooth_not_initialised">Bluetooth kann nicht initialisiert werden.</string>

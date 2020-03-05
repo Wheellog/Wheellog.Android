@@ -1,35 +1,35 @@
 package com.cooper.wheellog;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.CountDownTimer;
-import android.os.Vibrator;
-//import android.media.ToneGenerator;
+import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.AudioFormat;
+import android.os.Vibrator;
 
-import android.text.InputType;
-import android.widget.EditText;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.InMotionAdapter;
-import com.cooper.wheellog.utils.NinebotZAdapter;
 import com.cooper.wheellog.utils.NinebotAdapter;
+import com.cooper.wheellog.utils.NinebotZAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
-
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
+
+//import android.media.ToneGenerator;
 
 public class WheelData {
     private static final int TIME_BUFFER = 10;
@@ -289,7 +289,7 @@ public class WheelData {
         return mWheelTiltHorizon;
     }
 
-    public boolean is_pref_received(){
+    public boolean isPrefReceived(){
         return mKSAlertsAndSpeedupdated;
     }
 
