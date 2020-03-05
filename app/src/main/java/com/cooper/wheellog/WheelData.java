@@ -430,12 +430,7 @@ public class WheelData {
 	
 	public void updateCalibration() {
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
-			mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-            mBluetoothLeService.writeBluetoothGattCharacteristic(",".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());	
+			//mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());	
 		}

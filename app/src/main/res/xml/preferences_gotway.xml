@@ -38,8 +38,8 @@
         android:defaultValue="30"
 		android:enabled="true"
         sample:msbp_minValue="0"
-        sample:msbp_maxValue="48"
-        sample:msbp_interval="3"
+        sample:msbp_maxValue="99"
+        sample:msbp_interval="1"
         sample:msbp_measurementUnit="@string/kmh"
         sample:msbp_dialogEnabled="true"/>
 
