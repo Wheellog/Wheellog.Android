@@ -108,6 +108,7 @@ public class WheelData {
     private int mAlarmCurrent = 0;
 	private int mAlarmTemperature = 0;
     private int mGotwayVoltageScaler = 0;
+    private int mGotwayNegative = -1;
 
     private double mRotationSpeed = 70.0;
     private double mRotationVoltage = 84.00;
@@ -889,6 +890,10 @@ public class WheelData {
         mGotwayVoltageScaler = voltage;
     }
 
+    void setGotwayNegative(int negative) {
+        mGotwayNegative = negative;
+    }
+
     void setPreferences(int alarm1Speed, int alarm1Battery,
                                    int alarm2Speed, int alarm2Battery,
                                    int alarm3Speed, int alarm3Battery,
@@ -1334,11 +1339,11 @@ public class WheelData {
             }
 
             if (data[5] >= 0)
-                //mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
-                mSpeed = (int) -(((data[4] * 256.0) + data[5]) * 3.6);
+                if (mGotwayNegative == 0) mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
+                else mSpeed = ((int) (((data[4] * 256.0) + data[5]) * 3.6)) * mGotwayNegative;
             else
-                //mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
-                mSpeed = (int) -((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+                if (mGotwayNegative == 0) mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+                else mSpeed = ((int) ((((data[4] * 256.0) + 256.0) + data[5]) * 3.6) )* mGotwayNegative;
 			if (mUseRatio) mSpeed = (int)Math.round(mSpeed * RATIO_GW);
             setTopSpeed(mSpeed);
 
@@ -1351,7 +1356,9 @@ public class WheelData {
 
             mVoltage = (data[2] * 256) + (data[3] & 255);
 
-            mCurrent = -((data[10] * 256) + data[11]);
+            mCurrent = ((data[10] * 256) + data[11]);
+            if ( mGotwayNegative == 0 ) mCurrent = Math.abs(mCurrent);
+            else mCurrent = mCurrent * mGotwayNegative;
 
             int battery;
             if (mBetterPercents) {

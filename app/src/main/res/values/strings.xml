@@ -134,6 +134,7 @@
 	<string name="alarm_mode" translatable="false">alarm_mode</string>
 	<string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
+    <string name="gotway_negative" translatable="false">gotway_negative</string>
     <string name="no_settings" translatable="false">no_settings</string>
     <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
     <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
@@ -303,6 +304,11 @@
 
     <string name="battery_voltage_title">Battery voltage</string>
     <string name="battary_voltage_description">67V/84V/100V</string>
+    <string name="gotway_negative_title">Negative current and speed mode</string>
+    <string name="gotway_negative_description">When you riding straight if speed and currents negative - try change to opposite setting, or choose absolute</string>
+    <string name="absolute">Absolute (only positive)</string>
+    <string name="reverse">Reverse</string>
+    <string name="straight">Straight</string>
     <string name="off_level_1_alarm">Turn off level 1 alarm</string>
     <string name="off_level_2_alarm">Turn off level 2 alarm</string>
     <string name="on_level_alarm">Turn on alarm</string>

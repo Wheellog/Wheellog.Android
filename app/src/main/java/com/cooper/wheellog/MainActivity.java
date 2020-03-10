@@ -1089,6 +1089,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
+        int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "-1"));
+        WheelData.getInstance().setGotwayNegative(gotway_negative);
         //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
         //WheelData.getInstance().setGotway84V(gotway_84v);
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
