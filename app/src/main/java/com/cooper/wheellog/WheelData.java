@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Handler;
 import android.os.Vibrator;
 
 import com.cooper.wheellog.utils.Constants;
@@ -316,15 +317,30 @@ public class WheelData {
 			switch (pedalsMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("h".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;
 				case 1: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("f".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;
 				case 2: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("s".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;	
 			}			
 		}
@@ -349,15 +365,30 @@ public class WheelData {
 			switch (lightMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("E".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;
 				case 1: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("Q".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;
 				case 2: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("T".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;	
 			}			
 		}
@@ -413,15 +444,31 @@ public class WheelData {
 			switch (alarmMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("u".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
+
 					break;
 				case 1: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("i".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;
 				case 2: 
 					mBluetoothLeService.writeBluetoothGattCharacteristic("o".getBytes());
-					mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        }
+                    }, 100);
 					break;	
 			}			
 		}
@@ -432,7 +479,13 @@ public class WheelData {
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
 			//mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());	
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());
+                }
+            }, 300);
+
 		}
 		
 		
@@ -455,25 +508,72 @@ public class WheelData {
 		}
 
 		if (mWheelType == WHEEL_TYPE.GOTWAY) {
-			byte[] data = new byte[1];
+			final byte[] hhh = new byte[1];
+            final byte[] lll = new byte[1];
 			if (wheelMaxSpeed != 0) {
 				int wheelMaxSpeed2 = wheelMaxSpeed;
 				//if (mUseRatio) wheelMaxSpeed2 = (int)Math.round(wheelMaxSpeed2/RATIO_GW);
-				mBluetoothLeService.writeBluetoothGattCharacteristic("W".getBytes());
-				mBluetoothLeService.writeBluetoothGattCharacteristic("Y".getBytes());
-				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-				
-				data[0] = (byte)((wheelMaxSpeed2/10)+0x30);
-				mBluetoothLeService.writeBluetoothGattCharacteristic(data);
-				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-				data[0] = (byte)((wheelMaxSpeed2%10)+0x30);
-				mBluetoothLeService.writeBluetoothGattCharacteristic(data);
-				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                hhh[0] = (byte)((wheelMaxSpeed2/10)+0x30);
+                lll[0] = (byte)((wheelMaxSpeed2%10)+0x30);
+                mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("W".getBytes());
+                    }
+                }, 100);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("Y".getBytes());
+                    }
+                }, 200);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic(hhh);
+                    }
+                }, 300);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic(lll);
+                    }
+                }, 400);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 500);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 600);
+
 			} else {
-				data[0] = 0x22;
-				mBluetoothLeService.writeBluetoothGattCharacteristic(data); // "
-				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());			
+				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("\"".getBytes()); // "
+                    }
+                }, 100);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 200);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 300);
+
 			}
 		}
 		if (mWheelType == WHEEL_TYPE.KINGSONG) {
