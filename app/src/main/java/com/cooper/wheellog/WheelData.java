@@ -1333,8 +1333,17 @@ public class WheelData {
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
+            int a5 = data[4] & 255;
+            int a6 = data[5] & 255;
             int a19 = data[18] & 255;
+
             if (a1 != 85 || a2 != 170 || a19 != 0) {
+                if (a1 != 90 || a5 != 85 || a6 != 170) {
+                    return false;
+                }
+                mTotalDistance = ((data[6]&0xFF) <<24) | ((data[7]&0xFF) << 16) | ((data[8] & 0xFF) <<8) | (data[9] & 0xFF);
+                if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
+
                 return false;
             }
 
@@ -1397,7 +1406,7 @@ public class WheelData {
             if (a1 != 90 || a5 != 85 || a6 != 170) {
                 return false;
             }
-            mTotalDistance = ((data[6]&0xFF) <<24) + ((data[7]&0xFF) << 16) + ((data[8] & 0xFF) <<8) + (data[9] & 0xFF);
+            mTotalDistance = ((data[6]&0xFF) <<24) | ((data[7]&0xFF) << 16) | ((data[8] & 0xFF) <<8) | (data[9] & 0xFF);
 			if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
         }
         return false;
@@ -1518,6 +1527,7 @@ public class WheelData {
                 int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);
                 setTopSpeed(mSpeed);
+                setVoltageSag(mVoltage);
             }
         }
         return true;
