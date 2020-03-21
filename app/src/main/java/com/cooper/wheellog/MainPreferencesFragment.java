@@ -17,10 +17,10 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.cooper.wheellog.presentation.preferences.SeekBarPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.SettingsUtil;
-import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
 public class MainPreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -462,9 +462,9 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         SeekBarPreference sbPreference = findPreference(preference);
 		if (sbPreference == null)
 			return;
-		int sbValue = sbPreference.getCurrentValue();
+		int sbValue = sbPreference.getValue();
 		if (stateInt != sbValue) {
-			sbPreference.setCurrentValue(stateInt);
+			sbPreference.setValue(stateInt);
 			/// Workaround, seekbar doesn't want to update view
             getPreferenceScreen().removeAll();
 
@@ -523,18 +523,18 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 getString(R.string.alarm_temperature)
         };
         for (String preference : seekbarPreferencesNormal) {
-            SeekBarPreference seekbar = findPreference(preference);
+            Preference seekbar = findPreference(preference);
             if (seekbar != null)
                 seekbar.setEnabled(alarmsEnabled && !alteredAlarms);
         }
         for (String preference : seekbarPreferencesAltered) {
-            SeekBarPreference seekbar = findPreference(preference);
+            Preference seekbar = findPreference(preference);
             if (seekbar != null)
                 seekbar.setEnabled(alarmsEnabled && alteredAlarms);
         }
 
         for (String preference : seekbarPreferencesCommon) {
-            SeekBarPreference seekbar = findPreference(preference);
+            Preference seekbar = findPreference(preference);
             if (seekbar != null)
                 seekbar.setEnabled(alarmsEnabled);
         }

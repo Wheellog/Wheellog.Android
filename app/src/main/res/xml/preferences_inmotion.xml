@@ -1,55 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
         android:key="@string/light_enabled"
-        android:title="@string/on_headlight_title"
-        android:summary="@string/on_headlight_description" />
+        android:summary="@string/on_headlight_description"
+        android:title="@string/on_headlight_title" />
 
     <CheckBoxPreference
         android:key="@string/led_enabled"
-        android:title="@string/leds_settings_title"
-        android:summary="@string/leds_settings_description" />
+        android:summary="@string/leds_settings_description"
+        android:title="@string/leds_settings_title" />
 
     <CheckBoxPreference
         android:key="@string/handle_button_disabled"
-        android:title="@string/disable_handle_button_title"
-        android:summary="@string/disable_handle_button_description" />
+        android:summary="@string/disable_handle_button_description"
+        android:title="@string/disable_handle_button_title" />
 
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
         android:key="@string/wheel_max_speed"
-        android:title="@string/max_speed_title"
         android:summary="@string/tilt_back_description"
-        android:defaultValue="0"
-        sample:msbp_minValue="3"
-        sample:msbp_maxValue="45"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="@string/kmh"
-        sample:msbp_dialogEnabled="true"/>
+        android:title="@string/max_speed_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="45"
+        sample:sbp_measurementUnit="@string/kmh"
+        sample:sbp_minValue="3" />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/speaker_volume"
-        android:title="@string/speaker_volume_description"
-        android:summary="@string/speaker_volume_description"
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
         android:defaultValue="50"
-        sample:msbp_minValue="0"
-        sample:msbp_maxValue="100"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="%"
-        sample:msbp_dialogEnabled="true"/>
+        android:key="@string/speaker_volume"
+        android:summary="@string/speaker_volume_description"
+        android:title="@string/speaker_volume_description"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="100"
+        sample:sbp_measurementUnit="%"
+        sample:sbp_minValue="0" />
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/pedals_adjustment"
-        android:title="@string/pedal_horizont_title"
-        android:summary="@string/pedal_horizont_description"
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
         android:defaultValue="0"
-        sample:msbp_minValue="-80"
-        sample:msbp_maxValue="80"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="x 0.1°"
-        sample:msbp_dialogEnabled="true"/>
-		
+        android:key="@string/pedals_adjustment"
+        android:summary="@string/pedal_horizont_description"
+        android:title="@string/pedal_horizont_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="80"
+        sample:sbp_measurementUnit="x 0.1°"
+        sample:sbp_minValue="-80" />
+
 </PreferenceScreen>
