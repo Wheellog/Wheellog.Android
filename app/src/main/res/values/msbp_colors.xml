@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="color_bottom_line_enabled">#EEBDBDBD</color>
-    <color name="color_bottom_line_disabled">#40BDBDBD</color>
-    <color name="color_dialog">#607D8B</color>
-</resources>

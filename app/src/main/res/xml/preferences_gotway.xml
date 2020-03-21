@@ -1,75 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        android:key="@string/light_mode"
-        android:title="@string/light_mode_title"
         android:defaultValue="0"
-		android:enabled="true"
+        android:enabled="true"
         android:entries="@array/light_mode_gw"
         android:entryValues="@array/light_mode_values"
-        android:summary="@string/on_off_strobe" />
-			
-			
+        android:key="@string/light_mode"
+        android:summary="@string/on_off_strobe"
+        android:title="@string/light_mode_title" />
+
+
     <ListPreference
-        android:key="@string/alarm_mode"
-        android:title="@string/alarm_mode_title"
         android:defaultValue="0"
-		android:enabled="true"
+        android:enabled="true"
         android:entries="@array/alarm_mode_gw"
         android:entryValues="@array/alarm_mode_values"
-        android:summary="@string/alarm_settings_title" />
-	
+        android:key="@string/alarm_mode"
+        android:summary="@string/alarm_settings_title"
+        android:title="@string/alarm_mode_title" />
+
     <ListPreference
-        android:key="@string/pedals_mode"
-        android:title="@string/pedals_mode_title"
         android:defaultValue="1"
         android:entries="@array/pedals_mode"
         android:entryValues="@array/pedals_mode_values"
-        android:summary="@string/soft_medium_hard" />
+        android:key="@string/pedals_mode"
+        android:summary="@string/soft_medium_hard"
+        android:title="@string/pedals_mode_title" />
 
 
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/wheel_max_speed"
-        android:title="@string/max_speed_title"
-        android:summary="@string/tilt_back_description"
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
         android:defaultValue="30"
-		android:enabled="true"
-        sample:msbp_minValue="0"
-        sample:msbp_maxValue="99"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="@string/kmh"
-        sample:msbp_dialogEnabled="true"/>
+        android:enabled="true"
+        android:key="@string/wheel_max_speed"
+        android:summary="@string/tilt_back_description"
+        android:title="@string/max_speed_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="99"
+        sample:sbp_measurementUnit="@string/kmh"
+        sample:sbp_minValue="0" />
 
-		
-	<Preference
+
+    <Preference
+        android:enabled="true"
         android:key="@string/start_calibration"
-		android:enabled="true"
-        android:title="@string/calibration_title"/>
-		
-	<CheckBoxPreference
+        android:title="@string/calibration_title" />
+
+    <CheckBoxPreference
         android:key="@string/use_ratio"
-        android:title="@string/is_gotway_mcm_title"
-        android:summary="@string/is_gotway_mcm_description" />
+        android:summary="@string/is_gotway_mcm_description"
+        android:title="@string/is_gotway_mcm_title" />
 
-	<ListPreference
-		android:defaultValue="1"
-		android:enabled="true"
-		android:entries="@array/gotway_voltage"
-		android:entryValues="@array/gotway_voltage_values"
-		android:key="@string/gotway_voltage"
-		android:summary="@string/battary_voltage_description"
-		android:title="@string/battery_voltage_title" />
+    <ListPreference
+        android:defaultValue="1"
+        android:enabled="true"
+        android:entries="@array/gotway_voltage"
+        android:entryValues="@array/gotway_voltage_values"
+        android:key="@string/gotway_voltage"
+        android:summary="@string/battary_voltage_description"
+        android:title="@string/battery_voltage_title" />
 
-	<ListPreference
-		android:defaultValue="-1"
-		android:enabled="true"
-		android:entries="@array/gotway_negative"
-		android:entryValues="@array/gotway_negative_values"
-		android:key="@string/gotway_negative"
-		android:summary="@string/gotway_negative_description"
-		android:title="@string/gotway_negative_title" />
+    <ListPreference
+        android:defaultValue="-1"
+        android:enabled="true"
+        android:entries="@array/gotway_negative"
+        android:entryValues="@array/gotway_negative_values"
+        android:key="@string/gotway_negative"
+        android:summary="@string/gotway_negative_description"
+        android:title="@string/gotway_negative_title" />
 
 </PreferenceScreen>

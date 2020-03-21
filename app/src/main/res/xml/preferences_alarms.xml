@@ -1,225 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
         android:key="@string/alarms_enabled"
-        android:title="@string/enable_alarms_title"
-        android:summary="@string/enable_alarms_description" />
+        android:summary="@string/enable_alarms_description"
+        android:title="@string/enable_alarms_title" />
 
     <CheckBoxPreference
+        android:dependency="alarms_enabled"
         android:key="@string/disable_phone_vibrate"
-        android:dependency="alarms_enabled"
-        android:title="@string/disable_phone_vibrate_title"
-        android:summary="@string/disable_phone_vibration_description" />
+        android:summary="@string/disable_phone_vibration_description"
+        android:title="@string/disable_phone_vibrate_title" />
 
     <CheckBoxPreference
+        android:dependency="alarms_enabled"
         android:key="@string/disable_phone_beep"
-        android:dependency="alarms_enabled"
-        android:title="@string/disable_phone_beep_title"
-        android:summary="@string/disable_phone_beep_description" />
+        android:summary="@string/disable_phone_beep_description"
+        android:title="@string/disable_phone_beep_title" />
 
     <CheckBoxPreference
-        android:key="@string/altered_alarms"
         android:dependency="alarms_enabled"
-        android:title="@string/altered_alarms_title"
-        android:summary="@string/altered_alarms_description" />
+        android:key="@string/altered_alarms"
+        android:summary="@string/altered_alarms_description"
+        android:title="@string/altered_alarms_title" />
 
-    <PreferenceCategory
-        android:title="@string/speed_alarm1_phone_title">
+    <PreferenceCategory android:title="@string/speed_alarm1_phone_title">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_1_speed"
-            android:title="@string/speed"
-            android:summary="@string/speed_trigger_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="29"
+            android:key="@string/alarm_1_speed"
+            android:summary="@string/speed_trigger_description"
+            android:title="@string/speed"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="@string/kmh"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="@string/kmh"
+            sample:sbp_minValue="0" />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_1_battery"
-            android:title="@string/alarm_1_battery_title"
-            android:summary="@string/alarm_1_battery_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="100"
+            android:key="@string/alarm_1_battery"
+            android:summary="@string/alarm_1_battery_description"
+            android:title="@string/alarm_1_battery_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/speed_alarm2_phone_title">
+    <PreferenceCategory android:title="@string/speed_alarm2_phone_title">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+            android:defaultValue="0"
             android:key="@string/alarm_2_speed"
-            android:title="@string/speed"
             android:summary="@string/speed_trigger_description"
-            android:defaultValue="0"
+            android:title="@string/speed"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="@string/kmh"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="@string/kmh"
+            sample:sbp_minValue="0" />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+            android:defaultValue="0"
             android:key="@string/alarm_2_battery"
+            android:summary="@string/alarm_1_battery_description"
             android:title="@string/alarm_2_battery_title"
-            android:summary="@string/alarm_1_battery_description"
-            android:defaultValue="0"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/speed_alarm3_phone_title">
+    <PreferenceCategory android:title="@string/speed_alarm3_phone_title">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+            android:defaultValue="0"
             android:key="@string/alarm_3_speed"
-            android:title="@string/speed"
             android:summary="@string/speed_trigger_description"
-            android:defaultValue="0"
+            android:title="@string/speed"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="@string/kmh"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="@string/kmh"
+            sample:sbp_minValue="0" />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+            android:defaultValue="0"
             android:key="@string/alarm_3_battery"
-            android:title="@string/alarm_3_battery_title"
             android:summary="@string/alarm_1_battery_description"
-            android:defaultValue="0"
+            android:title="@string/alarm_3_battery_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/altered_alarms_pref_title">
+    <PreferenceCategory android:title="@string/altered_alarms_pref_title">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/rotation_speed"
-            android:title="@string/rotation_speed_title"
-            android:summary="@string/rotation_speed_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="500"
+            android:key="@string/rotation_speed"
+            android:summary="@string/rotation_speed_description"
+            android:title="@string/rotation_speed_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="2000"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="0.1*Km/h"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="2000"
+            sample:sbp_measurementUnit="0.1*Km/h"
+            sample:sbp_minValue="0" />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/rotation_voltage"
-            android:title="@string/rotation_voltage_title"
-            android:summary="@string/rotation_voltage_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="840"
+            android:key="@string/rotation_voltage"
+            android:summary="@string/rotation_voltage_description"
+            android:title="@string/rotation_voltage_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="1200"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="0.1*V"
-            sample:msbp_dialogEnabled="true"/>
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/power_factor"
-            android:title="@string/power_factor_title"
-            android:summary="@string/power_factor_description"
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="1200"
+            sample:sbp_measurementUnit="0.1*V"
+            sample:sbp_minValue="0" />
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="85"
+            android:key="@string/power_factor"
+            android:summary="@string/power_factor_description"
+            android:title="@string/power_factor_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_factor1"
-            android:title="@string/alarm_factor1_title"
-            android:summary="@string/alarm_factor1_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="80"
+            android:key="@string/alarm_factor1"
+            android:summary="@string/alarm_factor1_description"
+            android:title="@string/alarm_factor1_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_factor2"
-            android:title="@string/alarm_factor2_title"
-            android:summary="@string/alarm_factor2_description"
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="90"
+            android:key="@string/alarm_factor2"
+            android:summary="@string/alarm_factor2_description"
+            android:title="@string/alarm_factor2_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_factor3"
-            android:title="@string/alarm_factor3_title"
-            android:summary="@string/alarm_factor3_description"
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="95"
+            android:key="@string/alarm_factor3"
+            android:summary="@string/alarm_factor3_description"
+            android:title="@string/alarm_factor3_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="%"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
 
 
     </PreferenceCategory>
 
 
-    <PreferenceCategory
-        android:title="@string/current_alarm_title">
+    <PreferenceCategory android:title="@string/current_alarm_title">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_current"
-            android:title="@string/current_title"
-            android:summary="@string/alarm_current_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="35"
+            android:key="@string/alarm_current"
+            android:summary="@string/alarm_current_description"
+            android:title="@string/current_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="0"
-            sample:msbp_maxValue="200"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="@string/amp"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="200"
+            sample:sbp_measurementUnit="@string/amp"
+            sample:sbp_minValue="0" />
 
     </PreferenceCategory>
 
-	<PreferenceCategory
-        android:title="@string/temperature_alarm_title">
+    <PreferenceCategory android:title="@string/temperature_alarm_title">
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
-            android:key="@string/alarm_temperature"
-            android:title="@string/temperature_title"
-            android:summary="@string/alarm_temperature_description"
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="60"
+            android:key="@string/alarm_temperature"
+            android:summary="@string/alarm_temperature_description"
+            android:title="@string/temperature_title"
             sample:dependency="alarms_enabled"
-            sample:msbp_minValue="20"
-            sample:msbp_maxValue="100"
-            sample:msbp_interval="1"
-            sample:msbp_measurementUnit="°"
-            sample:msbp_dialogEnabled="true"/>
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="°"
+            sample:sbp_minValue="20" />
 
     </PreferenceCategory>
 
