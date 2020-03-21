@@ -258,6 +258,8 @@ public class NinebotZAdapter {
     public static class CANMessage {
 
         enum Addr {
+            BMS1(0x11),
+            BMS2(0x12),
             Controller(0x14),
             KeyGenerator(0x16),
             App(0x3e);
@@ -530,7 +532,29 @@ public class NinebotZAdapter {
             return msg;
         }
 
+        public static CANMessage getDumpBMS1(int b) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.BMS1.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = b & 0xFF;
+            msg.data = new byte[]{0x10};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
 
+        public static CANMessage getDumpBMS2(int b) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.BMS2.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = b & 0xFF;
+            msg.data = new byte[]{0x10};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
 
 
         private byte[] parseKey() {
@@ -619,11 +643,11 @@ public class NinebotZAdapter {
 				
                 if (result != null) { // data OK
                     Timber.i("Verification successful, command %02X", result.parameter);
-                    if (result.parameter == CANMessage.Param.Start.getValue()) {
+                    if ((result.parameter == CANMessage.Param.Start.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
 						Timber.i("Get start answer");
 						stateCon = 1;
 						
-					} else if (result.parameter == CANMessage.Param.GetKey.getValue()){
+					} else if ((result.parameter == CANMessage.Param.GetKey.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())){
                         Timber.i("Get encryption key");
                         gamma = result.parseKey();
                         stateCon = 2;
@@ -631,7 +655,7 @@ public class NinebotZAdapter {
 						//if (alert != null)
 						//	outValues.add(alert);
 						
-					} else if (result.parameter == CANMessage.Param.SerialNumber.getValue()){
+					} else if ((result.parameter == CANMessage.Param.SerialNumber.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())){
                         Timber.i("Get serial number");
                         serialNumberStatus infos = result.parseSerialNumber();
                         stateCon = 3;
@@ -639,7 +663,7 @@ public class NinebotZAdapter {
                         if (infos != null)
                         	outValues.add(infos);
 
-                    } else if (result.parameter == CANMessage.Param.Firmware.getValue()){
+                    } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())){
                         Timber.i("Get version number");
                         versionStatus infos = result.parseVersionNumber();
                         stateCon = 4;
@@ -647,12 +671,17 @@ public class NinebotZAdapter {
                         if (infos != null)
                             outValues.add(infos);
 
-                    } else if (result.parameter == CANMessage.Param.LiveData.getValue()){
+                    } else if ((result.parameter == CANMessage.Param.LiveData.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())){
                         Timber.i("Get life data");
                         Status status = result.parseLiveData();
                         if (status != null) {
                             outValues.add(status);
                         }
+                    } else if (result.source == CANMessage.Addr.BMS1.getValue()) {
+                        /// BMS1
+
+                    } else if (result.source == CANMessage.Addr.BMS2.getValue()) {
+                        /// BMS1
                     }
 
                 } 

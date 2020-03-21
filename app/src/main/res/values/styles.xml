@@ -46,6 +46,22 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="StatsBMS" parent="@android:style/TextAppearance.Medium">
+        <item name="android:gravity">left</item>
+        <item name="layout_columnWeight">1</item>
+        <item name="android:textColor">#AAFFFFFF</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="StatsBMS.Title" parent="@style/Stats">
+        <item name="android:textColor">#CCFFFFFF</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:gravity">right</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="LinePageIndicatorStyle">
         <item name="android:padding">5dp</item>
     </style>

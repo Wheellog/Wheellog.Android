@@ -328,4 +328,39 @@
     <string name="watt">W</string>
 
 
+    <string name="bmsBattery1Title">Battery 1</string>
+    <string name="bmsBattery2Title">Battery 2</string>
+    <string name="bmsSn">S/N</string>
+    <string name="bmsFw">FW</string>
+    <string name="bmsFactoryCap">Factory capacity</string>
+    <string name="bmsActualCap">Actual capacity</string>
+    <string name="bmsCycles">Full cycles</string>
+    <string name="bmsChrgCount">Charge count</string>
+    <string name="bmsMfgDate">Mfg date</string>
+    <string name="bmsStatus">Status</string>
+    <string name="bmsRemCap">Remain capacity</string>
+    <string name="bmsRemPerc">%</string>
+    <string name="bmsCurrent">Current</string>
+    <string name="bmsVoltage">Voltage</string>
+    <string name="bmsTemp1">Temp 1</string>
+    <string name="bmsTemp2">Temp 2</string>
+    <string name="bmsHealth">Health</string>
+    <string name="bmsCell1">Cell 1</string>
+    <string name="bmsCell2">Cell 2</string>
+    <string name="bmsCell3">Cell 3</string>
+    <string name="bmsCell4">Cell 4</string>
+    <string name="bmsCell5">Cell 5</string>
+    <string name="bmsCell6">Cell 6</string>
+    <string name="bmsCell7">Cell 7</string>
+    <string name="bmsCell8">Cell 8</string>
+    <string name="bmsCell9">Cell 9</string>
+    <string name="bmsCell10">Cell 10</string>
+    <string name="bmsCell11">Cell 11</string>
+    <string name="bmsCell12">Cell 12</string>
+    <string name="bmsCell13">Cell 13</string>
+    <string name="bmsCell14">Cell 14</string>
+    <string name="bmsCell15">Cell 15</string>
+    <string name="bmsCell16">Cell 16</string>
+
+
 </resources>

@@ -787,7 +787,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ViewPageAdapter adapter = new ViewPageAdapter(this);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
-        pager.setOffscreenPageLimit(3);
+        pager.setOffscreenPageLimit(4);
 
         LinePageIndicator titleIndicator = (LinePageIndicator) findViewById(R.id.indicator);
         titleIndicator.setViewPager(pager);

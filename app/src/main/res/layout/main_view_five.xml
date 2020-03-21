@@ -1,0 +1,354 @@
+<LinearLayout android:id="@+id/page_two"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <androidx.gridlayout.widget.GridLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:columnCount="2"
+            android:animateLayoutChanges="true"
+            app:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvWaitText"
+                android:text="@string/waiting_for_wheel"
+                android:textSize="32sp"
+                app:layout_gravity="center_horizontal|center_vertical"
+                app:layout_columnSpan="2"/>
+
+            <TextView
+                android:id="@+id/tvTitleSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/speed"/>
+
+            <TextView
+                android:id="@+id/tvSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleTopSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/top_speed"/>
+
+            <TextView
+                android:id="@+id/tvTopSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleAverageSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/average_speed"/>
+
+            <TextView
+                android:id="@+id/tvAverageSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleAverageRidingSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/average_riding_speed"/>
+
+            <TextView
+                android:id="@+id/tvAverageRidingSpeed"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleBattery"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/battery"/>
+
+            <TextView
+                android:id="@+id/tvBattery"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleTemperature"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/temperature"/>
+
+            <TextView
+                android:id="@+id/tvTemperature"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleTemperature2"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/temperature2"/>
+
+            <TextView
+                android:id="@+id/tvTemperature2"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+			<TextView
+                android:id="@+id/tvTitleAngle"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/angle"/>
+
+            <TextView
+                android:id="@+id/tvAngle"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleRoll"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/roll"/>
+
+            <TextView
+                android:id="@+id/tvRoll"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+            <TextView
+                android:id="@+id/tvTitleRideTime"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/ride_time"/>
+
+            <TextView
+                android:id="@+id/tvRideTime"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+			<TextView
+                android:id="@+id/tvTitleRidingTime"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/riding_time"/>
+
+            <TextView
+                android:id="@+id/tvRidingTime"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/distance"/>
+
+            <TextView
+                android:id="@+id/tvDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+            <TextView
+                android:id="@+id/tvTitleWheelDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/wheel_distance"/>
+
+            <TextView
+                android:id="@+id/tvWheelDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+				
+            <TextView
+                android:id="@+id/tvTitleUserDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/user_distance"/>
+
+            <TextView
+                android:id="@+id/tvUserDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleTotalDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/total_distance"/>
+
+            <TextView
+                android:id="@+id/tvTotalDistance"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleVoltage"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/voltage"/>
+
+            <TextView
+                android:id="@+id/tvVoltage"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleVoltageSag"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/voltage_sag"/>
+
+            <TextView
+                android:id="@+id/tvVoltageSag"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleCurrent"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/current"/>
+
+            <TextView
+                android:id="@+id/tvCurrent"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitlePower"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/power"/>
+
+            <TextView
+                android:id="@+id/tvPower"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleFanStatus"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/fan_status"/>
+
+            <TextView
+                android:id="@+id/tvFanStatus"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleMode"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/mode"/>
+
+            <TextView
+                android:id="@+id/tvMode"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleName"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/name"/>
+
+            <TextView
+                android:id="@+id/tvName"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleModel"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/model"/>
+
+            <TextView
+                android:id="@+id/tvModel"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleVersion"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/version"/>
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats"/>
+
+            <TextView
+                android:id="@+id/tvTitleSerial"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/serial_number"/>
+
+            <TextView
+                android:id="@+id/tvSerial"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+        </androidx.gridlayout.widget.GridLayout>
+
+    </ScrollView>
+</LinearLayout>
