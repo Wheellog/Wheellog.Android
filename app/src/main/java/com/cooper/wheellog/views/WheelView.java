@@ -414,6 +414,8 @@ public class WheelView extends View {
             currentTemperature = targetTemperature;
 
             mBattery = 50;
+            mBatteryLowest = 30;
+            targetBatteryLowest = 10;
             targetBattery = Math.round(((float) 40 / 100) * mBattery);
             currentBattery = targetBattery;
         }
