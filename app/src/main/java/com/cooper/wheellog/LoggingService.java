@@ -67,7 +67,9 @@ public class LoggingService extends Service
                     }
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
-                    updateFile();
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS)) {
+                        updateFile();
+                    }
                     break;
             }
         }

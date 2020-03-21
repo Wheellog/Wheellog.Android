@@ -47,7 +47,74 @@ public class WheelData {
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
     private ArrayList<Float> speedAxis = new ArrayList<>();
+    // BMS1
+    private String bms1SerialNumber = "";
+    private String bms1VersionNumber = "";
+    private int bms1FactoryCap = 0;
+    private int bms1ActualCap = 0;
+    private int bms1FullCycles = 0;
+    private int bms1ChargeCount = 0;
+    private String bms1MfgDateStr = "";
+    private int bms1Status = 0;
+    private int bms1RemCap = 0;
+    private int bms1RemPerc = 0;
+    private int bms1Current = 0;
+    private int bms1Voltage = 0;
+    private int bms1Temp1 = 0;
+    private int bms1Temp2 = 0;
+    private int bms1BalanceMap = 0;
+    private int bms1Health = 0;
+    private int bms1Cell1 = 0;
+    private int bms1Cell2 = 0;
+    private int bms1Cell3 = 0;
+    private int bms1Cell4 = 0;
+    private int bms1Cell5 = 0;
+    private int bms1Cell6 = 0;
+    private int bms1Cell7 = 0;
+    private int bms1Cell8 = 0;
+    private int bms1Cell9 = 0;
+    private int bms1Cell10 = 0;
+    private int bms1Cell11 = 0;
+    private int bms1Cell12 = 0;
+    private int bms1Cell13 = 0;
+    private int bms1Cell14 = 0;
+    private int bms1Cell15 = 0;
+    private int bms1Cell16 = 0;
 
+    // BMS2
+    private String bms2SerialNumber = "";
+    private String bms2VersionNumber = "";
+    private int bms2FactoryCap = 0;
+    private int bms2ActualCap = 0;
+    private int bms2FullCycles = 0;
+    private int bms2ChargeCount = 0;
+    private String bms2MfgDateStr = "";
+    private int bms2Status = 0;
+    private int bms2RemCap = 0;
+    private int bms2RemPerc = 0;
+    private int bms2Current = 0;
+    private int bms2Voltage = 0;
+    private int bms2Temp1 = 0;
+    private int bms2Temp2 = 0;
+    private int bms2BalanceMap = 0;
+    private int bms2Health = 0;
+    private int bms2Cell1 = 0;
+    private int bms2Cell2 = 0;
+    private int bms2Cell3 = 0;
+    private int bms2Cell4 = 0;
+    private int bms2Cell5 = 0;
+    private int bms2Cell6 = 0;
+    private int bms2Cell7 = 0;
+    private int bms2Cell8 = 0;
+    private int bms2Cell9 = 0;
+    private int bms2Cell10 = 0;
+    private int bms2Cell11 = 0;
+    private int bms2Cell12 = 0;
+    private int bms2Cell13 = 0;
+    private int bms2Cell14 = 0;
+    private int bms2Cell15 = 0;
+    private int bms2Cell16 = 0;
+    //all
     private int mSpeed;
     private long mTotalDistance;
     private int mCurrent;
@@ -124,6 +191,8 @@ public class WheelData {
 	private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
 	private boolean mTemperatureAlarmExecuting = false;
+	private boolean mBmsView = false;
+    private boolean mDataForLog = true;
 
     private String protoVer = "";
 
@@ -845,6 +914,148 @@ public class WheelData {
         return mTotalDistance;
     }
 
+    public String getBms1SerialNumber() { return bms1SerialNumber;}
+    public String getBms1VersionNumber() { return bms1VersionNumber;}
+    public int getBms1FactoryCap() {return bms1FactoryCap;}
+    public int getBms1ActualCap() {return bms1ActualCap;}
+    public int getBms1FullCycles() {return bms1FullCycles;}
+    public int getBms1ChargeCount() {return bms1ChargeCount;}
+    public String getBms1MfgDateStr() {return bms1MfgDateStr;}
+    public int getBms1Status() {return bms1Status;}
+    public int getBms1RemCap() {return bms1RemCap;}
+    public int getBms1RemPerc() {return bms1RemPerc;}
+    public double getBms1Current() {return bms1Current/100.0;}
+    public double getBms1Voltage() {return bms1Voltage/100.0;}
+    public int getBms1Temp1() {return bms1Temp1;}
+    public int getBms1Temp2() {return bms1Temp2;}
+    public int getBms1BalanceMap() {return bms1BalanceMap;}
+    public int getBms1Health() {return bms1Health;}
+    public double getBms1Cell1() {return bms1Cell1/1000.0;}
+    public double getBms1Cell2() {return bms1Cell2/1000.0;}
+    public double getBms1Cell3() {return bms1Cell3/1000.0;}
+    public double getBms1Cell4() {return bms1Cell4/1000.0;}
+    public double getBms1Cell5() {return bms1Cell5/1000.0;}
+    public double getBms1Cell6() {return bms1Cell6/1000.0;}
+    public double getBms1Cell7() {return bms1Cell7/1000.0;}
+    public double getBms1Cell8() {return bms1Cell8/1000.0;}
+    public double getBms1Cell9() {return bms1Cell9/1000.0;}
+    public double getBms1Cell10() {return bms1Cell10/1000.0;}
+    public double getBms1Cell11() {return bms1Cell11/1000.0;}
+    public double getBms1Cell12() {return bms1Cell12/1000.0;}
+    public double getBms1Cell13() {return bms1Cell13/1000.0;}
+    public double getBms1Cell14() {return bms1Cell14/1000.0;}
+    public double getBms1Cell15() {return bms1Cell15/1000.0;}
+    public double getBms1Cell16() {return bms1Cell16/1000.0;}
+    public String getbms2SerialNumber() { return bms2SerialNumber;}
+    public String getbms2VersionNumber() { return bms2VersionNumber;}
+    public int getbms2FactoryCap() {return bms2FactoryCap;}
+    public int getbms2ActualCap() {return bms2ActualCap;}
+    public int getbms2FullCycles() {return bms2FullCycles;}
+    public int getbms2ChargeCount() {return bms2ChargeCount;}
+    public String getbms2MfgDateStr() {return bms2MfgDateStr;}
+    public int getbms2Status() {return bms2Status;}
+    public int getbms2RemCap() {return bms2RemCap;}
+    public int getbms2RemPerc() {return bms2RemPerc;}
+    public double getbms2Current() {return bms2Current/100.0;}
+    public double getbms2Voltage() {return bms2Voltage/100.0;}
+    public int getbms2Temp1() {return bms2Temp1;}
+    public int getbms2Temp2() {return bms2Temp2;}
+    public int getbms2BalanceMap() {return bms2BalanceMap;}
+    public int getbms2Health() {return bms2Health;}
+    public double getbms2Cell1() {return bms2Cell1/1000.0;}
+    public double getbms2Cell2() {return bms2Cell2/1000.0;}
+    public double getbms2Cell3() {return bms2Cell3/1000.0;}
+    public double getbms2Cell4() {return bms2Cell4/1000.0;}
+    public double getbms2Cell5() {return bms2Cell5/1000.0;}
+    public double getbms2Cell6() {return bms2Cell6/1000.0;}
+    public double getbms2Cell7() {return bms2Cell7/1000.0;}
+    public double getbms2Cell8() {return bms2Cell8/1000.0;}
+    public double getbms2Cell9() {return bms2Cell9/1000.0;}
+    public double getbms2Cell10() {return bms2Cell10/1000.0;}
+    public double getbms2Cell11() {return bms2Cell11/1000.0;}
+    public double getbms2Cell12() {return bms2Cell12/1000.0;}
+    public double getbms2Cell13() {return bms2Cell13/1000.0;}
+    public double getbms2Cell14() {return bms2Cell14/1000.0;}
+    public double getbms2Cell15() {return bms2Cell15/1000.0;}
+    public double getbms2Cell16() {return bms2Cell16/1000.0;}
+
+
+
+    public void setBmsView(boolean bmsView){
+        if (mBmsView != bmsView) resetBmsData();
+        mBmsView = bmsView;
+    }
+
+    public void resetBmsData() {
+        // BMS1
+        bms1SerialNumber = "";
+        bms1VersionNumber = "";
+        bms1FactoryCap = 0;
+        bms1ActualCap = 0;
+        bms1FullCycles = 0;
+        bms1ChargeCount = 0;
+        bms1MfgDateStr = "";
+        bms1Status = 0;
+        bms1RemCap = 0;
+        bms1RemPerc = 0;
+        bms1Current = 0;
+        bms1Voltage = 0;
+        bms1Temp1 = 0;
+        bms1Temp2 = 0;
+        bms1BalanceMap = 0;
+        bms1Health = 0;
+        bms1Cell1 = 0;
+        bms1Cell2 = 0;
+        bms1Cell3 = 0;
+        bms1Cell4 = 0;
+        bms1Cell5 = 0;
+        bms1Cell6 = 0;
+        bms1Cell7 = 0;
+        bms1Cell8 = 0;
+        bms1Cell9 = 0;
+        bms1Cell10 = 0;
+        bms1Cell11 = 0;
+        bms1Cell12 = 0;
+        bms1Cell13 = 0;
+        bms1Cell14 = 0;
+        bms1Cell15 = 0;
+        bms1Cell16 = 0;
+
+        // BMS2
+        bms2SerialNumber = "";
+        bms2VersionNumber = "";
+        bms2FactoryCap = 0;
+        bms2ActualCap = 0;
+        bms2FullCycles = 0;
+        bms2ChargeCount = 0;
+        bms2MfgDateStr = "";
+        bms2Status = 0;
+        bms2RemCap = 0;
+        bms2RemPerc = 0;
+        bms2Current = 0;
+        bms2Voltage = 0;
+        bms2Temp1 = 0;
+        bms2Temp2 = 0;
+        bms2BalanceMap = 0;
+        bms2Health = 0;
+        bms2Cell1 = 0;
+        bms2Cell2 = 0;
+        bms2Cell3 = 0;
+        bms2Cell4 = 0;
+        bms2Cell5 = 0;
+        bms2Cell6 = 0;
+        bms2Cell7 = 0;
+        bms2Cell8 = 0;
+        bms2Cell9 = 0;
+        bms2Cell10 = 0;
+        bms2Cell11 = 0;
+        bms2Cell12 = 0;
+        bms2Cell13 = 0;
+        bms2Cell14 = 0;
+        bms2Cell15 = 0;
+        bms2Cell16 = 0;
+    }
+
     ArrayList<String> getXAxis() {
         return xAxis;
     }
@@ -1134,7 +1345,7 @@ public class WheelData {
     }
 
     void decodeResponse(byte[] data, Context mContext) {
-
+        mDataForLog = true;
         StringBuilder stringBuilder = new StringBuilder(data.length);
         for (byte aData : data)
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
@@ -1162,7 +1373,10 @@ public class WheelData {
         if (!new_data)
 			return;
 
-		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);       
+		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+		if (mDataForLog) {
+		    intent.putExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS, true);
+        }
 		
 		if (mNewWheelSettings) {
 			intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS, true);
@@ -1413,6 +1627,7 @@ public class WheelData {
     }
 
     private boolean decodeNinebotZ(byte[] data) {
+        NinebotZAdapter.getInstance().setBmsReadingMode(mBmsView);
         ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
         if (rideStartTime == 0) {
@@ -1424,9 +1639,92 @@ public class WheelData {
             if (status instanceof NinebotZAdapter.serialNumberStatus) {
                 mSerialNumber = ((NinebotZAdapter.serialNumberStatus) status).getSerialNumber();
                 mModel = "Ninebot Z";
+                mDataForLog = false;
             } else if (status instanceof NinebotZAdapter.versionStatus){
                 mVersion = ((NinebotZAdapter.versionStatus) status).getVersion();
+                mDataForLog = false;
+            } else if (status instanceof NinebotZAdapter.bmsStatusSn) {
+                mDataForLog = false;
+                if (((NinebotZAdapter.bmsStatusSn) status).getBmsNumber() == 1) {
+                    bms1SerialNumber = ((NinebotZAdapter.bmsStatusSn) status).getSerialNumber();
+                    bms1VersionNumber = ((NinebotZAdapter.bmsStatusSn) status).getVersionNumber();
+                    bms1FactoryCap = ((NinebotZAdapter.bmsStatusSn) status).getFactoryCap();
+                    bms1ActualCap = ((NinebotZAdapter.bmsStatusSn) status).getActualCap();
+                    bms1FullCycles = ((NinebotZAdapter.bmsStatusSn) status).getFullCycles();
+                    bms1ChargeCount = ((NinebotZAdapter.bmsStatusSn) status).getChargeCount();
+                    bms1MfgDateStr = ((NinebotZAdapter.bmsStatusSn) status).getMfgDateStr();
+                } else {
+                    bms2SerialNumber = ((NinebotZAdapter.bmsStatusSn) status).getSerialNumber();
+                    bms2VersionNumber = ((NinebotZAdapter.bmsStatusSn) status).getVersionNumber();
+                    bms2FactoryCap = ((NinebotZAdapter.bmsStatusSn) status).getFactoryCap();
+                    bms2ActualCap = ((NinebotZAdapter.bmsStatusSn) status).getActualCap();
+                    bms2FullCycles = ((NinebotZAdapter.bmsStatusSn) status).getFullCycles();
+                    bms2ChargeCount = ((NinebotZAdapter.bmsStatusSn) status).getChargeCount();
+                    bms2MfgDateStr = ((NinebotZAdapter.bmsStatusSn) status).getMfgDateStr();
+                }
+
+            } else if (status instanceof NinebotZAdapter.bmsStatusLife) {
+                mDataForLog = false;
+                if (((NinebotZAdapter.bmsStatusLife) status).getBmsNumber() == 1) {
+                    bms1Status = ((NinebotZAdapter.bmsStatusLife) status).getBmsStatus();
+                    bms1RemCap = ((NinebotZAdapter.bmsStatusLife) status).getRemCap();
+                    bms1RemPerc = ((NinebotZAdapter.bmsStatusLife) status).getRemPerc();
+                    bms1Current = ((NinebotZAdapter.bmsStatusLife) status).getBmsCurrent();
+                    bms1Voltage = ((NinebotZAdapter.bmsStatusLife) status).getBmsVoltage();
+                    bms1Temp1 = ((NinebotZAdapter.bmsStatusLife) status).getBmsTemp1();
+                    bms1Temp2 = ((NinebotZAdapter.bmsStatusLife) status).getBmsTemp2();
+                    bms1BalanceMap = ((NinebotZAdapter.bmsStatusLife) status).getBalanceMap();
+                    bms1Health = ((NinebotZAdapter.bmsStatusLife) status).getHealth();
+                } else {
+                    bms2Status = ((NinebotZAdapter.bmsStatusLife) status).getBmsStatus();
+                    bms2RemCap = ((NinebotZAdapter.bmsStatusLife) status).getRemCap();
+                    bms2RemPerc = ((NinebotZAdapter.bmsStatusLife) status).getRemPerc();
+                    bms2Current = ((NinebotZAdapter.bmsStatusLife) status).getBmsCurrent();
+                    bms2Voltage = ((NinebotZAdapter.bmsStatusLife) status).getBmsVoltage();
+                    bms2Temp1 = ((NinebotZAdapter.bmsStatusLife) status).getBmsTemp1();
+                    bms2Temp2 = ((NinebotZAdapter.bmsStatusLife) status).getBmsTemp2();
+                    bms2BalanceMap = ((NinebotZAdapter.bmsStatusLife) status).getBalanceMap();
+                    bms2Health = ((NinebotZAdapter.bmsStatusLife) status).getHealth();
+                }
+            } else if (status instanceof NinebotZAdapter.bmsStatusCells) {
+                mDataForLog = false;
+                if (((NinebotZAdapter.bmsStatusCells) status).getBmsNumber() == 1) {
+                    bms1Cell1 = ((NinebotZAdapter.bmsStatusCells) status).getCell1();
+                    bms1Cell2 = ((NinebotZAdapter.bmsStatusCells) status).getCell2();
+                    bms1Cell3 = ((NinebotZAdapter.bmsStatusCells) status).getCell3();
+                    bms1Cell4 = ((NinebotZAdapter.bmsStatusCells) status).getCell4();
+                    bms1Cell5 = ((NinebotZAdapter.bmsStatusCells) status).getCell5();
+                    bms1Cell6 = ((NinebotZAdapter.bmsStatusCells) status).getCell6();
+                    bms1Cell7 = ((NinebotZAdapter.bmsStatusCells) status).getCell7();
+                    bms1Cell8 = ((NinebotZAdapter.bmsStatusCells) status).getCell8();
+                    bms1Cell9 = ((NinebotZAdapter.bmsStatusCells) status).getCell9();
+                    bms1Cell10 = ((NinebotZAdapter.bmsStatusCells) status).getCell10();
+                    bms1Cell11 = ((NinebotZAdapter.bmsStatusCells) status).getCell11();
+                    bms1Cell12 = ((NinebotZAdapter.bmsStatusCells) status).getCell12();
+                    bms1Cell13 = ((NinebotZAdapter.bmsStatusCells) status).getCell13();
+                    bms1Cell14 = ((NinebotZAdapter.bmsStatusCells) status).getCell14();
+                    bms1Cell15 = ((NinebotZAdapter.bmsStatusCells) status).getCell15();
+                    bms1Cell16 = ((NinebotZAdapter.bmsStatusCells) status).getCell16();
+                } else {
+                    bms2Cell1 = ((NinebotZAdapter.bmsStatusCells) status).getCell1();
+                    bms2Cell2 = ((NinebotZAdapter.bmsStatusCells) status).getCell2();
+                    bms2Cell3 = ((NinebotZAdapter.bmsStatusCells) status).getCell3();
+                    bms2Cell4 = ((NinebotZAdapter.bmsStatusCells) status).getCell4();
+                    bms2Cell5 = ((NinebotZAdapter.bmsStatusCells) status).getCell5();
+                    bms2Cell6 = ((NinebotZAdapter.bmsStatusCells) status).getCell6();
+                    bms2Cell7 = ((NinebotZAdapter.bmsStatusCells) status).getCell7();
+                    bms2Cell8 = ((NinebotZAdapter.bmsStatusCells) status).getCell8();
+                    bms2Cell9 = ((NinebotZAdapter.bmsStatusCells) status).getCell9();
+                    bms2Cell10 = ((NinebotZAdapter.bmsStatusCells) status).getCell10();
+                    bms2Cell11 = ((NinebotZAdapter.bmsStatusCells) status).getCell11();
+                    bms2Cell12 = ((NinebotZAdapter.bmsStatusCells) status).getCell12();
+                    bms2Cell13 = ((NinebotZAdapter.bmsStatusCells) status).getCell13();
+                    bms2Cell14 = ((NinebotZAdapter.bmsStatusCells) status).getCell14();
+                    bms2Cell15 = ((NinebotZAdapter.bmsStatusCells) status).getCell15();
+                    bms2Cell16 = ((NinebotZAdapter.bmsStatusCells) status).getCell16();
+                }
             } else {
+                mDataForLog = true;
                 mSpeed = (int) (status.getSpeed());
                 mVoltage = (int) (status.getVoltage());
                 mBattery = (int) (status.getBatt());
@@ -1554,6 +1852,7 @@ public class WheelData {
         speedAxis.clear();
         currentAxis.clear();
         reset();
+        resetBmsData();
     }
 
     void reset() {

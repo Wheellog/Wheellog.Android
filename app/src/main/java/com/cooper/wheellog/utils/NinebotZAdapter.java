@@ -20,6 +20,7 @@ public class NinebotZAdapter {
 	private byte[] settingCommand;
 	private static byte[] gamma = new byte[16];
     private static int stateCon = 0;
+    private static boolean bmsMode = false;
 
 
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
@@ -32,6 +33,7 @@ public class NinebotZAdapter {
             @Override
             public void run() {
                 if (updateStep == 0) {
+                    Timber.i("State connection %d", stateCon) ;
                     if (stateCon == 0) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.startCommunication().writeBuffer())) {
                             //stateCon +=1;
@@ -56,14 +58,44 @@ public class NinebotZAdapter {
                             Timber.i("Sent serial version message");
                         } else updateStep = 39;
 
+                    } else if (stateCon == 4) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getBms1Sn().writeBuffer())) {
+                            //stateCon +=1;
+                            Timber.i("Sent BMS1 SN message");
+                        } else updateStep = 39;
+                    } else if (stateCon == 5) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getBms1Life().writeBuffer())) {
+                            //stateCon +=1;
+                            Timber.i("Sent BMS1 life message");
+                        } else updateStep = 39;
+                    } else if (stateCon == 6) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getBms1Cells().writeBuffer())) {
+                            //stateCon +=1;
+                            Timber.i("Sent BMS1 cells message");
+                        } else updateStep = 39;
+                    } else if (stateCon == 7) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getBms2Sn().writeBuffer())) {
+                            //stateCon +=1;
+                            Timber.i("Sent BMS2 SN message");
+                        } else updateStep = 39;
+                    } else if (stateCon == 8) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getBms2Life().writeBuffer())) {
+                            //stateCon +=1;
+                            Timber.i("Sent BMS2 life message");
+                        } else updateStep = 39;
+                    } else if (stateCon == 9) {
+                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getBms2Cells().writeBuffer())) {
+                            //stateCon +=1;
+                            Timber.i("Sent BMS2 cells message");
+                        } else updateStep = 39;
+
                     } else if (settingCommandReady) {
     					if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
                             //needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
                         } else updateStep = 39; // after +1 and %10 = 0
-    				}
-    				else {
+    				} else {
                         if (!mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotZAdapter.CANMessage.getLiveData().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
                             updateStep = 39;
@@ -74,6 +106,20 @@ public class NinebotZAdapter {
 
 				}
                 updateStep += 1;
+
+                if ((updateStep == 5) && (stateCon > 3) && (stateCon < 10)) {
+                    Timber.i("Change state to %d 1", stateCon);
+                    stateCon += 1;
+                    if (stateCon > 9) stateCon = 4;
+                }
+                if (bmsMode && (stateCon == 10)) {
+                    Timber.i("Change state to %d 2", stateCon);
+                    stateCon = 4;
+                }
+                if (!bmsMode && (stateCon > 3) && (stateCon < 10)) {
+                    Timber.i("Change state to %d 3", stateCon);
+                    stateCon = 10;
+                }
                 updateStep %= 5;
                 Timber.i("Step: %d", updateStep);
             }
@@ -91,7 +137,20 @@ public class NinebotZAdapter {
         stopTimer();
 	}
 	
+    public void setBmsReadingMode(boolean mode) {
+        bmsMode = mode;
+        /*
+        if (mode && (stateCon == 10)) {
+            stateCon = 4;
+            Timber.i("Set con from wheeldata 4");
+        } // else stateCon = 10;
+        if (!mode && (stateCon > 3) && (stateCon < 10)) {
+            Timber.i("Set con from wheeldata 10");
+            stateCon = 10;
+        }
 
+         */
+    }
 
 
 
@@ -200,6 +259,267 @@ public class NinebotZAdapter {
 
                     '}';
         }
+    }
+
+    public static class bmsStatusSn extends Status {
+        private final int bmsNum;
+        private final String serialNumber;
+        private final String versionNumber;
+        private final int factoryCap;
+        private final int actualCap;
+        private final int fullCycles;
+        private final int chargeCount;
+        private final String mfgDateStr;
+
+        bmsStatusSn(int bmsNum, String serialNumber, String versionNumber, int factoryCap, int actualCap, int fullCycles, int chargeCount, String mfgDateStr) {
+            super();
+            this.bmsNum = bmsNum;
+            this.serialNumber = serialNumber;
+            this.versionNumber = versionNumber;
+            this.factoryCap = factoryCap;
+            this.actualCap = actualCap;
+            this.fullCycles = fullCycles;
+            this.chargeCount = chargeCount;
+            this.mfgDateStr = mfgDateStr;
+        }
+        public int getBmsNumber() {
+            return bmsNum;
+        }
+        public String getSerialNumber() {
+            return serialNumber;
+        }
+        public String getVersionNumber() {
+            return versionNumber;
+        }
+        public int getFactoryCap() {
+            return factoryCap;
+        }
+        public int getActualCap() {
+            return actualCap;
+        }
+        public int getFullCycles() {
+            return fullCycles;
+        }
+        public int getChargeCount() {
+            return chargeCount;
+        }
+        public String getMfgDateStr() {
+            return mfgDateStr;
+        }
+
+        @Override
+        public String toString() {
+            return "BMS{" +
+                    "bmsNum=" + bmsNum +
+                    ", serialNumber='" + serialNumber + '\'' +
+                    ", versionNumber='" + versionNumber + '\'' +
+                    ", factoryCap=" + factoryCap +
+                    ", actualCap=" + actualCap +
+                    ", fullCycles=" + fullCycles +
+                    ", chargeCount=" + chargeCount +
+                    ", mfgDateStr='" + mfgDateStr + '\'' +
+                    '}';
+        }
+
+    }
+
+    public static class bmsStatusLife extends Status {
+        private final int bmsNum;
+        private final int bmsStatus;
+        private final int remCap;
+        private final int remPerc;
+        private final int bmsCurrent;
+        private final int bmsVoltage;
+        private final int bmsTemp1;
+        private final int bmsTemp2;
+        private final int balanceMap;
+        private final int health;
+
+        bmsStatusLife(int bmsNum, int bmsStatus, int remCap, int remPerc, int bmsCurrent, int bmsVoltage, int bmsTemp1, int bmsTemp2, int balanceMap, int health) {
+            super();
+            this.bmsNum = bmsNum;
+            this.bmsStatus = bmsStatus;
+            this.remCap = remCap;
+            this.remPerc = remPerc;
+            this.bmsCurrent = bmsCurrent;
+            this.bmsVoltage = bmsVoltage;
+            this.bmsTemp1 = bmsTemp1;
+            this.bmsTemp2 = bmsTemp2;
+            this.balanceMap = balanceMap;
+            this.health = health;
+
+        }
+        public int getBmsNumber() {
+            return bmsNum;
+        }
+        public int getBmsStatus() {
+            return bmsStatus;
+        }
+        public int getRemCap() {
+            return remCap;
+        }
+        public int getRemPerc() {
+            return remPerc;
+        }
+        public int getBmsCurrent() {
+            return bmsCurrent;
+        }
+        public int getBmsVoltage() {
+            return bmsVoltage;
+        }
+        public int getBmsTemp1() {
+            return bmsTemp1;
+        }
+        public int getBmsTemp2() {
+            return bmsTemp2;
+        }
+        public int getBalanceMap() {
+            return balanceMap;
+        }
+        public int getHealth() {
+            return health;
+        }
+
+
+        @Override
+        public String toString() {
+            return "BMS{" +
+                    "bmsNum=" + bmsNum +
+                    ", bmsStatus=" + bmsStatus +
+                    ", remCap=" + remCap +
+                    ", remPerc=" + remPerc +
+                    ", bmsCurrent=" + bmsCurrent +
+                    ", bmsVoltage=" + bmsVoltage +
+                    ", bmsTem1=" + bmsTemp1 +
+                    ", bmsTemp2=" + bmsTemp2 +
+                    ", balanceMap=" + balanceMap +
+                    ", health=" + health +
+
+
+                    '}';
+        }
+
+    }
+
+    public static class bmsStatusCells extends Status {
+        private final int bmsNum;
+        private final int cell1;
+        private final int cell2;
+        private final int cell3;
+        private final int cell4;
+        private final int cell5;
+        private final int cell6;
+        private final int cell7;
+        private final int cell8;
+        private final int cell9;
+        private final int cell10;
+        private final int cell11;
+        private final int cell12;
+        private final int cell13;
+        private final int cell14;
+        private final int cell15;
+        private final int cell16;
+
+        bmsStatusCells(int bmsNum, int cell1, int cell2, int cell3, int cell4, int cell5, int cell6,
+                      int cell7, int cell8, int cell9, int cell10, int cell11, int cell12, int cell13,
+                      int cell14, int cell15, int cell16) {
+            super();
+            this.bmsNum = bmsNum;
+            this.cell1 = cell1;
+            this.cell2 = cell2;
+            this.cell3 = cell3;
+            this.cell4 = cell4;
+            this.cell5 = cell5;
+            this.cell6 = cell6;
+            this.cell7 = cell7;
+            this.cell8 = cell8;
+            this.cell9 = cell9;
+            this.cell10 = cell10;
+            this.cell11 = cell11;
+            this.cell12 = cell12;
+            this.cell13 = cell13;
+            this.cell14 = cell14;
+            this.cell15 = cell15;
+            this.cell16 = cell16;
+
+        }
+        public int getBmsNumber() {
+            return bmsNum;
+        }
+        public int getCell1() {
+            return cell1;
+        }
+        public int getCell2() {
+            return cell2;
+        }
+        public int getCell3() {
+            return cell3;
+        }
+        public int getCell4() {
+            return cell4;
+        }
+        public int getCell5() {
+            return cell5;
+        }
+        public int getCell6() {
+            return cell6;
+        }
+        public int getCell7() {
+            return cell7;
+        }
+        public int getCell8() {
+            return cell8;
+        }
+        public int getCell9() {
+            return cell9;
+        }
+        public int getCell10() {
+            return cell10;
+        }
+        public int getCell11() {
+            return cell11;
+        }
+        public int getCell12() {
+            return cell12;
+        }
+        public int getCell13() {
+            return cell13;
+        }
+        public int getCell14() {
+            return cell14;
+        }
+        public int getCell15() {
+            return cell15;
+        }
+        public int getCell16() {
+            return cell16;
+        }
+
+
+        @Override
+        public String toString() {
+            return "BMS{" +
+                    "bmsNum=" + bmsNum +
+                    ", cell1=" + cell1 +
+                    ", cell2=" + cell2 +
+                    ", cell3=" + cell3 +
+                    ", cell4=" + cell4 +
+                    ", cell5=" + cell5 +
+                    ", cell6=" + cell6 +
+                    ", cell7=" + cell7 +
+                    ", cell8=" + cell8 +
+                    ", cell9=" + cell9 +
+                    ", cell10=" + cell10 +
+                    ", cell11=" + cell11 +
+                    ", cell12=" + cell12+
+                    ", cell13=" + cell13 +
+                    ", cell14=" + cell14 +
+                    ", cell15=" + cell15 +
+                    ", cell16=" + cell16 +
+
+                    '}';
+        }
+
     }
 
     public static class versionStatus extends Status {
@@ -532,25 +852,73 @@ public class NinebotZAdapter {
             return msg;
         }
 
-        public static CANMessage getDumpBMS1(int b) {
+        public static CANMessage getBms1Sn() {
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.BMS1.getValue();
             msg.command = Comm.Read.getValue();
-            msg.parameter = b & 0xFF;
-            msg.data = new byte[]{0x10};
+            msg.parameter = 0x10; //
+            msg.data = new byte[]{0x22};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
         }
 
-        public static CANMessage getDumpBMS2(int b) {
+        public static CANMessage getBms1Life() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.BMS1.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = 0x30; //
+            msg.data = new byte[]{0x18};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getBms1Cells() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.BMS1.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = 0x40; //
+            msg.data = new byte[]{0x20};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getBms2Sn() {
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.BMS2.getValue();
             msg.command = Comm.Read.getValue();
-            msg.parameter = b & 0xFF;
-            msg.data = new byte[]{0x10};
+            msg.parameter = 0x10; //
+            msg.data = new byte[]{0x22};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getBms2Life() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.BMS2.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = 0x30; //
+            msg.data = new byte[]{0x18};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getBms2Cells() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.BMS2.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = 0x40; //
+            msg.data = new byte[]{0x20};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -578,9 +946,12 @@ public class NinebotZAdapter {
 
         versionStatus parseVersionNumber() {
             String versionNumber = "";
-            for (int j = 0; j < data.length; j++) {
-                versionNumber += String.format("%02X", data[j]);
-            }
+            versionNumber += String.format("%X.",(data[1]&0x0f));
+            versionNumber += String.format("%1X.", (data[0]>>4)&0x0f );
+            versionNumber += String.format("%1X", (data[0])&0x0f );
+ //           for (int j = 0; j < data.length; j++) {
+ //               versionNumber += String.format("%02X", data[j]);
+ //           }
             return new versionStatus(versionNumber);
         }
 
@@ -606,6 +977,63 @@ public class NinebotZAdapter {
 
            return new Status(speed, voltage, batt, current, power, distance, temperature);
         }
+
+        bmsStatusSn parseBmsSn(int bmsnum) {
+            String serialNumber = new String(data,0,14);
+            String versionNumber = "";
+            versionNumber += String.format("%X.",(data[15]));
+            versionNumber += String.format("%1X.", (data[14]>>4)&0x0f );
+            versionNumber += String.format("%1X", (data[14])&0x0f );
+//            for (int j = 14; j < 16; j++) {
+//                versionNumber += String.format("%02X", data[j]);
+//            }
+            int factoryCap = this.shortFromBytes(data, 16);
+            int actualCap = this.shortFromBytes(data, 18);
+            int fullCycles = this.shortFromBytes(data, 22);
+            int chargeCount = this.shortFromBytes(data, 24);
+            int mfgDate = this.shortFromBytes(data, 32);
+            int year = mfgDate>>9;
+            int mounth = (mfgDate>>5) & 0x0f;
+            int day = mfgDate & 0x1f;
+            String mfgDateStr = String.format("%02d.%02d.20%02d", day, mounth,year);
+
+            return new bmsStatusSn(bmsnum, serialNumber, versionNumber, factoryCap, actualCap, fullCycles, chargeCount, mfgDateStr);
+        }
+
+        bmsStatusLife parseBmsLife(int bmsnum) {
+            int bmsStatus = this.shortFromBytes(data, 0);
+            int remCap = this.shortFromBytes(data, 2);
+            int remPerc = this.shortFromBytes(data, 4);
+            int current = this.signedShortFromBytes(data, 6);
+            int voltage = this.shortFromBytes(data, 8);
+            int temp1 = data[10]-20;
+            int temp2 = data[11]-20;
+            int balanceMap = this.shortFromBytes(data, 12);
+            int health = this.shortFromBytes(data, 22);
+
+            return new bmsStatusLife(bmsnum, bmsStatus, remCap, remPerc, current, voltage, temp1, temp2, balanceMap, health);
+        }
+
+        bmsStatusCells parseBmsCells(int bmsnum) {
+            int cell1 = this.shortFromBytes(data, 0);
+            int cell2 = this.shortFromBytes(data, 2);
+            int cell3 = this.shortFromBytes(data, 4);
+            int cell4 = this.shortFromBytes(data, 6);
+            int cell5 = this.shortFromBytes(data, 8);
+            int cell6 = this.shortFromBytes(data, 10);
+            int cell7 = this.shortFromBytes(data, 12);
+            int cell8 = this.shortFromBytes(data, 14);
+            int cell9 = this.shortFromBytes(data, 16);
+            int cell10 = this.shortFromBytes(data, 18);
+            int cell11 = this.shortFromBytes(data, 20);
+            int cell12 = this.shortFromBytes(data, 22);
+            int cell13 = this.shortFromBytes(data, 24);
+            int cell14 = this.shortFromBytes(data, 26);
+            int cell15 = this.shortFromBytes(data, 28);
+            int cell16 = this.shortFromBytes(data, 30);
+            return new bmsStatusCells(bmsnum, cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10, cell11, cell12, cell13, cell14, cell15, cell16);
+        }
+
 
         public byte[] getData() {
             return data;
@@ -647,7 +1075,7 @@ public class NinebotZAdapter {
 						Timber.i("Get start answer");
 						stateCon = 1;
 						
-					} else if ((result.parameter == CANMessage.Param.GetKey.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())){
+					} else if ((result.parameter == CANMessage.Param.GetKey.getValue()) && (result.source == CANMessage.Addr.KeyGenerator.getValue())){
                         Timber.i("Get encryption key");
                         gamma = result.parseKey();
                         stateCon = 2;
@@ -666,7 +1094,7 @@ public class NinebotZAdapter {
                     } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())){
                         Timber.i("Get version number");
                         versionStatus infos = result.parseVersionNumber();
-                        stateCon = 4;
+                        stateCon = 10;
                         //Alert alert = result.parseAlertInfoMessage();
                         if (infos != null)
                             outValues.add(infos);
@@ -679,9 +1107,53 @@ public class NinebotZAdapter {
                         }
                     } else if (result.source == CANMessage.Addr.BMS1.getValue()) {
                         /// BMS1
+                        Timber.i("Get info from BMS1");
+                        if (result.parameter == 0x10) {
+                            bmsStatusSn status = result.parseBmsSn(1);
+                            if (status != null) {
+                                outValues.add(status);
+                            }
+                            stateCon = 5;
+                        }
+                        if (result.parameter == 0x30) {
+                            bmsStatusLife status = result.parseBmsLife(1);
+                            if (status != null) {
+                                outValues.add(status);
+                            }
+                            stateCon = 6;
+                        }
+                        if (result.parameter == 0x40) {
+                            bmsStatusCells status = result.parseBmsCells(1);
+                            if (status != null) {
+                                outValues.add(status);
+                            }
+                            stateCon = 7;
+                        }
 
                     } else if (result.source == CANMessage.Addr.BMS2.getValue()) {
-                        /// BMS1
+                        /// BMS2
+                        Timber.i("Get info from BMS2");
+                        if (result.parameter == 0x10) {
+                            bmsStatusSn status = result.parseBmsSn(2);
+                            if (status != null) {
+                                outValues.add(status);
+                            }
+                            stateCon = 8;
+                        }
+                        if (result.parameter == 0x30) {
+                            bmsStatusLife status = result.parseBmsLife(2);
+                            if (status != null) {
+                                outValues.add(status);
+                            }
+                            stateCon = 9;
+                        }
+                        if (result.parameter == 0x40) {
+                            bmsStatusCells status = result.parseBmsCells(2);
+                            if (status != null) {
+                                outValues.add(status);
+                            }
+                            stateCon = 4;
+                        }
                     }
 
                 } 

@@ -19,6 +19,7 @@
             <TextView
                 android:id="@+id/tvBmsWaitText"
                 android:text="@string/waiting_for_wheel"
+                android:visibility="gone"
                 android:textSize="32sp"
                 app:layout_gravity="center_horizontal|center_vertical"
                 app:layout_columnSpan="4"/>
@@ -27,6 +28,7 @@
                 android:id="@+id/tvTitleBmsBattery1"
                 android:visibility="visible"
                 android:layout_width="0sp"
+                android:textSize="20sp"
                 style="@style/StatsBMS.Title"
                 app:layout_columnSpan="2"
                 android:text="@string/bmsBattery1Title"/>
@@ -35,7 +37,7 @@
                 android:id="@+id/tvTitleBmsBattery2"
                 android:visibility="visible"
                 android:layout_width="0sp"
-
+                android:textSize="20sp"
                 style="@style/StatsBMS.Title"
                 app:layout_columnSpan="2"
                 android:text="@string/bmsBattery2Title"/>
@@ -796,53 +798,53 @@
 
             <TextView
                 android:id="@+id/tvTitleBms1Cell15"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell15"/>
 
             <TextView
                 android:id="@+id/tvBms1Cell15"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
             <TextView
                 android:id="@+id/tvTitleBms2Cell15"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell15"/>
 
             <TextView
                 android:id="@+id/tvBms2Cell15"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
             <TextView
                 android:id="@+id/tvTitleBms1Cell16"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell16"/>
 
             <TextView
                 android:id="@+id/tvBms1Cell16"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
             <TextView
                 android:id="@+id/tvTitleBms2Cell16"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell16"/>
 
             <TextView
                 android:id="@+id/tvBms2Cell16"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 

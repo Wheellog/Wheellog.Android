@@ -18,7 +18,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 28
         versionCode 63
-        versionName "2.0.43b"
+        versionName "2.0.43n"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
         vectorDrawables.useSupportLibrary = true
     }

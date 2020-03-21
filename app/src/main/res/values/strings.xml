@@ -339,7 +339,7 @@
     <string name="bmsMfgDate">Mfg date</string>
     <string name="bmsStatus">Status</string>
     <string name="bmsRemCap">Remain capacity</string>
-    <string name="bmsRemPerc">%</string>
+    <string name="bmsRemPerc">Percent</string>
     <string name="bmsCurrent">Current</string>
     <string name="bmsVoltage">Voltage</string>
     <string name="bmsTemp1">Temp 1</string>
