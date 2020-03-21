@@ -1,92 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
-	<ListPreference
-        android:key="@string/light_mode"
-        android:title="@string/light_mode_title"
+    <ListPreference
         android:defaultValue="0"
-		android:enabled="true"
+        android:enabled="true"
         android:entries="@array/light_mode_ks"
         android:entryValues="@array/light_mode_values"
-        android:summary="@string/on_off_auto" />
+        android:key="@string/light_mode"
+        android:summary="@string/on_off_auto"
+        android:title="@string/light_mode_title" />
 
-	<ListPreference
-        android:key="@string/strobe_mode"
-        android:title="@string/strobe_mode_title"
-		android:enabled="true"
+    <ListPreference
         android:defaultValue="0"
+        android:enabled="true"
         android:entries="@array/strobe_mode_ks"
         android:entryValues="@array/strobe_mode_values"
-        android:summary="@string/on_off" />
+        android:key="@string/strobe_mode"
+        android:summary="@string/on_off"
+        android:title="@string/strobe_mode_title" />
 
-	<ListPreference
-        android:key="@string/led_mode"
-        android:title="@string/led_mode_title"
-		android:enabled="true"
+    <ListPreference
         android:defaultValue="1"
+        android:enabled="true"
         android:entries="@array/led_mode"
         android:entryValues="@array/led_mode_values"
-        android:summary="@string/on_off" />
+        android:key="@string/led_mode"
+        android:summary="@string/on_off"
+        android:title="@string/led_mode_title" />
 
 
-	<ListPreference
-        android:key="@string/pedals_mode"
-        android:title="@string/pedals_mode_title"
+    <ListPreference
         android:defaultValue="1"
         android:entries="@array/pedals_mode"
         android:entryValues="@array/pedals_mode_values"
-        android:summary="@string/soft_medium_hard" />
+        android:key="@string/pedals_mode"
+        android:summary="@string/soft_medium_hard"
+        android:title="@string/pedals_mode_title" />
 
-	<com.pavelsikun.seekbarpreference.SeekBarPreference
-		android:defaultValue="0"
-		android:enabled="true"
-		android:key="@string/wheel_max_speed"
-		android:summary="@string/tilt_back_description"
-		android:title="@string/max_speed_title"
-		sample:msbp_dialogEnabled="true"
-		sample:msbp_interval="1"
-		sample:msbp_maxValue="50"
-		sample:msbp_measurementUnit="@string/kmh"
-		sample:msbp_minValue="0" />
-	<com.pavelsikun.seekbarpreference.SeekBarPreference
-		android:defaultValue="0"
-		android:enabled="true"
-		android:key="@string/wheel_ks_alarm3"
-		android:summary="@string/alarm3_description"
-		android:title="@string/alert3_title"
-		sample:msbp_dialogEnabled="true"
-		sample:msbp_interval="1"
-		sample:msbp_maxValue="50"
-		sample:msbp_measurementUnit="@string/kmh"
-		sample:msbp_minValue="0" />
-	<com.pavelsikun.seekbarpreference.SeekBarPreference
-		android:defaultValue="0"
-		android:enabled="true"
-		android:key="@string/wheel_ks_alarm2"
-		android:summary="@string/alarm2_description"
-		android:title="@string/alert2_title"
-		sample:msbp_dialogEnabled="true"
-		sample:msbp_interval="1"
-		sample:msbp_maxValue="50"
-		sample:msbp_measurementUnit="@string/kmh"
-		sample:msbp_minValue="0" />
-	<com.pavelsikun.seekbarpreference.SeekBarPreference
-		android:defaultValue="0"
-		android:enabled="true"
-		android:key="@string/wheel_ks_alarm1"
-		android:summary="@string/alarm1_description"
-		android:title="@string/alert1_title"
-		sample:msbp_dialogEnabled="true"
-		sample:msbp_interval="1"
-		sample:msbp_maxValue="50"
-		sample:msbp_measurementUnit="@string/kmh"
-		sample:msbp_minValue="0" />
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:enabled="true"
+        android:key="@string/wheel_max_speed"
+        android:summary="@string/tilt_back_description"
+        android:title="@string/max_speed_title"
 
-	<CheckBoxPreference
-		android:key="@string/ks18l_scaler"
-		android:title="@string/ks18l_scaler_title"
-		android:enabled="true"
-		android:summary="@string/ks18l_scaler_description" />
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="50"
+        sample:sbp_measurementUnit="@string/kmh"
+        sample:sbp_minValue="0" />
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:enabled="true"
+        android:key="@string/wheel_ks_alarm3"
+        android:summary="@string/alarm3_description"
+        android:title="@string/alert3_title"
+
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="50"
+        sample:sbp_measurementUnit="@string/kmh"
+        sample:sbp_minValue="0" />
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:enabled="true"
+        android:key="@string/wheel_ks_alarm2"
+        android:summary="@string/alarm2_description"
+        android:title="@string/alert2_title"
+
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="50"
+        sample:sbp_measurementUnit="@string/kmh"
+        sample:sbp_minValue="0" />
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:enabled="true"
+        android:key="@string/wheel_ks_alarm1"
+        android:summary="@string/alarm1_description"
+        android:title="@string/alert1_title"
+
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="50"
+        sample:sbp_measurementUnit="@string/kmh"
+        sample:sbp_minValue="0" />
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/ks18l_scaler"
+        android:summary="@string/ks18l_scaler_description"
+        android:title="@string/ks18l_scaler_title" />
 </PreferenceScreen>
