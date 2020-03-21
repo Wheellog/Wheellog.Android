@@ -1,61 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
     <CheckBoxPreference
         android:key="@string/use_eng"
-        android:title="@string/use_eng_title"
-        android:summary="@string/use_eng_description" />
+        android:summary="@string/use_eng_description"
+        android:title="@string/use_eng_title" />
 
     <CheckBoxPreference
-        android:key="@string/use_better_percents"
-        android:title="@string/use_better_percents_title"
         android:enabled="true"
-        android:visible="true"
-        android:summary="@string/use_better_percents_description" />
-
+        android:key="@string/use_better_percents"
+        android:summary="@string/use_better_percents_description"
+        android:title="@string/use_better_percents_title"
+        android:visible="true" />
 
     <CheckBoxPreference
         android:key="@string/use_mph"
-        android:title="@string/use_mph_title"
-        android:summary="@string/use_mph_description" />
+        android:summary="@string/use_mph_description"
+        android:title="@string/use_mph_title" />
 
-
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/max_speed"
-        android:title="@string/max_speed_dial_title"
-        android:summary="@string/max_speed_dial_description"
-        android:enabled="true"
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
         android:defaultValue="30"
-        sample:msbp_minValue="10"
-        sample:msbp_maxValue="100"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="@string/dial_measurements"
-        sample:msbp_dialogEnabled="true"/>
+        android:enabled="true"
+        android:key="@string/max_speed"
+        android:summary="@string/max_speed_dial_description"
+        android:title="@string/max_speed_dial_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="100"
+        sample:sbp_measurementUnit="@string/dial_measurements"
+        sample:sbp_minValue="10" />
+
     <CheckBoxPreference
+        android:enabled="true"
         android:key="@string/current_on_dial"
-        android:title="@string/current_on_dial_title"
-        android:enabled="true"
-        android:summary="@string/current_on_dial_description" />
+        android:summary="@string/current_on_dial_description"
+        android:title="@string/current_on_dial_title" />
 
     <CheckBoxPreference
+        android:enabled="true"
         android:key="@string/connection_sound"
-        android:title="@string/connection_sound_title"
-        android:enabled="true"
-        android:summary="@string/connection_sound_description" />
-    <com.pavelsikun.seekbarpreference.SeekBarPreference
-        android:key="@string/no_connection_sound"
-        android:title="@string/no_connection_sound_title"
-        android:summary="@string/no_connection_sound_description"
-        android:enabled="true"
-        android:defaultValue="5"
-        sample:dependency="connection_sound"
-        sample:msbp_minValue="0"
-        sample:msbp_maxValue="60"
-        sample:msbp_interval="1"
-        sample:msbp_measurementUnit="@string/sec"
-        sample:msbp_dialogEnabled="true"/>
+        android:summary="@string/connection_sound_description"
+        android:title="@string/connection_sound_title" />
 
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="5"
+        android:enabled="true"
+        android:key="@string/no_connection_sound"
+        android:summary="@string/no_connection_sound_description"
+        android:title="@string/no_connection_sound_title"
+        sample:dependency="connection_sound"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="60"
+        sample:sbp_measurementUnit="@string/sec"
+        sample:sbp_minValue="0" />
 
 </PreferenceScreen>
