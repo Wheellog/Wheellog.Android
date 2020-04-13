@@ -139,17 +139,6 @@ public class NinebotZAdapter {
 	
     public void setBmsReadingMode(boolean mode) {
         bmsMode = mode;
-        /*
-        if (mode && (stateCon == 10)) {
-            stateCon = 4;
-            Timber.i("Set con from wheeldata 4");
-        } // else stateCon = 10;
-        if (!mode && (stateCon > 3) && (stateCon < 10)) {
-            Timber.i("Set con from wheeldata 10");
-            stateCon = 10;
-        }
-
-         */
     }
 
 
