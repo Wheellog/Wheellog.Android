@@ -516,6 +516,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 getString(R.string.alarm_factor1),
                 getString(R.string.alarm_factor2),
                 getString(R.string.alarm_factor3),
+                getString(R.string.warning_speed),
         };
 
         String[] seekbarPreferencesCommon = {
