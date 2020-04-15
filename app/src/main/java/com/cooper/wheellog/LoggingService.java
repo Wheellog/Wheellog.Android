@@ -238,7 +238,8 @@ public class LoggingService extends Service
             }
             FileUtil.writeLine(filename,
                     String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
-                            sdf.format(new Date()),
+                            //sdf.format(new Date()),
+                            sdf.format(WheelData.getInstance().getTimeStamp()),
                             latitude,
                             longitude,
                             gpsSpeed,
@@ -262,7 +263,8 @@ public class LoggingService extends Service
         } else {
             FileUtil.writeLine(filename,
                     String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
-                            sdf.format(new Date()),
+                            //sdf.format(new Date()),
+                            sdf.format(WheelData.getInstance().getTimeStamp()),
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
                             WheelData.getInstance().getCurrentDouble(),

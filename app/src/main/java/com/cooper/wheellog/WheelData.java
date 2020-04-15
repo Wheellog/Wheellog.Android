@@ -22,6 +22,7 @@ import com.cooper.wheellog.utils.SettingsUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -202,7 +203,9 @@ public class WheelData {
 //    private double samples[] = new double[numSamples];
     private short buffer[] = new short[numSamples];
     private int sfreq = 440;
-
+    
+    private long timestamp_raw;
+    private long timestamp_last;
     private static AudioTrack audioTrack = null;
 
 
@@ -879,6 +882,10 @@ public class WheelData {
         return mBluetoothLeService.getBluetoothDeviceAddress();
     }
 
+    public long getTimeStamp() {
+        return timestamp_last;
+    }
+
     public void resetUserDistance() {
 		if (mTotalDistance != 0)  {
 			Context mContext = mBluetoothLeService.getApplicationContext();
@@ -1345,7 +1352,11 @@ public class WheelData {
     }
 
     void decodeResponse(byte[] data, Context mContext) {
+<<<<<<< HEAD
         mDataForLog = true;
+=======
+        timestamp_raw = System.currentTimeMillis();//new Date(); //sdf.format(new Date());
+>>>>>>> master
         StringBuilder stringBuilder = new StringBuilder(data.length);
         for (byte aData : data)
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
@@ -1401,6 +1412,7 @@ public class WheelData {
 
 		if (mAlarmsEnabled) 
 			checkAlarmStatus(mContext);
+		timestamp_last = timestamp_raw;
 		mContext.sendBroadcast(intent);
         
        
