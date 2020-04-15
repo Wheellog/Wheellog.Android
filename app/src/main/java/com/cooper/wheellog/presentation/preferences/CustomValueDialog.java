@@ -107,6 +107,6 @@ class CustomValueDialog {
 
     private void notifyWrongInput() {
         mCustomValueView.setText("");
-        mCustomValueView.setHint(mCurrentValue);
+        mCustomValueView.setHint(String.valueOf(mCurrentValue));
     }
 }
