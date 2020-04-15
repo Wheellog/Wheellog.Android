@@ -1113,12 +1113,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             int alarmFactor1 = sharedPreferences.getInt(getString(R.string.alarm_factor1), 0);
             int alarmFactor2 = sharedPreferences.getInt(getString(R.string.alarm_factor2), 0);
             int alarmFactor3 = sharedPreferences.getInt(getString(R.string.alarm_factor3), 0);
+            int warningSpeed = sharedPreferences.getInt(getString(R.string.warning_speed), 0);
             WheelData.getInstance().setPreferences(
                     alarm1Speed, alarm1Battery,
                     alarm2Speed, alarm2Battery,
                     alarm3Speed, alarm3Battery,
                     current_alarm, temperature_alarm, disablePhoneVibrate, disablePhoneBeep, alteredAlarms,
-                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3);
+                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed);
             wheelView.setWarningSpeed(alarm1Speed);
         } else
             wheelView.setWarningSpeed(0);
