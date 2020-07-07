@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Vibrator;
 
@@ -117,6 +118,7 @@ public class WheelData {
     private double mAlarmFactor1 = 0.80;
     private double mAlarmFactor2 = 0.85;
     private double mAlarmFactor3 = 0.90;
+    private int mAdvanceWarningSpeed = 0;
 
     private boolean mAlteredAlarms = false;
 	private boolean mUseRatio = false;
@@ -907,7 +909,7 @@ public class WheelData {
                                    int alarmCurrent,int alarmTemperature,
                                     boolean disablePhoneVibrate, boolean disablePhoneBeep,
                                     boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
-                                    int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3
+                                    int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed
                                                                                                 ) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
@@ -926,6 +928,7 @@ public class WheelData {
         mAlarmFactor1 = (float)alarmFactor1/100.0;
         mAlarmFactor2 = (float)alarmFactor2/100.0;
         mAlarmFactor3 = (float)alarmFactor3/100.0;
+        mAdvanceWarningSpeed = warningSpeed;
     }
 
     private int byteArrayInt2(byte low, byte high) {
@@ -1008,6 +1011,12 @@ public class WheelData {
         timerCurrent.schedule(stopCurrentAlarmExecuring, 170);
     }
 
+    private void playWarningSpeed(Context mContext) {
+        MediaPlayer mp1 = MediaPlayer.create(mContext, R.raw.sound_warning_speed);
+        mp1.start();
+        mp1.setOnCompletionListener(mp11 -> mp11.release());
+    }
+
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
@@ -1023,8 +1032,9 @@ public class WheelData {
                 } else if (resultFactor > mAlarmFactor1) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+                } else if (mAdvanceWarningSpeed != 0 && getSpeedDouble() >= mAdvanceWarningSpeed) {
+                    playWarningSpeed(mContext);
                 }
-
             } else {
                 if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
                         mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
