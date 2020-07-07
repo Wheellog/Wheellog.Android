@@ -1352,11 +1352,9 @@ public class WheelData {
     }
 
     void decodeResponse(byte[] data, Context mContext) {
-<<<<<<< HEAD
         mDataForLog = true;
-=======
         timestamp_raw = System.currentTimeMillis();//new Date(); //sdf.format(new Date());
->>>>>>> master
+
         StringBuilder stringBuilder = new StringBuilder(data.length);
         for (byte aData : data)
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
@@ -1743,6 +1741,7 @@ public class WheelData {
                 mCurrent = (int) (status.getCurrent());
                 mTotalDistance = (long) (status.getDistance());
                 mTemperature = (int) (status.getTemperature()*10);
+                mAlert = (String) (status.getAlert());
 
 
                 setDistance((long) status.getDistance());

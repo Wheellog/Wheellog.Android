@@ -21,6 +21,9 @@ public class NinebotZAdapter {
 	private static byte[] gamma = new byte[16];
     private static int stateCon = 0;
     private static boolean bmsMode = false;
+    private static int mErrorCode = 0;
+    private static int mAlarmCode = 0;
+    private static int mEscStatus = 0;
 
 
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
@@ -156,7 +159,7 @@ public class NinebotZAdapter {
         private final int power;
         private final int distance;
 		private final int temperature;
-
+        private final String alert;
 
         Status() {
 
@@ -167,10 +170,11 @@ public class NinebotZAdapter {
             power = 0;
             distance = 0;
 			temperature = 0;
+			alert = "";
 
         }
 
-        Status(int speed, int voltage, int batt, int current, int power, int distance,  int temperature) {
+        Status(int speed, int voltage, int batt, int current, int power, int distance,  int temperature, String alert) {
 
             this.speed = speed;
             this.voltage = voltage;
@@ -179,6 +183,7 @@ public class NinebotZAdapter {
             this.power = power;
             this.distance = distance;
 			this.temperature = temperature;
+            this.alert = alert;
 
         }
 
@@ -210,6 +215,10 @@ public class NinebotZAdapter {
             return temperature;
         }
 
+        public String getAlert() {
+            return alert;
+        }
+
 
 
         @Override
@@ -222,6 +231,7 @@ public class NinebotZAdapter {
                     ", power=" + power +
                     ", distance=" + distance +
 					", temperature=" + temperature +
+                    ", alert=" + alert +
 
                     '}';
         }
@@ -955,6 +965,9 @@ public class NinebotZAdapter {
         }
 
         Status parseLiveData() {
+            int errorcode = this.shortFromBytes(data, 0);
+            int alarmcode = this.shortFromBytes(data, 2);
+            int escstatus = this.shortFromBytes(data, 4);
             int batt = this.shortFromBytes(data, 8);
             int speed = this.shortFromBytes(data, 10);
             int distance = this.intFromBytes(data,14);
@@ -962,9 +975,26 @@ public class NinebotZAdapter {
             int voltage = this.shortFromBytes(data, 24);
             int current = this.signedShortFromBytes(data, 26);
             int power = voltage*current;
-
-
-           return new Status(speed, voltage, batt, current, power, distance, temperature);
+            String alert = "";
+            /*
+            if (mErrorCode != errorcode) {
+                alert = alert + " " + String.format(Locale.ENGLISH, "error: %d", errorcode);
+                mErrorCode = errorcode;
+            }
+            if (mAlarmCode != alarmcode) {
+                alert = alert + " " + String.format(Locale.ENGLISH, "alarm: %d", alarmcode);
+                mAlarmCode = alarmcode;
+            }
+            if (mEscStatus != escstatus) {
+                alert = alert + " " + String.format(Locale.ENGLISH, "status: %04X", escstatus);
+                mEscStatus = escstatus;
+            }
+            if (alert.length() > 0 ) {
+                alert = "New " + alert;
+            }
+            */
+            alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
+           return new Status(speed, voltage, batt, current, power, distance, temperature, alert);
         }
 
         bmsStatusSn parseBmsSn(int bmsnum) {

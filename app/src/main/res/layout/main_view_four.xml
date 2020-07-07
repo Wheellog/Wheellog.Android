@@ -798,53 +798,53 @@
 
             <TextView
                 android:id="@+id/tvTitleBms1Cell15"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell15"/>
 
             <TextView
                 android:id="@+id/tvBms1Cell15"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
             <TextView
                 android:id="@+id/tvTitleBms2Cell15"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell15"/>
 
             <TextView
                 android:id="@+id/tvBms2Cell15"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
             <TextView
                 android:id="@+id/tvTitleBms1Cell16"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell16"/>
 
             <TextView
                 android:id="@+id/tvBms1Cell16"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
             <TextView
                 android:id="@+id/tvTitleBms2Cell16"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS.Title"
                 android:text="@string/bmsCell16"/>
 
             <TextView
                 android:id="@+id/tvBms2Cell16"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="0sp"
                 style="@style/StatsBMS" />
 
