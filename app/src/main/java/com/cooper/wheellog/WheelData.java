@@ -127,7 +127,7 @@ public class WheelData {
 	private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
 	private boolean mTemperatureAlarmExecuting = false;
-
+    private boolean mVeteran = false;
     private String protoVer = "";
 
     private int duration = 1; // duration of sound
@@ -689,6 +689,10 @@ public class WheelData {
 
     WHEEL_TYPE getWheelType() {
         return mWheelType;
+    }
+
+    boolean isVeteran() {
+        return mVeteran;
     }
 
     String getName() {
@@ -1344,80 +1348,125 @@ public class WheelData {
     }
 
     private boolean decodeGotway(byte[] data) {
+        Timber.i("Decode GOTWAY");
         if (rideStartTime == 0) {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
 			mRidingTime = 0;
 		}
         if (data.length >= 20) {
+            Timber.i("Len >=20");
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
+            int a3 = data[2] & 255;
+            int a4 = data[3] & 255;
             int a5 = data[4] & 255;
             int a6 = data[5] & 255;
             int a19 = data[18] & 255;
+            if ((a1 == 0xDC) && (a2 == 0x5A) && (a3 == 0x5C) && (a4 == 0x20)) {  // Sherman
+                Timber.i("Decode Sherman");
+                mVeteran = true;
+                mVoltage = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
+                mSpeed =  ((data[6]) << 8 | (data[7] & 0xFF))*10;
+                long distance = ((data[10] & 0xFF) << 24 | (data[11] & 0xFF) << 16 | (data[8] & 0xFF) << 8 | (data[9] & 0xFF));
+                setDistance(distance);
+                mTotalDistance = ((data[14] & 0xFF) << 24 | (data[15] & 0xFF) << 16 | (data[12] & 0xFF) << 8 | (data[13] & 0xFF));
+                mCurrent = ((data[16]) << 8 | (data[17] & 0xFF))*10;
+                mTemperature = (data[18] & 0xFF) << 8 | (data[19] & 0xFF);
+                mTemperature2 = mTemperature;
+                setTopSpeed(mSpeed);
+                int battery;
+                if (mBetterPercents) {
+                    if (mVoltage > 10020) {
+                        battery = 100;
+                    } else if (mVoltage > 8160) {
+                        battery = (int) Math.round((mVoltage - 8070) / 19.5);
+                    } else if (mVoltage > 7935) {
+                        battery = (int) Math.round((mVoltage - 7935) / 48.75);
+                    } else {
+                        battery = 0;
+                    }
+                } else {
+                    if (mVoltage <= 7935) {
+                        battery = 0;
+                    } else if (mVoltage >= 9870) {
+                        battery = 100;
+                    } else {
+                        battery = (int) Math.round((mVoltage - 7935) / 19.5);
+                    }
+                }
 
-            if (a1 != 85 || a2 != 170 || a19 != 0) {
-                if (a1 != 90 || a5 != 85 || a6 != 170) {
+                setBatteryPercent(battery);
+                setVoltageSag(mVoltage);
+                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+                setCurrentTime(currentTime);
+                return true;
+            } else { // Gotway
+
+                if (a1 != 85 || a2 != 170 || a19 != 0) {
+                    if (a1 != 90 || a5 != 85 || a6 != 170) {
+                        return false;
+                    }
+                    mTotalDistance = ((data[6] & 0xFF) << 24) | ((data[7] & 0xFF) << 16) | ((data[8] & 0xFF) << 8) | (data[9] & 0xFF);
+                    if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
+
                     return false;
                 }
-                mTotalDistance = ((data[6]&0xFF) <<24) | ((data[7]&0xFF) << 16) | ((data[8] & 0xFF) <<8) | (data[9] & 0xFF);
-                if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
 
-                return false;
-            }
+                if (data[5] >= 0)
+                    if (mGotwayNegative == 0)
+                        mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
+                    else mSpeed = ((int) (((data[4] * 256.0) + data[5]) * 3.6)) * mGotwayNegative;
+                else if (mGotwayNegative == 0)
+                    mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
+                else
+                    mSpeed = ((int) ((((data[4] * 256.0) + 256.0) + data[5]) * 3.6)) * mGotwayNegative;
+                if (mUseRatio) mSpeed = (int) Math.round(mSpeed * RATIO_GW);
+                setTopSpeed(mSpeed);
 
-            if (data[5] >= 0)
-                if (mGotwayNegative == 0) mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
-                else mSpeed = ((int) (((data[4] * 256.0) + data[5]) * 3.6)) * mGotwayNegative;
-            else
-                if (mGotwayNegative == 0) mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
-                else mSpeed = ((int) ((((data[4] * 256.0) + 256.0) + data[5]) * 3.6) )* mGotwayNegative;
-			if (mUseRatio) mSpeed = (int)Math.round(mSpeed * RATIO_GW);
-            setTopSpeed(mSpeed);
+                mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
+                mTemperature2 = mTemperature;
 
-            mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
-			mTemperature2 = mTemperature;
+                long distance = byteArrayInt2(data[9], data[8]);
+                if (mUseRatio) distance = Math.round(distance * RATIO_GW);
+                setDistance(distance);
 
-            long distance = byteArrayInt2(data[9], data[8]);
-			if (mUseRatio) distance = Math.round(distance * RATIO_GW);
-            setDistance(distance);
+                mVoltage = (data[2] * 256) + (data[3] & 255);
 
-            mVoltage = (data[2] * 256) + (data[3] & 255);
+                mCurrent = ((data[10] * 256) + data[11]);
+                if (mGotwayNegative == 0) mCurrent = Math.abs(mCurrent);
+                else mCurrent = mCurrent * mGotwayNegative;
 
-            mCurrent = ((data[10] * 256) + data[11]);
-            if ( mGotwayNegative == 0 ) mCurrent = Math.abs(mCurrent);
-            else mCurrent = mCurrent * mGotwayNegative;
-
-            int battery;
-            if (mBetterPercents) {
-                if (mVoltage > 6680) {
-                    battery = 100;
-                } else if (mVoltage > 5440) {
-                    battery = (mVoltage - 5380) / 13;
-                } else if (mVoltage > 5290) {
-                    battery = (int) Math.round((mVoltage - 5290) / 32.5);
+                int battery;
+                if (mBetterPercents) {
+                    if (mVoltage > 6680) {
+                        battery = 100;
+                    } else if (mVoltage > 5440) {
+                        battery = (mVoltage - 5380) / 13;
+                    } else if (mVoltage > 5290) {
+                        battery = (int) Math.round((mVoltage - 5290) / 32.5);
+                    } else {
+                        battery = 0;
+                    }
                 } else {
-                    battery = 0;
+                    if (mVoltage <= 5290) {
+                        battery = 0;
+                    } else if (mVoltage >= 6580) {
+                        battery = 100;
+                    } else {
+                        battery = (mVoltage - 5290) / 13;
+                    }
                 }
-            } else {
-                if (mVoltage <= 5290) {
-                    battery = 0;
-                } else if (mVoltage >= 6580) {
-                    battery = 100;
-                } else {
-                    battery = (mVoltage - 5290) / 13;
-                }
+
+                setBatteryPercent(battery);
+
+                mVoltage = (int) Math.round(mVoltage * (1 + (0.25 * mGotwayVoltageScaler)));
+                setVoltageSag(mVoltage);
+                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+                setCurrentTime(currentTime);
             }
-          setBatteryPercent(battery);
-//			if (mGotway84V) {
-//				mVoltage = (int)Math.round(mVoltage / 0.8);
-//			}
-            mVoltage = (int)Math.round(mVoltage*(1+(0.25*mGotwayVoltageScaler)));
-            setVoltageSag(mVoltage);
-            int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-            setCurrentTime(currentTime);
 
             return true;
-        } else if (data.length >= 10) {
+        } else if (data.length >= 10 && !mVeteran)  {
             int a1 = data[0];
             int a5 = data[4] & 255;
             int a6 = data[5] & 255;
@@ -1778,6 +1827,9 @@ public class WheelData {
                     return true;
                 }
 
+            }
+            else {
+                Timber.i("Protocol recognized as Unknown");
             }
         }
         return false;
