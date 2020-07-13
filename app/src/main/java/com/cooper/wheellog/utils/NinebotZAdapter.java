@@ -1092,7 +1092,7 @@ public class NinebotZAdapter {
                     Timber.i("Verification successful, command %02X", result.parameter);
                     if ((result.parameter == CANMessage.Param.Start.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
 						Timber.i("Get start answer");
-						stateCon = 1;
+						stateCon = 2;
 						
 					} else if ((result.parameter == CANMessage.Param.GetKey.getValue()) && (result.source == CANMessage.Addr.KeyGenerator.getValue())){
                         Timber.i("Get encryption key");
