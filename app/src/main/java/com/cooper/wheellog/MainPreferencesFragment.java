@@ -438,7 +438,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
 
         mWheelType = WheelData.getInstance().getWheelType();
-        if (mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z) {
+        boolean veteran = WheelData.getInstance().isVeteran();
+        if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z) && !veteran) {
             wheelButton.setEnabled(true);
         }
 
@@ -516,6 +517,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 getString(R.string.alarm_factor1),
                 getString(R.string.alarm_factor2),
                 getString(R.string.alarm_factor3),
+                getString(R.string.warning_speed),
         };
 
         String[] seekbarPreferencesCommon = {

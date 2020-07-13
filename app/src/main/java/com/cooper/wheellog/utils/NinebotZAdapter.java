@@ -10,7 +10,7 @@ import timber.log.Timber;
 //import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
 /**
- * Created by cedric on 29/12/2016.
+ * Created by palachzzz on 08/2018.
  */
 public class NinebotZAdapter {
     private static NinebotZAdapter INSTANCE;

@@ -205,6 +205,8 @@
     <string name="alarm_factor2_description">Должен быть больше первого</string>
     <string name="alarm_factor3_title">PWM третьего предупреждения</string>
     <string name="alarm_factor3_description">Должен быть больше второго</string>
+    <string name="warning_speed_title">Предварительное предупреждение</string>
+    <string name="warning_speed_description">Предварительное предупреждение по скорости (0 = откл)</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
     <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
     <string name="power_factor_description">Не меняйте если не знаете что это, 85 по дефолту</string>

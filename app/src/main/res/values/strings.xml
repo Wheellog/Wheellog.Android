@@ -35,6 +35,7 @@
     <string name="mode_play">Expert</string>
     <string name="mode_ride">Normal</string>
     <string name="waiting_for_wheel">Waiting for wheel…</string>
+    <string name="no_smart_bms">Smart BMS is not detected</string>
     <string name="speed">Speed</string>
 	<string name="average_speed">Avg Speed</string>
 	<string name="average_riding_speed">Avg Riding</string>
@@ -115,6 +116,7 @@
     <string name="alarm_factor1" translatable="false">alarm_factor1</string>
     <string name="alarm_factor2" translatable="false">alarm_factor2</string>
     <string name="alarm_factor3" translatable="false">alarm_factor3</string>
+    <string name="warning_speed" translatable="false">warning_speed</string>
 
 
 
@@ -265,6 +267,8 @@
     <string name="alarm_factor2_description">Should be higher than first alarm</string>
     <string name="alarm_factor3_title">Third alarm PWM</string>
     <string name="alarm_factor3_description">Should be higher than second alarm</string>
+    <string name="warning_speed_title">Advance warning</string>
+    <string name="warning_speed_description">Advance speed warning (0 = off)</string>
 
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>

@@ -6,6 +6,9 @@ import android.view.ViewGroup;
 
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.cooper.wheellog.utils.Constants;
+
+
 class ViewPageAdapter extends PagerAdapter {
 
     Activity mActivity;
@@ -29,6 +32,7 @@ class ViewPageAdapter extends PagerAdapter {
                 break;
             case 3:
                 resId = R.id.page_four;
+
                 break;
         }
         return mActivity.findViewById(resId);
