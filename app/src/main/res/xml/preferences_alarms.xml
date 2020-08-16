@@ -127,7 +127,7 @@
             sample:sbp_measurementUnit="0.1*V"
             sample:sbp_minValue="0" />
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-            android:defaultValue="85"
+            android:defaultValue="90"
             android:key="@string/power_factor"
             android:summary="@string/power_factor_description"
             android:title="@string/power_factor_title"
@@ -191,7 +191,7 @@
             android:title="@string/current_title"
             sample:dependency="alarms_enabled"
             sample:sbp_increment="1"
-            sample:sbp_maxValue="200"
+            sample:sbp_maxValue="300"
             sample:sbp_measurementUnit="@string/amp"
             sample:sbp_minValue="0" />
 
@@ -206,9 +206,9 @@
             android:title="@string/temperature_title"
             sample:dependency="alarms_enabled"
             sample:sbp_increment="1"
-            sample:sbp_maxValue="100"
+            sample:sbp_maxValue="120"
             sample:sbp_measurementUnit="°"
-            sample:sbp_minValue="20" />
+            sample:sbp_minValue="0" />
 
     </PreferenceCategory>
 

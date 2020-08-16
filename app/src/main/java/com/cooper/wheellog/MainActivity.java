@@ -1736,17 +1736,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
 
-        int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "-1"));
+        int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
         WheelData.getInstance().setGotwayNegative(gotway_negative);
         //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
         //WheelData.getInstance().setGotway84V(gotway_84v);
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {
-            int alarm1Speed = sharedPreferences.getInt(getString(R.string.alarm_1_speed), 0);
+            int alarm1Speed = sharedPreferences.getInt(getString(R.string.alarm_1_speed), 29);
             int alarm2Speed = sharedPreferences.getInt(getString(R.string.alarm_2_speed), 0);
             int alarm3Speed = sharedPreferences.getInt(getString(R.string.alarm_3_speed), 0);
-            int alarm1Battery = sharedPreferences.getInt(getString(R.string.alarm_1_battery), 0);
+            int alarm1Battery = sharedPreferences.getInt(getString(R.string.alarm_1_battery), 100);
             int alarm2Battery = sharedPreferences.getInt(getString(R.string.alarm_2_battery), 0);
             int alarm3Battery = sharedPreferences.getInt(getString(R.string.alarm_3_battery), 0);
             int current_alarm = sharedPreferences.getInt(getString(R.string.alarm_current), 0);
@@ -1754,12 +1754,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             boolean disablePhoneVibrate = sharedPreferences.getBoolean(getString(R.string.disable_phone_vibrate), false);
             boolean disablePhoneBeep = sharedPreferences.getBoolean(getString(R.string.disable_phone_beep), false);
             boolean alteredAlarms = sharedPreferences.getBoolean(getString(R.string.altered_alarms), false);
-            int rotationSpeed = sharedPreferences.getInt(getString(R.string.rotation_speed), 0);
-            int rotationVoltage = sharedPreferences.getInt(getString(R.string.rotation_voltage), 0);
-            int powerFactor = sharedPreferences.getInt(getString(R.string.power_factor), 0);
-            int alarmFactor1 = sharedPreferences.getInt(getString(R.string.alarm_factor1), 0);
-            int alarmFactor2 = sharedPreferences.getInt(getString(R.string.alarm_factor2), 0);
-            int alarmFactor3 = sharedPreferences.getInt(getString(R.string.alarm_factor3), 0);
+            int rotationSpeed = sharedPreferences.getInt(getString(R.string.rotation_speed), 500);
+            int rotationVoltage = sharedPreferences.getInt(getString(R.string.rotation_voltage), 840);
+            int powerFactor = sharedPreferences.getInt(getString(R.string.power_factor), 90);
+            int alarmFactor1 = sharedPreferences.getInt(getString(R.string.alarm_factor1), 80);
+            int alarmFactor2 = sharedPreferences.getInt(getString(R.string.alarm_factor2), 90);
+            int alarmFactor3 = sharedPreferences.getInt(getString(R.string.alarm_factor3), 95);
             int warningSpeed = sharedPreferences.getInt(getString(R.string.warning_speed), 0);
             WheelData.getInstance().setPreferences(
                     alarm1Speed, alarm1Battery,

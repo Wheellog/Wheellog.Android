@@ -62,7 +62,7 @@
         android:title="@string/battery_voltage_title" />
 
     <ListPreference
-        android:defaultValue="-1"
+        android:defaultValue="0"
         android:enabled="true"
         android:entries="@array/gotway_negative"
         android:entryValues="@array/gotway_negative_values"

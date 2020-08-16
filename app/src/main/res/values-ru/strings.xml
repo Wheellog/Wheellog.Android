@@ -209,7 +209,7 @@
     <string name="warning_speed_description">Предварительное предупреждение по скорости (0 = откл)</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
     <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
-    <string name="power_factor_description">Не меняйте если не знаете что это, 85 по дефолту</string>
+    <string name="power_factor_description">Не меняйте если не знаете что это, 90 по дефолту</string>
     <string name="power_factor_title">Фактор мощности</string>
     <string name="rotation_speed_title">Скорость раскрутки</string>
     <string name="rotation_speed_description">Измеренная на весу максимальная скорость вращения колеса</string>

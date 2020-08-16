@@ -260,7 +260,7 @@
     <string name="rotation_voltage_title">Rotation voltage</string>
     <string name="rotation_voltage_description">Voltage at which rotation speed was measured</string>
     <string name="power_factor_title">Power factor</string>
-    <string name="power_factor_description">Don\'t change if you don\'t understand what is that, default=85</string>
+    <string name="power_factor_description">Don\'t change if you don\'t understand what is that, default=90</string>
     <string name="alarm_factor1_title">First alarm PWM</string>
     <string name="alarm_factor1_description">Calculated PWM on which first alarm should occur</string>
     <string name="alarm_factor2_title">Second alarm PWM</string>
