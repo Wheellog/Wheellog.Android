@@ -24,7 +24,7 @@
         android:summary="@string/tilt_back_description"
         android:title="@string/max_speed_title"
         sample:sbp_increment="1"
-        sample:sbp_maxValue="45"
+        sample:sbp_maxValue="60"
         sample:sbp_measurementUnit="@string/kmh"
         sample:sbp_minValue="3" />
 

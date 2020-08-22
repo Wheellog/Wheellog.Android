@@ -17,8 +17,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
         targetSdkVersion 28
-        versionCode 67
-        versionName "2.0.48"
+        versionCode 68
+        versionName "2.0.49"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
         vectorDrawables.useSupportLibrary = true
     }
