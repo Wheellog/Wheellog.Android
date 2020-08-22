@@ -14,6 +14,8 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.cooper.wheellog.R;
 
+import timber.log.Timber;
+
 /**
  * Доработанный {@link androidx.preference.SeekBarPreference}, поддерживающий установку
  * значения через диалоговое окно по клику на текст с текущим значением.
@@ -31,11 +33,13 @@ public class SeekBarPreference extends Preference {
     private static final int DEFAULT_MIN_VALUE = 0;
     private static final int DEFAULT_MAX_VALUE = 100;
     private static final int DEFAULT_INTERVAL = 1;
+    private static final int DEFAULT_DECIMAL_PLACES = 0;
 
     private int mSeekBarValue;
     private int mMin;
+    private int mDecimalPlaces;
     private int mMax;
-    private int mSeekBarIncrement;
+    private int mSeekBarIncrement; //FIX ME - it doesn't work!
     private boolean mTrackingTouch;
     private TextView mSeekBarValueTextView;
     private String mMeasurementUnit;
@@ -62,7 +66,12 @@ public class SeekBarPreference extends Preference {
             mMin = a.getInt(R.styleable.SeekBarPreference_sbp_minValue, DEFAULT_MIN_VALUE);
             mSeekBarIncrement = a.getInt(R.styleable.SeekBarPreference_sbp_increment, DEFAULT_INTERVAL);
             int saved_maxValue = a.getInt(R.styleable.SeekBarPreference_sbp_maxValue, DEFAULT_MAX_VALUE);
-            mMax = (saved_maxValue - mMin) / mSeekBarIncrement;
+            mMax = saved_maxValue;// (saved_maxValue - mMin) / mSeekBarIncrement;
+            mDecimalPlaces = a.getInt(R.styleable.SeekBarPreference_sbp_decimalPlaces, DEFAULT_DECIMAL_PLACES);
+            if (mDecimalPlaces > 3)
+                mDecimalPlaces = 3;
+            if (mDecimalPlaces < 0)
+                mDecimalPlaces = 0;
             mMeasurementUnit = a.getString(R.styleable.SeekBarPreference_sbp_measurementUnit);
             mSeekBarValue = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "defaultValue", DEFAULT_CURRENT_VALUE);
         } finally {
@@ -76,7 +85,7 @@ public class SeekBarPreference extends Preference {
 
         mSeekBarValueTextView = (TextView) view.findViewById(R.id.seekbar_value);
         mSeekBarValueTextView.setOnClickListener(v ->
-                new CustomValueDialog(getContext(), mMin, mMax, mSeekBarValue)
+                new CustomValueDialog(getContext(), mMin, mMax, mSeekBarValue, mDecimalPlaces)
                         .setOnValueChangeListener(value -> setValueInternal(value, true))
                         .show());
 
@@ -87,18 +96,19 @@ public class SeekBarPreference extends Preference {
         }
 
         seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
-        seekBar.setMax(mMax - mMin);
+        seekBar.setMax(mMax); // - mMin);
         // If the increment is not zero, use that. Otherwise, use the default mKeyProgressIncrement
         // in AbsSeekBar when it's zero. This default increment value is set by AbsSeekBar
         // after calling setMax. That's why it's important to call setKeyProgressIncrement after
         // calling setMax() since setMax() can change the increment value.
+        seekBar.setMin(mMin);
         if (mSeekBarIncrement != 0) {
             seekBar.setKeyProgressIncrement(mSeekBarIncrement);
         } else {
             mSeekBarIncrement = seekBar.getKeyProgressIncrement();
         }
 
-        seekBar.setProgress(mSeekBarValue - mMin);
+        seekBar.setProgress(mSeekBarValue); // - mMin);
         updateLabelValue(mSeekBarValue);
         seekBar.setEnabled(isEnabled());
     }
@@ -172,12 +182,15 @@ public class SeekBarPreference extends Preference {
      * set the {@link SeekBar}'s value to the stored value.
      */
     private void syncValueInternal(SeekBar seekBar) {
-        int seekBarValue = mMin + seekBar.getProgress();
+        int seekBarValue = seekBar.getProgress();
+        //int seekBarValue = mMin + seekBar.getProgress();
+
         if (seekBarValue != mSeekBarValue) {
             if (callChangeListener(seekBarValue)) {
                 setValueInternal(seekBarValue, false);
             } else {
-                seekBar.setProgress(mSeekBarValue - mMin);
+                //seekBar.setProgress(mSeekBarValue - mMin);
+                seekBar.setProgress(mSeekBarValue);
                 updateLabelValue(mSeekBarValue);
             }
         }
@@ -208,7 +221,16 @@ public class SeekBarPreference extends Preference {
      */
     private void updateLabelValue(int value) {
         if (mSeekBarValueTextView != null) {
-            mSeekBarValueTextView.setText(String.format("%s %s", value, mMeasurementUnit));
+            //Timber.i("UPDATE<<<<<<<<<<<<<");
+            if (mDecimalPlaces == 0)
+                mSeekBarValueTextView.setText(String.format("%s %s", value, mMeasurementUnit));
+
+            else if (mDecimalPlaces == 1)
+                mSeekBarValueTextView.setText(String.format("%.1f %s", value/(10.0), mMeasurementUnit));
+            else if (mDecimalPlaces == 2)
+                mSeekBarValueTextView.setText(String.format("%.2f %s", value/(100.0), mMeasurementUnit));
+            else if (mDecimalPlaces == 3)
+                mSeekBarValueTextView.setText(String.format("%.3f %s", value/(1000.0), mMeasurementUnit));
         }
     }
 
@@ -267,7 +289,8 @@ public class SeekBarPreference extends Preference {
                 syncValueInternal(seekBar);
             } else {
                 // We always want to update the text while the seekbar is being dragged
-                updateLabelValue(progress + mMin);
+                //updateLabelValue(progress + mMin);
+                updateLabelValue(progress);
             }
         }
 
@@ -279,7 +302,8 @@ public class SeekBarPreference extends Preference {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             mTrackingTouch = false;
-            if (seekBar.getProgress() + mMin != mSeekBarValue) {
+            //if (seekBar.getProgress() + mMin != mSeekBarValue) {
+            if (seekBar.getProgress() != mSeekBarValue) {
                 syncValueInternal(seekBar);
             }
         }

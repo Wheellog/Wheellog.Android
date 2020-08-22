@@ -30,17 +30,18 @@ class CustomValueDialog {
     private int mMinValue;
     private int mMaxValue;
     private int mCurrentValue;
-
+    private int mDecimalPlaces;
     /**
      * @param context      контекст текущей {@link Activity}
      * @param minValue     минимально допустимое значение
      * @param maxValue     максимально допустимое значение
      * @param currentValue текущее значение для подсказки
      */
-    CustomValueDialog(Context context, int minValue, int maxValue, int currentValue) {
+    CustomValueDialog(Context context, int minValue, int maxValue, int currentValue, int decimalPlaces) {
         mMinValue = minValue;
         mMaxValue = maxValue;
         mCurrentValue = currentValue;
+        mDecimalPlaces = decimalPlaces;
 
         View dialogView = LayoutInflater.from(context).inflate(R.layout.value_selector_dialog, null);
 
@@ -48,14 +49,28 @@ class CustomValueDialog {
         mDialog = dialogBuilder.setView(dialogView).create();
 
         TextView minValueView = dialogView.findViewById(R.id.minValue);
-        minValueView.setText(String.valueOf(mMinValue));
-
         TextView maxValueView = dialogView.findViewById(R.id.maxValue);
-        maxValueView.setText(String.valueOf(mMaxValue));
-
         mCustomValueView = dialogView.findViewById(R.id.customValue);
-        mCustomValueView.setHint(String.valueOf(currentValue));
-
+        if (mDecimalPlaces == 0) {
+            minValueView.setText(String.valueOf(mMinValue));
+            maxValueView.setText(String.valueOf(mMaxValue));
+            mCustomValueView.setHint(String.valueOf(mCurrentValue));
+        }
+        if (mDecimalPlaces == 1) {
+            minValueView.setText(String.format("%.1f", mMinValue/10.0));
+            maxValueView.setText(String.format("%.1f", mMaxValue/10.0));
+            mCustomValueView.setHint(String.format("%.1f", mCurrentValue/10.0));
+        }
+        if (mDecimalPlaces == 2) {
+            minValueView.setText(String.format("%.2f", mMinValue/100.0));
+            maxValueView.setText(String.format("%.2f", mMaxValue/100.0));
+            mCustomValueView.setHint(String.format("%.2f", mCurrentValue/100.0));
+        }
+        if (mDecimalPlaces == 3) {
+            minValueView.setText(String.format("%.3f", mMinValue/1000.0));
+            maxValueView.setText(String.format("%.3f", mMaxValue/1000.0));
+            mCustomValueView.setHint(String.format("%.3f", mCurrentValue/1000.0));
+        }
         Button applyButton = dialogView.findViewById(R.id.btn_apply);
         applyButton.setOnClickListener(v -> tryApply());
 
@@ -81,9 +96,17 @@ class CustomValueDialog {
 
     private void tryApply() {
         int value;
-
+        float fval;
         try {
-            value = Integer.parseInt(mCustomValueView.getText().toString());
+            fval = Float.parseFloat(mCustomValueView.getText().toString());
+            value = Math.round(fval);
+            if (mDecimalPlaces == 1)
+                value = Math.round(fval*10);
+            if (mDecimalPlaces == 2)
+                value = Math.round(fval*100);
+            if (mDecimalPlaces == 3)
+                value = Math.round(fval*1000);
+
             if (value > mMaxValue) {
                 Log.e(TAG, "wrong input( > than required): " + mCustomValueView.getText().toString());
                 notifyWrongInput();
@@ -107,6 +130,18 @@ class CustomValueDialog {
 
     private void notifyWrongInput() {
         mCustomValueView.setText("");
-        mCustomValueView.setHint(String.valueOf(mCurrentValue));
+        if (mDecimalPlaces == 0) {
+            mCustomValueView.setHint(String.valueOf(mCurrentValue));
+        }
+        if (mDecimalPlaces == 1) {
+            mCustomValueView.setHint(String.format("%.1f", mCurrentValue/10.0));
+        }
+        if (mDecimalPlaces == 2) {
+            mCustomValueView.setHint(String.format("%.2f", mCurrentValue/100.0));
+        }
+        if (mDecimalPlaces == 3) {
+            mCustomValueView.setHint(String.format("%.3f", mCurrentValue/1000.0));
+        }
+
     }
 }

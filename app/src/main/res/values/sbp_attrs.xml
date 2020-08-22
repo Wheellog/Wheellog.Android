@@ -3,6 +3,7 @@
         <attr name="sbp_minValue" format="reference|integer"/>
         <attr name="sbp_maxValue" format="reference|integer"/>
         <attr name="sbp_increment" format="reference|integer"/>
+        <attr name="sbp_decimalPlaces" format="reference|integer"/>
         <attr name="sbp_measurementUnit" format="reference|string"/>
     </declare-styleable>
 </resources>

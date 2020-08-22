@@ -45,7 +45,8 @@
         android:title="@string/pedal_horizont_title"
         sample:sbp_increment="1"
         sample:sbp_maxValue="80"
-        sample:sbp_measurementUnit="x 0.1°"
+        sample:sbp_decimalPlaces="1"
+        sample:sbp_measurementUnit="°"
         sample:sbp_minValue="-80" />
 
 </PreferenceScreen>

@@ -113,7 +113,8 @@
             sample:dependency="alarms_enabled"
             sample:sbp_increment="1"
             sample:sbp_maxValue="2000"
-            sample:sbp_measurementUnit="0.1*Km/h"
+            sample:sbp_decimalPlaces="1"
+            sample:sbp_measurementUnit="Km/h"
             sample:sbp_minValue="0" />
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
@@ -124,7 +125,8 @@
             sample:dependency="alarms_enabled"
             sample:sbp_increment="1"
             sample:sbp_maxValue="1200"
-            sample:sbp_measurementUnit="0.1*V"
+            sample:sbp_measurementUnit="V"
+            sample:sbp_decimalPlaces="1"
             sample:sbp_minValue="0" />
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="90"
