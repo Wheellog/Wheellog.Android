@@ -27,6 +27,7 @@ public class NotificationUtil {
     private Context mContext;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private int notificationMessageId = R.string.disconnected;
+    private double mSpeed = 0;
     private int mBatteryLevel = 0;
     private double mDistance = 0;
     private int mTemperature = 0;
@@ -80,10 +81,13 @@ public class NotificationUtil {
                     int batteryLevel = WheelData.getInstance().getBatteryLevel();
                     int temperature = WheelData.getInstance().getTemperature();
                     double distance = (double) Math.round(WheelData.getInstance().getDistanceDouble() * 10) / 10;
+                    double speed = (double) Math.round(WheelData.getInstance().getSpeedDouble() * 10) / 10;
 
                     if (mBatteryLevel != batteryLevel ||
                             mDistance != distance ||
+                            mSpeed != speed ||
                             mTemperature != temperature) {
+                        mSpeed = speed;
                         mBatteryLevel = batteryLevel;
                         mTemperature = temperature;
                         mDistance = distance;
@@ -152,8 +156,8 @@ public class NotificationUtil {
 
         String title = mContext.getString(notificationMessageId);
 
-        if (mConnectionState == BluetoothLeService.STATE_CONNECTED || (mDistance + mTemperature + mBatteryLevel) > 0) {
-            notificationView.setTextViewText(R.id.text_message, mContext.getString(R.string.notification_text, mBatteryLevel, mTemperature, mDistance));
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTED || (mDistance + mTemperature + mBatteryLevel + mSpeed) > 0) {
+            notificationView.setTextViewText(R.id.text_message, mContext.getString(R.string.notification_text, mSpeed, mBatteryLevel, mTemperature, mDistance));
         }
 
         notificationView.setTextViewText(R.id.text_title, title);

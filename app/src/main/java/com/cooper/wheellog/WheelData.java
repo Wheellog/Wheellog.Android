@@ -821,7 +821,7 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 	
-    double getSpeedDouble() {
+    public double getSpeedDouble() {
         return mSpeed / 100.0;
     }
 

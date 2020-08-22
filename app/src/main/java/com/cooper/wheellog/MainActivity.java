@@ -1656,6 +1656,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 else
                     stopGarminConnectIQ();
                 return true;
+            case R.id.miSettings:
+                mDrawer.openDrawer(GravityCompat.START, true);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

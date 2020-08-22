@@ -23,6 +23,7 @@
     <string name="wheel_connected">Wheel Connected</string>
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
+    <string name="show_settings">Show settings menu</string>
     <string name="stop_pebble_service">Stop Pebble Dash</string>
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>
@@ -62,7 +63,7 @@
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
-    <string name="notification_text" translatable="false">%1$d%% • %2$d°C • %3$.1f km</string>
+    <string name="notification_text" translatable="false">%1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
 
