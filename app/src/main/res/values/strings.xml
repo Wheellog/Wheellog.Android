@@ -63,7 +63,7 @@
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
-    <string name="notification_text" translatable="false">%1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km</string>
+    <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
 
