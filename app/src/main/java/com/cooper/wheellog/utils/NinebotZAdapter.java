@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
+import com.cooper.wheellog.WheelData;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -146,7 +147,8 @@ public class NinebotZAdapter implements IWheelAdapter {
 
     @Override
     public boolean decode(byte[] data) {
-        return false;
+        Timber.i("Ninebot_z decoding");
+        return WheelData.getInstance().decodeNinebotZ(data);
     }
 
     @Override

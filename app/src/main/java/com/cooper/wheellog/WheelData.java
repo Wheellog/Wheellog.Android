@@ -12,13 +12,9 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Vibrator;
 
-import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.InMotionAdapter;
-import com.cooper.wheellog.utils.NinebotAdapter;
-import com.cooper.wheellog.utils.NinebotZAdapter;
-import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -210,7 +206,30 @@ public class WheelData {
     private long timestamp_last;
     private static AudioTrack audioTrack = null;
 
+    public IWheelAdapter getAdapter() {
+        switch (mWheelType) {
+            case GOTWAY:
+                return GotwayAdapter.getInstance();
+            case KINGSONG:
+                return KingsongAdapter.getInstance();
+            case NINEBOT:
+                return NinebotAdapter.getInstance();
+            case NINEBOT_Z:
+                // TODO: fix me
+                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
+                    return NinebotAdapter.getInstance();
+                }
+                return NinebotZAdapter.getInstance();
+            case INMOTION:
+                return InMotionAdapter.getInstance();
+            default:
+                return null;
+        }
+    }
 
+    public BluetoothLeService getBluetoothLeService() {
+        return mBluetoothLeService;
+    }
 
     void playBeep(ALARM_TYPE type) {
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
@@ -321,8 +340,8 @@ public class WheelData {
         return mInstance;
     }
 
-    int getSpeed() {
-        return mSpeed / 10;
+    public int getSpeed() {
+        return (int)Math.round(mSpeed / 10.0);
     }
 	
 	boolean getWheelLight() {
@@ -825,7 +844,7 @@ public class WheelData {
         return mSpeed / 100.0;
     }
 
-    double getVoltageDouble() {
+    public double getVoltageDouble() {
         return mVoltage / 100.0;
     }
 
@@ -1375,23 +1394,7 @@ public class WheelData {
         Timber.i("Received: " + stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
         Timber.i("Decode, proto: %s", protoVer);
-        boolean new_data = false;
-        if (mWheelType == WHEEL_TYPE.KINGSONG)
-            new_data = decodeKingSong(data);
-        else if (mWheelType == WHEEL_TYPE.GOTWAY)
-            new_data = decodeGotway(data);
-        else if (mWheelType == WHEEL_TYPE.INMOTION)
-            new_data = decodeInmotion(data);
-        else if (mWheelType == WHEEL_TYPE.NINEBOT || protoVer.compareTo("S2")==0|| protoVer.compareTo("Mini")==0) {
-            Timber.i("Ninebot_decoding");
-            new_data = decodeNinebot(data);
-        }
-        else if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
-            Timber.i("Ninebot_z decoding");
-            new_data = decodeNinebotZ(data);
-        }
-
-
+        boolean new_data = getAdapter().decode(data);
 
         if (!new_data)
 			return;
@@ -1432,7 +1435,8 @@ public class WheelData {
         
     }
 
-    private boolean decodeKingSong(byte[] data) {
+    // TODO move decode* to specific adapters
+    public boolean decodeKingSong(byte[] data) {
         if (rideStartTime == 0) {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
 			mRidingTime = 0;
@@ -1563,7 +1567,7 @@ public class WheelData {
         return false;
     }
 
-    private boolean decodeGotway(byte[] data) {
+    public boolean decodeGotway(byte[] data) {
         Timber.i("Decode GOTWAY");
         if (rideStartTime == 0) {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
@@ -1695,7 +1699,7 @@ public class WheelData {
         return false;
     }
 
-    private boolean decodeNinebotZ(byte[] data) {
+    public boolean decodeNinebotZ(byte[] data) {
         NinebotZAdapter.getInstance().setBmsReadingMode(mBmsView);
         ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
@@ -1816,7 +1820,7 @@ public class WheelData {
         return true;
     }
 
-    private boolean decodeNinebot(byte[] data) {
+    public boolean decodeNinebot(byte[] data) {
         ArrayList<NinebotAdapter.Status> statuses = NinebotAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
         if (rideStartTime == 0) {
@@ -1852,7 +1856,7 @@ public class WheelData {
         return true;
     }
 
-    private boolean decodeInmotion(byte[] data) {
+    public boolean decodeInmotion(byte[] data) {
         ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
 		if (statuses.size() < 1) return false;
         if (rideStartTime == 0) {
