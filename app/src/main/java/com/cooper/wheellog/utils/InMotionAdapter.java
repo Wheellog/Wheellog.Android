@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
+import com.cooper.wheellog.WheelData;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class InMotionAdapter implements IWheelAdapter {
 
     @Override
     public boolean decode(byte[] data) {
-        return false;
+        return WheelData.getInstance().decodeInmotion(data);
     }
 
     @Override
