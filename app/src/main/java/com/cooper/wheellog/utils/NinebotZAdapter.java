@@ -12,7 +12,7 @@ import timber.log.Timber;
 /**
  * Created by palachzzz on 08/2018.
  */
-public class NinebotZAdapter {
+public class NinebotZAdapter implements IWheelAdapter {
     private static NinebotZAdapter INSTANCE;
     private Timer keepAliveTimer;
 	private boolean settingCommandReady = false;
@@ -144,12 +144,27 @@ public class NinebotZAdapter {
         bmsMode = mode;
     }
 
+    @Override
+    public boolean decode(byte[] data) {
+        return false;
+    }
+
+    @Override
+    public void updatePedalsMode(int pedalsMode) {
+
+    }
+
+    @Override
+    public void updateLightMode(int lightMode) {
+
+    }
+
+    @Override
+    public void updateMaxSpeed(int wheelMaxSpeed) {
+
+    }
 
 
-
-
-
-	
     public static class Status {
 
         private final int speed;

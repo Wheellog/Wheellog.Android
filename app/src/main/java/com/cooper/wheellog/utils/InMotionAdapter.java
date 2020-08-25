@@ -12,7 +12,7 @@ import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 /**
  * Created by cedric on 29/12/2016.
  */
-public class InMotionAdapter {
+public class InMotionAdapter implements IWheelAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
     private boolean passwordSent = false;
@@ -25,6 +25,27 @@ public class InMotionAdapter {
     public static void setBetterPercents (boolean betterPercents) {
         mBetterPercents = betterPercents;
     }
+
+    @Override
+    public boolean decode(byte[] data) {
+        return false;
+    }
+
+    @Override
+    public void updatePedalsMode(int pedalsMode) {
+
+    }
+
+    @Override
+    public void updateLightMode(int lightMode) {
+
+    }
+
+    @Override
+    public void updateMaxSpeed(int wheelMaxSpeed) {
+
+    }
+
     enum Mode {
         rookie(0),
         general(1),
