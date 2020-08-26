@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -1778,7 +1779,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
         boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
 
-        if (auto_log)
+        if (auto_log && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
 
         if (log_location)
