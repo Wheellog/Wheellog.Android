@@ -30,10 +30,15 @@ public class FileUtil {
     private Uri uri;
     private String pathName = "WheelLog Logs";
     private Dictionary<String, Uri> AndroidQCache;
+    private boolean ignoreTimber = false;
 
     public FileUtil(Context context) {
         this.context = context;
         AndroidQCache = new Hashtable();
+    }
+
+    public void setIgnoreTimber(boolean value) {
+        ignoreTimber = value;
     }
 
     public File getFile() {
@@ -133,7 +138,7 @@ public class FileUtil {
             File dir = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
 
-            if (!dir.mkdirs())
+            if (!dir.mkdirs() && !ignoreTimber)
                 Timber.i("Directory not created");
 
             file = new File(dir, fileName);
@@ -143,7 +148,9 @@ public class FileUtil {
 
     public boolean writeLine(String line) {
         if (isNull()) {
-            Timber.e("Write failed. File is null");
+            if (!ignoreTimber) {
+                Timber.e("Write failed. File is null");
+            }
             return false;
         }
 
@@ -163,11 +170,15 @@ public class FileUtil {
             pw.close();
             f.close();
         } catch (FileNotFoundException e) {
-            Timber.e("File not found.");
+            if (!ignoreTimber) {
+                Timber.e("File not found.");
+            }
             e.printStackTrace();
             return false;
         } catch (IOException e) {
-            Timber.e("IOException");
+            if (!ignoreTimber) {
+                Timber.e("IOException");
+            }
             e.printStackTrace();
             return false;
         }
