@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -98,16 +99,18 @@ public class LoggingService extends Service
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         registerReceiver(mBluetoothUpdateReceiver, intentFilter);
 
-        if (!PermissionsUtil.checkExternalFilePermission(this)) {
-            showToast(R.string.logging_error_no_storage_permission);
-            stopSelf();
-            return START_STICKY;
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!PermissionsUtil.checkExternalFilePermission(this)) {
+                showToast(R.string.logging_error_no_storage_permission);
+                stopSelf();
+                return START_STICKY;
+            }
 
-        if (!isExternalStorageReadable() || !isExternalStorageWritable()) {
-            showToast(R.string.logging_error_storage_unavailable);
-            stopSelf();
-            return START_STICKY;
+            if (!isExternalStorageReadable() || !isExternalStorageWritable()) {
+                showToast(R.string.logging_error_storage_unavailable);
+                stopSelf();
+                return START_STICKY;
+            }
         }
 
         logLocationData = SettingsUtil.isLogLocationEnabled(this);
