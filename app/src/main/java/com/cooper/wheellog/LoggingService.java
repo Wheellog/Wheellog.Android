@@ -41,7 +41,7 @@ public class LoggingService extends Service
     private LocationManager mLocationManager;
     private String mLocationProvider = LocationManager.NETWORK_PROVIDER;
     private boolean logLocationData = false;
-    private File file;
+    private FileUtil fileUtil;
     private Notification mNotification;
 
     public static boolean isInstanceCreated() {
@@ -85,6 +85,7 @@ public class LoggingService extends Service
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         instance = this;
+        fileUtil = new FileUtil(getApplicationContext());
 /*        mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
@@ -121,9 +122,8 @@ public class LoggingService extends Service
         SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
 
         filename = sdFormatter.format(new Date()) + ".csv";
-        file = FileUtil.getFile(filename);
 
-        if (file == null) {
+        if (!fileUtil.prepareFile(filename)) {
             stopSelf();
             return START_STICKY;
         }
@@ -156,7 +156,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                FileUtil.writeLine(filename, "date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
                 mLocation = getLastBestLocation();
                 mLocationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -164,13 +164,14 @@ public class LoggingService extends Service
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             } else
-                FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
         }
-        else
-            FileUtil.writeLine(filename, "date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+        else {
+            fileUtil.writeLine("date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+        }
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+        serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
         startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
@@ -184,9 +185,9 @@ public class LoggingService extends Service
     @Override
     public void onDestroy() {
 
-        if (file != null) {
+        if (!fileUtil.isNull()) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
         }
@@ -195,9 +196,9 @@ public class LoggingService extends Service
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
 
-        if (SettingsUtil.isAutoUploadEnabled(this)) {
+        if (SettingsUtil.isAutoUploadEnabled(this) && !fileUtil.isNull()) {
             Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
-            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, file.getAbsolutePath());
+            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
             ContextCompat.startForegroundService(this, uploadIntent);
         }
         //stopForeground(false);
@@ -236,8 +237,7 @@ public class LoggingService extends Service
 
                 mLastLocation = mLocation;
             }
-            FileUtil.writeLine(filename,
-                    String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+            fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             //sdf.format(new Date()),
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             latitude,
@@ -261,8 +261,7 @@ public class LoggingService extends Service
 							WheelData.getInstance().getAlert()
                     ));
         } else {
-            FileUtil.writeLine(filename,
-                    String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+            fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             //sdf.format(new Date()),
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             WheelData.getInstance().getSpeedDouble(),
