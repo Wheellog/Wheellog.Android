@@ -2,6 +2,7 @@ package com.cooper.wheellog.presentation.preferences;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -101,7 +102,9 @@ public class SeekBarPreference extends Preference {
         // in AbsSeekBar when it's zero. This default increment value is set by AbsSeekBar
         // after calling setMax. That's why it's important to call setKeyProgressIncrement after
         // calling setMax() since setMax() can change the increment value.
-        seekBar.setMin(mMin);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            seekBar.setMin(mMin);
+        }
         if (mSeekBarIncrement != 0) {
             seekBar.setKeyProgressIncrement(mSeekBarIncrement);
         } else {
@@ -285,6 +288,10 @@ public class SeekBarPreference extends Preference {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O && progress < mMin) {
+                seekBar.setProgress(mMin);
+            }
+
             if (fromUser && (!mTrackingTouch)) {
                 syncValueInternal(seekBar);
             } else {
