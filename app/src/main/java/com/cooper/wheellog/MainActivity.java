@@ -1648,7 +1648,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                MainActivityPermissionsDispatcher.toggleLoggingServiceWithCheck(this);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    toggleLoggingService();
+                } else {
+                    MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithCheck(this);
+                }
                 return true;
             case R.id.miWatch:
                 togglePebbleService();
@@ -1860,6 +1864,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void toggleLoggingServiceLegacy() {
+        toggleLoggingService();
+    }
+
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
 

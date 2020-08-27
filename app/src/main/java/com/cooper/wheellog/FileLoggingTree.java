@@ -18,6 +18,7 @@ public class FileLoggingTree extends Timber.DebugTree {
     public FileLoggingTree(Context context) {
         this.context = context;
         fileUtil = new FileUtil(context);
+        fileUtil.setIgnoreTimber(true);
     }
 
     @Override
