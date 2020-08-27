@@ -1800,9 +1800,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     void acquireStoragePermission() {
     }
 
-    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION})
     void acquireLocationPermission() {
     }
+
+
 
     /*
         @NeedsPermission(Manifest.permission.WAKE_LOCK)
