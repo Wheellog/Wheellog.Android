@@ -3,11 +3,7 @@ package com.cooper.wheellog.utils
 import com.cooper.wheellog.WheelData
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
-import org.junit.After
-import org.junit.Before
-import org.junit.Ignore
-import org.junit.Test
-import java.nio.ByteBuffer
+import org.junit.*
 import kotlin.math.abs
 import kotlin.math.round
 
@@ -15,7 +11,7 @@ class GotwayAdapterTest {
 
     private var adapter: GotwayAdapter = GotwayAdapter()
     private var header = byteArrayOf(0x55, 0xAA.toByte())
-    private var data = spyk(WheelData())
+    private lateinit var data: WheelData
 
     @Before
     fun setUp() {
@@ -37,7 +33,7 @@ class GotwayAdapterTest {
             byteArray += i.toByte()
 
             // Act.
-            var result = adapter.decode(byteArray)
+            val result = adapter.decode(byteArray)
 
             // Assert.
             assertThat(result).isFalse()
@@ -47,29 +43,25 @@ class GotwayAdapterTest {
     @Test
     fun `decode with normal data`() {
         // Arrange.
-        var voltage = 6000.toShort()
-        var voltageBytes = ByteBuffer.allocate(2).putShort(voltage).array()
-        var speed = 111.toShort()
-        var speedBytes = ByteBuffer.allocate(2).putShort(speed).array()
-        var temperature = 99.toShort()
-        var temperatureBytes = ByteBuffer.allocate(2).putShort(temperature).array()
-        var distance = 321.toShort()
-        var distanceBytes = ByteBuffer.allocate(2).putShort(distance).array()
-        var byteArray = header +
-                voltageBytes +
-                speedBytes +
+        val voltage = 6000.toShort()
+        val speed = 111.toShort()
+        val temperature = 99.toShort()
+        val distance = 321.toShort()
+        val byteArray = header +
+                MathsUtil.getBytes(voltage) +
+                MathsUtil.getBytes(speed) +
                 byteArrayOf(6, 7) +
-                distanceBytes +
+                MathsUtil.getBytes(distance) +
                 byteArrayOf(10, 11) +
-                temperatureBytes +
-                byteArrayOf(14, 15, 16, 17, 0, 0);
+                MathsUtil.getBytes(temperature) +
+                byteArrayOf(14, 15, 16, 17, 0, 0)
 
         // Act.
-        var result = adapter.decode(byteArray)
+        val result = adapter.decode(byteArray)
 
         // Assert.
         assertThat(result).isTrue()
-        var speedInKm = round(speed * 3.6 / 10).toInt()
+        val speedInKm = round(speed * 3.6 / 10).toInt()
         assertThat(abs(data.speed)).isEqualTo(speedInKm)
         assertThat(data.temperature).isEqualTo(35)
         assertThat(data.temperature2).isEqualTo(35)

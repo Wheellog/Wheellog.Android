@@ -65,7 +65,7 @@ public class FileUtil {
         // Android 10+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Get uri from cashed dictionary
-            // It need to not create dublicate files
+            // It need to not create duplicate files
             uri = AndroidQCache.get(fileName);
             if (uri != null) {
                 file = new File(getPathFromUri(uri));

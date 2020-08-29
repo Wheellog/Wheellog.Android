@@ -1,6 +1,5 @@
 package com.cooper.wheellog;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +23,6 @@ import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -43,7 +41,6 @@ public class LoggingService extends Service
     private String mLocationProvider = LocationManager.NETWORK_PROVIDER;
     private boolean logLocationData = false;
     private FileUtil fileUtil;
-    private Notification mNotification;
 
     public static boolean isInstanceCreated() {
         return instance != null;
@@ -87,12 +84,6 @@ public class LoggingService extends Service
 
         instance = this;
         fileUtil = new FileUtil(getApplicationContext());
-/*        mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .build();
-
-*/
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
@@ -178,7 +169,6 @@ public class LoggingService extends Service
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
         startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
-        //startForeground(Constants.NOTIFICATION_ID_LOGGING, mNotification);
         Timber.i("DataLogger Started");
 
         return START_STICKY;
@@ -204,7 +194,6 @@ public class LoggingService extends Service
             uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
             ContextCompat.startForegroundService(this, uploadIntent);
         }
-        //stopForeground(false);
         stopSelf();
         Timber.i("DataLogger Stopped");
     }
@@ -241,7 +230,6 @@ public class LoggingService extends Service
                 mLastLocation = mLocation;
             }
             fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
-                            //sdf.format(new Date()),
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             latitude,
                             longitude,
@@ -265,7 +253,6 @@ public class LoggingService extends Service
                     ));
         } else {
             fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
-                            //sdf.format(new Date()),
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
