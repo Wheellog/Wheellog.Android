@@ -1,26 +1,19 @@
 package com.cooper.wheellog.utils
 
-import android.content.Context
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.nio.ByteBuffer
 
 class MathUtilTest {
-    private lateinit var util: FileUtil
-    private lateinit var mContextMock: Context
 
     @Before
     fun setUp() {
-        mContextMock = mockk(relaxed = true)
-        util = FileUtil(mContextMock)
     }
 
     @After
     fun tearDown() {
-        unmockkAll()
     }
 
     @Test
