@@ -757,7 +757,7 @@ public class WheelData {
         return mBattery;
     }
 
-    int getFanStatus() {
+    public int getFanStatus() {
         return mFanStatus;
     }
 
@@ -783,11 +783,11 @@ public class WheelData {
         return mVeteran;
     }
 
-    String getName() {
+    public String getName() {
         return mName;
     }
 
-    String getModel() {
+    public String getModel() {
         return mModel;
     }
 	
@@ -801,7 +801,7 @@ public class WheelData {
         return nAlert;
     }
 
-    String getSerial() {
+    public String getSerial() {
         return mSerialNumber;
     }
 
@@ -861,7 +861,7 @@ public class WheelData {
 
     int getTopSpeed() { return mTopSpeed; }
 
-    double getTopSpeedDouble() {
+    public double getTopSpeedDouble() {
         return mTopSpeed / 100.0;
     }
 
@@ -938,7 +938,7 @@ public class WheelData {
         return (mTotalDistance - mStartTotalDistance) / 1000.0;
     }
 
-    double getTotalDistanceDouble() {
+    public double getTotalDistanceDouble() {
         return mTotalDistance / 1000.0;
     }
 	
@@ -1520,6 +1520,7 @@ public class WheelData {
                 setCurrentTime(currentTime);
                 setTopSpeed(byteArrayInt2(data[8], data[9]));
                 mFanStatus = data[12];
+                return true;
             } else if ((data[16] & 255) == 187) { // Name and Type data
                 int end = 0;
                 int i = 0;
@@ -1540,7 +1541,7 @@ public class WheelData {
                     mVersion = String.format(Locale.US, "%.2f", ((double)(Integer.parseInt(ss[ss.length - 1])/100.0)));
                 } catch (Exception ignored) {
                 }
-
+                return true;
             } else if ((data[16] & 255) == 179) { // Serial Number
                 byte[] sndata = new byte[18];
                 System.arraycopy(data, 2, sndata, 0, 14);
@@ -1548,6 +1549,7 @@ public class WheelData {
                 sndata[17] = (byte) 0;
                 mSerialNumber = new String(sndata);
                 updateKSAlarmAndSpeed();
+                return true;
             }
             else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 mWheelMaxSpeed = (data[10] & 255);
@@ -1561,7 +1563,7 @@ public class WheelData {
                     data[16] = (byte)0x98;
                     mBluetoothLeService.writeBluetoothGattCharacteristic(data);
                 }
-
+                return true;
             }
         }
         return false;
