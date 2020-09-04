@@ -80,6 +80,8 @@
     <string name="max_speed_dial_title">Верхняя граница внешней шкалы</string>
     <string name="use_mph_title">Использовать мили</string>
     <string name="use_mph_description">Показывать мили вместо километров.</string>
+    <string name="view_blocks_title">Блоки под спидометром</string>
+    <string name="view_blocks_description">Настройка шести блоков под спидометром</string>
     <string name="enable_alarms_title">Включить предупреждения</string>
     <string name="enable_alarms_description">Телефон будет вибрировать во время предупреждения.</string>
     <string name="disable_phone_vibrate_title">Отключить вибросигнал</string>

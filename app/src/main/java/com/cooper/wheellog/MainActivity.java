@@ -62,6 +62,7 @@ import com.viewpagerindicator.LinePageIndicator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -1044,6 +1045,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
                 wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
                 wheelView.setAverageSpeed(WheelData.getInstance().getAverageRidingSpeedDouble());
+                wheelView.redrawTextBoxes();
                 break;
             case 1: // Text View
                 WheelData.getInstance().setBmsView(false);
@@ -1718,9 +1720,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void loadPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         use_mph = sharedPreferences.getBoolean(getString(R.string.use_mph), false);
+        Set<String> view_blocks = sharedPreferences.getStringSet(getString(R.string.view_blocks), null);
         int max_speed = sharedPreferences.getInt(getString(R.string.max_speed), 30) * 10;
         wheelView.setMaxSpeed(max_speed);
         wheelView.setUseMPH(use_mph);
+        if (view_blocks != null) {
+            wheelView.updateViewBlocksVisibility(view_blocks);
+        }
         //wheelView.invalidate();
         //wheelView.resetBatteryLowest();
 

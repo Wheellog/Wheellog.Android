@@ -352,7 +352,9 @@ public class BluetoothLeService extends Service {
                 mConnectionState != STATE_DISCONNECTED)
             mBluetoothGatt.disconnect();
         close();
-        mNotificationHandler.unregisterReceiver();
+        if (mNotificationHandler != null) {
+            mNotificationHandler.unregisterReceiver();
+        }
         unregisterReceiver(messageReceiver);
         stopForeground(true);
         stopSelf();
