@@ -807,21 +807,21 @@ public class WheelData {
 
     int getRideTime() { return mRideTime; }
 
-    double getAverageSpeedDouble() {
+    public double getAverageSpeedDouble() {
 		if (mTotalDistance!=0 && mRideTime !=0) {
 			return (((mTotalDistance - mStartTotalDistance)*3.6)/(mRideTime + mLastRideTime));
 		}
 		else return 0.0;
 	}
 	
-	double getAverageRidingSpeedDouble() {
+	public double getAverageRidingSpeedDouble() {
 		if (mTotalDistance!=0 && mRidingTime !=0) {
 			return (((mTotalDistance - mStartTotalDistance)*3.6)/mRidingTime);
 		}
 		else return 0.0;
 	}
 	
-    String getRideTimeString() {
+    public String getRideTimeString() {
         int currentTime = mRideTime + mLastRideTime;
         long hours = TimeUnit.SECONDS.toHours(currentTime);
         long minutes = TimeUnit.SECONDS.toMinutes(currentTime) -
@@ -851,7 +851,7 @@ public class WheelData {
     double getVoltageSagDouble() {
         return mVoltageSag / 100.0;
     }
-    double getPowerDouble() {
+    public double getPowerDouble() {
         return (mCurrent * mVoltage) / 10000.0;
     }
 

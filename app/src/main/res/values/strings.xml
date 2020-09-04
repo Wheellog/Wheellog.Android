@@ -231,6 +231,9 @@
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
+    <string name="view_blocks" translatable="false">view_blocks</string>
+    <string name="view_blocks_title">Info blocks</string>
+    <string name="view_blocks_description">Show info blocks below speedometer (only 6)</string>
     <string name="use_eng_alert_title">Restart required</string>
     <string name="use_eng_alert_description">Please restart the application to apply the language change</string>
     <string name="use_eng_title">English</string>
