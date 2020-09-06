@@ -7,6 +7,13 @@ import androidx.preference.PreferenceManager;
 
 import com.cooper.wheellog.R;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.Set;
+
+import timber.log.Timber;
+
 
 public class SettingsUtil {
 
@@ -26,14 +33,14 @@ public class SettingsUtil {
         editor.putString("last_mac", address);
         editor.apply();
     }
-	
-	public static void setUserDistance(Context context, String id, long distance) {
+
+    public static void setUserDistance(Context context, String id, long distance) {
         SharedPreferences.Editor editor = context.getSharedPreferences(key, Context.MODE_PRIVATE).edit();
         editor.putLong("user_distance_"+id, distance);
         editor.apply();
     }
-	
-	public static long getUserDistance(Context context, String id) {
+
+    public static long getUserDistance(Context context, String id) {
         SharedPreferences pref = context.getSharedPreferences(key, Context.MODE_PRIVATE);
         if (pref.contains("user_distance_"+id)) {
             return pref.getLong("user_distance_"+id, 0);
@@ -91,7 +98,7 @@ public class SettingsUtil {
     public static void setAutoUploadEnabled(Context context, boolean enabled) {
         getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_upload), enabled).apply();
     }
-    
+
     private static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -148,5 +155,53 @@ public class SettingsUtil {
 
     public static String getAdvDataForWheel(Context context, String id) {
         return getSharedPreferences(context).getString("wheel_adv_data_"+id, "");
+    }
+
+    public static boolean savePreferencesTo(Context context, String suffix) {
+        if (suffix == null || suffix.equals("")) {
+            return false;
+        }
+        SharedPreferences from = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences to = getDestinationPrefs(context, suffix);
+        return sync(from, to);
+    }
+
+    public static boolean restorePreferencesFrom(Context context, String suffix) {
+        if (suffix == null || suffix.equals("")) {
+            return false;
+        }
+        SharedPreferences from = getDestinationPrefs(context, suffix);
+        SharedPreferences to = PreferenceManager.getDefaultSharedPreferences(context);
+        return sync(from, to);
+    }
+
+    private static SharedPreferences getDestinationPrefs(@NotNull Context context, String suffix) {
+        return context.getSharedPreferences(
+                context.getPackageName() + "_preferences_" + suffix,
+                Context.MODE_PRIVATE);
+    }
+
+    private static boolean sync(SharedPreferences from, SharedPreferences to) {
+        if (from == null || to == null) {
+            return false;
+        }
+        Map<String, ?> prefs = to.getAll();
+        if (prefs.isEmpty()) {
+            return false;
+        }
+        SharedPreferences.Editor editor = from.edit();
+        for (Map.Entry<String, ?> p : prefs.entrySet()) {
+            String key = p.getKey();
+            Object value = p.getValue();
+            if (value instanceof String) editor.putString(key, (String) value);
+            else if (value instanceof Set<?>) editor.putStringSet(key, (Set<String>) value);
+            else if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
+            else if (value instanceof Float) editor.putFloat(key, (Float) value);
+            else if (value instanceof Integer) editor.putInt(key, (Integer) value);
+            else if (value instanceof Long) editor.putLong(key, (Long) value);
+            else Timber.i("Unexpected Preferences type " + value);
+        }
+        editor.apply();
+        return true;
     }
 }
