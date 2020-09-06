@@ -20,7 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Set;
@@ -31,8 +30,13 @@ public class FileUtil {
     private Context context;
     private File file;
     private Uri uri;
-    private Dictionary<String, Uri> AndroidQCache;
+    private Hashtable<String, CachedFile> AndroidQCache;
     private boolean ignoreTimber = false;
+
+    class CachedFile {
+        public File file;
+        public Uri uri;
+    }
 
     public FileUtil(Context context) {
         this.context = context;
@@ -66,22 +70,28 @@ public class FileUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Get uri from cashed dictionary
             // It need to not create duplicate files
-            uri = AndroidQCache.get(fileName);
-            if (uri != null) {
-                file = new File(getPathFromUri(uri));
+            if (AndroidQCache.containsKey(fileName)) {
+                CachedFile cache = AndroidQCache.get(fileName);
+                uri = cache.uri;
+                file = cache.file;
                 return true;
             }
+            try {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
+                contentValues.put(MediaStore.Downloads.TITLE, fileName);
+                contentValues.put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName));
+                contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME);
+                Uri contentUri = MediaStore.Downloads.getContentUri(getExternalStoreName());
 
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
-            contentValues.put(MediaStore.Downloads.TITLE, fileName);
-            contentValues.put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName));
-            contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME);
-            Uri contentUri = MediaStore.Downloads.getContentUri(getExternalStoreName());
-
-            uri = getContentResolver().insert(contentUri, contentValues);
-            file = new File(getPathFromUri(uri));
-            AndroidQCache.put(fileName, uri);
+                uri = getContentResolver().insert(contentUri, contentValues);
+                file = new File(getPathFromUri(uri));
+            } finally {
+                CachedFile cache = new CachedFile();
+                cache.uri = uri;
+                cache.file = file;
+                AndroidQCache.put(fileName, cache);
+            }
         } else {
             // api 28 or less
             // Get the directory for the user's public pictures directory.
@@ -167,11 +177,10 @@ public class FileUtil {
         }
     }
 
-    @Nullable
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private String getPathFromUri(@Nullable Uri uri) {
         if (uri == null) {
-            return null;
+            return "";
         }
         if ("content".equalsIgnoreCase(uri.getScheme())) {
             return getDataColumn();
@@ -180,10 +189,9 @@ public class FileUtil {
             return uri.getPath();
         }
 
-        return null;
+        return "";
     }
 
-    @Nullable
     private String getDataColumn() {
         Cursor cursor = null;
         final String column = "_data";
@@ -202,6 +210,6 @@ public class FileUtil {
             if (cursor != null)
                 cursor.close();
         }
-        return null;
+        return "";
     }
 }
