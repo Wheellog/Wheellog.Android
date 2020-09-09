@@ -47,6 +47,7 @@ public class WheelView extends View {
     final Rect speedTextRect = new Rect();
     final Rect batteryTextRect = new Rect();
     final Rect temperatureTextRect = new Rect();
+    final Rect nameTextRect = new Rect();
 
     float speedTextSize;
     float speedTextKPHSize;
@@ -72,6 +73,8 @@ public class WheelView extends View {
     private Double mVoltage = 0.0;
     private Double mCurrent = 0.0;
     private Double mAverageSpeed = 0.0;
+
+    private String mWheelName = "";
 
 
     float outerStrokeWidth;
@@ -199,6 +202,7 @@ public class WheelView extends View {
             targetBatteryLowest = 10;
             targetBattery = Math.round(((float) 40 / 100) * mBattery);
             currentBattery = targetBattery;
+            mWheelName = "InGotSong V15F";
         }
 
         mViewBlocks = getViewBlockInfo();
@@ -230,6 +234,14 @@ public class WheelView extends View {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(tfTest);
+    }
+
+    public String getWheelName() {
+        return mWheelName;
+    }
+
+    public void setWheelName(String mWheelName) {
+        this.mWheelName = mWheelName;
     }
 
     public void setMaxSpeed(int maxSpeed) {
@@ -476,6 +488,8 @@ public class WheelView extends View {
             Rect tempRect = new Rect(lLeft, tTop, lRight, tTop + (tlRect.height() / 3));
             boxTextSize = calculateFontSize(boundaryOfText, tempRect, getResources().getString(R.string.top_speed) + "W", textPaint);
             boxTextHeight = boundaryOfText.height();
+
+            nameTextRect.set((int)box_inner_padding, h - (int)(box_top_padding * 2), (int)w, h);
         } else {
             int tTop = (int) Math.round(outerArcRect.top + oaRadius + box_top_padding + (Math.cos(Math.toRadians(54)) * (oaRadius + (outerStrokeWidth / 2))));
             int height = Math.round((getHeight() - tTop - (box_inner_padding * 2) - getPaddingBottom()) / 3);
@@ -500,6 +514,8 @@ public class WheelView extends View {
             Rect tempRect = new Rect(lLeft, tTop, lRight, tTop + (tlRect.height() / 3));
             boxTextSize = calculateFontSize(boundaryOfText, tempRect, getResources().getString(R.string.top_speed) + "W", textPaint);
             boxTextHeight = boundaryOfText.height();
+
+            nameTextRect.set((int)box_inner_padding, h - (int)(box_top_padding * 2), (int)center_x, h);
         }
 
         mTextBoxesBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -509,33 +525,40 @@ public class WheelView extends View {
         refresh();
     }
 
-    private void drawTextBox(String header, String value, Canvas canvas, Rect rect)
+    private void drawWheelName(Canvas canvas) {
+        Paint paint = new Paint(textPaint);
+        paint.setTextSize(calculateFontSize(boundaryOfText, nameTextRect, mWheelName, paint));
+        canvas.drawText(mWheelName, nameTextRect.centerX(), nameTextRect.centerY(), paint);
+    }
+
+    private void drawTextBox(String header, String value, Canvas canvas, Rect rect, Paint paint)
     {
         if (header.length() > 10) {
-            textPaint.setTextSize(Math.min(boxTextSize, calculateFontSize(boundaryOfText, rect, header, textPaint)));
-            canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), textPaint);
-            textPaint.setTextSize(boxTextSize);
+            paint.setTextSize(Math.min(boxTextSize, calculateFontSize(boundaryOfText, rect, header, paint)));
+            canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), paint);
+            paint.setTextSize(boxTextSize);
         } else {
-            canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), textPaint);
+            canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), paint);
         }
-        canvas.drawText(value, rect.centerX(), rect.centerY() + boxTextHeight, textPaint);
+        canvas.drawText(value, rect.centerX(), rect.centerY() + boxTextHeight, paint);
     }
 
     public void redrawTextBoxes() {
-        if (mTextBoxesBitmap == null || getHeight() == getWidth()) {
+        if (mTextBoxesBitmap == null) {
             return;
         }
 
         mTextBoxesBitmap.eraseColor(Color.TRANSPARENT);
 
-        textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        textPaint.setTextSize(boxTextSize);
+        Paint paint = new Paint(textPaint);
+        paint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
+        paint.setTextSize(boxTextSize);
 
         try {
             int i = 0;
             for (ViewBlockInfo block : mViewBlocks) {
                 if (block.getEnabled() && i < 6) {
-                    drawTextBox(block.getTitle(), block.getValue(), mCanvas, boxRects[i++]);
+                    drawTextBox(block.getTitle(), block.getValue(), mCanvas, boxRects[i++], paint);
                 }
             }
         } catch (Exception e) {
@@ -664,6 +687,8 @@ public class WheelView extends View {
 
         // Draw text blocks bitmap
         canvas.drawBitmap(mTextBoxesBitmap, 0, 0, null);
+
+        drawWheelName(canvas);
 
         refreshDisplay = currentSpeed != targetSpeed ||
                 currentCurrent != targetCurrent ||

@@ -347,6 +347,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
                     loadPreferences();
+                    // save to specific pref depending on MAC
+                    SettingsUtil.savePreferencesTo(getBaseContext(), SettingsUtil.getLastAddress(getBaseContext()));
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
@@ -381,8 +383,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 configureDisplay(WheelData.getInstance().getWheelType());
-                if (mDeviceAddress != null && !mDeviceAddress.isEmpty())
+                if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
+
+                    // restore specific preferences depending on MAC
+                    // before that we pause the SharedPreferenceChangeListener
+                    // in MainPreferencesFragment to avoid endless loop
+                    MainPreferencesFragment pref = (MainPreferencesFragment) getPreferencesFragment();
+                    if (pref != null)
+                        pref.onPause();
+                    SettingsUtil.restorePreferencesFrom(getApplicationContext(), mDeviceAddress);
+                    if (pref != null)
+                        pref.onResume();
+                }
                 hideSnackBar();
                 break;
             case BluetoothLeService.STATE_CONNECTING:
@@ -1045,6 +1058,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
                 wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
                 wheelView.setAverageSpeed(WheelData.getInstance().getAverageRidingSpeedDouble());
+                wheelView.setWheelName(WheelData.getInstance().getName());
                 wheelView.redrawTextBoxes();
                 break;
             case 1: // Text View
