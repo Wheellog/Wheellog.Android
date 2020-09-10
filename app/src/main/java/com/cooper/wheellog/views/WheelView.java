@@ -504,9 +504,7 @@ public class WheelView extends View {
             float boxLeft2 = w - boxW - getPaddingRight();
             for (int row = 0; row < rows; row++) {
                 boxRects[i++] = new RectF(boxLeft, boxTop, boxLeft + boxW, boxTop + boxH);
-                mCanvas.drawRect(boxRects[i - 1], textPaint);
                 boxRects[i++] = new RectF(boxLeft2, boxTop, boxLeft2 + boxW, boxTop + boxH);
-                mCanvas.drawRect(boxRects[i - 1], textPaint);
                 boxTop += boxH + box_inner_padding;
             }
         } else {
