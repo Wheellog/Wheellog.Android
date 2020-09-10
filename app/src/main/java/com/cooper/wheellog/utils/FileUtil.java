@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Set;
@@ -32,6 +31,7 @@ public class FileUtil {
     private Uri uri;
     private Hashtable<String, CachedFile> AndroidQCache;
     private boolean ignoreTimber = false;
+    private OutputStream stream;
 
     class CachedFile {
         public File file;
@@ -60,7 +60,7 @@ public class FileUtil {
     }
 
     public boolean isNull() {
-        return file == null || file.toString().equals("null");
+        return file == null || file.toString().equals("null") || stream == null;
     }
 
     public boolean prepareFile(String fileName) {
@@ -103,46 +103,61 @@ public class FileUtil {
 
             file = new File(dir, fileName);
         }
+        prepareStream();
         return !isNull();
     }
 
-    public boolean writeLine(String line) {
-        if (isNull()) {
-            if (!ignoreTimber) {
-                Timber.e("Write failed. File is null");
-            }
-            return false;
-        }
-
-        OutputStream f;
+    private void prepareStream() {
         try {
+            close();
             if (uri != null) {
-                f = context.getContentResolver().openOutputStream(Objects.requireNonNull(uri), "wa");
-            } else {
-                f = new FileOutputStream(file, true);
+                stream = context.getContentResolver().openOutputStream(Objects.requireNonNull(uri), "wa");
+            } else if (file != null) {
+                stream = new FileOutputStream(file, true);
             }
-            PrintWriter pw = new PrintWriter(f);
-
-            pw.println(line);
-
-            // TODO Frequent opening and closing is not a good practice
-            pw.flush();
-            pw.close();
-            f.close();
         } catch (FileNotFoundException e) {
             if (!ignoreTimber) {
                 Timber.e("File not found.");
             }
             e.printStackTrace();
-            return false;
+        }
+    }
+
+    public void close() {
+        if (stream == null) {
+            return;
+        }
+        try {
+            stream.close();
+            stream = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeLine(String line) {
+        if (isNull()) {
+            if (!ignoreTimber) {
+                Timber.e("Write failed. File is null");
+            }
+            return;
+        }
+        if (stream == null) {
+            if (!ignoreTimber) {
+                Timber.e("Write failed. Stream is null. Forgot to call prepareStream()?");
+            }
+            return;
+        }
+
+        try {
+            stream.write((line + "\r\n").getBytes());
+            stream.flush();
         } catch (IOException e) {
             if (!ignoreTimber) {
                 Timber.e("IOException");
             }
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     @NotNull
@@ -211,5 +226,11 @@ public class FileUtil {
                 cursor.close();
         }
         return "";
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        close();
+        super.finalize();
     }
 }

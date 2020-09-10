@@ -10,28 +10,31 @@ import com.cooper.wheellog.utils.FileUtil;
 
 public class FileLoggingTree extends Timber.DebugTree {
 
-    private static final String TAG = FileLoggingTree.class.getSimpleName();
+    //private static final String TAG = FileLoggingTree.class.getSimpleName();
 
-    private Context context;
     private FileUtil fileUtil;
+    private String fileName;
+    private SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private SimpleDateFormat logFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
     public FileLoggingTree(Context context) {
-        this.context = context;
         fileUtil = new FileUtil(context);
         fileUtil.setIgnoreTimber(true);
+        String fileNameTimeStamp = fileNameFormat.format(new Date());
+        fileName = fileNameTimeStamp + ".html";
+        if (fileUtil.prepareFile(fileName)) {
+            fileUtil.writeLine("<style>p { background:lightgray; padding: 2; margin:2 } b { background:lightblue; padding: 2; margin-left: 10 }</style>");
+        }
     }
 
     @Override
     protected void log(int priority, String tag, String message, Throwable t) {
         try {
-            String fileNameTimeStamp = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
-            String logTimeStamp = new SimpleDateFormat("E MMM dd yyyy 'at' hh:mm:ss:SSS aaa", Locale.US).format(new Date());
-            String fileName = fileNameTimeStamp + ".html";
-
             if (fileUtil.prepareFile(fileName)) {
-                fileUtil.writeLine("<p style=\"background:lightgray;\"><strong style=\"background:lightblue;\">&nbsp&nbsp" + logTimeStamp + " :&nbsp&nbsp</strong>&nbsp&nbsp" + message + "</p>");
+                fileUtil.writeLine(String.format("<p><b>%s</b>%s</p>", logFormat.format(new Date()), message));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             //Log.e(TAG, "Error while logging into file : " + e);
         }
     }
