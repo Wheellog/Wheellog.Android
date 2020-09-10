@@ -490,14 +490,18 @@ public class WheelView extends View {
             }
         }
 
+        if (countBlocks == 0) {
+            return;
+        }
+
         int cols = 2;
-        int rows = (countBlocks + 1) / cols;
-        RectF[] boxRects = new RectF[cols * rows];
+        int rows = Math.round(countBlocks / (float) cols + 0.499f);
+        RectF[] boxRects = new RectF[(cols + 1) * rows];
 
         if (landscape) {
             float boxTop = getPaddingTop();
-            float boxH = (h - boxTop - getPaddingBottom()) / (float)rows - box_inner_padding;
-            float boxW = (w - oaDiameter - getPaddingRight()) / (float)cols - outerStrokeWidth;
+            float boxH = (h - boxTop - getPaddingBottom()) / (float) rows - box_inner_padding;
+            float boxW = (w - oaDiameter - getPaddingRight()) / (float) cols - outerStrokeWidth;
 
             int i = 0;
             float boxLeft = getPaddingLeft();
@@ -508,14 +512,15 @@ public class WheelView extends View {
                 boxTop += boxH + box_inner_padding;
             }
         } else {
-            if (countBlocks >= 9)
-            {
+            if (countBlocks == 1) {
+                cols = 1;
+            } else if (countBlocks >= 9) {
                 cols = 3;
-                rows = (countBlocks + 1) / cols;
+                rows = Math.round(countBlocks / (float) cols + 0.499f);
             }
             float boxTop = box_top_padding + outerArcRect.top + oaDiameter / 2 + (float) (Math.cos(Math.toRadians(54)) * (oaDiameter + outerStrokeWidth) / 2);
-            float boxH = (h - boxTop - getPaddingBottom()) / (float)rows - box_inner_padding;
-            float boxW = (w - getPaddingRight()) / (float)cols - box_inner_padding;
+            float boxH = (h - boxTop - getPaddingBottom()) / (float) rows - box_inner_padding;
+            float boxW = (w - getPaddingRight()) / (float) cols - box_inner_padding;
 
             int i = 0;
             for (int row = 0; row < rows; row++) {
