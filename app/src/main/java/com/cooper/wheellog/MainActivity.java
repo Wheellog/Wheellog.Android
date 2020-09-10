@@ -1058,7 +1058,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
                 wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
                 wheelView.setAverageSpeed(WheelData.getInstance().getAverageRidingSpeedDouble());
-                wheelView.setWheelName(WheelData.getInstance().getName());
+                wheelView.setWheelName(WheelData.getInstance().getModel());
                 wheelView.redrawTextBoxes();
                 break;
             case 1: // Text View

@@ -35,7 +35,7 @@ public class WheelView extends View {
     final RectF speedTextRect = new RectF();
     final RectF batteryTextRect = new RectF();
     final RectF temperatureTextRect = new RectF();
-    final Path nameTextPath = new Path();
+    Path nameTextPath;
     Paint nameTextPaint;
 
     float speedTextSize;
@@ -225,6 +225,9 @@ public class WheelView extends View {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(tfTest);
+
+        nameTextPaint = new Paint(textPaint);
+        nameTextPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
     }
 
     public void setWheelName(String mWheelName) {
@@ -443,14 +446,13 @@ public class WheelView extends View {
 
         // calculate name text
         RectF nameTextRect = new RectF(
-                innerArcRect.left + inner_outer_padding * 2,
-                innerArcRect.top + inner_outer_padding * 2,
-                innerArcRect.right - inner_outer_padding * 2,
-                innerArcRect.bottom - inner_outer_padding * 2);
+                left + inner_outer_padding * 2,
+                top + inner_outer_padding * 2,
+                right - inner_outer_padding * 2,
+                bottom - inner_outer_padding * 2);
+        nameTextPath = new Path();
         nameTextPath.addArc(nameTextRect, 190, 160);
-        nameTextPaint = new Paint(textPaint);
-        nameTextPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        nameTextRect.bottom = nameTextRect.top + innerTextRectWidth * 1.2f;
+        nameTextRect.bottom = nameTextRect.top + innerStrokeWidth * 1.2f;
         nameTextPaint.setTextSize(calculateFontSize(boundaryOfText, nameTextRect, mWheelName, nameTextPaint) / 2);
 
         mTextBoxesBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
