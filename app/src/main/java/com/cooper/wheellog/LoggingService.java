@@ -33,7 +33,6 @@ public class LoggingService extends Service
 {
     private static LoggingService instance = null;
     SimpleDateFormat sdf;
-    private String filename;
     private Location mLocation;
     private Location mLastLocation;
     private double mLocationDistance;
@@ -53,6 +52,7 @@ public class LoggingService extends Service
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
+            assert action != null;
             switch (action) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     if (mLocationManager != null && logLocationData) {
@@ -115,7 +115,7 @@ public class LoggingService extends Service
 
         SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
 
-        filename = sdFormatter.format(new Date()) + ".csv";
+        String filename = sdFormatter.format(new Date()) + ".csv";
 
         if (!fileUtil.prepareFile(filename)) {
             stopSelf();
@@ -126,6 +126,7 @@ public class LoggingService extends Service
             mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
             // Getting GPS Provider status
+            assert mLocationManager != null;
             boolean isGPSEnabled = mLocationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
@@ -196,6 +197,7 @@ public class LoggingService extends Service
         }
         stopSelf();
         Timber.i("DataLogger Stopped");
+        fileUtil.close();
     }
 
     /* Checks if external storage is available for read and write */
