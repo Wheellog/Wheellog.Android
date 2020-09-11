@@ -185,11 +185,11 @@ public class SettingsUtil {
         if (from == null || to == null) {
             return false;
         }
-        Map<String, ?> prefs = to.getAll();
+        Map<String, ?> prefs = from.getAll();
         if (prefs.isEmpty()) {
             return false;
         }
-        SharedPreferences.Editor editor = from.edit();
+        SharedPreferences.Editor editor = to.edit();
         for (Map.Entry<String, ?> p : prefs.entrySet()) {
             String key = p.getKey();
             Object value = p.getValue();
