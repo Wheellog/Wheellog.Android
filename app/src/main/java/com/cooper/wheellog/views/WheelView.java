@@ -14,7 +14,6 @@ import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.utils.Typefaces;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import timber.log.Timber;
@@ -35,8 +34,8 @@ public class WheelView extends View {
     final RectF speedTextRect = new RectF();
     final RectF batteryTextRect = new RectF();
     final RectF temperatureTextRect = new RectF();
-    Path nameTextPath;
-    Paint nameTextPaint;
+    Path modelTextPath;
+    Paint modelTextPaint;
 
     float speedTextSize;
     float speedTextKPHSize;
@@ -63,7 +62,7 @@ public class WheelView extends View {
     private Double mCurrent = 0.0;
     private Double mAverageSpeed = 0.0;
 
-    private String mWheelName = "";
+    private String mWheelModel = "";
 
 
     float outerStrokeWidth;
@@ -193,7 +192,7 @@ public class WheelView extends View {
             targetBatteryLowest = 10;
             targetBattery = Math.round(((float) 40 / 100) * mBattery);
             currentBattery = targetBattery;
-            mWheelName = "GotInSong Z10";
+            mWheelModel = "GotInSong Z10";
         }
 
         mViewBlocks = getViewBlockInfo();
@@ -226,12 +225,15 @@ public class WheelView extends View {
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(tfTest);
 
-        nameTextPaint = new Paint(textPaint);
-        nameTextPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
+        modelTextPaint = new Paint(textPaint);
+        modelTextPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
     }
 
-    public void setWheelName(String mWheelName) {
-        this.mWheelName = mWheelName;
+    public void setWheelModel(String mWheelModel) {
+        if (!this.mWheelModel.equals(mWheelModel)) {
+            this.mWheelModel = mWheelModel;
+            calcModelTextSize();
+        }
     }
 
     public void setMaxSpeed(int maxSpeed) {
@@ -444,22 +446,25 @@ public class WheelView extends View {
                 center_y+(innerTextRectWidth/2f));
         innerArcTextSize = calculateFontSize(boundaryOfText, batteryTextRect, "88%", textPaint);
 
-        // calculate name text
-        RectF nameTextRect = new RectF(
-                left + inner_outer_padding * 2,
-                top + inner_outer_padding * 2,
-                right - inner_outer_padding * 2,
-                bottom - inner_outer_padding * 2);
-        nameTextPath = new Path();
-        nameTextPath.addArc(nameTextRect, 190, 160);
-        nameTextRect.bottom = nameTextRect.top + innerStrokeWidth * 1.2f;
-        nameTextPaint.setTextSize(calculateFontSize(boundaryOfText, nameTextRect, mWheelName, nameTextPaint) / 2);
+        calcModelTextSize();
 
         mTextBoxesBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mTextBoxesBitmap);
         redrawTextBoxes();
 
         refresh();
+    }
+
+    private void calcModelTextSize() {
+        RectF modelTextRect = new RectF(
+                innerArcRect.left + inner_outer_padding * 2,
+                innerArcRect.top + inner_outer_padding * 2,
+                innerArcRect.right - inner_outer_padding * 2,
+                innerArcRect.bottom - inner_outer_padding * 2);
+        modelTextPath = new Path();
+        modelTextPath.addArc(modelTextRect, 190, 160);
+        modelTextRect.bottom = modelTextRect.top + innerStrokeWidth * 1.2f;
+        modelTextPaint.setTextSize(calculateFontSize(boundaryOfText, modelTextRect, mWheelModel, modelTextPaint) / 2);
     }
 
     private void drawTextBox(String header, String value, Canvas canvas, RectF rect, Paint paint)
@@ -673,7 +678,7 @@ public class WheelView extends View {
         }
 
         // Wheel name
-        canvas.drawTextOnPath(mWheelName, nameTextPath, 0, 0, nameTextPaint);
+        canvas.drawTextOnPath(mWheelModel, modelTextPath, 0, 0, modelTextPaint);
 
         // Draw text blocks bitmap
         canvas.drawBitmap(mTextBoxesBitmap, 0, 0, null);
