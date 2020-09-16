@@ -178,10 +178,12 @@ public class LoggingService extends Service
     @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
+        String path = fileUtil.getAbsolutePath();
+        fileUtil.close();
 
-        if (!fileUtil.isNull()) {
+        if (path != null) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
         }
@@ -190,14 +192,13 @@ public class LoggingService extends Service
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
 
-        if (SettingsUtil.isAutoUploadEnabled(this) && !fileUtil.isNull()) {
+        if (SettingsUtil.isAutoUploadEnabled(this) && path != null) {
             Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
-            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
+            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             ContextCompat.startForegroundService(this, uploadIntent);
         }
         stopSelf();
         Timber.i("DataLogger Stopped");
-        fileUtil.close();
     }
 
     /* Checks if external storage is available for read and write */
