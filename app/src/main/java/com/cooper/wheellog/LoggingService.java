@@ -175,13 +175,17 @@ public class LoggingService extends Service
         return START_STICKY;
     }
 
+    private boolean isNullOrEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
     @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
         String path = fileUtil.getAbsolutePath();
         fileUtil.close();
 
-        if (path != null) {
+        if (!isNullOrEmpty(path)) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
@@ -192,7 +196,7 @@ public class LoggingService extends Service
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
 
-        if (SettingsUtil.isAutoUploadEnabled(this) && path != null) {
+        if (SettingsUtil.isAutoUploadEnabled(this) && !isNullOrEmpty(path)) {
             Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
             uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             ContextCompat.startForegroundService(this, uploadIntent);
