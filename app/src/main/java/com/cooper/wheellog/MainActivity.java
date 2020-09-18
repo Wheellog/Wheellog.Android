@@ -1045,20 +1045,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void updateScreen(boolean updateGraph) {
+        WheelData data = WheelData.getInstance();
         switch (viewPagerPage) {
             case 0: // GUI View
-                WheelData.getInstance().setBmsView(false);
-                wheelView.setSpeed(WheelData.getInstance().getSpeed());
-                wheelView.setBattery(WheelData.getInstance().getBatteryLevel());
-                wheelView.setTemperature(WheelData.getInstance().getTemperature());
-                wheelView.setRideTime(WheelData.getInstance().getRidingTimeString());
-                wheelView.setTopSpeed(WheelData.getInstance().getTopSpeedDouble());
-                wheelView.setDistance(WheelData.getInstance().getDistanceDouble());
-                wheelView.setTotalDistance(WheelData.getInstance().getTotalDistanceDouble());
-                wheelView.setVoltage(WheelData.getInstance().getVoltageDouble());
-                wheelView.setCurrent(WheelData.getInstance().getPowerDouble());
-                wheelView.setAverageSpeed(WheelData.getInstance().getAverageRidingSpeedDouble());
-                wheelView.setWheelName(WheelData.getInstance().getModel());
+                data.setBmsView(false);
+                wheelView.setSpeed(data.getSpeed());
+                wheelView.setBattery(data.getBatteryLevel());
+                wheelView.setTemperature(data.getTemperature());
+                wheelView.setRideTime(data.getRidingTimeString());
+                wheelView.setTopSpeed(data.getTopSpeedDouble());
+                wheelView.setDistance(data.getDistanceDouble());
+                wheelView.setTotalDistance(data.getTotalDistanceDouble());
+                wheelView.setVoltage(data.getVoltageDouble());
+                wheelView.setCurrent(data.getPowerDouble());
+                wheelView.setAverageSpeed(data.getAverageRidingSpeedDouble());
+                wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
                 wheelView.redrawTextBoxes();
                 break;
             case 1: // Text View
