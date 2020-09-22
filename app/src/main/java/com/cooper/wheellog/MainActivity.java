@@ -1793,7 +1793,7 @@ public class MainActivity extends AppCompatActivity {
         if (auto_upload) {
             googleDriveUtil.requestSignIn(REQUEST_SIGN_IN);
         } else if (googleDriveUtil.alreadyLoggedIn()) {
-            googleDriveUtil.requestSignInOut();
+            googleDriveUtil.requestSignOut();
         }
 
         updateScreen(true);
