@@ -4,9 +4,9 @@ import android.app.Activity
 import com.cooper.wheellog.R
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.Scope
-import com.google.api.client.googleapis.apache.GoogleApacheHttpTransport.newTrustedTransport
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
+import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -14,7 +14,7 @@ import com.google.api.services.drive.model.File
 import java.util.*
 
 class GoogleDriveUtil(private val activity: Activity) {
-    private lateinit var googleClient: GoogleSignInClient
+    private var googleClient: GoogleSignInClient? = null
     private lateinit var driveService: Drive
     private var credential: GoogleAccountCredential? = null
 
@@ -23,18 +23,18 @@ class GoogleDriveUtil(private val activity: Activity) {
 
     private fun buildGoogleSignInClient() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(Scope(DriveScopes.DRIVE))
+                .requestScopes(Scope(DriveScopes.DRIVE_FILE))
                 .build()
         googleClient = GoogleSignIn.getClient(activity, gso)
     }
 
     fun requestSignIn(requestId: Int) {
         buildGoogleSignInClient()
-        activity.startActivityForResult(googleClient.signInIntent, requestId)
+        activity.startActivityForResult(googleClient?.signInIntent, requestId)
     }
 
-    fun requestSignInOut() {
-        googleClient.signOut()
+    fun requestSignOut() {
+        googleClient?.signOut()
     }
 
     private fun createFolder(folderName: String): String {
@@ -87,7 +87,7 @@ class GoogleDriveUtil(private val activity: Activity) {
                 ?: return false
         credential!!.selectedAccount = account.account
         driveService = Drive.Builder(
-                newTrustedTransport(),
+                NetHttpTransport(),
                 JacksonFactory.getDefaultInstance(),
                 credential)
                 .setApplicationName(activity.getString(R.string.app_name))
