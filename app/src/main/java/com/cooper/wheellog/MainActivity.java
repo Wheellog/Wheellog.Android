@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -41,6 +40,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.GoogleDriveUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -52,10 +52,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
@@ -70,9 +66,10 @@ import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
+import static com.google.api.client.util.Strings.isNullOrEmpty;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -243,26 +240,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     TextView tvTitleBms2Cell16;
     TextView tvBms2Cell16;
 
-    @Override
-    public void onUserLeaveHint() {
-        if (SettingsUtil.isUsePipMode(this)) {
-
-            //Rational rational = new Rational(90,160);
-
-            //PictureInPictureParams mParams =
-            //      new PictureInPictureParams.Builder()
-            //              .setAspectRatio(rational)
-            //              .build();
-
-            //enterPictureInPictureMode();
-            //enterPictureInPictureMode(mParams);
-
-            //      if (true){
-
-        }
-        //super.onR;
-    }
-
     private BluetoothLeService mBluetoothLeService;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
@@ -272,12 +249,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     int viewPagerPage = 0;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
-    private GoogleApiClient mGoogleApiClient;
     private DrawerLayout mDrawer;
+
+    public GoogleDriveUtil googleDriveUtil;
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
-    protected static final int REQUEST_CODE_RESOLUTION = 40;
+    protected static final int REQUEST_SIGN_IN = 40;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -339,8 +317,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
                         String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
-                        if (running)
+                        if (running) {
                             showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
+                        } else if (SettingsUtil.isAutoUploadEnabled(getApplicationContext()) && !isNullOrEmpty(filepath)) {
+                            if (googleDriveUtil.alreadyLoggedIn()) {
+                                googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
+                            }
+                        }
                     }
 
                     setMenuIconStates();
@@ -1539,6 +1522,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         xAxis.setTextColor(getResources().getColor(android.R.color.white));
         xAxis.setValueFormatter(chartAxisValueFormatter);
 
+        googleDriveUtil = new GoogleDriveUtil(this);
+
         loadPreferences();
 
         if (SettingsUtil.isFirstRun(this)) {
@@ -1586,9 +1571,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onResume() {
         super.onResume();
 
-        if (SettingsUtil.isAutoUploadEnabled(this))
-            getGoogleApiClient().connect();
-
         if (mBluetoothLeService != null &&
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
@@ -1609,9 +1591,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onPause() {
         super.onPause();
         unregisterReceiver(mBluetoothUpdateReceiver);
-        //cationUtil.getInstance().unregisterReceiver();
-        if (SettingsUtil.isAutoUploadEnabled(this))
-            getGoogleApiClient().disconnect();
     }
 
     @Override
@@ -1811,8 +1790,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
 //        if (mConnect_sound)
 //            MainActivityPermissionsDispatcher.acquireWakeLockPermissionWithCheck(this);
-        if (auto_upload)
-            getGoogleApiClient().connect();
+        if (auto_upload) {
+            googleDriveUtil.requestSignIn(REQUEST_SIGN_IN);
+        } else if (googleDriveUtil.alreadyLoggedIn()) {
+            googleDriveUtil.requestSignInOut();
+        }
 
         updateScreen(true);
     }
@@ -1825,18 +1807,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     void acquireLocationPermission() {
     }
 
-
-
-    /*
-        @NeedsPermission(Manifest.permission.WAKE_LOCK)
-        void acquireWakeLockPermission() {}
-
-        @OnPermissionDenied(Manifest.permission.WAKE_LOCK)
-        void wakeLockPermitionDenided(){
-            SettingsUtil.setConnectionSound(this, false);
-            ((PreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
-        }
-        */
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
         SettingsUtil.setAutoLog(this, false);
@@ -1976,10 +1946,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     finish();
                 }
                 break;
-            case REQUEST_CODE_RESOLUTION:
-                if (resultCode == RESULT_OK)
-                    getGoogleApiClient().connect();
-                else {
+            case REQUEST_SIGN_IN:
+                if (resultCode != RESULT_OK || !googleDriveUtil.setupDriveService()) {
                     SettingsUtil.setAutoUploadEnabled(this, false);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
@@ -2017,34 +1985,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     };
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Timber.i("GoogleApiClient connection failed: %s", connectionResult.toString());
-        if (!connectionResult.hasResolution()) {
-            // show the localized error dialog.
-            GoogleApiAvailability.getInstance().getErrorDialog(this, connectionResult.getErrorCode(), 0).show();
-            SettingsUtil.setAutoUploadEnabled(this, false);
-            ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
-            return;
-        }
-        try {
-            connectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
-        } catch (IntentSender.SendIntentException e) {
-            Timber.e("Exception while starting resolution activity");
-        }
-    }
-
-    public GoogleApiClient getGoogleApiClient() {
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(Drive.API)
-                    .addScope(Drive.SCOPE_FILE)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-        return mGoogleApiClient;
-    }
-
     private Fragment getPreferencesFragment() {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
         if (frag == null) {
@@ -2052,6 +1992,4 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         return frag;
     }
-
-
 }
