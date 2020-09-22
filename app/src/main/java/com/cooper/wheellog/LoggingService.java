@@ -15,7 +15,6 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
@@ -195,12 +194,6 @@ public class LoggingService extends Service
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
-
-        if (SettingsUtil.isAutoUploadEnabled(this) && !isNullOrEmpty(path)) {
-            Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
-            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
-            ContextCompat.startForegroundService(this, uploadIntent);
-        }
         stopSelf();
         Timber.i("DataLogger Stopped");
     }
