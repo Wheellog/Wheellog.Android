@@ -1947,7 +1947,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case REQUEST_SIGN_IN:
-                if (resultCode != RESULT_OK || !googleDriveUtil.setupDriveService()) {
+                if (resultCode != RESULT_OK || !googleDriveUtil.setupDriveService(data)) {
                     SettingsUtil.setAutoUploadEnabled(this, false);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
