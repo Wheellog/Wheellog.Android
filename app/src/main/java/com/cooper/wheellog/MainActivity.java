@@ -1947,9 +1947,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case REQUEST_SIGN_IN:
-                if (resultCode != RESULT_OK || !googleDriveUtil.setupDriveService(data)) {
-                    SettingsUtil.setAutoUploadEnabled(this, false);
-                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                if (resultCode == RESULT_OK) {
+                    googleDriveUtil.handleSignInResult(data, result -> {
+                        if (!result) {
+                            SettingsUtil.setAutoUploadEnabled(this, false);
+                            ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                        }
+                        return null;
+                    });
                 }
                 break;
         }

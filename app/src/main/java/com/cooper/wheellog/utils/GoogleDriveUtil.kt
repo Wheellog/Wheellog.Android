@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import com.cooper.wheellog.R
 import com.google.android.gms.auth.api.signin.*
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
@@ -84,25 +83,25 @@ class GoogleDriveUtil(private val activity: Activity) {
         return account != null
     }
 
-    fun setupDriveService(data: Intent?): Boolean {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-                    ?: return false
-            credential = GoogleAccountCredential.usingOAuth2(activity, listOf(DriveScopes.DRIVE_FILE))
-                    ?: return false
-            credential!!.selectedAccount = account.account
-            driveService = Drive.Builder(
-                    NetHttpTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    credential)
-                    .setApplicationName(activity.getString(R.string.app_name))
-                    .build()
-                    ?: return false
-        } catch (e: ApiException) {
-            Timber.e("signInResult:failed code=%s", e.statusCode)
-        }
-
-        return true
+    fun handleSignInResult(data: Intent?, callback: (result: Boolean) -> Unit) {
+        GoogleSignIn.getSignedInAccountFromIntent(data)
+                .addOnSuccessListener { googleAccount: GoogleSignInAccount ->
+                    credential = GoogleAccountCredential.usingOAuth2(activity, setOf(DriveScopes.DRIVE_FILE))
+                    credential?.selectedAccount = googleAccount.account
+                    driveService = Drive.Builder(
+                            NetHttpTransport(),
+                            JacksonFactory.getDefaultInstance())
+                    { httpRequest ->
+                        credential?.initialize(httpRequest)
+                        httpRequest.connectTimeout = 3 * 60000  // 3 minutes connect timeout
+                        httpRequest.readTimeout = 3 * 60000  // 3 minutes read timeout
+                    }
+                            .setApplicationName(activity.getString(R.string.app_name))
+                            .build()
+                    callback(true)
+                }.addOnFailureListener { e: Exception? ->
+                    Timber.e(e, "signIn failed")
+                    callback(true)
+                }
     }
 }
