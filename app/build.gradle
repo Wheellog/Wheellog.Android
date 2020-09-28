@@ -41,7 +41,7 @@ android {
             }
         }
         buildTypes.each {
-            it.buildConfigField 'String', 'ec_accessToken', props.getProperty('ec_accessToken')
+            it.buildConfigField 'String', 'ec_accessToken', props.getProperty('ec_accessToken') ?: "\"\""
         }
     }
     compileOptions {
