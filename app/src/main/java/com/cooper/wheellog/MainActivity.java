@@ -339,8 +339,10 @@ public class MainActivity extends AppCompatActivity {
                                     } else {
                                         data = FileUtil.readBytes(filepath);
                                     }
+                                    showSnackBar(("Upload file to electro.club"), 1000);
                                     ElectroClub.getInstance().uploadTrack(data, u -> {
                                         // TODO show track
+                                        showSnackBar(("File uploaded successfully"), 5000);
                                         return null;
                                     });
                                 } catch (IOException e) {
@@ -1324,6 +1326,10 @@ public class MainActivity extends AppCompatActivity {
         WheelData.initiate();
 
         ElectroClub.setInstance(new ElectroClub(this));
+        ElectroClub.getInstance().setErrorListener(error -> {
+            showSnackBar(("electro.club error: " + error), 4000);
+            return null;
+        });
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
