@@ -105,6 +105,8 @@
     <string name="no_chart_data">Нет данных для отображения графика</string>
     <string name="auto_log_title">Автоматическое логирование</string>
     <string name="auto_log_description">Автоматически начать запись логов при подключении колеса.</string>
+    <string name="auto_upload_log_ec_title">Выгрузка логов в Electro.Club</string>
+    <string name="auto_upload_log_ec_description">Автоматически выгружать логи на сайт Electro.Club. Требуется включить местоположение.</string>
     <string name="auto_upload_log_title">Выгрузка логов</string>
     <string name="auto_upload_log_description">Автоматически выгружать логи на Google Drive.</string>
     <string name="log_location_title">Местоположение</string>

@@ -99,6 +99,22 @@ public class SettingsUtil {
         getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_upload), enabled).apply();
     }
 
+    public static boolean isAutoUploadECEnabled(Context context) {
+        return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_upload_ec), false);
+    }
+
+    public static void setAutoUploadECEnabled(Context context, boolean enabled) {
+        getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_upload_ec), enabled).apply();
+    }
+
+    public static void setAutoUploadECToken(Context context, String token) {
+        getSharedPreferences(context).edit().putString(context.getString(R.string.auto_upload_ec_token), token).apply();
+    }
+
+    public static String getAutoUploadECToken(Context context) {
+        return getSharedPreferences(context).getString(context.getString(R.string.auto_upload_ec_token), null);
+    }
+
     private static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }

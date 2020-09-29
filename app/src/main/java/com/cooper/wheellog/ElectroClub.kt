@@ -2,98 +2,68 @@ package com.cooper.wheellog
 
 import android.content.Context
 import com.android.volley.Request
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.cooper.wheellog.utils.FileDataPart
-import com.cooper.wheellog.utils.VolleyFileUploadRequest
-import org.json.JSONException
+import com.cooper.wheellog.utils.VolleyMultipartRequest
 import org.json.JSONObject
-import java.io.File
+import java.net.HttpURLConnection
 
-class ElectroClub(private val context: Context) {
-    private val url = "https://electro.club/api"
+class ElectroClub(context: Context) {
+
+    companion object {
+        @JvmStatic lateinit var instance: ElectroClub
+    }
+
+    private val url = "https://electro.club/api/v1"
     private val accessToken = BuildConfig.ec_accessToken
 
     var userToken: String? = null
-        get() = field
-        private set(value) {
-            field = value
-        }
+
     var lastError: String? = null
-        get() = field
-        private set(value) {
-            field = value
-        }
 
-    private fun send (method: Int, parameters: MutableMap<String, String>,
-                      success: (jsonObject: JSONObject) -> Unit, err: (message: String) -> Unit) {
-        // TODO: GET method params
-        val req = object : StringRequest(
-                method,
-                url,
-                {
-                    val jsonObject = JSONObject(it)
-                    lastError = parseError(jsonObject)
-                    success(jsonObject)
-                },
-                {
-                    lastError = "Response was not successful. $it"
-                    err(it.message!!)
-                }) {
-            override fun getParams(): MutableMap<String, String> {
-                return parameters
-            }
-        }
-        Volley.newRequestQueue(context).add(req)
-    }
+    var requestQueue = Volley.newRequestQueue(context)
 
-    fun login(email: String, password: String, success: (token: String?) -> Unit) {
+    fun login(email: String, password: String, done: (String?) -> Unit) {
         userToken = null
         send(Request.Method.POST, mutableMapOf(
                 "method" to "login",
                 "access_token" to accessToken,
                 "email" to email,
                 "password" to password), {
-            userToken = it.getObjectSafe("loginSuccess")?.getString("user_token") ?: ""
-            success(userToken)
+            userToken = it
+                    .getObjectSafe("data")
+                    ?.getObjectSafe("user")
+                    ?.getString("user_token")
+            done(userToken)
         }, {
             println("error is: $it")
+            userToken = null
+            done(null)
         })
     }
 
-    fun uploadTrack(file: File, success: (json: JSONObject?) -> Unit) {
+    fun uploadTrack(data: ByteArray, success: (JSONObject?) -> Unit) {
         userToken ?: return
         val parameters = mutableMapOf(
                 "method" to "uploadTrack",
                 "access_token" to accessToken,
                 "user_token" to userToken!!)
 
-        val request = object : VolleyFileUploadRequest(
+        val request = object : VolleyMultipartRequest(
                 Method.POST,
                 url,
                 {
-                    println("response is: $it")
-                    try {
-                        val jsonObject = JSONObject(String(it.data))
-                        lastError = parseError(jsonObject)
-                        if (lastError == null) {
-                            success(jsonObject
-                                    .getObjectSafe("response")
-                                    ?.getObjectSafe("track"))
-                        }
-                    } catch (e: JSONException) {
-                        // API is not stable
-                        println("JSONException is: $e")
-                    }
+                    val jsonObject = JSONObject(String(it.data))
+                    success(jsonObject.getObjectSafe("data")?.getObjectSafe("track"))
                 },
                 {
-                    println("error is: $it")
+                    parseRequestError(it)
                 }
         ) {
-            override fun getByteData(): MutableMap<String, FileDataPart> {
-                var params = HashMap<String, FileDataPart>()
-                val fileData = byteArrayOf(14, 15, 16, 17, 0, 0) // file.readBytes()
-                params["file"] = FileDataPart("file", fileData, "csv")
+            override fun getByteData(): MutableMap<String, DataPart>? {
+                val params: MutableMap<String, DataPart> = HashMap()
+                params["file"] = DataPart("file.csv", data, "text/csv")
                 return params
             }
 
@@ -101,7 +71,41 @@ class ElectroClub(private val context: Context) {
                 return parameters
             }
         }
-        Volley.newRequestQueue(context).add(request)
+        requestQueue.add(request)
+    }
+
+    private fun send(method: Int, parameters: MutableMap<String, String>,
+                     success: (JSONObject) -> Unit, err: (String?) -> Unit) {
+        // TODO: GET method params
+        val req = object : StringRequest(
+                method,
+                url,
+                {
+                    val jsonObject = JSONObject(it)
+                    success(jsonObject)
+                },
+                {
+                    parseRequestError(it)
+                    err(lastError)
+                }) {
+            override fun getParams(): MutableMap<String, String> {
+                return parameters
+            }
+        }
+        requestQueue.add(req)
+    }
+
+    private fun parseRequestError(it: VolleyError) {
+        it.networkResponse.let { r ->
+            lastError = if (r.statusCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+                JSONObject(String(r.data))
+                        .getObjectSafe("data")
+                        ?.getStringSafe("error")
+                        ?: "Unknown error"
+            } else {
+                "Response was not successful. code:${r.statusCode}"
+            }
+        }
     }
 
     private fun JSONObject.getObjectSafe(name: String): JSONObject? {
@@ -111,7 +115,10 @@ class ElectroClub(private val context: Context) {
         return null
     }
 
-    private fun parseError(jsonObject: JSONObject): String? {
-        return jsonObject.getObjectSafe("error")?.getString("description")
+    private fun JSONObject.getStringSafe(name: String): String? {
+        if (this.has(name)) {
+            return this.getString(name)
+        }
+        return null
     }
 }

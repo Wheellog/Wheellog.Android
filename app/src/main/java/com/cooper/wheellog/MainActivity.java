@@ -40,6 +40,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.GoogleDriveUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
@@ -55,6 +56,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -256,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
     protected static final int REQUEST_SIGN_IN = 40;
+    protected static final int RESULT_AUTH_REQUEST = 50;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -268,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
 
-            loadPreferences();
+            loadPreferences(false);
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);
@@ -319,9 +322,22 @@ public class MainActivity extends AppCompatActivity {
                         String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
                         if (running) {
                             showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
-                        } else if (SettingsUtil.isAutoUploadEnabled(getApplicationContext()) && !isNullOrEmpty(filepath)) {
-                            if (googleDriveUtil.alreadyLoggedIn()) {
-                                googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
+                        } else if (!isNullOrEmpty(filepath)) {
+                            if (SettingsUtil.isAutoUploadEnabled(getApplicationContext())) {
+                                if (googleDriveUtil.alreadyLoggedIn()) {
+                                    googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
+                                }
+                            }
+                            if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
+                                    && ElectroClub.getInstance().getUserToken() != null) {
+                                try {
+                                    ElectroClub.getInstance().uploadTrack(FileUtil.readBytes(filepath), u -> {
+                                        // TODO show track
+                                        return null;
+                                    });
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -329,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
-                    loadPreferences();
+                    loadPreferences(true);
                     // save to specific pref depending on MAC
                     SettingsUtil.savePreferencesTo(getBaseContext(), SettingsUtil.getLastAddress(getBaseContext()));
                     break;
@@ -1299,6 +1315,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
+        ElectroClub.setInstance(new ElectroClub(this));
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
                 .commit();
@@ -1524,7 +1542,7 @@ public class MainActivity extends AppCompatActivity {
 
         googleDriveUtil = new GoogleDriveUtil(this);
 
-        loadPreferences();
+        loadPreferences(true);
 
         if (SettingsUtil.isFirstRun(this)) {
             new Handler().postDelayed(new Runnable() {
@@ -1711,7 +1729,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void loadPreferences() {
+    private void loadPreferences(boolean requests) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         use_mph = sharedPreferences.getBoolean(getString(R.string.use_mph), false);
         Set<String> view_blocks = sharedPreferences.getStringSet(getString(R.string.view_blocks), null);
@@ -1782,6 +1800,7 @@ public class MainActivity extends AppCompatActivity {
         boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
         boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
+        ElectroClub.getInstance().setUserToken(SettingsUtil.getAutoUploadECToken(this));
 
         if (auto_log && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -1790,10 +1809,23 @@ public class MainActivity extends AppCompatActivity {
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
 //        if (mConnect_sound)
 //            MainActivityPermissionsDispatcher.acquireWakeLockPermissionWithCheck(this);
-        if (auto_upload) {
-            googleDriveUtil.requestSignIn(REQUEST_SIGN_IN);
-        } else if (googleDriveUtil.alreadyLoggedIn()) {
-            googleDriveUtil.requestSignOut();
+
+        if (!requests) {
+            if (auto_upload) {
+                googleDriveUtil.requestSignIn(REQUEST_SIGN_IN);
+            } else if (googleDriveUtil.alreadyLoggedIn()) {
+                googleDriveUtil.requestSignOut();
+            }
+            if (sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false)) {
+                if (ElectroClub.getInstance().getUserToken() == null) {
+                    startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
+                }
+            } else {
+                // TODO: need to implement a logout
+                // logout after uncheck
+                ElectroClub.getInstance().setUserToken(null);
+                SettingsUtil.setAutoUploadECToken(this, null);
+            }
         }
 
         updateScreen(true);
@@ -1955,6 +1987,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                         return null;
                     });
+                }
+                break;
+            case RESULT_AUTH_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    SettingsUtil.setAutoUploadECToken(this, ElectroClub.getInstance().getUserToken());
+                } else {
+                    SettingsUtil.setAutoUploadECEnabled(this, false);
+                    SettingsUtil.setAutoUploadECToken(this, null);
+                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
         }
