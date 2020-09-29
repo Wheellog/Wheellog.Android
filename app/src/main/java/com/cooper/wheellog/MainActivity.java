@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -331,7 +332,14 @@ public class MainActivity extends AppCompatActivity {
                             if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
                                     && ElectroClub.getInstance().getUserToken() != null) {
                                 try {
-                                    ElectroClub.getInstance().uploadTrack(FileUtil.readBytes(filepath), u -> {
+                                    byte[] data;
+                                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_URI)) {
+                                        data = FileUtil.readBytes(getApplicationContext(),
+                                                Uri.parse(intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_URI)));
+                                    } else {
+                                        data = FileUtil.readBytes(filepath);
+                                    }
+                                    ElectroClub.getInstance().uploadTrack(data, u -> {
                                         // TODO show track
                                         return null;
                                     });

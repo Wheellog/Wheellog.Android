@@ -186,6 +186,9 @@ public class LoggingService extends Service
 
         if (!isNullOrEmpty(path)) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+            if (fileUtil.getUri() != null) {
+                serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_URI, fileUtil.getUri().toString());
+            }
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);

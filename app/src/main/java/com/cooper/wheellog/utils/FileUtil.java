@@ -55,6 +55,10 @@ public class FileUtil {
         return file;
     }
 
+    public Uri getUri() {
+        return uri;
+    }
+
     public String getAbsolutePath() {
         if (isNull()) {
             return null;
@@ -140,6 +144,11 @@ public class FileUtil {
 
     public static byte[] readBytes(String filePath) throws IOException {
         InputStream inputStream = new FileInputStream(filePath);
+        return ByteStreams.toByteArray(inputStream);
+    }
+
+    public static byte[] readBytes(Context context, Uri uri) throws IOException {
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
         return ByteStreams.toByteArray(inputStream);
     }
 
