@@ -1810,7 +1810,7 @@ public class MainActivity extends AppCompatActivity {
 //        if (mConnect_sound)
 //            MainActivityPermissionsDispatcher.acquireWakeLockPermissionWithCheck(this);
 
-        if (!requests) {
+        if (requests) {
             if (auto_upload) {
                 googleDriveUtil.requestSignIn(REQUEST_SIGN_IN);
             } else if (googleDriveUtil.alreadyLoggedIn()) {
