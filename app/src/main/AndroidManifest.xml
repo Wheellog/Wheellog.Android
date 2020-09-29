@@ -60,7 +60,9 @@
         <activity
             android:name=".ScanActivity"
             android:theme="@style/AppTheme.Transparent" />
-
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme.Transparent" />
         <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
         <service android:name=".LoggingService" />

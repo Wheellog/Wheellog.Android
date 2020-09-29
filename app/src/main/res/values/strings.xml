@@ -147,6 +147,8 @@
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
+    <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
+    <string name="auto_upload_ec_token" translatable="false">auto_upload_ec_token</string>
     <string name="auto_upload" translatable="false">auto_upload</string>
     <string name="log_location_data" translatable="false">log_location_data</string>
     <string name="use_gps" translatable="false">use_gps</string>
@@ -293,6 +295,8 @@
     <string name="no_chart_data">No data available</string>
     <string name="auto_log_title">Auto Log</string>
     <string name="auto_log_description">Start logging automatically when a wheel is connected</string>
+    <string name="auto_upload_log_ec_title">Upload to Electro.Club</string>
+    <string name="auto_upload_log_ec_description">Automatically upload log files to Electro.Club site. GPS must be turned on.</string>
     <string name="auto_upload_log_title">Auto Upload Logs</string>
     <string name="auto_upload_log_description">Automatically upload log files to Google Drive</string>
     <string name="log_location_title">Log location</string>
@@ -369,6 +373,8 @@
     <string name="bmsCell14">Cell 14</string>
     <string name="bmsCell15">Cell 15</string>
     <string name="bmsCell16">Cell 16</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
 
 
 </resources>

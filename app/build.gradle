@@ -32,6 +32,17 @@ android {
         debug {
             applicationIdSuffix ".debug"
         }
+        // private properties
+        def props = new Properties()
+        def propsPath =  "../local.properties"
+        if (file(propsPath).exists()) {
+            file(propsPath).withInputStream {
+                stream -> props.load(stream)
+            }
+        }
+        buildTypes.each {
+            it.buildConfigField 'String', 'ec_accessToken', props.getProperty('ec_accessToken') ?: "\"\""
+        }
     }
     compileOptions {
         sourceCompatibility = 1.8
@@ -45,9 +56,6 @@ android {
         exclude("META-INF/*.kotlin_module")
     }
 }
-
-//apply plugin: 'android-apt'
-
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -84,4 +92,5 @@ dependencies {
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
     implementation 'androidx.core:core-ktx:1.3.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.volley:volley:1.1.1'
 }
