@@ -19,9 +19,8 @@ class ElectroClub(context: Context) {
     private val accessToken = BuildConfig.ec_accessToken
 
     var userToken: String? = null
-
     var lastError: String? = null
-
+    var errorListener: ((String)->Unit)? = null
     var requestQueue = Volley.newRequestQueue(context)
 
     fun login(email: String, password: String, done: (String?) -> Unit) {
@@ -106,6 +105,7 @@ class ElectroClub(context: Context) {
                 "Response was not successful. code:${r.statusCode}"
             }
         }
+        errorListener?.let { it(lastError ?: "Unknown error") }
     }
 
     private fun JSONObject.getObjectSafe(name: String): JSONObject? {
