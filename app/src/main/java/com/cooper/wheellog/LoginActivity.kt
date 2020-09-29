@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 
 
-public class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,7 +23,7 @@ public class LoginActivity : AppCompatActivity() {
         val ok = convertView.findViewById<Button>(R.id.ok_button)
         val cancel = convertView.findViewById<Button>(R.id.btn_cancel)
         val title = convertView.findViewById<TextView>(R.id.alertTitle)
-        title.text = "Electro.Club"
+        title.text = "electro.club"
 
         AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
                 .setView(convertView)
