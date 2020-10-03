@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
                     email.editText?.text.toString(),
                     password.editText?.text.toString()
             ) {
-                if (it != null) {
+                if (it) {
                     setResult(RESULT_OK, Intent())
                     finish()
                 } else {
