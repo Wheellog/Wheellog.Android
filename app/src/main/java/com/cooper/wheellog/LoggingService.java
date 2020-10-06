@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,11 +23,14 @@ import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import timber.log.Timber;
+
+import static com.google.api.client.util.Strings.isNullOrEmpty;
 
 public class LoggingService extends Service
 {
@@ -186,12 +190,29 @@ public class LoggingService extends Service
 
         if (!isNullOrEmpty(path)) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-            if (fileUtil.getUri() != null) {
-                serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_URI, fileUtil.getUri().toString());
-            }
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
+
+            // TODO google drive upload
+            /*if (SettingsUtil.isAutoUploadEnabled(getApplicationContext())) {
+                if (googleDriveUtil.alreadyLoggedIn()) {
+                    googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
+                }
+            }*/
+
+            // electro.club ulpoad
+            if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
+                    && ElectroClub.getInstance().getUserToken() != null) {
+                try {
+                    byte[] data = fileUtil.readBytes();
+                    String[] tokens = path.split("[\\\\|/]");
+                    String filename = tokens[tokens.length - 1];
+                    ElectroClub.getInstance().uploadTrack(data, filename);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         instance = null;
         unregisterReceiver(mBluetoothUpdateReceiver);

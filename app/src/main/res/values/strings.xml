@@ -148,7 +148,8 @@
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
-    <string name="auto_upload_ec_token" translatable="false">auto_upload_ec_token</string>
+    <string name="ec_token" translatable="false">ec_token</string>
+    <string name="ec_user_id" translatable="false">ec_user_id</string>
     <string name="auto_upload" translatable="false">auto_upload</string>
     <string name="log_location_data" translatable="false">log_location_data</string>
     <string name="use_gps" translatable="false">use_gps</string>

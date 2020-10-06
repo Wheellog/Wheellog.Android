@@ -63,7 +63,6 @@ public class Constants {
     public static final String INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN = "pebble_displayed_Screen";
     public static final String INTENT_EXTRA_BLE_AUTO_CONNECT = "ble_auto_connect";
     public static final String INTENT_EXTRA_LOGGING_FILE_LOCATION = "logging_file_location";
-    public static final String INTENT_EXTRA_LOGGING_FILE_URI = "logging_file_uri";
     public static final String INTENT_EXTRA_IS_RUNNING = "is_running";
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
     public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";

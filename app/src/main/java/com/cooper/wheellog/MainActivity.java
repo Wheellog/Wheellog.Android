@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -41,7 +40,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.GoogleDriveUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
@@ -57,7 +55,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -69,7 +66,6 @@ import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
-import static com.google.api.client.util.Strings.isNullOrEmpty;
 
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
@@ -323,35 +319,8 @@ public class MainActivity extends AppCompatActivity {
                         String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
                         if (running) {
                             showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
-                        } else if (!isNullOrEmpty(filepath)) {
-                            if (SettingsUtil.isAutoUploadEnabled(getApplicationContext())) {
-                                if (googleDriveUtil.alreadyLoggedIn()) {
-                                    googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
-                                }
-                            }
-                            if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
-                                    && ElectroClub.getInstance().getUserToken() != null) {
-                                try {
-                                    byte[] data;
-                                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_URI)) {
-                                        data = FileUtil.readBytes(getApplicationContext(),
-                                                Uri.parse(intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_URI)));
-                                    } else {
-                                        data = FileUtil.readBytes(filepath);
-                                    }
-                                    showSnackBar(("Upload file to electro.club"), 1000);
-                                    ElectroClub.getInstance().uploadTrack(data, u -> {
-                                        // TODO show track
-                                        showSnackBar(("File uploaded successfully"), 5000);
-                                        return null;
-                                    });
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
                         }
                     }
-
                     setMenuIconStates();
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
@@ -1325,9 +1294,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
-        ElectroClub.setInstance(new ElectroClub(this));
-        ElectroClub.getInstance().setErrorListener(error -> {
-            showSnackBar(("electro.club error: " + error), 4000);
+        ElectroClub.getInstance().setErrorListener((method, error) -> {
+            String message = "[ec] " + method + " error: " + error;
+            Timber.i(message);
+            MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));
+            return null;
+        });
+        ElectroClub.getInstance().setSuccessListener((method, success) -> {
+            String message = "[ec] " + method + " ok: " + success;
+            Timber.i(message);
+            MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));
             return null;
         });
 
@@ -1814,7 +1790,9 @@ public class MainActivity extends AppCompatActivity {
         boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
         boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
-        ElectroClub.getInstance().setUserToken(SettingsUtil.getAutoUploadECToken(this));
+        ElectroClub.getInstance().setUserToken(SettingsUtil.getECToken(this));
+        ElectroClub.getInstance().setUserId(SettingsUtil.getECUserId(this));
+        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
 
         if (auto_log && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -1833,12 +1811,15 @@ public class MainActivity extends AppCompatActivity {
             if (sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false)) {
                 if (ElectroClub.getInstance().getUserToken() == null) {
                     startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
+                } else {
+                    // TODO check user token
                 }
             } else {
                 // TODO: need to implement a logout
                 // logout after uncheck
                 ElectroClub.getInstance().setUserToken(null);
-                SettingsUtil.setAutoUploadECToken(this, null);
+                ElectroClub.getInstance().setUserId(null);
+                SettingsUtil.setECToken(this, null);
             }
         }
 
@@ -1982,6 +1963,9 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
+                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                            mDeviceAddress,
+                            success -> null);
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:
@@ -2005,10 +1989,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case RESULT_AUTH_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    SettingsUtil.setAutoUploadECToken(this, ElectroClub.getInstance().getUserToken());
+                    SettingsUtil.setECToken(this, ElectroClub.getInstance().getUserToken());
+                    SettingsUtil.setECUserId(this, ElectroClub.getInstance().getUserId());
                 } else {
                     SettingsUtil.setAutoUploadECEnabled(this, false);
-                    SettingsUtil.setAutoUploadECToken(this, null);
+                    SettingsUtil.setECToken(this, null);
+                    SettingsUtil.setECUserId(this, null);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
