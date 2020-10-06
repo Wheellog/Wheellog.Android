@@ -152,11 +152,12 @@ class ElectroClub {
                 }
             }
 
-            if (primaryId != null)
+            // TODO todo todo need UI
+            /*if (primaryId != null)
             {
                 selectedGarage = primaryId
                 success(selectedGarage)
-            }
+            }*/
         }
     }
 
