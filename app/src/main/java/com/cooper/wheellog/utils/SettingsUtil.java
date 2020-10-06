@@ -107,12 +107,20 @@ public class SettingsUtil {
         getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_upload_ec), enabled).apply();
     }
 
-    public static void setAutoUploadECToken(Context context, String token) {
-        getSharedPreferences(context).edit().putString(context.getString(R.string.auto_upload_ec_token), token).apply();
+    public static void setECToken(Context context, String token) {
+        getSharedPreferences(context).edit().putString(context.getString(R.string.ec_token), token).apply();
     }
 
-    public static String getAutoUploadECToken(Context context) {
-        return getSharedPreferences(context).getString(context.getString(R.string.auto_upload_ec_token), null);
+    public static String getECToken(Context context) {
+        return getSharedPreferences(context).getString(context.getString(R.string.ec_token), null);
+    }
+
+    public static void setECUserId(Context context, String userId) {
+        getSharedPreferences(context).edit().putString(context.getString(R.string.ec_user_id), userId).apply();
+    }
+
+    public static String getECUserId(Context context) {
+        return getSharedPreferences(context).getString(context.getString(R.string.ec_user_id), null);
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {

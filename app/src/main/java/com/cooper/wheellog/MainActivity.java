@@ -1294,17 +1294,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
-        ElectroClub.setInstance(new ElectroClub());
         ElectroClub.getInstance().setErrorListener((method, error) -> {
-            showSnackBar(("ec " + method + " error: " + error), 4000);
+            String message = "[ec] " + method + " error: " + error;
+            Timber.i(message);
+            MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));
             return null;
         });
         ElectroClub.getInstance().setSuccessListener((method, success) -> {
-            if (method.equals("uploadTrack")) {
-                showSnackBar(("ec: upload track was successful"), 3000);
-            } else {
-                showSnackBar(("ec " + method + " ok: " + success), 3000);
-            }
+            String message = "[ec] " + method + " ok: " + success;
+            Timber.i(message);
+            MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));
             return null;
         });
 
@@ -1791,7 +1790,9 @@ public class MainActivity extends AppCompatActivity {
         boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
         boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
-        ElectroClub.getInstance().setUserToken(SettingsUtil.getAutoUploadECToken(this));
+        ElectroClub.getInstance().setUserToken(SettingsUtil.getECToken(this));
+        ElectroClub.getInstance().setUserId(SettingsUtil.getECUserId(this));
+        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
 
         if (auto_log && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -1810,12 +1811,15 @@ public class MainActivity extends AppCompatActivity {
             if (sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false)) {
                 if (ElectroClub.getInstance().getUserToken() == null) {
                     startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
+                } else {
+                    // TODO check user token
                 }
             } else {
                 // TODO: need to implement a logout
                 // logout after uncheck
                 ElectroClub.getInstance().setUserToken(null);
-                SettingsUtil.setAutoUploadECToken(this, null);
+                ElectroClub.getInstance().setUserId(null);
+                SettingsUtil.setECToken(this, null);
             }
         }
 
@@ -1959,6 +1963,9 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
+                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                            mDeviceAddress,
+                            success -> null);
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:
@@ -1982,10 +1989,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case RESULT_AUTH_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    SettingsUtil.setAutoUploadECToken(this, ElectroClub.getInstance().getUserToken());
+                    SettingsUtil.setECToken(this, ElectroClub.getInstance().getUserToken());
+                    SettingsUtil.setECUserId(this, ElectroClub.getInstance().getUserId());
                 } else {
                     SettingsUtil.setAutoUploadECEnabled(this, false);
-                    SettingsUtil.setAutoUploadECToken(this, null);
+                    SettingsUtil.setECToken(this, null);
+                    SettingsUtil.setECUserId(this, null);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
