@@ -54,12 +54,15 @@ public class WheelView extends View {
     private int mBattery = 0;
     private int mBatteryLowest = 101;
     private int mTemperature = 0;
+    private int mMaxTemperature = 0;
     private String mCurrentTime = "00:00:00";
     private Double mDistance = 0.0;
     private Double mTotalDistance = 0.0;
     private Double mTopSpeed = 0.0;
     private Double mVoltage = 0.0;
     private Double mCurrent = 0.0;
+    private Double mPwm = 0.0;
+    private Double mMaxPwm = 0.0;
     private Double mAverageSpeed = 0.0;
 
     private String mWheelModel = "";
@@ -105,6 +108,10 @@ public class WheelView extends View {
 
     private ViewBlockInfo[] getViewBlockInfo() {
         return new ViewBlockInfo[]{
+                new ViewBlockInfo(getResources().getString(R.string.pwm),
+                        () -> String.format(Locale.US, "%.2f%%" , mPwm)),
+                new ViewBlockInfo(getResources().getString(R.string.max_pwm),
+                        () -> String.format(Locale.US, "%.2f%%" , mMaxPwm)),
                 new ViewBlockInfo(getResources().getString(R.string.voltage),
                         () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.volt), mVoltage)),
                 new ViewBlockInfo(getResources().getString(R.string.average_riding_speed),
@@ -184,6 +191,7 @@ public class WheelView extends View {
             currentSpeed = targetSpeed;
 
             mTemperature = 35;
+            mMaxTemperature = 70;
             targetTemperature = 112 - Math.round(((float) 40 / 80) * mTemperature);
             currentTemperature = targetTemperature;
 
@@ -299,6 +307,25 @@ public class WheelView extends View {
             return;
         mTemperature = MathUtils.clamp(temperature, 0, 80);
         targetTemperature = 112 - Math.round(((float) 40 / 80) * mTemperature);
+        refresh();
+    }
+
+    public void setMaxTemperature(int temperature) {
+        if (mMaxTemperature == temperature)
+            return;
+        refresh();
+    }
+
+    public void setMaxPwm(double pwm) {
+        if (mMaxPwm == pwm)
+            return;
+        refresh();
+    }
+
+
+    public void setPwm(double pwm) {
+        if (mPwm == pwm)
+            return;
         refresh();
     }
 
@@ -675,6 +702,16 @@ public class WheelView extends View {
             String temperatureString = String.format(Locale.US, "%02dC", mTemperature);
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
+            // Max temperature
+            if (getWidth() > getHeight())
+                canvas.rotate((143.5F + (1 * 2.25F) - 105), innerArcRect.centerX(), innerArcRect.centerY());
+            else
+                canvas.rotate((143.5F + (1 * 2.25F) - 105), innerArcRect.centerY(), innerArcRect.centerX());
+
+            String maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature);
+            canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
+            canvas.restore();
+            canvas.save();
         }
 
         // Wheel name

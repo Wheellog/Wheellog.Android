@@ -154,7 +154,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
                 mLocation = getLastBestLocation();
                 mLocationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -162,10 +162,10 @@ public class LoggingService extends Service
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             } else
-                fileUtil.writeLine("date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
         }
         else {
-            fileUtil.writeLine("date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+            fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
         }
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
@@ -253,7 +253,7 @@ public class LoggingService extends Service
 
                 mLastLocation = mLocation;
             }
-            fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+            fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             latitude,
                             longitude,
@@ -263,6 +263,7 @@ public class LoggingService extends Service
                             mLocationDistance,
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
+                            WheelData.getInstance().getPhaseCurrentDouble(),
                             WheelData.getInstance().getCurrentDouble(),
                             WheelData.getInstance().getPowerDouble(),
                             WheelData.getInstance().getBatteryLevel(),
@@ -276,10 +277,11 @@ public class LoggingService extends Service
 							WheelData.getInstance().getAlert()
                     ));
         } else {
-            fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+            fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
+                            WheelData.getInstance().getPhaseCurrentDouble(),
                             WheelData.getInstance().getCurrentDouble(),
                             WheelData.getInstance().getPowerDouble(),
                             WheelData.getInstance().getBatteryLevel(),

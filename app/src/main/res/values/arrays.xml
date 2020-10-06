@@ -114,6 +114,8 @@
     </string-array>
 
     <string-array name="view_blocks_values">
+        <item>@string/pwm</item>
+        <item>@string/max_pwm</item>
         <item>@string/voltage</item>
         <item>@string/average_riding_speed</item>
         <item>@string/riding_time</item>

@@ -116,7 +116,9 @@ public class WheelData {
     private int mSpeed;
     private long mTotalDistance;
     private int mCurrent;
+    private int mPhaseCurrent;
     private int mTemperature;
+    private int mMaxTemp;
 	private int mTemperature2;
 	private double mAngle;
 	private double mRoll;
@@ -182,6 +184,8 @@ public class WheelData {
     private double mAlarmFactor2 = 0.85;
     private double mAlarmFactor3 = 0.90;
     private int mAdvanceWarningSpeed = 0;
+    private double mCalculatedPwm = 0.0;
+    private double mMaxPwm = 0.0;
 
     private boolean mAlteredAlarms = false;
 	private boolean mUseRatio = false;
@@ -740,6 +744,9 @@ public class WheelData {
     public int getTemperature() {
         return mTemperature / 100;
     }
+    public int getMaxTemp() {
+        return mMaxTemp / 100;
+    }
 	
     public int getTemperature2() {
         return mTemperature2 / 100;
@@ -857,6 +864,15 @@ public class WheelData {
 
     double getCurrentDouble() {
         return mCurrent / 100.0;
+    }
+    double getPhaseCurrentDouble() {
+        return mPhaseCurrent / 100.0;
+    }
+    double getCalculatedPwm() {
+        return mCalculatedPwm;
+    }
+    double getMaxPwm() {
+        return mMaxPwm;
     }
 
     int getTopSpeed() { return mTopSpeed; }
@@ -1196,6 +1212,16 @@ public class WheelData {
             mVoltageSag = voltSag;
     }
 
+    private void setMaxPwm(int currentPwm) {
+        if ((currentPwm < mMaxPwm) && (currentPwm > 0))
+            mMaxPwm = currentPwm;
+    }
+
+    private void setMaxTemp(int temp) {
+        if ((temp < mMaxTemp) && (temp > 0))
+            mMaxTemp = temp;
+    }
+
     private void setBatteryPercent(int battery) {
         mBattery = battery;
 
@@ -1255,15 +1281,14 @@ public class WheelData {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
             if (mAlteredAlarms) {
-                double resultFactor = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * ((float)mVoltage/100.0) * mPowerFactor);
 
-                if (resultFactor > mAlarmFactor3) {
+                if (mCalculatedPwm > mAlarmFactor3) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                } else if (resultFactor > mAlarmFactor2) {
+                } else if (mCalculatedPwm > mAlarmFactor2) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (resultFactor > mAlarmFactor1) {
+                } else if (mCalculatedPwm > mAlarmFactor1) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
                 } else if (mAdvanceWarningSpeed != 0 && getSpeedDouble() >= mAdvanceWarningSpeed) {
@@ -1298,53 +1323,7 @@ public class WheelData {
 
         }
 
-/*
-        if (!mSpeedAlarmExecuted) {
-            if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
-                    mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed)
-                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-            else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
-                    mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-                raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-            else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
-                    mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-                raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-        } else {
-            boolean alarm_finished = false;
-            if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
-                    mAverageBattery > mAlarm1Battery && mSpeed < mAlarm1Speed)
-                alarm_finished = true;
-            else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
-                    mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed)
-                alarm_finished = true;
-            else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
-                    mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed)
-                alarm_finished = true;
 
-            mSpeedAlarmExecuted = alarm_finished;
-        }
-
-        // CURRENT
-        if (!mCurrentAlarmExecuted) {
-            if (mAlarmCurrent > 0 &&
-                    mCurrent >= mAlarmCurrent) {
-                raiseAlarm(ALARM_TYPE.CURRENT, mContext);
-            }
-        } else {
-            if (mCurrent < mAlarmCurrent)
-                mCurrentAlarmExecuted = false;
-        }
-		
-		// TEMP
-		if (!mTemperatureAlarmExecuted) {
-            if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature) {
-                raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
-            }
-        } else {
-            if (mTemperature < mAlarmTemperature)
-                mTemperatureAlarmExecuted = false;
-        }
-*/
     }
 
     private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
@@ -1424,10 +1403,14 @@ public class WheelData {
             }
 			
         }
+        mCalculatedPwm = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * ((float)mVoltage/100.0) * mPowerFactor);
+        if (mWheelType == WHEEL_TYPE.GOTWAY) {
+            mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
+        }
 
-		if (mAlarmsEnabled) 
+        if (mAlarmsEnabled)
 			checkAlarmStatus(mContext);
-		timestamp_last = timestamp_raw;
+      	timestamp_last = timestamp_raw;
 		mContext.sendBroadcast(intent);
         
        
@@ -1586,13 +1569,14 @@ public class WheelData {
             int a19 = data[18] & 255;
             if ((a1 == 0xDC) && (a2 == 0x5A) && (a3 == 0x5C) && (a4 == 0x20)) {  // Sherman
                 Timber.i("Decode Sherman");
+                mModel = "Veteran";
                 mVeteran = true;
                 mVoltage = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
                 mSpeed =  ((data[6]) << 8 | (data[7] & 0xFF))*10;
                 long distance = ((data[10] & 0xFF) << 24 | (data[11] & 0xFF) << 16 | (data[8] & 0xFF) << 8 | (data[9] & 0xFF));
                 setDistance(distance);
                 mTotalDistance = ((data[14] & 0xFF) << 24 | (data[15] & 0xFF) << 16 | (data[12] & 0xFF) << 8 | (data[13] & 0xFF));
-                mCurrent = ((data[16]) << 8 | (data[17] & 0xFF))*10;
+                mPhaseCurrent = ((data[16]) << 8 | (data[17] & 0xFF))*10;
                 mTemperature = (data[18] & 0xFF) << 8 | (data[19] & 0xFF);
                 mTemperature2 = mTemperature;
                 setTopSpeed(mSpeed);
@@ -1623,7 +1607,7 @@ public class WheelData {
                 setCurrentTime(currentTime);
                 return true;
             } else { // Gotway
-
+                mModel = "Begode :D";
                 if (a1 != 85 || a2 != 170 || a19 != 0) {
                     if (a1 != 90 || a5 != 85 || a6 != 170) {
                         return false;
@@ -1654,7 +1638,7 @@ public class WheelData {
 
                 mVoltage = (data[2] * 256) + (data[3] & 255);
 
-                mCurrent = ((data[10] * 256) + data[11]);
+                mPhaseCurrent = ((data[10] * 256) + data[11]);
                 if (mGotwayNegative == 0) mCurrent = Math.abs(mCurrent);
                 else mCurrent = mCurrent * mGotwayNegative;
 
@@ -1942,6 +1926,9 @@ public class WheelData {
         mMode = 0;
         mBattery = 0;
         //mAverageBatteryCount = 0;
+        mCalculatedPwm = 0.0;
+        mMaxPwm = 0.0;
+        mMaxTemp = 0;
         mAverageBattery = 0;
         mVoltage = 0;
         mVoltageSag = 20000;

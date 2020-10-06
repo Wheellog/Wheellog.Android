@@ -53,6 +53,8 @@
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
 	<string name="temperature2">CPU(?) temp</string>
+    <string name="pwm">PWM</string>
+    <string name="max_pwm">Max PWM</string>
 	<string name="angle">Tilt</string>
 	<string name="roll">Roll</string>
     <string name="fan_status">Fan Status</string>

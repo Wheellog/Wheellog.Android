@@ -693,6 +693,8 @@ public class MainActivity extends AppCompatActivity {
                 tvTemperature.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
+                tvTitleModel.setVisibility(View.VISIBLE);
+                tvModel.setVisibility(View.VISIBLE);
                 break;
             case INMOTION:
                 tvWaitText.setVisibility(View.GONE);
@@ -1039,6 +1041,9 @@ public class MainActivity extends AppCompatActivity {
                 wheelView.setAverageSpeed(data.getAverageRidingSpeedDouble());
                 wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
                 wheelView.redrawTextBoxes();
+                wheelView.setMaxPwm(data.getMaxPwm());
+                wheelView.setMaxTemperature(data.getMaxTemp());
+                wheelView.setPwm(data.getCalculatedPwm());
                 break;
             case 1: // Text View
                 WheelData.getInstance().setBmsView(false);
