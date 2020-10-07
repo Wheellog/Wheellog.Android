@@ -1790,17 +1790,15 @@ public class MainActivity extends AppCompatActivity {
         boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
         boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
+        boolean auto_upload_ec = sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false);
         ElectroClub.getInstance().setUserToken(SettingsUtil.getECToken(this));
         ElectroClub.getInstance().setUserId(SettingsUtil.getECUserId(this));
-        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
 
         if (auto_log && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
 
         if (log_location)
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
-//        if (mConnect_sound)
-//            MainActivityPermissionsDispatcher.acquireWakeLockPermissionWithCheck(this);
 
         if (requests) {
             if (auto_upload) {
@@ -1808,10 +1806,11 @@ public class MainActivity extends AppCompatActivity {
             } else if (googleDriveUtil.alreadyLoggedIn()) {
                 googleDriveUtil.requestSignOut();
             }
-            if (sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false)) {
+            if (auto_upload_ec) {
                 if (ElectroClub.getInstance().getUserToken() == null) {
                     startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
                 } else {
+                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
                     // TODO check user token
                 }
             } else {
@@ -1991,6 +1990,7 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     SettingsUtil.setECToken(this, ElectroClub.getInstance().getUserToken());
                     SettingsUtil.setECUserId(this, ElectroClub.getInstance().getUserId());
+                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
                 } else {
                     SettingsUtil.setAutoUploadECEnabled(this, false);
                     SettingsUtil.setECToken(this, null);
