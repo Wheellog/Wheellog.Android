@@ -313,12 +313,14 @@ public class WheelView extends View {
     public void setMaxTemperature(int temperature) {
         if (mMaxTemperature == temperature)
             return;
+        mMaxTemperature = temperature;
         refresh();
     }
 
     public void setMaxPwm(double pwm) {
         if (mMaxPwm == pwm)
             return;
+        mMaxPwm = pwm;
         refresh();
     }
 
@@ -326,6 +328,7 @@ public class WheelView extends View {
     public void setPwm(double pwm) {
         if (mPwm == pwm)
             return;
+        mPwm = pwm;
         refresh();
     }
 
@@ -702,6 +705,7 @@ public class WheelView extends View {
             String temperatureString = String.format(Locale.US, "%02dC", mTemperature);
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
+            canvas.save();
             // Max temperature
             if (getWidth() > getHeight())
                 canvas.rotate((143.5F + (1 * 2.25F) - 105), innerArcRect.centerX(), innerArcRect.centerY());

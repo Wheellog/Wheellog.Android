@@ -57,6 +57,7 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
@@ -1727,15 +1728,28 @@ public class MainActivity extends AppCompatActivity {
     private void loadPreferences(boolean requests) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         use_mph = sharedPreferences.getBoolean(getString(R.string.use_mph), false);
-        Set<String> view_blocks = sharedPreferences.getStringSet(getString(R.string.view_blocks), null);
+        Set<String> view_blocks = sharedPreferences.getStringSet(getString(R.string.view_blocks),  null);
         int max_speed = sharedPreferences.getInt(getString(R.string.max_speed), 30) * 10;
         wheelView.setMaxSpeed(max_speed);
         wheelView.setUseMPH(use_mph);
         if (view_blocks != null) {
             wheelView.updateViewBlocksVisibility(view_blocks);
         }
-        //wheelView.invalidate();
-        //wheelView.resetBatteryLowest();
+/*
+
+        if (view_blocks== null) {
+            Set<String> view_blocks_def = getStringSet;
+            view_blocks_def.add(getString(R.string.voltage));
+            view_blocks_def.add(getString(R.string.average_riding_speed));
+            view_blocks_def.add(getString(R.string.riding_time));
+            view_blocks_def.add(getString(R.string.top_speed));
+            view_blocks_def.add(getString(R.string.distance));
+            view_blocks_def.add(getString(R.string.total));
+            wheelView.updateViewBlocksVisibility(view_blocks_def);
+        } else {
+            wheelView.updateViewBlocksVisibility(view_blocks);
+        }
+*/
 
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
         boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);

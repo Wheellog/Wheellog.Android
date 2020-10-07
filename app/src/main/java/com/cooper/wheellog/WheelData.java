@@ -869,10 +869,10 @@ public class WheelData {
         return mPhaseCurrent / 100.0;
     }
     double getCalculatedPwm() {
-        return mCalculatedPwm;
+        return mCalculatedPwm*100.0;
     }
     double getMaxPwm() {
-        return mMaxPwm;
+        return mMaxPwm*100.0;
     }
 
     int getTopSpeed() { return mTopSpeed; }
@@ -1212,14 +1212,16 @@ public class WheelData {
             mVoltageSag = voltSag;
     }
 
-    private void setMaxPwm(int currentPwm) {
-        if ((currentPwm < mMaxPwm) && (currentPwm > 0))
+    private void setMaxPwm(double currentPwm) {
+        if ((currentPwm > mMaxPwm) && (currentPwm > 0))
             mMaxPwm = currentPwm;
+
     }
 
     private void setMaxTemp(int temp) {
-        if ((temp < mMaxTemp) && (temp > 0))
+        if ((temp > mMaxTemp) && (temp > 0))
             mMaxTemp = temp;
+
     }
 
     private void setBatteryPercent(int battery) {
@@ -1403,7 +1405,9 @@ public class WheelData {
             }
 			
         }
+        setMaxTemp(mTemperature);
         mCalculatedPwm = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * ((float)mVoltage/100.0) * mPowerFactor);
+        setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY) {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
