@@ -1142,7 +1142,7 @@ public class InMotionAdapter implements IWheelAdapter {
             if (model.belongToInputType( "1") || model.belongToInputType( "5") ||
                     model == V8 || model == Glide3 || model == V10 || model == V10F ||
                     model == V10S || model == V10SF || model == V10T || model == V10FT ||
-                    || model == V8F) {
+                    model == V8F) {
                 distance = (double) (this.intFromBytes(ex_data, 44)) / 1000.0d; ///// V10F 48 byte - trip distance
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
