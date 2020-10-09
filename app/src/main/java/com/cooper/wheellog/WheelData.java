@@ -865,7 +865,7 @@ public class WheelData {
     public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
-    double getPhaseCurrentDouble() {
+    public double getPhaseCurrentDouble() {
         return mPhaseCurrent / 100.0;
     }
     double getCalculatedPwm() {
