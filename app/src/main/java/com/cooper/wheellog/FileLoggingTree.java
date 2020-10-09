@@ -15,7 +15,7 @@ public class FileLoggingTree extends Timber.DebugTree {
     private FileUtil fileUtil;
     private String fileName;
     private SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-    private SimpleDateFormat logFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
+    private SimpleDateFormat logFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 
     public FileLoggingTree(Context context) {
         fileUtil = new FileUtil(context);
