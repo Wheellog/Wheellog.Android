@@ -1,9 +1,11 @@
-# WheelLogAndroid
+# WheelLog.Android
 
-One more try to make it working with Inmotion V8
-
-Added support for Samsung Gear Tizen based watches
-
+App for EUC on Android. 
+The following manufacturers are supported:
+- InMotion
+- KingSong
+- Gotway
+- Veteran
 
 ## Pebble app code
 
