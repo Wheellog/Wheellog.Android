@@ -695,6 +695,8 @@ public class MainActivity extends AppCompatActivity {
                 tvTemperature.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
+                tvTitleVersion.setVisibility(View.VISIBLE);
+                tvVersion.setVisibility(View.VISIBLE);
                 tvTitleModel.setVisibility(View.VISIBLE);
                 tvModel.setVisibility(View.VISIBLE);
                 break;

@@ -144,6 +144,54 @@ class GotwayAdapterTest {
     }
 
     @Test
+    fun `decode veteran old board data`() {
+        // Arrange.
+        val byteArray1 = hexStringToByteArray("DC5A5C2025D600003BF500003BF50000FFDE1399")
+        val byteArray2 = hexStringToByteArray("0DEF0000024602460000000000000000")
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(result2).isFalse()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(50)
+        assertThat(data.temperature2).isEqualTo(50)
+        assertThat(data.voltageDouble).isEqualTo(96.86)
+        assertThat(data.phaseCurrentDouble).isEqualTo(-3.4)
+        assertThat(data.wheelDistanceDouble).isEqualTo(15.349)
+        assertThat(data.totalDistance).isEqualTo(15349)
+        assertThat(data.batteryLevel).isEqualTo(90)
+        assertThat(data.version).isEqualTo("0.0 (0)")
+    }
+
+    @Test
+    fun `decode veteran new board data`() {
+        // Arrange.
+        val byteArray1 = hexStringToByteArray("DC5A5C20238A0112121A00004D450005064611F2")
+        val byteArray2 = hexStringToByteArray("0E1000000AF00AF0041B000300000000")
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(result2).isFalse()
+        assertThat(abs(data.speed)).isEqualTo(274)
+        assertThat(data.temperature).isEqualTo(45)
+        assertThat(data.temperature2).isEqualTo(45)
+        assertThat(data.voltageDouble).isEqualTo(90.98)
+        assertThat(data.phaseCurrentDouble).isEqualTo(160.6)
+        assertThat(data.wheelDistanceDouble).isEqualTo(4.634)
+        assertThat(data.totalDistance).isEqualTo(347461)
+        assertThat(data.batteryLevel).isEqualTo(60)
+        assertThat(data.version).isEqualTo("4.27 (1051)")
+    }
+
+    @Test
     @Ignore // TODO
     fun `update pedals mode`() {
         // Arrange.

@@ -773,7 +773,7 @@ public class WheelData {
     }
 
     //    int getTopSpeed() { return mTopSpeed; }
-    String getVersion() {
+    public String getVersion() {
         return mVersion;
     }
 
@@ -1611,7 +1611,7 @@ public class WheelData {
                 setCurrentTime(currentTime);
                 return true;
             } else { // Gotway
-                mModel = "Begode :D";
+                mModel = "Begode";
                 if (a1 != 85 || a2 != 170 || a19 != 0) {
                     if (a1 != 90 || a5 != 85 || a6 != 170) {
                         return false;
@@ -1685,6 +1685,8 @@ public class WheelData {
             }
             mTotalDistance = ((data[6]&0xFF) <<24) | ((data[7]&0xFF) << 16) | ((data[8] & 0xFF) <<8) | (data[9] & 0xFF);
 			if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
+        } else if (mVeteran) { // second part
+            mVersion = String.format(Locale.US, "%d.%d (%d)", data[8], data[9],((data[8]<<8)  | data[9]));
         }
         return false;
     }
