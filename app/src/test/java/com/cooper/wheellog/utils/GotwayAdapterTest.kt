@@ -3,15 +3,32 @@ package com.cooper.wheellog.utils
 import com.cooper.wheellog.WheelData
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Ignore
+import org.junit.Test
+//import sun.security.krb5.internal.KDCOptions.with
 import kotlin.math.abs
 import kotlin.math.round
+
 
 class GotwayAdapterTest {
 
     private var adapter: GotwayAdapter = GotwayAdapter()
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
+
+    fun hexStringToByteArray(s: String): ByteArray? {
+        val len = s.length
+        val data = ByteArray(len / 2)
+        var i = 0
+        while (i < len) {
+            data[i / 2] = ((Character.digit(s[i], 16) shl 4)
+                    + Character.digit(s[i + 1], 16)).toByte()
+            i += 2
+        }
+        return data
+    }
 
     @Before
     fun setUp() {
@@ -69,6 +86,33 @@ class GotwayAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
         assertThat(data.batteryLevel).isEqualTo(54)
     }
+
+    @Test
+    fun `decode with 2020 board data`() {
+        // Arrange.
+        val byteArray1 = hexStringToByteArray("55AA19C1000000000000008CF0000001FFF80018")
+        val byteArray2 = hexStringToByteArray("5A5A5A5A55AA000060D248001C20006400010007")
+        val byteArray3 = hexStringToByteArray("000804185A5A5A5A")
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(22)
+        assertThat(data.temperature2).isEqualTo(22)
+        assertThat(data.voltageDouble).isEqualTo(65.93)
+        assertThat(data.currentDouble).isEqualTo(1.16)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
+        assertThat(data.totalDistance).isEqualTo(24786)
+        assertThat(data.batteryLevel).isEqualTo(100)
+    }
+
 
     @Test
     @Ignore // TODO

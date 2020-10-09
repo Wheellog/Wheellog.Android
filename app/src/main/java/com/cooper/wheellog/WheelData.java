@@ -855,7 +855,7 @@ public class WheelData {
         return (mCurrent * mVoltage) / 10000.0;
     }
 
-    double getCurrentDouble() {
+    public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
 
@@ -942,7 +942,7 @@ public class WheelData {
         return mTotalDistance / 1000.0;
     }
 	
-	long getTotalDistance() {
+	public long getTotalDistance() {
         return mTotalDistance;
     }
 
