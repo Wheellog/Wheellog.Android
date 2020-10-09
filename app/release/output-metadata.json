@@ -12,7 +12,7 @@
       "filters": [],
       "properties": [],
       "versionCode": 70,
-      "versionName": "2.1.1",
+      "versionName": "2.1.2beta",
       "enabled": true,
       "outputFile": "app-release.apk"
     }

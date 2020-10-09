@@ -8,7 +8,7 @@ repositories {
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    buildToolsVersion '29.0.3'
 
     lintOptions {
         abortOnError false
@@ -22,6 +22,7 @@ android {
         versionName "2.1.2beta"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -30,6 +31,17 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
+        }
+        // private properties
+        def props = new Properties()
+        def propsPath =  "../local.properties"
+        if (file(propsPath).exists()) {
+            file(propsPath).withInputStream {
+                stream -> props.load(stream)
+            }
+        }
+        buildTypes.each {
+            it.buildConfigField 'String', 'ec_accessToken', props.getProperty('ec_accessToken') ?: "\"\""
         }
     }
     compileOptions {
@@ -45,33 +57,40 @@ android {
     }
 }
 
-//apply plugin: 'android-apt'
-
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/connectiq.jar')
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation "androidx.preference:preference:1.1.0"
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    implementation 'com.google.android.gms:play-services-drive:10.0.1'
-
-    implementation 'com.getpebble:pebblekit:3.1.0'
+    implementation 'com.getpebble:pebblekit:4.0.1'
     implementation 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
-    implementation 'com.jakewharton.timber:timber:4.3.1'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.0'
     implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
 
+    // google drive
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation('com.google.api-client:google-api-client-android:1.30.10') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude module: 'guava-jdk5'
+    }
+    implementation('com.google.apis:google-api-services-drive:v3-rev99-1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+        exclude module: 'guava-jdk5'
+    }
+
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.google.truth:truth:1.0.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.2'
-    testImplementation 'io.mockk:mockk:1.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    testImplementation 'io.mockk:mockk:1.10.2'
 
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.2.0"
-    implementation "androidx.core:core-ktx:+"
+    implementation 'androidx.core:core-ktx:1.3.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 }

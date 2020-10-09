@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,7 +16,6 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
@@ -23,11 +23,14 @@ import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import timber.log.Timber;
+
+import static com.google.api.client.util.Strings.isNullOrEmpty;
 
 public class LoggingService extends Service
 {
@@ -151,7 +154,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
                 mLocation = getLastBestLocation();
                 mLocationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -159,10 +162,10 @@ public class LoggingService extends Service
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             } else
-                fileUtil.writeLine("date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
         }
         else {
-            fileUtil.writeLine("date,time,speed,voltage,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+            fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
         }
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
@@ -190,17 +193,31 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
+
+            // TODO google drive upload
+            /*if (SettingsUtil.isAutoUploadEnabled(getApplicationContext())) {
+                if (googleDriveUtil.alreadyLoggedIn()) {
+                    googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
+                }
+            }*/
+
+            // electro.club ulpoad
+            if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
+                    && ElectroClub.getInstance().getUserToken() != null) {
+                try {
+                    byte[] data = fileUtil.readBytes();
+                    String[] tokens = path.split("[\\\\|/]");
+                    String filename = tokens[tokens.length - 1];
+                    ElectroClub.getInstance().uploadTrack(data, filename);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         instance = null;
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
-
-        if (SettingsUtil.isAutoUploadEnabled(this) && !isNullOrEmpty(path)) {
-            Intent uploadIntent = new Intent(getApplicationContext(), GoogleDriveService.class);
-            uploadIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
-            ContextCompat.startForegroundService(this, uploadIntent);
-        }
         stopSelf();
         Timber.i("DataLogger Stopped");
     }
@@ -236,7 +253,7 @@ public class LoggingService extends Service
 
                 mLastLocation = mLocation;
             }
-            fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+            fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             latitude,
                             longitude,
@@ -246,6 +263,7 @@ public class LoggingService extends Service
                             mLocationDistance,
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
+                            WheelData.getInstance().getPhaseCurrentDouble(),
                             WheelData.getInstance().getCurrentDouble(),
                             WheelData.getInstance().getPowerDouble(),
                             WheelData.getInstance().getBatteryLevel(),
@@ -259,10 +277,11 @@ public class LoggingService extends Service
 							WheelData.getInstance().getAlert()
                     ));
         } else {
-            fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+            fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                             sdf.format(WheelData.getInstance().getTimeStamp()),
                             WheelData.getInstance().getSpeedDouble(),
                             WheelData.getInstance().getVoltageDouble(),
+                            WheelData.getInstance().getPhaseCurrentDouble(),
                             WheelData.getInstance().getCurrentDouble(),
                             WheelData.getInstance().getPowerDouble(),
                             WheelData.getInstance().getBatteryLevel(),

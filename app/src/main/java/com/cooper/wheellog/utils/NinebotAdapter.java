@@ -11,7 +11,7 @@ import timber.log.Timber;
 //import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
 /**
- * Created by cedric on 29/12/2016.
+ * Created by palachzzz on Dec 2019.
  */
 public class NinebotAdapter implements IWheelAdapter {
     private static NinebotAdapter INSTANCE;

@@ -42,3 +42,4 @@ captures/
 .idea/libraries/*
 .idea/dictionaries/*
 .idea/copyright/*
+private.properties

@@ -7,8 +7,14 @@
         android:summary="@string/auto_log_description" />
 
     <CheckBoxPreference
+        android:key="@string/auto_upload_ec"
+        android:title="@string/auto_upload_log_ec_title"
+        android:summary="@string/auto_upload_log_ec_description" />
+
+    <CheckBoxPreference
         android:key="@string/auto_upload"
         android:title="@string/auto_upload_log_title"
+        android:enabled="false"
         android:summary="@string/auto_upload_log_description" />
 
     <CheckBoxPreference

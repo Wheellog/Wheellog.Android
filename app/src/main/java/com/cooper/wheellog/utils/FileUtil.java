@@ -11,13 +11,17 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.common.io.ByteStreams;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Objects;
@@ -49,6 +53,10 @@ public class FileUtil {
 
     public File getFile() {
         return file;
+    }
+
+    public Uri getUri() {
+        return uri;
     }
 
     public String getAbsolutePath() {
@@ -121,6 +129,27 @@ public class FileUtil {
             }
             e.printStackTrace();
         }
+    }
+
+    public byte[] readBytes() throws IOException {
+        InputStream inputStream = null;
+        if (uri != null) {
+            inputStream = context.getContentResolver().openInputStream(uri);
+        } else if (file != null) {
+            inputStream = new FileInputStream(file);
+        }
+        assert inputStream != null;
+        return ByteStreams.toByteArray(inputStream);
+    }
+
+    public static byte[] readBytes(String filePath) throws IOException {
+        InputStream inputStream = new FileInputStream(filePath);
+        return ByteStreams.toByteArray(inputStream);
+    }
+
+    public static byte[] readBytes(Context context, Uri uri) throws IOException {
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        return ByteStreams.toByteArray(inputStream);
     }
 
     public void close() {

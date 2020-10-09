@@ -60,11 +60,12 @@
         <activity
             android:name=".ScanActivity"
             android:theme="@style/AppTheme.Transparent" />
-
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme.Transparent" />
         <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
         <service android:name=".LoggingService" />
-        <service android:name=".GoogleDriveService" />
         <!-- Services needed for Samsung Gear watches -->
         <service android:name="com.cooper.wheellog.GearService" />
         <!-- Services needed for Garmin ConnectIQ devices -->

@@ -412,6 +412,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             correctCheckState(getString(R.string.auto_log));
             correctCheckState(getString(R.string.log_location_data));
             correctCheckState(getString(R.string.auto_upload));
+            correctCheckState(getString(R.string.auto_upload_ec));
         }
     }
 	

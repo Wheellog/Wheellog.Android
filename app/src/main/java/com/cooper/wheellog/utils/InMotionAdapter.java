@@ -93,13 +93,16 @@ public class InMotionAdapter implements IWheelAdapter {
         V5("50", 3812.0d),
         V5PLUS("51", 3812.0d),
         V5F("52", 3812.0d),
-        V5FPLUS("53", 3812.0d),
+        V5D("53", 3812.0d),
         V8("80", 3812.0d),
+        V8F("86", 3812.0d),
         Glide3("85", 3812.0d),
-        V10_test("100", 3812.0d),
-        V10F_test("101", 3812.0d),
+        V10S("100", 3812.0d),
+        V10SF("101", 3812.0d),
         V10("140", 3812.0d),
         V10F("141", 3812.0d),
+        V10T("142", 3812.0d),
+        V10FT("143", 3812.0d),
         UNKNOWN("x", 3812.0d);
 
         private String value;
@@ -352,7 +355,7 @@ public class InMotionAdapter implements IWheelAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 ) {
+        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F ) {
             if (mBetterPercents) {
                 if (volts > 84.00) {
                     batt = 1.0;
@@ -372,7 +375,7 @@ public class InMotionAdapter implements IWheelAdapter {
             }
 
 
-        } else if (model == Model.V10 || model == Model.V10F || model == Model.V10_test || model == Model.V10F_test) {
+        } else if (model == Model.V10 || model == Model.V10F || model == Model.V10S || model == Model.V10SF || model == Model.V10T || model == Model.V10FT) {
         if (mBetterPercents) {
             if (volts > 8350) {
                 batt = 100;
@@ -658,13 +661,16 @@ public class InMotionAdapter implements IWheelAdapter {
 				case "50": return "Inmotion V5";
 				case "51": return "Inmotion V5PLUS";
 				case "52": return "Inmotion V5F";
-				case "53": return "Inmotion V5FPLUS";
+				case "53": return "Inmotion V5D";
 				case "80": return "Inmotion V8";
                 case "85": return "Solowheel Glide 3";
-                case "100": return "Inmotion V10 test";
-                case "101": return "Inmotion V10F test";
+                case "86": return "Inmotion V8F";
+                case "100": return "Inmotion V10S";
+                case "101": return "Inmotion V10SF";
                 case "140": return "Inmotion V10";
                 case "141": return "Inmotion V10F";
+                case "142": return "Inmotion V10T";
+                case "143": return "Inmotion V10FT";
 				default: return "Unknown";
 			}
         }
@@ -1134,7 +1140,9 @@ public class InMotionAdapter implements IWheelAdapter {
             double distance;
 
             if (model.belongToInputType( "1") || model.belongToInputType( "5") ||
-                    model == V8 || model == Glide3 || model == V10 || model == V10F || model == V10_test || model == V10F_test) {
+                    model == V8 || model == Glide3 || model == V10 || model == V10F ||
+                    model == V10S || model == V10SF || model == V10T || model == V10FT ||
+                    model == V8F) {
                 distance = (double) (this.intFromBytes(ex_data, 44)) / 1000.0d; ///// V10F 48 byte - trip distance
             } else if (model == R0) {
                 distance = (double) (this.longFromBytes(ex_data, 44)) / 1000.0d;
