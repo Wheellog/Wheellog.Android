@@ -42,6 +42,51 @@ class InmotionAdapterTest {
     }
 
     @Test
+    fun `decode with v8f slow data`() {
+        // Arrange.
+        val byteArray1 = hexStringToByteArray("AAAA1401A5550F8500000000000000FE0201000E")
+        val byteArray2 = hexStringToByteArray("009BBD5E4A601400000000000000000000000000")
+        val byteArray3 = hexStringToByteArray("0000001500020200000000070003020000000026")
+        val byteArray4 = hexStringToByteArray("0301010000000000000A000000000073000000C8")
+        val byteArray5 = hexStringToByteArray("AF00002510000000100000000000000000000000")
+        val byteArray6 = hexStringToByteArray("0000000100000000000000000000000000000000")
+        val byteArray7 = hexStringToByteArray("0000000600000800000000000000000000000000")
+        val byteArray8 = hexStringToByteArray("000000801027000001010A00DC5555")
+
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isTrue()
+        assertThat(data.serial).isEqualTo("14604A5EBD9B000E")
+        assertThat(data.model).isEqualTo("Inmotion V8F")
+        assertThat(data.version).isEqualTo("2.2.21")
+        assertThat(data.wheelLight).isFalse()
+        assertThat(data.wheelLed).isTrue()
+        assertThat(data.wheelHandleButton).isFalse()
+        assertThat(data.wheelMaxSpeed).isEqualTo(45)
+        assertThat(data.speakerVolume).isEqualTo(100)
+        assertThat(data.pedalsPosition).isEqualTo(0)
+
+    }
+
+    @Test
     fun `decode with v8f real data`() {
         // Arrange.
         val byteArray1 = hexStringToByteArray("AAAA1301A5550F9500000000000000FE0201008F")

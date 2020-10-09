@@ -348,19 +348,19 @@ public class WheelData {
         return (int)Math.round(mSpeed / 10.0);
     }
 	
-	boolean getWheelLight() {
+	public boolean getWheelLight() {
         return mWheelLightEnabled;
     }
 	
-	boolean getWheelLed() {
+	public boolean getWheelLed() {
         return mWheelLedEnabled;
     }
 	
-	boolean getWheelHandleButton() {
+	public boolean getWheelHandleButton() {
         return mWheelButtonDisabled;
     }
 	
-    int getWheelMaxSpeed() {
+    public int getWheelMaxSpeed() {
 
         return mWheelMaxSpeed;
     }
@@ -380,11 +380,11 @@ public class WheelData {
         return mKSAlarm3Speed;
     }
 
-	int getSpeakerVolume() {
+	public int getSpeakerVolume() {
         return mWheelSpeakerVolume;
     }
 	
-	int getPedalsPosition() {
+	public int getPedalsPosition() {
         return mWheelTiltHorizon;
     }
 
