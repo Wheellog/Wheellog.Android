@@ -17,17 +17,6 @@ class InmotionAdapterTest {
     private var adapter: InMotionAdapter = InMotionAdapter()
     private lateinit var data: WheelData
 
-    fun hexStringToByteArray(s: String): ByteArray? {
-        val len = s.length
-        val data = ByteArray(len / 2)
-        var i = 0
-        while (i < len) {
-            data[i / 2] = ((Character.digit(s[i], 16) shl 4)
-                    + Character.digit(s[i + 1], 16)).toByte()
-            i += 2
-        }
-        return data
-    }
 
     @Before
     fun setUp() {
@@ -44,21 +33,21 @@ class InmotionAdapterTest {
     @Test
     fun `decode with v5f full data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("AAAA1401A5550F7C000000B4720020FE0001001B")
-        val byteArray2 = hexStringToByteArray("0076BA5C28711200000000000000000100000000")
-        val byteArray3 = hexStringToByteArray("000000FA010301FA0103010402020100000000C2")
-        val byteArray4 = hexStringToByteArray("040001C2040001900302010000000000000000A8")
-        val byteArray5 = hexStringToByteArray("6100000010000000000000000000000000000000")
-        val byteArray6 = hexStringToByteArray("0000000100000000000000000000000000000000")
-        val byteArray7 = hexStringToByteArray("0000000200000500000000000000000000000004")
-        val byteArray8 = hexStringToByteArray("020301E35555")
+        val byteArray1 = Utils.hexStringToByteArray("AAAA1401A5550F7C000000B4720020FE0001001B")
+        val byteArray2 = Utils.hexStringToByteArray("0076BA5C28711200000000000000000100000000")
+        val byteArray3 = Utils.hexStringToByteArray("000000FA010301FA0103010402020100000000C2")
+        val byteArray4 = Utils.hexStringToByteArray("040001C2040001900302010000000000000000A8")
+        val byteArray5 = Utils.hexStringToByteArray("6100000010000000000000000000000000000000")
+        val byteArray6 = Utils.hexStringToByteArray("0000000100000000000000000000000000000000")
+        val byteArray7 = Utils.hexStringToByteArray("0000000200000500000000000000000000000004")
+        val byteArray8 = Utils.hexStringToByteArray("020301E35555")
 
-        val byteArray11 = hexStringToByteArray("AAAA1301A5550F60000000B4720020FE000100FF")
-        val byteArray12 = hexStringToByteArray("3F00003A18DEFF5D01000029F0FFFF29F0FFFFEC")
-        val byteArray13 = hexStringToByteArray("FFFFFF15200000000000001A1A00000000000000")
-        val byteArray14 = hexStringToByteArray("0000001CE3130000000000000026061A03D20721")
-        val byteArray15 = hexStringToByteArray("0000006F0100006F010000F7010000420C00002B")
-        val byteArray16 = hexStringToByteArray("110000070000000000000000000000265555")
+        val byteArray11 = Utils.hexStringToByteArray("AAAA1301A5550F60000000B4720020FE000100FF")
+        val byteArray12 = Utils.hexStringToByteArray("3F00003A18DEFF5D01000029F0FFFF29F0FFFFEC")
+        val byteArray13 = Utils.hexStringToByteArray("FFFFFF15200000000000001A1A00000000000000")
+        val byteArray14 = Utils.hexStringToByteArray("0000001CE3130000000000000026061A03D20721")
+        val byteArray15 = Utils.hexStringToByteArray("0000006F0100006F010000F7010000420C00002B")
+        val byteArray16 = Utils.hexStringToByteArray("110000070000000000000000000000265555")
 
 
         // Act.
@@ -120,24 +109,24 @@ class InmotionAdapterTest {
     @Test
     fun `decode with v8f full data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("AAAA1401A5550F8500000000000000FE0201000E")
-        val byteArray2 = hexStringToByteArray("009BBD5E4A601400000000000000000000000000")
-        val byteArray3 = hexStringToByteArray("0000001500020200000000070003020000000026")
-        val byteArray4 = hexStringToByteArray("0301010000000000000A000000000073000000C8")
-        val byteArray5 = hexStringToByteArray("AF00002510000000100000000000000000000000")
-        val byteArray6 = hexStringToByteArray("0000000100000000000000000000000000000000")
-        val byteArray7 = hexStringToByteArray("0000000600000800000000000000000000000000")
-        val byteArray8 = hexStringToByteArray("000000801027000001010A00DC5555")
+        val byteArray1 = Utils.hexStringToByteArray("AAAA1401A5550F8500000000000000FE0201000E")
+        val byteArray2 = Utils.hexStringToByteArray("009BBD5E4A601400000000000000000000000000")
+        val byteArray3 = Utils.hexStringToByteArray("0000001500020200000000070003020000000026")
+        val byteArray4 = Utils.hexStringToByteArray("0301010000000000000A000000000073000000C8")
+        val byteArray5 = Utils.hexStringToByteArray("AF00002510000000100000000000000000000000")
+        val byteArray6 = Utils.hexStringToByteArray("0000000100000000000000000000000000000000")
+        val byteArray7 = Utils.hexStringToByteArray("0000000600000800000000000000000000000000")
+        val byteArray8 = Utils.hexStringToByteArray("000000801027000001010A00DC5555")
 
-        val byteArray11 = hexStringToByteArray("AAAA1301A5550F9500000000000000FE0201008F")
-        val byteArray12 = hexStringToByteArray("020000000000000000000054FAFFFF54FAFFFFFB")
-        val byteArray13 = hexStringToByteArray("FFFFFFBE200000000000001B1B24240000000000")
-        val byteArray14 = hexStringToByteArray("000000AF5400000100000000302B140605E00722")
-        val byteArray15 = hexStringToByteArray("00000023000000C50000005D020000D900000006")
-        val byteArray16 = hexStringToByteArray("000000000000000000000000000000004000081B")
-        val byteArray17 = hexStringToByteArray("0000F221000033060000000000000B0000006216")
-        val byteArray18 = hexStringToByteArray("0000F42A0000030000000E000000110106000000")
-        val byteArray19 = hexStringToByteArray("000000000000C500765555")
+        val byteArray11 = Utils.hexStringToByteArray("AAAA1301A5550F9500000000000000FE0201008F")
+        val byteArray12 = Utils.hexStringToByteArray("020000000000000000000054FAFFFF54FAFFFFFB")
+        val byteArray13 = Utils.hexStringToByteArray("FFFFFFBE200000000000001B1B24240000000000")
+        val byteArray14 = Utils.hexStringToByteArray("000000AF5400000100000000302B140605E00722")
+        val byteArray15 = Utils.hexStringToByteArray("00000023000000C50000005D020000D900000006")
+        val byteArray16 = Utils.hexStringToByteArray("000000000000000000000000000000004000081B")
+        val byteArray17 = Utils.hexStringToByteArray("0000F221000033060000000000000B0000006216")
+        val byteArray18 = Utils.hexStringToByteArray("0000F42A0000030000000E000000110106000000")
+        val byteArray19 = Utils.hexStringToByteArray("000000000000C500765555")
 
 
         // Act.
@@ -204,24 +193,24 @@ class InmotionAdapterTest {
     @Test
     fun `decode with v8f full data 2`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("AAAA1401A5550F8500000000000000FE0201000E")
-        val byteArray2 = hexStringToByteArray("009BBD5E4A601400000000000000000000000000")
-        val byteArray3 = hexStringToByteArray("0000001500020200000000070003020000000026")
-        val byteArray4 = hexStringToByteArray("0301010000000000000A000000000073000000C8")
-        val byteArray5 = hexStringToByteArray("AF00002510000000100000000000000000000000")
-        val byteArray6 = hexStringToByteArray("0000000100000000000000000000000000000000")
-        val byteArray7 = hexStringToByteArray("0000000600000800000000000000000000000000")
-        val byteArray8 = hexStringToByteArray("000000801027000001010A00DC5555")
+        val byteArray1 = Utils.hexStringToByteArray("AAAA1401A5550F8500000000000000FE0201000E")
+        val byteArray2 = Utils.hexStringToByteArray("009BBD5E4A601400000000000000000000000000")
+        val byteArray3 = Utils.hexStringToByteArray("0000001500020200000000070003020000000026")
+        val byteArray4 = Utils.hexStringToByteArray("0301010000000000000A000000000073000000C8")
+        val byteArray5 = Utils.hexStringToByteArray("AF00002510000000100000000000000000000000")
+        val byteArray6 = Utils.hexStringToByteArray("0000000100000000000000000000000000000000")
+        val byteArray7 = Utils.hexStringToByteArray("0000000600000800000000000000000000000000")
+        val byteArray8 = Utils.hexStringToByteArray("000000801027000001010A00DC5555")
 
-        val byteArray11 = hexStringToByteArray("AAAA1301A5550F9500000000000000FE0201007A")
-        val byteArray12 = hexStringToByteArray("14000000000000000000003CFDFFFF3CFDFFFFF6")
-        val byteArray13 = hexStringToByteArray("FFFFFFA7200000400100001C1C2424F8FFFFFFE7")
-        val byteArray14 = hexStringToByteArray("FFFFFFB75400000900000000042C140605E00722")
-        val byteArray15 = hexStringToByteArray("000000E301000023010000AC0500000302000056")
-        val byteArray16 = hexStringToByteArray("0000004C0000000000000000000000004000081C")
-        val byteArray17 = hexStringToByteArray("0000F221000033060000BF020000070100006F16")
-        val byteArray18 = hexStringToByteArray("0000032B0000100000001D000000380256004C00")
-        val byteArray19 = hexStringToByteArray("F8FFE7FFE7FF2301465555")
+        val byteArray11 = Utils.hexStringToByteArray("AAAA1301A5550F9500000000000000FE0201007A")
+        val byteArray12 = Utils.hexStringToByteArray("14000000000000000000003CFDFFFF3CFDFFFFF6")
+        val byteArray13 = Utils.hexStringToByteArray("FFFFFFA7200000400100001C1C2424F8FFFFFFE7")
+        val byteArray14 = Utils.hexStringToByteArray("FFFFFFB75400000900000000042C140605E00722")
+        val byteArray15 = Utils.hexStringToByteArray("000000E301000023010000AC0500000302000056")
+        val byteArray16 = Utils.hexStringToByteArray("0000004C0000000000000000000000004000081C")
+        val byteArray17 = Utils.hexStringToByteArray("0000F221000033060000BF020000070100006F16")
+        val byteArray18 = Utils.hexStringToByteArray("0000032B0000100000001D000000380256004C00")
+        val byteArray19 = Utils.hexStringToByteArray("F8FFE7FFE7FF2301465555")
 
         // Act.
         val result1 = adapter.decode(byteArray1)

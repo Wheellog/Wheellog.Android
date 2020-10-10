@@ -17,18 +17,7 @@ class GotwayAdapterTest {
     private var adapter: GotwayAdapter = GotwayAdapter()
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
-
-    fun hexStringToByteArray(s: String): ByteArray? {
-        val len = s.length
-        val data = ByteArray(len / 2)
-        var i = 0
-        while (i < len) {
-            data[i / 2] = ((Character.digit(s[i], 16) shl 4)
-                    + Character.digit(s[i + 1], 16)).toByte()
-            i += 2
-        }
-        return data
-    }
+    
 
     @Before
     fun setUp() {
@@ -90,9 +79,9 @@ class GotwayAdapterTest {
     @Test
     fun `decode with 2020 board data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("55AA19C1000000000000008CF0000001FFF80018")
-        val byteArray2 = hexStringToByteArray("5A5A5A5A55AA000060D248001C20006400010007")
-        val byteArray3 = hexStringToByteArray("000804185A5A5A5A")
+        val byteArray1 = Utils.hexStringToByteArray("55AA19C1000000000000008CF0000001FFF80018")
+        val byteArray2 = Utils.hexStringToByteArray("5A5A5A5A55AA000060D248001C20006400010007")
+        val byteArray3 = Utils.hexStringToByteArray("000804185A5A5A5A")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -117,10 +106,10 @@ class GotwayAdapterTest {
     @Test
     fun `decode strange board data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("55AA19A0000C00000000032AF8150001FFF80018")
-        val byteArray2 = hexStringToByteArray("5A5A5A5A")
-        val byteArray3 = hexStringToByteArray("55AA000026E324001C19001E0001000700080418")
-        val byteArray4 = hexStringToByteArray("5A5A5A5A")
+        val byteArray1 = Utils.hexStringToByteArray("55AA19A0000C00000000032AF8150001FFF80018")
+        val byteArray2 = Utils.hexStringToByteArray("5A5A5A5A")
+        val byteArray3 = Utils.hexStringToByteArray("55AA000026E324001C19001E0001000700080418")
+        val byteArray4 = Utils.hexStringToByteArray("5A5A5A5A")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -146,8 +135,8 @@ class GotwayAdapterTest {
     @Test
     fun `decode veteran old board data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("DC5A5C2025D600003BF500003BF50000FFDE1399")
-        val byteArray2 = hexStringToByteArray("0DEF0000024602460000000000000000")
+        val byteArray1 = Utils.hexStringToByteArray("DC5A5C2025D600003BF500003BF50000FFDE1399")
+        val byteArray2 = Utils.hexStringToByteArray("0DEF0000024602460000000000000000")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -170,8 +159,8 @@ class GotwayAdapterTest {
     @Test
     fun `decode veteran new board data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("DC5A5C20238A0112121A00004D450005064611F2")
-        val byteArray2 = hexStringToByteArray("0E1000000AF00AF0041B000300000000")
+        val byteArray1 = Utils.hexStringToByteArray("DC5A5C20238A0112121A00004D450005064611F2")
+        val byteArray2 = Utils.hexStringToByteArray("0E1000000AF00AF0041B000300000000")
 
         // Act.
         val result1 = adapter.decode(byteArray1)

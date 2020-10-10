@@ -7,6 +7,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+
 //import sun.security.krb5.internal.KDCOptions.with
 import kotlin.math.abs
 import kotlin.math.round
@@ -16,18 +17,6 @@ class NinebotZAdapterTest {
 
     private var adapter: NinebotZAdapter = NinebotZAdapter()
     private lateinit var data: WheelData
-
-    fun hexStringToByteArray(s: String): ByteArray? {
-        val len = s.length
-        val data = ByteArray(len / 2)
-        var i = 0
-        while (i < len) {
-            data[i / 2] = ((Character.digit(s[i], 16) shl 4)
-                    + Character.digit(s[i + 1], 16)).toByte()
-            i += 2
-        }
-        return data
-    }
 
     @Before
     fun setUp() {
@@ -44,8 +33,8 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 sn data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA50E143E04104E334F54433230323054303030")
-        val byteArray2 = hexStringToByteArray("314BFC")
+        val byteArray1 = Utils.hexStringToByteArray("5AA50E143E04104E334F54433230323054303030")
+        val byteArray2 = Utils.hexStringToByteArray("314BFC")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -62,7 +51,7 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 version data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA502143E041A771006FF")
+        val byteArray1 = Utils.hexStringToByteArray("5AA502143E041A771006FF")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -75,9 +64,9 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 bms1 sn data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA522113E041034395945513138483151303432")
-        val byteArray2 = hexStringToByteArray("33160180258025EC13AF00810100000000000001")
-        val byteArray3 = hexStringToByteArray("256BF8")
+        val byteArray1 = Utils.hexStringToByteArray("5AA522113E041034395945513138483151303432")
+        val byteArray2 = Utils.hexStringToByteArray("33160180258025EC13AF00810100000000000001")
+        val byteArray3 = Utils.hexStringToByteArray("256BF8")
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
@@ -99,8 +88,8 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 bms1 status data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA518113E04300102BF25640011009A162F2E00")
-        val byteArray2 = hexStringToByteArray("2000000000C025BD256200B2FA")
+        val byteArray1 = Utils.hexStringToByteArray("5AA518113E04300102BF25640011009A162F2E00")
+        val byteArray2 = Utils.hexStringToByteArray("2000000000C025BD256200B2FA")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -123,9 +112,9 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 bms1 cells data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA520113E0440341006103110381005103010FA")
-        val byteArray2 = hexStringToByteArray("0F06103D104010011034103D1051100000000055")
-        val byteArray3 = hexStringToByteArray("FB")
+        val byteArray1 = Utils.hexStringToByteArray("5AA520113E0440341006103110381005103010FA")
+        val byteArray2 = Utils.hexStringToByteArray("0F06103D104010011034103D1051100000000055")
+        val byteArray3 = Utils.hexStringToByteArray("FB")
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
@@ -157,9 +146,9 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 bms2 sn data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA522123E041034395945513138483151303432")
-        val byteArray2 = hexStringToByteArray("33160180258025EC13B000810100000000000001")
-        val byteArray3 = hexStringToByteArray("2569F8")
+        val byteArray1 = Utils.hexStringToByteArray("5AA522123E041034395945513138483151303432")
+        val byteArray2 = Utils.hexStringToByteArray("33160180258025EC13B000810100000000000001")
+        val byteArray3 = Utils.hexStringToByteArray("2569F8")
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
@@ -181,8 +170,8 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 bms2 status data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA518123E043001029C2564000000A0162F2E00")
-        val byteArray2 = hexStringToByteArray("00000000009C259C25620044FB")
+        val byteArray1 = Utils.hexStringToByteArray("5AA518123E043001029C2564000000A0162F2E00")
+        val byteArray2 = Utils.hexStringToByteArray("00000000009C259C25620044FB")
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -205,9 +194,9 @@ class NinebotZAdapterTest {
     @Test
     fun `decode z10 bms2 cells data`() {
         // Arrange.
-        val byteArray1 = hexStringToByteArray("5AA520123E04401B102C10221024102310211031")
-        val byteArray2 = hexStringToByteArray("1030102F10271026103510321035100000000021")
-        val byteArray3 = hexStringToByteArray("FC")
+        val byteArray1 = Utils.hexStringToByteArray("5AA520123E04401B102C10221024102310211031")
+        val byteArray2 = Utils.hexStringToByteArray("1030102F10271026103510321035100000000021")
+        val byteArray3 = Utils.hexStringToByteArray("FC")
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
