@@ -26,3 +26,7 @@ The watch application is also available for download directly on the ConnectIQ s
 ## Google Play
 
 https://play.google.com/store/apps/details?id=com.cooper.wheellog
+
+## Previous code base
+
+https://github.com/palachzzz/WheelLogAndroid
