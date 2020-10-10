@@ -938,6 +938,7 @@ public class WheelData {
 	
 	public void resetTopSpeed() {
 		mTopSpeed = 0;
+		mMaxPwm = 0;
     }
     public void resetVoltageSag() {
         Timber.i("Sag WD");
