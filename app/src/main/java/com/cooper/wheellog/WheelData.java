@@ -120,6 +120,9 @@ public class WheelData {
     private int mTemperature;
     private int mMaxTemp;
 	private int mTemperature2;
+    private int mCpuLoad;
+    private int mOutput;
+    private int mSpeedLimit;
 	private double mAngle;
 	private double mRoll;
 
@@ -136,6 +139,7 @@ public class WheelData {
     private int mTopSpeed;
     private int mVoltageSag;
     private int mFanStatus;
+    private int mChargingStatus;
     private boolean mConnectionState = false;
 	private boolean mNewWheelSettings = false;
     private boolean mKSAlertsAndSpeedupdated = false;
@@ -751,7 +755,17 @@ public class WheelData {
     public int getTemperature2() {
         return mTemperature2 / 100;
     }
-	
+    public int getCpuLoad() {
+        return mCpuLoad;
+    }
+    public int getOutput() {
+        return mOutput;
+    }
+
+    public double getSpeedLimit() {
+        return mSpeedLimit/100.0;
+    }
+
 	public double getAngle() {
         return mAngle;
     }
@@ -766,6 +780,9 @@ public class WheelData {
 
     public int getFanStatus() {
         return mFanStatus;
+    }
+    public int getChargingStatus() {
+        return mChargingStatus;
     }
 
     boolean isConnected() {
@@ -798,7 +815,7 @@ public class WheelData {
         return mModel;
     }
 	
-	String getModeStr() {
+	public String getModeStr() {
         return mModeStr;
     }
 
@@ -1435,7 +1452,7 @@ public class WheelData {
             if (a1 != 170 || a2 != 85) {
                 return false;
             }
-            if ((data[16] & 255) == 169) { // Live data
+            if ((data[16] & 255) == 0xA9) { // Live data
                 mVoltage = byteArrayInt2(data[2], data[3]);
                 mSpeed = byteArrayInt2(data[4], data[5]);
                 mTotalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
@@ -1500,7 +1517,7 @@ public class WheelData {
                 setBatteryPercent(battery);
 
                 return true;
-            } else if ((data[16] & 255) == 185) { // Distance/Time/Fan Data
+            } else if ((data[16] & 255) == 0xB9) { // Distance/Time/Fan Data
                 long distance = byteArrayInt4(data[2], data[3], data[4], data[5]);
                 setDistance(distance);
                 //int currentTime = byteArrayInt2(data[6], data[7]);
@@ -1508,6 +1525,8 @@ public class WheelData {
                 setCurrentTime(currentTime);
                 setTopSpeed(byteArrayInt2(data[8], data[9]));
                 mFanStatus = data[12];
+                mChargingStatus = data[13];
+                mTemperature2 = byteArrayInt2(data[14], data[15]);
                 return true;
             } else if ((data[16] & 255) == 187) { // Name and Type data
                 int end = 0;
@@ -1538,8 +1557,14 @@ public class WheelData {
                 mSerialNumber = new String(sndata);
                 updateKSAlarmAndSpeed();
                 return true;
-            }
-            else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
+            } else if ((data[16] & 255) == 0xF5) { //cpu load
+                mCpuLoad = data[14];//byteArrayInt2(data[14], data[15]);
+                mOutput = data[15];
+                return false;
+            } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
+                mSpeedLimit = byteArrayInt2(data[2], data[3]);
+                return false;
+            } else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 mWheelMaxSpeed = (data[10] & 255);
                 mKSAlarm3Speed = (data[8] & 255);
                 mKSAlarm2Speed = (data[6] & 255);
@@ -1928,6 +1953,9 @@ public class WheelData {
         mCurrent = 0;
         mTemperature = 0;
 		mTemperature2 = 0;
+        mCpuLoad = 0;
+        mOutput = 0;
+        mSpeedLimit = 0;
 		mAngle = 0;
 		mRoll = 0;
         mMode = 0;
@@ -1943,6 +1971,7 @@ public class WheelData {
 		mRidingTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
+        mChargingStatus = 0;
 		mDistance = 0;
 		mUserDistance = 0;
         mName = "";

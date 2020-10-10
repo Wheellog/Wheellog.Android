@@ -89,6 +89,32 @@
                 style="@style/Stats" />
 
             <TextView
+                android:id="@+id/tvTitleOutput"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/output"/>
+
+            <TextView
+                android:id="@+id/tvOutput"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleCpuLoad"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/cpuload"/>
+
+            <TextView
+                android:id="@+id/tvCpuLoad"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
                 android:id="@+id/tvTitleTemperature"
                 android:visibility="gone"
                 android:layout_width="0sp"
@@ -279,6 +305,19 @@
 
             <TextView
                 android:id="@+id/tvFanStatus"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
+            <TextView
+                android:id="@+id/tvTitleChargingStatus"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/charging_status"/>
+
+            <TextView
+                android:id="@+id/tvChargingStatus"
                 android:visibility="gone"
                 android:layout_width="0sp"
                 style="@style/Stats" />

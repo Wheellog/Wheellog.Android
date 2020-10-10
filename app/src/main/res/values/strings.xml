@@ -42,6 +42,9 @@
 	<string name="average_riding_speed">Avg Riding</string>
     <string name="top_speed">Top Speed</string>
     <string name="battery">Battery</string>
+    <string name="output">Motor output</string>
+    <string name="cpuload">CPU load</string>
+    <string name="charging_status">Charging</string>
     <string name="distance">Distance</string>
 	<string name="wheel_distance">Wheel Distance</string>
 	<string name="user_distance">User Distance</string>

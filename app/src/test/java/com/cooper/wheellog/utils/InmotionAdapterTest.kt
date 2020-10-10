@@ -92,8 +92,8 @@ class InmotionAdapterTest {
         assertThat(data.temperature2).isEqualTo(0)
         assertThat(data.voltageDouble).isEqualTo(82.13)
         assertThat(data.currentDouble).isEqualTo(-0.2)
-        assertThat(data.totalDistance).isEqualTo(1303324) // wrong should be 1303324
-        assertThat(data.batteryLevel).isEqualTo(97) //wrong should be 97
+        assertThat(data.totalDistance).isEqualTo(1303324)
+        assertThat(data.batteryLevel).isEqualTo(97)
         assertThat(data.angle).isEqualTo(0.2499847412109375)
         assertThat(data.roll).isEqualTo(5.588888888888889)
     }
