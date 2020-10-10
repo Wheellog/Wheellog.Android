@@ -1815,9 +1815,9 @@ public class MainActivity extends AppCompatActivity {
                     alarm3Speed, alarm3Battery,
                     current_alarm, temperature_alarm, disablePhoneVibrate, disablePhoneBeep, alteredAlarms,
                     rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed);
-            wheelView.setWarningSpeed(alarm1Speed);
+            wheelView.setWarningSpeed(alarm1Speed, alteredAlarms);
         } else
-            wheelView.setWarningSpeed(0);
+            wheelView.setWarningSpeed(0, false);
 
         boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);

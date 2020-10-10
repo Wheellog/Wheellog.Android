@@ -51,6 +51,7 @@ public class WheelView extends View {
     private boolean mUseMPH = false;
     private int mSpeed = 0;
     private int mWarningSpeed = 0;
+    private boolean mAlteredAlarms = false;
     private int mBattery = 0;
     private int mBatteryLowest = 101;
     private int mTemperature = 0;
@@ -280,8 +281,9 @@ public class WheelView extends View {
         refreshDrawableState();
     }
 
-    public void setWarningSpeed(int speed) {
+    public void setWarningSpeed(int speed, boolean alteredAlarms) {
         mWarningSpeed = speed*10;
+        mAlteredAlarms = alteredAlarms;
     }
 
     public void setBattery(int battery) {
@@ -657,7 +659,7 @@ public class WheelView extends View {
         else
             speedString = String.format(Locale.US, "%02d", Math.round(speed / 10.0));
 
-        if (mWarningSpeed > 0 && mSpeed >= mWarningSpeed)
+        if (!mAlteredAlarms && mWarningSpeed > 0 && mSpeed >= mWarningSpeed)
             textPaint.setColor(getContext().getResources().getColor(R.color.accent));
         else
             textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_text));
