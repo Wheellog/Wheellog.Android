@@ -120,6 +120,7 @@
     <string name="alarm_factor2" translatable="false">alarm_factor2</string>
     <string name="alarm_factor3" translatable="false">alarm_factor3</string>
     <string name="warning_speed" translatable="false">warning_speed</string>
+    <string name="warning_speed_period" translatable="false">warning_speed_period</string>
 
 
 
@@ -280,7 +281,9 @@
     <string name="alarm_factor3_title">Third alarm PWM</string>
     <string name="alarm_factor3_description">Should be higher than second alarm</string>
     <string name="warning_speed_title">Advance warning</string>
-    <string name="warning_speed_description">Advance speed warning (0 = off)</string>
+    <string name="warning_speed_description">Advance speed warning, 0 - off</string>
+    <string name="warning_speed_period_title">Frequency of warnings</string>
+    <string name="warning_speed_period_description">Notification period, 0 - off</string>
 
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>

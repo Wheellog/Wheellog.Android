@@ -184,6 +184,8 @@ public class WheelData {
     private double mAlarmFactor2 = 0.85;
     private double mAlarmFactor3 = 0.90;
     private int mAdvanceWarningSpeed = 0;
+    private int mWarningSpeedPeriod = 0;
+    private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
@@ -1160,13 +1162,13 @@ public class WheelData {
     }
 
     void setPreferences(int alarm1Speed, int alarm1Battery,
-                                   int alarm2Speed, int alarm2Battery,
-                                   int alarm3Speed, int alarm3Battery,
-                                   int alarmCurrent,int alarmTemperature,
-                                    boolean disablePhoneVibrate, boolean disablePhoneBeep,
-                                    boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
-                                    int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed
-                                                                                                ) {
+                        int alarm2Speed, int alarm2Battery,
+                        int alarm3Speed, int alarm3Battery,
+                        int alarmCurrent, int alarmTemperature,
+                        boolean disablePhoneVibrate, boolean disablePhoneBeep,
+                        boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
+                        int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed,
+                        int warningSpeedPeriod) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -1185,6 +1187,7 @@ public class WheelData {
         mAlarmFactor2 = (float)alarmFactor2/100.0;
         mAlarmFactor3 = (float)alarmFactor3/100.0;
         mAdvanceWarningSpeed = warningSpeed;
+        mWarningSpeedPeriod = warningSpeedPeriod * 1000;
     }
 
     private int byteArrayInt2(byte low, byte high) {
@@ -1299,7 +1302,9 @@ public class WheelData {
                 } else if (mCalculatedPwm > mAlarmFactor1) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-                } else if (mAdvanceWarningSpeed != 0 && getSpeedDouble() >= mAdvanceWarningSpeed) {
+                } else if (mAdvanceWarningSpeed != 0 && mWarningSpeedPeriod != 0 && getSpeedDouble() >= mAdvanceWarningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > mWarningSpeedPeriod)
+                {
+                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
                     playWarningSpeed(mContext);
                 }
             } else {
