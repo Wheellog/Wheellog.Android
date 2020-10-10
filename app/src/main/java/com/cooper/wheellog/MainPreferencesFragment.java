@@ -111,6 +111,10 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
                 WheelData.getInstance().setBetterPercents(betterPercents);
                 break;
+            case "use_stop_music":
+                boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
+                WheelData.getInstance().setUseStopMusic(useStopMusic);
+                break;
 			case "led_enabled":
 				boolean ledEnabled = sharedPreferences.getBoolean(getString(R.string.led_enabled), false);
 				WheelData.getInstance().updateLed(ledEnabled);

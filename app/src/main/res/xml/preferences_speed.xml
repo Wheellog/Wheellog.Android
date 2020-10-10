@@ -63,4 +63,11 @@
         sample:sbp_measurementUnit="@string/sec"
         sample:sbp_minValue="0" />
 
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/use_stop_music"
+        android:summary="@string/use_stop_music_description"
+        android:title="@string/use_stop_music_title"
+        android:visible="true" />
+
 </PreferenceScreen>

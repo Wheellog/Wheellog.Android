@@ -219,6 +219,8 @@
     <string name="rotation_speed_description">Измеренная на весу максимальная скорость вращения колеса</string>
     <string name="rotation_voltage_title">Напряжение раскрутки</string>
     <string name="rotation_voltage_description">Напряжение при котором измерялась скорость раскрутки</string>
+    <string name="use_stop_music_title">Выключение звука</string>
+    <string name="use_stop_music_description">Автовыключение звука при скорости ниже 3.5 км/ч</string>
 
 
 </resources>

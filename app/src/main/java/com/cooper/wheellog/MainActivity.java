@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -71,6 +72,7 @@ import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
+    public static AudioManager audioManager = null;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -1300,6 +1302,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
@@ -1332,6 +1335,7 @@ public class MainActivity extends AppCompatActivity {
         mDeviceAddress = SettingsUtil.getLastAddress(getApplicationContext());
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         tvSpeed = (TextView) findViewById(R.id.tvSpeed);
         tvCurrent = (TextView) findViewById(R.id.tvCurrent);
@@ -1760,9 +1764,14 @@ public class MainActivity extends AppCompatActivity {
         WheelData.getInstance().setUseRatio(use_ratio);
         boolean ks18l_scaler = sharedPreferences.getBoolean(getString(R.string.ks18l_scaler), false);
         WheelData.getInstance().set18Lkm(ks18l_scaler);
+
         boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
         WheelData.getInstance().setBetterPercents(betterPercents);
         wheelView.setBetterPercent(betterPercents);
+
+        boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
+        WheelData.getInstance().setUseStopMusic(useStopMusic);
+
         boolean currentOnDial = sharedPreferences.getBoolean(getString(R.string.current_on_dial), false);
         wheelView.setCurrentOnDial(currentOnDial);
         wheelView.invalidate();

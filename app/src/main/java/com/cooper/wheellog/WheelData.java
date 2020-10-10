@@ -186,6 +186,8 @@ public class WheelData {
     private int mAdvanceWarningSpeed = 0;
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
+    private long mLowSpeedMusicTime = 0;
+    private boolean mUseStopMusic = false;
 
     private boolean mAlteredAlarms = false;
 	private boolean mUseRatio = false;
@@ -948,7 +950,10 @@ public class WheelData {
 
         mBetterPercents = betterPercents;
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().setBetterPercents(betterPercents);
+    }
 
+    public void setUseStopMusic(boolean useStopMusic) {
+        mUseStopMusic = useStopMusic;
     }
 
     public double getDistanceDouble() {
@@ -1415,12 +1420,29 @@ public class WheelData {
 
         if (mAlarmsEnabled)
 			checkAlarmStatus(mContext);
+
       	timestamp_last = timestamp_raw;
 		mContext.sendBroadcast(intent);
-        
-       
+        CheckMuteMusic();
+    }
 
-        
+    private void CheckMuteMusic() {
+        if (!mUseStopMusic)
+            return;
+
+        final double muteSpeedThreshold = 3.5;
+        double speed = getSpeedDouble();
+        if (speed <= muteSpeedThreshold) {
+            mLowSpeedMusicTime = 0;
+            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+        }
+        else {
+            if (mLowSpeedMusicTime == 0)
+                mLowSpeedMusicTime = System.currentTimeMillis();
+
+            if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= 1500)
+                MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        }
     }
 
     // TODO move decode* to specific adapters
@@ -1923,6 +1945,7 @@ public class WheelData {
     }
 
     void reset() {
+        mLowSpeedMusicTime = 0;
         mSpeed = 0;
         mTotalDistance = 0;
         mCurrent = 0;
