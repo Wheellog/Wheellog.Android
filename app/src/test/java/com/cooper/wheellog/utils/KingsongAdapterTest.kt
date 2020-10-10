@@ -122,7 +122,7 @@ class KingsongAdapterTest {
         justRun { data.updateKSAlarmAndSpeed() }
         val type = 179.toByte() // Name and Type data
         val serial = "King1234567890123"
-        var serialBytes = serial.toByteArray(Charsets.UTF_8)
+        val serialBytes = serial.toByteArray(Charsets.UTF_8)
         val byteArray = MathsUtil.reverseEvery2(header) +
                 serialBytes.copyOfRange(0, 14) +
                 type +
