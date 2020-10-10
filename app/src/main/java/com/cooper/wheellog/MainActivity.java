@@ -93,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
     TextView tvVoltage;
     TextView tvVoltageSag;
     TextView tvBattery;
+    TextView tvOutput;
+    TextView tvCpuLoad;
     TextView tvFanStatus;
+    TextView tvChargingStatus;
     TextView tvTopSpeed;
     TextView tvAverageSpeed;
     TextView tvAverageRidingSpeed;
@@ -478,6 +481,9 @@ public class MainActivity extends AppCompatActivity {
         TextView tvTitleAngle = (TextView) findViewById(R.id.tvTitleAngle);
         TextView tvTitleRoll = (TextView) findViewById(R.id.tvTitleRoll);
         TextView tvTitleFanStatus = (TextView) findViewById(R.id.tvTitleFanStatus);
+        TextView tvTitleChargingStatus = (TextView) findViewById(R.id.tvTitleChargingStatus);
+        TextView tvTitleOutput = (TextView) findViewById(R.id.tvTitleOutput);
+        TextView tvTitleCpuLoad = (TextView) findViewById(R.id.tvTitleCpuLoad);
         TextView tvTitleMode = (TextView) findViewById(R.id.tvTitleMode);
         TextView tvTitleTotalDistance = (TextView) findViewById(R.id.tvTitleTotalDistance);
         TextView tvTitleName = (TextView) findViewById(R.id.tvTitleName);
@@ -614,6 +620,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         switch (wheelType) {
+            case Unknown:
+                break;
             case KINGSONG:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
@@ -648,7 +656,13 @@ public class MainActivity extends AppCompatActivity {
                 tvTemperature.setVisibility(View.VISIBLE);
                 tvTitleFanStatus.setVisibility(View.VISIBLE);
                 tvFanStatus.setVisibility(View.VISIBLE);
-                tvTitleMode.setVisibility(View.VISIBLE);
+                tvTitleFanStatus.setVisibility(View.VISIBLE);
+                tvChargingStatus.setVisibility(View.VISIBLE);
+                tvTitleChargingStatus.setVisibility(View.VISIBLE);
+                tvOutput.setVisibility(View.VISIBLE);
+                tvTitleOutput.setVisibility(View.VISIBLE);
+                tvCpuLoad.setVisibility(View.VISIBLE);
+                tvTitleCpuLoad.setVisibility(View.VISIBLE);
                 tvMode.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
@@ -1012,6 +1026,12 @@ public class MainActivity extends AppCompatActivity {
                 tvRoll.setVisibility(View.GONE);
                 tvTitleFanStatus.setVisibility(View.GONE);
                 tvFanStatus.setVisibility(View.GONE);
+                tvTitleChargingStatus.setVisibility(View.GONE);
+                tvChargingStatus.setVisibility(View.GONE);
+                tvTitleOutput.setVisibility(View.GONE);
+                tvOutput.setVisibility(View.GONE);
+                tvTitleCpuLoad.setVisibility(View.GONE);
+                tvCpuLoad.setVisibility(View.GONE);
                 tvTitleMode.setVisibility(View.GONE);
                 tvMode.setVisibility(View.GONE);
                 tvTitleTotalDistance.setVisibility(View.GONE);
