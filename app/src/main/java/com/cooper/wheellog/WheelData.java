@@ -19,6 +19,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
 public class WheelData {
+    private List<IDataListener> listeners = new ArrayList<IDataListener>();
+
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
 	private Timer ridingTimerControl;
@@ -182,12 +185,16 @@ public class WheelData {
     private double mAlarmFactor3 = 0.90;
     private int mAdvanceWarningSpeed = 0;
     private double mWarningPwm = 0;
+    private boolean mUseShortPwm = false;
     private int mWarningSpeedPeriod = 0;
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
     private boolean mUseStopMusic = false;
+    public int mBatteryCapacity = 0;
+    public boolean mConnectBeep = true;
+    private double mChargingPowerAmp = 0;
 
     private boolean mAlteredAlarms = false;
 	private boolean mUseRatio = false;
@@ -262,6 +269,9 @@ public class WheelData {
 
     }
 
+    public void addListener(IDataListener toAdd) {
+        listeners.add(toAdd);
+    }
 
     static void initiate() {
         if (mInstance == null)
@@ -345,6 +355,14 @@ public class WheelData {
 
     public static WheelData getInstance() {
         return mInstance;
+    }
+
+    public boolean isUseShortPwm() {
+        return mUseShortPwm;
+    }
+
+    public double getCurrentPwm() {
+        return mCalculatedPwm * 100.0;
     }
 
     public int getSpeed() {
@@ -802,7 +820,7 @@ public class WheelData {
     }
 
     public String getVersion() {
-        return mVersion;
+        return mVersion == "" ? "Unknown" : mVersion;
     }
 
     public void setVersion(String value) {
@@ -814,7 +832,13 @@ public class WheelData {
     }
 
     public void setWheelType(WHEEL_TYPE wheelType) {
+        boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
+
+        if (isChanged) {
+            for (IDataListener hl : listeners)
+                hl.changeWheelType();
+        }
     }
 
     public WHEEL_TYPE getWheelType() {
@@ -839,6 +863,34 @@ public class WheelData {
 	
 	public String getModeStr() {
         return mModeStr;
+    }
+
+    String getChargeTime()
+    {
+        if (!isSupportsFixedPercents())
+            return "Unknown";
+
+        double maxVoltage = 100.8;
+        double minVoltage = mTiltbackVoltage;
+        if (getWheelType() == WHEEL_TYPE.GOTWAY) {
+            switch (GotwayAdapter.getInstance().getGotwayVoltageScaler()) {
+                case 0:
+                    maxVoltage = 67.2;
+                    break;
+                case 1:
+                    maxVoltage = 84.0;
+                    break;
+            }
+        }
+
+        double whInOneV = mBatteryCapacity / (maxVoltage - minVoltage);
+        double needToMax = maxVoltage - getVoltageDouble();
+        double needToMaxInWh = needToMax * whInOneV;
+        double chargePower = maxVoltage * mChargingPowerAmp;
+        int chargeTime = (int) (needToMaxInWh / chargePower * 60);
+        return getSpeed() == 0
+                ? String.format(Locale.US, "~%d min", chargeTime)
+                : String.format(Locale.US, "~%d min *", chargeTime);
     }
 
 	String getAlert() {
@@ -928,8 +980,9 @@ public class WheelData {
     double getCalculatedPwm() {
         return mCalculatedPwm*100.0;
     }
-    double getMaxPwm() {
-        return mMaxPwm*100.0;
+
+    public double getMaxPwm() {
+        return mMaxPwm * 100.0;
     }
 
     public int getTopSpeed() { return mTopSpeed; }
@@ -1221,7 +1274,7 @@ public class WheelData {
                         boolean disablePhoneVibrate, boolean disablePhoneBeep,
                         boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
                         int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed,
-                        int warningSpeedPeriod, int warningPwm) {
+                        int warningSpeedPeriod, int warningPwm, boolean useShortPwm) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -1242,6 +1295,20 @@ public class WheelData {
         mAdvanceWarningSpeed = warningSpeed;
         mWarningSpeedPeriod = warningSpeedPeriod * 1000;
         mWarningPwm = (float)warningPwm/100.0;
+        mUseShortPwm = useShortPwm;
+    }
+
+    public void setBatteryCapacityAndChargePower(int batteryCapacity, int chargingPower) {
+        mBatteryCapacity = batteryCapacity;
+        mChargingPowerAmp = (float) chargingPower / 10.0;
+    }
+
+    public void setConnectBeep(boolean connectBeep) {
+        mConnectBeep = connectBeep;
+    }
+
+    public boolean getConnectBeep() {
+        return mConnectBeep;
     }
 
     public void setDistance(long distance) {
@@ -2022,7 +2089,9 @@ public class WheelData {
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     // Let the user know it's working by making the wheel beep
-                    mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    if (mConnectBeep)
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+
                     return true;
                 } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.INMOTION;

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sample="http://schemas.android.com/apk/res-auto">
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/fixed_percents"
+        android:summary="@string/fixed_percents_description"
+        android:title="@string/fixed_percents_title"
+        android:visible="true" />
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="660"
+        android:key="@string/tiltback_voltage"
+        android:summary="@string/tiltback_voltage_description"
+        android:title="@string/tiltback_voltage_title"
+        sample:dependency="fixed_percents"
+        sample:sbp_decimalPlaces="1"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="900"
+        sample:sbp_measurementUnit="V"
+        sample:sbp_minValue="300" />
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:key="@string/battery_capacity"
+        android:summary="@string/battery_capacity_description"
+        android:title="@string/battery_capacity_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="9999"
+        sample:sbp_minValue="0"
+        sample:sbp_measurementUnit="Wh"/>
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:key="@string/charging_power"
+        android:summary="@string/charging_power_description"
+        android:title="@string/charging_power_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="100"
+        sample:sbp_minValue="0"
+        sample:sbp_decimalPlaces="1"
+        sample:sbp_measurementUnit="A"/>
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/connect_beep"
+        android:summary="@string/connect_beep_description"
+        android:title="@string/connect_beep_title"
+        android:defaultValue="true"
+        android:visible="true" />
+
+</PreferenceScreen>

@@ -30,6 +30,7 @@
     <string name="model">Модель</string>
     <string name="version">Версия</string>
     <string name="serial_number">Серийный номер</string>
+    <string name="time_charge_title">Время зарядки</string>
     <string name="waiting_for_wheel">Ожидание колеса</string>
     <string name="fan_status">Вентилятор</string>
     <string name="speed">Скорость</string>
@@ -203,6 +204,12 @@
     <string name="max_speed_dial_description">Максимальное значение внешней шкалы (скорость или ток)</string>
     <string name="connection_sound_description">Проигрывать звуки подключения и отключения колеса</string>
     <string name="connection_sound_title">Звуки подключения колеса</string>
+    <string name="battery_capacity_title">Ёмкость батареи</string>
+    <string name="battery_capacity_description">Ёмкость батареи в Wh</string>
+    <string name="charging_power_title">Мощность зарядки</string>
+    <string name="charging_power_description">Мощность зарядки</string>
+    <string name="connect_beep_title">Звук подключения</string>
+    <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="sec">сек</string>
     <string name="altered_alarms_title">Измененные предупреждения</string>
     <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
@@ -219,6 +226,8 @@
     <string name="warning_pwm_description">Предварительное предупреждение по PWM, 0 - отключить</string>
     <string name="warning_speed_period_title">Переодичность предупреждений</string>
     <string name="warning_speed_period_description">Период оповещений, 0 - отключить</string>
+    <string name="use_short_pwm_title">Короткое отображение PWM</string>
+    <string name="use_short_pwm_description">Current/Max PWM отображается около скорости</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
     <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
     <string name="power_factor_description">Не меняйте если не знаете что это, 90 по дефолту</string>

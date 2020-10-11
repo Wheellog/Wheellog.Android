@@ -42,7 +42,6 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.GotwayAdapter;
-import com.cooper.wheellog.utils.IWheelAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -59,7 +58,6 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -72,7 +70,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IDataListener {
     public static AudioManager audioManager = null;
 
     @Override
@@ -114,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
     TextView tvRideTime;
     TextView tvRidingTime;
     TextView tvMode;
+    TextView tvTimeCharge;
+    TextView tvTimeChargeTitle;
 
     LineChart chart1;
 
@@ -618,7 +618,6 @@ public class MainActivity extends AppCompatActivity {
         tvTitleBms2Cell15.setVisibility(View.GONE);
         tvTitleBms2Cell16.setVisibility(View.GONE);
 
-
         switch (wheelType) {
             case Unknown:
                 break;
@@ -676,6 +675,8 @@ public class MainActivity extends AppCompatActivity {
                 tvVersion.setVisibility(View.VISIBLE);
                 tvTitleSerial.setVisibility(View.VISIBLE);
                 tvSerial.setVisibility(View.VISIBLE);
+                tvTimeChargeTitle.setVisibility(View.GONE);
+                tvTimeCharge.setVisibility(View.GONE);
                 break;
             case VETERAN:
             case GOTWAY:
@@ -716,6 +717,8 @@ public class MainActivity extends AppCompatActivity {
                 tvVersion.setVisibility(View.VISIBLE);
                 tvTitleModel.setVisibility(View.VISIBLE);
                 tvModel.setVisibility(View.VISIBLE);
+                tvTimeChargeTitle.setVisibility(View.VISIBLE);
+                tvTimeCharge.setVisibility(View.VISIBLE);
                 break;
             case INMOTION:
                 tvWaitText.setVisibility(View.GONE);
@@ -763,6 +766,8 @@ public class MainActivity extends AppCompatActivity {
                 tvVersion.setVisibility(View.VISIBLE);
                 tvTitleSerial.setVisibility(View.VISIBLE);
                 tvSerial.setVisibility(View.VISIBLE);
+                tvTimeChargeTitle.setVisibility(View.GONE);
+                tvTimeCharge.setVisibility(View.GONE);
                 break;
 
             case NINEBOT_Z:
@@ -940,6 +945,8 @@ public class MainActivity extends AppCompatActivity {
                 tvTitleBms2Cell14.setVisibility(View.VISIBLE);
                 tvTitleBms2Cell15.setVisibility(View.GONE);
                 tvTitleBms2Cell16.setVisibility(View.GONE);
+                tvTimeChargeTitle.setVisibility(View.GONE);
+                tvTimeCharge.setVisibility(View.GONE);
 
                 break;
             case NINEBOT:
@@ -988,6 +995,8 @@ public class MainActivity extends AppCompatActivity {
                 tvVersion.setVisibility(View.VISIBLE);
                 tvTitleSerial.setVisibility(View.VISIBLE);
                 tvSerial.setVisibility(View.VISIBLE);
+                tvTimeChargeTitle.setVisibility(View.GONE);
+                tvTimeCharge.setVisibility(View.GONE);
                 break;
             default:
                 tvWaitText.setVisibility(View.VISIBLE);
@@ -1047,6 +1056,8 @@ public class MainActivity extends AppCompatActivity {
                 tvVersion.setVisibility(View.GONE);
                 tvTitleSerial.setVisibility(View.GONE);
                 tvSerial.setVisibility(View.GONE);
+                tvTimeChargeTitle.setVisibility(View.GONE);
+                tvTimeCharge.setVisibility(View.GONE);
                 break;
         }
     }
@@ -1114,6 +1125,7 @@ public class MainActivity extends AppCompatActivity {
                 tvRideTime.setText(WheelData.getInstance().getRideTimeString());
                 tvRidingTime.setText(WheelData.getInstance().getRidingTimeString());
                 tvMode.setText(WheelData.getInstance().getModeStr());
+                tvTimeCharge.setText(WheelData.getInstance().getChargeTime());
                 break;
             case 2: // Graph  View
                 WheelData.getInstance().setBmsView(false);
@@ -1329,6 +1341,7 @@ public class MainActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
+        WheelData.getInstance().addListener(this);
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
@@ -1386,6 +1399,8 @@ public class MainActivity extends AppCompatActivity {
         tvName = (TextView) findViewById(R.id.tvName);
         tvVersion = (TextView) findViewById(R.id.tvVersion);
         tvSerial = (TextView) findViewById(R.id.tvSerial);
+        tvTimeChargeTitle = findViewById(R.id.tvTimeChargeTitle);
+        tvTimeCharge = findViewById(R.id.tvTimeCharge);
         tvRideTime = (TextView) findViewById(R.id.tvRideTime);
         tvRidingTime = (TextView) findViewById(R.id.tvRidingTime);
         tvMode = (TextView) findViewById(R.id.tvMode);
@@ -1837,6 +1852,13 @@ public class MainActivity extends AppCompatActivity {
         //WheelData.getInstance().setGotway84V(gotway_84v);
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
+        int batteryCapacity = sharedPreferences.getInt(getString(R.string.battery_capacity), 0);
+        int chargingPower = sharedPreferences.getInt(getString(R.string.charging_power), 0);
+        WheelData.getInstance().setBatteryCapacityAndChargePower(batteryCapacity, chargingPower);
+
+        boolean connectBeep = sharedPreferences.getBoolean(getString(R.string.connect_beep), true);
+        WheelData.getInstance().setConnectBeep(connectBeep);
+
         if (alarms_enabled) {
             int alarm1Speed = sharedPreferences.getInt(getString(R.string.alarm_1_speed), 29);
             int alarm2Speed = sharedPreferences.getInt(getString(R.string.alarm_2_speed), 0);
@@ -1858,12 +1880,14 @@ public class MainActivity extends AppCompatActivity {
             int warningSpeed = sharedPreferences.getInt(getString(R.string.warning_speed), 0);
             int warningPwm = sharedPreferences.getInt(getString(R.string.warning_pwm), 0);
             int warningSpeedPeriod = sharedPreferences.getInt(getString(R.string.warning_speed_period), 0);
+            boolean useShortPwm = sharedPreferences.getBoolean(getString(R.string.use_short_pwm), false);
             WheelData.getInstance().setPreferences(
                     alarm1Speed, alarm1Battery,
                     alarm2Speed, alarm2Battery,
                     alarm3Speed, alarm3Battery,
                     current_alarm, temperature_alarm, disablePhoneVibrate, disablePhoneBeep, alteredAlarms,
-                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed, warningSpeedPeriod, warningPwm);
+                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed, warningSpeedPeriod,
+                    warningPwm, useShortPwm);
             wheelView.setWarningSpeed(alarm1Speed, alteredAlarms);
         } else
             wheelView.setWarningSpeed(0, false);
@@ -2101,5 +2125,13 @@ public class MainActivity extends AppCompatActivity {
             return new MainPreferencesFragment();
         }
         return frag;
+    }
+
+    @Override
+    public void changeWheelType() {
+        if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
+            configureDisplay(WheelData.getInstance().getWheelType());
+            updateScreen(false);
+        }
     }
 }

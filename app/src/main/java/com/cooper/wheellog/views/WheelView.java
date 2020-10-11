@@ -468,8 +468,10 @@ public class WheelView extends View {
                 center_y + speedTextKPHRectSize/2f);
 
         speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, getResources().getString(R.string.kmh), textPaint);
-        speedTextKPHHeight = boundaryOfText.height();
+        if (WheelData.getInstance().isUseShortPwm())
+            speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
 
+        speedTextKPHHeight = boundaryOfText.height();
 
         int innerTextRectWidth = Math.round(innerStrokeWidth);
         batteryTextRect.set(
@@ -675,6 +677,9 @@ public class WheelView extends View {
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
         String metric = mUseMPH ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
+        if (WheelData.getInstance().isUseShortPwm())
+            metric = "(" + (int)WheelData.getInstance().getCurrentPwm() + "%) " + metric + " (" + (int)WheelData.getInstance().getMaxPwm() + "%)";
+
         canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 1.25F), textPaint);
 
         //####################################################
@@ -694,7 +699,7 @@ public class WheelView extends View {
             canvas.restore();
             canvas.save();
             /// true battery
-            if (mTrueBattery) {
+            if (mTrueBattery || mFixedPercents) {
                 if (getWidth() > getHeight())
                     canvas.rotate((144 + (-3.3F * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
                 else
