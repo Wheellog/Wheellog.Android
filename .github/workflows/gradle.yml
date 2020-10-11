@@ -22,5 +22,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build
       run: ./gradlew build
-    - name: Android Build
-      uses: vgaidarji/android-github-actions-build@v1.0.1
+    - name: Get Debug APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
