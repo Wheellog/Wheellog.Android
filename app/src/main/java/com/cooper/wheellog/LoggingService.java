@@ -30,8 +30,6 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
-import static com.google.api.client.util.Strings.isNullOrEmpty;
-
 public class LoggingService extends Service
 {
     private static LoggingService instance = null;

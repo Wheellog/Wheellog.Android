@@ -91,14 +91,6 @@ public class SettingsUtil {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.use_gps), false);
     }
 
-    public static boolean isAutoUploadEnabled(Context context) {
-        return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_upload), false);
-    }
-
-    public static void setAutoUploadEnabled(Context context, boolean enabled) {
-        getSharedPreferences(context).edit().putBoolean(context.getString(R.string.auto_upload), enabled).apply();
-    }
-
     public static boolean isAutoUploadECEnabled(Context context) {
         return getSharedPreferences(context).getBoolean(context.getString(R.string.auto_upload_ec), false);
     }
