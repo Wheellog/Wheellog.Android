@@ -271,7 +271,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
                                 }
                             }
-							if (mWheelType == WHEEL_TYPE.GOTWAY) {
+							if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 								addPreferencesFromResource(R.xml.preferences_gotway);
 								Preference startCalibrationButton = findPreference(getString(R.string.start_calibration));
 								if (startCalibrationButton != null) {
@@ -443,8 +443,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
 
         mWheelType = WheelData.getInstance().getWheelType();
-        boolean veteran = WheelData.getInstance().isVeteran();
-        if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z) && !veteran) {
+        if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z)) {
             wheelButton.setEnabled(true);
         }
 

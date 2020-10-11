@@ -19,7 +19,6 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,8 +26,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
-
-//import android.media.ToneGenerator;
 
 public class WheelData {
     private static final int TIME_BUFFER = 10;
@@ -38,9 +35,7 @@ public class WheelData {
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
- //   private static final int MAX_BATTERY_AVERAGE_COUNT = 150;
 	private static final int RIDING_SPEED = 200; // 2km/h
-	private static final double RATIO_GW = 0.875;
     private static final double KS18L_SCALER = 0.83;
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
@@ -178,8 +173,6 @@ public class WheelData {
     private int mAlarm3Battery = 0;
     private int mAlarmCurrent = 0;
 	private int mAlarmTemperature = 0;
-    private int mGotwayVoltageScaler = 0;
-    private int mGotwayNegative = -1;
 
     private double mRotationSpeed = 70.0;
     private double mRotationVoltage = 84.00;
@@ -204,7 +197,6 @@ public class WheelData {
 	private boolean mTemperatureAlarmExecuting = false;
 	private boolean mBmsView = false;
     private boolean mDataForLog = true;
-    private boolean mVeteran = false;
     private String protoVer = "";
 
     private int duration = 1; // duration of sound
@@ -221,6 +213,7 @@ public class WheelData {
     public IWheelAdapter getAdapter() {
         switch (mWheelType) {
             case GOTWAY:
+            case VETERAN:
                 return GotwayAdapter.getInstance();
             case KINGSONG:
                 return KingsongAdapter.getInstance();
@@ -280,7 +273,6 @@ public class WheelData {
         mInstance.full_reset();
         mInstance.prepareTone(mInstance.sfreq);
         mInstance.startRidingTimerControl();
-
     }
 
     private void prepareTone(int freq){
@@ -355,6 +347,10 @@ public class WheelData {
     public int getSpeed() {
         return (int)Math.round(mSpeed / 10.0);
     }
+
+    public void setSpeed(int speed) {
+        mSpeed = speed;
+    }
 	
 	public boolean getWheelLight() {
         return mWheelLightEnabled;
@@ -419,7 +415,7 @@ public class WheelData {
     }
 	
 	public void updatePedalsMode(int pedalsMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (pedalsMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("h".getBytes());
@@ -467,7 +463,7 @@ public class WheelData {
     }
 	
 	public void updateLightMode(int lightMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (lightMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("E".getBytes());
@@ -546,7 +542,7 @@ public class WheelData {
 	
 	
 	public void updateAlarmMode(int alarmMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (alarmMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("u".getBytes());
@@ -582,7 +578,7 @@ public class WheelData {
     }
 	
 	public void updateCalibration() {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			//mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
             new Handler().postDelayed(new Runnable() {
@@ -613,12 +609,11 @@ public class WheelData {
 			}
 		}
 
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			final byte[] hhh = new byte[1];
             final byte[] lll = new byte[1];
 			if (wheelMaxSpeed != 0) {
 				int wheelMaxSpeed2 = wheelMaxSpeed;
-				//if (mUseRatio) wheelMaxSpeed2 = (int)Math.round(wheelMaxSpeed2/RATIO_GW);
                 hhh[0] = (byte)((wheelMaxSpeed2/10)+0x30);
                 lll[0] = (byte)((wheelMaxSpeed2%10)+0x30);
                 mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
@@ -752,6 +747,11 @@ public class WheelData {
     public int getTemperature() {
         return mTemperature / 100;
     }
+
+    public void setTemperature(int value) {
+        mTemperature = value;
+    }
+
     public int getMaxTemp() {
         return mMaxTemp / 100;
     }
@@ -759,6 +759,7 @@ public class WheelData {
     public int getTemperature2() {
         return mTemperature2 / 100;
     }
+
     public int getCpuLoad() {
         return mCpuLoad;
     }
@@ -770,6 +771,10 @@ public class WheelData {
         return mSpeedLimit/100.0;
     }
 
+    public void setTemperature2(int value) {
+        mTemperature2 = value;
+    }
+	
 	public double getAngle() {
         return mAngle;
     }
@@ -793,22 +798,24 @@ public class WheelData {
         return mConnectionState;
     }
 
-    //    int getTopSpeed() { return mTopSpeed; }
     public String getVersion() {
         return mVersion;
     }
 
-    //    int getCurrentTime() { return mCurrentTime+mLastCurrentTime; }
-    int getMode() {
+    public void setVersion(String value) {
+        mVersion = value;
+    }
+
+     int getMode() {
         return mMode;
     }
 
-    WHEEL_TYPE getWheelType() {
+    public WHEEL_TYPE getWheelType() {
         return mWheelType;
     }
 
-    boolean isVeteran() {
-        return mVeteran;
+    public void setWheelType(WHEEL_TYPE wheelType) {
+        this.mWheelType = wheelType;
     }
 
     public String getName() {
@@ -817,6 +824,10 @@ public class WheelData {
 
     public String getModel() {
         return mModel;
+    }
+
+    public void setModel(String model) {
+        mModel = model;
     }
 	
 	public String getModeStr() {
@@ -876,6 +887,10 @@ public class WheelData {
         return mVoltage / 100.0;
     }
 
+    public void setVoltage(int voltage) {
+        mVoltage = voltage;
+    }
+
     double getVoltageSagDouble() {
         return mVoltageSag / 100.0;
     }
@@ -886,9 +901,23 @@ public class WheelData {
     public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
+
+    public void setCurrent(int value) {
+        mCurrent = value;
+    }
+
+    public int getCurrent() {
+        return mCurrent;
+    }
+
     public double getPhaseCurrentDouble() {
         return mPhaseCurrent / 100.0;
     }
+
+    public void setPhaseCurrent(int value) {
+        mPhaseCurrent = value;
+    }
+
     double getCalculatedPwm() {
         return mCalculatedPwm*100.0;
     }
@@ -896,7 +925,7 @@ public class WheelData {
         return mMaxPwm*100.0;
     }
 
-    int getTopSpeed() { return mTopSpeed; }
+    public int getTopSpeed() { return mTopSpeed; }
 
     public double getTopSpeedDouble() {
         return mTopSpeed / 100.0;
@@ -965,6 +994,11 @@ public class WheelData {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
     }
+
+    public boolean getBetterPercents() {
+        return mBetterPercents;
+    }
+
     public void setBetterPercents(boolean betterPercents) {
 
         mBetterPercents = betterPercents;
@@ -1144,22 +1178,18 @@ public class WheelData {
     void setConnected(boolean connected) {		
         mConnectionState = connected;
         Timber.i("State %b", connected);
-
-		//if (mWheelType == WHEEL_TYPE.INMOTION || !mConnectionState) InMotionAdapter.getInstance().stopTimer();
-        //if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.getInstance().resetConnection();
     }
-	
-//	void setUserDistance(long userDistance) {
-//        mUserDistance = userDistance;
-//    }
 
     void setAlarmsEnabled(boolean enabled) {
         mAlarmsEnabled = enabled;
     }
 	
-	void setUseRatio(boolean enabled) {
+	public void setUseRatio(boolean enabled) {
         mUseRatio = enabled;
-		//reset();
+    }
+
+    public boolean getUseRatio() {
+        return mUseRatio;
     }
 
     void set18Lkm(boolean enabled) {
@@ -1168,14 +1198,6 @@ public class WheelData {
             mTotalDistance = Math.round(mTotalDistance*KS18L_SCALER);
         }
         //reset();
-    }
-
-	void setGotwayVoltage(int voltage) {
-        mGotwayVoltageScaler = voltage;
-    }
-
-    void setGotwayNegative(int negative) {
-        mGotwayNegative = negative;
     }
 
     void setPreferences(int alarm1Speed, int alarm1Battery,
@@ -1207,33 +1229,29 @@ public class WheelData {
         mWarningSpeedPeriod = warningSpeedPeriod * 1000;
     }
 
-    private int byteArrayInt2(byte low, byte high) {
-        return (low & 255) + ((high & 255) * 256);
-    }
-
-    private long byteArrayInt4(byte value1, byte value2, byte value3, byte value4) {
-        return (((((long) ((value1 & 255) << 16))) | ((long) ((value2 & 255) << 24))) | ((long) (value3 & 255))) | ((long) ((value4 & 255) << 8));
-    }
-
-    private void setDistance(long distance) {
+    public void setDistance(long distance) {
         if (mStartTotalDistance == 0 && mTotalDistance != 0)
             mStartTotalDistance = mTotalDistance;
 
         mDistance = distance;
     }
 
-    private void setCurrentTime(int currentTime) {
+    public void setTotalDistance(long totalDistance) {
+        mTotalDistance = totalDistance;
+    }
+
+    public void setCurrentTime(int currentTime) {
         if (mRideTime > (currentTime + TIME_BUFFER))
             mLastRideTime += mRideTime;
         mRideTime = currentTime;
     }
 
-    private void setTopSpeed(int topSpeed) {
+    public void setTopSpeed(int topSpeed) {
         if (topSpeed > mTopSpeed)
             mTopSpeed = topSpeed;
     }
 
-    private void setVoltageSag(int voltSag) {
+    public void setVoltageSag(int voltSag) {
         if ((voltSag < mVoltageSag) && (voltSag > 0))
             mVoltageSag = voltSag;
     }
@@ -1250,7 +1268,7 @@ public class WheelData {
 
     }
 
-    private void setBatteryPercent(int battery) {
+    public void setBatteryPercent(int battery) {
         mBattery = battery;
 
 //        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
@@ -1436,7 +1454,7 @@ public class WheelData {
         setMaxTemp(mTemperature);
         mCalculatedPwm = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * ((float)mVoltage/100.0) * mPowerFactor);
         setMaxPwm(mCalculatedPwm);
-        if (mWheelType == WHEEL_TYPE.GOTWAY) {
+        if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
 
@@ -1445,6 +1463,7 @@ public class WheelData {
 
       	timestamp_last = timestamp_raw;
 		mContext.sendBroadcast(intent);
+
         CheckMuteMusic();
     }
 
@@ -1457,8 +1476,7 @@ public class WheelData {
         if (speed <= muteSpeedThreshold) {
             mLowSpeedMusicTime = 0;
             MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-        }
-        else {
+        } else {
             if (mLowSpeedMusicTime == 0)
                 mLowSpeedMusicTime = System.currentTimeMillis();
 
@@ -1467,12 +1485,21 @@ public class WheelData {
         }
     }
 
-    // TODO move decode* to specific adapters
-    public boolean decodeKingSong(byte[] data) {
+    public void resetRideTime() {
         if (rideStartTime == 0) {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
-			mRidingTime = 0;
-		}
+            mRidingTime = 0;
+        }
+    }
+
+    public void updateRideTime() {
+        int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
+        setCurrentTime(currentTime);
+    }
+
+    // TODO move decode* to specific adapters
+    public boolean decodeKingSong(byte[] data) {
+        resetRideTime();
         if (data.length >= 20) {
             int a1 = data[0] & 255;
             int a2 = data[1] & 255;
@@ -1480,15 +1507,15 @@ public class WheelData {
                 return false;
             }
             if ((data[16] & 255) == 0xA9) { // Live data
-                mVoltage = byteArrayInt2(data[2], data[3]);
-                mSpeed = byteArrayInt2(data[4], data[5]);
-                mTotalDistance = byteArrayInt4(data[6], data[7], data[8], data[9]);
+                mVoltage = MathsUtil.getInt2R(data, 2);
+                mSpeed = MathsUtil.getInt2R(data, 4);
+                mTotalDistance = MathsUtil.getInt4R(data, 6);
                 if ((mModel.compareTo("KS-18L") == 0) && !m18Lkm) {
                     mTotalDistance = Math.round(mTotalDistance*KS18L_SCALER);
                 }
                 mCurrent = ((data[10]&0xFF) + (data[11]<<8));
  
-				mTemperature = byteArrayInt2(data[12], data[13]);
+				mTemperature = MathsUtil.getInt2R(data, 12);
                 setVoltageSag(mVoltage);
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
@@ -1538,22 +1565,17 @@ public class WheelData {
                             battery = (mVoltage - 5000) / 16;
                         }
                     }
-
                 }
-
                 setBatteryPercent(battery);
-
                 return true;
             } else if ((data[16] & 255) == 0xB9) { // Distance/Time/Fan Data
-                long distance = byteArrayInt4(data[2], data[3], data[4], data[5]);
+                long distance = MathsUtil.getInt4R(data, 2);
                 setDistance(distance);
-                //int currentTime = byteArrayInt2(data[6], data[7]);
-	            int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-                setCurrentTime(currentTime);
-                setTopSpeed(byteArrayInt2(data[8], data[9]));
+	            updateRideTime();
+                setTopSpeed(MathsUtil.getInt2R(data, 8));
                 mFanStatus = data[12];
                 mChargingStatus = data[13];
-                mTemperature2 = byteArrayInt2(data[14], data[15]);
+                mTemperature2 = MathsUtil.getInt2R(data, 14);
                 return true;
             } else if ((data[16] & 255) == 187) { // Name and Type data
                 int end = 0;
@@ -1585,11 +1607,11 @@ public class WheelData {
                 updateKSAlarmAndSpeed();
                 return true;
             } else if ((data[16] & 255) == 0xF5) { //cpu load
-                mCpuLoad = data[14];//byteArrayInt2(data[14], data[15]);
+                mCpuLoad = data[14];
                 mOutput = data[15];
                 return false;
             } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
-                mSpeedLimit = byteArrayInt2(data[2], data[3]);
+                mSpeedLimit = MathsUtil.getInt2R(data, 2);
                 return false;
             } else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 mWheelMaxSpeed = (data[10] & 255);
@@ -1609,149 +1631,11 @@ public class WheelData {
         return false;
     }
 
-    public boolean decodeGotway(byte[] data) {
-        Timber.i("Decode GOTWAY");
-        if (rideStartTime == 0) {
-            rideStartTime = Calendar.getInstance().getTimeInMillis();
-			mRidingTime = 0;
-		}
-        if (data.length >= 20) {
-            Timber.i("Len >=20");
-            int a1 = data[0] & 255;
-            int a2 = data[1] & 255;
-            int a3 = data[2] & 255;
-            int a4 = data[3] & 255;
-            int a5 = data[4] & 255;
-            int a6 = data[5] & 255;
-            int a19 = data[18] & 255;
-            if ((a1 == 0xDC) && (a2 == 0x5A) && (a3 == 0x5C) && (a4 == 0x20)) {  // Sherman
-                Timber.i("Decode Sherman");
-                mModel = "Veteran";
-                mVeteran = true;
-                mVoltage = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
-                mSpeed =  ((data[6]) << 8 | (data[7] & 0xFF))*10;
-                long distance = ((data[10] & 0xFF) << 24 | (data[11] & 0xFF) << 16 | (data[8] & 0xFF) << 8 | (data[9] & 0xFF));
-                setDistance(distance);
-                mTotalDistance = ((data[14] & 0xFF) << 24 | (data[15] & 0xFF) << 16 | (data[12] & 0xFF) << 8 | (data[13] & 0xFF));
-                mPhaseCurrent = ((data[16]) << 8 | (data[17] & 0xFF))*10;
-                mTemperature = (data[18] & 0xFF) << 8 | (data[19] & 0xFF);
-                mTemperature2 = mTemperature;
-                setTopSpeed(mSpeed);
-                int battery;
-                if (mBetterPercents) {
-                    if (mVoltage > 10020) {
-                        battery = 100;
-                    } else if (mVoltage > 8160) {
-                        battery = (int) Math.round((mVoltage - 8070) / 19.5);
-                    } else if (mVoltage > 7935) {
-                        battery = (int) Math.round((mVoltage - 7935) / 48.75);
-                    } else {
-                        battery = 0;
-                    }
-                } else {
-                    if (mVoltage <= 7935) {
-                        battery = 0;
-                    } else if (mVoltage >= 9870) {
-                        battery = 100;
-                    } else {
-                        battery = (int) Math.round((mVoltage - 7935) / 19.5);
-                    }
-                }
-
-                setBatteryPercent(battery);
-                setVoltageSag(mVoltage);
-                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-                setCurrentTime(currentTime);
-                return true;
-            } else { // Gotway
-                mModel = "Begode";
-                if (a1 != 85 || a2 != 170 || a19 != 0) {
-                    if (a1 != 90 || a5 != 85 || a6 != 170) {
-                        return false;
-                    }
-                    mTotalDistance = ((data[6] & 0xFF) << 24) | ((data[7] & 0xFF) << 16) | ((data[8] & 0xFF) << 8) | (data[9] & 0xFF);
-                    if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
-
-                    return false;
-                }
-
-                if (data[5] >= 0)
-                    if (mGotwayNegative == 0)
-                        mSpeed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
-                    else mSpeed = ((int) (((data[4] * 256.0) + data[5]) * 3.6)) * mGotwayNegative;
-                else if (mGotwayNegative == 0)
-                    mSpeed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
-                else
-                    mSpeed = ((int) ((((data[4] * 256.0) + 256.0) + data[5]) * 3.6)) * mGotwayNegative;
-                if (mUseRatio) mSpeed = (int) Math.round(mSpeed * RATIO_GW);
-                setTopSpeed(mSpeed);
-
-                mTemperature = (int) Math.round(((((data[12] * 256) + data[13]) / 340.0) + 35) * 100);
-                mTemperature2 = mTemperature;
-
-                long distance = byteArrayInt2(data[9], data[8]);
-                if (mUseRatio) distance = Math.round(distance * RATIO_GW);
-                setDistance(distance);
-
-                mVoltage = (data[2] * 256) + (data[3] & 255);
-
-                mPhaseCurrent = ((data[10] * 256) + data[11]);
-                if (mGotwayNegative == 0) mCurrent = Math.abs(mCurrent);
-                else mCurrent = mCurrent * mGotwayNegative;
-
-                int battery;
-                if (mBetterPercents) {
-                    if (mVoltage > 6680) {
-                        battery = 100;
-                    } else if (mVoltage > 5440) {
-                        battery = (mVoltage - 5380) / 13;
-                    } else if (mVoltage > 5290) {
-                        battery = (int) Math.round((mVoltage - 5290) / 32.5);
-                    } else {
-                        battery = 0;
-                    }
-                } else {
-                    if (mVoltage <= 5290) {
-                        battery = 0;
-                    } else if (mVoltage >= 6580) {
-                        battery = 100;
-                    } else {
-                        battery = (mVoltage - 5290) / 13;
-                    }
-                }
-
-                setBatteryPercent(battery);
-
-                mVoltage = (int) Math.round(mVoltage * (1 + (0.25 * mGotwayVoltageScaler)));
-                setVoltageSag(mVoltage);
-                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-                setCurrentTime(currentTime);
-            }
-
-            return true;
-        } else if (data.length >= 10 && !mVeteran)  {
-            int a1 = data[0];
-            int a5 = data[4] & 255;
-            int a6 = data[5] & 255;
-            if (a1 != 90 || a5 != 85 || a6 != 170) {
-                return false;
-            }
-            mTotalDistance = ((data[6]&0xFF) <<24) | ((data[7]&0xFF) << 16) | ((data[8] & 0xFF) <<8) | (data[9] & 0xFF);
-			if (mUseRatio) mTotalDistance = Math.round(mTotalDistance * RATIO_GW);
-        } else if (mVeteran) { // second part
-            mVersion = String.format(Locale.US, "%d.%d (%d)", data[8], data[9],((data[8]<<8)  | data[9]));
-        }
-        return false;
-    }
-
     public boolean decodeNinebotZ(byte[] data) {
         NinebotZAdapter.getInstance().setBmsReadingMode(mBmsView);
         ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
-        if (rideStartTime == 0) {
-            rideStartTime = Calendar.getInstance().getTimeInMillis();
-            mRidingTime = 0;
-        }
+        resetRideTime();
         for (NinebotZAdapter.Status status: statuses) {
             Timber.i(status.toString());
             if (status instanceof NinebotZAdapter.serialNumberStatus) {
@@ -1853,8 +1737,7 @@ public class WheelData {
 
 
                 setDistance((long) status.getDistance());
-                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-                setCurrentTime(currentTime);
+                updateRideTime();
                 setBatteryPercent(mBattery);
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
@@ -1868,10 +1751,7 @@ public class WheelData {
     public boolean decodeNinebot(byte[] data) {
         ArrayList<NinebotAdapter.Status> statuses = NinebotAdapter.getInstance().charUpdated(data);
         if (statuses.size() < 1) return false;
-        if (rideStartTime == 0) {
-            rideStartTime = Calendar.getInstance().getTimeInMillis();
-            mRidingTime = 0;
-        }
+        resetRideTime();
         for (NinebotAdapter.Status status: statuses) {
             Timber.i(status.toString());
             if (status instanceof NinebotAdapter.serialNumberStatus) {
@@ -1889,8 +1769,7 @@ public class WheelData {
 
 
                 setDistance((long) status.getDistance());
-                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-                setCurrentTime(currentTime);
+                updateRideTime();
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
                 setBatteryPercent(mBattery);
@@ -1904,10 +1783,7 @@ public class WheelData {
     public boolean decodeInmotion(byte[] data) {
         ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
 		if (statuses.size() < 1) return false;
-        if (rideStartTime == 0) {
-            rideStartTime = Calendar.getInstance().getTimeInMillis();
-			mRidingTime = 0;
-		}		
+        resetRideTime();
         for (InMotionAdapter.Status status: statuses) {
             Timber.i(status.toString());
             if (status instanceof InMotionAdapter.Infos) {
@@ -1941,8 +1817,7 @@ public class WheelData {
                 setBatteryPercent((int) status.getBatt());
                 setDistance((long) status.getDistance());
 				
-                int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
-                setCurrentTime(currentTime);
+                updateRideTime();
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
             }
@@ -2110,7 +1985,6 @@ public class WheelData {
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.GOTWAY;
-                    mModel = "GotWay";
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);

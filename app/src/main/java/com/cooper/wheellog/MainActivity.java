@@ -42,6 +42,8 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.GoogleDriveUtil;
+import com.cooper.wheellog.utils.GotwayAdapter;
+import com.cooper.wheellog.utils.IWheelAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -679,6 +681,7 @@ public class MainActivity extends AppCompatActivity {
                 tvTitleSerial.setVisibility(View.VISIBLE);
                 tvSerial.setVisibility(View.VISIBLE);
                 break;
+            case VETERAN:
             case GOTWAY:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
@@ -1809,13 +1812,14 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);
         }
 
-        int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
-        WheelData.getInstance().setGotwayVoltage(gotway_voltage);
+        IWheelAdapter adapter = WheelData.getInstance().getAdapter();
+        if (adapter instanceof GotwayAdapter) {
+            int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
+            int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
+            ((GotwayAdapter)adapter).setGotwayVoltageScaler(gotway_voltage);
+            ((GotwayAdapter)adapter).setGotwayNegative(gotway_negative);
+        }
 
-        int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
-        WheelData.getInstance().setGotwayNegative(gotway_negative);
-        //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
-        //WheelData.getInstance().setGotway84V(gotway_84v);
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {

@@ -102,7 +102,6 @@ class GotwayAdapterTest {
         assertThat(data.batteryLevel).isEqualTo(100)
     }
 
-
     @Test
     fun `decode strange board data`() {
         // Arrange.
