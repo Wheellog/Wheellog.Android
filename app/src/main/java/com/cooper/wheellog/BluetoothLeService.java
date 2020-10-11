@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.views.WheelView;
 
 import java.util.*;
 
@@ -241,7 +242,6 @@ public class BluetoothLeService extends Service {
                 if (recognisedWheel) {
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
-
                 } else
                     disconnect();
                 return;

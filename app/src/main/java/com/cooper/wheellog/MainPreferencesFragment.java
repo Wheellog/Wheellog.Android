@@ -111,6 +111,14 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
                 WheelData.getInstance().setBetterPercents(betterPercents);
                 break;
+            case "fixed_percents":
+                boolean fixedPercents = sharedPreferences.getBoolean(getString(R.string.fixed_percents), false);
+                WheelData.getInstance().setFixedPercents(fixedPercents);
+                break;
+            case "tiltback_voltage":
+                double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
+                WheelData.getInstance().setTiltbackVoltage(tiltbackVoltage);
+                break;
             case "use_stop_music":
                 boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
                 WheelData.getInstance().setUseStopMusic(useStopMusic);
@@ -271,7 +279,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
                                 }
                             }
-							if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
+
+							if (mWheelType == WHEEL_TYPE.GOTWAY) {
 								addPreferencesFromResource(R.xml.preferences_gotway);
 								Preference startCalibrationButton = findPreference(getString(R.string.start_calibration));
 								if (startCalibrationButton != null) {
@@ -284,6 +293,9 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 									});
 								}
 							}
+
+							if (mWheelType == WHEEL_TYPE.VETERAN)
+                                addPreferencesFromResource(R.xml.preferences_veteran);
 
                             setupScreen();
                             return true;
@@ -443,7 +455,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
 
         mWheelType = WheelData.getInstance().getWheelType();
-        if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z)) {
+        if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z || mWheelType == WHEEL_TYPE.VETERAN)) {
             wheelButton.setEnabled(true);
         }
 
@@ -477,6 +489,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 			if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
 			if (mWheelType == WHEEL_TYPE.KINGSONG) addPreferencesFromResource(R.xml.preferences_kingsong);
 			if (mWheelType == WHEEL_TYPE.GOTWAY) addPreferencesFromResource(R.xml.preferences_gotway);
+			if (mWheelType == WHEEL_TYPE.VETERAN) addPreferencesFromResource(R.xml.preferences_veteran);
             setupScreen();
 		}
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();

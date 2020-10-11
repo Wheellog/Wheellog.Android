@@ -12,6 +12,7 @@ import androidx.core.math.MathUtils;
 
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Typefaces;
 
 import java.util.*;
@@ -46,6 +47,7 @@ public class WheelView extends View {
 
     private int mMaxSpeed = 300;
     private boolean mTrueBattery = false;
+    private boolean mFixedPercents = false;
     private boolean mCurrentOnDial = false;
 
     private boolean mUseMPH = false;
@@ -263,6 +265,10 @@ public class WheelView extends View {
         mTrueBattery = betterPercent;
     }
 
+    public void setFixedPercents(boolean fixedPercents) {
+        mFixedPercents = fixedPercents;
+    }
+
     public void setCurrentOnDial(boolean currentOnDial) {
         Timber.i("Change dial type to %b", currentOnDial);
         mCurrentOnDial = currentOnDial;
@@ -462,8 +468,10 @@ public class WheelView extends View {
                 center_y + speedTextKPHRectSize/2f);
 
         speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, getResources().getString(R.string.kmh), textPaint);
-        speedTextKPHHeight = boundaryOfText.height();
+        if (WheelData.getInstance().isUseShortPwm())
+            speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
 
+        speedTextKPHHeight = boundaryOfText.height();
 
         int innerTextRectWidth = Math.round(innerStrokeWidth);
         batteryTextRect.set(
@@ -669,6 +677,9 @@ public class WheelView extends View {
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
         String metric = mUseMPH ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
+        if (WheelData.getInstance().isUseShortPwm())
+            metric = "(" + (int)WheelData.getInstance().getCurrentPwm() + "%) " + metric + " (" + (int)WheelData.getInstance().getMaxPwm() + "%)";
+
         canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 1.25F), textPaint);
 
         //####################################################
@@ -688,13 +699,17 @@ public class WheelView extends View {
             canvas.restore();
             canvas.save();
             /// true battery
-            if (mTrueBattery) {
+            if (mTrueBattery || mFixedPercents) {
                 if (getWidth() > getHeight())
                     canvas.rotate((144 + (-3.3F * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
                 else
                     canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
-                String batteryString = String.format(Locale.US, "%s", "true");
+                String batteryCalculateType = "true";
+                if (mFixedPercents && WheelData.getInstance().isSupportsFixedPercents())
+                    batteryCalculateType = "fixed";
+
+                String batteryString = String.format(Locale.US, "%s", batteryCalculateType);
                 canvas.drawText(batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
                 canvas.restore();
                 canvas.save();

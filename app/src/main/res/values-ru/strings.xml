@@ -30,6 +30,7 @@
     <string name="model">Модель</string>
     <string name="version">Версия</string>
     <string name="serial_number">Серийный номер</string>
+    <string name="time_charge_title">Время зарядки</string>
     <string name="waiting_for_wheel">Ожидание колеса</string>
     <string name="fan_status">Вентилятор</string>
     <string name="speed">Скорость</string>
@@ -185,6 +186,10 @@
     <string name="unknown_device">Неизвестное устройство</string>
     <string name="use_better_percents_description">Использовать улучшенную формулу рассчета % вместо формулы производителя колеса</string>
     <string name="use_better_percents_title">Улучшенные проценты</string>
+    <string name="fixed_percents_title">Фиксированные проценты</string>
+    <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
+    <string name="tiltback_voltage_title">Напряжение подъёма педалей</string>
+    <string name="tiltback_voltage_description">Напряжение, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_eng_title">English</string>
@@ -203,6 +208,8 @@
     <string name="battery_capacity_description">Ёмкость батареи в Wh</string>
     <string name="charging_power_title">Мощность зарядки</string>
     <string name="charging_power_description">Мощность зарядки</string>
+    <string name="connect_beep_title">Звук подключения</string>
+    <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="sec">сек</string>
     <string name="altered_alarms_title">Измененные предупреждения</string>
     <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
@@ -219,6 +226,8 @@
     <string name="warning_pwm_description">Предварительное предупреждение по PWM, 0 - отключить</string>
     <string name="warning_speed_period_title">Переодичность предупреждений</string>
     <string name="warning_speed_period_description">Период оповещений, 0 - отключить</string>
+    <string name="use_short_pwm_title">Короткое отображение PWM</string>
+    <string name="use_short_pwm_description">Current/Max PWM отображается около скорости</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
     <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
     <string name="power_factor_description">Не меняйте если не знаете что это, 90 по дефолту</string>

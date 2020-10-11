@@ -134,11 +134,10 @@ public class GotwayAdapter implements IWheelAdapter {
                     }
                 }
 
-                wd.setBatteryPercent(battery);
-
                 voltage = (int) Math.round(voltage * (1 + (0.25 * mGotwayVoltageScaler)));
                 wd.setVoltage(voltage);
                 wd.setVoltageSag(voltage);
+                wd.setBatteryPercent(battery);
                 wd.updateRideTime();
             }
 
@@ -185,6 +184,10 @@ public class GotwayAdapter implements IWheelAdapter {
             INSTANCE = new GotwayAdapter();
         }
         return INSTANCE;
+    }
+
+    public int getGotwayVoltageScaler() {
+        return mGotwayVoltageScaler;
     }
 
     public void setGotwayVoltageScaler(int value) {

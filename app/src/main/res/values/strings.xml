@@ -68,6 +68,7 @@
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
+    <string name="time_charge_title">Charge Time</string>
     <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
@@ -125,6 +126,7 @@
     <string name="warning_speed" translatable="false">warning_speed</string>
     <string name="warning_pwm" translatable="false">warning_pwm</string>
     <string name="warning_speed_period" translatable="false">warning_speed_period</string>
+    <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
 
 
@@ -165,6 +167,8 @@
     <string name="use_mph" translatable="false">use_mph</string>
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="use_better_percents" translatable="false">use_better_percents</string>
+    <string name="fixed_percents" translatable="false">fixed_percents</string>
+    <string name="tiltback_voltage" translatable="false">tiltback_voltage</string>
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
     <string name="current_on_dial" translatable="false">current_on_dial</string>
     <string name="connection_sound" translatable="false">connection_sound</string>
@@ -172,6 +176,7 @@
     <string name="use_stop_music" translatable="false">use_stop_music</string>
     <string name="battery_capacity" translatable="false">battery_capacity</string>
     <string name="charging_power" translatable="false">charging_power</string>
+    <string name="connect_beep" translatable="false">connect_beep</string>
 
 
     <string name="max_speed" translatable="false">max_speed</string>
@@ -255,6 +260,10 @@
     <string name="use_eng_description">Use English language instead of Android system language</string>
     <string name="use_better_percents_title">Improved percents</string>
     <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
+    <string name="fixed_percents_title">Fixed percents</string>.
+    <string name="fixed_percents_description">Use fixed formula for battery percents calculation instead of wheel vendor formula</string>.
+    <string name="tiltback_voltage_title">Tiltback voltage</string>.
+    <string name="tiltback_voltage_description">Voltage where the wheel tiltback the pedals</string>.
     <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
     <string name="current_on_dial_title">Current on main dial</string>
@@ -269,6 +278,8 @@
     <string name="battery_capacity_description">Battery Capacity in Wh</string>
     <string name="charging_power_title">Charging power</string>
     <string name="charging_power_description">Charging Power in A</string>
+    <string name="connect_beep_title">Sound of connection</string>.
+    <string name="connect_beep_description">Sound of connection to the wheel</string>.
 
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
@@ -298,7 +309,8 @@
     <string name="warning_pwm_description">Advance PWM warning, 0 - off</string>
     <string name="warning_speed_period_title">Frequency of warnings</string>
     <string name="warning_speed_period_description">Notification period, 0 - off</string>
-
+    <string name="use_short_pwm_title">Short display of PWM</string>.
+    <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>.
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>
     <string name="speed_alarm2_phone_title">Speed Alarm 2</string>

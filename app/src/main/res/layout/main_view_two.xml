@@ -387,6 +387,19 @@
                 android:layout_width="0sp"
                 style="@style/Stats" />
 
+            <TextView
+                android:id="@+id/tvTimeChargeTitle"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats.Title"
+                android:text="@string/time_charge_title"/>
+
+            <TextView
+                android:id="@+id/tvTimeCharge"
+                android:visibility="gone"
+                android:layout_width="0sp"
+                style="@style/Stats" />
+
         </androidx.gridlayout.widget.GridLayout>
 
     </ScrollView>
