@@ -1228,14 +1228,6 @@ public class WheelData {
         mWarningSpeedPeriod = warningSpeedPeriod * 1000;
     }
 
-    private int byteArrayInt2(byte low, byte high) {
-        return (low & 255) + ((high & 255) * 256);
-    }
-
-    private long byteArrayInt4(byte value1, byte value2, byte value3, byte value4) {
-        return (((((long) ((value1 & 255) << 16))) | ((long) ((value2 & 255) << 24))) | ((long) (value3 & 255))) | ((long) ((value4 & 255) << 8));
-    }
-
     public void setDistance(long distance) {
         if (mStartTotalDistance == 0 && mTotalDistance != 0)
             mStartTotalDistance = mTotalDistance;
@@ -1614,11 +1606,11 @@ public class WheelData {
                 updateKSAlarmAndSpeed();
                 return true;
             } else if ((data[16] & 255) == 0xF5) { //cpu load
-                mCpuLoad = data[14];//byteArrayInt2(data[14], data[15]);
+                mCpuLoad = data[14];
                 mOutput = data[15];
                 return false;
             } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
-                mSpeedLimit = byteArrayInt2(data[2], data[3]);
+                mSpeedLimit = MathsUtil.getInt2R(data, 2);
                 return false;
             } else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 mWheelMaxSpeed = (data[10] & 255);
