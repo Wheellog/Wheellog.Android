@@ -211,6 +211,8 @@
     <string name="alarm_factor3_description">Должен быть больше второго</string>
     <string name="warning_speed_title">Предварительное предупреждение</string>
     <string name="warning_speed_description">Предварительное предупреждение по скорости, 0 - отключить</string>
+    <string name="warning_pwm_title">Предварительное предупреждение PWM</string>
+    <string name="warning_pwm_description">Предварительное предупреждение по PWM, 0 - отключить</string>
     <string name="warning_speed_period_title">Переодичность предупреждений</string>
     <string name="warning_speed_period_description">Период оповещений, 0 - отключить</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>

@@ -179,9 +179,18 @@
             sample:sbp_maxValue="100"
             sample:sbp_measurementUnit="km/h"
             sample:sbp_minValue="0" />
-
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-            android:defaultValue="3"
+            android:defaultValue="0"
+            android:key="@string/warning_pwm"
+            android:summary="@string/warning_pwm_description"
+            android:title="@string/warning_pwm_title"
+            sample:dependency="alarms_enabled"
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="%"
+            sample:sbp_minValue="0" />
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+            android:defaultValue="0"
             android:enabled="true"
             android:key="@string/warning_speed_period"
             android:summary="@string/warning_speed_period_description"
