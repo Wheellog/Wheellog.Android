@@ -1800,6 +1800,10 @@ public class MainActivity extends AppCompatActivity {
         WheelData.getInstance().setBetterPercents(betterPercents);
         wheelView.setBetterPercent(betterPercents);
 
+        boolean fixedPercents = sharedPreferences.getBoolean(getString(R.string.fixed_percents), false);
+        WheelData.getInstance().setFixedPercents(fixedPercents);
+        wheelView.setFixedPercents(fixedPercents);
+
         boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
         WheelData.getInstance().setUseStopMusic(useStopMusic);
 
@@ -1812,14 +1816,31 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);
         }
 
-        IWheelAdapter adapter = WheelData.getInstance().getAdapter();
-        if (adapter instanceof GotwayAdapter) {
-            int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
-            int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
-            ((GotwayAdapter)adapter).setGotwayVoltageScaler(gotway_voltage);
-            ((GotwayAdapter)adapter).setGotwayNegative(gotway_negative);
+        int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
+        int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
+        GotwayAdapter.getInstance().setGotwayVoltageScaler(gotway_voltage);
+        GotwayAdapter.getInstance().setGotwayNegative(gotway_negative);
+
+        // Set tiltback voltage with check gotway voltage changes
+        double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
+        double correctedTiltbackVoltage = tiltbackVoltage;
+        if (gotway_voltage == 0 && (tiltbackVoltage > 52.8 || tiltbackVoltage < 48))
+            correctedTiltbackVoltage = 52.8;
+        else if (gotway_voltage == 1 && (tiltbackVoltage > 66 || tiltbackVoltage < 60))
+            correctedTiltbackVoltage = 66;
+        else if (gotway_voltage == 2 && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
+            correctedTiltbackVoltage = 79.2;
+
+        if (correctedTiltbackVoltage != tiltbackVoltage) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(getString(R.string.tiltback_voltage), (int)(correctedTiltbackVoltage * 10));
+            editor.commit();
         }
 
+        WheelData.getInstance().setTiltbackVoltage(correctedTiltbackVoltage);
+
+        //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
+        //WheelData.getInstance().setGotway84V(gotway_84v);
         WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
 
         if (alarms_enabled) {

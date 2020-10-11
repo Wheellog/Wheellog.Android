@@ -111,6 +111,14 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
                 WheelData.getInstance().setBetterPercents(betterPercents);
                 break;
+            case "fixed_percents":
+                boolean fixedPercents = sharedPreferences.getBoolean(getString(R.string.fixed_percents), false);
+                WheelData.getInstance().setFixedPercents(fixedPercents);
+                break;
+            case "tiltback_voltage":
+                double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
+                WheelData.getInstance().setTiltbackVoltage(tiltbackVoltage);
+                break;
             case "use_stop_music":
                 boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
                 WheelData.getInstance().setUseStopMusic(useStopMusic);
@@ -394,6 +402,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             case Speed:
                 tb.setTitle(getText(R.string.speed_settings_title));
                 hideShowSeekBarsApp();
+                setSupportFixedPercents(WheelData.getInstance().isSupportsFixedPercents());
                 break;
             case Logs:
                 tb.setTitle(getText(R.string.logs_settings_title));
@@ -561,6 +570,15 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             if (seekbar != null)
                 seekbar.setEnabled(connectSound);
         }
+    }
+
+    public void setSupportFixedPercents(boolean supportFixedPercents) {
+        Preference voltageSpeedThresholdPreference = findPreference(getString(R.string.fixed_percents));
+        Preference tiltbackVoltagePreference = findPreference(getString(R.string.tiltback_voltage));
+        if (voltageSpeedThresholdPreference != null)
+            voltageSpeedThresholdPreference.setVisible(supportFixedPercents);
+        if (tiltbackVoltagePreference != null)
+            tiltbackVoltagePreference.setVisible(supportFixedPercents);
     }
 
     private enum SettingsScreen {

@@ -193,6 +193,8 @@ public class WheelData {
 	private boolean mUseRatio = false;
     private boolean m18Lkm = true;
     private boolean mBetterPercents = false;
+    private boolean mFixedPercents = false;
+    private double mTiltbackVoltage = 66;
 	private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
 	private boolean mTemperatureAlarmExecuting = false;
@@ -811,12 +813,16 @@ public class WheelData {
         return mMode;
     }
 
+    public void setWheelType(WHEEL_TYPE wheelType) {
+        mWheelType = wheelType;
+    }
+
     public WHEEL_TYPE getWheelType() {
         return mWheelType;
     }
 
-    public void setWheelType(WHEEL_TYPE wheelType) {
-        this.mWheelType = wheelType;
+    public boolean isSupportsFixedPercents() {
+        return getWheelType() == WHEEL_TYPE.GOTWAY || getWheelType() == WHEEL_TYPE.VETERAN;
     }
 
     public String getName() {
@@ -1001,9 +1007,16 @@ public class WheelData {
     }
 
     public void setBetterPercents(boolean betterPercents) {
-
         mBetterPercents = betterPercents;
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().setBetterPercents(betterPercents);
+    }
+
+    public void setFixedPercents(boolean fixedPercents) {
+        mFixedPercents = fixedPercents;
+    }
+
+    public void setTiltbackVoltage(double tiltbackVoltage) {
+        mTiltbackVoltage = tiltbackVoltage;
     }
 
     public void setUseStopMusic(boolean useStopMusic) {
@@ -1271,6 +1284,24 @@ public class WheelData {
     }
 
     public void setBatteryPercent(int battery) {
+        if (mFixedPercents && isSupportsFixedPercents()) {
+            double maxVoltage = 100.8;
+            double minVoltage = mTiltbackVoltage;
+            if (getWheelType() == WHEEL_TYPE.GOTWAY) {
+                switch (GotwayAdapter.getInstance().getGotwayVoltageScaler()) {
+                    case 0:
+                        maxVoltage = 67.2;
+                        break;
+                    case 1:
+                        maxVoltage = 84.0;
+                        break;
+                }
+            }
+
+            double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
+            battery = (int)((getVoltageDouble() - minVoltage) / voltagePercentStep);
+        }
+
         mBattery = battery;
 
 //        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?

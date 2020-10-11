@@ -165,6 +165,8 @@
     <string name="use_mph" translatable="false">use_mph</string>
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="use_better_percents" translatable="false">use_better_percents</string>
+    <string name="fixed_percents" translatable="false">fixed_percents</string>
+    <string name="tiltback_voltage" translatable="false">tiltback_voltage</string>
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
     <string name="current_on_dial" translatable="false">current_on_dial</string>
     <string name="connection_sound" translatable="false">connection_sound</string>
@@ -253,6 +255,10 @@
     <string name="use_eng_description">Use English language instead of Android system language</string>
     <string name="use_better_percents_title">Improved percents</string>
     <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
+    <string name="fixed_percents_title">Fixed percents</string>.
+    <string name="fixed_percents_description">Use fixed formula for battery percents calculation instead of wheel vendor formula</string>.
+    <string name="tiltback_voltage_title">Tiltback voltage</string>.
+    <string name="tiltback_voltage_description">Voltage where the wheel tiltback the pedals</string>.
     <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
     <string name="current_on_dial_title">Current on main dial</string>

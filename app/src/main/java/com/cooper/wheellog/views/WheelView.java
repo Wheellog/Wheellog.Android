@@ -12,6 +12,7 @@ import androidx.core.math.MathUtils;
 
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Typefaces;
 
 import java.util.*;
@@ -46,6 +47,7 @@ public class WheelView extends View {
 
     private int mMaxSpeed = 300;
     private boolean mTrueBattery = false;
+    private boolean mFixedPercents = false;
     private boolean mCurrentOnDial = false;
 
     private boolean mUseMPH = false;
@@ -261,6 +263,10 @@ public class WheelView extends View {
 
     public void setBetterPercent(boolean betterPercent) {
         mTrueBattery = betterPercent;
+    }
+
+    public void setFixedPercents(boolean fixedPercents) {
+        mFixedPercents = fixedPercents;
     }
 
     public void setCurrentOnDial(boolean currentOnDial) {
@@ -694,7 +700,11 @@ public class WheelView extends View {
                 else
                     canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
-                String batteryString = String.format(Locale.US, "%s", "true");
+                String batteryCalculateType = "true";
+                if (mFixedPercents && WheelData.getInstance().isSupportsFixedPercents())
+                    batteryCalculateType = "fixed";
+
+                String batteryString = String.format(Locale.US, "%s", batteryCalculateType);
                 canvas.drawText(batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
                 canvas.restore();
                 canvas.save();
