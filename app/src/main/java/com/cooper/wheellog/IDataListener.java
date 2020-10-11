@@ -1,5 +1,5 @@
 package com.cooper.wheellog;
 
-public interface DataListener {
+public interface IDataListener {
     void changeWheelType();
 }

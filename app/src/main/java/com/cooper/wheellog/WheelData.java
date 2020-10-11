@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
 public class WheelData {
-    private List<DataListener> listeners = new ArrayList<DataListener>();
+    private List<IDataListener> listeners = new ArrayList<IDataListener>();
 
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
@@ -269,7 +269,7 @@ public class WheelData {
 
     }
 
-    public void addListener(DataListener toAdd) {
+    public void addListener(IDataListener toAdd) {
         listeners.add(toAdd);
     }
 
@@ -836,7 +836,7 @@ public class WheelData {
         mWheelType = wheelType;
 
         if (isChanged) {
-            for (DataListener hl : listeners)
+            for (IDataListener hl : listeners)
                 hl.changeWheelType();
         }
     }

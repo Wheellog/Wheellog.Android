@@ -42,7 +42,6 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.GotwayAdapter;
-import com.cooper.wheellog.utils.IWheelAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -59,7 +58,6 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -72,7 +70,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements DataListener {
+public class MainActivity extends AppCompatActivity implements IDataListener {
     public static AudioManager audioManager = null;
 
     @Override
