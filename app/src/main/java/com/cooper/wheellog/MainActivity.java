@@ -41,7 +41,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.GoogleDriveUtil;
 import com.cooper.wheellog.utils.GotwayAdapter;
 import com.cooper.wheellog.utils.IWheelAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
@@ -259,11 +258,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean use_mph = false;
     private DrawerLayout mDrawer;
 
-    public GoogleDriveUtil googleDriveUtil;
-
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
-    protected static final int REQUEST_SIGN_IN = 40;
     protected static final int RESULT_AUTH_REQUEST = 50;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -1574,8 +1570,6 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setTextColor(getResources().getColor(android.R.color.white));
         xAxis.setValueFormatter(chartAxisValueFormatter);
 
-        googleDriveUtil = new GoogleDriveUtil(this);
-
         loadPreferences(true);
 
         if (SettingsUtil.isFirstRun(this)) {
@@ -1876,7 +1870,6 @@ public class MainActivity extends AppCompatActivity {
 
         boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
         boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
-        boolean auto_upload = sharedPreferences.getBoolean(getString(R.string.auto_upload), false);
         boolean auto_upload_ec = sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false);
         ElectroClub.getInstance().setUserToken(SettingsUtil.getECToken(this));
         ElectroClub.getInstance().setUserId(SettingsUtil.getECUserId(this));
@@ -1888,11 +1881,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
 
         if (requests) {
-            if (auto_upload) {
-                googleDriveUtil.requestSignIn(REQUEST_SIGN_IN);
-            } else if (googleDriveUtil.alreadyLoggedIn()) {
-                googleDriveUtil.requestSignOut();
-            }
             if (auto_upload_ec) {
                 if (ElectroClub.getInstance().getUserToken() == null) {
                     startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
@@ -2060,17 +2048,6 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show();
                     finish();
-                }
-                break;
-            case REQUEST_SIGN_IN:
-                if (resultCode == RESULT_OK) {
-                    googleDriveUtil.handleSignInResult(data, result -> {
-                        if (!result) {
-                            SettingsUtil.setAutoUploadEnabled(this, false);
-                            ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
-                        }
-                        return null;
-                    });
                 }
                 break;
             case RESULT_AUTH_REQUEST:
