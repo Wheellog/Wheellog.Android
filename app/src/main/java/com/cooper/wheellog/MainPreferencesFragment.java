@@ -61,26 +61,22 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             case "altered_alarms":
                 hideShowSeekBarsAlarms();
                 break;
-            case "auto_upload":
-                if (SettingsUtil.isAutoUploadEnabled(getActivity()) && !mDataWarningDisplayed) {
-                    SettingsUtil.setAutoUploadEnabled(getActivity(), false);
+            case "auto_upload_ec":
+                if (SettingsUtil.isAutoUploadECEnabled(getActivity()) && !mDataWarningDisplayed) {
+                    SettingsUtil.setAutoUploadECEnabled(getActivity(), false);
                     new AlertDialog.Builder(context)
-                            .setTitle(getString(R.string.enable_auto_upload_title))  // ("Enable Auto Upload?")
+                            .setTitle(getString(R.string.enable_auto_upload_title))
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mDataWarningDisplayed = true;
-                                    SettingsUtil.setAutoUploadEnabled(getActivity(), true);
-                                    refreshVolatileSettings();
-                                    context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
-                                }
+                            .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                                mDataWarningDisplayed = true;
+                                SettingsUtil.setAutoUploadECEnabled(getActivity(), true);
+                                refreshVolatileSettings();
+                                context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mDataWarningDisplayed = false;
-                                    refreshVolatileSettings();
-                                    context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
-                                }
+                            .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                                mDataWarningDisplayed = false;
+                                refreshVolatileSettings();
+                                context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
@@ -406,6 +402,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             case Speed:
                 tb.setTitle(getText(R.string.speed_settings_title));
                 hideShowSeekBarsApp();
+                setSupportFixedPercents(WheelData.getInstance().isSupportsFixedPercents());
                 break;
             case Logs:
                 tb.setTitle(getText(R.string.logs_settings_title));
@@ -574,6 +571,15 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             if (seekbar != null)
                 seekbar.setEnabled(connectSound);
         }
+    }
+
+    public void setSupportFixedPercents(boolean supportFixedPercents) {
+        Preference voltageSpeedThresholdPreference = findPreference(getString(R.string.fixed_percents));
+        Preference tiltbackVoltagePreference = findPreference(getString(R.string.tiltback_voltage));
+        if (voltageSpeedThresholdPreference != null)
+            voltageSpeedThresholdPreference.setVisible(supportFixedPercents);
+        if (tiltbackVoltagePreference != null)
+            tiltbackVoltagePreference.setVisible(supportFixedPercents);
     }
 
     private enum SettingsScreen {

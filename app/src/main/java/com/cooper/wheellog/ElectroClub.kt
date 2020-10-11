@@ -38,7 +38,6 @@ class ElectroClub {
     fun login(email: String, password: String, success: (Boolean) -> Unit) {
         userToken = null
         userId = null
-        var nickname = ""
         val urlWithParams = Uri.parse(url)
                 .buildUpon()
                 .appendQueryParameter("method", LOGIN_METHOD)
@@ -66,6 +65,7 @@ class ElectroClub {
             override fun onResponse(call: Call, response: Response) {
                 response.use {
                     val json = JSONObject(response.body!!.string())
+                    val nickname: String
                     if (!response.isSuccessful) {
                         userToken = null
                         userId = null
