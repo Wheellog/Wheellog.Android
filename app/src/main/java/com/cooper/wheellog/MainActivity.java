@@ -2121,17 +2121,8 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     void ResetTiltbackVoltage() {
         // Set tiltback voltage with check gotway voltage changes
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        int gotwayVoltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
-        double correctedTiltbackVoltage = tiltbackVoltage;
-        if (GotwayAdapter.getInstance().isVeteran() && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
-            correctedTiltbackVoltage = 75.6;
-        else if (gotwayVoltage == 0 && (tiltbackVoltage > 52.8 || tiltbackVoltage < 48))
-            correctedTiltbackVoltage = 52.8;
-        else if (gotwayVoltage == 1 && (tiltbackVoltage > 66 || tiltbackVoltage < 60))
-            correctedTiltbackVoltage = 66;
-        else if (gotwayVoltage == 2 && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
-            correctedTiltbackVoltage = 79.2;
+        double correctedTiltbackVoltage = GotwayAdapter.getInstance().getCorrectedTiltbackVoltage(tiltbackVoltage);
 
         if (correctedTiltbackVoltage != tiltbackVoltage) {
             SharedPreferences.Editor editor = sharedPreferences.edit();

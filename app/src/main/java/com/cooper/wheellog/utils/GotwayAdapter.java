@@ -164,6 +164,20 @@ public class GotwayAdapter implements IWheelAdapter {
         return WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.VETERAN;
     }
 
+    public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
+        double correctedTiltbackVoltage = tiltbackVoltage;
+        if (isVeteran() && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
+            correctedTiltbackVoltage = 75.6;
+        else if (mGotwayVoltageScaler == 0 && (tiltbackVoltage > 52.8 || tiltbackVoltage < 48))
+            correctedTiltbackVoltage = 52.8;
+        else if (mGotwayVoltageScaler == 1 && (tiltbackVoltage > 66 || tiltbackVoltage < 60))
+            correctedTiltbackVoltage = 66;
+        else if (mGotwayVoltageScaler == 2 && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
+            correctedTiltbackVoltage = 79.2;
+
+        return correctedTiltbackVoltage;
+    }
+
     @Override
     public void updatePedalsMode(int pedalsMode) {
         WheelData.getInstance().updatePedalsMode(pedalsMode);
