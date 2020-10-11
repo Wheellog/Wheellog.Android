@@ -50,7 +50,7 @@
 	<string name="current">Courant</string>
 	<string name="power">Puissance</string>
 	<string name="temperature">Température système</string>
-	<string name="temperature2">Température CPU(?)</string>
+	<string name="temperature2">Température 2</string>
 	<string name="angle">Inclinaison</string>
 	<string name="roll">Rouler</string>
 	<string name="fan_status">Etat du ventilateur</string>

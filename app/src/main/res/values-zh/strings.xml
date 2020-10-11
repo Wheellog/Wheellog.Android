@@ -50,7 +50,7 @@
     <string name="current">当前电流</string>
     <string name="power">当前功率</string>
     <string name="temperature">系统温度</string>
-	<string name="temperature2">CPU(?) 温度</string>
+	<string name="temperature2">2 温度</string>
 	<string name="angle">倾斜角度</string>
 	<string name="roll">Roll</string>
     <string name="fan_status">风扇状态</string>

@@ -95,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
     TextView tvVoltage;
     TextView tvVoltageSag;
     TextView tvBattery;
+    TextView tvOutput;
+    TextView tvCpuLoad;
     TextView tvFanStatus;
+    TextView tvChargingStatus;
     TextView tvTopSpeed;
     TextView tvAverageSpeed;
     TextView tvAverageRidingSpeed;
@@ -480,6 +483,9 @@ public class MainActivity extends AppCompatActivity {
         TextView tvTitleAngle = (TextView) findViewById(R.id.tvTitleAngle);
         TextView tvTitleRoll = (TextView) findViewById(R.id.tvTitleRoll);
         TextView tvTitleFanStatus = (TextView) findViewById(R.id.tvTitleFanStatus);
+        TextView tvTitleChargingStatus = (TextView) findViewById(R.id.tvTitleChargingStatus);
+        TextView tvTitleOutput = (TextView) findViewById(R.id.tvTitleOutput);
+        TextView tvTitleCpuLoad = (TextView) findViewById(R.id.tvTitleCpuLoad);
         TextView tvTitleMode = (TextView) findViewById(R.id.tvTitleMode);
         TextView tvTitleTotalDistance = (TextView) findViewById(R.id.tvTitleTotalDistance);
         TextView tvTitleName = (TextView) findViewById(R.id.tvTitleName);
@@ -616,6 +622,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         switch (wheelType) {
+            case Unknown:
+                break;
             case KINGSONG:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
@@ -648,9 +656,17 @@ public class MainActivity extends AppCompatActivity {
                 tvPower.setVisibility(View.VISIBLE);
                 tvTitleTemperature.setVisibility(View.VISIBLE);
                 tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleTemperature2.setVisibility(View.VISIBLE);
+                tvTemperature2.setVisibility(View.VISIBLE);
                 tvTitleFanStatus.setVisibility(View.VISIBLE);
                 tvFanStatus.setVisibility(View.VISIBLE);
-                tvTitleMode.setVisibility(View.VISIBLE);
+                tvTitleFanStatus.setVisibility(View.VISIBLE);
+                tvChargingStatus.setVisibility(View.VISIBLE);
+                tvTitleChargingStatus.setVisibility(View.VISIBLE);
+                tvOutput.setVisibility(View.VISIBLE);
+                tvTitleOutput.setVisibility(View.VISIBLE);
+                tvCpuLoad.setVisibility(View.VISIBLE);
+                tvTitleCpuLoad.setVisibility(View.VISIBLE);
                 tvMode.setVisibility(View.VISIBLE);
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
@@ -1014,6 +1030,12 @@ public class MainActivity extends AppCompatActivity {
                 tvRoll.setVisibility(View.GONE);
                 tvTitleFanStatus.setVisibility(View.GONE);
                 tvFanStatus.setVisibility(View.GONE);
+                tvTitleChargingStatus.setVisibility(View.GONE);
+                tvChargingStatus.setVisibility(View.GONE);
+                tvTitleOutput.setVisibility(View.GONE);
+                tvOutput.setVisibility(View.GONE);
+                tvTitleCpuLoad.setVisibility(View.GONE);
+                tvCpuLoad.setVisibility(View.GONE);
                 tvTitleMode.setVisibility(View.GONE);
                 tvMode.setVisibility(View.GONE);
                 tvTitleTotalDistance.setVisibility(View.GONE);
@@ -1083,7 +1105,10 @@ public class MainActivity extends AppCompatActivity {
                 tvPower.setText(String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
                 tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
                 tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
+                tvChargingStatus.setText(WheelData.getInstance().getChargingStatus() == 0 ? getString(R.string.discharging) : getString(R.string.charging));
                 tvVersion.setText(String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
+                tvOutput.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getOutput()));
+                tvCpuLoad.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getCpuLoad()));
                 tvName.setText(WheelData.getInstance().getName());
                 tvModel.setText(WheelData.getInstance().getModel());
                 tvSerial.setText(WheelData.getInstance().getSerial());
@@ -1348,6 +1373,9 @@ public class MainActivity extends AppCompatActivity {
         tvVoltageSag = (TextView) findViewById(R.id.tvVoltageSag);
         tvBattery = (TextView) findViewById(R.id.tvBattery);
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
+        tvChargingStatus = (TextView) findViewById(R.id.tvChargingStatus);
+        tvOutput = (TextView) findViewById(R.id.tvOutput);
+        tvCpuLoad = (TextView) findViewById(R.id.tvCpuLoad);
         tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
         tvAverageSpeed = (TextView) findViewById(R.id.tvAverageSpeed);
         tvAverageRidingSpeed = (TextView) findViewById(R.id.tvAverageRidingSpeed);

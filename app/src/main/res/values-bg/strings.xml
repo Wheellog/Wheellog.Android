@@ -50,7 +50,7 @@
 	<string name="current">Ток</string>
 	<string name="power">Мощност</string>
 	<string name="temperature">Системна Температура</string>
-	<string name="temperature2">CPU(?) темп</string>
+	<string name="temperature2">2 темп</string>
 	<string name="angle">Крен</string>
 	<string name="roll">Наклон</string>
 	<string name="fan_status">Вентилатор статут</string>
