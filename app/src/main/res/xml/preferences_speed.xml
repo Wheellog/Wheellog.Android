@@ -15,6 +15,26 @@
         android:visible="true" />
 
     <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/fixed_percents"
+        android:summary="@string/fixed_percents_description"
+        android:title="@string/fixed_percents_title"
+        sample:dependency="use_better_percents"
+        android:visible="true" />
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="660"
+        android:key="@string/tiltback_voltage"
+        android:summary="@string/tiltback_voltage_description"
+        android:title="@string/tiltback_voltage_title"
+        sample:dependency="fixed_percents"
+        sample:sbp_decimalPlaces="1"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="900"
+        sample:sbp_measurementUnit="V"
+        sample:sbp_minValue="300" />
+
+    <CheckBoxPreference
         android:key="@string/use_mph"
         android:summary="@string/use_mph_description"
         android:title="@string/use_mph_title" />

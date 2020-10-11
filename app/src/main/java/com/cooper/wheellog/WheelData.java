@@ -200,6 +200,8 @@ public class WheelData {
 	private boolean mUseRatio = false;
     private boolean m18Lkm = true;
     private boolean mBetterPercents = false;
+    private boolean mFixedPercents = false;
+    private double mTiltbackVoltage = 66;
 	private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
 	private boolean mTemperatureAlarmExecuting = false;
@@ -808,6 +810,10 @@ public class WheelData {
         return mWheelType;
     }
 
+    public boolean isSupportsFixedPercents() {
+        return getWheelType() == WHEEL_TYPE.GOTWAY || isVeteran();
+    }
+
     boolean isVeteran() {
         return mVeteran;
     }
@@ -966,10 +972,18 @@ public class WheelData {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
     }
-    public void setBetterPercents(boolean betterPercents) {
 
+    public void setBetterPercents(boolean betterPercents) {
         mBetterPercents = betterPercents;
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().setBetterPercents(betterPercents);
+    }
+
+    public void setFixedPercents(boolean fixedPercents) {
+        mFixedPercents = fixedPercents;
+    }
+
+    public void setTiltbackVoltage(double tiltbackVoltage) {
+        mTiltbackVoltage = tiltbackVoltage;
     }
 
     public void setUseStopMusic(boolean useStopMusic) {
@@ -1253,6 +1267,24 @@ public class WheelData {
     }
 
     private void setBatteryPercent(int battery) {
+        if (mFixedPercents && isSupportsFixedPercents()) {
+            double maxVoltage = 100.8;
+            double minVoltage = mTiltbackVoltage;
+            if (getWheelType() == WHEEL_TYPE.GOTWAY) {
+                switch (mGotwayVoltageScaler) {
+                    case 0:
+                        maxVoltage = 67.2;
+                        break;
+                    case 1:
+                        maxVoltage = 84.0;
+                        break;
+                }
+            }
+
+            double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
+            battery = (int)((getVoltageDouble() - minVoltage) / voltagePercentStep);
+        }
+
         mBattery = battery;
 
 //        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
@@ -1722,9 +1754,9 @@ public class WheelData {
                     }
                 }
 
-                setBatteryPercent(battery);
 
                 mVoltage = (int) Math.round(mVoltage * (1 + (0.25 * mGotwayVoltageScaler)));
+                setBatteryPercent(battery);
                 setVoltageSag(mVoltage);
                 int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
                 setCurrentTime(currentTime);

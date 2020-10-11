@@ -1797,6 +1797,10 @@ public class MainActivity extends AppCompatActivity {
         WheelData.getInstance().setBetterPercents(betterPercents);
         wheelView.setBetterPercent(betterPercents);
 
+        boolean fixedPercents = sharedPreferences.getBoolean(getString(R.string.fixed_percents), false);
+        WheelData.getInstance().setFixedPercents(fixedPercents);
+        wheelView.setFixedPercents(fixedPercents);
+
         boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
         WheelData.getInstance().setUseStopMusic(useStopMusic);
 
@@ -1811,6 +1815,24 @@ public class MainActivity extends AppCompatActivity {
 
         int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
         WheelData.getInstance().setGotwayVoltage(gotway_voltage);
+
+        // Set tiltback voltage with check gotway voltage changes
+        double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
+        double correctedTiltbackVoltage = tiltbackVoltage;
+        if (gotway_voltage == 0 && (tiltbackVoltage > 52.8 || tiltbackVoltage < 48))
+            correctedTiltbackVoltage = 52.8;
+        else if (gotway_voltage == 1 && (tiltbackVoltage > 66 || tiltbackVoltage < 60))
+            correctedTiltbackVoltage = 66;
+        else if (gotway_voltage == 2 && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
+            correctedTiltbackVoltage = 79.2;
+
+        if (correctedTiltbackVoltage != tiltbackVoltage) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(getString(R.string.tiltback_voltage), (int)(correctedTiltbackVoltage * 10));
+            editor.commit();
+        }
+
+        WheelData.getInstance().setTiltbackVoltage(correctedTiltbackVoltage);
 
         int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
         WheelData.getInstance().setGotwayNegative(gotway_negative);
