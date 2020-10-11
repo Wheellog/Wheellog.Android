@@ -1843,12 +1843,15 @@ public class MainActivity extends AppCompatActivity {
             int warningSpeed = sharedPreferences.getInt(getString(R.string.warning_speed), 0);
             int warningPwm = sharedPreferences.getInt(getString(R.string.warning_pwm), 0);
             int warningSpeedPeriod = sharedPreferences.getInt(getString(R.string.warning_speed_period), 0);
+            int batteryCapacity = sharedPreferences.getInt(getString(R.string.battery_capacity), 0);
+            int chargingPower = sharedPreferences.getInt(getString(R.string.charging_power), 0);
             WheelData.getInstance().setPreferences(
                     alarm1Speed, alarm1Battery,
                     alarm2Speed, alarm2Battery,
                     alarm3Speed, alarm3Battery,
                     current_alarm, temperature_alarm, disablePhoneVibrate, disablePhoneBeep, alteredAlarms,
-                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed, warningSpeedPeriod, warningPwm);
+                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed, warningSpeedPeriod,
+                    warningPwm, batteryCapacity, chargingPower);
             wheelView.setWarningSpeed(alarm1Speed, alteredAlarms);
         } else
             wheelView.setWarningSpeed(0, false);

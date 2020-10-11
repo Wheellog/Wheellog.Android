@@ -188,6 +188,8 @@ public class WheelData {
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
     private boolean mUseStopMusic = false;
+    public int mBatteryCapacity = 0;
+    private double mChargingPowerAmp = 0;
 
     private boolean mAlteredAlarms = false;
 	private boolean mUseRatio = false;
@@ -835,6 +837,60 @@ public class WheelData {
         return mModeStr;
     }
 
+    String getChargeTime()
+    {
+        if (!isSupportsFixedPercents())
+            return;
+
+        double maxVoltage = 100.8;
+        double minVoltage = mTiltbackVoltage;
+        if (getWheelType() == WHEEL_TYPE.GOTWAY) {
+            switch (mGotwayVoltageScaler) {
+                case 0:
+                    maxVoltage = 67.2;
+                    break;
+                case 1:
+                    maxVoltage = 84.0;
+                    break;
+            }
+        }
+
+        double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
+        battery = (int)((getVoltageDouble() - minVoltage) / voltagePercentStep);
+
+
+        double minVoltage = voltage
+
+        double maxVoltage = 67.2;
+        double minVoltage = mTiltBackVoltage;
+        switch (mGotwayVoltageScaler)
+        {
+            case 1:
+                maxVoltage = 84.0;
+                minVoltage = mTiltBackVoltage;
+                break;
+            case 2:
+                maxVoltage = 100.8;
+                minVoltage = mTiltBackVoltage;
+                break;
+        }
+
+        if (isVeteran())
+        {
+            maxVoltage = 100.8;
+            minVoltage = 75.6;
+        }
+
+        double whInOneV = mBatteryCapacity / (maxVoltage - minVoltage);
+        double needToMax = maxVoltage - mLastRestVoltage;
+        double needToMaxInWh = needToMax * whInOneV;
+        double chargePower = maxVoltage * mChargingPowerAmp;
+        int chargeTime = (int) (needToMaxInWh / chargePower * 60);
+        return getSpeed() == 0
+                ? String.format(Locale.US, "~%d min", chargeTime)
+                : String.format(Locale.US, "~%d min *", chargeTime);
+    }
+
 	String getAlert() {
 		String nAlert = mAlert;
 		mAlert = "";
@@ -1004,6 +1060,10 @@ public class WheelData {
 
         mBetterPercents = betterPercents;
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().setBetterPercents(betterPercents);
+    }
+
+    public boolean isSupportsFixedPercents() {
+        return getWheelType() == WHEEL_TYPE.GOTWAY || getWheelType() == WHEEL_TYPE.VETERAN;
     }
 
     public void setUseStopMusic(boolean useStopMusic) {
@@ -1208,7 +1268,7 @@ public class WheelData {
                         boolean disablePhoneVibrate, boolean disablePhoneBeep,
                         boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
                         int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed,
-                        int warningSpeedPeriod, int warningPwm) {
+                        int warningSpeedPeriod, int warningPwm, int batteryCapacity, int chargingPower) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -1229,6 +1289,8 @@ public class WheelData {
         mAdvanceWarningSpeed = warningSpeed;
         mWarningSpeedPeriod = warningSpeedPeriod * 1000;
         mWarningPwm = (float)warningPwm/100.0;
+        mBatteryCapacity = batteryCapacity;
+        mChargingPowerAmp = (float) chargingPower / 10.0;
     }
 
     public void setDistance(long distance) {

@@ -170,6 +170,8 @@
     <string name="connection_sound" translatable="false">connection_sound</string>
     <string name="no_connection_sound" translatable="false">no_connection_sound</string>
     <string name="use_stop_music" translatable="false">use_stop_music</string>
+    <string name="battery_capacity" translatable="false">battery_capacity</string>
+    <string name="charging_power" translatable="false">charging_power</string>
 
 
     <string name="max_speed" translatable="false">max_speed</string>
@@ -263,6 +265,10 @@
     <string name="no_connection_sound_description">Period of beeps when connection lost, 0sec - no beeps</string>
     <string name="use_stop_music_title">Auto mute</string>
     <string name="use_stop_music_description">Auto mute at speeds below 3.5 km/h</string>
+    <string name="battery_capacity_title">Battery capacity</string>
+    <string name="battery_capacity_description">Battery Capacity in Wh</string>
+    <string name="charging_power_title">Charging power</string>
+    <string name="charging_power_description">Charging Power in A</string>
 
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
