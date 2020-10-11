@@ -1798,7 +1798,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             wheelView.updateViewBlocksVisibility(view_blocks);
         }
 
-
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
         boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
         WheelData.getInstance().setUseRatio(use_ratio);
@@ -1829,6 +1828,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
         GotwayAdapter.getInstance().setGotwayVoltageScaler(gotway_voltage);
         GotwayAdapter.getInstance().setGotwayNegative(gotway_negative);
+        ResetTiltbackVoltage();
 
         //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
         //WheelData.getInstance().setGotway84V(gotway_84v);
