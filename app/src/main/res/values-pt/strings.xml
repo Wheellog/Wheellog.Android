@@ -50,7 +50,7 @@
 	<string name="current">Corrente</string>
 	<string name="power">Potência</string>
 	<string name="temperature">Temperatura Sistema</string>
-	<string name="temperature2">Temperatura CPU</string>
+	<string name="temperature2">Temperatura 2</string>
 	<string name="angle">Tilt</string>
 	<string name="roll">Roll</string>
 	<string name="fan_status">Estado da ventilação</string>

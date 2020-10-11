@@ -50,7 +50,7 @@
 	<string name="current">Φορτίο</string>
 	<string name="power">Ισχύ</string>
 	<string name="temperature">Θερμοκρασία Συστήματος</string>
-	<string name="temperature2">CPU(?) θερμοκρασία</string>
+	<string name="temperature2">2 θερμοκρασία</string>
 	<string name="angle">Κλίση</string>
 	<string name="roll">Κύλιση</string>
 	<string name="fan_status">Κατάσταση Ανεμιστήρα</string>

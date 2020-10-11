@@ -55,7 +55,7 @@
     <string name="current">Current</string>
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
-	<string name="temperature2">CPU(?) temp</string>
+	<string name="temperature2">Second temp</string>
     <string name="pwm">PWM</string>
     <string name="max_pwm">Max PWM</string>
 	<string name="angle">Tilt</string>
@@ -212,6 +212,8 @@
     <string name="on_off_auto">On/Off/Auto</string>
     <string name="on">On</string>
     <string name="off">Off</string>
+    <string name="charging">Charging</string>
+    <string name="discharging">Discharging</string>
     <string name="auto">Auto</string>
     <string name="strobe">Strobe</string>
     <string name="disabled">Disabled</string>

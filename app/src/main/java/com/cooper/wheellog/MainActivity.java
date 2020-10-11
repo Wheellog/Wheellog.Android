@@ -654,6 +654,8 @@ public class MainActivity extends AppCompatActivity {
                 tvPower.setVisibility(View.VISIBLE);
                 tvTitleTemperature.setVisibility(View.VISIBLE);
                 tvTemperature.setVisibility(View.VISIBLE);
+                tvTitleTemperature2.setVisibility(View.VISIBLE);
+                tvTemperature2.setVisibility(View.VISIBLE);
                 tvTitleFanStatus.setVisibility(View.VISIBLE);
                 tvFanStatus.setVisibility(View.VISIBLE);
                 tvTitleFanStatus.setVisibility(View.VISIBLE);
@@ -1101,7 +1103,10 @@ public class MainActivity extends AppCompatActivity {
                 tvPower.setText(String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
                 tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
                 tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
+                tvChargingStatus.setText(WheelData.getInstance().getChargingStatus() == 0 ? getString(R.string.discharging) : getString(R.string.charging));
                 tvVersion.setText(String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
+                tvOutput.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getOutput()));
+                tvCpuLoad.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getCpuLoad()));
                 tvName.setText(WheelData.getInstance().getName());
                 tvModel.setText(WheelData.getInstance().getModel());
                 tvSerial.setText(WheelData.getInstance().getSerial());
@@ -1364,6 +1369,9 @@ public class MainActivity extends AppCompatActivity {
         tvVoltageSag = (TextView) findViewById(R.id.tvVoltageSag);
         tvBattery = (TextView) findViewById(R.id.tvBattery);
         tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
+        tvChargingStatus = (TextView) findViewById(R.id.tvChargingStatus);
+        tvOutput = (TextView) findViewById(R.id.tvOutput);
+        tvCpuLoad = (TextView) findViewById(R.id.tvCpuLoad);
         tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
         tvAverageSpeed = (TextView) findViewById(R.id.tvAverageSpeed);
         tvAverageRidingSpeed = (TextView) findViewById(R.id.tvAverageRidingSpeed);
