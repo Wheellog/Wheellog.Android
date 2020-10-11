@@ -181,6 +181,7 @@ public class WheelData {
     private double mAlarmFactor2 = 0.85;
     private double mAlarmFactor3 = 0.90;
     private int mAdvanceWarningSpeed = 0;
+    private double mWarningPwm = 0;
     private int mWarningSpeedPeriod = 0;
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
@@ -1207,7 +1208,7 @@ public class WheelData {
                         boolean disablePhoneVibrate, boolean disablePhoneBeep,
                         boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
                         int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed,
-                        int warningSpeedPeriod) {
+                        int warningSpeedPeriod, int warningPwm) {
         mAlarm1Speed = alarm1Speed * 100;
         mAlarm2Speed = alarm2Speed * 100;
         mAlarm3Speed = alarm3Speed * 100;
@@ -1227,6 +1228,7 @@ public class WheelData {
         mAlarmFactor3 = (float)alarmFactor3/100.0;
         mAdvanceWarningSpeed = warningSpeed;
         mWarningSpeedPeriod = warningSpeedPeriod * 1000;
+        mWarningPwm = (float)warningPwm/100.0;
     }
 
     public void setDistance(long distance) {
@@ -1323,11 +1325,16 @@ public class WheelData {
         mp1.setOnCompletionListener(mp11 -> mp11.release());
     }
 
+    private void playRecommendSpeed(Context mContext) {
+        MediaPlayer mp1 = MediaPlayer.create(mContext, R.raw.warning_pwm);
+        mp1.start();
+        mp1.setOnCompletionListener(mp11 -> mp11.release());
+    }
+
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
             if (mAlteredAlarms) {
-
                 if (mCalculatedPwm > mAlarmFactor3) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED3, mContext);
@@ -1337,41 +1344,36 @@ public class WheelData {
                 } else if (mCalculatedPwm > mAlarmFactor1) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-                } else if (mAdvanceWarningSpeed != 0 && mWarningSpeedPeriod != 0 && getSpeedDouble() >= mAdvanceWarningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > mWarningSpeedPeriod)
-                {
+                } else if (mWarningPwm != 0 && mWarningSpeedPeriod != 0 && mCalculatedPwm >= mWarningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > mWarningSpeedPeriod) {
+                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
+                    playRecommendSpeed(mContext);
+                } else if (mAdvanceWarningSpeed != 0 && mWarningSpeedPeriod != 0 && getSpeedDouble() >= mAdvanceWarningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > mWarningSpeedPeriod) {
                     mLastPlayWarningSpeedTime = System.currentTimeMillis();
                     playWarningSpeed(mContext);
                 }
             } else {
-                if (mAlarm1Speed > 0 && mAlarm1Battery > 0 &&
-                        mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
+                if (mAlarm1Speed > 0 && mAlarm1Battery > 0 && mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-                } else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 &&
-                        mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed) {
+                } else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 && mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 &&
-                        mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed) {
+                } else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 && mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED3, mContext);
                 }
             }
         }
 
-        if (mAlarmCurrent > 0 &&
-                mCurrent >= mAlarmCurrent && !mCurrentAlarmExecuting) {
+        if (mAlarmCurrent > 0 && mCurrent >= mAlarmCurrent && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
             raiseAlarm(ALARM_TYPE.CURRENT, mContext);
-
         }
+
         if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
             raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
-
         }
-
-
     }
 
     private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {

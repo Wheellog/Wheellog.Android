@@ -522,6 +522,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 getString(R.string.alarm_factor2),
                 getString(R.string.alarm_factor3),
                 getString(R.string.warning_speed),
+                getString(R.string.warning_pwm),
                 getString(R.string.warning_speed_period),
         };
 
