@@ -681,6 +681,7 @@ public class MainActivity extends AppCompatActivity {
                 tvTitleSerial.setVisibility(View.VISIBLE);
                 tvSerial.setVisibility(View.VISIBLE);
                 break;
+            case VETERAN:
             case GOTWAY:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);

@@ -271,7 +271,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
                                 }
                             }
-							if (mWheelType == WHEEL_TYPE.GOTWAY) {
+							if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 								addPreferencesFromResource(R.xml.preferences_gotway);
 								Preference startCalibrationButton = findPreference(getString(R.string.start_calibration));
 								if (startCalibrationButton != null) {

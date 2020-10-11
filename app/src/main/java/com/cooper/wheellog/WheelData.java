@@ -213,6 +213,7 @@ public class WheelData {
     public IWheelAdapter getAdapter() {
         switch (mWheelType) {
             case GOTWAY:
+            case VETERAN:
                 return GotwayAdapter.getInstance();
             case KINGSONG:
                 return KingsongAdapter.getInstance();
@@ -414,7 +415,7 @@ public class WheelData {
     }
 	
 	public void updatePedalsMode(int pedalsMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (pedalsMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("h".getBytes());
@@ -462,7 +463,7 @@ public class WheelData {
     }
 	
 	public void updateLightMode(int lightMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (lightMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("E".getBytes());
@@ -541,7 +542,7 @@ public class WheelData {
 	
 	
 	public void updateAlarmMode(int alarmMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (alarmMode) {
 				case 0:
 					mBluetoothLeService.writeBluetoothGattCharacteristic("u".getBytes());
@@ -577,7 +578,7 @@ public class WheelData {
     }
 	
 	public void updateCalibration() {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			//mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
             new Handler().postDelayed(new Runnable() {
@@ -608,7 +609,7 @@ public class WheelData {
 			}
 		}
 
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
+		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			final byte[] hhh = new byte[1];
             final byte[] lll = new byte[1];
 			if (wheelMaxSpeed != 0) {
@@ -1984,7 +1985,6 @@ public class WheelData {
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
                     mWheelType = WHEEL_TYPE.GOTWAY;
-                    mModel = "GotWay";
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
