@@ -576,10 +576,16 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     public void setSupportFixedPercents(boolean supportFixedPercents) {
         Preference voltageSpeedThresholdPreference = findPreference(getString(R.string.fixed_percents));
         Preference tiltbackVoltagePreference = findPreference(getString(R.string.tiltback_voltage));
+        Preference batteryCapacityPreference = findPreference(getString(R.string.battery_capacity));
+        Preference chargingPowerPreference = findPreference(getString(R.string.charging_power));
         if (voltageSpeedThresholdPreference != null)
             voltageSpeedThresholdPreference.setVisible(supportFixedPercents);
         if (tiltbackVoltagePreference != null)
             tiltbackVoltagePreference.setVisible(supportFixedPercents);
+        if (batteryCapacityPreference != null)
+            batteryCapacityPreference.setVisible(supportFixedPercents);
+        if (chargingPowerPreference != null)
+            chargingPowerPreference.setVisible(supportFixedPercents);
     }
 
     private enum SettingsScreen {

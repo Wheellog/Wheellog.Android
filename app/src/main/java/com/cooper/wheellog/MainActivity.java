@@ -1797,7 +1797,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         } else {
             wheelView.updateViewBlocksVisibility(view_blocks);
         }
-//*/
 
         boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
         boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
@@ -1829,24 +1828,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
         GotwayAdapter.getInstance().setGotwayVoltageScaler(gotway_voltage);
         GotwayAdapter.getInstance().setGotwayNegative(gotway_negative);
-
-        // Set tiltback voltage with check gotway voltage changes
-        double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
-        double correctedTiltbackVoltage = tiltbackVoltage;
-        if (gotway_voltage == 0 && (tiltbackVoltage > 52.8 || tiltbackVoltage < 48))
-            correctedTiltbackVoltage = 52.8;
-        else if (gotway_voltage == 1 && (tiltbackVoltage > 66 || tiltbackVoltage < 60))
-            correctedTiltbackVoltage = 66;
-        else if (gotway_voltage == 2 && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
-            correctedTiltbackVoltage = 79.2;
-
-        if (correctedTiltbackVoltage != tiltbackVoltage) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(getString(R.string.tiltback_voltage), (int)(correctedTiltbackVoltage * 10));
-            editor.commit();
-        }
-
-        WheelData.getInstance().setTiltbackVoltage(correctedTiltbackVoltage);
+        ResetTiltbackVoltage();
 
         //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
         //WheelData.getInstance().setGotway84V(gotway_84v);
@@ -2130,8 +2112,24 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     @Override
     public void changeWheelType() {
         if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
+            ResetTiltbackVoltage();
             configureDisplay(WheelData.getInstance().getWheelType());
             updateScreen(false);
         }
+    }
+
+    void ResetTiltbackVoltage() {
+        // Set tiltback voltage with check gotway voltage changes
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
+        double correctedTiltbackVoltage = GotwayAdapter.getInstance().getCorrectedTiltbackVoltage(tiltbackVoltage);
+
+        if (correctedTiltbackVoltage != tiltbackVoltage) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(getString(R.string.tiltback_voltage), (int)(correctedTiltbackVoltage * 10));
+            editor.commit();
+        }
+
+        WheelData.getInstance().setTiltbackVoltage(correctedTiltbackVoltage);
     }
 }

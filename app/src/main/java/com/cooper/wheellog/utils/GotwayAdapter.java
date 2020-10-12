@@ -134,7 +134,7 @@ public class GotwayAdapter implements IWheelAdapter {
                     }
                 }
 
-                voltage = (int) Math.round(voltage * (1 + (0.25 * mGotwayVoltageScaler)));
+                voltage = (int) Math.round(getScaledVoltage (voltage));
                 wd.setVoltage(voltage);
                 wd.setVoltageSag(voltage);
                 wd.setBatteryPercent(battery);
@@ -162,6 +162,20 @@ public class GotwayAdapter implements IWheelAdapter {
 
     public boolean isVeteran() {
         return WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.VETERAN;
+    }
+
+    public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
+        if (isVeteran()) {
+            return tiltbackVoltage > 79.2 || tiltbackVoltage < 72
+                    ? 75.6
+                    : tiltbackVoltage;
+        }
+
+        double min = getScaledVoltage(48);
+        double max = getScaledVoltage(52.8);
+        return tiltbackVoltage > max || tiltbackVoltage < min
+                ? max
+                : tiltbackVoltage;
     }
 
     @Override
@@ -196,5 +210,9 @@ public class GotwayAdapter implements IWheelAdapter {
 
     public void setGotwayNegative(int value) {
         mGotwayNegative = value;
+    }
+
+    private double getScaledVoltage(double value) {
+        return value * (1 + (0.25 * mGotwayVoltageScaler));
     }
 }
