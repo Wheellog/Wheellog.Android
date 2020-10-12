@@ -10,6 +10,7 @@ import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 
 class GotwayAdapterTest {
@@ -22,6 +23,7 @@ class GotwayAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -177,6 +179,92 @@ class GotwayAdapterTest {
         assertThat(data.totalDistance).isEqualTo(347461)
         assertThat(data.batteryLevel).isEqualTo(60)
         assertThat(data.version).isEqualTo("4.27 (1051)")
+    }
+
+    @Test
+    fun `getting corrected tiltback voltage on veteran`() {
+        // Arrange.
+        data.wheelType = Constants.WHEEL_TYPE.VETERAN
+
+        // Act.
+        val veteran50 = adapter.getCorrectedTiltbackVoltage(50.0)
+        val veteran72 = adapter.getCorrectedTiltbackVoltage(72.0)
+        val veteran75 = adapter.getCorrectedTiltbackVoltage(75.0)
+        val veteran79 = adapter.getCorrectedTiltbackVoltage(79.2)
+        val veteran90 = adapter.getCorrectedTiltbackVoltage(90.0)
+        val veteran100 = adapter.getCorrectedTiltbackVoltage(100.0)
+
+        // Assert.
+        assertThat(veteran50).isEqualTo(75.6) // correct?
+        assertThat(veteran72).isEqualTo(72)
+        assertThat(veteran75).isEqualTo(75)
+        assertThat(veteran79).isEqualTo(79.2)
+        assertThat(veteran90).isEqualTo(75.6) // correct?
+        assertThat(veteran100).isEqualTo(75.6) // correct?
+    }
+
+    @Test
+    fun `getting corrected tiltback voltage on begode sacaler 0`() {
+        // Arrange.
+        adapter.gotwayVoltageScaler = 0;
+
+        // Act.
+        val g30 = adapter.getCorrectedTiltbackVoltage(30.0)
+        val g40 = adapter.getCorrectedTiltbackVoltage(40.0)
+        val g48 = adapter.getCorrectedTiltbackVoltage(48.0)
+        val g50 = adapter.getCorrectedTiltbackVoltage(50.0)
+        val g52 = adapter.getCorrectedTiltbackVoltage(52.0)
+        val g60 = adapter.getCorrectedTiltbackVoltage(60.0)
+        val g72 = adapter.getCorrectedTiltbackVoltage(72.0)
+        val g75 = adapter.getCorrectedTiltbackVoltage(75.0)
+
+        // Assert.
+        assertThat(g30).isEqualTo(52.8) // correct?
+        assertThat(g40).isEqualTo(52.8) // correct?
+        assertThat(g48).isEqualTo(48)
+        assertThat(g50).isEqualTo(50)
+        assertThat(g52).isEqualTo(52)
+        assertThat(g60).isEqualTo(52.8)
+        assertThat(g72).isEqualTo(52.8)
+        assertThat(g75).isEqualTo(52.8)
+    }
+
+    @Test
+    fun `getting corrected tiltback voltage on begode sacaler 1`() {
+        // Arrange.
+        adapter.gotwayVoltageScaler = 1;
+
+        // Act.
+        val g50 = adapter.getCorrectedTiltbackVoltage(50.0)
+        val g60 = adapter.getCorrectedTiltbackVoltage(60.0)
+        val g65 = adapter.getCorrectedTiltbackVoltage(65.0)
+        val g72 = adapter.getCorrectedTiltbackVoltage(72.0)
+        val g75 = adapter.getCorrectedTiltbackVoltage(75.0)
+
+        // Assert.
+        assertThat(g50).isEqualTo(66) // correct?
+        assertThat(g60).isEqualTo(60)
+        assertThat(g65).isEqualTo(65)
+        assertThat(g72).isEqualTo(66)
+        assertThat(g75).isEqualTo(66)
+    }
+
+    @Test
+    fun `getting corrected tiltback voltage on begode sacaler 2`() {
+        // Arrange.
+        adapter.gotwayVoltageScaler = 2;
+
+        // Act.
+        val g60 = adapter.getCorrectedTiltbackVoltage(60.0)
+        val g72 = adapter.getCorrectedTiltbackVoltage(72.0)
+        val g75 = adapter.getCorrectedTiltbackVoltage(75.0)
+        val g80 = adapter.getCorrectedTiltbackVoltage(80.0)
+
+        // Assert.
+        assertThat((g60 * 10).roundToInt() / 10.0).isEqualTo(79.2) // correct?
+        assertThat(g72).isEqualTo(72)
+        assertThat(g75).isEqualTo(75)
+        assertThat((g80 * 10).roundToInt() / 10.0).isEqualTo(79.2)
     }
 
     @Test

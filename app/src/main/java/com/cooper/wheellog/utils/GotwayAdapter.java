@@ -165,19 +165,17 @@ public class GotwayAdapter implements IWheelAdapter {
     }
 
     public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
-        if (isVeteran() && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
-            return 75.6;
+        if (isVeteran()) {
+            return tiltbackVoltage > 79.2 || tiltbackVoltage < 72
+                    ? 75.6
+                    : tiltbackVoltage;
+        }
 
-        if (mGotwayVoltageScaler == 0 && (tiltbackVoltage > 52.8 || tiltbackVoltage < 48))
-            return 52.8;
-
-        if (mGotwayVoltageScaler == 1 && (tiltbackVoltage > 66 || tiltbackVoltage < 60))
-            return 66;
-
-        if (mGotwayVoltageScaler == 2 && (tiltbackVoltage > 79.2 || tiltbackVoltage < 72))
-            return 79.2;
-
-        return tiltbackVoltage;
+        double min = getScaledVoltage(48);
+        double max = getScaledVoltage(52.8);
+        return tiltbackVoltage > max || tiltbackVoltage < min
+                ? max
+                : tiltbackVoltage;
     }
 
     @Override
@@ -212,5 +210,9 @@ public class GotwayAdapter implements IWheelAdapter {
 
     public void setGotwayNegative(int value) {
         mGotwayNegative = value;
+    }
+
+    private double getScaledVoltage(double value) {
+        return value * (1 + (0.25 * mGotwayVoltageScaler));
     }
 }
