@@ -134,7 +134,7 @@ public class GotwayAdapter implements IWheelAdapter {
                     }
                 }
 
-                voltage = (int) Math.round(voltage * (1 + (0.25 * mGotwayVoltageScaler)));
+                voltage = (int) Math.round(getScaledVoltage (voltage));
                 wd.setVoltage(voltage);
                 wd.setVoltageSag(voltage);
                 wd.setBatteryPercent(battery);

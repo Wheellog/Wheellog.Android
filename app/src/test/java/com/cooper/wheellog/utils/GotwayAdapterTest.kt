@@ -18,7 +18,6 @@ class GotwayAdapterTest {
     private var adapter: GotwayAdapter = GotwayAdapter()
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
-    
 
     @Before
     fun setUp() {
@@ -182,7 +181,7 @@ class GotwayAdapterTest {
     }
 
     @Test
-    fun `getting corrected tiltback voltage on veteran`() {
+    fun `getting corrected tiltback voltage on Veteran`() {
         // Arrange.
         data.wheelType = Constants.WHEEL_TYPE.VETERAN
 
@@ -204,7 +203,7 @@ class GotwayAdapterTest {
     }
 
     @Test
-    fun `getting corrected tiltback voltage on begode sacaler 0`() {
+    fun `getting corrected tiltback voltage on Begode sacaler 0 - 67V`() {
         // Arrange.
         adapter.gotwayVoltageScaler = 0;
 
@@ -219,8 +218,8 @@ class GotwayAdapterTest {
         val g75 = adapter.getCorrectedTiltbackVoltage(75.0)
 
         // Assert.
-        assertThat(g30).isEqualTo(52.8) // correct?
-        assertThat(g40).isEqualTo(52.8) // correct?
+        assertThat(g30).isEqualTo(52.8)
+        assertThat(g40).isEqualTo(52.8)
         assertThat(g48).isEqualTo(48)
         assertThat(g50).isEqualTo(50)
         assertThat(g52).isEqualTo(52)
@@ -230,7 +229,7 @@ class GotwayAdapterTest {
     }
 
     @Test
-    fun `getting corrected tiltback voltage on begode sacaler 1`() {
+    fun `getting corrected tiltback voltage on Begode sacaler 1 - 84V`() {
         // Arrange.
         adapter.gotwayVoltageScaler = 1;
 
@@ -242,7 +241,7 @@ class GotwayAdapterTest {
         val g75 = adapter.getCorrectedTiltbackVoltage(75.0)
 
         // Assert.
-        assertThat(g50).isEqualTo(66) // correct?
+        assertThat(g50).isEqualTo(66)
         assertThat(g60).isEqualTo(60)
         assertThat(g65).isEqualTo(65)
         assertThat(g72).isEqualTo(66)
@@ -250,7 +249,7 @@ class GotwayAdapterTest {
     }
 
     @Test
-    fun `getting corrected tiltback voltage on begode sacaler 2`() {
+    fun `getting corrected tiltback voltage on Begode sacaler 2 - 100V`() {
         // Arrange.
         adapter.gotwayVoltageScaler = 2;
 
@@ -261,7 +260,7 @@ class GotwayAdapterTest {
         val g80 = adapter.getCorrectedTiltbackVoltage(80.0)
 
         // Assert.
-        assertThat((g60 * 10).roundToInt() / 10.0).isEqualTo(79.2) // correct?
+        assertThat((g60 * 10).roundToInt() / 10.0).isEqualTo(79.2)
         assertThat(g72).isEqualTo(72)
         assertThat(g75).isEqualTo(75)
         assertThat((g80 * 10).roundToInt() / 10.0).isEqualTo(79.2)
