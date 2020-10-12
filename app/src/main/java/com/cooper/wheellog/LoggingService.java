@@ -192,13 +192,6 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
 
-            // TODO google drive upload
-            /*if (SettingsUtil.isAutoUploadEnabled(getApplicationContext())) {
-                if (googleDriveUtil.alreadyLoggedIn()) {
-                    googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
-                }
-            }*/
-
             // electro.club ulpoad
             if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
                     && ElectroClub.getInstance().getUserToken() != null) {
