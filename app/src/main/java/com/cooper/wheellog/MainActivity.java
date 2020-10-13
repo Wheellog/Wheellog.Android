@@ -1350,6 +1350,9 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             return null;
         });
         ElectroClub.getInstance().setSuccessListener((method, success) -> {
+            if (method.equals(ElectroClub.GET_GARAGE_METHOD)) {
+                return null;
+            }
             String message = "[ec] " + method + " ok: " + success;
             Timber.i(message);
             MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));

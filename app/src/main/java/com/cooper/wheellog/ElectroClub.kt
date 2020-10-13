@@ -19,6 +19,7 @@ class ElectroClub {
         const val LOGIN_METHOD = "login"
         const val UPLOAD_METHOD = "uploadTrack"
         const val GET_GARAGE_METHOD = "getUserGarage"
+        const val GET_GARAGE_METHOD_FILTRED = "garage"
     }
 
     private val url = "https://electro.club/api/v1"
@@ -135,6 +136,9 @@ class ElectroClub {
 
     fun getAndSelectGarageByMacOrPrimary(mac: String, success: (String?) -> Unit)
     {
+        if (selectedGarage != "0")
+            return // already selected
+
         getGarage {
             val len = it.length() - 1
             var primaryId: String? = null
@@ -145,6 +149,7 @@ class ElectroClub {
                 if (m != null && m == mac) {
                     selectedGarage = it.getJSONObject(i).getString("id")
                     success(selectedGarage)
+                    successListener?.invoke(GET_GARAGE_METHOD_FILTRED, it.getJSONObject(i).getString("name"))
                     break
                 }
                 if (isPrimary) {
