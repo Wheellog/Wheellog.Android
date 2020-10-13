@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.viewpager.widget.PagerAdapter;
+
 import java.util.ArrayList;
 
 class ViewPageAdapter extends PagerAdapter {
@@ -38,7 +39,6 @@ class ViewPageAdapter extends PagerAdapter {
         if (pages.contains(pageId)) {
             pages.remove((Object) pageId);
             notifyDataSetChanged();
-            mActivity.findViewById(pageId).getParent().requestLayout();
         }
     }
 
@@ -46,7 +46,6 @@ class ViewPageAdapter extends PagerAdapter {
         if (!pages.contains(pageId)) {
             pages.add(pageId);
             notifyDataSetChanged();
-            mActivity.findViewById(pageId).getParent().requestLayout();
         }
     }
 
@@ -56,7 +55,7 @@ class ViewPageAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View arg0, Object arg1) {
-        return arg0 == (arg1);
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
     }
 }
