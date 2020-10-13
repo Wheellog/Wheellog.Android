@@ -681,6 +681,14 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 tvTimeCharge.setVisibility(View.GONE);
                 break;
             case VETERAN:
+                /*
+                tvChargingStatus.setVisibility(View.VISIBLE);
+                tvTitleChargingStatus.setVisibility(View.VISIBLE);
+                tvVersion.setVisibility(View.VISIBLE);
+                tvTitleModel.setVisibility(View.VISIBLE);
+
+                */
+
             case GOTWAY:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
@@ -716,8 +724,10 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 tvTitleTotalDistance.setVisibility(View.VISIBLE);
                 tvTotalDistance.setVisibility(View.VISIBLE);
                 tvTitleVersion.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE);
-                tvTitleModel.setVisibility(View.VISIBLE);
+                tvVersion.setVisibility(View.VISIBLE); //to remove from gotway
+                tvTitleModel.setVisibility(View.VISIBLE); //to remove from gotway
+                tvChargingStatus.setVisibility(View.VISIBLE); //to remove from gotway
+                tvTitleChargingStatus.setVisibility(View.VISIBLE); //to remove from gotway
                 tvModel.setVisibility(View.VISIBLE);
                 tvTimeChargeTitle.setVisibility(View.VISIBLE);
                 tvTimeCharge.setVisibility(View.VISIBLE);

@@ -814,6 +814,9 @@ public class WheelData {
     public int getChargingStatus() {
         return mChargingStatus;
     }
+    public int setChargingStatus(int charging) {
+        return mChargingStatus = charging;
+    }
 
     boolean isConnected() {
         return mConnectionState;

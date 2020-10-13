@@ -154,8 +154,14 @@ public class GotwayAdapter implements IWheelAdapter {
                 totalDistance = Math.round(totalDistance * RATIO_GW);
             }
             wd.setTotalDistance(totalDistance);
-        } else if (isVeteran()) { // second part
+        } else if (isVeteran()) { // second part of Veteran
             wd.setVersion(String.format(Locale.US, "%d.%d (%d)", data[8], data[9],((data[8]<<8)  | data[9])));
+            int autoOffSec = ((data[0]&0xFF)<<8) | data[1] & 0xFF;
+            int isCharging = ((data[2]&0xFF)<<8) | data[3] & 0xFF;
+            int speedAlert = ((data[4]&0xFF)<<8) | data[5] & 0xFF;
+            int speedTiltback = ((data[6]&0xFF)<<8) | data[7] & 0xFF;
+            int pedalsMode = ((data[10]&0xFF)<<8) | data[11] & 0xFF;
+            wd.setChargingStatus(isCharging);
         }
         return false;
     }
