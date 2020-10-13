@@ -6,45 +6,56 @@ import android.view.ViewGroup;
 
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.cooper.wheellog.utils.Constants;
-
+import java.util.ArrayList;
 
 class ViewPageAdapter extends PagerAdapter {
 
     Activity mActivity;
 
-    public ViewPageAdapter(Activity activity){
+    private ArrayList<Integer> pages;
+
+    public ViewPageAdapter(Activity activity) {
         mActivity = activity;
+        pages = new ArrayList<>();
+        reset(true);
     }
 
     public Object instantiateItem(ViewGroup collection, int position) {
+        return mActivity.findViewById(pages.get(position));
+    }
 
-        int resId = 0;
-        switch (position) {
-            case 0:
-                resId = R.id.page_one;
-                break;
-            case 1:
-                resId = R.id.page_two;
-                break;
-            case 2:
-                resId = R.id.page_three;
-                break;
-            case 3:
-                resId = R.id.page_four;
-
-                break;
+    public void reset(boolean init) {
+        int oldSize = pages.size();
+        pages.clear();
+        pages.add(R.id.page_one);
+        pages.add(R.id.page_two);
+        pages.add(R.id.page_three);
+        if (!init && oldSize != pages.size()) {
+            notifyDataSetChanged();
         }
-        return mActivity.findViewById(resId);
+    }
+
+    public void deletePage(int pageId) {
+        if (pages.contains(pageId)) {
+            pages.remove((Object) pageId);
+            notifyDataSetChanged();
+        }
+    }
+
+    public void addPage(int pageId) {
+        if (!pages.contains(pageId)) {
+            pages.add(pageId);
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public int getCount() {
-        return 4;
+        return pages.size();
     }
 
     @Override
-    public boolean isViewFromObject(View arg0, Object arg1) {
-        return arg0 == (arg1);
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
     }
 }
