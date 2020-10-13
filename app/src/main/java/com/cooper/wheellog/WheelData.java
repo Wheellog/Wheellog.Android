@@ -2120,9 +2120,6 @@ public class WheelData {
                     if (notifyCharacteristic == null) {
                         Timber.i("it seems that RX UUID doesn't exist");
                     }
-                    // add BMS page
-                    MainActivity.pagerAdapter.addPage(R.id.page_four);
-
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     Timber.i("notify UUID");
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));

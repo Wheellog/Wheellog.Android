@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         super.attachBaseContext(LocaleManager.setLocale(base));
     }
 
-    public static ViewPageAdapter pagerAdapter;
-
     Menu mMenu;
     MenuItem miSearch;
     MenuItem miWheel;
@@ -1375,9 +1373,9 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
                 .commit();
 
-        pagerAdapter = new ViewPageAdapter(this);
+        ViewPageAdapter adapter = new ViewPageAdapter(this);
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(pagerAdapter);
+        pager.setAdapter(adapter);
         pager.setOffscreenPageLimit(4);
 
         LinePageIndicator titleIndicator = (LinePageIndicator) findViewById(R.id.indicator);
