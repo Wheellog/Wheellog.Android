@@ -32,7 +32,9 @@ public class GotwayAdapter implements IWheelAdapter {
                 wd.setWheelType(Constants.WHEEL_TYPE.VETERAN);
                 int voltage = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
                 wd.setVoltage(voltage);
-                wd.setSpeed(((data[6]) << 8 | (data[7] & 0xFF))*10);
+
+                int speed = ((data[6]) << 8 | (data[7] & 0xFF))*10;
+                wd.setSpeed(speed);
                 long distance = ((data[10] & 0xFF) << 24 | (data[11] & 0xFF) << 16 | (data[8] & 0xFF) << 8 | (data[9] & 0xFF));
                 wd.setDistance(distance);
                 wd.setTotalDistance(((data[14] & 0xFF) << 24 | (data[15] & 0xFF) << 16 | (data[12] & 0xFF) << 8 | (data[13] & 0xFF)));
@@ -40,7 +42,7 @@ public class GotwayAdapter implements IWheelAdapter {
                 int temperature = (data[18] & 0xFF) << 8 | (data[19] & 0xFF);
                 wd.setTemperature(temperature);
                 wd.setTemperature2(temperature);
-                wd.setTopSpeed(wd.getSpeed());
+                wd.setTopSpeed(speed);
                 int battery;
                 if (wd.getBetterPercents()) {
                     if (voltage > 10020) {
