@@ -344,8 +344,11 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
                         // show BMS page
                         pagerAdapter.addPage(R.id.page_four);
-                        findViewById(R.id.indicator).invalidate();
+                    } else {
+                        // hide BMS page
+                        pagerAdapter.deletePage(R.id.page_four);
                     }
+                    findViewById(R.id.indicator).invalidate();
                     break;
                 case Constants.ACTION_ALARM_TRIGGERED:
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
