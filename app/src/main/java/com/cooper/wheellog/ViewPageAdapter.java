@@ -20,6 +20,7 @@ class ViewPageAdapter extends PagerAdapter {
         reset(true);
     }
 
+    @Override
     public Object instantiateItem(ViewGroup collection, int position) {
         return mActivity.findViewById(pages.get(position));
     }

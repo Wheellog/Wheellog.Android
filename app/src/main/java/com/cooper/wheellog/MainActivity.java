@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         super.attachBaseContext(LocaleManager.setLocale(base));
     }
 
-    public static ViewPageAdapter pagerAdapter;
+    ViewPageAdapter pagerAdapter;
 
     Menu mMenu;
     MenuItem miSearch;
@@ -341,10 +341,11 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                     break;
 
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
-                    //System.out.println("WheelRecognizedMain");
-                    String wheel_type = intent.getStringExtra(Constants.INTENT_EXTRA_WHEEL_TYPE);
-                    //showSnackBar(getResources().getString(R.string.wheel_type_recognized, wheel_type), 5000);
-                    //((PreferencesFragment) getPreferencesFragment()).show_main_menu();
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+                        // show BMS page
+                        pagerAdapter.addPage(R.id.page_four);
+                        findViewById(R.id.indicator).invalidate();
+                    }
                     break;
                 case Constants.ACTION_ALARM_TRIGGERED:
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
@@ -1363,11 +1364,11 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 .commit();
 
         pagerAdapter = new ViewPageAdapter(this);
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = findViewById(R.id.pager);
         pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(4);
 
-        LinePageIndicator titleIndicator = (LinePageIndicator) findViewById(R.id.indicator);
+        LinePageIndicator titleIndicator = findViewById(R.id.indicator);
         titleIndicator.setViewPager(pager);
         pager.addOnPageChangeListener(pageChangeListener);
 

@@ -2064,11 +2064,7 @@ public class WheelData {
             }
 
             if (detected_wheel) {
-				final Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED); // update preferences
-                intent.putExtra(Constants.INTENT_EXTRA_WHEEL_TYPE, wheel_Type);
-				mContext.sendBroadcast(intent);
 				Timber.i("Protocol recognized as %s", wheel_Type);
-				//System.out.println("WheelRecognizedWD");
                 if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
                     Timber.i("It seems to be RochWheel, force to Kingsong proto");
                     wheel_Type = mContext.getResources().getString(R.string.kingsong);
@@ -2117,9 +2113,6 @@ public class WheelData {
                     if (notifyCharacteristic == null) {
                         Timber.i("it seems that RX UUID doesn't exist");
                     }
-                    // add BMS page
-                    MainActivity.pagerAdapter.addPage(R.id.page_four);
-
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     Timber.i("notify UUID");
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));
