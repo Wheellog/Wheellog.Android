@@ -2067,11 +2067,7 @@ public class WheelData {
             }
 
             if (detected_wheel) {
-				final Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED); // update preferences
-                intent.putExtra(Constants.INTENT_EXTRA_WHEEL_TYPE, wheel_Type);
-				mContext.sendBroadcast(intent);
 				Timber.i("Protocol recognized as %s", wheel_Type);
-				//System.out.println("WheelRecognizedWD");
                 if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
                     Timber.i("It seems to be RochWheel, force to Kingsong proto");
                     wheel_Type = mContext.getResources().getString(R.string.kingsong);

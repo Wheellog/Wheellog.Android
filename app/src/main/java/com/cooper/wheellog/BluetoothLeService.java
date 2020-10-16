@@ -240,6 +240,7 @@ public class BluetoothLeService extends Service {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
                 boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this, mBluetoothDeviceAddress);
                 if (recognisedWheel) {
+                    sendBroadcast(new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED));
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
                 } else
