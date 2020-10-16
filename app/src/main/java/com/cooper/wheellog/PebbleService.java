@@ -82,54 +82,59 @@ public class PebbleService extends Service {
                 outgoingDictionary.addInt32(KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(PebbleService.this));
             }
 
+            WheelData data = WheelData.getInstance();
+            if (data == null) {
+                return;
+            }
+
             switch (displayedScreen) {
                 case GUI:
-                    if (refreshAll || lastSpeed != WheelData.getInstance().getSpeed())
+                    if (refreshAll || lastSpeed != data.getSpeed())
                     {
-                        lastSpeed = WheelData.getInstance().getSpeed();
+                        lastSpeed = data.getSpeed();
                         outgoingDictionary.addInt32(KEY_SPEED, lastSpeed);
                     }
 
-                    if (refreshAll || lastBattery != WheelData.getInstance().getBatteryLevel())
+                    if (refreshAll || lastBattery != data.getBatteryLevel())
                     {
-                        lastBattery = WheelData.getInstance().getBatteryLevel();
+                        lastBattery = data.getBatteryLevel();
                         outgoingDictionary.addInt32(KEY_BATTERY, lastBattery);
                     }
 
-                    if (refreshAll || lastTemperature != WheelData.getInstance().getTemperature())
+                    if (refreshAll || lastTemperature != data.getTemperature())
                     {
-                        lastTemperature = WheelData.getInstance().getTemperature();
+                        lastTemperature = data.getTemperature();
                         outgoingDictionary.addInt32(KEY_TEMPERATURE, lastTemperature);
                     }
 
-                    if (refreshAll || lastFanStatus != WheelData.getInstance().getFanStatus())
+                    if (refreshAll || lastFanStatus != data.getFanStatus())
                     {
-                        lastFanStatus = WheelData.getInstance().getFanStatus();
+                        lastFanStatus = data.getFanStatus();
                         outgoingDictionary.addInt32(KEY_FAN_STATE, lastFanStatus);
                     }
 
-                    if (refreshAll || lastConnectionState != WheelData.getInstance().isConnected())
+                    if (refreshAll || lastConnectionState != data.isConnected())
                     {
-                        lastConnectionState = WheelData.getInstance().isConnected();
+                        lastConnectionState = data.isConnected();
                         outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
                     }
                     break;
                 case DETAILS:
-                    if (refreshAll || lastRideTime != WheelData.getInstance().getRideTime())
+                    if (refreshAll || lastRideTime != data.getRideTime())
                     {
-                        lastRideTime = WheelData.getInstance().getRideTime();
+                        lastRideTime = data.getRideTime();
                         outgoingDictionary.addInt32(KEY_RIDE_TIME, lastRideTime);
                     }
 
-                    if (refreshAll || lastDistance != WheelData.getInstance().getDistance())
+                    if (refreshAll || lastDistance != data.getDistance())
                     {
-                        lastDistance = WheelData.getInstance().getDistance();
+                        lastDistance = data.getDistance();
                         outgoingDictionary.addInt32(KEY_DISTANCE, lastDistance/100);
                     }
 
-                    if (refreshAll || lastTopSpeed != WheelData.getInstance().getTopSpeed())
+                    if (refreshAll || lastTopSpeed != data.getTopSpeed())
                     {
-                        lastTopSpeed = WheelData.getInstance().getTopSpeed();
+                        lastTopSpeed = data.getTopSpeed();
                         outgoingDictionary.addInt32(KEY_TOP_SPEED, lastTopSpeed/10);
                     }
                     break;
