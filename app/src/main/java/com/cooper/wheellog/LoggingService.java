@@ -183,8 +183,12 @@ public class LoggingService extends Service
     @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
-        String path = fileUtil.getAbsolutePath();
-        fileUtil.close();
+        String path = "";
+
+        if (fileUtil != null) {
+            path = fileUtil.getAbsolutePath();
+            fileUtil.close();
+        }
 
         if (!isNullOrEmpty(path)) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
