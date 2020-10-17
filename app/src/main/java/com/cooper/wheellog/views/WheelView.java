@@ -156,13 +156,13 @@ public class WheelView extends View {
                             }
                         }),
                 new ViewBlockInfo(getResources().getString(R.string.current),
-                        () -> String.format(Locale.US, "%.2f ", mCurrent)),
+                        () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.amp), mCurrent)),
                 new ViewBlockInfo(getResources().getString(R.string.power),
                         () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.watt), WheelData.getInstance().getPowerDouble()), false),
                 new ViewBlockInfo(getResources().getString(R.string.temperature),
-                        () -> String.format(Locale.US, "%d ", WheelData.getInstance().getTemperature()), false),
+                        () -> String.format(Locale.US, "%d °C", WheelData.getInstance().getTemperature()), false),
                 new ViewBlockInfo(getResources().getString(R.string.temperature2),
-                        () -> String.format(Locale.US, "%d ", WheelData.getInstance().getTemperature2()), false),
+                        () -> String.format(Locale.US, "%d °C", WheelData.getInstance().getTemperature2()), false),
                 new ViewBlockInfo(getResources().getString(R.string.average_speed),
                         () -> {
                             if (mUseMPH) {
