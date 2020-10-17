@@ -79,6 +79,9 @@ public class BluetoothLeService extends Service {
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
                                 InMotionAdapter.newInstance();
                             }
+                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+                                InmotionAdapterV2.newInstance();
+                            }
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
                                 NinebotZAdapter.newInstance();
                             }
@@ -203,6 +206,9 @@ public class BluetoothLeService extends Service {
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
                                 InMotionAdapter.getInstance().stopTimer();
                         }
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+                        InmotionAdapterV2.getInstance().stopTimer();
+                    }
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
                         NinebotZAdapter.getInstance().resetConnection();
                     }
@@ -289,6 +295,13 @@ public class BluetoothLeService extends Service {
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
                 byte[] value = characteristic.getValue();
                 if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
+                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
+                }
+            }
+
+            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+                byte[] value = characteristic.getValue();
+                if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
                     WheelData.getInstance().decodeResponse(value, getApplicationContext());
                 }
             }
@@ -599,6 +612,20 @@ public class BluetoothLeService extends Service {
                 }
                 Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
                 return true;
+            case INMOTION_V2:
+                BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                if (inv2_service == null) {
+                    Timber.i("writeBluetoothGattCharacteristic service == null");
+                    return false;
+                }
+                BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID));
+                if (inv2_characteristic == null) {
+                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                    return false;
+                }
+                inv2_characteristic.setValue(cmd);
+                Timber.i("writeBluetoothGattCharacteristic writeType = %d", inv2_characteristic.getWriteType());
+                return this.mBluetoothGatt.writeCharacteristic(inv2_characteristic);
         }
         return false;
     }

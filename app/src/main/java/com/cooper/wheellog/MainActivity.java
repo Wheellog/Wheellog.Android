@@ -736,6 +736,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 tvTimeChargeTitle.setVisibility(View.VISIBLE);
                 tvTimeCharge.setVisibility(View.VISIBLE);
                 break;
+            case INMOTION_V2:
             case INMOTION:
                 tvWaitText.setVisibility(View.GONE);
                 tvTitleSpeed.setVisibility(View.VISIBLE);
@@ -785,6 +786,8 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 tvTimeChargeTitle.setVisibility(View.GONE);
                 tvTimeCharge.setVisibility(View.GONE);
                 break;
+
+
 
             case NINEBOT_Z:
                 tvWaitText.setVisibility(View.GONE);

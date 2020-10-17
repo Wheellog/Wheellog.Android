@@ -237,6 +237,8 @@ public class WheelData {
                 return NinebotZAdapter.getInstance();
             case INMOTION:
                 return InMotionAdapter.getInstance();
+            case INMOTION_V2:
+                return InmotionAdapterV2.getInstance();
             default:
                 return null;
         }
@@ -904,6 +906,10 @@ public class WheelData {
 
     public String getSerial() {
         return mSerialNumber;
+    }
+
+    public void setSerial(String serial) {
+        mSerialNumber = serial;
     }
 
     int getRideTime() { return mRideTime; }
@@ -1930,6 +1936,7 @@ public class WheelData {
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
+        if (mWheelType == WHEEL_TYPE.INMOTION_V2) InmotionAdapterV2.getInstance().stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
             if (protoVer.compareTo("S2")==0) {
                 Timber.i("Ninebot S2 stop!");
@@ -2106,6 +2113,32 @@ public class WheelData {
                         return true;
                     }
                     return false;
+
+                } else if (mContext.getResources().getString(R.string.inmotion_v2).equals(wheel_Type)) {
+                    Timber.i("Trying to start Inmotion V2");
+                    mWheelType = WHEEL_TYPE.INMOTION_V2;
+                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                    Timber.i("service UUID");
+                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_READ_CHARACTER_UUID));
+                    Timber.i("read UUID");
+                    if (notifyCharacteristic == null) {
+                        Timber.i("it seems that RX UUID doesn't exist");
+                    }
+                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                    Timber.i("notify UUID");
+                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_V2_DESCRIPTER_UUID));
+                    Timber.i("descr UUID");
+                    if (descriptor == null) {
+                        Timber.i("it seems that descr UUID doesn't exist");
+                    }
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    Timber.i("enable notify UUID");
+                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                    Timber.i("write notify");
+                    InmotionAdapterV2.getInstance().startKeepAliveTimer(mBluetoothLeService);
+                    Timber.i("starting Inmotion V2 adapter");
+                    return true;
+
                 } else if (mContext.getResources().getString(R.string.ninebot_z).equals(wheel_Type)) {
                     Timber.i("Trying to start Ninebot Z");
                     mWheelType = WHEEL_TYPE.NINEBOT_Z;
