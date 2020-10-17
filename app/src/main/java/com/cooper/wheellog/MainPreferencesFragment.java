@@ -20,6 +20,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 
 public class MainPreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -161,15 +162,15 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 				break;
             case "wheel_ks_alarm3":
                 final int alert3 = sharedPreferences.getInt("wheel_ks_alarm3", 0);
-                WheelData.getInstance().updateKSAlarm3(alert3);
+                KingsongAdapter.getInstance().updateKSAlarm3(alert3);
                 break;
             case "wheel_ks_alarm2":
                 final int alert2 = sharedPreferences.getInt("wheel_ks_alarm2", 0);
-                WheelData.getInstance().updateKSAlarm2(alert2);
+                KingsongAdapter.getInstance().updateKSAlarm2(alert2);
                 break;
             case "wheel_ks_alarm1":
                 final int alert1 = sharedPreferences.getInt("wheel_ks_alarm1", 0);
-                WheelData.getInstance().updateKSAlarm1(alert1);
+                KingsongAdapter.getInstance().updateKSAlarm1(alert1);
                 break;
         }
         context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
@@ -262,37 +263,40 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                         public boolean onPreferenceClick(Preference preference) {
                             currentScreen = SettingsScreen.Wheel;
                             getPreferenceScreen().removeAll();
-                            if (mWheelType == WHEEL_TYPE.NINEBOT_Z) addPreferencesFromResource(R.xml.preferences_ninebot_z);
-							if (mWheelType == WHEEL_TYPE.INMOTION) addPreferencesFromResource(R.xml.preferences_inmotion);
-							if (mWheelType == WHEEL_TYPE.KINGSONG) {
-							    addPreferencesFromResource(R.xml.preferences_kingsong);
-							    if(WheelData.getInstance().isPrefReceived()) {
-
-                                    correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
-                                    correctWheelBarState(getString(R.string.wheel_ks_alarm1), WheelData.getInstance().getKSAlarm1Speed());
-                                    correctWheelBarState(getString(R.string.wheel_ks_alarm2), WheelData.getInstance().getKSAlarm2Speed());
-                                    correctWheelBarState(getString(R.string.wheel_ks_alarm3), WheelData.getInstance().getKSAlarm3Speed());
-
-                                }
+                            switch (mWheelType) {
+                                case NINEBOT_Z:
+                                    addPreferencesFromResource(R.xml.preferences_ninebot_z);
+                                    break;
+                                case INMOTION:
+                                    addPreferencesFromResource(R.xml.preferences_inmotion);
+                                    break;
+                                case KINGSONG:
+                                    addPreferencesFromResource(R.xml.preferences_kingsong);
+                                    KingsongAdapter adapter = KingsongAdapter.getInstance();
+                                    if (adapter.getKSAlertsAndSpeedupdated()) {
+                                        correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
+                                        correctWheelBarState(getString(R.string.wheel_ks_alarm1), adapter.getKSAlarm1Speed());
+                                        correctWheelBarState(getString(R.string.wheel_ks_alarm2), adapter.getKSAlarm2Speed());
+                                        correctWheelBarState(getString(R.string.wheel_ks_alarm3), adapter.getKSAlarm3Speed());
+                                    }
+                                    break;
+                                case GOTWAY:
+                                    addPreferencesFromResource(R.xml.preferences_gotway);
+                                    Preference startCalibrationButton = findPreference(getString(R.string.start_calibration));
+                                    if (startCalibrationButton != null) {
+                                        startCalibrationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                                            @Override
+                                            public boolean onPreferenceClick(Preference preference) {
+                                                WheelData.getInstance().updateCalibration();
+                                                return true;
+                                            }
+                                        });
+                                    }
+                                    break;
+                                case VETERAN:
+                                    addPreferencesFromResource(R.xml.preferences_veteran);
+                                    break;
                             }
-
-							if (mWheelType == WHEEL_TYPE.GOTWAY) {
-								addPreferencesFromResource(R.xml.preferences_gotway);
-								Preference startCalibrationButton = findPreference(getString(R.string.start_calibration));
-								if (startCalibrationButton != null) {
-									startCalibrationButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-										@Override
-										public boolean onPreferenceClick(Preference preference) {                            
-											WheelData.getInstance().updateCalibration();
-											return true;
-										}
-									});
-								}
-							}
-
-							if (mWheelType == WHEEL_TYPE.VETERAN)
-                                addPreferencesFromResource(R.xml.preferences_veteran);
-
                             setupScreen();
                             return true;
                         }
