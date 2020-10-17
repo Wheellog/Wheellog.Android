@@ -68,7 +68,7 @@ public class FileUtil {
     }
 
     public boolean prepareFile(String fileName) {
-        prepareFile(fileName, "");
+        return prepareFile(fileName, "");
     }
 
     public boolean prepareFile(String fileName, String folder) {
