@@ -25,7 +25,9 @@ import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
@@ -118,7 +120,8 @@ public class LoggingService extends Service
 
         String filename = sdFormatter.format(new Date()) + ".csv";
 
-        if (!fileUtil.prepareFile(filename)) {
+//        if (!fileUtil.prepareFile(filename, WheelData.getInstance().getWheelType().toString())) {
+        if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
             stopSelf();
             return START_STICKY;
         }
