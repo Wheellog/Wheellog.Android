@@ -6,6 +6,7 @@ import com.cooper.wheellog.WheelData;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import timber.log.Timber;
@@ -62,13 +63,11 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                 if (updateStep == 0) {
                     if (stateCon == 0) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getCarType().writeBuffer())) {
-                            stateCon += 1;
                             Timber.i("Sent car type message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 1) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getSerialNumber().writeBuffer())) {
-                            stateCon += 1;
                             Timber.i("Sent s/n message");
                         } else updateStep = 39;
 
@@ -92,14 +91,14 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                     }
                     else if (stateCon == 4) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getUselessData().writeBuffer())) {
-                            Timber.i("Sent statistics data message");
+                            Timber.i("Sent useless data message");
                             stateCon += 1;
                         } else updateStep = 39;
 
                     }
                     else if (stateCon == 5) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getStatistics().writeBuffer())) {
-                            Timber.i("Sent useless data message");
+                            Timber.i("Sent statistics data message");
                             stateCon += 1;
                         } else updateStep = 39;
 
@@ -183,7 +182,8 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             Timber.i("Parse main data");
             WheelData wd = WheelData.getInstance();
             wd.resetRideTime();
-            if ((data[0] == (byte) 0x01) || len >= 8) {
+            if ((data[0] == (byte) 0x01) && len >= 6) {
+                stateCon += 1;
                 Timber.i("Parse car type");
                 int mainSeries = data[1]; //02
                 int series = data[2];    // 06
@@ -191,33 +191,33 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                 int batch = data[4];     // 02
                 int feature = data[5];   // 01
                 int reverse = data[6];   // 00
-                wd.setModel(String.format("Inmotion V11 rev:%d.%d",batch,feature));
+                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11 rev:%d.%d",batch,feature));
 
-            } else if ((data[0] == (byte) 0x02) || len >= 19) {
+            } else if ((data[0] == (byte) 0x02) && len >= 17) {
+                stateCon += 1;
                 Timber.i("Parse serial num");
                 String serialNumber = "";
-                for (int j = 0; j < 15; j++) {
-                    serialNumber += String.format("%02X", data[j+1]);
+                serialNumber = new String(data, 1, 16);
 
-                }
                 wd.setSerial(serialNumber);
-            } else if ((data[0] == (byte) 0x06) || len >= 28) {
+            } else if ((data[0] == (byte) 0x06) && len >= 10) {
                 Timber.i("Parse versions");
             }
             return false;
         }
 
         boolean parseTotalStats() {
+            Timber.i("Parse total stats data");
             WheelData wd = WheelData.getInstance();
-            long mTotal = longFromBytes(data, 0);
-            long mDissiparion = longFromBytes(data, 4);
-            long mRecovery = longFromBytes(data, 8);
-            long mRideTime = longFromBytes(data, 12);
+            long mTotal = intFromBytes(data, 0);
+            long mDissiparion = intFromBytes(data, 4);
+            long mRecovery = intFromBytes(data, 8);
+            long mRideTime = intFromBytes(data, 12);
             int sec = (int)(mRideTime % 60);
             int min = (int)((mRideTime / 60) % 60);
             int hour = (int) (mRideTime/ 3600);
             String mRideTimeStr = String.format("%d:%02d:%02d",hour,min,sec);
-            long mPowerOnTime = longFromBytes(data, 16);
+            long mPowerOnTime = intFromBytes(data, 16);
             sec = (int)(mPowerOnTime % 60);
             min = (int)((mPowerOnTime / 60) % 60);
             hour = (int) (mPowerOnTime/ 3600);
@@ -228,43 +228,44 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         }
 
         boolean parseRealTimeInfo() {
+            Timber.i("Parse realtime stats data");
             WheelData wd = WheelData.getInstance();
-            int mVoltage = intFromBytes(data, 0);
-            long mCurrent = signedIntFromBytes(data, 2);
-            long mSpeed = signedIntFromBytes(data, 4);
-            long mTorque = signedIntFromBytes(data, 6);
-            long mBatPower = signedIntFromBytes(data, 8);
-            long mMotPower = signedIntFromBytes(data, 10);
-            long mMileage = intFromBytes(data, 12) * 10;
-            long mRemainMileage = intFromBytes(data, 14) * 10;
+            int mVoltage = shortFromBytes(data, 0);
+            int mCurrent = signedShortFromBytes(data, 2);
+            int mSpeed = signedShortFromBytes(data, 4);
+            int mTorque = signedShortFromBytes(data, 6);
+            int mBatPower = signedShortFromBytes(data, 8);
+            int mMotPower = signedShortFromBytes(data, 10);
+            int mMileage = shortFromBytes(data, 12) * 10;
+            int mRemainMileage = shortFromBytes(data, 14) * 10;
             int mBatLevel = data[16] & 0x7f;
             int mBatMode = (data[16] >> 7)  & 0x1;
-            int mMosTemp = data[17] & 0xff + 80 - 256;
-            int mMotTemp = data[18]& 0xff + 80 - 256;
-            int mBatTemp = data[19]& 0xff + 80 - 256;
-            int mBoardTemp = data[20]& 0xff + 80 - 256;
-            int mLampTemp = data[21]& 0xff + 80 - 256;
-            long mPitchAngle = signedIntFromBytes(data, 22);
-            long mPitchAimAngle = signedIntFromBytes(data, 24);
-            long mRollAngle = signedIntFromBytes(data, 26);
-            long mDinamicSpeedLimit = signedIntFromBytes(data, 28);
-            long mDinamicCurrentLimit = signedIntFromBytes(data, 30);
+            int mMosTemp = (data[17] & 0xff) + 80 - 256;
+            int mMotTemp = (data[18]& 0xff) + 80 - 256;
+            int mBatTemp = (data[19]& 0xff) + 80 - 256;
+            int mBoardTemp = (data[20]& 0xff) + 80 - 256;
+            int mLampTemp = (data[21]& 0xff) + 80 - 256;
+            int mPitchAngle = signedShortFromBytes(data, 22);
+            int mPitchAimAngle = signedShortFromBytes(data, 24);
+            int mRollAngle = signedShortFromBytes(data, 26);
+            int mDinamicSpeedLimit = shortFromBytes(data, 28);
+            int mDinamicCurrentLimit = shortFromBytes(data, 30);
             int mBrightness = data[32]& 0xff;
             int mLightBrightness = data[33]& 0xff;
             int mCpuTemp = data[34]& 0xff + 80 - 256;
             int mImuTemp = data[35]& 0xff + 80 - 256;
             wd.setVoltage(mVoltage);
-            wd.setCurrent((int)mCurrent);
-            wd.setSpeed((int)mSpeed);
+            wd.setCurrent(mCurrent);
+            wd.setSpeed(mSpeed);
             wd.setBatteryPercent(mBatLevel);
-            wd.setTemperature(mMosTemp);
-            wd.setTemperature2(mBoardTemp);
+            wd.setTemperature(mMosTemp * 100);
+            wd.setTemperature2(mBoardTemp * 100);
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
             wd.updateRideTime();
-            wd.setTopSpeed((int)mSpeed);
+            wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
-
+            wd.setPower(mBatPower);
             //// state data
             int mPcMode = data[36] & 0x07;
             int mMcMode = (data[36]>>3)&0x07;
@@ -380,32 +381,38 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             }
             return (byte) check;
         }
-        private int intFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 4) {
-                return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
-            }
-            return 0;
-        }
-
-        private long longFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 8) {
-                return ((((((((((((((((long) (bytes[starting + 7] & 255))) << 8) | ((long) (bytes[starting + 6] & 255))) << 8) | ((long) (bytes[starting + 5] & 255))) << 8) | ((long) (bytes[starting + 4] & 255))) << 8) | ((long) (bytes[starting + 3] & 255))) << 8) | ((long) (bytes[starting + 2] & 255))) << 8) | ((long) (bytes[starting + 1] & 255))) << 8) | ((long) (bytes[starting] & 255));
-            }
-            return 0;
-        }
 
         long signedIntFromBytes(byte[] bytes, int starting) {
             if (bytes.length >= starting + 4) {
-                return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
+                return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
+                //return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
             }
             return 0;
         }
 
-        public static short shortFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 2) {
-                return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
+
+        int intFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 4) {
+                return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
+                //return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
             }
-            return (short) 0;
+            return 0;
+        }
+
+        public static int shortFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 2) {
+                return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting+1] & 0xFF);
+                //return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
+            }
+            return 0;
+        }
+
+        public static int signedShortFromBytes(byte[] bytes, int starting) {
+            if (bytes.length >= starting + 2) {
+                return ((bytes[starting+1] << 8) | (bytes[starting+1] & 0xFF));
+                //return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
+            }
+            return 0;
         }
 
         public static String toHexString(byte[] buffer) {

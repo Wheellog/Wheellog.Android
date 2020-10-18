@@ -114,6 +114,7 @@ public class WheelData {
     private int mSpeed;
     private long mTotalDistance;
     private int mCurrent;
+    private int mPower;
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
@@ -969,7 +970,10 @@ public class WheelData {
         return mVoltageSag / 100.0;
     }
     public double getPowerDouble() {
-        return (mCurrent * mVoltage) / 10000.0;
+        return mPower / 10000.0;
+    }
+    public void setPower(int power) {
+        mPower = power;
     }
 
     public double getCurrentDouble() {
@@ -1572,6 +1576,9 @@ public class WheelData {
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
+        if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
+            mPower = mCurrent * mVoltage;
+        }
 
         if (mAlarmsEnabled)
 			checkAlarmStatus(mContext);
@@ -1970,6 +1977,7 @@ public class WheelData {
         mSpeed = 0;
         mTotalDistance = 0;
         mCurrent = 0;
+        mPower = 0;
         mTemperature = 0;
 		mTemperature2 = 0;
         mCpuLoad = 0;
