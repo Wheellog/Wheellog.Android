@@ -11,8 +11,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import timber.log.Timber;
 
-// created by palachzzz October 2020
-
 public class InmotionAdapterV2 implements IWheelAdapter {
     private static InmotionAdapterV2 INSTANCE;
     private Timer keepAliveTimer;
@@ -21,15 +19,32 @@ public class InmotionAdapterV2 implements IWheelAdapter {
     private static int stateCon = 0;
     private byte[] settingCommand;
     InmotionUnpackerV2 unpacker = new InmotionUnpackerV2();
-    //WheelData wd;
+
     @Override
     public boolean decode(byte[] data) {
-        if (decodeNewData(data)) {
-            return true;
-        } else {
-            return false;
-        }
+        for (byte c : data) {
+            if (unpacker.addChar(c)) {
 
+                Message result = Message.verify(unpacker.getBuffer());
+
+                if (result != null) {
+                    Timber.i("Get new data, command: %02X", result.command);
+
+                    if (result.command == Message.Command.MainInfo.getValue()) {
+                        return result.parseMainData();
+
+                    } else if (result.command == Message.Command.TotalStats.getValue()) {
+                        return result.parseTotalStats();
+                    } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
+                        return result.parseRealTimeInfo();
+                    } else {
+                        Timber.i("Get unknown command: %02X",result.command);
+                    }
+
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -170,7 +185,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             len = bArr[3];
             command = bArr[4] & 0x7F;
             if (len > 1) {
-                data = Arrays.copyOfRange(bArr, 5, len);
+                data = Arrays.copyOfRange(bArr, 5, len+4);
             }
         }
 
@@ -191,8 +206,8 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                 int batch = data[4];     // 02
                 int feature = data[5];   // 01
                 int reverse = data[6];   // 00
-                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11 rev:%d.%d",batch,feature));
-
+                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11",batch,feature));
+                wd.setVersion(String.format(Locale.ENGLISH,"rev: %d.%d",batch,feature));
             } else if ((data[0] == (byte) 0x02) && len >= 17) {
                 stateCon += 1;
                 Timber.i("Parse serial num");
@@ -210,7 +225,8 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             Timber.i("Parse total stats data");
             WheelData wd = WheelData.getInstance();
             long mTotal = intFromBytes(data, 0);
-            long mDissiparion = intFromBytes(data, 4);
+            long mTotal2 = MathsUtil.getInt4(data, 0);
+            long mDissipation = intFromBytes(data, 4);
             long mRecovery = intFromBytes(data, 8);
             long mRideTime = intFromBytes(data, 12);
             int sec = (int)(mRideTime % 60);
@@ -231,6 +247,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             Timber.i("Parse realtime stats data");
             WheelData wd = WheelData.getInstance();
             int mVoltage = shortFromBytes(data, 0);
+            //int mVoltage2 = MathsUtil.getInt2R(data, 0); looks ok
             int mCurrent = signedShortFromBytes(data, 2);
             int mSpeed = signedShortFromBytes(data, 4);
             int mTorque = signedShortFromBytes(data, 6);
@@ -241,10 +258,10 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             int mBatLevel = data[16] & 0x7f;
             int mBatMode = (data[16] >> 7)  & 0x1;
             int mMosTemp = (data[17] & 0xff) + 80 - 256;
-            int mMotTemp = (data[18]& 0xff) + 80 - 256;
-            int mBatTemp = (data[19]& 0xff) + 80 - 256;
-            int mBoardTemp = (data[20]& 0xff) + 80 - 256;
-            int mLampTemp = (data[21]& 0xff) + 80 - 256;
+            int mMotTemp = (data[18] & 0xff) + 80 - 256;
+            int mBatTemp = (data[19] & 0xff) + 80 - 256;
+            int mBoardTemp = (data[20] & 0xff) + 80 - 256;
+            int mLampTemp = (data[21] & 0xff) + 80 - 256;
             int mPitchAngle = signedShortFromBytes(data, 22);
             int mPitchAimAngle = signedShortFromBytes(data, 24);
             int mRollAngle = signedShortFromBytes(data, 26);
@@ -252,8 +269,8 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             int mDinamicCurrentLimit = shortFromBytes(data, 30);
             int mBrightness = data[32]& 0xff;
             int mLightBrightness = data[33]& 0xff;
-            int mCpuTemp = data[34]& 0xff + 80 - 256;
-            int mImuTemp = data[35]& 0xff + 80 - 256;
+            int mCpuTemp = (data[34] & 0xff) + 80 - 256;
+            int mImuTemp = (data[35] & 0xff) + 80 - 256;
             wd.setVoltage(mVoltage);
             wd.setCurrent(mCurrent);
             wd.setSpeed(mSpeed);
@@ -265,7 +282,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             wd.updateRideTime();
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
-            wd.setPower(mBatPower);
+            wd.setPower(mBatPower*10000);
             //// state data
             int mPcMode = data[36] & 0x07;
             int mMcMode = (data[36]>>3)&0x07;
@@ -276,7 +293,11 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             int liftedState = (data[37]>>2)&0x01;
             int tailLiState = (data[37]>>3)&0x03;
             int fanState = (data[37]>>5)&0x01;
-
+            String wmode = "";
+            if (mMotState == 1) {wmode = wmode + " Active";}
+            if (chrgState == 1) {wmode = wmode + " Charging";}
+            if (liftedState == 1) {wmode = wmode + " Lifted";}
+            wd.setModeStr(wmode);
             //// rest data
 
 
@@ -401,7 +422,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
 
         public static int shortFromBytes(byte[] bytes, int starting) {
             if (bytes.length >= starting + 2) {
-                return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting+1] & 0xFF);
+                return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting] & 0xFF);
                 //return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
             }
             return 0;
@@ -409,7 +430,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
 
         public static int signedShortFromBytes(byte[] bytes, int starting) {
             if (bytes.length >= starting + 2) {
-                return ((bytes[starting+1] << 8) | (bytes[starting+1] & 0xFF));
+                return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));
                 //return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
             }
             return 0;
@@ -518,31 +539,6 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             state = InmotionAdapterV2.InmotionUnpackerV2.UnpackerState.unknown;
 
         }
-    }
-
-    private boolean decodeNewData(byte[] data) {
-        for (byte c : data) {
-            if (unpacker.addChar(c)) {
-
-                Message result = Message.verify(unpacker.getBuffer());
-
-                if (result != null) {
-                    Timber.i("Get new data, command: %02X", result.command);
-                    if (result.command == Message.Command.MainInfo.getValue()) {
-                        return result.parseMainData();
-
-                    } else if (result.command == Message.Command.TotalStats.getValue()) {
-                        return result.parseTotalStats();
-                    } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                        return result.parseRealTimeInfo();
-                    } else {
-                        Timber.i("Get unknown command: %02X",result.command);
-                    }
-
-                }
-            }
-        }
-        return false;
     }
 
     public static void newInstance() {
