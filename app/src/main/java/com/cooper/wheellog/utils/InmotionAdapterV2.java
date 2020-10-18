@@ -405,13 +405,8 @@ public class InmotionAdapterV2 implements IWheelAdapter {
 
         public static String toHexString(byte[] buffer) {
             String str = "[";
-            boolean comma = false;
             for (int c : buffer) {
-                if (comma) {
-                    str += ", ";
-                }
                 str += String.format("%02X", (c & 0xFF));
-                //comma = true;
             }
             str += "]";
             return str;
