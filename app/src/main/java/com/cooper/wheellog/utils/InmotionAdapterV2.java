@@ -265,8 +265,8 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             int mPitchAngle = signedShortFromBytes(data, 22);
             int mPitchAimAngle = signedShortFromBytes(data, 24);
             int mRollAngle = signedShortFromBytes(data, 26);
-            int mDinamicSpeedLimit = shortFromBytes(data, 28);
-            int mDinamicCurrentLimit = shortFromBytes(data, 30);
+            int mDynamicSpeedLimit = shortFromBytes(data, 28);
+            int mDynamicCurrentLimit = shortFromBytes(data, 30);
             int mBrightness = data[32]& 0xff;
             int mLightBrightness = data[33]& 0xff;
             int mCpuTemp = (data[34] & 0xff) + 80 - 256;
