@@ -947,7 +947,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 updateSecondPageValue(R.string.model, WheelData.getInstance().getModel());
                 updateSecondPageValue(R.string.serial_number, WheelData.getInstance().getSerial());
                 updateSecondPageValue(R.string.ride_time, WheelData.getInstance().getRideTimeString());
-                updateSecondPageValue(R.string.average_riding_speed, WheelData.getInstance().getRidingTimeString());
+                updateSecondPageValue(R.string.riding_time, WheelData.getInstance().getRidingTimeString());
                 updateSecondPageValue(R.string.mode, WheelData.getInstance().getModeStr());
                 updateSecondPageValue(R.string.charging, WheelData.getInstance().getChargeTime());
                 updateSecondPage();
