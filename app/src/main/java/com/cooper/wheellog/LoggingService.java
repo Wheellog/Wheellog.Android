@@ -120,7 +120,6 @@ public class LoggingService extends Service
 
         String filename = sdFormatter.format(new Date()) + ".csv";
 
-//        if (!fileUtil.prepareFile(filename, WheelData.getInstance().getWheelType().toString())) {
         if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
             stopSelf();
             return START_STICKY;

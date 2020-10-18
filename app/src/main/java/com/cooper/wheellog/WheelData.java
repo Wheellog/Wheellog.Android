@@ -980,7 +980,9 @@ public class WheelData {
     }
 
     public String getMac() {
-        return mBluetoothLeService.getBluetoothDeviceAddress();
+        return mBluetoothLeService != null
+                ? mBluetoothLeService.getBluetoothDeviceAddress()
+                : "default";
     }
 
     public long getTimeStamp() {
