@@ -397,28 +397,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             miWheel.getIcon().setAlpha(255);
         }
 
-        switch (mConnectionState) {
-            case BluetoothLeService.STATE_CONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_orange);
-                miWheel.setTitle(R.string.disconnect_from_wheel);
-                miSearch.setEnabled(false);
-                miSearch.getIcon().setAlpha(64);
-                break;
-            case BluetoothLeService.STATE_CONNECTING:
-                miWheel.setIcon(R.drawable.anim_wheel_icon);
-                miWheel.setTitle(R.string.disconnect_from_wheel);
-                ((AnimationDrawable) miWheel.getIcon()).start();
-                miSearch.setEnabled(false);
-                miSearch.getIcon().setAlpha(64);
-                break;
-            case BluetoothLeService.STATE_DISCONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_white);
-                miWheel.setTitle(R.string.connect_to_wheel);
-                miSearch.setEnabled(true);
-                miSearch.getIcon().setAlpha(255);
-                break;
-        }
-
         if (PebbleService.isInstanceCreated()) {
             miWatch.setIcon(R.drawable.ic_action_watch_orange);
         } else {
@@ -431,6 +409,34 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         } else {
             miLogging.setTitle(R.string.start_data_service);
             miLogging.setIcon(R.drawable.ic_action_logging_white);
+        }
+
+        switch (mConnectionState) {
+            case BluetoothLeService.STATE_CONNECTED:
+                miWheel.setIcon(R.drawable.ic_action_wheel_orange);
+                miWheel.setTitle(R.string.disconnect_from_wheel);
+                miSearch.setEnabled(false);
+                miSearch.getIcon().setAlpha(64);
+                miLogging.setEnabled(true);
+                miLogging.getIcon().setAlpha(255);
+                break;
+            case BluetoothLeService.STATE_CONNECTING:
+                miWheel.setIcon(R.drawable.anim_wheel_icon);
+                miWheel.setTitle(R.string.disconnect_from_wheel);
+                ((AnimationDrawable) miWheel.getIcon()).start();
+                miSearch.setEnabled(false);
+                miSearch.getIcon().setAlpha(64);
+                miLogging.setEnabled(false);
+                miLogging.getIcon().setAlpha(64);
+                break;
+            case BluetoothLeService.STATE_DISCONNECTED:
+                miWheel.setIcon(R.drawable.ic_action_wheel_white);
+                miWheel.setTitle(R.string.connect_to_wheel);
+                miSearch.setEnabled(true);
+                miSearch.getIcon().setAlpha(255);
+                miLogging.setEnabled(false);
+                miLogging.getIcon().setAlpha(64);
+                break;
         }
     }
 
@@ -1763,7 +1769,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
         if (LoggingService.isInstanceCreated())
             stopService(dataLoggerServiceIntent);
-        else
+        else if (mConnectionState == BluetoothLeService.STATE_CONNECTED)
             ContextCompat.startForegroundService(this, dataLoggerServiceIntent);
     }
 
