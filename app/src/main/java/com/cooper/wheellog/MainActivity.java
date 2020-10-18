@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.gridlayout.widget.GridLayout;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
@@ -59,7 +60,9 @@ import com.viewpagerindicator.LinePageIndicator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
@@ -85,37 +88,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     MenuItem miWheel;
     MenuItem miWatch;
     MenuItem miLogging;
-
-    TextView tvSpeed;
-    TextView tvTemperature;
-    TextView tvTemperature2;
-    TextView tvAngle;
-    TextView tvRoll;
-    TextView tvCurrent;
-    TextView tvPower;
-    TextView tvVoltage;
-    TextView tvVoltageSag;
-    TextView tvBattery;
-    TextView tvOutput;
-    TextView tvCpuLoad;
-    TextView tvFanStatus;
-    TextView tvChargingStatus;
-    TextView tvTopSpeed;
-    TextView tvAverageSpeed;
-    TextView tvAverageRidingSpeed;
-    TextView tvDistance;
-    TextView tvWheelDistance;
-    TextView tvUserDistance;
-    TextView tvModel;
-    TextView tvName;
-    TextView tvVersion;
-    TextView tvSerial;
-    TextView tvTotalDistance;
-    TextView tvRideTime;
-    TextView tvRidingTime;
-    TextView tvMode;
-    TextView tvTimeCharge;
-    TextView tvTimeChargeTitle;
 
     LineChart chart1;
 
@@ -315,11 +287,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
                     break;
-                //case Constants.ACTION_WHEEL_SETTING_CHANGED:
-                //	if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_REFRESH)) {
-                //		setWheelPreferences();
-                //	}
-                //	break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
@@ -466,36 +433,52 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         }
     }
 
+    private LinkedHashMap<Integer, String> secondPageValues = new LinkedHashMap<>();
+
+    public void setupFieldForSecondPage(int resId)
+    {
+        secondPageValues.put(resId, "");
+    }
+
+    public void updateFieldForSecondPage(int resId, String value)
+    {
+        if (secondPageValues.containsKey(resId)) {
+            secondPageValues.put(resId, value);
+        }
+    }
+
+    public void createSecondPage() {
+        GridLayout layout = findViewById(R.id.page_two_grid);
+        layout.removeAllViews();
+        for (Map.Entry<Integer, String> entry : secondPageValues.entrySet()) {
+            TextView headerText = (TextView) getLayoutInflater().inflate(
+                    R.layout.textview_title_template, layout, false);
+            TextView valueText = (TextView) getLayoutInflater().inflate(
+                    R.layout.textview_value_template, layout, false);
+            headerText.setText(getApplicationContext().getString(entry.getKey()));
+            valueText.setText(entry.getValue());
+            layout.addView(headerText);
+            layout.addView(valueText);
+        }
+    }
+
+    public Boolean updateSecondPage() {
+        GridLayout layout = findViewById(R.id.page_two_grid);
+        int count = layout.getChildCount();
+        if (secondPageValues.size() * 2 != count)
+        {
+            return false;
+        }
+        int index = 1;
+        for (String value : secondPageValues.values()) {
+            TextView valueText = (TextView) layout.getChildAt(index);
+            valueText.setText(value);
+            index += 2;
+        }
+        return true;
+    }
+
     private void configureDisplay(WHEEL_TYPE wheelType) {
-        TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
-        TextView tvTitleSpeed = (TextView) findViewById(R.id.tvTitleSpeed);
-        TextView tvTitleMaxSpeed = (TextView) findViewById(R.id.tvTitleTopSpeed);
-        TextView tvTitleAverageSpeed = (TextView) findViewById(R.id.tvTitleAverageSpeed);
-        TextView tvTitleAverageRidingSpeed = (TextView) findViewById(R.id.tvTitleAverageRidingSpeed);
-        TextView tvTitleBattery = (TextView) findViewById(R.id.tvTitleBattery);
-        TextView tvTitleDistance = (TextView) findViewById(R.id.tvTitleDistance);
-        TextView tvTitleWheelDistance = (TextView) findViewById(R.id.tvTitleWheelDistance);
-        TextView tvTitleUserDistance = (TextView) findViewById(R.id.tvTitleUserDistance);
-        TextView tvTitleRideTime = (TextView) findViewById(R.id.tvTitleRideTime);
-        TextView tvTitleRidingTime = (TextView) findViewById(R.id.tvTitleRidingTime);
-        TextView tvTitleVoltage = (TextView) findViewById(R.id.tvTitleVoltage);
-        TextView tvTitleVoltageSag = (TextView) findViewById(R.id.tvTitleVoltageSag);
-        TextView tvTitleCurrent = (TextView) findViewById(R.id.tvTitleCurrent);
-        TextView tvTitlePower = (TextView) findViewById(R.id.tvTitlePower);
-        TextView tvTitleTemperature = (TextView) findViewById(R.id.tvTitleTemperature);
-        TextView tvTitleTemperature2 = (TextView) findViewById(R.id.tvTitleTemperature2);
-        TextView tvTitleAngle = (TextView) findViewById(R.id.tvTitleAngle);
-        TextView tvTitleRoll = (TextView) findViewById(R.id.tvTitleRoll);
-        TextView tvTitleFanStatus = (TextView) findViewById(R.id.tvTitleFanStatus);
-        TextView tvTitleChargingStatus = (TextView) findViewById(R.id.tvTitleChargingStatus);
-        TextView tvTitleOutput = (TextView) findViewById(R.id.tvTitleOutput);
-        TextView tvTitleCpuLoad = (TextView) findViewById(R.id.tvTitleCpuLoad);
-        TextView tvTitleMode = (TextView) findViewById(R.id.tvTitleMode);
-        TextView tvTitleTotalDistance = (TextView) findViewById(R.id.tvTitleTotalDistance);
-        TextView tvTitleName = (TextView) findViewById(R.id.tvTitleName);
-        TextView tvTitleModel = (TextView) findViewById(R.id.tvTitleModel);
-        TextView tvTitleVersion = (TextView) findViewById(R.id.tvTitleVersion);
-        TextView tvTitleSerial = (TextView) findViewById(R.id.tvTitleSerial);
         tvBmsWaitText.setVisibility(View.VISIBLE);
         tvTitleBmsBattery1.setVisibility(View.GONE);
         tvTitleBmsBattery2.setVisibility(View.GONE);
@@ -624,214 +607,127 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         tvTitleBms2Cell15.setVisibility(View.GONE);
         tvTitleBms2Cell16.setVisibility(View.GONE);
 
-        switch (wheelType) {
-            case Unknown:
-                break;
-            case KINGSONG:
-                tvWaitText.setVisibility(View.GONE);
-                tvTitleSpeed.setVisibility(View.VISIBLE);
-                tvSpeed.setVisibility(View.VISIBLE);
-                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-                tvTopSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageSpeed.setVisibility(View.VISIBLE);
-                tvAverageSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvTitleBattery.setVisibility(View.VISIBLE);
-                tvBattery.setVisibility(View.VISIBLE);
-                tvTitleDistance.setVisibility(View.VISIBLE);
-                tvDistance.setVisibility(View.VISIBLE);
-                tvTitleWheelDistance.setVisibility(View.VISIBLE);
-                tvWheelDistance.setVisibility(View.VISIBLE);
-                tvTitleUserDistance.setVisibility(View.VISIBLE);
-                tvUserDistance.setVisibility(View.VISIBLE);
-                tvTitleRideTime.setVisibility(View.VISIBLE);
-                tvRideTime.setVisibility(View.VISIBLE);
-                tvTitleRidingTime.setVisibility(View.VISIBLE);
-                tvRidingTime.setVisibility(View.VISIBLE);
-                tvTitleVoltage.setVisibility(View.VISIBLE);
-                tvVoltage.setVisibility(View.VISIBLE);
-                tvTitleVoltageSag.setVisibility(View.VISIBLE);
-                tvVoltageSag.setVisibility(View.VISIBLE);
-                tvTitleCurrent.setVisibility(View.VISIBLE);
-                tvCurrent.setVisibility(View.VISIBLE);
-                tvTitlePower.setVisibility(View.VISIBLE);
-                tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature.setVisibility(View.VISIBLE);
-                tvTemperature.setVisibility(View.VISIBLE);
-                tvTitleTemperature2.setVisibility(View.VISIBLE);
-                tvTemperature2.setVisibility(View.VISIBLE);
-                tvTitleFanStatus.setVisibility(View.VISIBLE);
-                tvFanStatus.setVisibility(View.VISIBLE);
-                tvTitleFanStatus.setVisibility(View.VISIBLE);
-                tvChargingStatus.setVisibility(View.VISIBLE);
-                tvTitleChargingStatus.setVisibility(View.VISIBLE);
-                tvOutput.setVisibility(View.VISIBLE);
-                tvTitleOutput.setVisibility(View.VISIBLE);
-                tvCpuLoad.setVisibility(View.VISIBLE);
-                tvTitleCpuLoad.setVisibility(View.VISIBLE);
-                tvMode.setVisibility(View.VISIBLE);
-                tvTitleTotalDistance.setVisibility(View.VISIBLE);
-                tvTotalDistance.setVisibility(View.VISIBLE);
-                tvTitleName.setVisibility(View.VISIBLE);
-                tvName.setVisibility(View.VISIBLE);
-                tvTitleModel.setVisibility(View.VISIBLE);
-                tvModel.setVisibility(View.VISIBLE);
-                tvTitleVersion.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE);
-                tvTitleSerial.setVisibility(View.VISIBLE);
-                tvSerial.setVisibility(View.VISIBLE);
-                tvTimeChargeTitle.setVisibility(View.GONE);
-                tvTimeCharge.setVisibility(View.GONE);
-                break;
-            case VETERAN:
-                /*
-                tvChargingStatus.setVisibility(View.VISIBLE);
-                tvTitleChargingStatus.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE);
-                tvTitleModel.setVisibility(View.VISIBLE);
+        secondPageValues.clear();
 
-                */
+        switch (wheelType) {
+            case KINGSONG:
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.output);
+                setupFieldForSecondPage(R.string.cpuload);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.temperature2);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.fan_status);
+                setupFieldForSecondPage(R.string.charging);
+                setupFieldForSecondPage(R.string.mode);
+                setupFieldForSecondPage(R.string.name);
+                setupFieldForSecondPage(R.string.model);
+                setupFieldForSecondPage(R.string.version);
+                setupFieldForSecondPage(R.string.serial_number);
+                break;
+
+            case VETERAN:
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.charging);
+                setupFieldForSecondPage(R.string.model);
+                setupFieldForSecondPage(R.string.version);
+                break;
 
             case GOTWAY:
-                tvWaitText.setVisibility(View.GONE);
-                tvTitleSpeed.setVisibility(View.VISIBLE);
-                tvSpeed.setVisibility(View.VISIBLE);
-                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-                tvTopSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageSpeed.setVisibility(View.VISIBLE);
-                tvAverageSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvTitleBattery.setVisibility(View.VISIBLE);
-                tvBattery.setVisibility(View.VISIBLE);
-                tvTitleDistance.setVisibility(View.VISIBLE);
-                tvDistance.setVisibility(View.VISIBLE);
-                tvTitleWheelDistance.setVisibility(View.VISIBLE);
-                tvWheelDistance.setVisibility(View.VISIBLE);
-                tvTitleUserDistance.setVisibility(View.VISIBLE);
-                tvUserDistance.setVisibility(View.VISIBLE);
-                tvTitleRideTime.setVisibility(View.VISIBLE);
-                tvRideTime.setVisibility(View.VISIBLE);
-                tvTitleRidingTime.setVisibility(View.VISIBLE);
-                tvRidingTime.setVisibility(View.VISIBLE);
-                tvTitleVoltage.setVisibility(View.VISIBLE);
-                tvVoltage.setVisibility(View.VISIBLE);
-                tvTitleVoltageSag.setVisibility(View.VISIBLE);
-                tvVoltageSag.setVisibility(View.VISIBLE);
-                tvTitleCurrent.setVisibility(View.VISIBLE);
-                tvCurrent.setVisibility(View.VISIBLE);
-                tvTitlePower.setVisibility(View.VISIBLE);
-                tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature.setVisibility(View.VISIBLE);
-                tvTemperature.setVisibility(View.VISIBLE);
-                tvTitleTotalDistance.setVisibility(View.VISIBLE);
-                tvTotalDistance.setVisibility(View.VISIBLE);
-                tvTitleVersion.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE); //to remove from gotway
-                tvTitleModel.setVisibility(View.VISIBLE); //to remove from gotway
-                tvChargingStatus.setVisibility(View.VISIBLE); //to remove from gotway
-                tvTitleChargingStatus.setVisibility(View.VISIBLE); //to remove from gotway
-                tvModel.setVisibility(View.VISIBLE);
-                tvTimeChargeTitle.setVisibility(View.VISIBLE);
-                tvTimeCharge.setVisibility(View.VISIBLE);
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.power);
                 break;
+
             case INMOTION:
-                tvWaitText.setVisibility(View.GONE);
-                tvTitleSpeed.setVisibility(View.VISIBLE);
-                tvSpeed.setVisibility(View.VISIBLE);
-                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-                tvTopSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageSpeed.setVisibility(View.VISIBLE);
-                tvAverageSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvTitleBattery.setVisibility(View.VISIBLE);
-                tvBattery.setVisibility(View.VISIBLE);
-                tvTitleDistance.setVisibility(View.VISIBLE);
-                tvDistance.setVisibility(View.VISIBLE);
-                tvTitleUserDistance.setVisibility(View.VISIBLE);
-                tvUserDistance.setVisibility(View.VISIBLE);
-                tvTitleRideTime.setVisibility(View.VISIBLE);
-                tvRideTime.setVisibility(View.VISIBLE);
-                tvTitleRidingTime.setVisibility(View.VISIBLE);
-                tvRidingTime.setVisibility(View.VISIBLE);
-                tvTitleVoltage.setVisibility(View.VISIBLE);
-                tvVoltage.setVisibility(View.VISIBLE);
-                tvTitleVoltageSag.setVisibility(View.VISIBLE);
-                tvVoltageSag.setVisibility(View.VISIBLE);
-                tvTitleCurrent.setVisibility(View.VISIBLE);
-                tvCurrent.setVisibility(View.VISIBLE);
-                tvTitlePower.setVisibility(View.VISIBLE);
-                tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature.setVisibility(View.VISIBLE);
-                tvTemperature.setVisibility(View.VISIBLE);
-                tvTitleTemperature2.setVisibility(View.VISIBLE);
-                tvTemperature2.setVisibility(View.VISIBLE);
-                tvTitleMode.setVisibility(View.VISIBLE);
-                tvMode.setVisibility(View.VISIBLE);
-                tvTitleAngle.setVisibility(View.VISIBLE);
-                tvAngle.setVisibility(View.VISIBLE);
-                tvTitleRoll.setVisibility(View.VISIBLE);
-                tvRoll.setVisibility(View.VISIBLE);
-                tvTitleTotalDistance.setVisibility(View.VISIBLE);
-                tvTotalDistance.setVisibility(View.VISIBLE);
-                tvTitleModel.setVisibility(View.VISIBLE);
-                tvModel.setVisibility(View.VISIBLE);
-                tvTitleVersion.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE);
-                tvTitleSerial.setVisibility(View.VISIBLE);
-                tvSerial.setVisibility(View.VISIBLE);
-                tvTimeChargeTitle.setVisibility(View.GONE);
-                tvTimeCharge.setVisibility(View.GONE);
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.temperature2);
+                setupFieldForSecondPage(R.string.angle);
+                setupFieldForSecondPage(R.string.roll);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.mode);
+                setupFieldForSecondPage(R.string.model);
+                setupFieldForSecondPage(R.string.version);
+                setupFieldForSecondPage(R.string.serial_number);
                 break;
 
             case NINEBOT_Z:
-                tvWaitText.setVisibility(View.GONE);
-                tvTitleSpeed.setVisibility(View.VISIBLE);
-                tvSpeed.setVisibility(View.VISIBLE);
-                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-                tvTopSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageSpeed.setVisibility(View.VISIBLE);
-                tvAverageSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvTitleBattery.setVisibility(View.VISIBLE);
-                tvBattery.setVisibility(View.VISIBLE);
-                tvTitleDistance.setVisibility(View.VISIBLE);
-                tvDistance.setVisibility(View.VISIBLE);
-                tvTitleUserDistance.setVisibility(View.VISIBLE);
-                tvUserDistance.setVisibility(View.VISIBLE);
-                tvTitleRideTime.setVisibility(View.VISIBLE);
-                tvRideTime.setVisibility(View.VISIBLE);
-                tvTitleRidingTime.setVisibility(View.VISIBLE);
-                tvRidingTime.setVisibility(View.VISIBLE);
-                tvTitleVoltage.setVisibility(View.VISIBLE);
-                tvVoltage.setVisibility(View.VISIBLE);
-                tvTitleCurrent.setVisibility(View.VISIBLE);
-                tvTitleVoltageSag.setVisibility(View.VISIBLE);
-                tvVoltageSag.setVisibility(View.VISIBLE);
-                tvCurrent.setVisibility(View.VISIBLE);
-                tvTitlePower.setVisibility(View.VISIBLE);
-                tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature.setVisibility(View.VISIBLE);
-                tvTemperature.setVisibility(View.VISIBLE);
-                tvTitleTemperature2.setVisibility(View.GONE);
-                tvTemperature2.setVisibility(View.GONE);
-                tvTitleMode.setVisibility(View.GONE);
-                tvMode.setVisibility(View.GONE);
-                tvTitleAngle.setVisibility(View.VISIBLE);
-                tvAngle.setVisibility(View.VISIBLE);
-                tvTitleRoll.setVisibility(View.VISIBLE);
-                tvRoll.setVisibility(View.VISIBLE);
-                tvTitleTotalDistance.setVisibility(View.VISIBLE);
-                tvTotalDistance.setVisibility(View.VISIBLE);
-                tvTitleModel.setVisibility(View.VISIBLE);
-                tvModel.setVisibility(View.VISIBLE);
-                tvTitleVersion.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE);
-                tvTitleSerial.setVisibility(View.VISIBLE);
-                tvSerial.setVisibility(View.VISIBLE);
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.angle);
+                setupFieldForSecondPage(R.string.roll);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.model);
+                setupFieldForSecondPage(R.string.version);
+                setupFieldForSecondPage(R.string.serial_number);
 
                 tvBmsWaitText.setVisibility(View.GONE);
                 tvTitleBmsBattery1.setVisibility(View.VISIBLE);
@@ -961,121 +857,32 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 tvTitleBms2Cell14.setVisibility(View.VISIBLE);
                 tvTitleBms2Cell15.setVisibility(View.GONE);
                 tvTitleBms2Cell16.setVisibility(View.GONE);
-                tvTimeChargeTitle.setVisibility(View.GONE);
-                tvTimeCharge.setVisibility(View.GONE);
+                break;
 
-                break;
             case NINEBOT:
-                tvWaitText.setVisibility(View.GONE);
-                tvTitleSpeed.setVisibility(View.VISIBLE);
-                tvSpeed.setVisibility(View.VISIBLE);
-                tvTitleMaxSpeed.setVisibility(View.VISIBLE);
-                tvTopSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageSpeed.setVisibility(View.VISIBLE);
-                tvAverageSpeed.setVisibility(View.VISIBLE);
-                tvTitleAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvAverageRidingSpeed.setVisibility(View.VISIBLE);
-                tvTitleBattery.setVisibility(View.VISIBLE);
-                tvBattery.setVisibility(View.VISIBLE);
-                tvTitleDistance.setVisibility(View.VISIBLE);
-                tvDistance.setVisibility(View.VISIBLE);
-                tvTitleUserDistance.setVisibility(View.VISIBLE);
-                tvUserDistance.setVisibility(View.VISIBLE);
-                tvTitleRideTime.setVisibility(View.VISIBLE);
-                tvRideTime.setVisibility(View.VISIBLE);
-                tvTitleRidingTime.setVisibility(View.VISIBLE);
-                tvRidingTime.setVisibility(View.VISIBLE);
-                tvTitleVoltage.setVisibility(View.VISIBLE);
-                tvVoltage.setVisibility(View.VISIBLE);
-                tvTitleVoltageSag.setVisibility(View.VISIBLE);
-                tvVoltageSag.setVisibility(View.VISIBLE);
-                tvTitleCurrent.setVisibility(View.VISIBLE);
-                tvCurrent.setVisibility(View.VISIBLE);
-                tvTitlePower.setVisibility(View.VISIBLE);
-                tvPower.setVisibility(View.VISIBLE);
-                tvTitleTemperature.setVisibility(View.VISIBLE);
-                tvTemperature.setVisibility(View.VISIBLE);
-                tvTitleTemperature2.setVisibility(View.GONE);
-                tvTemperature2.setVisibility(View.GONE);
-                tvTitleMode.setVisibility(View.GONE);
-                tvMode.setVisibility(View.GONE);
-                tvTitleAngle.setVisibility(View.VISIBLE);
-                tvAngle.setVisibility(View.VISIBLE);
-                tvTitleRoll.setVisibility(View.VISIBLE);
-                tvRoll.setVisibility(View.VISIBLE);
-                tvTitleTotalDistance.setVisibility(View.VISIBLE);
-                tvTotalDistance.setVisibility(View.VISIBLE);
-                tvTitleModel.setVisibility(View.VISIBLE);
-                tvModel.setVisibility(View.VISIBLE);
-                tvTitleVersion.setVisibility(View.VISIBLE);
-                tvVersion.setVisibility(View.VISIBLE);
-                tvTitleSerial.setVisibility(View.VISIBLE);
-                tvSerial.setVisibility(View.VISIBLE);
-                tvTimeChargeTitle.setVisibility(View.GONE);
-                tvTimeCharge.setVisibility(View.GONE);
-                break;
-            default:
-                tvWaitText.setVisibility(View.VISIBLE);
-                tvTitleSpeed.setVisibility(View.GONE);
-                tvSpeed.setVisibility(View.GONE);
-                tvTitleMaxSpeed.setVisibility(View.GONE);
-                tvTopSpeed.setVisibility(View.GONE);
-                tvTitleAverageSpeed.setVisibility(View.GONE);
-                tvAverageSpeed.setVisibility(View.GONE);
-                tvTitleAverageRidingSpeed.setVisibility(View.GONE);
-                tvAverageRidingSpeed.setVisibility(View.GONE);
-                tvTitleBattery.setVisibility(View.GONE);
-                tvBattery.setVisibility(View.GONE);
-                tvTitleDistance.setVisibility(View.GONE);
-                tvDistance.setVisibility(View.GONE);
-                tvTitleWheelDistance.setVisibility(View.GONE);
-                tvWheelDistance.setVisibility(View.GONE);
-                tvTitleUserDistance.setVisibility(View.GONE);
-                tvUserDistance.setVisibility(View.GONE);
-                tvTitleRideTime.setVisibility(View.GONE);
-                tvRideTime.setVisibility(View.GONE);
-                tvTitleRidingTime.setVisibility(View.GONE);
-                tvRidingTime.setVisibility(View.GONE);
-                tvTitleVoltage.setVisibility(View.GONE);
-                tvVoltage.setVisibility(View.GONE);
-                tvTitleVoltageSag.setVisibility(View.GONE);
-                tvVoltageSag.setVisibility(View.GONE);
-                tvTitleCurrent.setVisibility(View.GONE);
-                tvCurrent.setVisibility(View.GONE);
-                tvTitlePower.setVisibility(View.GONE);
-                tvPower.setVisibility(View.GONE);
-                tvTitleTemperature.setVisibility(View.GONE);
-                tvTemperature.setVisibility(View.GONE);
-                tvTitleTemperature2.setVisibility(View.GONE);
-                tvTemperature2.setVisibility(View.GONE);
-                tvTitleAngle.setVisibility(View.GONE);
-                tvAngle.setVisibility(View.GONE);
-                tvTitleRoll.setVisibility(View.GONE);
-                tvRoll.setVisibility(View.GONE);
-                tvTitleFanStatus.setVisibility(View.GONE);
-                tvFanStatus.setVisibility(View.GONE);
-                tvTitleChargingStatus.setVisibility(View.GONE);
-                tvChargingStatus.setVisibility(View.GONE);
-                tvTitleOutput.setVisibility(View.GONE);
-                tvOutput.setVisibility(View.GONE);
-                tvTitleCpuLoad.setVisibility(View.GONE);
-                tvCpuLoad.setVisibility(View.GONE);
-                tvTitleMode.setVisibility(View.GONE);
-                tvMode.setVisibility(View.GONE);
-                tvTitleTotalDistance.setVisibility(View.GONE);
-                tvTotalDistance.setVisibility(View.GONE);
-                tvTitleName.setVisibility(View.GONE);
-                tvName.setVisibility(View.GONE);
-                tvTitleModel.setVisibility(View.GONE);
-                tvModel.setVisibility(View.GONE);
-                tvTitleVersion.setVisibility(View.GONE);
-                tvVersion.setVisibility(View.GONE);
-                tvTitleSerial.setVisibility(View.GONE);
-                tvSerial.setVisibility(View.GONE);
-                tvTimeChargeTitle.setVisibility(View.GONE);
-                tvTimeCharge.setVisibility(View.GONE);
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.angle);
+                setupFieldForSecondPage(R.string.roll);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.model);
+                setupFieldForSecondPage(R.string.version);
+                setupFieldForSecondPage(R.string.serial_number);
                 break;
         }
+        createSecondPage();
     }
 
     private void updateScreen(boolean updateGraph) {
@@ -1101,47 +908,49 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 break;
             case 1: // Text View
                 WheelData.getInstance().setBmsView(false);
+
                 if (use_mph) {
-                    tvSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getSpeedDouble())));
-                    tvTopSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
-                    tvAverageSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble())));
-                    tvAverageRidingSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageRidingSpeedDouble())));
-                    tvDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getDistanceDouble())));
-                    tvWheelDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble())));
-                    tvUserDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getUserDistanceDouble())));
-                    tvTotalDistance.setText(String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
+                    updateFieldForSecondPage(R.string.speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getSpeedDouble())));
+                    updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
+                    updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble())));
+                    updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageRidingSpeedDouble())));
+                    updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getDistanceDouble())));
+                    updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble())));
+                    updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getUserDistanceDouble())));
+                    updateFieldForSecondPage(R.string.total_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
                 } else {
-                    tvSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getSpeedDouble()));
-                    tvTopSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getTopSpeedDouble()));
-                    tvAverageSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble()));
-                    tvAverageRidingSpeed.setText(String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageRidingSpeedDouble()));
-                    tvDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getDistanceDouble()));
-                    tvWheelDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble()));
-                    tvUserDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getUserDistanceDouble()));
-                    tvTotalDistance.setText(String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getTotalDistanceDouble()));
+                    updateFieldForSecondPage(R.string.speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getSpeedDouble()));
+                    updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getTopSpeedDouble()));
+                    updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble()));
+                    updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageRidingSpeedDouble()));
+                    updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getDistanceDouble()));
+                    updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble()));
+                    updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getUserDistanceDouble()));
+                    updateFieldForSecondPage(R.string.total_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getTotalDistanceDouble()));
                 }
 
-                tvVoltage.setText(String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageDouble()));
-                tvVoltageSag.setText(String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageSagDouble()));
-                tvTemperature.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
-                tvTemperature2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
-                tvAngle.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
-                tvRoll.setText(String.format(Locale.US, "%.2f°", WheelData.getInstance().getRoll()));
-                tvCurrent.setText(String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentDouble()));
-                tvPower.setText(String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
-                tvBattery.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
-                tvFanStatus.setText(WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
-                tvChargingStatus.setText(WheelData.getInstance().getChargingStatus() == 0 ? getString(R.string.discharging) : getString(R.string.charging));
-                tvVersion.setText(String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
-                tvOutput.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getOutput()));
-                tvCpuLoad.setText(String.format(Locale.US, "%d%%", WheelData.getInstance().getCpuLoad()));
-                tvName.setText(WheelData.getInstance().getName());
-                tvModel.setText(WheelData.getInstance().getModel());
-                tvSerial.setText(WheelData.getInstance().getSerial());
-                tvRideTime.setText(WheelData.getInstance().getRideTimeString());
-                tvRidingTime.setText(WheelData.getInstance().getRidingTimeString());
-                tvMode.setText(WheelData.getInstance().getModeStr());
-                tvTimeCharge.setText(WheelData.getInstance().getChargeTime());
+                updateFieldForSecondPage(R.string.voltage, String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageDouble()));
+                updateFieldForSecondPage(R.string.voltage_sag, String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageSagDouble()));
+                updateFieldForSecondPage(R.string.temperature, String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
+                updateFieldForSecondPage(R.string.temperature2, String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
+                updateFieldForSecondPage(R.string.angle, String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
+                updateFieldForSecondPage(R.string.roll, String.format(Locale.US, "%.2f°", WheelData.getInstance().getRoll()));
+                updateFieldForSecondPage(R.string.current, String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentDouble()));
+                updateFieldForSecondPage(R.string.power, String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
+                updateFieldForSecondPage(R.string.battery, String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
+                updateFieldForSecondPage(R.string.fan_status, WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
+                updateFieldForSecondPage(R.string.charging_status, WheelData.getInstance().getChargingStatus() == 0 ? getString(R.string.discharging) : getString(R.string.charging));
+                updateFieldForSecondPage(R.string.version, String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
+                updateFieldForSecondPage(R.string.output, String.format(Locale.US, "%d%%", WheelData.getInstance().getOutput()));
+                updateFieldForSecondPage(R.string.cpuload, String.format(Locale.US, "%d%%", WheelData.getInstance().getCpuLoad()));
+                updateFieldForSecondPage(R.string.name, WheelData.getInstance().getName());
+                updateFieldForSecondPage(R.string.model, WheelData.getInstance().getModel());
+                updateFieldForSecondPage(R.string.serial_number, WheelData.getInstance().getSerial());
+                updateFieldForSecondPage(R.string.ride_time, WheelData.getInstance().getRideTimeString());
+                updateFieldForSecondPage(R.string.riding_time, WheelData.getInstance().getRidingTimeString());
+                updateFieldForSecondPage(R.string.mode, WheelData.getInstance().getModeStr());
+                updateFieldForSecondPage(R.string.charging, WheelData.getInstance().getChargeTime());
+                updateSecondPage();
                 break;
             case 2: // Graph  View
                 WheelData.getInstance().setBmsView(false);
@@ -1393,36 +1202,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         setSupportActionBar(toolbar);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        tvSpeed = (TextView) findViewById(R.id.tvSpeed);
-        tvCurrent = (TextView) findViewById(R.id.tvCurrent);
-        tvPower = (TextView) findViewById(R.id.tvPower);
-        tvTemperature = (TextView) findViewById(R.id.tvTemperature);
-        tvTemperature2 = (TextView) findViewById(R.id.tvTemperature2);
-        tvAngle = (TextView) findViewById(R.id.tvAngle);
-        tvRoll = (TextView) findViewById(R.id.tvRoll);
-        tvVoltage = (TextView) findViewById(R.id.tvVoltage);
-        tvVoltageSag = (TextView) findViewById(R.id.tvVoltageSag);
-        tvBattery = (TextView) findViewById(R.id.tvBattery);
-        tvFanStatus = (TextView) findViewById(R.id.tvFanStatus);
-        tvChargingStatus = (TextView) findViewById(R.id.tvChargingStatus);
-        tvOutput = (TextView) findViewById(R.id.tvOutput);
-        tvCpuLoad = (TextView) findViewById(R.id.tvCpuLoad);
-        tvTopSpeed = (TextView) findViewById(R.id.tvTopSpeed);
-        tvAverageSpeed = (TextView) findViewById(R.id.tvAverageSpeed);
-        tvAverageRidingSpeed = (TextView) findViewById(R.id.tvAverageRidingSpeed);
-        tvDistance = (TextView) findViewById(R.id.tvDistance);
-        tvWheelDistance = (TextView) findViewById(R.id.tvWheelDistance);
-        tvUserDistance = (TextView) findViewById(R.id.tvUserDistance);
-        tvTotalDistance = (TextView) findViewById(R.id.tvTotalDistance);
-        tvModel = (TextView) findViewById(R.id.tvModel);
-        tvName = (TextView) findViewById(R.id.tvName);
-        tvVersion = (TextView) findViewById(R.id.tvVersion);
-        tvSerial = (TextView) findViewById(R.id.tvSerial);
-        tvTimeChargeTitle = findViewById(R.id.tvTimeChargeTitle);
-        tvTimeCharge = findViewById(R.id.tvTimeCharge);
-        tvRideTime = (TextView) findViewById(R.id.tvRideTime);
-        tvRidingTime = (TextView) findViewById(R.id.tvRidingTime);
-        tvMode = (TextView) findViewById(R.id.tvMode);
         wheelView = (WheelView) findViewById(R.id.wheelView);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -1576,9 +1355,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
         Typeface typefacePrime = Typefaces.get(this, "fonts/prime.otf");
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
-        TextView tvWaitText = (TextView) findViewById(R.id.tvWaitText);
         textClock.setTypeface(typefacePrime);
-        tvWaitText.setTypeface(typefacePrime);
 
         chart1 = (LineChart) findViewById(R.id.chart);
         chart1.setDrawGridBackground(false);
@@ -1615,13 +1392,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             }, 1000);
         }
 
-//        if (SettingsUtil.isUseENG(this)) {
-        //          if WheelLog.localeManager.getLocale(this, language);
-//            setNewLocale("en",false);
-//        }
-
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             finish();
