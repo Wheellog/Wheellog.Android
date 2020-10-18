@@ -20,7 +20,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
     private static int stateCon = 0;
     private byte[] settingCommand;
     InmotionUnpackerV2 unpacker = new InmotionUnpackerV2();
-
+    //WheelData wd;
     @Override
     public boolean decode(byte[] data) {
         if (decodeNewData(data)) {
@@ -166,12 +166,12 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         byte[] data;
 
         Message(byte[] bArr) {
-            if (bArr.length < 3) return;
-            flags = bArr[0];
-            len = bArr[1];
-            command = bArr[2] & 0x7F;
+            if (bArr.length < 5) return;
+            flags = bArr[2];
+            len = bArr[3];
+            command = bArr[4] & 0x7F;
             if (len > 1) {
-                data = Arrays.copyOfRange(bArr, 3, len);
+                data = Arrays.copyOfRange(bArr, 5, len);
             }
         }
 
@@ -205,6 +205,82 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                 Timber.i("Parse versions");
             }
             return false;
+        }
+
+        boolean parseTotalStats() {
+            WheelData wd = WheelData.getInstance();
+            long mTotal = longFromBytes(data, 0);
+            long mDissiparion = longFromBytes(data, 4);
+            long mRecovery = longFromBytes(data, 8);
+            long mRideTime = longFromBytes(data, 12);
+            int sec = (int)(mRideTime % 60);
+            int min = (int)((mRideTime / 60) % 60);
+            int hour = (int) (mRideTime/ 3600);
+            String mRideTimeStr = String.format("%d:%02d:%02d",hour,min,sec);
+            long mPowerOnTime = longFromBytes(data, 16);
+            sec = (int)(mPowerOnTime % 60);
+            min = (int)((mPowerOnTime / 60) % 60);
+            hour = (int) (mPowerOnTime/ 3600);
+            String mPowerOnTimeStr = String.format("%d:%02d:%02d",hour,min,sec);
+            wd.setTotalDistance(mTotal*10);
+            wd.setDistance(mTotal*10);
+            return false;
+        }
+
+        boolean parseRealTimeInfo() {
+            WheelData wd = WheelData.getInstance();
+            int mVoltage = intFromBytes(data, 0);
+            long mCurrent = signedIntFromBytes(data, 2);
+            long mSpeed = signedIntFromBytes(data, 4);
+            long mTorque = signedIntFromBytes(data, 6);
+            long mBatPower = signedIntFromBytes(data, 8);
+            long mMotPower = signedIntFromBytes(data, 10);
+            long mMileage = intFromBytes(data, 12) * 10;
+            long mRemainMileage = intFromBytes(data, 14) * 10;
+            int mBatLevel = data[16] & 0x7f;
+            int mBatMode = (data[16] >> 7)  & 0x1;
+            int mMosTemp = data[17] & 0xff + 80 - 256;
+            int mMotTemp = data[18]& 0xff + 80 - 256;
+            int mBatTemp = data[19]& 0xff + 80 - 256;
+            int mBoardTemp = data[20]& 0xff + 80 - 256;
+            int mLampTemp = data[21]& 0xff + 80 - 256;
+            long mPitchAngle = signedIntFromBytes(data, 22);
+            long mPitchAimAngle = signedIntFromBytes(data, 24);
+            long mRollAngle = signedIntFromBytes(data, 26);
+            long mDinamicSpeedLimit = signedIntFromBytes(data, 28);
+            long mDinamicCurrentLimit = signedIntFromBytes(data, 30);
+            int mBrightness = data[32]& 0xff;
+            int mLightBrightness = data[33]& 0xff;
+            int mCpuTemp = data[34]& 0xff + 80 - 256;
+            int mImuTemp = data[35]& 0xff + 80 - 256;
+            wd.setVoltage(mVoltage);
+            wd.setCurrent((int)mCurrent);
+            wd.setSpeed((int)mSpeed);
+            wd.setBatteryPercent(mBatLevel);
+            wd.setTemperature(mMosTemp);
+            wd.setTemperature2(mBoardTemp);
+            wd.setAngle((double)mPitchAngle/100.0);
+            wd.setRoll((double)mRollAngle/100.0);
+            wd.updateRideTime();
+            wd.setTopSpeed((int)mSpeed);
+            wd.setVoltageSag(mVoltage);
+
+            //// state data
+            int mPcMode = data[36] & 0x07;
+            int mMcMode = (data[36]>>3)&0x07;
+            int mMotState = (data[36]>>6)&0x01;
+            int chrgState = (data[36]>>7)&0x01;
+            int lightState = (data[37])&0x01;
+            int decorLiState = (data[37] >> 1) & 0x01;
+            int liftedState = (data[37]>>2)&0x01;
+            int tailLiState = (data[37]>>3)&0x03;
+            int fanState = (data[37]>>5)&0x01;
+
+            //// rest data
+
+
+
+            return true;
         }
 
         public static Message getCarType() {
@@ -395,6 +471,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                     if (buffer.size() == len+5) {
                         state = UnpackerState.done;
                         updateStep = 0;
+                        oldc = 0;
                         Timber.i("Len %d", len);
                         Timber.i("Step reset");
                         return true;
@@ -405,12 +482,14 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                     buffer.write(c);
                     len = c & 0xff;
                     state = UnpackerState.collecting;
+                    oldc = c;
                     break;
 
                 case flagsearch:
                     buffer.write(c);
                     flags = c & 0xff;
                     state = UnpackerState.lensearch;
+                    oldc = c;
                     break;
 
                 default:
@@ -441,8 +520,16 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                 Message result = Message.verify(unpacker.getBuffer());
 
                 if (result != null) {
+                    Timber.i("Get new data, command: %02X", result.command);
                     if (result.command == Message.Command.MainInfo.getValue()) {
                         return result.parseMainData();
+
+                    } else if (result.command == Message.Command.TotalStats.getValue()) {
+                        return result.parseTotalStats();
+                    } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
+                        return result.parseRealTimeInfo();
+                    } else {
+                        Timber.i("Get unknown command: %02X",result.command);
                     }
 
                 }

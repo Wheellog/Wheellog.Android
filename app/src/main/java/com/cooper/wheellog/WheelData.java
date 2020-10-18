@@ -801,9 +801,15 @@ public class WheelData {
 	public double getAngle() {
         return mAngle;
     }
+    public void setAngle(double angle) {
+        mAngle = angle;
+    }
 	
 	public double getRoll() {
         return mRoll;
+    }
+    public void setRoll(double roll) {
+        mRoll = roll;
     }
 	
     public int getBatteryLevel() {

@@ -1337,7 +1337,7 @@ public class InMotionAdapter implements IWheelAdapter {
                     if (c == (byte) 0x55 && oldc == (byte) 0x55) {
                         state = UnpackerState.done;
                         updateStep = 0;
-                        oldc = c;
+                        oldc = 0;
                         Timber.i("Step reset");
                         return true;
                     }
