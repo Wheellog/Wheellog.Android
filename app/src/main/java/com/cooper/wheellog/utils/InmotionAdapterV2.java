@@ -224,16 +224,16 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         boolean parseTotalStats() {
             Timber.i("Parse total stats data");
             WheelData wd = WheelData.getInstance();
-            long mTotal = intFromBytes(data, 0);
+            long mTotal = MathsUtil.intFromBytes(data, 0);
             long mTotal2 = MathsUtil.getInt4(data, 0);
-            long mDissipation = intFromBytes(data, 4);
-            long mRecovery = intFromBytes(data, 8);
-            long mRideTime = intFromBytes(data, 12);
+            long mDissipation = MathsUtil.intFromBytes(data, 4);
+            long mRecovery = MathsUtil.intFromBytes(data, 8);
+            long mRideTime = MathsUtil.intFromBytes(data, 12);
             int sec = (int)(mRideTime % 60);
             int min = (int)((mRideTime / 60) % 60);
             int hour = (int) (mRideTime/ 3600);
             String mRideTimeStr = String.format("%d:%02d:%02d",hour,min,sec);
-            long mPowerOnTime = intFromBytes(data, 16);
+            long mPowerOnTime = MathsUtil.intFromBytes(data, 16);
             sec = (int)(mPowerOnTime % 60);
             min = (int)((mPowerOnTime / 60) % 60);
             hour = (int) (mPowerOnTime/ 3600);
@@ -246,15 +246,15 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         boolean parseRealTimeInfo() {
             Timber.i("Parse realtime stats data");
             WheelData wd = WheelData.getInstance();
-            int mVoltage = shortFromBytes(data, 0);
+            int mVoltage = MathsUtil.shortFromBytes(data, 0);
             //int mVoltage2 = MathsUtil.getInt2R(data, 0); looks ok
-            int mCurrent = signedShortFromBytes(data, 2);
-            int mSpeed = signedShortFromBytes(data, 4);
-            int mTorque = signedShortFromBytes(data, 6);
-            int mBatPower = signedShortFromBytes(data, 8);
-            int mMotPower = signedShortFromBytes(data, 10);
-            int mMileage = shortFromBytes(data, 12) * 10;
-            int mRemainMileage = shortFromBytes(data, 14) * 10;
+            int mCurrent = MathsUtil.signedShortFromBytes(data, 2);
+            int mSpeed = MathsUtil.signedShortFromBytes(data, 4);
+            int mTorque = MathsUtil.signedShortFromBytes(data, 6);
+            int mBatPower = MathsUtil.signedShortFromBytes(data, 8);
+            int mMotPower = MathsUtil.signedShortFromBytes(data, 10);
+            int mMileage = MathsUtil.shortFromBytes(data, 12) * 10;
+            int mRemainMileage = MathsUtil.shortFromBytes(data, 14) * 10;
             int mBatLevel = data[16] & 0x7f;
             int mBatMode = (data[16] >> 7)  & 0x1;
             int mMosTemp = (data[17] & 0xff) + 80 - 256;
@@ -262,11 +262,11 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             int mBatTemp = (data[19] & 0xff) + 80 - 256;
             int mBoardTemp = (data[20] & 0xff) + 80 - 256;
             int mLampTemp = (data[21] & 0xff) + 80 - 256;
-            int mPitchAngle = signedShortFromBytes(data, 22);
-            int mPitchAimAngle = signedShortFromBytes(data, 24);
-            int mRollAngle = signedShortFromBytes(data, 26);
-            int mDynamicSpeedLimit = shortFromBytes(data, 28);
-            int mDynamicCurrentLimit = shortFromBytes(data, 30);
+            int mPitchAngle = MathsUtil.signedShortFromBytes(data, 22);
+            int mPitchAimAngle = MathsUtil.signedShortFromBytes(data, 24);
+            int mRollAngle = MathsUtil.signedShortFromBytes(data, 26);
+            int mDynamicSpeedLimit = MathsUtil.shortFromBytes(data, 28);
+            int mDynamicCurrentLimit = MathsUtil.shortFromBytes(data, 30);
             int mBrightness = data[32]& 0xff;
             int mLightBrightness = data[33]& 0xff;
             int mCpuTemp = (data[34] & 0xff) + 80 - 256;
@@ -401,39 +401,6 @@ public class InmotionAdapterV2 implements IWheelAdapter {
                 check = (check ^ c) & 0xFF;
             }
             return (byte) check;
-        }
-
-        long signedIntFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 4) {
-                return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
-                //return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
-            }
-            return 0;
-        }
-
-
-        int intFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 4) {
-                return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
-                //return (((((((bytes[starting + 3] & 255)) << 8) | (bytes[starting + 2] & 255)) << 8) | (bytes[starting + 1] & 255)) << 8) | (bytes[starting] & 255);
-            }
-            return 0;
-        }
-
-        public static int shortFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 2) {
-                return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting] & 0xFF);
-                //return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
-            }
-            return 0;
-        }
-
-        public static int signedShortFromBytes(byte[] bytes, int starting) {
-            if (bytes.length >= starting + 2) {
-                return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));
-                //return (short) (((short) (((short) ((bytes[starting + 1] & 255))) << 8)) | (bytes[starting] & 255));
-            }
-            return 0;
         }
 
         public static String toHexString(byte[] buffer) {
