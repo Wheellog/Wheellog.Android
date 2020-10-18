@@ -43,6 +43,7 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.GotwayAdapter;
+import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -1591,7 +1592,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
         WheelData.getInstance().setUseRatio(use_ratio);
         boolean ks18l_scaler = sharedPreferences.getBoolean(getString(R.string.ks18l_scaler), false);
-        WheelData.getInstance().set18Lkm(ks18l_scaler);
+        KingsongAdapter.getInstance().set18Lkm(ks18l_scaler);
 
         boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
         WheelData.getInstance().setBetterPercents(betterPercents);

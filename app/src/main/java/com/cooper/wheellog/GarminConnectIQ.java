@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.SettingsUtil;
 
@@ -536,9 +537,11 @@ class GarminConnectIQWebServer extends NanoHTTPD {
             data.put("" + GarminConnectIQ.MESSAGE_KEY_DISTANCE, WheelData.getInstance().getDistance() / 100);
             data.put("" + GarminConnectIQ.MESSAGE_KEY_TOP_SPEED, WheelData.getInstance().getTopSpeed() / 10);
             data.put("" + GarminConnectIQ.MESSAGE_KEY_POWER, (int) WheelData.getInstance().getPowerDouble());
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, WheelData.getInstance().getKSAlarm1Speed());
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, WheelData.getInstance().getKSAlarm2Speed());
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, WheelData.getInstance().getKSAlarm3Speed());
+            if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.KINGSONG) {
+                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, KingsongAdapter.getInstance().getKSAlarm1Speed());
+                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, KingsongAdapter.getInstance().getKSAlarm2Speed());
+                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, KingsongAdapter.getInstance().getKSAlarm3Speed());
+            }
 
             JSONObject message = new JSONObject();
             message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_TYPE, GarminConnectIQ.MessageType.EUC_DATA.ordinal());
