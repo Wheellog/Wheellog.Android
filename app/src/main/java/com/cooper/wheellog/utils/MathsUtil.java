@@ -64,7 +64,7 @@ public class MathsUtil {
     }
 
     @NotNull
-    public static long signedIntFromBytes(byte[] bytes, int starting) {
+    public static long signedIntFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 4) {
             return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
         }
@@ -72,7 +72,7 @@ public class MathsUtil {
     }
 
     @NotNull
-    public static int intFromBytes(byte[] bytes, int starting) {
+    public static int intFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 4) {
             return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
         }
@@ -80,7 +80,7 @@ public class MathsUtil {
     }
 
     @NotNull
-    public static int shortFromBytes(byte[] bytes, int starting) {
+    public static int shortFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 2) {
             return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting] & 0xFF);
         }
@@ -88,7 +88,7 @@ public class MathsUtil {
     }
 
     @NotNull
-    public static int signedShortFromBytes(byte[] bytes, int starting) {
+    public static int signedShortFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 2) {
             return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));
         }

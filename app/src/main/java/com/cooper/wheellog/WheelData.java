@@ -917,7 +917,7 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower != null ? mPower : (mCurrent * mVoltage)) / 10000.0;
+        return (mPower != null ? mPower : (mCurrent * mVoltage)/ 10000.0) ;
     }
 
     public void setPower(int power) {

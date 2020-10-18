@@ -224,16 +224,16 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         boolean parseTotalStats() {
             Timber.i("Parse total stats data");
             WheelData wd = WheelData.getInstance();
-            long mTotal = MathsUtil.intFromBytes(data, 0);
+            long mTotal = MathsUtil.intFromBytesLE(data, 0);
             long mTotal2 = MathsUtil.getInt4(data, 0);
-            long mDissipation = MathsUtil.intFromBytes(data, 4);
-            long mRecovery = MathsUtil.intFromBytes(data, 8);
-            long mRideTime = MathsUtil.intFromBytes(data, 12);
+            long mDissipation = MathsUtil.intFromBytesLE(data, 4);
+            long mRecovery = MathsUtil.intFromBytesLE(data, 8);
+            long mRideTime = MathsUtil.intFromBytesLE(data, 12);
             int sec = (int)(mRideTime % 60);
             int min = (int)((mRideTime / 60) % 60);
             int hour = (int) (mRideTime/ 3600);
             String mRideTimeStr = String.format("%d:%02d:%02d",hour,min,sec);
-            long mPowerOnTime = MathsUtil.intFromBytes(data, 16);
+            long mPowerOnTime = MathsUtil.intFromBytesLE(data, 16);
             sec = (int)(mPowerOnTime % 60);
             min = (int)((mPowerOnTime / 60) % 60);
             hour = (int) (mPowerOnTime/ 3600);
@@ -246,15 +246,15 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         boolean parseRealTimeInfo() {
             Timber.i("Parse realtime stats data");
             WheelData wd = WheelData.getInstance();
-            int mVoltage = MathsUtil.shortFromBytes(data, 0);
+            int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
             //int mVoltage2 = MathsUtil.getInt2R(data, 0); looks ok
-            int mCurrent = MathsUtil.signedShortFromBytes(data, 2);
-            int mSpeed = MathsUtil.signedShortFromBytes(data, 4);
-            int mTorque = MathsUtil.signedShortFromBytes(data, 6);
-            int mBatPower = MathsUtil.signedShortFromBytes(data, 8);
-            int mMotPower = MathsUtil.signedShortFromBytes(data, 10);
-            int mMileage = MathsUtil.shortFromBytes(data, 12) * 10;
-            int mRemainMileage = MathsUtil.shortFromBytes(data, 14) * 10;
+            int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
+            int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
+            int mTorque = MathsUtil.signedShortFromBytesLE(data, 6);
+            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 8);
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 10);
+            int mMileage = MathsUtil.shortFromBytesLE(data, 12) * 10;
+            int mRemainMileage = MathsUtil.shortFromBytesLE(data, 14) * 10;
             int mBatLevel = data[16] & 0x7f;
             int mBatMode = (data[16] >> 7)  & 0x1;
             int mMosTemp = (data[17] & 0xff) + 80 - 256;
@@ -262,11 +262,11 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             int mBatTemp = (data[19] & 0xff) + 80 - 256;
             int mBoardTemp = (data[20] & 0xff) + 80 - 256;
             int mLampTemp = (data[21] & 0xff) + 80 - 256;
-            int mPitchAngle = MathsUtil.signedShortFromBytes(data, 22);
-            int mPitchAimAngle = MathsUtil.signedShortFromBytes(data, 24);
-            int mRollAngle = MathsUtil.signedShortFromBytes(data, 26);
-            int mDynamicSpeedLimit = MathsUtil.shortFromBytes(data, 28);
-            int mDynamicCurrentLimit = MathsUtil.shortFromBytes(data, 30);
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 22);
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 24);
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 26);
+            int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 28);
+            int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 30);
             int mBrightness = data[32]& 0xff;
             int mLightBrightness = data[33]& 0xff;
             int mCpuTemp = (data[34] & 0xff) + 80 - 256;
@@ -282,7 +282,7 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             wd.updateRideTime();
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
-            wd.setPower(mBatPower*10000);
+            wd.setPower(mBatPower);
             //// state data
             int mPcMode = data[36] & 0x07;
             int mMcMode = (data[36]>>3)&0x07;
