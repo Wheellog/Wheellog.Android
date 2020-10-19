@@ -62,4 +62,37 @@ public class MathsUtil {
         }
         return result;
     }
+
+    @NotNull
+    public static long signedIntFromBytesLE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 4) {
+            return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
+        }
+        return 0;
+    }
+
+    @NotNull
+    public static int intFromBytesLE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 4) {
+            return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
+        }
+        return 0;
+    }
+
+    @NotNull
+    public static int shortFromBytesLE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 2) {
+            return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting] & 0xFF);
+        }
+        return 0;
+    }
+
+    @NotNull
+    public static int signedShortFromBytesLE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 2) {
+            return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));
+        }
+        return 0;
+    }
+
 }

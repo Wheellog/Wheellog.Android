@@ -674,6 +674,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 setupFieldForSecondPage(R.string.power);
                 break;
 
+            case INMOTION_V2:
             case INMOTION:
                 setupFieldForSecondPage(R.string.speed);
                 setupFieldForSecondPage(R.string.top_speed);
@@ -699,6 +700,8 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 setupFieldForSecondPage(R.string.version);
                 setupFieldForSecondPage(R.string.serial_number);
                 break;
+
+
 
             case NINEBOT_Z:
                 setupFieldForSecondPage(R.string.speed);

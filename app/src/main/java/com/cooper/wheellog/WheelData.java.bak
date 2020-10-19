@@ -1426,8 +1426,13 @@ public class WheelData {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
 
+<<<<<<< HEAD
         if (WheelLog.AppConfig.getAlarmsEnabled())
-        	checkAlarmStatus(mContext);
+=======
+
+        if (mAlarmsEnabled)
+>>>>>>> 42ceb33342ec54c2c657b6323048243cda768d1f
+			checkAlarmStatus(mContext);
 
       	timestamp_last = timestamp_raw;
 		mContext.sendBroadcast(intent);

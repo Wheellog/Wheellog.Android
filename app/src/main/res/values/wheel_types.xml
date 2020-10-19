@@ -2,6 +2,7 @@
 <resources>
     <string-array name="wheel_types">
         <item>@string/inmotion</item>
+        <item>@string/inmotion_v2</item>
         <item>@string/ninebot</item>
         <item>@string/ninebot_z</item>
         <item>@string/gotway</item>
@@ -13,4 +14,5 @@
     <string name="ninebot">ninebot</string>
     <string name="ninebot_z">ninebot_z</string>
     <string name="inmotion">inmotion</string>
+    <string name="inmotion_v2">inmotion_v2</string>
 </resources>

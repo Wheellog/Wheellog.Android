@@ -246,7 +246,23 @@ public class WheelView extends View {
             block.setEnabled(viewBlocks.contains(block.getTitle()));
         }
     }
-    
+
+<<<<<<< HEAD
+=======
+    public void setBetterPercent(boolean betterPercent) {
+        mTrueBattery = betterPercent;
+    }
+
+    public void setFixedPercents(boolean fixedPercents) {
+        mFixedPercents = fixedPercents;
+    }
+
+    public void setCurrentOnDial(boolean currentOnDial) {
+        Timber.i("Change dial type to %b", currentOnDial);
+        mCurrentOnDial = currentOnDial;
+    }
+
+>>>>>>> 42ceb33342ec54c2c657b6323048243cda768d1f
     public void resetBatteryLowest() {
         mBatteryLowest = 101;
         refresh();
@@ -263,7 +279,15 @@ public class WheelView extends View {
         targetSpeed = Math.round(((float) speed / maxSpeed) * 112);
         refreshDrawableState();
     }
-    
+
+<<<<<<< HEAD
+=======
+    public void setWarningSpeed(int speed, boolean alteredAlarms) {
+        mWarningSpeed = speed * 10;
+        mAlteredAlarms = alteredAlarms;
+    }
+
+>>>>>>> 42ceb33342ec54c2c657b6323048243cda768d1f
     public void setBattery(int battery) {
         if (mBattery == battery)
             return;
@@ -359,10 +383,19 @@ public class WheelView extends View {
             return;
         mCurrent = current;
 
-        current = current / 10;
+<<<<<<< HEAD
+        current = current/10;
         int maxSpeed = WheelLog.AppConfig.getMaxSpeed();
         current = Math.abs(current) > maxSpeed ? maxSpeed : current;
+
         targetCurrent = (int) Math.round(( current / maxSpeed) * 112);
+=======
+        current = current / 10;
+        current = Math.abs(current) > mMaxSpeed ? mMaxSpeed : current;
+
+
+        targetCurrent = (int) Math.round(current / mMaxSpeed * 112);
+>>>>>>> 42ceb33342ec54c2c657b6323048243cda768d1f
         refresh();
     }
 
@@ -442,8 +475,15 @@ public class WheelView extends View {
                 center_x + speedTextKPHRectSize / 2f,
                 center_y + speedTextKPHRectSize / 2f);
 
-        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);        speedTextKPHHeight = boundaryOfText.height();
-        
+<<<<<<< HEAD
+        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
+=======
+        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, getResources().getString(R.string.kmh), textPaint);
+        //if (WheelData.getInstance().isUseShortPwm())
+        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
+
+>>>>>>> 42ceb33342ec54c2c657b6323048243cda768d1f
+        speedTextKPHHeight = boundaryOfText.height();
         int innerTextRectWidth = Math.round(innerStrokeWidth);
         batteryTextRect.set(
                 center_x - (iaDiameter / 2) - (innerTextRectWidth / 2f),
