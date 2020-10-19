@@ -1,34 +1,26 @@
 package com.cooper.wheellog;
 
-
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
-//import android.preference.PreferenceManager;
-import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.util.Locale;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.N;
 
-
 public class LocaleManager {
-
     public static final  String LANGUAGE_ENGLISH   = "en";
 
-
     public LocaleManager(Context context) {
-        //prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
     }
 
     public static Context setLocale(Context c) {
         Context a;
         a = c;
-        if (SettingsUtil.isUseENG(c)) {
+        if (WheelLog.AppConfig.getUseEng()) {
             a = updateResources(c, LANGUAGE_ENGLISH);
         }
         return a;

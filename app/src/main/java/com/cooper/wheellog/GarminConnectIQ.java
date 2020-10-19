@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.NotificationUtil;
-import com.cooper.wheellog.utils.SettingsUtil;
 
 import com.garmin.android.connectiq.ConnectIQ;
 import com.garmin.android.connectiq.ConnectIQ.ConnectIQListener;
@@ -274,8 +273,8 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
             data.put(MESSAGE_KEY_BT_STATE, lastConnectionState);
 
             data.put(MESSAGE_KEY_VIBE_ALERT, false);
-            data.put(MESSAGE_KEY_USE_MPH, SettingsUtil.isUseMPH(GarminConnectIQ.this));
-            data.put(MESSAGE_KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(GarminConnectIQ.this));
+            data.put(MESSAGE_KEY_USE_MPH, WheelLog.AppConfig.getUseMph());
+            data.put(MESSAGE_KEY_MAX_SPEED, WheelLog.AppConfig.getMaxSpeed());
 
             lastRideTime = WheelData.getInstance().getRideTime();
             data.put(MESSAGE_KEY_RIDE_TIME, lastRideTime);
@@ -437,7 +436,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     public void playHorn() {
         Context context = getApplicationContext();
 
-        int horn_mode = SettingsUtil.getHornMode(context);
+        int horn_mode = WheelLog.AppConfig.getHornMode();
         if (horn_mode == 1) {
             final Intent hornIntent = new Intent(ACTION_REQUEST_KINGSONG_HORN);
             context.sendBroadcast(hornIntent);
@@ -530,8 +529,8 @@ class GarminConnectIQWebServer extends NanoHTTPD {
             data.put("" + GarminConnectIQ.MESSAGE_KEY_FAN_STATE, WheelData.getInstance().getFanStatus());
             data.put("" + GarminConnectIQ.MESSAGE_KEY_BT_STATE, WheelData.getInstance().isConnected());
             data.put("" + GarminConnectIQ.MESSAGE_KEY_VIBE_ALERT, false);
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_USE_MPH, SettingsUtil.isUseMPH(GarminConnectIQ.instance()));
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(GarminConnectIQ.instance()));
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_USE_MPH, WheelLog.AppConfig.getUseMph());
+            data.put("" + GarminConnectIQ.MESSAGE_KEY_MAX_SPEED, WheelLog.AppConfig.getMaxSpeed());
             data.put("" + GarminConnectIQ.MESSAGE_KEY_RIDE_TIME, WheelData.getInstance().getRideTime());
             data.put("" + GarminConnectIQ.MESSAGE_KEY_DISTANCE, WheelData.getInstance().getDistance() / 100);
             data.put("" + GarminConnectIQ.MESSAGE_KEY_TOP_SPEED, WheelData.getInstance().getTopSpeed() / 10);

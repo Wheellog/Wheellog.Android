@@ -161,47 +161,16 @@ public class WheelData {
 	private int mWheelMaxSpeed = 0;
 	private int mWheelSpeakerVolume = 50;
 	private int mWheelTiltHorizon = 0;
-	
-    private boolean mAlarmsEnabled = false;
-    private boolean mDisablePhoneVibrate = false;
-    private boolean mDisablePhoneBeep = false;
-    private int mAlarm1Speed = 0;
-    private int mAlarm2Speed = 0;
-    private int mAlarm3Speed = 0;
+
     private int mKSAlarm1Speed = 0;
     private int mKSAlarm2Speed = 0;
     private int mKSAlarm3Speed = 0;
-    private int mAlarm1Battery = 0;
-    private int mAlarm2Battery = 0;
-    private int mAlarm3Battery = 0;
-    private int mAlarmCurrent = 0;
-	private int mAlarmTemperature = 0;
 
-    private double mRotationSpeed = 70.0;
-    private double mRotationVoltage = 84.00;
-    private double mPowerFactor = 0.85;
-    private double mAlarmFactor1 = 0.80;
-    private double mAlarmFactor2 = 0.85;
-    private double mAlarmFactor3 = 0.90;
-    private int mAdvanceWarningSpeed = 0;
-    private double mWarningPwm = 0;
-    private boolean mUseShortPwm = false;
-    private int mWarningSpeedPeriod = 0;
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
-    private boolean mUseStopMusic = false;
-    public int mBatteryCapacity = 0;
-    public boolean mConnectBeep = true;
-    private double mChargingPowerAmp = 0;
 
-    private boolean mAlteredAlarms = false;
-	private boolean mUseRatio = false;
-    private boolean m18Lkm = true;
-    private boolean mBetterPercents = false;
-    private boolean mFixedPercents = false;
-    private double mTiltbackVoltage = 66;
 	private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
 	private boolean mTemperatureAlarmExecuting = false;
@@ -355,10 +324,6 @@ public class WheelData {
 
     public static WheelData getInstance() {
         return mInstance;
-    }
-
-    public boolean isUseShortPwm() {
-        return mUseShortPwm;
     }
 
     public double getCurrentPwm() {
@@ -874,9 +839,9 @@ public class WheelData {
             return "Unknown";
 
         double maxVoltage = 100.8;
-        double minVoltage = mTiltbackVoltage;
+        double minVoltage = WheelLog.AppConfig.getTiltbackVoltage();
         if (getWheelType() == WHEEL_TYPE.GOTWAY) {
-            switch (GotwayAdapter.getInstance().getGotwayVoltageScaler()) {
+            switch (WheelLog.AppConfig.getGotwayVoltage()) {
                 case 0:
                     maxVoltage = 67.2;
                     break;
@@ -886,10 +851,10 @@ public class WheelData {
             }
         }
 
-        double whInOneV = mBatteryCapacity / (maxVoltage - minVoltage);
+        double whInOneV = WheelLog.AppConfig.getBatteryCapacity() / (maxVoltage - minVoltage);
         double needToMax = maxVoltage - getVoltageDouble();
         double needToMaxInWh = needToMax * whInOneV;
-        double chargePower = maxVoltage * mChargingPowerAmp;
+        double chargePower = maxVoltage * WheelLog.AppConfig.getChargingPower();
         int chargeTime = (int) (needToMaxInWh / chargePower * 60);
         return getSpeed() == 0
                 ? String.format(Locale.US, "~%d min", chargeTime)
@@ -1023,9 +988,9 @@ public class WheelData {
 	public double getUserDistanceDouble() {
 		if (mUserDistance == 0 && mTotalDistance != 0 )  {
 			Context mContext = mBluetoothLeService.getApplicationContext();
-			mUserDistance = SettingsUtil.getUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress());
+			mUserDistance = WheelLog.AppConfig.getUserDistance(mBluetoothLeService.getBluetoothDeviceAddress());
 			if (mUserDistance == 0) {
-				SettingsUtil.setUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress(),mTotalDistance);
+				WheelLog.AppConfig.setUserDistance(mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);
 				mUserDistance = mTotalDistance;
 			}
 		}
@@ -1043,7 +1008,7 @@ public class WheelData {
     public void resetUserDistance() {
 		if (mTotalDistance != 0)  {
 			Context mContext = mBluetoothLeService.getApplicationContext();
-			SettingsUtil.setUserDistance(mContext, mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);		
+            WheelLog.AppConfig.setUserDistance(mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);
 			mUserDistance = mTotalDistance;
 		}
 
@@ -1056,27 +1021,6 @@ public class WheelData {
     public void resetVoltageSag() {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
-    }
-
-    public boolean getBetterPercents() {
-        return mBetterPercents;
-    }
-
-    public void setBetterPercents(boolean betterPercents) {
-        mBetterPercents = betterPercents;
-        if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().setBetterPercents(betterPercents);
-    }
-
-    public void setFixedPercents(boolean fixedPercents) {
-        mFixedPercents = fixedPercents;
-    }
-
-    public void setTiltbackVoltage(double tiltbackVoltage) {
-        mTiltbackVoltage = tiltbackVoltage;
-    }
-
-    public void setUseStopMusic(boolean useStopMusic) {
-        mUseStopMusic = useStopMusic;
     }
 
     public double getDistanceDouble() {
@@ -1250,70 +1194,6 @@ public class WheelData {
         Timber.i("State %b", connected);
     }
 
-    void setAlarmsEnabled(boolean enabled) {
-        mAlarmsEnabled = enabled;
-    }
-	
-	public void setUseRatio(boolean enabled) {
-        mUseRatio = enabled;
-    }
-
-    public boolean getUseRatio() {
-        return mUseRatio;
-    }
-
-    void set18Lkm(boolean enabled) {
-        m18Lkm = enabled;
-        if ((mModel.compareTo("KS-18L") == 0) && !m18Lkm) {
-            mTotalDistance = Math.round(mTotalDistance*KS18L_SCALER);
-        }
-        //reset();
-    }
-
-    void setPreferences(int alarm1Speed, int alarm1Battery,
-                        int alarm2Speed, int alarm2Battery,
-                        int alarm3Speed, int alarm3Battery,
-                        int alarmCurrent, int alarmTemperature,
-                        boolean disablePhoneVibrate, boolean disablePhoneBeep,
-                        boolean alteredAlarms, int rotationSpeed, int rotationVoltage,
-                        int powerFactor, int alarmFactor1, int alarmFactor2, int alarmFactor3, int warningSpeed,
-                        int warningSpeedPeriod, int warningPwm, boolean useShortPwm) {
-        mAlarm1Speed = alarm1Speed * 100;
-        mAlarm2Speed = alarm2Speed * 100;
-        mAlarm3Speed = alarm3Speed * 100;
-        mAlarm1Battery = alarm1Battery;
-        mAlarm2Battery = alarm2Battery;
-        mAlarm3Battery = alarm3Battery;
-        mAlarmCurrent = alarmCurrent*100;
-		mAlarmTemperature = alarmTemperature*100;
-        mDisablePhoneVibrate = disablePhoneVibrate;
-        mDisablePhoneBeep = disablePhoneBeep;
-        mAlteredAlarms = alteredAlarms;
-        mRotationSpeed = (float)rotationSpeed/10.0;
-        mRotationVoltage = (float)rotationVoltage/10.0;
-        mPowerFactor = (float)powerFactor/100.0;
-        mAlarmFactor1 = (float)alarmFactor1/100.0;
-        mAlarmFactor2 = (float)alarmFactor2/100.0;
-        mAlarmFactor3 = (float)alarmFactor3/100.0;
-        mAdvanceWarningSpeed = warningSpeed;
-        mWarningSpeedPeriod = warningSpeedPeriod * 1000;
-        mWarningPwm = (float)warningPwm/100.0;
-        mUseShortPwm = useShortPwm;
-    }
-
-    public void setBatteryCapacityAndChargePower(int batteryCapacity, int chargingPower) {
-        mBatteryCapacity = batteryCapacity;
-        mChargingPowerAmp = (float) chargingPower / 10.0;
-    }
-
-    public void setConnectBeep(boolean connectBeep) {
-        mConnectBeep = connectBeep;
-    }
-
-    public boolean getConnectBeep() {
-        return mConnectBeep;
-    }
-
     public void setDistance(long distance) {
         if (mStartTotalDistance == 0 && mTotalDistance != 0)
             mStartTotalDistance = mTotalDistance;
@@ -1354,11 +1234,11 @@ public class WheelData {
     }
 
     public void setBatteryPercent(int battery) {
-        if (mFixedPercents && isSupportsFixedPercents()) {
+        if (WheelLog.AppConfig.getFixedPercents() && isSupportsFixedPercents()) {
             double maxVoltage = 100.8;
-            double minVoltage = mTiltbackVoltage;
+            double minVoltage = WheelLog.AppConfig.getTiltbackVoltage();
             if (getWheelType() == WHEEL_TYPE.GOTWAY) {
-                switch (GotwayAdapter.getInstance().getGotwayVoltageScaler()) {
+                switch (WheelLog.AppConfig.getGotwayVoltage()) {
                     case 0:
                         maxVoltage = 67.2;
                         break;
@@ -1435,43 +1315,62 @@ public class WheelData {
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
-            if (mAlteredAlarms) {
-                if (mCalculatedPwm > mAlarmFactor3) {
+            if (WheelLog.AppConfig.getAlteredAlarms()) {
+                if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor3()) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                } else if (mCalculatedPwm > mAlarmFactor2) {
+                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor2()) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (mCalculatedPwm > mAlarmFactor1) {
+                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1()) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-                } else if (mWarningPwm != 0 && mWarningSpeedPeriod != 0 && mCalculatedPwm >= mWarningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > mWarningSpeedPeriod) {
-                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                    playRecommendSpeed(mContext);
-                } else if (mAdvanceWarningSpeed != 0 && mWarningSpeedPeriod != 0 && getSpeedDouble() >= mAdvanceWarningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > mWarningSpeedPeriod) {
-                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                    playWarningSpeed(mContext);
+                } else {
+                    double warningPwm = WheelLog.AppConfig.getWarningPwm();
+                    int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod();
+                    if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
+                        mLastPlayWarningSpeedTime = System.currentTimeMillis();
+                        playRecommendSpeed(mContext);
+                    } else {
+                        int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
+                        if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
+                            mLastPlayWarningSpeedTime = System.currentTimeMillis();
+                            playWarningSpeed(mContext);
+                        }
+                    }
                 }
             } else {
-                if (mAlarm1Speed > 0 && mAlarm1Battery > 0 && mAverageBattery <= mAlarm1Battery && mSpeed >= mAlarm1Speed) {
+                int alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
+                int alarm1Battery = WheelLog.AppConfig.getAlarm1Battery();
+                if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && mSpeed >= alarm1Speed) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-                } else if (mAlarm2Speed > 0 && mAlarm2Battery > 0 && mAverageBattery <= mAlarm2Battery && mSpeed >= mAlarm2Speed) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (mAlarm3Speed > 0 && mAlarm3Battery > 0 && mAverageBattery <= mAlarm3Battery && mSpeed >= mAlarm3Speed) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+                } else {
+                    int alarm2Speed = WheelLog.AppConfig.getAlarm2Speed();
+                    int alarm2Battery = WheelLog.AppConfig.getAlarm2Battery();
+                    if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && mSpeed >= alarm2Speed) {
+                        startSpeedAlarmCount();
+                        raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+                    } else {
+                        int alarm3Speed = WheelLog.AppConfig.getAlarm3Speed();
+                        int alarm3Battery = WheelLog.AppConfig.getAlarm3Battery();
+                        if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && mSpeed >= alarm3Speed) {
+                            startSpeedAlarmCount();
+                            raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+                        }
+                    }
                 }
             }
         }
 
-        if (mAlarmCurrent > 0 && mCurrent >= mAlarmCurrent && !mCurrentAlarmExecuting) {
+        int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent();
+        if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
             raiseAlarm(ALARM_TYPE.CURRENT, mContext);
         }
 
-        if (mAlarmTemperature > 0 && mTemperature >= mAlarmTemperature && !mTemperatureAlarmExecuting) {
+        int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature();
+        if (alarmTemperature > 0 && mTemperature >= alarmTemperature && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
             raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
         }
@@ -1507,9 +1406,9 @@ public class WheelData {
                 break;
         }
         mContext.sendBroadcast(intent);
-        if (v.hasVibrator() && !mDisablePhoneVibrate)
+        if (v.hasVibrator() && !WheelLog.AppConfig.getDisablePhoneVibrate())
             v.vibrate(pattern, -1);
-        if (!mDisablePhoneBeep) {
+        if (!WheelLog.AppConfig.getDisablePhoneBeep()) {
             playBeep(alarmType);
         }
     }
@@ -1555,13 +1454,13 @@ public class WheelData {
 			
         }
         setMaxTemp(mTemperature);
-        mCalculatedPwm = ((float)mSpeed/100.0)/((mRotationSpeed/mRotationVoltage) * ((float)mVoltage/100.0) * mPowerFactor);
+        mCalculatedPwm = ((float)mSpeed/100.0)/((WheelLog.AppConfig.getRotationSpeed()/WheelLog.AppConfig.getRotationVoltage()) * ((float)mVoltage/100.0) * WheelLog.AppConfig.getPowerFactor());
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
 
-        if (mAlarmsEnabled)
+        if (WheelLog.AppConfig.getAlarmsEnabled())
 			checkAlarmStatus(mContext);
 
       	timestamp_last = timestamp_raw;
@@ -1571,7 +1470,7 @@ public class WheelData {
     }
 
     private void CheckMuteMusic() {
-        if (!mUseStopMusic)
+        if (!WheelLog.AppConfig.getUseStopMusic())
             return;
 
         final double muteSpeedThreshold = 3.5;
@@ -1613,7 +1512,7 @@ public class WheelData {
                 mVoltage = MathsUtil.getInt2R(data, 2);
                 mSpeed = MathsUtil.getInt2R(data, 4);
                 mTotalDistance = MathsUtil.getInt4R(data, 6);
-                if ((mModel.compareTo("KS-18L") == 0) && !m18Lkm) {
+                if ((mModel.compareTo("KS-18L") == 0) && !WheelLog.AppConfig.getKs18LScaler()) {
                     mTotalDistance = Math.round(mTotalDistance*KS18L_SCALER);
                 }
                 mCurrent = ((data[10]&0xFF) + (data[11]<<8));
@@ -1628,8 +1527,9 @@ public class WheelData {
                 int battery;
 
 
+                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
                 if ((mModel.compareTo("KS-18L") == 0) || (mModel.compareTo("KS-16X") == 0) ||(mBtName.compareTo("RW") == 0) || (mModel.compareTo("KS-18LH") == 0) || (mModel.compareTo("KS-S18") == 0) || (mName.startsWith("ROCKW"))) {
-                    if (mBetterPercents) {
+                    if (useBetterPercents) {
                         if (mVoltage > 8350) {
                             battery = 100;
                         } else if (mVoltage > 6800) {
@@ -1649,7 +1549,7 @@ public class WheelData {
                         }
                     }
                 } else {
-                    if (mBetterPercents) {
+                    if (useBetterPercents) {
                         if (mVoltage > 6680) {
                             battery = 100;
                         } else if (mVoltage > 5440) {
@@ -2004,7 +1904,7 @@ public class WheelData {
 
         mBluetoothLeService = bluetoothService;
         Context mContext = bluetoothService.getApplicationContext();
-        String advData = SettingsUtil.getAdvDataForWheel(mContext,deviceAddress);
+        String advData = WheelLog.AppConfig.getAdvDataForWheel(deviceAddress);
          //String wheel_Type = "";
         protoVer = "";
         if (advData.compareTo("4e421300000000ec")==0) {
@@ -2092,8 +1992,10 @@ public class WheelData {
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     // Let the user know it's working by making the wheel beep
-                    if (mConnectBeep)
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+
+                    // TODO: Если увидели, верните эти 2 строчки обратно, мог забыть
+                    //if (WheelLog.AppConfig.getConnectBeep())
+                    //    mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 
                     return true;
                 } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {
@@ -2104,8 +2006,8 @@ public class WheelData {
                     BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
                     descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    if (SettingsUtil.hasPasswordForWheel(mContext, mBluetoothLeService.getBluetoothDeviceAddress())) {
-                        String inmotionPassword = SettingsUtil.getPasswordForWheel(mBluetoothLeService.getApplicationContext(), mBluetoothLeService.getBluetoothDeviceAddress());
+                    if (WheelLog.AppConfig.hasPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress())) {
+                        String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress());
                         InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
                         return true;
                     }

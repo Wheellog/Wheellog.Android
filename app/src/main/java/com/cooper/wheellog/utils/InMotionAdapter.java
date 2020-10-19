@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,11 +22,6 @@ public class InMotionAdapter implements IWheelAdapter {
 	private boolean settingCommandReady = false;
 	private static int updateStep = 0;
 	private byte[] settingCommand;
-    private static boolean mBetterPercents = false;
-
-    public static void setBetterPercents (boolean betterPercents) {
-        mBetterPercents = betterPercents;
-    }
 
     @Override
     public boolean decode(byte[] data) {
@@ -355,14 +351,38 @@ public class InMotionAdapter implements IWheelAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F ) {
-            if (mBetterPercents) {
-                if (volts > 84.00) {
-                    batt = 1.0;
-                } else if (volts > 68.5) {
-                    batt = (volts - 68.5) / 15.5;
+        } else {
+            Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+            if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F ) {
+                if (useBetterPercents) {
+                    if (volts > 84.00) {
+                        batt = 1.0;
+                    } else if (volts > 68.5) {
+                        batt = (volts - 68.5) / 15.5;
+                    } else {
+                        batt = 0.0;
+                    }
                 } else {
-                    batt = 0.0;
+                    if (volts > 82.50) {
+                        batt = 1.0;
+                    } else if (volts > 68.0) {
+                        batt = (volts - 68.0) / 14.5;
+                    } else {
+                        batt = 0.0;
+                    }
+                }
+
+
+            } else if (model == Model.V10 || model == Model.V10F || model == Model.V10S || model == Model.V10SF || model == Model.V10T || model == Model.V10FT) {
+            if (useBetterPercents) {
+                if (volts > 8350) {
+                    batt = 100;
+                } else if (volts > 6800) {
+                    batt = (volts - 6650) / 17;
+                } else if (volts > 6400) {
+                    batt = (volts - 6400) / 45;
+                } else {
+                    batt = 0;
                 }
             } else {
                 if (volts > 82.50) {
@@ -375,47 +395,26 @@ public class InMotionAdapter implements IWheelAdapter {
             }
 
 
-        } else if (model == Model.V10 || model == Model.V10F || model == Model.V10S || model == Model.V10SF || model == Model.V10T || model == Model.V10FT) {
-        if (mBetterPercents) {
-            if (volts > 8350) {
-                batt = 100;
-            } else if (volts > 6800) {
-                batt = (volts - 6650) / 17;
-            } else if (volts > 6400) {
-                batt = (volts - 6400) / 45;
-            } else {
-                batt = 0;
-            }
-        } else {
-            if (volts > 82.50) {
-                batt = 1.0;
-            } else if (volts > 68.0) {
-                batt = (volts - 68.0) / 14.5;
-            } else {
+        } else if (model.belongToInputType("6")) {
                 batt = 0.0;
-            }
-        }
-
-
-    } else if (model.belongToInputType("6")) {
-            batt = 0.0;
-        } else {
-            if (volts >= 82.00) {
-                batt = 1.0;
-            } else if (volts > 77.8) {
-                batt = ((volts - 77.8) / 4.2) * 0.2 + 0.8;
-            } else if (volts > 74.8) {
-                batt = ((volts - 74.8) / 3.0) * 0.2 + 0.6;
-            } else if (volts > 71.8) {
-                batt = ((volts - 71.8) / 3.0) * 0.2 + 0.4;
-            } else if (volts > 70.3) {
-                batt = ((volts - 70.3) / 1.5) * 0.2 + 0.2;
-            } else if (volts > 68.0) {
-                batt = ((volts - 68.0) / 2.3) * 0.2;
             } else {
-                batt = 0.0;
-            }
+                if (volts >= 82.00) {
+                    batt = 1.0;
+                } else if (volts > 77.8) {
+                    batt = ((volts - 77.8) / 4.2) * 0.2 + 0.8;
+                } else if (volts > 74.8) {
+                    batt = ((volts - 74.8) / 3.0) * 0.2 + 0.6;
+                } else if (volts > 71.8) {
+                    batt = ((volts - 71.8) / 3.0) * 0.2 + 0.4;
+                } else if (volts > 70.3) {
+                    batt = ((volts - 70.3) / 1.5) * 0.2 + 0.2;
+                } else if (volts > 68.0) {
+                    batt = ((volts - 68.0) / 2.3) * 0.2;
+                } else {
+                    batt = 0.0;
+                }
 
+            }
         }
         return batt * 100.0;
 
