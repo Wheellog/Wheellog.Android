@@ -1676,7 +1676,7 @@ public class WheelData {
         }
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.getInstance().stopTimer();
         mBluetoothLeService = null;
-        setWheelType(WHEEL_TYPE.Unknown);
+        mWheelType = WHEEL_TYPE.Unknown;
         xAxis.clear();
         speedAxis.clear();
         currentAxis.clear();

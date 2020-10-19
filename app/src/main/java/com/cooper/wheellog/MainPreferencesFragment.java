@@ -169,6 +169,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 Timber.i("Change dial type to %b", WheelLog.AppConfig.getCurrentOnDial());
                 break;
             case "gotway_voltage":
+            case "last_mac":
                 GotwayAdapter.getInstance().resetTiltbackVoltage();
                 break;
         }

@@ -79,7 +79,6 @@ public class AppConfig extends AppConfigBase {
         put("max_speed", SettingsType.Owner);
         put("use_ratio", SettingsType.Owner);
         put("ks18l_scaler", SettingsType.Owner);
-        put("last_mac", SettingsType.Owner);
         put("profile_name", SettingsType.Owner);
 
         // Add here all settings, which are changed through controls, which are common for all wheels
@@ -101,6 +100,7 @@ public class AppConfig extends AppConfigBase {
         put("garmin_connectiq_enable", SettingsType.General);
         put("horn_mode", SettingsType.General);
         put("view_blocks", SettingsType.General);
+        put("last_mac", SettingsType.General);
     }};
 
     public Map<String, SettingsType> getControlSettings() {
@@ -162,7 +162,6 @@ public class AppConfig extends AppConfigBase {
             case "max_speed": setMaxSpeed(getMaxSpeed(fromControlOptional), fromControlReverseOptional); break;
             case "use_ratio": setUseRatio(getUseRatio(fromControlOptional), fromControlReverseOptional); break;
             case "ks18l_scaler": setKs18LScaler(getKs18LScaler(fromControlOptional), fromControlReverseOptional); break;
-            case "last_mac": setLastMac(getLastMac(fromControlOptional), fromControlReverseOptional); break;
             case "profile_name": setProfileName(getProfileName(fromControlOptional), fromControlReverseOptional); break;
 
             // Add here all settings, which are changed through controls, which are common for all wheels
@@ -184,6 +183,7 @@ public class AppConfig extends AppConfigBase {
             case "garmin_connectiq_enable": setGarminConnectiqEnable(getGarminConnectIqEnable(fromControlOptional), fromControlReverseOptional); break;
             case "horn_mode": setHornMode(getHornMode(fromControlOptional), fromControlReverseOptional); break;
             case "view_blocks": setViewBlocks(getViewBlocks(fromControlOptional), fromControlReverseOptional); break;
+            case "last_mac": setLastMac(getLastMac(fromControlOptional), fromControlReverseOptional); break;
         }
     }
 

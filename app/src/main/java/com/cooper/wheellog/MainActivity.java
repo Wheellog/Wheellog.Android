@@ -1165,6 +1165,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (onDestroyProcess)
+            android.os.Process.killProcess(android.os.Process.myPid());
+
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
@@ -1423,7 +1426,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
         if (mBluetoothLeService != null &&
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
@@ -1446,6 +1448,8 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(mBluetoothUpdateReceiver);
     }
 
+    private static Boolean onDestroyProcess = false;
+
     @Override
     protected void onDestroy() {
         stopPebbleService();
@@ -1458,6 +1462,7 @@ public class MainActivity extends AppCompatActivity {
             mBluetoothLeService = null;
         }
         super.onDestroy();
+        onDestroyProcess = true;
         new CountDownTimer(60000, 100) {
 
             @Override
