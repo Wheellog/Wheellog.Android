@@ -1819,7 +1819,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     public void changeWheelType() {
         if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
             GotwayAdapter.getInstance().resetTiltbackVoltage();
-            configureDisplay(WheelData.getInstance().getWheelType());
             updateScreen(false);
         }
     }

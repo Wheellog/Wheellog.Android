@@ -32,6 +32,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void changeWheelType() {
+        mWheelType = WheelData.getInstance().getWheelType();
         switchOwnerSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
     }
 
@@ -405,10 +406,10 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             return;
         }
 
-        mWheelType = WheelData.getInstance().getWheelType();
         if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z || mWheelType == WHEEL_TYPE.VETERAN))
             wheelButton.setEnabled(true);
 
+        switchOwnerSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         currentScreen = SettingsScreen.Main;
         setupScreen();
     }
