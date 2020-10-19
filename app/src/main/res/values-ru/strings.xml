@@ -209,7 +209,7 @@
     <string name="battery_capacity_description">Ёмкость батареи в Wh</string>
     <string name="charging_power_title">Мощность зарядки</string>
     <string name="charging_power_description">Мощность зарядки</string>
-    <string name="show_unknown_devices_title">Показать BLE без имени</string>
+    <string name="show_unknown_devices_title">Показать Bluetooth без имени</string>
     <string name="show_unknown_devices_description">Показывать устройства Bluetooth без имени</string>
     <string name="connect_beep_title">Звук подключения</string>
     <string name="connect_beep_description">Звук подключения к колесу</string>

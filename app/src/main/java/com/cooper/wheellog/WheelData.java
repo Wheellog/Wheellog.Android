@@ -1992,10 +1992,8 @@ public class WheelData {
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
                     // Let the user know it's working by making the wheel beep
-
-                    // TODO: Если увидели, верните эти 2 строчки обратно, мог забыть
-                    //if (WheelLog.AppConfig.getConnectBeep())
-                    //    mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                    if (WheelLog.AppConfig.getConnectBeep())
+                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 
                     return true;
                 } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {

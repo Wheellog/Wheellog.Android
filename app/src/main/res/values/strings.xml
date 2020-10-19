@@ -268,7 +268,7 @@
     <string name="battery_capacity_description">Battery Capacity in Wh</string>
     <string name="charging_power_title">Charging power</string>
     <string name="charging_power_description">Charging Power in A</string>
-    <string name="show_unknown_devices_title">Show BLE without name</string>.
+    <string name="show_unknown_devices_title">Show Bluetooth without name</string>.
     <string name="show_unknown_devices_description">Show Bluetooth devices without name</string>.
     <string name="connect_beep_title">Sound of connection</string>.
     <string name="connect_beep_description">Sound of connection to the wheel</string>.

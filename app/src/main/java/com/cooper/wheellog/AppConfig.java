@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 // Add methods get and set for new settings at the end of the class
-// If the setting is common to all wheels, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.General".
-// If the setting is unique for each wheel, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.Owner".
+// If the setting is common to all wheels, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.General" or correct map from "controlSettings"
+// If the setting is unique for each wheel, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.Owner" or correct map from "controlSettings"
 //
 // Do not forget to add "switchSettingOwner" method and "controlSettings" fields as needed
 // If you need a reaction to a change in the setting, you can describe it in "MainPreferencesFragment.onSharedPreferenceChanged" method
@@ -29,14 +29,6 @@ public class AppConfig extends AppConfigBase {
     private Map<String, SettingsType> controlSettings  = new HashMap<String, SettingsType>() {{
         // Add here all settings that are changed through controls that are unique to each wheel
         // Remember to add them to the "switchSettingOwner" method
-
-        //put("speed_preferences", SettingsType.Owner);
-        //put("log_preferences", SettingsType.Owner);
-        //put("alarm_preferences", SettingsType.Owner);
-        //put("watch_preferences", SettingsType.Owner);
-        //put("wheel_settings", SettingsType.Owner);
-        //put("trip_settings", SettingsType.Owner);
-
         put("alarms_enabled", SettingsType.Owner);
         put("disable_phone_vibrate", SettingsType.Owner);
         put("disable_phone_beep", SettingsType.Owner);
@@ -85,8 +77,6 @@ public class AppConfig extends AppConfigBase {
         put("max_speed", SettingsType.Owner);
         put("use_ratio", SettingsType.Owner);
         put("ks18l_scaler", SettingsType.Owner);
-        put("horn_mode", SettingsType.Owner);
-        put("garmin_connectiq_enable", SettingsType.Owner);
         put("last_mac", SettingsType.Owner);
         put("profile_name", SettingsType.Owner);
 
@@ -106,6 +96,9 @@ public class AppConfig extends AppConfigBase {
         put("connection_sound", SettingsType.General);
         put("no_connection_sound", SettingsType.General);
         put("use_stop_music", SettingsType.General);
+        put("garmin_connectiq_enable", SettingsType.General);
+        put("horn_mode", SettingsType.General);
+        put("view_blocks", SettingsType.General);
     }};
 
     public Map<String, SettingsType> getControlSettings() {
@@ -119,13 +112,6 @@ public class AppConfig extends AppConfigBase {
         switch (keyString) {
             // Add here all settings that are changed through controls that are unique to each wheel
             // Remember to add them to the "controlSettings" array
-            //case "speed_preferences": setSpeedPreferences(getSpeedPreferences(fromControlOptional), fromControlReverseOptional); return;
-            //case "log_preferences": setLogPreferences(getLogPreferences(fromControlOptional), fromControlReverseOptional); return;
-            //case "alarm_preferences": setAlarmPreferences(getAlarmPreferences(fromControlOptional), fromControlReverseOptional); return;
-            //case "watch_preferences": setWatchPreferences(getWatchPreferences(fromControlOptional), fromControlReverseOptional); return;
-            //case "wheel_settings": setWheelSettings(getWheelSettings(fromControlOptional), fromControlReverseOptional); return;
-            //case "trip_settings": setTripSettings(getTripSettings(fromControlOptional), fromControlReverseOptional); return;
-
             case "alarms_enabled": setAlarmsEnabled(getAlarmsEnabled(fromControlOptional), fromControlReverseOptional); return;
             case "disable_phone_vibrate": setDisablePhoneVibrate(getDisablePhoneVibrate(fromControlOptional), fromControlReverseOptional); return;
             case "disable_phone_beep": setDisablePhoneBeep(getDisablePhoneBeep(fromControlOptional), fromControlReverseOptional); return;
@@ -174,8 +160,6 @@ public class AppConfig extends AppConfigBase {
             case "max_speed": setMaxSpeed(getMaxSpeed(fromControlOptional), fromControlReverseOptional); return;
             case "use_ratio": setUseRatio(getUseRatio(fromControlOptional), fromControlReverseOptional); return;
             case "ks18l_scaler": setKs18LScaler(getKs18LScaler(fromControlOptional), fromControlReverseOptional); return;
-            case "horn_mode": setHornMode(getHornMode(fromControlOptional), fromControlReverseOptional); return;
-            case "garmin_connectiq_enable": setGarminConnectiqEnable(getGarminConnectIqEnable(fromControlOptional), fromControlReverseOptional); return;
             case "last_mac": setLastMac(getLastMac(fromControlOptional), fromControlReverseOptional); return;
             case "profile_name": setProfileName(getProfileName(fromControlOptional), fromControlReverseOptional); return;
 
@@ -195,6 +179,9 @@ public class AppConfig extends AppConfigBase {
             case "connection_sound": setConnectionSound(getConnectionSound(fromControlOptional), fromControlReverseOptional); return;
             case "no_connection_sound": setNoConnectionSound(getNoConnectionSound(fromControlOptional), fromControlReverseOptional); return;
             case "use_stop_music": setUseStopMusic(getUseStopMusic(fromControlOptional), fromControlReverseOptional); return;
+            case "garmin_connectiq_enable": setGarminConnectiqEnable(getGarminConnectIqEnable(fromControlOptional), fromControlReverseOptional); return;
+            case "horn_mode": setHornMode(getHornMode(fromControlOptional), fromControlReverseOptional); return;
+            case "view_blocks": setViewBlocks(getViewBlocks(fromControlOptional), fromControlReverseOptional); return;
         }
     }
 

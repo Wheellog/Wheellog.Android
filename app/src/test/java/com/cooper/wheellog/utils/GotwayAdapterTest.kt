@@ -1,6 +1,10 @@
 package com.cooper.wheellog.utils
 
+import android.app.Activity
+import android.content.Context
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -12,7 +16,6 @@ import kotlin.math.abs
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-
 class GotwayAdapterTest {
 
     private var adapter: GotwayAdapter = GotwayAdapter()
@@ -23,6 +26,7 @@ class GotwayAdapterTest {
     fun setUp() {
         data = spyk(WheelData())
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
+        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -205,7 +209,7 @@ class GotwayAdapterTest {
     @Test
     fun `getting corrected tiltback voltage on Begode sacaler 0 - 67V`() {
         // Arrange.
-        adapter.gotwayVoltageScaler = 0;
+        every { WheelLog.AppConfig.getGotwayVoltage() } returns 0
 
         // Act.
         val g30 = adapter.getCorrectedTiltbackVoltage(30.0)
@@ -231,7 +235,7 @@ class GotwayAdapterTest {
     @Test
     fun `getting corrected tiltback voltage on Begode sacaler 1 - 84V`() {
         // Arrange.
-        adapter.gotwayVoltageScaler = 1;
+        every { WheelLog.AppConfig.getGotwayVoltage() } returns 1
 
         // Act.
         val g50 = adapter.getCorrectedTiltbackVoltage(50.0)
@@ -251,7 +255,7 @@ class GotwayAdapterTest {
     @Test
     fun `getting corrected tiltback voltage on Begode sacaler 2 - 100V`() {
         // Arrange.
-        adapter.gotwayVoltageScaler = 2;
+        every { WheelLog.AppConfig.getGotwayVoltage() } returns 2
 
         // Act.
         val g60 = adapter.getCorrectedTiltbackVoltage(60.0)

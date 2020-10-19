@@ -182,7 +182,7 @@ public class GotwayAdapter implements IWheelAdapter {
             WheelLog.AppConfig.setTiltbackVoltage(correctedValue);
     }
 
-    private double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
+    public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
         if (isVeteran()) {
             return tiltbackVoltage > 79.2 || tiltbackVoltage < 72
                     ? 75.6
