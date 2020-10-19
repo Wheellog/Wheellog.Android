@@ -25,6 +25,8 @@ public class AppConfig extends AppConfigBase {
         return INSTANCE;
     }
 
+    private Boolean isInProgressControlsMigration;
+
     // Add here all settings that are changed through controls
     private Map<String, SettingsType> controlSettings  = new HashMap<String, SettingsType>() {{
         // Add here all settings that are changed through controls that are unique to each wheel
@@ -185,12 +187,18 @@ public class AppConfig extends AppConfigBase {
         }
     }
 
+    public Boolean getIsInProgressControlsMigration() {
+        return isInProgressControlsMigration;
+    }
+
     @Override
     // Get all settings from application and move to controls settings
     public void setAllSettingsToControls() {
+        isInProgressControlsMigration = true;
         for (String key : controlSettings.keySet()) {
             switchSettingOwner(key, false);
         }
+        isInProgressControlsMigration = false;
     }
 
     @Override

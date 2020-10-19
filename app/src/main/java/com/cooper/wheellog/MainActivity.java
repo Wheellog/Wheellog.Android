@@ -1581,8 +1581,9 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         }
 
         wheelView.invalidate();
+        if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+            KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.getKs18LScaler());
 
-        KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.getKs18LScaler());
         ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
         ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
 

@@ -107,46 +107,61 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                         .show();
                 break;
             case "light_enabled":
-                WheelData.getInstance().updateLight(WheelLog.AppConfig.getLightEnabled());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateLight(WheelLog.AppConfig.getLightEnabled());
                 break;
             case "led_enabled":
-                WheelData.getInstance().updateLed(WheelLog.AppConfig.getLedEnabled());
+
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateLed(WheelLog.AppConfig.getLedEnabled());
                 break;
             case "handle_button_disabled":
-                WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.getHandleButtonDisabled());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.getHandleButtonDisabled());
                 break;
             case "wheel_max_speed":
-                WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.getWheelMaxSpeed());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.getWheelMaxSpeed());
                 break;
             case "speaker_volume":
-                WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.getSpeakerVolume());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.getSpeakerVolume());
                 break;
             case "pedals_adjustment":
-                WheelData.getInstance().updatePedals(WheelLog.AppConfig.getPedalsAdjustment());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updatePedals(WheelLog.AppConfig.getPedalsAdjustment());
                 break;
             case "pedals_mode":
-                WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.getPedalsMode());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.getPedalsMode());
                 break;
             case "light_mode":
-                WheelData.getInstance().updateLightMode(WheelLog.AppConfig.getLightMode());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateLightMode(WheelLog.AppConfig.getLightMode());
                 break;
             case "alarm_mode":
-                WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.getAlarmMode());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.getAlarmMode());
                 break;
             case "strobe_mode":
-                WheelData.getInstance().updateStrobe(WheelLog.AppConfig.getStrobeMode());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateStrobe(WheelLog.AppConfig.getStrobeMode());
                 break;
             case "led_mode":
-                WheelData.getInstance().updateLedMode(WheelLog.AppConfig.getLedMode());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    WheelData.getInstance().updateLedMode(WheelLog.AppConfig.getLedMode());
                 break;
             case "wheel_ks_alarm3":
-                KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.getWheelKsAlarm3());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.getWheelKsAlarm3());
                 break;
             case "wheel_ks_alarm2":
-                KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.getWheelKsAlarm2());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.getWheelKsAlarm2());
                 break;
             case "wheel_ks_alarm1":
-                KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.getWheelKsAlarm1());
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.getWheelKsAlarm1());
                 break;
             case "current_on_dial":
                 Timber.i("Change dial type to %b", WheelLog.AppConfig.getCurrentOnDial());
