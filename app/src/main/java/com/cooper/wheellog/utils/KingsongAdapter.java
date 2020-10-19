@@ -221,18 +221,6 @@ public class KingsongAdapter implements IWheelAdapter {
         }
     }
 
-    public int getKSAlarm1Speed() {
-        return mKSAlarm1Speed;
-    }
-
-    public int getKSAlarm2Speed() {
-        return mKSAlarm2Speed;
-    }
-
-    public int getKSAlarm3Speed() {
-        return mKSAlarm3Speed;
-    }
-
     public void set18Lkm(boolean enabled) {
         m18Lkm = enabled;
 

@@ -142,10 +142,10 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.getWheelKsAlarm3());
                 break;
             case "wheel_ks_alarm2":
-                KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.getWheelKsAlarm2());
+                KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.getWheelKsAlarm2());
                 break;
             case "wheel_ks_alarm1":
-                KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.getWheelKsAlarm1());
+                KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.getWheelKsAlarm1());
                 break;
             case "current_on_dial":
                 Timber.i("Change dial type to %b", WheelLog.AppConfig.getCurrentOnDial());
@@ -239,9 +239,9 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                                 KingsongAdapter adapter = KingsongAdapter.getInstance();
                                 if (adapter.getKSAlertsAndSpeedupdated()) {
                                     correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().getWheelMaxSpeed());
-                                    correctWheelBarState(getString(R.string.wheel_ks_alarm1), adapter.getKSAlarm1Speed());
-                                    correctWheelBarState(getString(R.string.wheel_ks_alarm2), adapter.getKSAlarm2Speed());
-                                    correctWheelBarState(getString(R.string.wheel_ks_alarm3), adapter.getKSAlarm3Speed());
+                                    correctWheelBarState(getString(R.string.wheel_ks_alarm1), WheelLog.AppConfig.getWheelKsAlarm1());
+                                    correctWheelBarState(getString(R.string.wheel_ks_alarm2), WheelLog.AppConfig.getWheelKsAlarm2());
+                                    correctWheelBarState(getString(R.string.wheel_ks_alarm3), WheelLog.AppConfig.getWheelKsAlarm3());
                                 }
                                 break;
                             case GOTWAY:

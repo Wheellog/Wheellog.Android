@@ -158,10 +158,6 @@ public class WheelData {
 	private int mWheelSpeakerVolume = 50;
 	private int mWheelTiltHorizon = 0;
 
-    private int mKSAlarm1Speed = 0;
-    private int mKSAlarm2Speed = 0;
-    private int mKSAlarm3Speed = 0;
-
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;

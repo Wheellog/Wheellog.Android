@@ -537,9 +537,9 @@ class GarminConnectIQWebServer extends NanoHTTPD {
             data.put("" + GarminConnectIQ.MESSAGE_KEY_TOP_SPEED, WheelData.getInstance().getTopSpeed() / 10);
             data.put("" + GarminConnectIQ.MESSAGE_KEY_POWER, (int) WheelData.getInstance().getPowerDouble());
             if (WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.KINGSONG) {
-                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, KingsongAdapter.getInstance().getKSAlarm1Speed());
-                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, KingsongAdapter.getInstance().getKSAlarm2Speed());
-                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, KingsongAdapter.getInstance().getKSAlarm3Speed());
+                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, WheelLog.AppConfig.getWheelKsAlarm1());
+                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, WheelLog.AppConfig.getWheelKsAlarm2());
+                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, WheelLog.AppConfig.getWheelKsAlarm3());
             }
 
             JSONObject message = new JSONObject();
