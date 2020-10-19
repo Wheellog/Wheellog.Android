@@ -112,9 +112,9 @@ public class WheelView extends View {
     private ViewBlockInfo[] getViewBlockInfo() {
         return new ViewBlockInfo[]{
                 new ViewBlockInfo(getResources().getString(R.string.pwm),
-                        () -> String.format(Locale.US, "%.2f%%" , mPwm)),
+                        () -> String.format(Locale.US, "%.2f%%", mPwm)),
                 new ViewBlockInfo(getResources().getString(R.string.max_pwm),
-                        () -> String.format(Locale.US, "%.2f%%" , mMaxPwm)),
+                        () -> String.format(Locale.US, "%.2f%%", mMaxPwm)),
                 new ViewBlockInfo(getResources().getString(R.string.voltage),
                         () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.volt), mVoltage)),
                 new ViewBlockInfo(getResources().getString(R.string.average_riding_speed),
@@ -273,10 +273,12 @@ public class WheelView extends View {
         Timber.i("Change dial type to %b", currentOnDial);
         mCurrentOnDial = currentOnDial;
     }
+
     public void resetBatteryLowest() {
         mBatteryLowest = 101;
         refresh();
     }
+
     public void setSpeed(int speed) {
         if (mSpeed == speed)
             return;
@@ -289,7 +291,7 @@ public class WheelView extends View {
     }
 
     public void setWarningSpeed(int speed, boolean alteredAlarms) {
-        mWarningSpeed = speed*10;
+        mWarningSpeed = speed * 10;
         mAlteredAlarms = alteredAlarms;
     }
 
@@ -382,17 +384,17 @@ public class WheelView extends View {
         mAverageSpeed = avg_speed;
         refresh();
     }
-	
+
     public void setCurrent(Double current) {
         if (mCurrent.equals(current))
             return;
         mCurrent = current;
 
-        current = current/10;
+        current = current / 10;
         current = Math.abs(current) > mMaxSpeed ? mMaxSpeed : current;
 
 
-        targetCurrent = (int) Math.round(( current /(mMaxSpeed)) * 112);
+        targetCurrent = (int) Math.round(current / mMaxSpeed * 112);
         refresh();
     }
 
@@ -413,10 +415,14 @@ public class WheelView extends View {
         float xpad = (float) (getPaddingLeft() + getPaddingRight());
         float ww;
 
-        if (landscape)
+        if (landscape) {
             ww = (float) h - xpad;
-        else
+        } else {
             ww = (float) w - xpad;
+        }
+
+        outerStrokeWidth = ww / 8;
+        innerStrokeWidth = Math.round(outerStrokeWidth * 0.8);
 
         oaDiameter = ww - outerStrokeWidth;
         float oaRadius = oaDiameter / 2;
@@ -426,7 +432,7 @@ public class WheelView extends View {
         if (landscape)
             center_y = h / 2f;
         else
-            center_y = (ww/2) + getPaddingTop();
+            center_y = (ww / 2) + getPaddingTop();
 
         float orLeft = center_x - oaRadius;
         float orTop = center_y - oaRadius;
@@ -434,8 +440,9 @@ public class WheelView extends View {
         float orBottom = center_y + oaRadius;
 
         outerArcRect.set(orLeft, orTop, orRight, orBottom);
+        outerArcPaint.setStrokeWidth(outerStrokeWidth);
 
-        float iaDiameter = oaDiameter - outerStrokeWidth - innerStrokeWidth - (inner_outer_padding*2);
+        float iaDiameter = oaDiameter - outerStrokeWidth - innerStrokeWidth - (inner_outer_padding * 2);
         float iaRadius = iaDiameter / 2;
 
         float left = center_x - iaRadius;
@@ -445,53 +452,55 @@ public class WheelView extends View {
 
         innerArcRect.set(left, top, right, bottom);
 
-
-        int innerArcHypot = Math.round((innerArcRect.right - innerArcRect.left) - (innerStrokeWidth)-inner_text_padding);
-        int speedTextRectSize = (int) Math.round(Math.sqrt(2*Math.pow(innerArcHypot/2f, 2)));
+        int innerArcHypot = Math.round((innerArcRect.right - innerArcRect.left) - (innerStrokeWidth) - inner_text_padding);
+        int speedTextRectSize = (int) Math.round(Math.sqrt(2 * Math.pow(innerArcHypot / 2f, 2)));
 
         speedTextRect.set(
-                center_x - speedTextRectSize/2f,
-                center_y - speedTextRectSize/2f,
-                center_x + speedTextRectSize/2f,
-                center_y + speedTextRectSize/2f);
+                center_x - speedTextRectSize / 2f,
+                center_y - speedTextRectSize / 2f,
+                center_x + speedTextRectSize / 2f,
+                center_y + speedTextRectSize / 2f);
 
         speedTextSize = calculateFontSize(boundaryOfText, speedTextRect, "00", textPaint);
 
         speedTextRect.set(boundaryOfText);
-        speedTextRect.top = Math.round(center_y - boundaryOfText.height()/2f - boundaryOfText.height()/10f);
+        speedTextRect.top = Math.round(center_y - boundaryOfText.height() / 2f - boundaryOfText.height() / 10f);
         speedTextRect.bottom = Math.round(speedTextRect.top + boundaryOfText.height());
 
         int speedTextKPHRectSize = speedTextRectSize / 2;
         RectF speedTextKPHRect = new RectF(
-                center_x - speedTextKPHRectSize/2f,
-                center_y - speedTextKPHRectSize/2f,
-                center_x + speedTextKPHRectSize/2f,
-                center_y + speedTextKPHRectSize/2f);
+                center_x - speedTextKPHRectSize / 2f,
+                center_y - speedTextKPHRectSize / 2f,
+                center_x + speedTextKPHRectSize / 2f,
+                center_y + speedTextKPHRectSize / 2f);
 
         speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, getResources().getString(R.string.kmh), textPaint);
-        if (WheelData.getInstance().isUseShortPwm())
-            speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
+        //if (WheelData.getInstance().isUseShortPwm())
+        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
 
         speedTextKPHHeight = boundaryOfText.height();
 
         int innerTextRectWidth = Math.round(innerStrokeWidth);
         batteryTextRect.set(
-                center_x-(iaDiameter/2)-(innerTextRectWidth/2f),
-                center_y-(innerTextRectWidth/2f),
-                (center_x-(iaDiameter/2))+(innerTextRectWidth/2f),
-                center_y+(innerTextRectWidth/2f));
+                center_x - (iaDiameter / 2) - (innerTextRectWidth / 2f),
+                center_y - (innerTextRectWidth / 2f),
+                (center_x - (iaDiameter / 2)) + (innerTextRectWidth / 2f),
+                center_y + (innerTextRectWidth / 2f));
         temperatureTextRect.set(
-                center_x+(iaDiameter/2)-(innerTextRectWidth/2f),
-                center_y-(innerTextRectWidth/2f),
-                (center_x+(iaDiameter/2))+(innerTextRectWidth/2f),
-                center_y+(innerTextRectWidth/2f));
+                center_x + (iaDiameter / 2) - (innerTextRectWidth / 2f),
+                center_y - (innerTextRectWidth / 2f),
+                (center_x + (iaDiameter / 2)) + (innerTextRectWidth / 2f),
+                center_y + (innerTextRectWidth / 2f));
         innerArcTextSize = calculateFontSize(boundaryOfText, batteryTextRect, "88%", textPaint);
+        innerArcPaint.setStrokeWidth(innerStrokeWidth);
 
         calcModelTextSize();
 
         mTextBoxesBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mTextBoxesBitmap);
-        redrawTextBoxes();
+        if ((landscape && (float) w / h > 1.4) || (!landscape && (float) h / w > 1.1)) {
+            redrawTextBoxes();
+        }
 
         refresh();
     }
@@ -508,20 +517,20 @@ public class WheelView extends View {
         modelTextPaint.setTextSize(calculateFontSize(boundaryOfText, modelTextRect, mWheelModel, modelTextPaint) / 2);
     }
 
-    private void drawTextBox(String header, String value, Canvas canvas, RectF rect, Paint paint)
-    {
+    private void drawTextBox(String header, String value, Canvas canvas, RectF rect, Paint paint) {
         if (header.length() > 10) {
-            paint.setTextSize(Math.min(boxTextSize, calculateFontSize(boundaryOfText, rect, header, paint)));
+            paint.setTextSize(Math.min(boxTextSize * 0.8f, calculateFontSize(boundaryOfText, rect, header, paint)));
             canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), paint);
-            paint.setTextSize(boxTextSize);
         } else {
+            paint.setTextSize(boxTextSize * 0.8f);
             canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), paint);
         }
+        paint.setTextSize(boxTextSize);
         canvas.drawText(value, rect.centerX(), rect.centerY() + boxTextHeight, paint);
     }
 
     public void redrawTextBoxes() {
-        if (mTextBoxesBitmap == null || getWidth() == getHeight()) {
+        if (mTextBoxesBitmap == null) {
             return;
         }
 
@@ -560,13 +569,28 @@ public class WheelView extends View {
                 boxTop += boxH + box_inner_padding;
             }
         } else {
+            float boxTop = box_top_padding + outerArcRect.top + oaDiameter / 2 + (float) (Math.cos(Math.toRadians(54)) * (oaDiameter + outerStrokeWidth) / 2);
+
             if (countBlocks == 1) {
                 cols = 1;
-            } else if (countBlocks >= 9) {
-                cols = 3;
-                rows = Math.round(countBlocks / (float) cols + 0.499f);
+            } else {
+                float hh = h - boxTop - getPaddingBottom() - box_inner_padding;
+                float ratio = w / hh;
+                rows = (int) (Math.sqrt((float) countBlocks / ratio * 3));
+                cols = Math.round(countBlocks / (float) rows + 0.499f);
+                // packing
+                if (countBlocks != cols * rows) {
+                    for (; ; ) {
+                        if (countBlocks / (float) rows <= cols) {
+                            rows--;
+                        } else {
+                            rows++;
+                            break;
+                        }
+                    }
+                }
             }
-            float boxTop = box_top_padding + outerArcRect.top + oaDiameter / 2 + (float) (Math.cos(Math.toRadians(54)) * (oaDiameter + outerStrokeWidth) / 2);
+
             float boxH = (h - boxTop - getPaddingBottom()) / (float) rows - box_inner_padding;
             float boxW = (w - getPaddingRight()) / (float) cols - box_inner_padding;
 
@@ -595,7 +619,7 @@ public class WheelView extends View {
                 }
             }
         } catch (Exception e) {
-            Timber.i("Draw exception: " + e.getMessage());
+            Timber.i("Draw exception: %s", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -720,16 +744,17 @@ public class WheelView extends View {
                 canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
             else
                 canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
+
             String temperatureString = String.format(Locale.US, "%02dC", mTemperature);
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
             canvas.save();
+
             // Max temperature
             if (getWidth() > getHeight())
-                canvas.rotate((143.5F + (1 * 2.25F) - 105), innerArcRect.centerX(), innerArcRect.centerY());
+                canvas.rotate((40F + (1 * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
             else
-                canvas.rotate((143.5F + (1 * 2.25F) - 105), innerArcRect.centerY(), innerArcRect.centerX());
-
+                canvas.rotate((40F + (1 * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
             String maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature);
             canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
@@ -750,9 +775,9 @@ public class WheelView extends View {
 
     private int updateCurrentValue(int target, int current) {
         if (target > current)
-            return current+1;
+            return current + 1;
         else if (current > target)
-            return current-1;
+            return current - 1;
         else
             return target;
     }
@@ -793,8 +818,8 @@ public class WheelView extends View {
         }
         float target_w = textContainer.width();
 
-        float size_h = ((target_h/h)*100f);
-        float size_w = ((target_w/w)*100f);
+        float size_h = ((target_h / h) * 100f);
+        float size_w = ((target_w / w) * 100f);
 
         float result = Math.min(size_h, size_w);
         textPaint.setTextSize(result);
