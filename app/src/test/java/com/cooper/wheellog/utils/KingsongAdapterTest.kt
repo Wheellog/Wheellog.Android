@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import com.cooper.wheellog.BluetoothLeService
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -25,6 +26,8 @@ class KingsongAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        every { data.bluetoothLeService } returns
+                mockkClass(BluetoothLeService::class, relaxed = true)
     }
 
     @After
@@ -123,7 +126,6 @@ class KingsongAdapterTest {
     @Test
     fun `decode Serial number`() {
         // Arrange.
-        justRun { data.updateKSAlarmAndSpeed() }
         val type = 179.toByte() // Name and Type data
         val serial = "King1234567890123"
         val serialBytes = serial.toByteArray(Charsets.UTF_8)
@@ -199,7 +201,7 @@ class KingsongAdapterTest {
         assertThat(data.output).isEqualTo(12)
 
         //5th data
-        assertThat(data.speedLimit).isEqualTo(32.05) //limit speed
+        assertThat(adapter.speedLimit).isEqualTo(32.05) //limit speed
     }
 
     @Test
