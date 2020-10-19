@@ -63,6 +63,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         if (context == null)
             return;
 
+        // Add a check for control migration when setting a value on wheels
+        // Through WheelLog.AppConfig.getIsInProgressControlsMigration() method
         switch (key) {
             case "connection_sound":
                 hideShowSeekBarsApp();
@@ -111,7 +113,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                     WheelData.getInstance().updateLight(WheelLog.AppConfig.getLightEnabled());
                 break;
             case "led_enabled":
-
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateLed(WheelLog.AppConfig.getLedEnabled());
                 break;
