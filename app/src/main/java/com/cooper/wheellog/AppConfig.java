@@ -25,7 +25,7 @@ public class AppConfig extends AppConfigBase {
         return INSTANCE;
     }
 
-    private Boolean isInProgressControlsMigration;
+    private Boolean isInProgressControlsMigration = false;
 
     // Add here all settings that are changed through controls
     private Map<String, SettingsType> controlSettings  = new HashMap<String, SettingsType>() {{
