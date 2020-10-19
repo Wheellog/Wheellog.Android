@@ -32,6 +32,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void changeWheelType() {
+        GotwayAdapter.getInstance().resetTiltbackVoltage();
         mWheelType = WheelData.getInstance().getWheelType();
         switchOwnerSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
     }

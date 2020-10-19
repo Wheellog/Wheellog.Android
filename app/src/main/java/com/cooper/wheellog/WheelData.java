@@ -1676,7 +1676,7 @@ public class WheelData {
         }
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.getInstance().stopTimer();
         mBluetoothLeService = null;
-        mWheelType = WHEEL_TYPE.Unknown;
+        setWheelType(WHEEL_TYPE.Unknown);
         xAxis.clear();
         speedAxis.clear();
         currentAxis.clear();
@@ -1804,7 +1804,7 @@ public class WheelData {
                     wheel_Type = mContext.getResources().getString(R.string.kingsong);
                 }
                 if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
-                    mWheelType = WHEEL_TYPE.KINGSONG;
+                    setWheelType(WHEEL_TYPE.KINGSONG);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
@@ -1814,7 +1814,7 @@ public class WheelData {
 					
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
-                    mWheelType = WHEEL_TYPE.GOTWAY;
+                    setWheelType(WHEEL_TYPE.GOTWAY);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
@@ -1824,7 +1824,7 @@ public class WheelData {
 
                     return true;
                 } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {
-                    mWheelType = WHEEL_TYPE.INMOTION;
+                    setWheelType(WHEEL_TYPE.INMOTION);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
@@ -1840,7 +1840,7 @@ public class WheelData {
 
                 } else if (mContext.getResources().getString(R.string.inmotion_v2).equals(wheel_Type)) {
                     Timber.i("Trying to start Inmotion V2");
-                    mWheelType = WHEEL_TYPE.INMOTION_V2;
+                    setWheelType(WHEEL_TYPE.INMOTION_V2);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
                     Timber.i("service UUID");
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_READ_CHARACTER_UUID));
@@ -1865,7 +1865,7 @@ public class WheelData {
 
                 } else if (mContext.getResources().getString(R.string.ninebot_z).equals(wheel_Type)) {
                     Timber.i("Trying to start Ninebot Z");
-                    mWheelType = WHEEL_TYPE.NINEBOT_Z;
+                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
                     Timber.i("service UUID");
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
@@ -1895,7 +1895,7 @@ public class WheelData {
                 }
                 else if (mContext.getResources().getString(R.string.ninebot).equals(wheel_Type)) {
                     Timber.i("Trying to start Ninebot");
-                    mWheelType = WHEEL_TYPE.NINEBOT;
+                    setWheelType(WHEEL_TYPE.NINEBOT);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
                     Timber.i("service UUID");
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_READ_CHARACTER_UUID));

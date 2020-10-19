@@ -72,7 +72,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements IDataListener {
+public class MainActivity extends AppCompatActivity {
     public static AudioManager audioManager = null;
 
     @Override
@@ -1170,7 +1170,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         setContentView(R.layout.activity_main);
         WheelData.initiate();
         WheelLog.AppConfig.initGeneralSettingsOwner();
-        WheelData.getInstance().addListener(this);
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
@@ -1814,13 +1813,5 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             return new MainPreferencesFragment();
         }
         return frag;
-    }
-
-    @Override
-    public void changeWheelType() {
-        if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
-            GotwayAdapter.getInstance().resetTiltbackVoltage();
-            updateScreen(false);
-        }
     }
 }
