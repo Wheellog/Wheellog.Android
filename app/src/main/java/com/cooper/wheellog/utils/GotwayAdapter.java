@@ -179,7 +179,7 @@ public class GotwayAdapter implements IWheelAdapter {
         double currentValue = WheelLog.AppConfig.getTiltbackVoltage();
         double correctedValue = getCorrectedTiltbackVoltage(currentValue);
         if (currentValue != correctedValue)
-            WheelLog.AppConfig.setTiltbackVoltage(correctedValue);
+            WheelLog.AppConfig.setTiltbackVoltage(correctedValue, true);
     }
 
     public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {

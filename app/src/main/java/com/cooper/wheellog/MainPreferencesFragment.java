@@ -75,13 +75,13 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 break;
             case "auto_upload_ec":
                 if (WheelLog.AppConfig.getAutoUploadEc() && !mDataWarningDisplayed) {
-                    WheelLog.AppConfig.setAutoUploadEc(false);
+                    WheelLog.AppConfig.setAutoUploadEc(false, true);
                     new AlertDialog.Builder(context)
                             .setTitle(getString(R.string.enable_auto_upload_title))
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                 mDataWarningDisplayed = true;
-                                WheelLog.AppConfig.setAutoUploadEc(true);
+                                WheelLog.AppConfig.setAutoUploadEc(true, true);
                                 refreshVolatileSettings();
                                 context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
@@ -330,7 +330,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                         builder.setView(input);
                         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             final String deviceAddress = input.getText().toString();
-                            WheelLog.AppConfig.setLastMac(deviceAddress);
+                            WheelLog.AppConfig.setLastMac(deviceAddress, true);
                             AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
                             builder1.setTitle(getText(R.string.wheel_pass_imotion));
 
@@ -364,7 +364,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                         builder.setView(input);
                         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             final String newProfileName = input.getText().toString();
-                            WheelLog.AppConfig.setProfileName(newProfileName);
+                            WheelLog.AppConfig.setProfileName(newProfileName, true);
                         });
                         builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
                         builder.show();

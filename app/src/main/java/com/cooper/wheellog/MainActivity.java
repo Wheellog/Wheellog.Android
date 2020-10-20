@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothLeService.STATE_CONNECTED:
                 configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    WheelLog.AppConfig.setLastMac(mDeviceAddress);
+                    WheelLog.AppConfig.setLastMac(mDeviceAddress, true);
                     WheelLog.AppConfig.changeSettingsSpecific(mDeviceAddress);
                 }
                 hideSnackBar();
@@ -1608,7 +1608,7 @@ public class MainActivity extends AppCompatActivity {
                 // logout after uncheck
                 ElectroClub.getInstance().setUserToken(null);
                 ElectroClub.getInstance().setUserId(null);
-                WheelLog.AppConfig.setEcToken(null);
+                WheelLog.AppConfig.setEcToken(null, true);
             }
         }
 
@@ -1625,13 +1625,13 @@ public class MainActivity extends AppCompatActivity {
 
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
-        WheelLog.AppConfig.setAutoLog(false);
+        WheelLog.AppConfig.setAutoLog(false, true);
         ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
-        WheelLog.AppConfig.setLogLocationData(false);
+        WheelLog.AppConfig.setLogLocationData(false, true);
         ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
@@ -1767,13 +1767,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case RESULT_AUTH_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken());
-                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId());
+                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken(), true);
+                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId(), true);
                     ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
                 } else {
-                    WheelLog.AppConfig.setAutoUploadEc(false);
+                    WheelLog.AppConfig.setAutoUploadEc(false, true);
                     WheelLog.AppConfig.setEcToken(null);
-                    WheelLog.AppConfig.setEcUserId(null);
+                    WheelLog.AppConfig.setEcUserId(null, true);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
