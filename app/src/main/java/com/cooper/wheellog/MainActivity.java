@@ -1574,20 +1574,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPreferences(String settingsKey) {
         switch (settingsKey) {
-            case "view_blocks":
-                Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
-                if (view_blocks == null) {
-                    Set<String> view_blocks_def = new HashSet<String>();
-                    view_blocks_def.add(getString(R.string.voltage));
-                    view_blocks_def.add(getString(R.string.average_riding_speed));
-                    view_blocks_def.add(getString(R.string.riding_time));
-                    view_blocks_def.add(getString(R.string.top_speed));
-                    view_blocks_def.add(getString(R.string.distance));
-                    view_blocks_def.add(getString(R.string.total));
-                    wheelView.updateViewBlocksVisibility(view_blocks_def);
-                } else
-                    wheelView.updateViewBlocksVisibility(view_blocks);
-                break;
             case "auto_log":
                 if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
                     MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -1611,6 +1597,19 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+
+        Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
+        if (view_blocks == null) {
+            Set<String> view_blocks_def = new HashSet<String>();
+            view_blocks_def.add(getString(R.string.voltage));
+            view_blocks_def.add(getString(R.string.average_riding_speed));
+            view_blocks_def.add(getString(R.string.riding_time));
+            view_blocks_def.add(getString(R.string.top_speed));
+            view_blocks_def.add(getString(R.string.distance));
+            view_blocks_def.add(getString(R.string.total));
+            wheelView.updateViewBlocksVisibility(view_blocks_def);
+        } else
+            wheelView.updateViewBlocksVisibility(view_blocks);
 
         wheelView.invalidate();
         updateScreen(true);
