@@ -89,12 +89,10 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                                 mDataWarningDisplayed = true;
                                 WheelLog.AppConfig.setAutoUploadEc(true, true);
                                 refreshVolatileSettings();
-                                context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
                             .setNegativeButton(android.R.string.no, (dialog, which) -> {
                                 mDataWarningDisplayed = false;
                                 refreshVolatileSettings();
-                                context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
