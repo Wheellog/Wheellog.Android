@@ -13,7 +13,6 @@ import androidx.core.math.MathUtils;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
-import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Typefaces;
 
 import java.util.*;
@@ -697,7 +696,7 @@ public class WheelView extends View {
                     canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
                 String batteryCalculateType = "true";
-                if (fixedPercents && WheelData.getInstance().isSupportsFixedPercents())
+                if (fixedPercents && !WheelData.getInstance().isVoltageTiltbackUnsupported())
                     batteryCalculateType = "fixed";
 
                 String batteryString = String.format(Locale.US, "%s", batteryCalculateType);

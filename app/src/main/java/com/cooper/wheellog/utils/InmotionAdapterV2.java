@@ -503,6 +503,10 @@ public class InmotionAdapterV2 implements IWheelAdapter {
         }
     }
 
+    public int getCellSForWheel() {
+        return 20;
+    }
+
     public static void newInstance() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();

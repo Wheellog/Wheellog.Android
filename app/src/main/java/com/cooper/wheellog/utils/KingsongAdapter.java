@@ -49,7 +49,7 @@ public class KingsongAdapter implements IWheelAdapter {
 
                 int battery;
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                if (StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || wd.getModel().startsWith("ROCKW")) {
+                if (is84vWheel()) {
                     if (useBetterPercents) {
                         if (voltage > 8350) {
                             battery = 100;
@@ -169,6 +169,14 @@ public class KingsongAdapter implements IWheelAdapter {
     @Override
     public void updateMaxSpeed(int wheelMaxSpeed) {
 
+    }
+
+    private boolean is84vWheel() {
+        return StringUtil.inArray(WheelData.getInstance().getModel(), new String[] { "KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || WheelData.getInstance().getModel().startsWith("ROCKW");
+    }
+
+    public int getCellSForWheel() {
+        return is84vWheel() ? 20 : 16;
     }
 
     public static KingsongAdapter getInstance() {

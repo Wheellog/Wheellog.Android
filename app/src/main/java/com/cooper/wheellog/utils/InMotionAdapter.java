@@ -1363,6 +1363,10 @@ public class InMotionAdapter implements IWheelAdapter {
         }
     }
 
+    public int getCellSForWheel() {
+        return 20;
+    }
+
     public static InMotionAdapter getInstance() {
         if (INSTANCE == null) {
             Timber.i("New instance");

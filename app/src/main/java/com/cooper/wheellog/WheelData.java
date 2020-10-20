@@ -757,10 +757,6 @@ public class WheelData {
         return mWheelType;
     }
 
-    public boolean isSupportsFixedPercents() {
-        return getWheelType() == WHEEL_TYPE.GOTWAY || getWheelType() == WHEEL_TYPE.VETERAN;
-    }
-
     public String getName() {
         return mName;
     }
@@ -786,24 +782,33 @@ public class WheelData {
         mModeStr = value;
     }
 
-    String getChargeTime()
-    {
-        if (!isSupportsFixedPercents())
-            return "Unknown";
-
-        double maxVoltage = 100.8;
-        double minVoltage = WheelLog.AppConfig.getTiltbackVoltage();
-        if (getWheelType() == WHEEL_TYPE.GOTWAY) {
-            switch (WheelLog.AppConfig.getGotwayVoltage()) {
-                case 0:
-                    maxVoltage = 67.2;
-                    break;
-                case 1:
-                    maxVoltage = 84.0;
-                    break;
-            }
+    int getCellSForWheel() {
+        switch (getWheelType()) {
+            case KINGSONG: return KingsongAdapter.getInstance().getCellSForWheel();
+            case GOTWAY: return GotwayAdapter.getInstance().getCellSForWheel();
+            case INMOTION: return InMotionAdapter.getInstance().getCellSForWheel();
+            case INMOTION_V2: return InmotionAdapterV2.getInstance().getCellSForWheel();
+            case VETERAN: return GotwayAdapter.getInstance().getVeteranCellSForWheel();
         }
 
+        return  0;
+    }
+
+    double getMaxVoltageForWheel() {
+        return Constants.MAX_CELL_VOLTAGE * getCellSForWheel();
+    }
+
+    double getVoltageTiltbackForWheel() {
+        return WheelLog.AppConfig.getCellVoltageTiltback() * getCellSForWheel();
+    }
+
+    public boolean isVoltageTiltbackUnsupported() {
+        return mWheelType == WHEEL_TYPE.NINEBOT || mWheelType == WHEEL_TYPE.NINEBOT_Z;
+    }
+
+    String getChargeTime() {
+        double maxVoltage = getMaxVoltageForWheel();
+        double minVoltage = getVoltageTiltbackForWheel();
         double whInOneV = WheelLog.AppConfig.getBatteryCapacity() / (maxVoltage - minVoltage);
         double needToMax = maxVoltage - getVoltageDouble();
         double needToMaxInWh = needToMax * whInOneV;
@@ -1200,20 +1205,9 @@ public class WheelData {
     }
 
     public void setBatteryPercent(int battery) {
-        if (WheelLog.AppConfig.getFixedPercents() && isSupportsFixedPercents()) {
-            double maxVoltage = 100.8;
-            double minVoltage = WheelLog.AppConfig.getTiltbackVoltage();
-            if (getWheelType() == WHEEL_TYPE.GOTWAY) {
-                switch (WheelLog.AppConfig.getGotwayVoltage()) {
-                    case 0:
-                        maxVoltage = 67.2;
-                        break;
-                    case 1:
-                        maxVoltage = 84.0;
-                        break;
-                }
-            }
-
+        if (WheelLog.AppConfig.getFixedPercents()) {
+            double maxVoltage = getMaxVoltageForWheel();
+            double minVoltage = getVoltageTiltbackForWheel();
             double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
             battery = (int)((getVoltageDouble() - minVoltage) / voltagePercentStep);
         }

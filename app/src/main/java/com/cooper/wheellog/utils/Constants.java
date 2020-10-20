@@ -86,6 +86,8 @@ public class Constants {
     public static final String INTENT_EXTRA_SETTINGS_KEY = "settings_key";
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
+    public static final double MAX_CELL_VOLTAGE = 4.2;
+
     public enum WHEEL_TYPE {
         Unknown,
         KINGSONG,
