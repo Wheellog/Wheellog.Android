@@ -66,6 +66,12 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         // Add a check for control migration when setting a value on wheels
         // Through WheelLog.AppConfig.getIsInProgressControlsMigration() method
         switch (key) {
+            case "ec_token":
+                ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
+                break;
+            case "ec_user_id":
+                ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
+                break;
             case "connection_sound":
                 hideShowSeekBarsApp();
                 break;
@@ -92,9 +98,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
-                } else {
+                } else
                     mDataWarningDisplayed = false;
-                }
                 break;
             case "max_speed":
             case "use_mph":
@@ -164,6 +169,10 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.getWheelKsAlarm1());
                 break;
+            case "ks18l_scaler":
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.getKs18LScaler());
+                break;
             case "current_on_dial":
                 Timber.i("Change dial type to %b", WheelLog.AppConfig.getCurrentOnDial());
                 break;
@@ -173,8 +182,11 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 break;
         }
 
-        if (WheelLog.AppConfig.getControlSettings().containsKey(key) && !WheelLog.AppConfig.getIsInProgressControlsMigration())
-            context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+        if (WheelLog.AppConfig.getControlSettings().containsKey(key) && !WheelLog.AppConfig.getIsInProgressControlsMigration()) {
+            Intent intent = new Intent(Constants.ACTION_PREFERENCE_CHANGED);
+            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, key);
+            context.sendBroadcast(intent);
+        }
     }
 
     private void setupScreen() {
