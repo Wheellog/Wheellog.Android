@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 
-import com.cooper.wheellog.utils.SettingsUtil;
 import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
@@ -75,7 +74,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
                 pebbleScreenIntent.putExtra(INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, displayed_screen);
                 context.sendBroadcast(pebbleScreenIntent);
             } else if (data.contains(PEBBLE_KEY_PLAY_HORN)) {
-                int horn_mode = SettingsUtil.getHornMode(context);
+                int horn_mode = WheelLog.AppConfig.getHornMode();
                 if (horn_mode == 1) {
                     final Intent hornIntent = new Intent(ACTION_REQUEST_KINGSONG_HORN);
                     context.sendBroadcast(hornIntent);

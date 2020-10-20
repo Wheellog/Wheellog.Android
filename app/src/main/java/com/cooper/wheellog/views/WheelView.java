@@ -12,6 +12,7 @@ import androidx.core.math.MathUtils;
 
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Typefaces;
 
@@ -45,15 +46,7 @@ public class WheelView extends View {
     float boxTextSize;
     float boxTextHeight;
 
-    private int mMaxSpeed = 300;
-    private boolean mTrueBattery = false;
-    private boolean mFixedPercents = false;
-    private boolean mCurrentOnDial = false;
-
-    private boolean mUseMPH = false;
     private int mSpeed = 0;
-    private int mWarningSpeed = 0;
-    private boolean mAlteredAlarms = false;
     private int mBattery = 0;
     private int mBatteryLowest = 101;
     private int mTemperature = 0;
@@ -110,6 +103,7 @@ public class WheelView extends View {
     };
 
     private ViewBlockInfo[] getViewBlockInfo() {
+        Boolean useMph = WheelLog.AppConfig.getUseMph();
         return new ViewBlockInfo[]{
                 new ViewBlockInfo(getResources().getString(R.string.pwm),
                         () -> String.format(Locale.US, "%.2f%%", mPwm)),
@@ -119,7 +113,7 @@ public class WheelView extends View {
                         () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.volt), mVoltage)),
                 new ViewBlockInfo(getResources().getString(R.string.average_riding_speed),
                         () -> {
-                            if (mUseMPH) {
+                            if (useMph) {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(mAverageSpeed));
                             } else {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mAverageSpeed);
@@ -129,7 +123,7 @@ public class WheelView extends View {
                         () -> mCurrentTime),
                 new ViewBlockInfo(getResources().getString(R.string.top_speed),
                         () -> {
-                            if (mUseMPH) {
+                            if (useMph) {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(mTopSpeed));
                             } else {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mTopSpeed);
@@ -137,7 +131,7 @@ public class WheelView extends View {
                         }),
                 new ViewBlockInfo(getResources().getString(R.string.distance),
                         () -> {
-                            if (mUseMPH) {
+                            if (useMph) {
                                 return String.format(Locale.US, "%.2f " + getResources().getString(R.string.milli), kmToMiles(mTopSpeed));
                             } else {
                                 if (mDistance < 1) {
@@ -149,7 +143,7 @@ public class WheelView extends View {
                         }),
                 new ViewBlockInfo(getResources().getString(R.string.total),
                         () -> {
-                            if (mUseMPH) {
+                            if (useMph) {
                                 return String.format(Locale.US, "%.0f " + getResources().getString(R.string.milli), kmToMiles(mTotalDistance));
                             } else {
                                 return String.format(Locale.US, "%.0f " + getResources().getString(R.string.km), mTotalDistance);
@@ -165,7 +159,7 @@ public class WheelView extends View {
                         () -> String.format(Locale.US, "%d °C", WheelData.getInstance().getTemperature2()), false),
                 new ViewBlockInfo(getResources().getString(R.string.average_speed),
                         () -> {
-                            if (mUseMPH) {
+                            if (useMph) {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble()));
                             } else {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble());
@@ -175,7 +169,7 @@ public class WheelView extends View {
                         () -> WheelData.getInstance().getRideTimeString(), false),
                 new ViewBlockInfo(getResources().getString(R.string.wheel_distance),
                         () -> {
-                            if (mUseMPH) {
+                            if (useMph) {
                                 return String.format(Locale.US, "%.2f " + getResources().getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble()));
                             } else {
                                 return String.format(Locale.US, "%.3f " + getResources().getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble());
@@ -188,9 +182,9 @@ public class WheelView extends View {
         super(context, attrs);
 
         if (isInEditMode()) {
-            mMaxSpeed = 300;
+            // mMaxSpeed = 300;
             mSpeed = 150;
-            targetSpeed = Math.round(((float) mSpeed / mMaxSpeed) * 112);
+            targetSpeed = Math.round(((float) mSpeed / WheelLog.AppConfig.getMaxSpeed()) * 112);
             currentSpeed = targetSpeed;
 
             mTemperature = 35;
@@ -247,33 +241,12 @@ public class WheelView extends View {
         }
     }
 
-    public void setMaxSpeed(int maxSpeed) {
-        mMaxSpeed = maxSpeed;
-    }
-
-    public void setUseMPH(boolean use_mph) {
-        mUseMPH = use_mph;
-    }
-
     public void updateViewBlocksVisibility(Set<String> viewBlocks) {
         for (ViewBlockInfo block : mViewBlocks) {
             block.setEnabled(viewBlocks.contains(block.getTitle()));
         }
     }
-
-    public void setBetterPercent(boolean betterPercent) {
-        mTrueBattery = betterPercent;
-    }
-
-    public void setFixedPercents(boolean fixedPercents) {
-        mFixedPercents = fixedPercents;
-    }
-
-    public void setCurrentOnDial(boolean currentOnDial) {
-        Timber.i("Change dial type to %b", currentOnDial);
-        mCurrentOnDial = currentOnDial;
-    }
-
+    
     public void resetBatteryLowest() {
         mBatteryLowest = 101;
         refresh();
@@ -284,17 +257,13 @@ public class WheelView extends View {
             return;
 
         mSpeed = speed;
-        speed = speed > mMaxSpeed ? mMaxSpeed : speed;
+        int maxSpeed = WheelLog.AppConfig.getMaxSpeed();
+        speed = speed > maxSpeed ? maxSpeed : speed;
 
-        targetSpeed = Math.round(((float) speed / mMaxSpeed) * 112);
+        targetSpeed = Math.round(((float) speed / maxSpeed) * 112);
         refreshDrawableState();
     }
-
-    public void setWarningSpeed(int speed, boolean alteredAlarms) {
-        mWarningSpeed = speed * 10;
-        mAlteredAlarms = alteredAlarms;
-    }
-
+    
     public void setBattery(int battery) {
         if (mBattery == battery)
             return;
@@ -391,10 +360,9 @@ public class WheelView extends View {
         mCurrent = current;
 
         current = current / 10;
-        current = Math.abs(current) > mMaxSpeed ? mMaxSpeed : current;
-
-
-        targetCurrent = (int) Math.round(current / mMaxSpeed * 112);
+        int maxSpeed = WheelLog.AppConfig.getMaxSpeed();
+        current = Math.abs(current) > maxSpeed ? maxSpeed : current;
+        targetCurrent = (int) Math.round(( current / maxSpeed) * 112);
         refresh();
     }
 
@@ -474,12 +442,8 @@ public class WheelView extends View {
                 center_x + speedTextKPHRectSize / 2f,
                 center_y + speedTextKPHRectSize / 2f);
 
-        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, getResources().getString(R.string.kmh), textPaint);
-        //if (WheelData.getInstance().isUseShortPwm())
-        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);
-
-        speedTextKPHHeight = boundaryOfText.height();
-
+        speedTextKPHSize = calculateFontSize(boundaryOfText, speedTextKPHRect, ")) " + getResources().getString(R.string.kmh) + " ((", textPaint);        speedTextKPHHeight = boundaryOfText.height();
+        
         int innerTextRectWidth = Math.round(innerStrokeWidth);
         batteryTextRect.set(
                 center_x - (iaDiameter / 2) - (innerTextRectWidth / 2f),
@@ -629,7 +593,7 @@ public class WheelView extends View {
         super.onDraw(canvas);
 
         int currentDial;
-        if (mCurrentOnDial) {
+        if (WheelLog.AppConfig.getCurrentOnDial()) {
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent);
             currentDial = currentCurrent;
         } else {
@@ -684,7 +648,7 @@ public class WheelView extends View {
         //################# DRAW SPEED TEXT ##################
         //####################################################
 
-        int speed = mUseMPH ? Math.round(kmToMiles(mSpeed)) : mSpeed;
+        int speed = WheelLog.AppConfig.getUseMph() ? Math.round(kmToMiles(mSpeed)) : mSpeed;
 
         String speedString;
         if (speed < 100)
@@ -692,7 +656,8 @@ public class WheelView extends View {
         else
             speedString = String.format(Locale.US, "%02d", Math.round(speed / 10.0));
 
-        if (!mAlteredAlarms && mWarningSpeed > 0 && mSpeed >= mWarningSpeed)
+        double alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
+        if (!WheelLog.AppConfig.getAlteredAlarms() && (alarm1Speed * 10) > 0 && mSpeed >= (alarm1Speed * 10))
             textPaint.setColor(getContext().getResources().getColor(R.color.accent));
         else
             textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_speed_text));
@@ -701,9 +666,9 @@ public class WheelView extends View {
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + (speedTextRect.height() / 2), textPaint);
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        String metric = mUseMPH ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
-        if (WheelData.getInstance().isUseShortPwm())
-            metric = "(" + (int)WheelData.getInstance().getCurrentPwm() + "%) " + metric + " (" + (int)WheelData.getInstance().getMaxPwm() + "%)";
+        String metric = WheelLog.AppConfig.getUseMph() ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
+        if (WheelLog.AppConfig.getUseShortPwm())
+            metric = "(" + (int) WheelData.getInstance().getCurrentPwm() + "%) " + metric + " (" + (int) WheelData.getInstance().getMaxPwm() + "%)";
 
         canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 1.25F), textPaint);
 
@@ -724,14 +689,15 @@ public class WheelView extends View {
             canvas.restore();
             canvas.save();
             /// true battery
-            if (mTrueBattery || mFixedPercents) {
+            Boolean fixedPercents = WheelLog.AppConfig.getFixedPercents();
+            if (WheelLog.AppConfig.getUseBetterPercents() || fixedPercents) {
                 if (getWidth() > getHeight())
                     canvas.rotate((144 + (-3.3F * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
                 else
                     canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
                 String batteryCalculateType = "true";
-                if (mFixedPercents && WheelData.getInstance().isSupportsFixedPercents())
+                if (fixedPercents && WheelData.getInstance().isSupportsFixedPercents())
                     batteryCalculateType = "fixed";
 
                 String batteryString = String.format(Locale.US, "%s", batteryCalculateType);

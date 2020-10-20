@@ -50,8 +50,6 @@ public class BluetoothLeService extends Service {
     private NotificationUtil mNotificationHandler;
 
     private Timer beepTimer;
-    private int mBeepPeriod = 5000;
-    private boolean mConnectSound = false;
     private int timerTicks;
     PowerManager mgr;
     PowerManager.WakeLock wl;
@@ -67,7 +65,7 @@ public class BluetoothLeService extends Service {
                     switch (connectionState) {
                         case STATE_CONNECTED:
                             mConnectionState = STATE_CONNECTED;
-                            if (!LoggingService.isInstanceCreated() && SettingsUtil.isAutoLogEnabled(BluetoothLeService.this))
+                            if (!LoggingService.isInstanceCreated() && WheelLog.AppConfig.getAutoLog())
                                 startService(new Intent(getApplicationContext(), LoggingService.class));
 							if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                                 Timber.i("Sending King Name request");
@@ -165,11 +163,13 @@ public class BluetoothLeService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
+            Boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
+            int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
             if (newState == BluetoothProfile.STATE_CONNECTED) {
 
                 Timber.i("Connected to GATT server.");
-                if (mConnectSound) {
-                    if (mBeepPeriod>0) {
+                if (connectionSound) {
+                    if (noConnectionSound >0) {
                         stopBeepTimer();
                     }
                     if (wl != null) {
@@ -189,13 +189,13 @@ public class BluetoothLeService extends Service {
                 Timber.i("Disconnected from GATT server.");
                 if (mConnectionState == STATE_CONNECTED) {
                     mDisconnectTime = Calendar.getInstance().getTime();
-                    if (mConnectSound) {
+                    if (connectionSound) {
                         playDisconnect();
                         if (wl != null) {
                             wl.release();
                             wl = null;
                         }
-                        if (mBeepPeriod>0) {
+                        if (noConnectionSound >0) {
                             startBeepTimer();
                         }
                     }
@@ -659,30 +659,17 @@ public class BluetoothLeService extends Service {
         return mBluetoothDeviceAddress;
     }
 
-    public void setConnectionSounds(boolean connectSound, int beepPeriod) {
-        mConnectSound = connectSound;
-        mBeepPeriod = beepPeriod;
-/*        if (mConnectSound) {
-            if (!wl.isHeld())
-                wl.acquire();
-        } else {
-            if (wl.isHeld())
-                wl.release();
-        }
-
-*/
-    }
-
     private void startBeepTimer(){
         //wl.acquire();
         wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
         wl.acquire(300000);
         timerTicks = 0;
+        final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
         TimerTask beepTimerTask = new TimerTask() {
             @Override
             public void run() {
                 timerTicks +=1;
-                if (timerTicks*mBeepPeriod > 300000){
+                if (timerTicks* noConnectionSound > 300000){
                     stopBeepTimer();
                 }
                 MediaPlayer mp3 = MediaPlayer.create(getApplicationContext(), R.raw.sound_no_connection);
@@ -697,7 +684,7 @@ public class BluetoothLeService extends Service {
             }
         };
         beepTimer = new Timer();
-        beepTimer.scheduleAtFixedRate(beepTimerTask, mBeepPeriod, mBeepPeriod);
+        beepTimer.scheduleAtFixedRate(beepTimerTask, noConnectionSound, noConnectionSound);
     }
     private void stopBeepTimer(){
         if (wl != null) {

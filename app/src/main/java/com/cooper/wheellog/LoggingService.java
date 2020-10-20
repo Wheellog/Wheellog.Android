@@ -21,7 +21,6 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
-import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -107,7 +106,7 @@ public class LoggingService extends Service
             }
         }
 
-        logLocationData = SettingsUtil.isLogLocationEnabled(this);
+        logLocationData = WheelLog.AppConfig.getLogLocationData();
 
         if (logLocationData && !PermissionsUtil.checkLocationPermission(this)) {
             showToast(R.string.logging_error_no_location_permission);
@@ -138,7 +137,7 @@ public class LoggingService extends Service
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             // Getting if the users wants to use GPS
-            boolean useGPS = SettingsUtil.isUseGPSEnabled(this);
+            boolean useGPS = WheelLog.AppConfig.getUseGps();
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 logLocationData = false;
@@ -199,7 +198,7 @@ public class LoggingService extends Service
             sendBroadcast(serviceIntent);
 
             // electro.club ulpoad
-            if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
+            if (WheelLog.AppConfig.getAutoUploadEc()
                     && ElectroClub.getInstance().getUserToken() != null) {
                 try {
                     byte[] data = fileUtil.readBytes();

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -36,15 +35,12 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.GotwayAdapter;
 import com.cooper.wheellog.utils.KingsongAdapter;
-import com.cooper.wheellog.utils.SettingsUtil;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -74,7 +70,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements IDataListener {
+public class MainActivity extends AppCompatActivity {
     public static AudioManager audioManager = null;
 
     @Override
@@ -300,8 +296,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
                     loadPreferences(true);
-                    // save to specific pref depending on MAC
-                    SettingsUtil.savePreferencesTo(getBaseContext(), SettingsUtil.getLastAddress(getBaseContext()));
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
@@ -341,17 +335,8 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             case BluetoothLeService.STATE_CONNECTED:
                 configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    SettingsUtil.setLastAddress(getApplicationContext(), mDeviceAddress);
-
-                    // restore specific preferences depending on MAC
-                    // before that we pause the SharedPreferenceChangeListener
-                    // in MainPreferencesFragment to avoid endless loop
-                    MainPreferencesFragment pref = (MainPreferencesFragment) getPreferencesFragment();
-                    if (pref != null)
-                        pref.onPause();
-                    SettingsUtil.restorePreferencesFrom(getApplicationContext(), mDeviceAddress);
-                    if (pref != null)
-                        pref.onResume();
+                    WheelLog.AppConfig.setLastMac(mDeviceAddress, true);
+                    WheelLog.AppConfig.changeSettingsSpecific(mDeviceAddress);
                 }
                 hideSnackBar();
                 break;
@@ -910,11 +895,17 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 wheelView.setVoltage(data.getVoltageDouble());
                 wheelView.setCurrent(data.getPowerDouble());
                 wheelView.setAverageSpeed(data.getAverageRidingSpeedDouble());
-                wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
                 wheelView.redrawTextBoxes();
                 wheelView.setMaxPwm(data.getMaxPwm());
                 wheelView.setMaxTemperature(data.getMaxTemp());
                 wheelView.setPwm(data.getCalculatedPwm());
+
+                String profileName = WheelLog.AppConfig.getProfileName();
+                if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneral())
+                    wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
+                else
+                    wheelView.setWheelModel(profileName);
+
                 break;
             case 1: // Text View
                 WheelData.getInstance().setBmsView(false);
@@ -1172,11 +1163,14 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (onDestroyProcess)
+            android.os.Process.killProcess(android.os.Process.myPid());
+
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
-        WheelData.getInstance().addListener(this);
+        WheelLog.AppConfig.initGeneralSettingsSpecific();
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
@@ -1207,7 +1201,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         titleIndicator.setViewPager(pager);
         pager.addOnPageChangeListener(pageChangeListener);
 
-        mDeviceAddress = SettingsUtil.getLastAddress(getApplicationContext());
+        mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -1393,7 +1387,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
         loadPreferences(true);
 
-        if (SettingsUtil.isFirstRun(this)) {
+        if (WheelLog.AppConfig.isFirstRun()) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -1430,7 +1424,6 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     @Override
     public void onResume() {
         super.onResume();
-
         if (mBluetoothLeService != null &&
                 mConnectionState != mBluetoothLeService.getConnectionState())
             setConnectionState(mBluetoothLeService.getConnectionState());
@@ -1453,6 +1446,8 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
         unregisterReceiver(mBluetoothUpdateReceiver);
     }
 
+    private static Boolean onDestroyProcess = false;
+
     @Override
     protected void onDestroy() {
         stopPebbleService();
@@ -1465,6 +1460,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             mBluetoothLeService = null;
         }
         super.onDestroy();
+        onDestroyProcess = true;
         new CountDownTimer(60000, 100) {
 
             @Override
@@ -1512,7 +1508,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 return true;
             case R.id.miWatch:
                 togglePebbleService();
-                if (SettingsUtil.getGarminConnectIQEnable(this))
+                if (WheelLog.AppConfig.getGarminConnectIqEnable())
                     toggleGarminConnectIQ();
                 else
                     stopGarminConnectIQ();
@@ -1572,19 +1568,8 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
     };
 
     private void loadPreferences(boolean requests) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        use_mph = sharedPreferences.getBoolean(getString(R.string.use_mph), false);
-
-        Set<String> view_blocks = sharedPreferences.getStringSet(getString(R.string.view_blocks), null);
-        int max_speed = sharedPreferences.getInt(getString(R.string.max_speed), 30) * 10;
-        wheelView.setMaxSpeed(max_speed);
-        wheelView.setUseMPH(use_mph);
- /*       if (view_blocks != null) {
-            wheelView.updateViewBlocksVisibility(view_blocks);
-        }
-*/
-
-        if (view_blocks== null) {
+        Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
+        if (view_blocks == null) {
             Set<String> view_blocks_def = new HashSet<String>();
             view_blocks_def.add(getString(R.string.voltage));
             view_blocks_def.add(getString(R.string.average_riding_speed));
@@ -1597,96 +1582,21 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             wheelView.updateViewBlocksVisibility(view_blocks);
         }
 
-        boolean alarms_enabled = sharedPreferences.getBoolean(getString(R.string.alarms_enabled), false);
-        boolean use_ratio = sharedPreferences.getBoolean(getString(R.string.use_ratio), false);
-        WheelData.getInstance().setUseRatio(use_ratio);
-        boolean ks18l_scaler = sharedPreferences.getBoolean(getString(R.string.ks18l_scaler), false);
-        KingsongAdapter.getInstance().set18Lkm(ks18l_scaler);
-
-        boolean betterPercents = sharedPreferences.getBoolean(getString(R.string.use_better_percents), false);
-        WheelData.getInstance().setBetterPercents(betterPercents);
-        wheelView.setBetterPercent(betterPercents);
-
-        boolean fixedPercents = sharedPreferences.getBoolean(getString(R.string.fixed_percents), false);
-        WheelData.getInstance().setFixedPercents(fixedPercents);
-        wheelView.setFixedPercents(fixedPercents);
-
-        boolean useStopMusic = sharedPreferences.getBoolean(getString(R.string.use_stop_music), false);
-        WheelData.getInstance().setUseStopMusic(useStopMusic);
-
-        boolean currentOnDial = sharedPreferences.getBoolean(getString(R.string.current_on_dial), false);
-        wheelView.setCurrentOnDial(currentOnDial);
         wheelView.invalidate();
-        final boolean connectSound = sharedPreferences.getBoolean(getString(R.string.connection_sound), false);
-        final int beepPeriod = sharedPreferences.getInt(getString(R.string.no_connection_sound), 0) * 1000;
-        if (mBluetoothLeService != null) {
-            mBluetoothLeService.setConnectionSounds(connectSound, beepPeriod);
-        }
+        if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+            KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.getKs18LScaler());
 
-        int gotway_voltage = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_voltage), "1"));
-        int gotway_negative = Integer.parseInt(sharedPreferences.getString(getString(R.string.gotway_negative), "0"));
-        GotwayAdapter.getInstance().setGotwayVoltageScaler(gotway_voltage);
-        GotwayAdapter.getInstance().setGotwayNegative(gotway_negative);
-        ResetTiltbackVoltage();
+        ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
+        ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
 
-        //boolean gotway_84v = sharedPreferences.getBoolean(getString(R.string.gotway_84v), false);
-        //WheelData.getInstance().setGotway84V(gotway_84v);
-        WheelData.getInstance().setAlarmsEnabled(alarms_enabled);
-
-        int batteryCapacity = sharedPreferences.getInt(getString(R.string.battery_capacity), 0);
-        int chargingPower = sharedPreferences.getInt(getString(R.string.charging_power), 0);
-        WheelData.getInstance().setBatteryCapacityAndChargePower(batteryCapacity, chargingPower);
-
-        boolean connectBeep = sharedPreferences.getBoolean(getString(R.string.connect_beep), true);
-        WheelData.getInstance().setConnectBeep(connectBeep);
-
-        if (alarms_enabled) {
-            int alarm1Speed = sharedPreferences.getInt(getString(R.string.alarm_1_speed), 29);
-            int alarm2Speed = sharedPreferences.getInt(getString(R.string.alarm_2_speed), 0);
-            int alarm3Speed = sharedPreferences.getInt(getString(R.string.alarm_3_speed), 0);
-            int alarm1Battery = sharedPreferences.getInt(getString(R.string.alarm_1_battery), 100);
-            int alarm2Battery = sharedPreferences.getInt(getString(R.string.alarm_2_battery), 0);
-            int alarm3Battery = sharedPreferences.getInt(getString(R.string.alarm_3_battery), 0);
-            int current_alarm = sharedPreferences.getInt(getString(R.string.alarm_current), 0);
-            int temperature_alarm = sharedPreferences.getInt(getString(R.string.alarm_temperature), 0);
-            boolean disablePhoneVibrate = sharedPreferences.getBoolean(getString(R.string.disable_phone_vibrate), false);
-            boolean disablePhoneBeep = sharedPreferences.getBoolean(getString(R.string.disable_phone_beep), false);
-            boolean alteredAlarms = sharedPreferences.getBoolean(getString(R.string.altered_alarms), false);
-            int rotationSpeed = sharedPreferences.getInt(getString(R.string.rotation_speed), 500);
-            int rotationVoltage = sharedPreferences.getInt(getString(R.string.rotation_voltage), 840);
-            int powerFactor = sharedPreferences.getInt(getString(R.string.power_factor), 90);
-            int alarmFactor1 = sharedPreferences.getInt(getString(R.string.alarm_factor1), 80);
-            int alarmFactor2 = sharedPreferences.getInt(getString(R.string.alarm_factor2), 90);
-            int alarmFactor3 = sharedPreferences.getInt(getString(R.string.alarm_factor3), 95);
-            int warningSpeed = sharedPreferences.getInt(getString(R.string.warning_speed), 0);
-            int warningPwm = sharedPreferences.getInt(getString(R.string.warning_pwm), 0);
-            int warningSpeedPeriod = sharedPreferences.getInt(getString(R.string.warning_speed_period), 0);
-            boolean useShortPwm = sharedPreferences.getBoolean(getString(R.string.use_short_pwm), false);
-            WheelData.getInstance().setPreferences(
-                    alarm1Speed, alarm1Battery,
-                    alarm2Speed, alarm2Battery,
-                    alarm3Speed, alarm3Battery,
-                    current_alarm, temperature_alarm, disablePhoneVibrate, disablePhoneBeep, alteredAlarms,
-                    rotationSpeed, rotationVoltage, powerFactor, alarmFactor1, alarmFactor2, alarmFactor3, warningSpeed, warningSpeedPeriod,
-                    warningPwm, useShortPwm);
-            wheelView.setWarningSpeed(alarm1Speed, alteredAlarms);
-        } else
-            wheelView.setWarningSpeed(0, false);
-
-        boolean auto_log = sharedPreferences.getBoolean(getString(R.string.auto_log), false);
-        boolean log_location = sharedPreferences.getBoolean(getString(R.string.log_location_data), false);
-        boolean auto_upload_ec = sharedPreferences.getBoolean(getString(R.string.auto_upload_ec), false);
-        ElectroClub.getInstance().setUserToken(SettingsUtil.getECToken(this));
-        ElectroClub.getInstance().setUserId(SettingsUtil.getECUserId(this));
-
-        if (auto_log && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+        if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
             MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
 
-        if (log_location)
+        if (WheelLog.AppConfig.getLogLocationData())
             MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
 
         if (requests) {
-            if (auto_upload_ec) {
+            if (WheelLog.AppConfig.getAutoUploadEc()) {
                 if (ElectroClub.getInstance().getUserToken() == null) {
                     startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
                 } else {
@@ -1698,7 +1608,7 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 // logout after uncheck
                 ElectroClub.getInstance().setUserToken(null);
                 ElectroClub.getInstance().setUserId(null);
-                SettingsUtil.setECToken(this, null);
+                WheelLog.AppConfig.setEcToken(null, true);
             }
         }
 
@@ -1715,13 +1625,13 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
 
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
-        SettingsUtil.setAutoLog(this, false);
+        WheelLog.AppConfig.setAutoLog(false, true);
         ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
-        SettingsUtil.setLogLocationEnabled(this, false);
+        WheelLog.AppConfig.setLogLocationData(false, true);
         ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
     }
 
@@ -1857,13 +1767,13 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
                 break;
             case RESULT_AUTH_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    SettingsUtil.setECToken(this, ElectroClub.getInstance().getUserToken());
-                    SettingsUtil.setECUserId(this, ElectroClub.getInstance().getUserId());
+                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken(), true);
+                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId(), true);
                     ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
                 } else {
-                    SettingsUtil.setAutoUploadECEnabled(this, false);
-                    SettingsUtil.setECToken(this, null);
-                    SettingsUtil.setECUserId(this, null);
+                    WheelLog.AppConfig.setAutoUploadEc(false, true);
+                    WheelLog.AppConfig.setEcToken(null);
+                    WheelLog.AppConfig.setEcUserId(null, true);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }
                 break;
@@ -1906,29 +1816,5 @@ public class MainActivity extends AppCompatActivity implements IDataListener {
             return new MainPreferencesFragment();
         }
         return frag;
-    }
-
-    @Override
-    public void changeWheelType() {
-        if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
-            ResetTiltbackVoltage();
-            configureDisplay(WheelData.getInstance().getWheelType());
-            updateScreen(false);
-        }
-    }
-
-    void ResetTiltbackVoltage() {
-        // Set tiltback voltage with check gotway voltage changes
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        double tiltbackVoltage = (float)sharedPreferences.getInt(getString(R.string.tiltback_voltage), 660) / 100;
-        double correctedTiltbackVoltage = GotwayAdapter.getInstance().getCorrectedTiltbackVoltage(tiltbackVoltage);
-
-        if (correctedTiltbackVoltage != tiltbackVoltage) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(getString(R.string.tiltback_voltage), (int)(correctedTiltbackVoltage * 10));
-            editor.commit();
-        }
-
-        WheelData.getInstance().setTiltbackVoltage(correctedTiltbackVoltage);
     }
 }

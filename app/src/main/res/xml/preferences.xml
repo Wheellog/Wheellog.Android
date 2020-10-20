@@ -49,6 +49,11 @@
         android:title="@string/edit_mac_addr_title" />
 
     <Preference
+        android:key="@string/profile_name"
+        android:enabled="true"
+        android:title="@string/profile_name_title" />
+
+    <Preference
         android:key="@string/about"
         android:enabled="true"
         android:title="@string/about_app_title" />
