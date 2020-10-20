@@ -12,7 +12,7 @@ import java.util.Set;
 public abstract class AppConfigBase {
     protected AppConfigBase(Context context) {
         this.context = context;
-        this.ownerUID = generalSettingsPrefix;
+        this.specificID = generalSettingsPrefix;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -20,19 +20,19 @@ public abstract class AppConfigBase {
     private final String settingsKeyDelimiter = "_";
     private Context context;
     private SharedPreferences sharedPreferences;
-    private String ownerUID;
+    private String specificID;
 
-    public abstract void switchSettingOwner(String keyString, Boolean fromControl);
+    public abstract void switchSettingSpecific(String keyString, Boolean fromControl);
     public abstract void setAllSettingsToControls();
     public abstract void setAllControlsToSettings();
 
     // Common settings methods
-    public Boolean isGeneralOwner() {
-        return generalSettingsPrefix == this.ownerUID;
+    public Boolean isGeneral() {
+        return generalSettingsPrefix == this.specificID;
     }
 
-    public void initGeneralSettingsOwner() {
-        if (!isGeneralOwner())
+    public void initGeneralSettingsSpecific() {
+        if (!isGeneral())
             return;
 
         if (getIsGeneralSettingsMigrated()) {
@@ -43,16 +43,16 @@ public abstract class AppConfigBase {
         }
     }
 
-    public void changeSettingsOwner(String ownerUID) {
-        if (ownerUID == this.ownerUID)
+    public void changeSettingsSpecific(String specificID) {
+        if (specificID == this.specificID)
             return;
 
-        this.ownerUID = ownerUID;
-        if (getIsOwnerSettingsMigrated()) {
+        this.specificID = specificID;
+        if (getIsSpecificSettingsMigrated()) {
             setAllSettingsToControls();
         } else {
             setAllControlsToSettings();
-            setIsOwnerSettingsMigrated(true);
+            setIsSpecificSettingsMigrated(true);
         }
     }
 
@@ -68,12 +68,12 @@ public abstract class AppConfigBase {
         return generalSettingsPrefix + settingsKeyDelimiter + keyString;
     }
 
-    protected String getOwnerKey(int resId) {
-        return getOwnerKey(getControlKey(resId));
+    protected String getSpecificKey(int resId) {
+        return getSpecificKey(getControlKey(resId));
     }
 
-    public String getOwnerKey(String keyString) {
-        return ownerUID + settingsKeyDelimiter + keyString;
+    public String getSpecificKey(String keyString) {
+        return specificID + settingsKeyDelimiter + keyString;
     }
 
     private String getRequiredKey(int resId, SettingsType settingsType, Boolean... isControl) {
@@ -82,7 +82,7 @@ public abstract class AppConfigBase {
 
         return settingsType == SettingsType.General
                 ? getGeneralKey(resId)
-                : getOwnerKey(resId);
+                : getSpecificKey(resId);
     }
 
     private Boolean isFromControl(Boolean... fromControl) {
@@ -254,17 +254,17 @@ public abstract class AppConfigBase {
         setBoolean("isGeneralSettingsMigrated", newValue);
     }
 
-    public Boolean getIsOwnerSettingsMigrated() {
-        return getBoolean("isOwnerSettingsMigrated", false);
+    public Boolean getIsSpecificSettingsMigrated() {
+        return getBoolean("isSpecificSettingsMigrated", false);
     }
 
-    public void setIsOwnerSettingsMigrated(Boolean newValue) {
-        setBoolean("isOwnerSettingsMigrated", newValue);
+    public void setIsSpecificSettingsMigrated(Boolean newValue) {
+        setBoolean("isSpecificSettingsMigrated", newValue);
     }
 
     public enum SettingsType
     {
         General,
-        Owner,
+        Specific,
     }
 }

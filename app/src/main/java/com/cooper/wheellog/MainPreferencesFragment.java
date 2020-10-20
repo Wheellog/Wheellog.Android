@@ -59,7 +59,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        WheelLog.AppConfig.switchSettingOwner(key, true);
+        WheelLog.AppConfig.switchSettingSpecific(key, true);
         final Context context = getContext();
         if (context == null)
             return;
@@ -353,7 +353,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
                 if (profileNameButton != null) {
                     profileNameButton.setOnPreferenceClickListener(preference -> {
-                        if (WheelLog.AppConfig.isGeneralOwner())
+                        if (WheelLog.AppConfig.isGeneral())
                             return false;
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -574,7 +574,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
         Map<String, AppConfigBase.SettingsType> controlSettings = WheelLog.AppConfig.getControlSettings();
         for (String key : controlSettings.keySet()) {
-            if (controlSettings.get(key) == AppConfigBase.SettingsType.Owner) {
+            if (controlSettings.get(key) == AppConfigBase.SettingsType.Specific) {
                 Preference pref = findPreference(key);
                 if (pref != null)
                     pref.setVisible(isOn);

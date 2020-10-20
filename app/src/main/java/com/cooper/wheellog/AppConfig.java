@@ -8,9 +8,9 @@ import java.util.Set;
 
 // Add methods get and set for new settings at the end of the class
 // If the setting is common to all wheels, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.General" or correct map from "controlSettings"
-// If the setting is unique for each wheel, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.Owner" or correct map from "controlSettings"
+// If the setting is unique for each wheel, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.Specific" or correct map from "controlSettings"
 //
-// Do not forget to add "switchSettingOwner" method and "controlSettings" fields as needed
+// Do not forget to add "switchSettingSpecific" method and "controlSettings" fields as needed
 // If you need a reaction to a change in the setting, you can describe it in "MainPreferencesFragment.onSharedPreferenceChanged" method
 public class AppConfig extends AppConfigBase {
     private AppConfig(Context context) {
@@ -30,59 +30,59 @@ public class AppConfig extends AppConfigBase {
     // Add here all settings that are changed through controls
     private Map<String, SettingsType> controlSettings  = new HashMap<String, SettingsType>() {{
         // Add here all settings that are changed through controls that are unique to each wheel
-        // Remember to add them to the "switchSettingOwner" method
-        put("alarms_enabled", SettingsType.Owner);
-        put("disable_phone_vibrate", SettingsType.Owner);
-        put("disable_phone_beep", SettingsType.Owner);
-        put("alarm_1_speed", SettingsType.Owner);
-        put("alarm_1_battery", SettingsType.Owner);
-        put("alarm_2_speed", SettingsType.Owner);
-        put("alarm_2_battery", SettingsType.Owner);
-        put("alarm_3_speed", SettingsType.Owner);
-        put("alarm_3_battery", SettingsType.Owner);
-        put("alarm_current", SettingsType.Owner);
-        put("alarm_temperature", SettingsType.Owner);
-        put("altered_alarms", SettingsType.Owner);
-        put("rotation_speed", SettingsType.Owner);
-        put("rotation_voltage", SettingsType.Owner);
-        put("power_factor", SettingsType.Owner);
-        put("alarm_factor1", SettingsType.Owner);
-        put("alarm_factor2", SettingsType.Owner);
-        put("alarm_factor3", SettingsType.Owner);
-        put("warning_speed", SettingsType.Owner);
-        put("warning_pwm", SettingsType.Owner);
-        put("warning_speed_period", SettingsType.Owner);
-        put("use_short_pwm", SettingsType.Owner);
-        put("light_enabled", SettingsType.Owner);
-        put("led_enabled", SettingsType.Owner);
-        put("handle_button_disabled", SettingsType.Owner);
-        put("wheel_max_speed", SettingsType.Owner);
-        put("speaker_volume", SettingsType.Owner);
-        put("pedals_adjustment", SettingsType.Owner);
-        put("pedals_mode", SettingsType.Owner);
-        put("light_mode", SettingsType.Owner);
-        put("strobe_mode", SettingsType.Owner);
-        put("led_mode", SettingsType.Owner);
-        put("alarm_mode", SettingsType.Owner);
-        put("gotway_voltage", SettingsType.Owner);
-        put("gotway_negative", SettingsType.Owner);
-        put("wheel_ks_alarm3", SettingsType.Owner);
-        put("wheel_ks_alarm2", SettingsType.Owner);
-        put("wheel_ks_alarm1", SettingsType.Owner);
-        put("use_better_percents", SettingsType.Owner);
-        put("fixed_percents", SettingsType.Owner);
-        put("tiltback_voltage", SettingsType.Owner);
-        put("current_on_dial", SettingsType.Owner);
-        put("battery_capacity", SettingsType.Owner);
-        put("charging_power", SettingsType.Owner);
-        put("connect_beep", SettingsType.Owner);
-        put("max_speed", SettingsType.Owner);
-        put("use_ratio", SettingsType.Owner);
-        put("ks18l_scaler", SettingsType.Owner);
-        put("profile_name", SettingsType.Owner);
+        // Remember to add them to the "switchSettingSpecific" method
+        put("alarms_enabled", SettingsType.Specific);
+        put("disable_phone_vibrate", SettingsType.Specific);
+        put("disable_phone_beep", SettingsType.Specific);
+        put("alarm_1_speed", SettingsType.Specific);
+        put("alarm_1_battery", SettingsType.Specific);
+        put("alarm_2_speed", SettingsType.Specific);
+        put("alarm_2_battery", SettingsType.Specific);
+        put("alarm_3_speed", SettingsType.Specific);
+        put("alarm_3_battery", SettingsType.Specific);
+        put("alarm_current", SettingsType.Specific);
+        put("alarm_temperature", SettingsType.Specific);
+        put("altered_alarms", SettingsType.Specific);
+        put("rotation_speed", SettingsType.Specific);
+        put("rotation_voltage", SettingsType.Specific);
+        put("power_factor", SettingsType.Specific);
+        put("alarm_factor1", SettingsType.Specific);
+        put("alarm_factor2", SettingsType.Specific);
+        put("alarm_factor3", SettingsType.Specific);
+        put("warning_speed", SettingsType.Specific);
+        put("warning_pwm", SettingsType.Specific);
+        put("warning_speed_period", SettingsType.Specific);
+        put("use_short_pwm", SettingsType.Specific);
+        put("light_enabled", SettingsType.Specific);
+        put("led_enabled", SettingsType.Specific);
+        put("handle_button_disabled", SettingsType.Specific);
+        put("wheel_max_speed", SettingsType.Specific);
+        put("speaker_volume", SettingsType.Specific);
+        put("pedals_adjustment", SettingsType.Specific);
+        put("pedals_mode", SettingsType.Specific);
+        put("light_mode", SettingsType.Specific);
+        put("strobe_mode", SettingsType.Specific);
+        put("led_mode", SettingsType.Specific);
+        put("alarm_mode", SettingsType.Specific);
+        put("gotway_voltage", SettingsType.Specific);
+        put("gotway_negative", SettingsType.Specific);
+        put("wheel_ks_alarm3", SettingsType.Specific);
+        put("wheel_ks_alarm2", SettingsType.Specific);
+        put("wheel_ks_alarm1", SettingsType.Specific);
+        put("use_better_percents", SettingsType.Specific);
+        put("fixed_percents", SettingsType.Specific);
+        put("tiltback_voltage", SettingsType.Specific);
+        put("current_on_dial", SettingsType.Specific);
+        put("battery_capacity", SettingsType.Specific);
+        put("charging_power", SettingsType.Specific);
+        put("connect_beep", SettingsType.Specific);
+        put("max_speed", SettingsType.Specific);
+        put("use_ratio", SettingsType.Specific);
+        put("ks18l_scaler", SettingsType.Specific);
+        put("profile_name", SettingsType.Specific);
 
         // Add here all settings, which are changed through controls, which are common for all wheels
-        // Remember to add them to the "switchSettingOwner" method
+        // Remember to add them to the "switchSettingSpecific" method
         put("show_unknown_devices", SettingsType.General);
         put("auto_log", SettingsType.General);
         put("auto_upload_ec", SettingsType.General);
@@ -108,7 +108,7 @@ public class AppConfig extends AppConfigBase {
     }
 
     @Override
-    public void switchSettingOwner(String keyString, Boolean fromControl) {
+    public void switchSettingSpecific(String keyString, Boolean fromControl) {
         Boolean[] fromControlOptional = new Boolean[] { fromControl };
         Boolean[] fromControlReverseOptional = new Boolean[] { !fromControl };
         switch (keyString) {
@@ -196,7 +196,7 @@ public class AppConfig extends AppConfigBase {
     public void setAllSettingsToControls() {
         isInProgressControlsMigration = true;
         for (String key : controlSettings.keySet()) {
-            switchSettingOwner(key, false);
+            switchSettingSpecific(key, false);
         }
         isInProgressControlsMigration = false;
     }
@@ -205,7 +205,7 @@ public class AppConfig extends AppConfigBase {
     // Get all settings from controls and move to application settings
     public void setAllControlsToSettings() {
         for (String key : controlSettings.keySet()) {
-            switchSettingOwner(key, true);
+            switchSettingSpecific(key, true);
         }
     }
 

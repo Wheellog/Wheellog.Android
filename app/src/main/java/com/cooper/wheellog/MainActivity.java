@@ -35,13 +35,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.GotwayAdapter;
 import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
@@ -338,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
                 configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
-                    WheelLog.AppConfig.changeSettingsOwner(mDeviceAddress);
+                    WheelLog.AppConfig.changeSettingsSpecific(mDeviceAddress);
                 }
                 hideSnackBar();
                 break;
@@ -903,7 +901,7 @@ public class MainActivity extends AppCompatActivity {
                 wheelView.setPwm(data.getCalculatedPwm());
 
                 String profileName = WheelLog.AppConfig.getProfileName();
-                if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneralOwner())
+                if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneral())
                     wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
                 else
                     wheelView.setWheelModel(profileName);
@@ -1172,7 +1170,7 @@ public class MainActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
-        WheelLog.AppConfig.initGeneralSettingsOwner();
+        WheelLog.AppConfig.initGeneralSettingsSpecific();
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
