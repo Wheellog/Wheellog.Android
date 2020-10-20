@@ -15,6 +15,7 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Typefaces;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import timber.log.Timber;
@@ -160,9 +161,9 @@ public class WheelView extends View {
                 new ViewBlockInfo(getResources().getString(R.string.power),
                         () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.watt), WheelData.getInstance().getPowerDouble()), false),
                 new ViewBlockInfo(getResources().getString(R.string.temperature),
-                        () -> String.format(Locale.US, "%d °C", WheelData.getInstance().getTemperature()), false),
+                        () -> String.format(Locale.US, "%d ℃", WheelData.getInstance().getTemperature()), false),
                 new ViewBlockInfo(getResources().getString(R.string.temperature2),
-                        () -> String.format(Locale.US, "%d °C", WheelData.getInstance().getTemperature2()), false),
+                        () -> String.format(Locale.US, "%d ℃", WheelData.getInstance().getTemperature2()), false),
                 new ViewBlockInfo(getResources().getString(R.string.average_speed),
                         () -> {
                             if (mUseMPH) {
@@ -204,6 +205,13 @@ public class WheelView extends View {
             targetBattery = Math.round(((float) 40 / 100) * mBattery);
             currentBattery = targetBattery;
             mWheelModel = "GotInSong Z10";
+            try {
+                Field f1 = WheelData.class.getDeclaredField("mInstance");
+                f1.setAccessible(true);
+                f1.set(null, new WheelData());
+            } catch (NoSuchFieldException ignored) {
+            } catch (IllegalAccessException ignored) {
+            }
         }
 
         mViewBlocks = getViewBlockInfo();
@@ -520,11 +528,10 @@ public class WheelView extends View {
     private void drawTextBox(String header, String value, Canvas canvas, RectF rect, Paint paint) {
         if (header.length() > 10) {
             paint.setTextSize(Math.min(boxTextSize * 0.8f, calculateFontSize(boundaryOfText, rect, header, paint)));
-            canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), paint);
         } else {
             paint.setTextSize(boxTextSize * 0.8f);
-            canvas.drawText(header, rect.centerX(), rect.centerY() - (box_inner_padding / 2), paint);
         }
+        canvas.drawText(header, rect.centerX(), rect.centerY() - box_inner_padding, paint);
         paint.setTextSize(boxTextSize);
         canvas.drawText(value, rect.centerX(), rect.centerY() + boxTextHeight, paint);
     }
@@ -604,12 +611,11 @@ public class WheelView extends View {
                 boxTop += boxH + box_inner_padding;
             }
         }
-        boxTextSize = calculateFontSize(boundaryOfText, boxRects[0], getResources().getString(R.string.top_speed) + "W", textPaint, 2);
+        boxTextSize = calculateFontSize(boundaryOfText, boxRects[0], getResources().getString(R.string.top_speed) + "W", textPaint, 2) * 1.2f;
         boxTextHeight = boundaryOfText.height();
 
         Paint paint = new Paint(textPaint);
         paint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        paint.setTextSize(boxTextSize);
 
         try {
             int i = 0;
@@ -745,16 +751,16 @@ public class WheelView extends View {
             else
                 canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
 
-            String temperatureString = String.format(Locale.US, "%02dC", mTemperature);
+            String temperatureString = String.format(Locale.US, "%02d℃", mTemperature);
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
             canvas.save();
 
             // Max temperature
             if (getWidth() > getHeight())
-                canvas.rotate((40F + (1 * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
+                canvas.rotate((42F + (1 * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
             else
-                canvas.rotate((40F + (1 * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
+                canvas.rotate((42F + (1 * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
             String maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature);
             canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
