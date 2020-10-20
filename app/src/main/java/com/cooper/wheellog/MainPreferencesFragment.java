@@ -32,15 +32,14 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void changeWheelType() {
-        GotwayAdapter.getInstance().resetTiltbackVoltage();
         mWheelType = WheelData.getInstance().getWheelType();
-        switchOwnerSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
+        switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
     }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences);
-        switchOwnerSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
+        switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         WheelData.getInstance().addListener(this);
     }
 
@@ -376,7 +375,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             case Speed:
                 tb.setTitle(getText(R.string.speed_settings_title));
                 hideShowSeekBarsApp();
-                switchGotwayAndVeteranOnlySettings(WheelData.getInstance().isSupportsFixedPercents());
                 break;
             case Logs:
                 tb.setTitle(getText(R.string.logs_settings_title));
@@ -428,7 +426,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z || mWheelType == WHEEL_TYPE.VETERAN))
             wheelButton.setEnabled(true);
 
-        switchOwnerSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
+        switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         currentScreen = SettingsScreen.Main;
         setupScreen();
     }
@@ -541,29 +539,14 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
     }
 
-    public void switchGotwayAndVeteranOnlySettings(boolean isGotwayOrVeteran) {
+    private void switchSpecificSettings(Boolean isOn) {
         String[] preferencesForOwner = {
-                getString(R.string.fixed_percents),
-                getString(R.string.tiltback_voltage),
-                getString(R.string.battery_capacity),
-                getString(R.string.charging_power),
-        };
-
-        for (String preference : preferencesForOwner) {
-            Preference pref = findPreference(preference);
-            if (pref != null)
-                pref.setVisible(isGotwayOrVeteran);
-        }
-    }
-
-    private void switchOwnerSettings(Boolean isOn) {
-        String[] preferencesForOwner = {
-                getString(R.string.alarm_preferences),
-                getString(R.string.wheel_settings),
-                getString(R.string.reset_top_speed),
-                getString(R.string.reset_lowest_battery),
-                getString(R.string.reset_user_distance),
-                getString(R.string.profile_name)
+            getString(R.string.alarm_preferences),
+            getString(R.string.wheel_settings),
+            getString(R.string.reset_top_speed),
+            getString(R.string.reset_lowest_battery),
+            getString(R.string.reset_user_distance),
+            getString(R.string.profile_name)
         };
 
         for (String preference : preferencesForOwner) {
@@ -578,6 +561,22 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 Preference pref = findPreference(key);
                 if (pref != null)
                     pref.setVisible(isOn);
+            }
+        }
+
+        // Hide settings that are only available for Gotway and Veteran
+        if (isOn && mWheelType != WHEEL_TYPE.GOTWAY && mWheelType != WHEEL_TYPE.VETERAN) {
+            String[] preferences = {
+                    getString(R.string.fixed_percents),
+                    getString(R.string.tiltback_voltage),
+                    getString(R.string.battery_capacity),
+                    getString(R.string.charging_power),
+            };
+
+            for (String preference : preferences) {
+                Preference pref = findPreference(preference);
+                if (pref != null)
+                    pref.setVisible(false);
             }
         }
     }
