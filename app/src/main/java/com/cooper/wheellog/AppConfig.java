@@ -29,6 +29,10 @@ public class AppConfig extends AppConfigBase {
     private Boolean isInProgressControlsMigration = false;
 
     public int getResId(String resName) {
+        if (resName == null || resName == "") {
+            return -1;
+        }
+
         try {
             Field idField = R.string.class.getDeclaredField(resName);
             return idField.getInt(idField);

@@ -41,8 +41,13 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         addPreferencesFromResource(R.xml.preferences);
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         WheelData.getInstance().addListener(this);
+
+        // Reset ElectroClub settings
         ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
         ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
+        if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() == null) {
+            WheelLog.AppConfig.setAutoUploadEc(false, true);
+        }
     }
 
     @Override
