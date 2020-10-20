@@ -41,6 +41,13 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         addPreferencesFromResource(R.xml.preferences);
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         WheelData.getInstance().addListener(this);
+
+        // Reset ElectroClub settings
+        ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
+        ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
+        if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() == null) {
+            WheelLog.AppConfig.setAutoUploadEc(false, true);
+        }
     }
 
     @Override
@@ -65,15 +72,21 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
         // Add a check for control migration when setting a value on wheels
         // Through WheelLog.AppConfig.getIsInProgressControlsMigration() method
-        switch (key) {
-            case "connection_sound":
+        switch (WheelLog.AppConfig.getResId(key)) {
+            case R.string.ec_token:
+                ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
+                break;
+            case R.string.ec_user_id:
+                ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
+                break;
+            case R.string.connection_sound:
                 hideShowSeekBarsApp();
                 break;
-            case "alarms_enabled":
-            case "altered_alarms":
+            case R.string.alarms_enabled:
+            case R.string.altered_alarms:
                 hideShowSeekBarsAlarms();
                 break;
-            case "auto_upload_ec":
+            case R.string.auto_upload_ec:
                 if (WheelLog.AppConfig.getAutoUploadEc() && !mDataWarningDisplayed) {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
                     new AlertDialog.Builder(context)
@@ -83,24 +96,21 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                                 mDataWarningDisplayed = true;
                                 WheelLog.AppConfig.setAutoUploadEc(true, true);
                                 refreshVolatileSettings();
-                                context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
                             .setNegativeButton(android.R.string.no, (dialog, which) -> {
                                 mDataWarningDisplayed = false;
                                 refreshVolatileSettings();
-                                context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
                             })
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show();
-                } else {
+                } else
                     mDataWarningDisplayed = false;
-                }
                 break;
-            case "max_speed":
-            case "use_mph":
+            case R.string.max_speed:
+            case R.string.use_mph:
                 context.sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
-            case "use_eng":
+            case R.string.use_eng:
                 new AlertDialog.Builder(context)
                         .setTitle(R.string.use_eng_alert_title)
                         .setMessage(R.string.use_eng_alert_description)
@@ -108,73 +118,80 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                         .setIcon(android.R.drawable.ic_dialog_info)
                         .show();
                 break;
-            case "light_enabled":
+            case R.string.light_enabled:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateLight(WheelLog.AppConfig.getLightEnabled());
                 break;
-            case "led_enabled":
+            case R.string.led_enabled:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateLed(WheelLog.AppConfig.getLedEnabled());
                 break;
-            case "handle_button_disabled":
+            case R.string.handle_button_disabled:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.getHandleButtonDisabled());
                 break;
-            case "wheel_max_speed":
+            case R.string.wheel_max_speed:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.getWheelMaxSpeed());
                 break;
-            case "speaker_volume":
+            case R.string.speaker_volume:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.getSpeakerVolume());
                 break;
-            case "pedals_adjustment":
+            case R.string.pedals_adjustment:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updatePedals(WheelLog.AppConfig.getPedalsAdjustment());
                 break;
-            case "pedals_mode":
+            case R.string.pedals_mode:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.getPedalsMode());
                 break;
-            case "light_mode":
+            case R.string.light_mode:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateLightMode(WheelLog.AppConfig.getLightMode());
                 break;
-            case "alarm_mode":
+            case R.string.alarm_mode:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.getAlarmMode());
                 break;
-            case "strobe_mode":
+            case R.string.strobe_mode:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateStrobe(WheelLog.AppConfig.getStrobeMode());
                 break;
-            case "led_mode":
+            case R.string.led_mode:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     WheelData.getInstance().updateLedMode(WheelLog.AppConfig.getLedMode());
                 break;
-            case "wheel_ks_alarm3":
+            case R.string.wheel_ks_alarm3:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.getWheelKsAlarm3());
                 break;
-            case "wheel_ks_alarm2":
+            case R.string.wheel_ks_alarm2:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.getWheelKsAlarm2());
                 break;
-            case "wheel_ks_alarm1":
+            case R.string.wheel_ks_alarm1:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
                     KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.getWheelKsAlarm1());
                 break;
-            case "current_on_dial":
+            case R.string.ks18l_scaler:
+                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
+                    KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.getKs18LScaler());
+                break;
+            case R.string.current_on_dial:
                 Timber.i("Change dial type to %b", WheelLog.AppConfig.getCurrentOnDial());
                 break;
-            case "gotway_voltage":
-            case "last_mac":
+            case R.string.gotway_voltage:
+            case R.string.last_mac:
                 GotwayAdapter.getInstance().resetTiltbackVoltage();
                 break;
         }
 
-        if (WheelLog.AppConfig.getControlSettings().containsKey(key) && !WheelLog.AppConfig.getIsInProgressControlsMigration())
-            context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+        if (WheelLog.AppConfig.getControlSettings().containsKey(key) && !WheelLog.AppConfig.getIsInProgressControlsMigration()) {
+            Intent intent = new Intent(Constants.ACTION_PREFERENCE_CHANGED);
+            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, key);
+            context.sendBroadcast(intent);
+        }
     }
 
     private void setupScreen() {

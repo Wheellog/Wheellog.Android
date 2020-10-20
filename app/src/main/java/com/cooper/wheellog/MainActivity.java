@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
 
-            loadPreferences(false);
+            loadPreferences();
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);
@@ -295,7 +295,8 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
-                    loadPreferences(true);
+                    String settingsKey = intent.getStringExtra(Constants.INTENT_EXTRA_SETTINGS_KEY);
+                    loadPreferences(settingsKey);
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
@@ -1385,7 +1386,7 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setTextColor(getResources().getColor(android.R.color.white));
         xAxis.setValueFormatter(chartAxisValueFormatter);
 
-        loadPreferences(true);
+        loadPreferences();
 
         if (WheelLog.AppConfig.isFirstRun()) {
             new Handler().postDelayed(new Runnable() {
@@ -1567,7 +1568,36 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void loadPreferences(boolean requests) {
+    private void loadPreferences() {
+        loadPreferences("");
+    }
+
+    private void loadPreferences(String settingsKey) {
+        switch (WheelLog.AppConfig.getResId(settingsKey)) {
+            case R.string.auto_log:
+                if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+                    MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
+                break;
+            case R.string.log_location_data:
+                if (WheelLog.AppConfig.getLogLocationData())
+                    MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
+                break;
+            case R.string.auto_upload_ec:
+                if (WheelLog.AppConfig.getAutoUploadEc()) {
+                    if (ElectroClub.getInstance().getUserToken() == null)
+                        startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
+                    else
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null); // TODO check user token
+                } else {
+                    // TODO: need to implement a logout
+                    // logout after uncheck
+                    ElectroClub.getInstance().setUserToken(null);
+                    ElectroClub.getInstance().setUserId(null);
+                    WheelLog.AppConfig.setEcToken(null, true);
+                }
+                break;
+        }
+
         Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
         if (view_blocks == null) {
             Set<String> view_blocks_def = new HashSet<String>();
@@ -1578,40 +1608,10 @@ public class MainActivity extends AppCompatActivity {
             view_blocks_def.add(getString(R.string.distance));
             view_blocks_def.add(getString(R.string.total));
             wheelView.updateViewBlocksVisibility(view_blocks_def);
-        } else {
+        } else
             wheelView.updateViewBlocksVisibility(view_blocks);
-        }
 
         wheelView.invalidate();
-        if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
-            KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.getKs18LScaler());
-
-        ElectroClub.getInstance().setUserToken(WheelLog.AppConfig.getEcToken());
-        ElectroClub.getInstance().setUserId(WheelLog.AppConfig.getEcUserId());
-
-        if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-            MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
-
-        if (WheelLog.AppConfig.getLogLocationData())
-            MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
-
-        if (requests) {
-            if (WheelLog.AppConfig.getAutoUploadEc()) {
-                if (ElectroClub.getInstance().getUserToken() == null) {
-                    startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
-                } else {
-                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
-                    // TODO check user token
-                }
-            } else {
-                // TODO: need to implement a logout
-                // logout after uncheck
-                ElectroClub.getInstance().setUserToken(null);
-                ElectroClub.getInstance().setUserId(null);
-                WheelLog.AppConfig.setEcToken(null, true);
-            }
-        }
-
         updateScreen(true);
     }
 
@@ -1772,7 +1772,7 @@ public class MainActivity extends AppCompatActivity {
                     ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
                 } else {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
-                    WheelLog.AppConfig.setEcToken(null);
+                    WheelLog.AppConfig.setEcToken(null, true);
                     WheelLog.AppConfig.setEcUserId(null, true);
                     ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
                 }

@@ -2,6 +2,7 @@ package com.cooper.wheellog;
 
 import android.content.Context;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,20 @@ public class AppConfig extends AppConfigBase {
     }
 
     private Boolean isInProgressControlsMigration = false;
+
+    public int getResId(String resName) {
+        if (resName == null || resName == "") {
+            return -1;
+        }
+
+        try {
+            Field idField = R.string.class.getDeclaredField(resName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
     // Add here all settings that are changed through controls
     private Map<String, SettingsType> controlSettings  = new HashMap<String, SettingsType>() {{
