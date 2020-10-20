@@ -1573,16 +1573,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadPreferences(String settingsKey) {
-        switch (settingsKey) {
-            case "auto_log":
+        switch (WheelLog.AppConfig.getResId(settingsKey)) {
+            case R.string.auto_log:
                 if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
                     MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
                 break;
-            case "log_location_data":
+            case R.string.log_location_data:
                 if (WheelLog.AppConfig.getLogLocationData())
                     MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
                 break;
-            case "auto_upload_ec":
+            case R.string.auto_upload_ec:
                 if (WheelLog.AppConfig.getAutoUploadEc()) {
                     if (ElectroClub.getInstance().getUserToken() == null)
                         startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
