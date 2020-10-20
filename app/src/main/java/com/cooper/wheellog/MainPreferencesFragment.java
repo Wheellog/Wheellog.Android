@@ -21,7 +21,6 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.GotwayAdapter;
 import com.cooper.wheellog.utils.KingsongAdapter;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import timber.log.Timber;
