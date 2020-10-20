@@ -174,7 +174,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 break;
         }
 
-        context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
+        if (WheelLog.AppConfig.getControlSettings().containsKey(key) && !WheelLog.AppConfig.getIsInProgressControlsMigration())
+            context.sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_CHANGED));
     }
 
     private void setupScreen() {
