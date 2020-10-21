@@ -18,7 +18,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.GotwayAdapter;
 import com.cooper.wheellog.utils.KingsongAdapter;
 
 import java.util.Map;
@@ -39,7 +38,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences);
-        switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         WheelData.getInstance().addListener(this);
 
         // Reset ElectroClub settings
@@ -180,10 +178,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 break;
             case R.string.current_on_dial:
                 Timber.i("Change dial type to %b", WheelLog.AppConfig.getCurrentOnDial());
-                break;
-            case R.string.gotway_voltage:
-            case R.string.last_mac:
-                GotwayAdapter.getInstance().resetTiltbackVoltage();
                 break;
         }
 
@@ -407,6 +401,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 tb.setTitle(getText(R.string.wheel_settings_title));
                 break;
         }
+
+        switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
     }
 
     void refreshVolatileSettings() {
@@ -443,7 +439,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         if ((mWheelType == WHEEL_TYPE.INMOTION || mWheelType == WHEEL_TYPE.KINGSONG || mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.NINEBOT_Z || mWheelType == WHEEL_TYPE.VETERAN))
             wheelButton.setEnabled(true);
 
-        switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         currentScreen = SettingsScreen.Main;
         setupScreen();
     }
@@ -557,16 +552,17 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     }
 
     private void switchSpecificSettings(Boolean isOn) {
-        String[] preferencesForOwner = {
+        String[] specificPreferences = {
             getString(R.string.alarm_preferences),
             getString(R.string.wheel_settings),
             getString(R.string.reset_top_speed),
             getString(R.string.reset_lowest_battery),
             getString(R.string.reset_user_distance),
+            getString(R.string.last_mac),
             getString(R.string.profile_name)
         };
 
-        for (String preference : preferencesForOwner) {
+        for (String preference : specificPreferences) {
             Preference pref = findPreference(preference);
             if (pref != null)
                 pref.setVisible(isOn);
@@ -581,13 +577,13 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             }
         }
 
-        // Hide settings that are only available for Gotway and Veteran
-        if (isOn && mWheelType != WHEEL_TYPE.GOTWAY && mWheelType != WHEEL_TYPE.VETERAN) {
+        // Hide inaccessible settings for VoltageTiltbackUnsupported wheels
+        if (WheelData.getInstance().isVoltageTiltbackUnsupported()) {
             String[] preferences = {
-                    getString(R.string.fixed_percents),
-                    getString(R.string.tiltback_voltage),
-                    getString(R.string.battery_capacity),
-                    getString(R.string.charging_power),
+                getString(R.string.fixed_percents),
+                getString(R.string.cell_voltage_tiltback),
+                getString(R.string.battery_capacity),
+                getString(R.string.charging_power),
             };
 
             for (String preference : preferences) {

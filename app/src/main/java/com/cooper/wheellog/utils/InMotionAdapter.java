@@ -14,7 +14,7 @@ import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 /**
  * Created by cedric on 29/12/2016.
  */
-public class InMotionAdapter implements IWheelAdapter {
+public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
     private boolean passwordSent = false;
@@ -1361,6 +1361,11 @@ public class InMotionAdapter implements IWheelAdapter {
             state = UnpackerState.unknown;
 
         }
+    }
+
+    @Override
+    public int getCellSForWheel() {
+        return 20;
     }
 
     public static InMotionAdapter getInstance() {

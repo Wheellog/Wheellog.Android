@@ -86,7 +86,7 @@ public class AppConfig extends AppConfigBase {
         put("wheel_ks_alarm1", SettingsType.Specific);
         put("use_better_percents", SettingsType.Specific);
         put("fixed_percents", SettingsType.Specific);
-        put("tiltback_voltage", SettingsType.Specific);
+        put("cell_voltage_tiltback", SettingsType.Specific);
         put("current_on_dial", SettingsType.Specific);
         put("battery_capacity", SettingsType.Specific);
         put("charging_power", SettingsType.Specific);
@@ -169,7 +169,7 @@ public class AppConfig extends AppConfigBase {
             case "wheel_ks_alarm1": setWheelKsAlarm3(getWheelKsAlarm3(fromControlOptional), fromControlReverseOptional); break;
             case "use_better_percents": setUseBetterPercents(getUseBetterPercents(fromControlOptional), fromControlReverseOptional); break;
             case "fixed_percents": setFixedPercents(getFixedPercents(fromControlOptional), fromControlReverseOptional); break;
-            case "tiltback_voltage": setTiltbackVoltage(getTiltbackVoltage(fromControlOptional), fromControlReverseOptional); break;
+            case "cell_voltage_tiltback": setCellVoltageTiltback(getCellVoltageTiltback(fromControlOptional), fromControlReverseOptional); break;
             case "current_on_dial": setCurrentOnDial(getCurrentOnDial(fromControlOptional), fromControlReverseOptional); break;
             case "battery_capacity": setBatteryCapacity(getBatteryCapacity(fromControlOptional), fromControlReverseOptional); break;
             case "charging_power": setChargingPower(getChargingPower(fromControlOptional), fromControlReverseOptional); break;
@@ -706,12 +706,12 @@ public class AppConfig extends AppConfigBase {
         setBoolean(R.string.fixed_percents, newValue, settingsType(R.string.fixed_percents), fromControl);
     }
 
-    public double getTiltbackVoltage(Boolean... fromControl) {
-        return getInt(R.string.tiltback_voltage, 660, settingsType(R.string.tiltback_voltage), fromControl) / 10.0;
+    public double getCellVoltageTiltback(Boolean... fromControl) {
+        return getInt(R.string.cell_voltage_tiltback, 330, settingsType(R.string.cell_voltage_tiltback), fromControl) / 100.0;
     }
 
-    public void setTiltbackVoltage(double newValue, Boolean... fromControl) {
-        setInt(R.string.tiltback_voltage, (int)(newValue * 10), settingsType(R.string.tiltback_voltage), fromControl);
+    public void setCellVoltageTiltback(double newValue, Boolean... fromControl) {
+        setInt(R.string.cell_voltage_tiltback, (int)(newValue * 100), settingsType(R.string.cell_voltage_tiltback), fromControl);
     }
 
     public Boolean getUsePipMode(Boolean... fromControl) {
