@@ -671,6 +671,7 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.voltage_sag);
                 setupFieldForSecondPage(R.string.current);
                 setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.charging);
                 break;
 
             case INMOTION_V2:
@@ -698,6 +699,7 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.model);
                 setupFieldForSecondPage(R.string.version);
                 setupFieldForSecondPage(R.string.serial_number);
+                setupFieldForSecondPage(R.string.charging);
                 break;
 
 

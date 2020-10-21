@@ -43,15 +43,15 @@
     </string-array>
 	
 	<string-array name="alarm_mode_gw">
+        <item>@string/on_level_alarm</item>
         <item>@string/off_level_1_alarm</item>
         <item>@string/off_level_2_alarm</item>
-        <item>@string/on_level_alarm</item>
     </string-array>
 	
 	<string-array name="alarm_mode_values">
+        <item>2</item>
         <item>0</item>
         <item>1</item>
-        <item>2</item>
     </string-array>	
 	
 	<string-array name="light_mode_values">

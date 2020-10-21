@@ -124,9 +124,9 @@
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="battery_voltage_title">Напряжение батареи</string>
     <string name="battary_voltage_description">67В/84В/100В</string>
-    <string name="off_level_1_alarm">Отключить первое предупреждение.</string>
-    <string name="off_level_2_alarm">Отключить второе предупреждение.</string>
-    <string name="on_level_alarm">Включить предупреждения</string>
+    <string name="off_level_1_alarm">35 км/ч + 80% PWM</string>
+    <string name="off_level_2_alarm">Только 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 км/ч + 80% PWM</string>
     <string name="metre">м</string>
     <string name="on_headlight_title">Включение фонаря</string>
     <string name="on_headlight_description">Включает передний фонарь для освещения дороги.</string>
@@ -189,8 +189,8 @@
     <string name="use_better_percents_title">Улучшенные проценты</string>
     <string name="fixed_percents_title">Фиксированные проценты</string>
     <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
-    <string name="tiltback_voltage_title">Напряжение подъёма педалей</string>
-    <string name="tiltback_voltage_description">Напряжение, при котором колесо поднимает педали</string>
+    <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
+    <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_eng_title">English</string>

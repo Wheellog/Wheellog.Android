@@ -23,16 +23,16 @@
         android:visible="true" />
 
     <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-        android:defaultValue="660"
-        android:key="@string/tiltback_voltage"
-        android:summary="@string/tiltback_voltage_description"
-        android:title="@string/tiltback_voltage_title"
+        android:defaultValue="330"
+        android:key="@string/cell_voltage_tiltback"
+        android:summary="@string/cell_voltage_tiltback_description"
+        android:title="@string/cell_voltage_tiltback_title"
         sample:dependency="fixed_percents"
-        sample:sbp_decimalPlaces="1"
+        sample:sbp_decimalPlaces="2"
         sample:sbp_increment="1"
-        sample:sbp_maxValue="900"
+        sample:sbp_maxValue="400"
         sample:sbp_measurementUnit="V"
-        sample:sbp_minValue="300" />
+        sample:sbp_minValue="250" />
 
     <CheckBoxPreference
         android:key="@string/use_mph"

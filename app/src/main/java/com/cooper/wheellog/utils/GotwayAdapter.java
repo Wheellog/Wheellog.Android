@@ -6,7 +6,7 @@ import com.cooper.wheellog.WheelLog;
 import java.util.Locale;
 import timber.log.Timber;
 
-public class GotwayAdapter implements IWheelAdapter {
+public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
 
     private static final double RATIO_GW = 0.875;
@@ -175,27 +175,6 @@ public class GotwayAdapter implements IWheelAdapter {
         return WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.VETERAN;
     }
 
-    public void resetTiltbackVoltage() {
-        double currentValue = WheelLog.AppConfig.getTiltbackVoltage();
-        double correctedValue = getCorrectedTiltbackVoltage(currentValue);
-        if (currentValue != correctedValue)
-            WheelLog.AppConfig.setTiltbackVoltage(correctedValue, true);
-    }
-
-    public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
-        if (isVeteran()) {
-            return tiltbackVoltage > 79.2 || tiltbackVoltage < 72
-                    ? 75.6
-                    : tiltbackVoltage;
-        }
-
-        double min = getScaledVoltage(48);
-        double max = getScaledVoltage(52.8);
-        return tiltbackVoltage > max || tiltbackVoltage < min
-                ? max
-                : tiltbackVoltage;
-    }
-
     @Override
     public void updatePedalsMode(int pedalsMode) {
         WheelData.getInstance().updatePedalsMode(pedalsMode);
@@ -209,6 +188,20 @@ public class GotwayAdapter implements IWheelAdapter {
     @Override
     public void updateMaxSpeed(int wheelMaxSpeed) {
 
+    }
+
+    @Override
+    public int getCellSForWheel() {
+        if (isVeteran()) {
+            return 24;
+        }
+
+        switch (WheelLog.AppConfig.getGotwayVoltage()) {
+            case 0: return 16;
+            case 1: return 20;
+        }
+
+        return 24;
     }
 
     public static GotwayAdapter getInstance() {

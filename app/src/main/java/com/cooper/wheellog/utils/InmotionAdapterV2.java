@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import timber.log.Timber;
 
-public class InmotionAdapterV2 implements IWheelAdapter {
+public class InmotionAdapterV2 extends BaseAdapter {
     private static InmotionAdapterV2 INSTANCE;
     private Timer keepAliveTimer;
     private boolean settingCommandReady = false;
@@ -501,6 +501,11 @@ public class InmotionAdapterV2 implements IWheelAdapter {
             state = InmotionAdapterV2.InmotionUnpackerV2.UnpackerState.unknown;
 
         }
+    }
+
+    @Override
+    public int getCellSForWheel() {
+        return 20;
     }
 
     public static void newInstance() {

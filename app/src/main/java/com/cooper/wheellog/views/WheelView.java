@@ -728,7 +728,7 @@ public class WheelView extends View {
                     canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
                 String batteryCalculateType = "true";
-                if (fixedPercents && WheelData.getInstance().isSupportsFixedPercents())
+                if (fixedPercents && !WheelData.getInstance().isVoltageTiltbackUnsupported())
                     batteryCalculateType = "fixed";
 
                 String batteryString = String.format(Locale.US, "%s", batteryCalculateType);
