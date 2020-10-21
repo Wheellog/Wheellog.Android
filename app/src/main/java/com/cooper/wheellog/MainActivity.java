@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -41,7 +42,6 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.KingsongAdapter;
-import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -1360,7 +1360,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Typeface typefacePrime = Typefaces.get(this, "fonts/prime.otf");
+        Typeface typefacePrime = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                ? getResources().getFont(R.font.prime)
+                : ResourcesCompat.getFont(this, R.font.prime);
         TextClock textClock = (TextClock) findViewById(R.id.textClock);
         textClock.setTypeface(typefacePrime);
 

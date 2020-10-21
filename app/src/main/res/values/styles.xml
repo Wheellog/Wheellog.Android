@@ -36,6 +36,7 @@
         <item name="android:gravity">left</item>
         <item name="layout_columnWeight">1</item>
         <item name="android:textColor">#AAFFFFFF</item>
+        <item name="android:fontFamily">@font/prime</item>
     </style>
 
     <style name="Stats.Title" parent="@style/Stats">
@@ -44,6 +45,7 @@
         <item name="android:paddingRight">20dp</item>
         <item name="android:gravity">right</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/prime</item>
     </style>
 
     <style name="StatsBMS" parent="@android:style/TextAppearance.Medium">
