@@ -8,4 +8,6 @@ public interface IWheelAdapter {
     void updateLightMode(int lightMode);
 
     void updateMaxSpeed(int wheelMaxSpeed);
+
+    int getCellSForWheel();
 }

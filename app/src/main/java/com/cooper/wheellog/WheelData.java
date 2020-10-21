@@ -782,24 +782,12 @@ public class WheelData {
         mModeStr = value;
     }
 
-    int getCellSForWheel() {
-        switch (getWheelType()) {
-            case KINGSONG: return KingsongAdapter.getInstance().getCellSForWheel();
-            case GOTWAY: return GotwayAdapter.getInstance().getCellSForWheel();
-            case INMOTION: return InMotionAdapter.getInstance().getCellSForWheel();
-            case INMOTION_V2: return InmotionAdapterV2.getInstance().getCellSForWheel();
-            case VETERAN: return GotwayAdapter.getInstance().getVeteranCellSForWheel();
-        }
-
-        return  0;
-    }
-
     double getMaxVoltageForWheel() {
-        return Constants.MAX_CELL_VOLTAGE * getCellSForWheel();
+        return Constants.MAX_CELL_VOLTAGE * getAdapter().getCellSForWheel();
     }
 
     double getVoltageTiltbackForWheel() {
-        return WheelLog.AppConfig.getCellVoltageTiltback() * getCellSForWheel();
+        return WheelLog.AppConfig.getCellVoltageTiltback() * getAdapter().getCellSForWheel();
     }
 
     public boolean isVoltageTiltbackUnsupported() {

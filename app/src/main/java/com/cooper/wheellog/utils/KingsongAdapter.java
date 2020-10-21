@@ -6,7 +6,7 @@ import com.cooper.wheellog.WheelLog;
 import java.util.Locale;
 import timber.log.Timber;
 
-public class KingsongAdapter implements IWheelAdapter {
+public class KingsongAdapter extends BaseAdapter implements IWheelAdapter {
     private static KingsongAdapter INSTANCE;
 
     private int mKSAlarm1Speed = 0;
@@ -175,6 +175,7 @@ public class KingsongAdapter implements IWheelAdapter {
         return StringUtil.inArray(WheelData.getInstance().getModel(), new String[] { "KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || WheelData.getInstance().getModel().startsWith("ROCKW");
     }
 
+    @Override
     public int getCellSForWheel() {
         return is84vWheel() ? 20 : 16;
     }

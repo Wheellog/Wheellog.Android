@@ -6,7 +6,7 @@ import com.cooper.wheellog.WheelLog;
 import java.util.Locale;
 import timber.log.Timber;
 
-public class GotwayAdapter implements IWheelAdapter {
+public class GotwayAdapter extends BaseAdapter implements IWheelAdapter {
     private static GotwayAdapter INSTANCE;
 
     private static final double RATIO_GW = 0.875;
@@ -190,17 +190,18 @@ public class GotwayAdapter implements IWheelAdapter {
 
     }
 
+    @Override
     public int getCellSForWheel() {
+        if (isVeteran()) {
+            return 24;
+        }
+
         switch (WheelLog.AppConfig.getGotwayVoltage()) {
             case 0: return 16;
             case 1: return 20;
         }
 
-        return  24;
-    }
-
-    public int getVeteranCellSForWheel() {
-        return  24;
+        return 24;
     }
 
     public static GotwayAdapter getInstance() {
