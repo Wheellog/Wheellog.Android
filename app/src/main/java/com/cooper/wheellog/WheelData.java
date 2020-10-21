@@ -182,7 +182,7 @@ public class WheelData {
     private long timestamp_last;
     private static AudioTrack audioTrack = null;
 
-    public IWheelAdapter getAdapter() {
+    public BaseAdapter getAdapter() {
         switch (mWheelType) {
             case GOTWAY:
             case VETERAN:
