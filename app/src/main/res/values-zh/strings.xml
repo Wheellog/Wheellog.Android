@@ -124,7 +124,6 @@
     <string name="edit_mac_addr_title">编辑MAC地址</string>
     <string name="about_app_title">关于WheelLog</string>
     <string name="settings_title">设置</string>
-    <string name="wheel_pass_imotion">轮子密码(仅限乐行)</string>
     <string name="amp">A</string>
     <string name="max_speed_dial_title">最大速度</string>
     <string name="max_speed_dial_description">外部表盘上显示的最高速度</string>

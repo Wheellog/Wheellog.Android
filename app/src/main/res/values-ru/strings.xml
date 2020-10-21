@@ -77,7 +77,6 @@
     <string name="profile_name_title">Изменить имя профиля</string>
     <string name="about_app_title">О программе Wheellog</string>
     <string name="settings_title">Настройки</string>
-    <string name="wheel_pass_imotion">Пароль (только для Inmotion)</string>
     <string name="amp">А</string>
     <string name="max_speed_dial_title">Верхняя граница внешней шкалы</string>
     <string name="use_mph_title">Использовать мили</string>

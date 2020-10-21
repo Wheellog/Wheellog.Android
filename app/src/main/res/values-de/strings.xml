@@ -130,7 +130,6 @@
 	<string name="edit_mac_addr_title">MAC adresse ändern</string>
 	<string name="about_app_title">Über WheelLog</string>
 	<string name="settings_title">Einstellungen</string>
-	<string name="wheel_pass_imotion">Rad Passwort ( nur InMotion )</string>
 	<string name="amp">A</string>
 	<string name="max_speed_dial_title">Max. Geschwindigkeit</string>
 	<string name="max_speed_dial_description">Max. angezeigte Geschwindigkeit (Tachometer)</string>
