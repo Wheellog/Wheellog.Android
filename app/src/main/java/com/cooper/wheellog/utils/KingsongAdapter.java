@@ -6,7 +6,7 @@ import com.cooper.wheellog.WheelLog;
 import java.util.Locale;
 import timber.log.Timber;
 
-public class KingsongAdapter extends BaseAdapter implements IWheelAdapter {
+public class KingsongAdapter extends BaseAdapter {
     private static KingsongAdapter INSTANCE;
 
     private int mKSAlarm1Speed = 0;

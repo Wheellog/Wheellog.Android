@@ -6,7 +6,7 @@ import com.cooper.wheellog.WheelLog;
 import java.util.Locale;
 import timber.log.Timber;
 
-public class GotwayAdapter extends BaseAdapter implements IWheelAdapter {
+public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
 
     private static final double RATIO_GW = 0.875;

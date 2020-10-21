@@ -14,7 +14,7 @@ import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 /**
  * Created by cedric on 29/12/2016.
  */
-public class InMotionAdapter extends BaseAdapter implements IWheelAdapter {
+public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
     private boolean passwordSent = false;

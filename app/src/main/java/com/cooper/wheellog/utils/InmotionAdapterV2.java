@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import timber.log.Timber;
 
-public class InmotionAdapterV2 extends BaseAdapter implements IWheelAdapter {
+public class InmotionAdapterV2 extends BaseAdapter {
     private static InmotionAdapterV2 INSTANCE;
     private Timer keepAliveTimer;
     private boolean settingCommandReady = false;

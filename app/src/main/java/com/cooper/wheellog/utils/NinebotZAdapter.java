@@ -13,7 +13,7 @@ import timber.log.Timber;
 /**
  * Created by palachzzz on 08/2018.
  */
-public class NinebotZAdapter extends BaseAdapter implements IWheelAdapter {
+public class NinebotZAdapter extends BaseAdapter {
     private static NinebotZAdapter INSTANCE;
     private Timer keepAliveTimer;
 	private boolean settingCommandReady = false;
