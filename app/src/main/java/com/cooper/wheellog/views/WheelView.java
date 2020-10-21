@@ -12,11 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.math.MathUtils;
 
+import com.cooper.wheellog.AppConfig;
+import com.cooper.wheellog.AppConfigBase;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
-import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.Typefaces;
 import com.cooper.wheellog.utils.ReflectUtil;
 
 import java.lang.reflect.Field;
@@ -186,9 +186,9 @@ public class WheelView extends View {
         super(context, attrs);
 
         if (isInEditMode()) {
-            // mMaxSpeed = 300;
-            mSpeed = 150;
-            targetSpeed = Math.round(((float) mSpeed / WheelLog.AppConfig.getMaxSpeed()) * 112);
+            WheelLog.AppConfig = AppConfig.getInstance(context);
+            mSpeed = 380;
+            targetSpeed = Math.round(((float) mSpeed / 500) * 112);
             currentSpeed = targetSpeed;
 
             mTemperature = 35;
@@ -208,7 +208,6 @@ public class WheelView extends View {
                 wdField.setAccessible(true);
                 wdField.set(null, wd);
 
-                ReflectUtil.SetPrivateField(wd, "mUseShortPwm", true);
                 ReflectUtil.SetPrivateField(wd, "mCalculatedPwm", 0.62d);
                 ReflectUtil.SetPrivateField(wd, "mMaxPwm", 0.97d);
             } catch (Exception ignored) {
@@ -686,27 +685,22 @@ public class WheelView extends View {
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + (speedTextRect.height() / 2), textPaint);
         textPaint.setTextSize(speedTextKPHSize);
         textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
-        String metric = mUseMPH ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
-        //canvas.save();
-        //canvas.rotate(-90, innerArcRect.centerX(), innerArcRect.centerY());
-        canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 1.1F), textPaint);
-        //canvas.restore();
 
-        if (WheelData.getInstance().isUseShortPwm()) {
-            metric = (int) WheelData.getInstance().getCurrentPwm() + "  |  " + (int) WheelData.getInstance().getMaxPwm();
+
+        if (WheelLog.AppConfig.getUseShortPwm() || isInEditMode()) {
+            String pwm = String.format("%2.0f  |  %2.0f", WheelData.getInstance().getCurrentPwm(), WheelData.getInstance().getMaxPwm());
             textPaint.setTextSize(speedTextKPHSize * 1.2F);
-            textPaint.setStrokeWidth(5);
-            canvas.drawLine(outerArcRect.centerX() - speedTextKPHSize * 3,
-                    speedTextRect.bottom + (speedTextKPHHeight * 1.8F),
-                    outerArcRect.centerX() + speedTextKPHSize * 3,
-                    speedTextRect.bottom + (speedTextKPHHeight * 1.8F),
-                    textPaint);
-            canvas.drawLine(outerArcRect.centerX() - speedTextKPHSize * 4,
-                    speedTextRect.bottom + (speedTextKPHHeight * 3.3F),
-                    outerArcRect.centerX() + speedTextKPHSize * 4,
-                    speedTextRect.bottom + (speedTextKPHHeight * 3.3F),
-                    textPaint);
-            canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 3F), textPaint);
+            textPaint.setStrokeWidth(speedTextKPHSize / 20);
+            float lineY = speedTextRect.bottom + (speedTextKPHHeight * 1.8F);
+            canvas.drawLine(outerArcRect.centerX() - speedTextKPHSize * 3, lineY,
+                    outerArcRect.centerX() + speedTextKPHSize * 3, lineY, textPaint);
+            lineY = speedTextRect.bottom + (speedTextKPHHeight * 3.7F);
+            canvas.drawLine(outerArcRect.centerX() - speedTextKPHSize * 4, lineY,
+                    outerArcRect.centerX() + speedTextKPHSize * 4, lineY, textPaint);
+            canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 3.3F), textPaint);
+        } else {
+            String metric = WheelLog.AppConfig.getUseMph() ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
+            canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 1.1F), textPaint);
         }
 
         //####################################################
@@ -755,9 +749,9 @@ public class WheelView extends View {
 
             // Max temperature
             if (getWidth() > getHeight())
-                canvas.rotate((40F + (1 * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
+                canvas.rotate(-50F, innerArcRect.centerX(), innerArcRect.centerY());
             else
-                canvas.rotate((40F + (1 * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
+                canvas.rotate(-50F, innerArcRect.centerY(), innerArcRect.centerX());
             String maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature);
             canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
