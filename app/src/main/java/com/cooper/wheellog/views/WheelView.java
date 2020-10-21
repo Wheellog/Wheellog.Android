@@ -13,13 +13,13 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.math.MathUtils;
 
 import com.cooper.wheellog.AppConfig;
-import com.cooper.wheellog.AppConfigBase;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.ReflectUtil;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import timber.log.Timber;
@@ -208,7 +208,7 @@ public class WheelView extends View {
                 wdField.setAccessible(true);
                 wdField.set(null, wd);
 
-                ReflectUtil.SetPrivateField(wd, "mCalculatedPwm", 0.62d);
+                ReflectUtil.SetPrivateField(wd, "mCalculatedPwm", 0.05d);
                 ReflectUtil.SetPrivateField(wd, "mMaxPwm", 0.97d);
             } catch (Exception ignored) {
             }
@@ -688,7 +688,9 @@ public class WheelView extends View {
 
 
         if (WheelLog.AppConfig.getUseShortPwm() || isInEditMode()) {
-            String pwm = String.format("%2.0f  |  %2.0f", WheelData.getInstance().getCurrentPwm(), WheelData.getInstance().getMaxPwm());
+            String pwm = String.format("%02.0f  |  %02.0f",
+                    WheelData.getInstance().getCurrentPwm(),
+                    WheelData.getInstance().getMaxPwm());
             textPaint.setTextSize(speedTextKPHSize * 1.2F);
             textPaint.setStrokeWidth(speedTextKPHSize / 20);
             float lineY = speedTextRect.bottom + (speedTextKPHHeight * 1.8F);
