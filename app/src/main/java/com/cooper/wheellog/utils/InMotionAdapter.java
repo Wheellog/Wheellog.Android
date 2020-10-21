@@ -17,7 +17,7 @@ import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
-    private boolean passwordSent = false;
+    private int passwordSent = 0;
 	private boolean needSlowData = true;
 	private boolean settingCommandReady = false;
 	private static int updateStep = 0;
@@ -182,9 +182,10 @@ public class InMotionAdapter extends BaseAdapter {
             @Override
             public void run() {
                 if (updateStep == 0) {
-                    if (!passwordSent) {
+                    if (passwordSent < 6) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
                             Timber.i("Sent password message");
+                            passwordSent++;
                         } else updateStep = 35;
 
                     } else if ((model == UNKNOWN) | needSlowData ) {
@@ -215,13 +216,9 @@ public class InMotionAdapter extends BaseAdapter {
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 25);
     }
-	
 
-	public void resetConnection() {
-		passwordSent = false;
-	}
 	
 	public void setLightState(final boolean lightEnable) {
 		settingCommandReady = true;
@@ -1302,7 +1299,7 @@ public class InMotionAdapter extends BaseAdapter {
                             outValues.add(infos);
                         }
                     } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
-                        passwordSent = true;
+                        passwordSent = Integer.MAX_VALUE;
                     }
                 } 
             }
