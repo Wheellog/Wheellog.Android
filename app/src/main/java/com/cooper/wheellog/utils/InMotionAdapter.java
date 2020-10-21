@@ -185,7 +185,7 @@ public class InMotionAdapter extends BaseAdapter {
                     if (passwordSent < 6) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
                             Timber.i("Sent password message");
-                            passwordSent += 1;
+                            passwordSent++;
                         } else updateStep = 35;
 
                     } else if ((model == UNKNOWN) | needSlowData ) {
