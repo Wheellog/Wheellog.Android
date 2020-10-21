@@ -342,18 +342,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                         builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             final String deviceAddress = input.getText().toString();
                             WheelLog.AppConfig.setLastMac(deviceAddress, true);
-                            AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
-                            builder1.setTitle(getText(R.string.wheel_pass_imotion));
+                            WheelLog.AppConfig.setPasswordForWheel(deviceAddress, "");
 
-                            final EditText input1 = new EditText(activity);
-                            input1.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                            builder1.setView(input1);
-                            builder1.setPositiveButton(android.R.string.ok, (dialog12, which12) -> {
-                                String password = input1.getText().toString();
-                                WheelLog.AppConfig.setPasswordForWheel(deviceAddress, password);
-                            });
-                            builder1.setNegativeButton(android.R.string.cancel, (dialog1, which1) -> dialog1.cancel());
-                            builder1.show();
                         });
                         builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
                         builder.show();

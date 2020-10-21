@@ -130,8 +130,7 @@
 	<string name="edit_mac_addr_title">Въведете МАС адрес</string>
 	<string name="about_app_title">За WheelLog</string>
 	<string name="settings_title">Настройки</string>
-	<string name="wheel_pass_imotion">Парола на колелото ( Само за InMotion )</string>
-	<string name="amp">A</string>
+    <string name="amp">A</string>
 	<string name="max_speed_dial_title">Максимална скорост</string>
 	<string name="max_speed_dial_description">Максималната скорост показвана на външния ринг</string>
 	<string name="use_mph_title">Скорост и дистанция в мили</string>

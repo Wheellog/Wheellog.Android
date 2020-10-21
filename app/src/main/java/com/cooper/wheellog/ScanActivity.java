@@ -110,29 +110,10 @@ public class ScanActivity extends AppCompatActivity {
             intent.putExtra("ADV", advData);
             WheelLog.AppConfig.setAdvDataForWheel(deviceAddress, advData);
             setResult(RESULT_OK, intent);
-            //Ask for inmotion password
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setTitle(R.string.wheel_pass_imotion);
+            //Set password for inmotion
+            WheelLog.AppConfig.setPasswordForWheel(deviceAddress, "");
+            finish();
 
-            final EditText input = new EditText(view.getContext());
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            builder.setView(input);
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String password = input.getText().toString();
-                    WheelLog.AppConfig.setPasswordForWheel(deviceAddress, password);
-                    finish();
-                }
-            });
-            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                    finish();
-                }
-            });
-            builder.show();
         }
     };
 

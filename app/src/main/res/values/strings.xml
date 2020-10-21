@@ -234,7 +234,6 @@
     <string name="profile_name_title">Edit profile name</string>
     <string name="about_app_title">About WheelLog</string>
     <string name="settings_title">Settings</string>
-    <string name="wheel_pass_imotion">Wheel Password ( InMotion only )</string>
     <string name="amp">A</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
     <string name="dial_measurements"></string>

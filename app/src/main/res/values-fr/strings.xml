@@ -130,8 +130,7 @@
 	<string name="edit_mac_addr_title">Edition addresse MAC</string>
 	<string name="about_app_title">A propos de WheelLog</string>
 	<string name="settings_title">Paramètres</string>
-	<string name="wheel_pass_imotion">Mot de passe de la roue ( InMotion uniquement )</string>
-	<string name="amp">A</string>
+    <string name="amp">A</string>
 	<string name="max_speed_dial_title">Vitesse Max</string>
 	<string name="max_speed_dial_description">Vitesse max affiché sur le graphique</string>
 	<string name="use_mph_title">Vitesse et distance en miles</string>

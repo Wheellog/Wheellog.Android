@@ -130,7 +130,6 @@
 	<string name="edit_mac_addr_title">Editar MAC adress</string>
 	<string name="about_app_title">Sobre WheelLog</string>
 	<string name="settings_title">Settings</string>
-	<string name="wheel_pass_imotion">Senha monociclo (somente InMotion)</string>
 	<string name="amp">A</string>
 	<string name="max_speed_dial_title">Velocidade Máxima</string>
 	<string name="max_speed_dial_description">Velocidade máxima mostrada no indicador externo</string>

@@ -130,8 +130,7 @@
 	<string name="edit_mac_addr_title">Επεξεργασία διεύθυνσης MAC</string>
 	<string name="about_app_title">Σχετικά με το WheelLog</string>
 	<string name="settings_title">Ρυθμίσεις</string>
-	<string name="wheel_pass_imotion">Κωδικός Ρόδας ( μόνο InMotion )</string>
-	<string name="amp">A</string>
+    <string name="amp">A</string>
 	<string name="max_speed_dial_title">Μέγιστη ταχύτητα</string>
 	<string name="max_speed_dial_description">Η μέγιστη ταχύτητα που εμφανίζεται στον εξωτερικό επιλογέα</string>
 	<string name="use_mph_title">Ταχύτητα και απόσταση σε μίλια</string>
