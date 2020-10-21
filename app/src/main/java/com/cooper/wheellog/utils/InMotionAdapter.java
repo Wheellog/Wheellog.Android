@@ -184,26 +184,25 @@ public class InMotionAdapter extends BaseAdapter {
                 if (updateStep == 0) {
                     if (!passwordSent) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
-                            passwordSent = true;
                             Timber.i("Sent password message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     } else if ((model == UNKNOWN) | needSlowData ) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     } else if (settingCommandReady) {
     					if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
                             needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
-                        } else updateStep = 39; // after +1 and %10 = 0
+                        } else updateStep = 35; // after +1 and %10 = 0
     				}
     				else {
                         if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
-                            updateStep = 39;
+                            updateStep = 35;
     					} else {
                             Timber.i("Sent keep-alive message");
     					}
@@ -211,7 +210,7 @@ public class InMotionAdapter extends BaseAdapter {
 
 				}
                 updateStep += 1;
-                updateStep %= 40;
+                updateStep %= 10;
                 Timber.i("Step: %d", updateStep);
             }
         };
@@ -1284,7 +1283,7 @@ public class InMotionAdapter extends BaseAdapter {
 				CANMessage result = CANMessage.verify(unpacker.getBuffer());
 				
                 if (result != null) { // data OK
-					
+
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
 						Status vals = result.parseFastInfoMessage(model);
                         if (vals != null)
@@ -1302,7 +1301,9 @@ public class InMotionAdapter extends BaseAdapter {
                             model = infos.getModel();
                             outValues.add(infos);
                         }
-                    }					
+                    } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
+                        passwordSent = true;
+                    }
                 } 
             }
         }

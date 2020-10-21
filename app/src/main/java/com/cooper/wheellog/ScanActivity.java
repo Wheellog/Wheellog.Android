@@ -112,6 +112,7 @@ public class ScanActivity extends AppCompatActivity {
             setResult(RESULT_OK, intent);
             //Set password for inmotion
             WheelLog.AppConfig.setPasswordForWheel(deviceAddress, "");
+            finish();
 
         }
     };
