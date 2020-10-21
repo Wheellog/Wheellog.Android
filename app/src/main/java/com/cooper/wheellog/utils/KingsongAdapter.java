@@ -1,5 +1,8 @@
 package com.cooper.wheellog.utils;
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
+
 import java.util.Locale;
 import timber.log.Timber;
 
@@ -45,8 +48,9 @@ public class KingsongAdapter implements IWheelAdapter {
                 }
 
                 int battery;
+                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
                 if (StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || wd.getModel().startsWith("ROCKW")) {
-                    if (wd.getBetterPercents()) {
+                    if (useBetterPercents) {
                         if (voltage > 8350) {
                             battery = 100;
                         } else if (voltage > 6800) {
@@ -66,7 +70,7 @@ public class KingsongAdapter implements IWheelAdapter {
                         }
                     }
                 } else {
-                    if (wd.getBetterPercents()) {
+                    if (useBetterPercents) {
                         if (voltage > 6680) {
                             battery = 100;
                         } else if (voltage > 5440) {
@@ -215,18 +219,6 @@ public class KingsongAdapter implements IWheelAdapter {
             mKSAlarm3Speed = wheelKSAlarm3;
             updateKSAlarmAndSpeed();
         }
-    }
-
-    public int getKSAlarm1Speed() {
-        return mKSAlarm1Speed;
-    }
-
-    public int getKSAlarm2Speed() {
-        return mKSAlarm2Speed;
-    }
-
-    public int getKSAlarm3Speed() {
-        return mKSAlarm3Speed;
     }
 
     public void set18Lkm(boolean enabled) {

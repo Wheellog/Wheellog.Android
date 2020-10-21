@@ -1,4 +1,107 @@
 <resources>
+    // PREFERENCES
+    <string name="speed_preferences" translatable="false">speed_preferences</string>
+    <string name="log_preferences" translatable="false">log_preferences</string>
+    <string name="alarm_preferences" translatable="false">alarm_preferences</string>
+    <string name="watch_preferences" translatable="false">watch_preferences</string>
+    <string name="wheel_settings" translatable="false">wheel_settings</string> 
+	<string name="trip_settings" translatable="false">trip_settings</string>
+
+    // ALARM PREFERENCES
+    <string name="alarms_enabled" translatable="false">alarms_enabled</string>
+    <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
+    <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
+    <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
+    <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
+    <string name="alarm_2_battery" translatable="false">alarm_2_battery</string>
+    <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
+    <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
+    <string name="alarm_current" translatable="false">alarm_current</string>
+	<string name="alarm_temperature" translatable="false">alarm_temperature</string>
+    <string name="altered_alarms" translatable="false">altered_alarms</string>
+    <string name="rotation_speed" translatable="false">rotation_speed</string>
+    <string name="rotation_voltage" translatable="false">rotation_voltage</string>
+    <string name="power_factor" translatable="false">power_factor</string>
+    <string name="alarm_factor1" translatable="false">alarm_factor1</string>
+    <string name="alarm_factor2" translatable="false">alarm_factor2</string>
+    <string name="alarm_factor3" translatable="false">alarm_factor3</string>
+    <string name="warning_speed" translatable="false">warning_speed</string>
+    <string name="warning_pwm" translatable="false">warning_pwm</string>
+    <string name="warning_speed_period" translatable="false">warning_speed_period</string>
+    <string name="use_short_pwm" translatable="false">use_short_pwm</string>
+
+    // WHEEL SETTINGS
+    <string name="light_enabled" translatable="false">light_enabled</string>
+    <string name="led_enabled" translatable="false">led_enabled</string>
+    <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
+    <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
+    <string name="speaker_volume" translatable="false">speaker_volume</string>
+	<string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
+	<string name="pedals_mode" translatable="false">pedals_mode</string>
+	<string name="light_mode" translatable="false">light_mode</string>
+	<string name="strobe_mode" translatable="false">strobe_mode</string>
+	<string name="led_mode" translatable="false">led_mode</string>
+	<string name="start_calibration" translatable="false">start_calibration</string>
+	<string name="alarm_mode" translatable="false">alarm_mode</string>
+	<string name="gotway_84v" translatable="false">gotway_84v</string>
+    <string name="gotway_voltage" translatable="false">gotway_voltage</string>
+    <string name="gotway_negative" translatable="false">gotway_negative</string>
+    <string name="no_settings" translatable="false">no_settings</string>
+    <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
+    <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
+    <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
+
+    // LOG PREFERENCES
+    <string name="auto_log" translatable="false">auto_log</string>
+    <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
+    <string name="ec_token" translatable="false">ec_token</string>
+    <string name="ec_user_id" translatable="false">ec_user_id</string>
+    <string name="auto_upload" translatable="false">auto_upload</string>
+    <string name="log_location_data" translatable="false">log_location_data</string>
+    <string name="use_gps" translatable="false">use_gps</string>
+
+    // SPEED PREFERENCES
+    <string name="use_mph" translatable="false">use_mph</string>
+    <string name="use_eng" translatable="false">use_eng</string>
+    <string name="use_better_percents" translatable="false">use_better_percents</string>
+    <string name="fixed_percents" translatable="false">fixed_percents</string>
+    <string name="tiltback_voltage" translatable="false">tiltback_voltage</string>
+    <string name="use_pip_mode" translatable="false">use_pip_mode</string>
+    <string name="current_on_dial" translatable="false">current_on_dial</string>
+    <string name="connection_sound" translatable="false">connection_sound</string>
+    <string name="no_connection_sound" translatable="false">no_connection_sound</string>
+    <string name="use_stop_music" translatable="false">use_stop_music</string>
+    <string name="battery_capacity" translatable="false">battery_capacity</string>
+    <string name="charging_power" translatable="false">charging_power</string>
+    <string name="show_unknown_devices" translatable="false">show_unknown_devices</string>
+    <string name="connect_beep" translatable="false">connect_beep</string>
+    <string name="max_speed" translatable="false">max_speed</string>
+	<string name="use_ratio" translatable="false">use_ratio</string>
+    <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
+
+    // WATCH PREFERENCES
+    <string name="horn_mode" translatable="false">horn_mode</string>
+    <string name="garmin_connectiq_enable" translatable="false">garmin_connectiq_enable</string>
+
+	// TRIP PREFERENCES
+	<string name="reset_top_speed" translatable="false">reset_top_speed</string>
+	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
+    <string name="reset_lowest_battery" translatable="false">reset_lowest_battery</string>
+    <string name="last_mac" translatable="false">last_mac</string>
+    <string name="profile_name" translatable="false">profile_name</string>
+    <string name="about" translatable="false">about</string>
+    <string name="kmh">km/h</string>
+    <string name="mph">mph</string>
+    <string name="km">km</string>
+    <string name="sec">sec</string>
+    <string name="milli">mi</string>
+
+    // Garmin ConnectIQ dialogs
+    <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
+    <string name="garmin_connectiq_service_unavailable_message">The ConnectIQ service is unavailable.</string>
+
+    // Other
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>
@@ -38,28 +141,28 @@
     <string name="waiting_for_wheel">Waiting for wheel…</string>
     <string name="no_smart_bms">Smart BMS is not detected</string>
     <string name="speed">Speed</string>
-	<string name="average_speed">Avg Speed</string>
-	<string name="average_riding_speed">Avg Riding</string>
+    <string name="average_speed">Avg Speed</string>
+    <string name="average_riding_speed">Avg Riding</string>
     <string name="top_speed">Top Speed</string>
     <string name="battery">Battery</string>
     <string name="output">Motor output</string>
     <string name="cpuload">CPU load</string>
     <string name="charging_status">Charging</string>
     <string name="distance">Distance</string>
-	<string name="wheel_distance">Wheel Distance</string>
-	<string name="user_distance">User Distance</string>
+    <string name="wheel_distance">Wheel Distance</string>
+    <string name="user_distance">User Distance</string>
     <string name="ride_time">Journey Time</string>
-	<string name="riding_time">Ride Time</string>
+    <string name="riding_time">Ride Time</string>
     <string name="voltage">Voltage</string>
     <string name="voltage_sag">Voltage Sag</string>
     <string name="current">Current</string>
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
-	<string name="temperature2">Second temp</string>
+    <string name="temperature2">Second temp</string>
     <string name="pwm">PWM</string>
     <string name="max_pwm">Max PWM</string>
-	<string name="angle">Tilt</string>
-	<string name="roll">Roll</string>
+    <string name="angle">Tilt</string>
+    <string name="roll">Roll</string>
     <string name="fan_status">Fan Status</string>
     <string name="mode">Mode</string>
     <string name="total_distance">Total Distance</string>
@@ -72,16 +175,12 @@
     <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
-
-
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
     <string name="connection_lost_at">Connection lost at %1s</string>
-
     <string name="enable_auto_upload_title">Enable Auto Upload?</string>
     <string name="enable_auto_upload_descriprion">Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.</string>
-
     <string name="logging_error_no_storage_permission">No permission to write to external storage. Logging cancelled.</string>
     <string name="logging_error_storage_unavailable">External storage is unavailable. Logging cancelled.</string>
     <string name="logging_error_no_location_permission">Log location was requested but no permission to location data was provided. No location data will be logged.</string>
@@ -89,121 +188,11 @@
     <string name="logging_error_network_disabled">Location logging using GSM Network was requested but this location provider is disabled. No location data will be logged.</string>
     <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
     <string name="raw_distance">Raw Distance</string>
-
-	<string name="alarm_text_speed">Speed alarm triggered</string>
-	<string name="alarm_text_current">Current alarm triggered</string>
-	<string name="alarm_text_temperature">Temperature alarm triggered</string>
-	
-	
-    // PREFERENCES
-    <string name="speed_preferences" translatable="false">speed_preferences</string>
-    <string name="log_preferences" translatable="false">log_preferences</string>
-    <string name="alarm_preferences" translatable="false">alarm_preferences</string>
-    <string name="watch_preferences" translatable="false">watch_preferences</string>
-    <string name="wheel_settings" translatable="false">wheel_settings</string> 
-	<string name="trip_settings" translatable="false">trip_settings</string>
-
-
-    // ALARM PREFERENCES
-    <string name="alarms_enabled" translatable="false">alarms_enabled</string>
-    <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
-    <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
-    <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
-    <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
-    <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
-    <string name="alarm_2_battery" translatable="false">alarm_2_battery</string>
-    <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
-    <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
-    <string name="alarm_current" translatable="false">alarm_current</string>
-	<string name="alarm_temperature" translatable="false">alarm_temperature</string>
-    <string name="altered_alarms" translatable="false">altered_alarms</string>
-    <string name="rotation_speed" translatable="false">rotation_speed</string>
-    <string name="rotation_voltage" translatable="false">rotation_voltage</string>
-    <string name="power_factor" translatable="false">power_factor</string>
-    <string name="alarm_factor1" translatable="false">alarm_factor1</string>
-    <string name="alarm_factor2" translatable="false">alarm_factor2</string>
-    <string name="alarm_factor3" translatable="false">alarm_factor3</string>
-    <string name="warning_speed" translatable="false">warning_speed</string>
-    <string name="warning_pwm" translatable="false">warning_pwm</string>
-    <string name="warning_speed_period" translatable="false">warning_speed_period</string>
-    <string name="use_short_pwm" translatable="false">use_short_pwm</string>
-
-
-
-
-    // WHEEL SETTINGS
-    <string name="light_enabled" translatable="false">light_enabled</string>
-    <string name="led_enabled" translatable="false">led_enabled</string>
-    <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
-    <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
-    <string name="speaker_volume" translatable="false">speaker_volume</string>
-	<string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
-	<string name="pedals_mode" translatable="false">pedals_mode</string>
-	<string name="light_mode" translatable="false">light_mode</string>
-	<string name="strobe_mode" translatable="false">strobe_mode</string>
-	<string name="led_mode" translatable="false">led_mode</string>
-	<string name="start_calibration" translatable="false">start_calibration</string>
-	<string name="alarm_mode" translatable="false">alarm_mode</string>
-	<string name="gotway_84v" translatable="false">gotway_84v</string>
-    <string name="gotway_voltage" translatable="false">gotway_voltage</string>
-    <string name="gotway_negative" translatable="false">gotway_negative</string>
-    <string name="no_settings" translatable="false">no_settings</string>
-    <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
-    <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
-    <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
-
-
-
-    // LOG PREFERENCES
-    <string name="auto_log" translatable="false">auto_log</string>
-    <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
-    <string name="ec_token" translatable="false">ec_token</string>
-    <string name="ec_user_id" translatable="false">ec_user_id</string>
-    <string name="auto_upload" translatable="false">auto_upload</string>
-    <string name="log_location_data" translatable="false">log_location_data</string>
-    <string name="use_gps" translatable="false">use_gps</string>
-
-    // SPEED PREFERENCES
-    <string name="use_mph" translatable="false">use_mph</string>
-    <string name="use_eng" translatable="false">use_eng</string>
-    <string name="use_better_percents" translatable="false">use_better_percents</string>
-    <string name="fixed_percents" translatable="false">fixed_percents</string>
-    <string name="tiltback_voltage" translatable="false">tiltback_voltage</string>
-    <string name="use_pip_mode" translatable="false">use_pip_mode</string>
-    <string name="current_on_dial" translatable="false">current_on_dial</string>
-    <string name="connection_sound" translatable="false">connection_sound</string>
-    <string name="no_connection_sound" translatable="false">no_connection_sound</string>
-    <string name="use_stop_music" translatable="false">use_stop_music</string>
-    <string name="battery_capacity" translatable="false">battery_capacity</string>
-    <string name="charging_power" translatable="false">charging_power</string>
-    <string name="connect_beep" translatable="false">connect_beep</string>
-
-
-    <string name="max_speed" translatable="false">max_speed</string>
-	<string name="use_ratio" translatable="false">use_ratio</string>
-    <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
-
-    // WATCH PREFERENCES
-    <string name="horn_mode" translatable="false">horn_mode</string>
-    <string name="garmin_connectiq_enable" translatable="false">garmin_connectiq_enable</string>
+    <string name="alarm_text_speed">Speed alarm triggered</string>
+    <string name="alarm_text_current">Current alarm triggered</string>
+    <string name="alarm_text_temperature">Temperature alarm triggered</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
-
-    // Garmin ConnectIQ dialogs
-    <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
-    <string name="garmin_connectiq_service_unavailable_message">The ConnectIQ service is unavailable.</string>
-
-	// TRIP PREFERENCES
-	<string name="reset_top_speed" translatable="false">reset_top_speed</string>
-	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
-    <string name="reset_lowest_battery" translatable="false">reset_lowest_battery</string>
-    <string name="last_mac" translatable="false">last_mac</string>
-    <string name="about" translatable="false">about</string>
-    <string name="kmh">km/h</string>
-    <string name="mph">mph</string>
-    <string name="km">km</string>
-    <string name="sec">sec</string>
-    <string name="milli">mi</string>
     <string name="horn_mode_title">Horn Mode</string>
     <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
     <string name="tilt_back_description" >Tiltback speed</string>
@@ -242,6 +231,7 @@
     <string name="reset_lowest_battery_title">Reset battery sag</string>
     <string name="reset_user_distance_title">Reset user distance</string>
     <string name="edit_mac_addr_title">Edit MAC address</string>
+    <string name="profile_name_title">Edit profile name</string>
     <string name="about_app_title">About WheelLog</string>
     <string name="settings_title">Settings</string>
     <string name="wheel_pass_imotion">Wheel Password ( InMotion only )</string>
@@ -278,16 +268,16 @@
     <string name="battery_capacity_description">Battery Capacity in Wh</string>
     <string name="charging_power_title">Charging power</string>
     <string name="charging_power_description">Charging Power in A</string>
+    <string name="show_unknown_devices_title">Show Bluetooth without name</string>.
+    <string name="show_unknown_devices_description">Show Bluetooth devices without name</string>.
     <string name="connect_beep_title">Sound of connection</string>.
     <string name="connect_beep_description">Sound of connection to the wheel</string>.
-
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
     <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
-
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
     <string name="altered_alarms_pref_title">Altered alarms options</string>
@@ -347,8 +337,6 @@
     <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
     <string name="ks18l_scaler_title">Wrong 18L distanse</string>
     <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
-
-
     <string name="battery_voltage_title">Battery voltage</string>
     <string name="battary_voltage_description">67V/84V/100V</string>
     <string name="gotway_negative_title">Negative current and speed mode</string>
@@ -373,8 +361,6 @@
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
-
-
     <string name="bmsBattery1Title">Battery 1</string>
     <string name="bmsBattery2Title">Battery 2</string>
     <string name="bmsSn">S/N</string>
@@ -410,6 +396,4 @@
     <string name="bmsCell16">Cell 16</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
-
-
 </resources>

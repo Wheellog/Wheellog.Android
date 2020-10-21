@@ -83,6 +83,7 @@ public class Constants {
 	public static final String INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT = "pedals_adjustment";
 	public static final String INTENT_EXTRA_WHEEL_TYPE = "wheel_type";
     public static final String INTENT_EXTRA_RESET = "reset";
+    public static final String INTENT_EXTRA_SETTINGS_KEY = "settings_key";
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
     public enum WHEEL_TYPE {

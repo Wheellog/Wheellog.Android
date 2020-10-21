@@ -12,7 +12,6 @@ import android.os.IBinder;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
 import com.cooper.wheellog.utils.NotificationUtil;
-import com.cooper.wheellog.utils.SettingsUtil;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -78,8 +77,8 @@ public class PebbleService extends Service {
             }
 
             if (refreshAll) {
-                outgoingDictionary.addInt32(KEY_USE_MPH, SettingsUtil.isUseMPH(PebbleService.this) ? 1 : 0);
-                outgoingDictionary.addInt32(KEY_MAX_SPEED, SettingsUtil.getMaxSpeed(PebbleService.this));
+                outgoingDictionary.addInt32(KEY_USE_MPH, WheelLog.AppConfig.getUseMph() ? 1 : 0);
+                outgoingDictionary.addInt32(KEY_MAX_SPEED, WheelLog.AppConfig.getMaxSpeed());
             }
 
             WheelData data = WheelData.getInstance();

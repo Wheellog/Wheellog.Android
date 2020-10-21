@@ -74,6 +74,7 @@
 
     <string name="reset_user_distance_title">Обнулить мой пробег</string>
     <string name="edit_mac_addr_title">Изменить MAC адрес</string>
+    <string name="profile_name_title">Изменить имя профиля</string>
     <string name="about_app_title">О программе Wheellog</string>
     <string name="settings_title">Настройки</string>
     <string name="wheel_pass_imotion">Пароль (только для Inmotion)</string>
@@ -208,6 +209,8 @@
     <string name="battery_capacity_description">Ёмкость батареи в Wh</string>
     <string name="charging_power_title">Мощность зарядки</string>
     <string name="charging_power_description">Мощность зарядки</string>
+    <string name="show_unknown_devices_title">Показать Bluetooth без имени</string>
+    <string name="show_unknown_devices_description">Показывать устройства Bluetooth без имени</string>
     <string name="connect_beep_title">Звук подключения</string>
     <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="sec">сек</string>

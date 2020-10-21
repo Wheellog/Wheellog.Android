@@ -104,5 +104,4 @@
         <meta-data android:name="GearAppType" android:value="wgt" />
 
     </application>
-
 </manifest>

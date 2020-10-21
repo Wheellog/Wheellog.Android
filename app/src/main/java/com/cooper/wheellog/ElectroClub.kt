@@ -85,6 +85,9 @@ class ElectroClub {
                             return
                         }
                     }
+
+                    WheelLog.AppConfig.setEcUserId(userId)
+                    WheelLog.AppConfig.setEcToken(userToken)
                     successListener?.invoke(LOGIN_METHOD, nickname)
                     success(true)
                 }

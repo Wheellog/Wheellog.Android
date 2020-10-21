@@ -30,6 +30,12 @@ public class DeviceListAdapter extends BaseAdapter {
     }
 
     public void addDevice(BluetoothDevice device, String advData) {
+        if (!WheelLog.AppConfig.getShowUnknownDevices()) {
+            String deviceName = device.getName();
+            if (deviceName == null || deviceName.length() == 0)
+                return;
+        }
+
         if(!mLeDevices.contains(device)) {
             mLeDevices.add(device);
             mLeAdvDatas.add(advData);

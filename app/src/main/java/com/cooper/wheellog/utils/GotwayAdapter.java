@@ -1,6 +1,8 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
+
 import java.util.Locale;
 import timber.log.Timber;
 
@@ -8,14 +10,13 @@ public class GotwayAdapter implements IWheelAdapter {
     private static GotwayAdapter INSTANCE;
 
     private static final double RATIO_GW = 0.875;
-    private int mGotwayVoltageScaler = 0;
-    private int mGotwayNegative = -1;
 
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode Begode");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
+        Boolean useRatio = WheelLog.AppConfig.getUseRatio();
         if (data.length >= 20) {
             Timber.i("Len >=20");
             int a1 = data[0] & 255;
@@ -25,6 +26,7 @@ public class GotwayAdapter implements IWheelAdapter {
             int a5 = data[4] & 255;
             int a6 = data[5] & 255;
             int a19 = data[18] & 255;
+            Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
             if ((a1 == 0xDC) && (a2 == 0x5A) && (a3 == 0x5C) && (a4 == 0x20)) {  // Sherman
                 Timber.i("Decode Sherman");
                 // TODO move Veteran to adapter
@@ -44,7 +46,7 @@ public class GotwayAdapter implements IWheelAdapter {
                 wd.setTemperature2(temperature);
                 wd.setTopSpeed(speed);
                 int battery;
-                if (wd.getBetterPercents()) {
+                if (useBetterPercents) {
                     if (voltage > 10020) {
                         battery = 100;
                     } else if (voltage > 8160) {
@@ -76,27 +78,28 @@ public class GotwayAdapter implements IWheelAdapter {
                     }
                     int totalDistance = ((data[6] & 0xFF) << 24) | ((data[7] & 0xFF) << 16) | ((data[8] & 0xFF) << 8) | (data[9] & 0xFF);
                     wd.setTotalDistance(totalDistance);
-                    if (wd.getUseRatio()) {
+                    if (useRatio) {
                         wd.setTotalDistance(Math.round(totalDistance * RATIO_GW));
                     }
                     return false;
                 }
 
                 int speed;
+                int gotwayNegative = WheelLog.AppConfig.getGotwayNegative();
                 if (data[5] >= 0)
-                    if (mGotwayNegative == 0) {
+                    if (gotwayNegative == 0) {
                         speed = (int) Math.abs(((data[4] * 256.0) + data[5]) * 3.6);
                     }
                     else {
-                        speed = ((int) (((data[4] * 256.0) + data[5]) * 3.6)) * mGotwayNegative;
+                        speed = ((int) (((data[4] * 256.0) + data[5]) * 3.6)) * gotwayNegative;
                     }
-                else if (mGotwayNegative == 0) {
+                else if (gotwayNegative == 0) {
                     speed = (int) Math.abs((((data[4] * 256.0) + 256.0) + data[5]) * 3.6);
                 }
                 else {
-                    speed = ((int) ((((data[4] * 256.0) + 256.0) + data[5]) * 3.6)) * mGotwayNegative;
+                    speed = ((int) ((((data[4] * 256.0) + 256.0) + data[5]) * 3.6)) * gotwayNegative;
                 }
-                if (wd.getUseRatio()) {
+                if (useRatio) {
                     speed = (int) Math.round(speed * RATIO_GW);
                 }
 
@@ -108,15 +111,15 @@ public class GotwayAdapter implements IWheelAdapter {
                 wd.setTemperature2(temperature);
 
                 long distance = MathsUtil.getInt2(data, 8);
-                if (wd.getUseRatio()) distance = Math.round(distance * RATIO_GW);
+                if (useRatio) distance = Math.round(distance * RATIO_GW);
                 wd.setDistance(distance);
 
                 int voltage = (data[2] * 256) + (data[3] & 255);
                 wd.setPhaseCurrent((data[10] * 256) + data[11]);
-                wd.setCurrent(mGotwayNegative == 0 ? Math.abs(wd.getCurrent()) : wd.getCurrent() * mGotwayNegative);
+                wd.setCurrent(gotwayNegative == 0 ? Math.abs(wd.getCurrent()) : wd.getCurrent() * gotwayNegative);
 
                 int battery;
-                if (wd.getBetterPercents()) {
+                if (useBetterPercents) {
                     if (voltage > 6680) {
                         battery = 100;
                     } else if (voltage > 5440) {
@@ -152,7 +155,7 @@ public class GotwayAdapter implements IWheelAdapter {
                 return false;
             }
             long totalDistance = ((data[6]&0xFF) <<24) | ((data[7]&0xFF) << 16) | ((data[8] & 0xFF) <<8) | (data[9] & 0xFF);
-            if (wd.getUseRatio()) {
+            if (useRatio) {
                 totalDistance = Math.round(totalDistance * RATIO_GW);
             }
             wd.setTotalDistance(totalDistance);
@@ -170,6 +173,13 @@ public class GotwayAdapter implements IWheelAdapter {
 
     public boolean isVeteran() {
         return WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.VETERAN;
+    }
+
+    public void resetTiltbackVoltage() {
+        double currentValue = WheelLog.AppConfig.getTiltbackVoltage();
+        double correctedValue = getCorrectedTiltbackVoltage(currentValue);
+        if (currentValue != correctedValue)
+            WheelLog.AppConfig.setTiltbackVoltage(correctedValue, true);
     }
 
     public double getCorrectedTiltbackVoltage(double tiltbackVoltage) {
@@ -208,19 +218,7 @@ public class GotwayAdapter implements IWheelAdapter {
         return INSTANCE;
     }
 
-    public int getGotwayVoltageScaler() {
-        return mGotwayVoltageScaler;
-    }
-
-    public void setGotwayVoltageScaler(int value) {
-        mGotwayVoltageScaler = value;
-    }
-
-    public void setGotwayNegative(int value) {
-        mGotwayNegative = value;
-    }
-
     private double getScaledVoltage(double value) {
-        return value * (1 + (0.25 * mGotwayVoltageScaler));
+        return value * (1 + (0.25 * WheelLog.AppConfig.getGotwayVoltage()));
     }
 }

@@ -111,4 +111,12 @@
         sample:sbp_decimalPlaces="1"
         sample:sbp_measurementUnit="A"/>
 
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/show_unknown_devices"
+        android:summary="@string/show_unknown_devices_description"
+        android:title="@string/show_unknown_devices_title"
+        android:defaultValue="false"
+        android:visible="true" />
+
 </PreferenceScreen>
