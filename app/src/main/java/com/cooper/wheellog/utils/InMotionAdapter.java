@@ -1299,7 +1299,7 @@ public class InMotionAdapter extends BaseAdapter {
                             outValues.add(infos);
                         }
                     } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
-                        passwordSent = 100;
+                        passwordSent = Integer.MAX_VALUE;
                     }
                 } 
             }
