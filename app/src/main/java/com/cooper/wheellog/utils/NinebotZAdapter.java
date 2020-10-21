@@ -1262,6 +1262,11 @@ public class NinebotZAdapter extends BaseAdapter {
         }
     }
 
+    @Override
+    public int getCellSForWheel() {
+        return 14;
+    }
+
     public static NinebotZAdapter getInstance() {
         Timber.i("Get instance");
         if (INSTANCE == null) {

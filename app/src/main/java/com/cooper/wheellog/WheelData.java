@@ -790,10 +790,6 @@ public class WheelData {
         return WheelLog.AppConfig.getCellVoltageTiltback() * getAdapter().getCellSForWheel();
     }
 
-    public boolean isVoltageTiltbackUnsupported() {
-        return mWheelType == WHEEL_TYPE.NINEBOT || mWheelType == WHEEL_TYPE.NINEBOT_Z;
-    }
-
     String getChargeTime() {
         double maxVoltage = getMaxVoltageForWheel();
         double minVoltage = getVoltageTiltbackForWheel();

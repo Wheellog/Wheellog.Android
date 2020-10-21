@@ -576,22 +576,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                     pref.setVisible(isOn);
             }
         }
-
-        // Hide inaccessible settings for VoltageTiltbackUnsupported wheels
-        if (WheelData.getInstance().isVoltageTiltbackUnsupported()) {
-            String[] preferences = {
-                getString(R.string.fixed_percents),
-                getString(R.string.cell_voltage_tiltback),
-                getString(R.string.battery_capacity),
-                getString(R.string.charging_power),
-            };
-
-            for (String preference : preferences) {
-                Preference pref = findPreference(preference);
-                if (pref != null)
-                    pref.setVisible(false);
-            }
-        }
     }
 
     private enum SettingsScreen {
