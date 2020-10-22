@@ -688,17 +688,10 @@ public class WheelView extends View {
 
 
         if (WheelLog.AppConfig.getUseShortPwm() || isInEditMode()) {
-            String pwm = String.format("%02.0f  |  %02.0f",
+            String pwm = String.format("%02.0f%% / %02.0f%%",
                     WheelData.getInstance().getCurrentPwm(),
                     WheelData.getInstance().getMaxPwm());
             textPaint.setTextSize(speedTextKPHSize * 1.2F);
-            textPaint.setStrokeWidth(speedTextKPHSize / 20);
-            float lineY = speedTextRect.bottom + (speedTextKPHHeight * 1.8F);
-            canvas.drawLine(outerArcRect.centerX() - speedTextKPHSize * 3, lineY,
-                    outerArcRect.centerX() + speedTextKPHSize * 3, lineY, textPaint);
-            lineY = speedTextRect.bottom + (speedTextKPHHeight * 3.7F);
-            canvas.drawLine(outerArcRect.centerX() - speedTextKPHSize * 4, lineY,
-                    outerArcRect.centerX() + speedTextKPHSize * 4, lineY, textPaint);
             canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 3.3F), textPaint);
         } else {
             String metric = WheelLog.AppConfig.getUseMph() ? getResources().getString(R.string.mph) : getResources().getString(R.string.kmh);
