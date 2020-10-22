@@ -321,7 +321,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                             String buildTime = BuildConfig.BUILD_TIME;
                             new AlertDialog.Builder(activity)
                                     .setTitle(R.string.about_app_title)
-                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Palachzzz</i> <br><a href=\"palachzzz.wl@gmail.com\">palachzzz.wl@gmail.com</a> <br> Thanks to:<br>JumpMaster - project initiator<br>cedbossneo - Inmotion support<br>juliomap - Tizen support<br>MacPara - some improvements<br>datarsoja - KS alerts<br>and others!", versionName, buildTime)))
+                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br><a href=\"https://github.com/Wheellog/Wheellog.Android/\">github.com/Wheellog/Wheellog.Android</a> <br> Thanks to all <a href=\"https://github.com/Wheellog/Wheellog.Android/contributors\">contributors</a>", versionName, buildTime)))
                                     .setPositiveButton(android.R.string.ok, (dialog, which) -> { })
                                     .setIcon(android.R.drawable.ic_dialog_info)
                                     .show();
