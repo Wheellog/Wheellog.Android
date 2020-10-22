@@ -331,13 +331,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setConnectionState(int connectionState) {
-
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    WheelLog.AppConfig.setLastMac(mDeviceAddress, true);
                     WheelLog.AppConfig.changeSettingsSpecific(mDeviceAddress);
+                    WheelLog.AppConfig.setLastMac(mDeviceAddress, true);
+                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), s -> null);
+                    }
                 }
                 hideSnackBar();
                 break;

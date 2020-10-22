@@ -783,11 +783,21 @@ public class WheelData {
     }
 
     double getMaxVoltageForWheel() {
-        return Constants.MAX_CELL_VOLTAGE * getAdapter().getCellSForWheel();
+        BaseAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return 0;
+        }
+
+        return Constants.MAX_CELL_VOLTAGE * adapter.getCellSForWheel();
     }
 
     double getVoltageTiltbackForWheel() {
-        return WheelLog.AppConfig.getCellVoltageTiltback() * getAdapter().getCellSForWheel();
+        BaseAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return 0;
+        }
+
+        return WheelLog.AppConfig.getCellVoltageTiltback() * adapter.getCellSForWheel();
     }
 
     public boolean isVoltageTiltbackUnsupported() {
