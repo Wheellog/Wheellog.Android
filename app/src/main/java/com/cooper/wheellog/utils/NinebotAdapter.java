@@ -13,7 +13,7 @@ import timber.log.Timber;
 /**
  * Created by palachzzz on Dec 2019.
  */
-public class NinebotAdapter implements IWheelAdapter {
+public class NinebotAdapter extends BaseAdapter {
     private static NinebotAdapter INSTANCE;
     private Timer keepAliveTimer;
 	private boolean settingCommandReady = false;
@@ -103,7 +103,6 @@ public class NinebotAdapter implements IWheelAdapter {
     public void updateMaxSpeed(int wheelMaxSpeed) {
 
     }
-
 
     public static class Status {
 

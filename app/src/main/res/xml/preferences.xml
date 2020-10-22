@@ -33,20 +33,25 @@
 		android:enabled="true"
         android:title="@string/reset_top_speed_title" />
 
-	<Preference
-        android:key="@string/reset_user_distance"
-		android:enabled="true"
-        android:title="@string/reset_user_distance_title" />
-
     <Preference
         android:key="@string/reset_lowest_battery"
         android:enabled="true"
         android:title="@string/reset_lowest_battery_title" />
 
     <Preference
+        android:key="@string/reset_user_distance"
+        android:enabled="true"
+        android:title="@string/reset_user_distance_title" />
+
+    <Preference
         android:key="@string/last_mac"
         android:enabled="true"
         android:title="@string/edit_mac_addr_title" />
+
+    <Preference
+        android:key="@string/profile_name"
+        android:enabled="true"
+        android:title="@string/profile_name_title" />
 
     <Preference
         android:key="@string/about"

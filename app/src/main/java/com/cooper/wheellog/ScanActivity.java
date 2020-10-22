@@ -24,8 +24,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cooper.wheellog.utils.SettingsUtil;
-
 import java.util.Arrays;
 
 import timber.log.Timber;
@@ -110,31 +108,12 @@ public class ScanActivity extends AppCompatActivity {
             intent.putExtra("MAC", deviceAddress);
             intent.putExtra("NAME", deviceName);
             intent.putExtra("ADV", advData);
-            SettingsUtil.setAdvDataForWheel(view.getContext(), deviceAddress, advData);
+            WheelLog.AppConfig.setAdvDataForWheel(deviceAddress, advData);
             setResult(RESULT_OK, intent);
-            //Ask for inmotion password
-            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setTitle(R.string.wheel_pass_imotion);
+            //Set password for inmotion
+            WheelLog.AppConfig.setPasswordForWheel(deviceAddress, "");
+            finish();
 
-            final EditText input = new EditText(view.getContext());
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            builder.setView(input);
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String password = input.getText().toString();
-                    SettingsUtil.setPasswordForWheel(view.getContext(), deviceAddress, password);
-                    finish();
-                }
-            });
-            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                    finish();
-                }
-            });
-            builder.show();
         }
     };
 

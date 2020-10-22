@@ -21,16 +21,15 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
-import com.cooper.wheellog.utils.SettingsUtil;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
-
-import static com.google.api.client.util.Strings.isNullOrEmpty;
 
 public class LoggingService extends Service
 {
@@ -107,7 +106,7 @@ public class LoggingService extends Service
             }
         }
 
-        logLocationData = SettingsUtil.isLogLocationEnabled(this);
+        logLocationData = WheelLog.AppConfig.getLogLocationData();
 
         if (logLocationData && !PermissionsUtil.checkLocationPermission(this)) {
             showToast(R.string.logging_error_no_location_permission);
@@ -120,7 +119,7 @@ public class LoggingService extends Service
 
         String filename = sdFormatter.format(new Date()) + ".csv";
 
-        if (!fileUtil.prepareFile(filename)) {
+        if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
             stopSelf();
             return START_STICKY;
         }
@@ -138,7 +137,7 @@ public class LoggingService extends Service
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             // Getting if the users wants to use GPS
-            boolean useGPS = SettingsUtil.isUseGPSEnabled(this);
+            boolean useGPS = WheelLog.AppConfig.getUseGps();
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 logLocationData = false;
@@ -154,7 +153,7 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
                 mLocation = getLastBestLocation();
                 mLocationProvider = LocationManager.NETWORK_PROVIDER;
                 if (useGPS)
@@ -162,10 +161,10 @@ public class LoggingService extends Service
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             } else
-                fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+                fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
         }
         else {
-            fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,cpu_temp,tilt,roll,mode,alert");
+            fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
         }
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
@@ -185,8 +184,12 @@ public class LoggingService extends Service
     @SuppressWarnings("MissingPermission")
     @Override
     public void onDestroy() {
-        String path = fileUtil.getAbsolutePath();
-        fileUtil.close();
+        String path = "";
+
+        if (fileUtil != null) {
+            path = fileUtil.getAbsolutePath();
+            fileUtil.close();
+        }
 
         if (!isNullOrEmpty(path)) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
@@ -194,15 +197,8 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
 
-            // TODO google drive upload
-            /*if (SettingsUtil.isAutoUploadEnabled(getApplicationContext())) {
-                if (googleDriveUtil.alreadyLoggedIn()) {
-                    googleDriveUtil.uploadFile(filepath, Constants.LOG_FOLDER_NAME);
-                }
-            }*/
-
             // electro.club ulpoad
-            if (SettingsUtil.isAutoUploadECEnabled(getApplicationContext())
+            if (WheelLog.AppConfig.getAutoUploadEc()
                     && ElectroClub.getInstance().getUserToken() != null) {
                 try {
                     byte[] data = fileUtil.readBytes();

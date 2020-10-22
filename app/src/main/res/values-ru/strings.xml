@@ -24,12 +24,13 @@
     <string name="average_riding_speed">Сред. движения</string>
     <string name="angle">Наклон вперед</string>
     <string name="roll">Наклон в бок</string>
-    <string name="temperature2">Темп. процессора</string>
+    <string name="temperature2">Темп. 2</string>
     <string name="total_distance">Пробег</string>
     <string name="name">Название</string>
     <string name="model">Модель</string>
     <string name="version">Версия</string>
     <string name="serial_number">Серийный номер</string>
+    <string name="time_charge_title">Время зарядки</string>
     <string name="waiting_for_wheel">Ожидание колеса</string>
     <string name="fan_status">Вентилятор</string>
     <string name="speed">Скорость</string>
@@ -73,9 +74,9 @@
 
     <string name="reset_user_distance_title">Обнулить мой пробег</string>
     <string name="edit_mac_addr_title">Изменить MAC адрес</string>
+    <string name="profile_name_title">Изменить имя профиля</string>
     <string name="about_app_title">О программе Wheellog</string>
     <string name="settings_title">Настройки</string>
-    <string name="wheel_pass_imotion">Пароль (только для Inmotion)</string>
     <string name="amp">А</string>
     <string name="max_speed_dial_title">Верхняя граница внешней шкалы</string>
     <string name="use_mph_title">Использовать мили</string>
@@ -122,9 +123,9 @@
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="battery_voltage_title">Напряжение батареи</string>
     <string name="battary_voltage_description">67В/84В/100В</string>
-    <string name="off_level_1_alarm">Отключить первое предупреждение.</string>
-    <string name="off_level_2_alarm">Отключить второе предупреждение.</string>
-    <string name="on_level_alarm">Включить предупреждения</string>
+    <string name="off_level_1_alarm">35 км/ч + 80% PWM</string>
+    <string name="off_level_2_alarm">Только 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 км/ч + 80% PWM</string>
     <string name="metre">м</string>
     <string name="on_headlight_title">Включение фонаря</string>
     <string name="on_headlight_description">Включает передний фонарь для освещения дороги.</string>
@@ -185,6 +186,10 @@
     <string name="unknown_device">Неизвестное устройство</string>
     <string name="use_better_percents_description">Использовать улучшенную формулу рассчета % вместо формулы производителя колеса</string>
     <string name="use_better_percents_title">Улучшенные проценты</string>
+    <string name="fixed_percents_title">Фиксированные проценты</string>
+    <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
+    <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
+    <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_eng_title">English</string>
@@ -199,6 +204,14 @@
     <string name="max_speed_dial_description">Максимальное значение внешней шкалы (скорость или ток)</string>
     <string name="connection_sound_description">Проигрывать звуки подключения и отключения колеса</string>
     <string name="connection_sound_title">Звуки подключения колеса</string>
+    <string name="battery_capacity_title">Ёмкость батареи</string>
+    <string name="battery_capacity_description">Ёмкость батареи в Wh</string>
+    <string name="charging_power_title">Мощность зарядки</string>
+    <string name="charging_power_description">Мощность зарядки</string>
+    <string name="show_unknown_devices_title">Показать Bluetooth без имени</string>
+    <string name="show_unknown_devices_description">Показывать устройства Bluetooth без имени</string>
+    <string name="connect_beep_title">Звук подключения</string>
+    <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="sec">сек</string>
     <string name="altered_alarms_title">Измененные предупреждения</string>
     <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
@@ -210,7 +223,13 @@
     <string name="alarm_factor3_title">PWM третьего предупреждения</string>
     <string name="alarm_factor3_description">Должен быть больше второго</string>
     <string name="warning_speed_title">Предварительное предупреждение</string>
-    <string name="warning_speed_description">Предварительное предупреждение по скорости (0 = откл)</string>
+    <string name="warning_speed_description">Предварительное предупреждение по скорости, 0 - отключить</string>
+    <string name="warning_pwm_title">Предварительное предупреждение PWM</string>
+    <string name="warning_pwm_description">Предварительное предупреждение по PWM, 0 - отключить</string>
+    <string name="warning_speed_period_title">Переодичность предупреждений</string>
+    <string name="warning_speed_period_description">Период оповещений, 0 - отключить</string>
+    <string name="use_short_pwm_title">Короткое отображение PWM</string>
+    <string name="use_short_pwm_description">Current/Max PWM отображается около скорости</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
     <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
     <string name="power_factor_description">Не меняйте если не знаете что это, 90 по дефолту</string>
@@ -219,6 +238,8 @@
     <string name="rotation_speed_description">Измеренная на весу максимальная скорость вращения колеса</string>
     <string name="rotation_voltage_title">Напряжение раскрутки</string>
     <string name="rotation_voltage_description">Напряжение при котором измерялась скорость раскрутки</string>
+    <string name="use_stop_music_title">Выключение звука</string>
+    <string name="use_stop_music_description">Автовыключение звука при скорости ниже 3.5 км/ч</string>
 
 
 </resources>

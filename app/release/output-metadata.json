@@ -1,19 +1,17 @@
 {
-  "version": 1,
+  "version": 2,
   "artifactType": {
     "type": "APK",
     "kind": "Directory"
   },
   "applicationId": "com.cooper.wheellog",
-  "variantName": "release",
+  "variantName": "processReleaseResources",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
-      "properties": [],
-      "versionCode": 71,
-      "versionName": "2.1.4beta",
-      "enabled": true,
+      "versionCode": 73,
+      "versionName": "2.2.1",
       "outputFile": "app-release.apk"
     }
   ]

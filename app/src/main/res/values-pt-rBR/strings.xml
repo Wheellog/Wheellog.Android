@@ -50,7 +50,7 @@
 	<string name="current">Prąd</string>
 	<string name="power">Moc</string>
 	<string name="temperature">Temperatura</string>
-	<string name="temperature2">Temperatura</string>
+	<string name="temperature2">Temperatura 2</string>
 	<string name="angle">Pochylenie</string>
 	<string name="roll">Przechylenie</string>
 	<string name="fan_status">Stan wentylatora</string>
@@ -130,8 +130,7 @@
 	<string name="edit_mac_addr_title">Edytuj adres MAC</string>
 	<string name="about_app_title">O programie</string>
 	<string name="settings_title">Ustawienia</string>
-	<string name="wheel_pass_imotion">Hasło monocykla (tylko Inmotion)</string>
-	<string name="amp">A</string>
+    <string name="amp">A</string>
 	<string name="max_speed_dial_title">Maksymalna prędkość</string>
 	<string name="max_speed_dial_description">Maksymalna prędkość wyświetlana na prędkościomierzu</string>
 	<string name="use_mph_title">Prędkość i dystans w milach</string>

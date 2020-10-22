@@ -1,6 +1,10 @@
 package com.cooper.wheellog.utils
 
+import android.app.Activity
+import android.content.Context
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -10,18 +14,19 @@ import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
 import kotlin.math.round
-
+import kotlin.math.roundToInt
 
 class GotwayAdapterTest {
 
     private var adapter: GotwayAdapter = GotwayAdapter()
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
-    
 
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        data.wheelType = Constants.WHEEL_TYPE.GOTWAY
+        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -101,7 +106,6 @@ class GotwayAdapterTest {
         assertThat(data.totalDistance).isEqualTo(24786)
         assertThat(data.batteryLevel).isEqualTo(100)
     }
-
 
     @Test
     fun `decode strange board data`() {

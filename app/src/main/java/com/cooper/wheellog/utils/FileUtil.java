@@ -55,10 +55,6 @@ public class FileUtil {
         return file;
     }
 
-    public Uri getUri() {
-        return uri;
-    }
-
     public String getAbsolutePath() {
         if (isNull()) {
             return null;
@@ -72,6 +68,10 @@ public class FileUtil {
     }
 
     public boolean prepareFile(String fileName) {
+        return prepareFile(fileName, "");
+    }
+
+    public boolean prepareFile(String fileName, String folder) {
         uri = null;
         file = null;
         // Android 10+
@@ -89,10 +89,14 @@ public class FileUtil {
                 contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
                 contentValues.put(MediaStore.Downloads.TITLE, fileName);
                 contentValues.put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName));
-                contentValues.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME);
+                String path = Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME;
+                if (folder != null && !folder.equals("")) {
+                    path += File.separator + folder;
+                }
+                contentValues.put(MediaStore.Downloads.RELATIVE_PATH, path);
                 Uri contentUri = MediaStore.Downloads.getContentUri(getExternalStoreName());
 
-                uri = getContentResolver().insert(contentUri, contentValues);
+                uri = Objects.requireNonNull(getContentResolver()).insert(contentUri, contentValues);
                 file = new File(getPathFromUri(uri));
             } finally {
                 CachedFile cache = new CachedFile();
@@ -103,8 +107,12 @@ public class FileUtil {
         } else {
             // api 28 or less
             // Get the directory for the user's public pictures directory.
+            String path = Constants.LOG_FOLDER_NAME;
+            if (folder != null && !folder.equals("")) {
+                path += File.separator + folder;
+            }
             File dir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
+                    Environment.DIRECTORY_DOWNLOADS), path);
 
             if (!dir.mkdirs() && !ignoreTimber)
                 Timber.i("Directory not created");

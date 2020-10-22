@@ -1,6 +1,8 @@
 package com.cooper.wheellog.utils
 
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -16,6 +18,7 @@ class InmotionAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -92,8 +95,8 @@ class InmotionAdapterTest {
         assertThat(data.temperature2).isEqualTo(0)
         assertThat(data.voltageDouble).isEqualTo(82.13)
         assertThat(data.currentDouble).isEqualTo(-0.2)
-        assertThat(data.totalDistance).isEqualTo(1303324) // wrong should be 1303324
-        assertThat(data.batteryLevel).isEqualTo(97) //wrong should be 97
+        assertThat(data.totalDistance).isEqualTo(1303324)
+        assertThat(data.batteryLevel).isEqualTo(97)
         assertThat(data.angle).isEqualTo(0.2499847412109375)
         assertThat(data.roll).isEqualTo(5.588888888888889)
     }

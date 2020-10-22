@@ -50,7 +50,7 @@
 	<string name="current">Proud</string>
 	<string name="power">Výkon</string>
 	<string name="temperature">Teplota desky</string>
-	<string name="temperature2">Teplota baterie</string>
+	<string name="temperature2">Teplota 2</string>
 	<string name="angle">Angle</string>
 	<string name="roll">Roll</string>
 	<string name="fan_status">Větrání</string>
@@ -130,8 +130,7 @@
 	<string name="edit_mac_addr_title">Upravit MAC adresu</string>
 	<string name="about_app_title">O WheelLogu</string>
 	<string name="settings_title">Nastavení</string>
-	<string name="wheel_pass_imotion">Heslo jednokolky ( jen InMotion )</string>
-	<string name="amp">A</string>
+    <string name="amp">A</string>
 	<string name="max_speed_dial_title">Maximální rychlost</string>
 	<string name="max_speed_dial_description">Maximální rychlost zobrazená ciferníku</string>
 	<string name="use_mph_title">Rychlost a vzdálenost v mílích</string>

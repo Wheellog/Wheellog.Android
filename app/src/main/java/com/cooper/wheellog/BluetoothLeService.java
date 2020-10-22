@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.views.WheelView;
 
 import java.util.*;
 
@@ -49,8 +50,6 @@ public class BluetoothLeService extends Service {
     private NotificationUtil mNotificationHandler;
 
     private Timer beepTimer;
-    private int mBeepPeriod = 5000;
-    private boolean mConnectSound = false;
     private int timerTicks;
     PowerManager mgr;
     PowerManager.WakeLock wl;
@@ -66,7 +65,7 @@ public class BluetoothLeService extends Service {
                     switch (connectionState) {
                         case STATE_CONNECTED:
                             mConnectionState = STATE_CONNECTED;
-                            if (!LoggingService.isInstanceCreated() && SettingsUtil.isAutoLogEnabled(BluetoothLeService.this))
+                            if (!LoggingService.isInstanceCreated() && WheelLog.AppConfig.getAutoLog())
                                 startService(new Intent(getApplicationContext(), LoggingService.class));
 							if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                                 Timber.i("Sending King Name request");
@@ -77,6 +76,9 @@ public class BluetoothLeService extends Service {
                             mConnectionState = STATE_DISCONNECTED;
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
                                 InMotionAdapter.newInstance();
+                            }
+                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+                                InmotionAdapterV2.newInstance();
                             }
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
                                 NinebotZAdapter.newInstance();
@@ -161,11 +163,13 @@ public class BluetoothLeService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
+            Boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
+            int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
             if (newState == BluetoothProfile.STATE_CONNECTED) {
 
                 Timber.i("Connected to GATT server.");
-                if (mConnectSound) {
-                    if (mBeepPeriod>0) {
+                if (connectionSound) {
+                    if (noConnectionSound >0) {
                         stopBeepTimer();
                     }
                     if (wl != null) {
@@ -185,13 +189,13 @@ public class BluetoothLeService extends Service {
                 Timber.i("Disconnected from GATT server.");
                 if (mConnectionState == STATE_CONNECTED) {
                     mDisconnectTime = Calendar.getInstance().getTime();
-                    if (mConnectSound) {
+                    if (connectionSound) {
                         playDisconnect();
                         if (wl != null) {
                             wl.release();
                             wl = null;
                         }
-                        if (mBeepPeriod>0) {
+                        if (noConnectionSound >0) {
                             startBeepTimer();
                         }
                     }
@@ -202,6 +206,9 @@ public class BluetoothLeService extends Service {
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
                                 InMotionAdapter.getInstance().stopTimer();
                         }
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+                        InmotionAdapterV2.getInstance().stopTimer();
+                    }
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
                         NinebotZAdapter.getInstance().resetConnection();
                     }
@@ -239,9 +246,9 @@ public class BluetoothLeService extends Service {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
                 boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this, mBluetoothDeviceAddress);
                 if (recognisedWheel) {
+                    sendBroadcast(new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED));
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
-
                 } else
                     disconnect();
                 return;
@@ -279,7 +286,8 @@ public class BluetoothLeService extends Service {
                 }
             }
 
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY) {
+            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY ||
+                    WheelData.getInstance().getWheelType() == WHEEL_TYPE.VETERAN) {
                 byte[] value = characteristic.getValue();
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());
             }
@@ -287,6 +295,13 @@ public class BluetoothLeService extends Service {
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
                 byte[] value = characteristic.getValue();
                 if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
+                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
+                }
+            }
+
+            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+                byte[] value = characteristic.getValue();
+                if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
                     WheelData.getInstance().decodeResponse(value, getApplicationContext());
                 }
             }
@@ -522,6 +537,7 @@ public class BluetoothLeService extends Service {
                 ks_characteristic.setWriteType(1);
                 return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
             case GOTWAY:
+            case VETERAN:
                 BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                 if (gw_service == null) {
                     Timber.i("writeBluetoothGattCharacteristic service == null");
@@ -596,6 +612,20 @@ public class BluetoothLeService extends Service {
                 }
                 Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
                 return true;
+            case INMOTION_V2:
+                BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                if (inv2_service == null) {
+                    Timber.i("writeBluetoothGattCharacteristic service == null");
+                    return false;
+                }
+                BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID));
+                if (inv2_characteristic == null) {
+                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                    return false;
+                }
+                inv2_characteristic.setValue(cmd);
+                Timber.i("writeBluetoothGattCharacteristic writeType = %d", inv2_characteristic.getWriteType());
+                return this.mBluetoothGatt.writeCharacteristic(inv2_characteristic);
         }
         return false;
     }
@@ -629,30 +659,17 @@ public class BluetoothLeService extends Service {
         return mBluetoothDeviceAddress;
     }
 
-    public void setConnectionSounds(boolean connectSound, int beepPeriod) {
-        mConnectSound = connectSound;
-        mBeepPeriod = beepPeriod;
-/*        if (mConnectSound) {
-            if (!wl.isHeld())
-                wl.acquire();
-        } else {
-            if (wl.isHeld())
-                wl.release();
-        }
-
-*/
-    }
-
     private void startBeepTimer(){
         //wl.acquire();
         wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
         wl.acquire(300000);
         timerTicks = 0;
+        final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
         TimerTask beepTimerTask = new TimerTask() {
             @Override
             public void run() {
                 timerTicks +=1;
-                if (timerTicks*mBeepPeriod > 300000){
+                if (timerTicks* noConnectionSound > 300000){
                     stopBeepTimer();
                 }
                 MediaPlayer mp3 = MediaPlayer.create(getApplicationContext(), R.raw.sound_no_connection);
@@ -667,7 +684,7 @@ public class BluetoothLeService extends Service {
             }
         };
         beepTimer = new Timer();
-        beepTimer.scheduleAtFixedRate(beepTimerTask, mBeepPeriod, mBeepPeriod);
+        beepTimer.scheduleAtFixedRate(beepTimerTask, noConnectionSound, noConnectionSound);
     }
     private void stopBeepTimer(){
         if (wl != null) {

@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,19 +14,14 @@ import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 /**
  * Created by cedric on 29/12/2016.
  */
-public class InMotionAdapter implements IWheelAdapter {
+public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
-    private boolean passwordSent = false;
+    private int passwordSent = 0;
 	private boolean needSlowData = true;
 	private boolean settingCommandReady = false;
 	private static int updateStep = 0;
 	private byte[] settingCommand;
-    private static boolean mBetterPercents = false;
-
-    public static void setBetterPercents (boolean betterPercents) {
-        mBetterPercents = betterPercents;
-    }
 
     @Override
     public boolean decode(byte[] data) {
@@ -186,28 +182,28 @@ public class InMotionAdapter implements IWheelAdapter {
             @Override
             public void run() {
                 if (updateStep == 0) {
-                    if (!passwordSent) {
+                    if (passwordSent < 6) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
-                            passwordSent = true;
                             Timber.i("Sent password message");
-                        } else updateStep = 39;
+                            passwordSent++;
+                        } else updateStep = 35;
 
                     } else if ((model == UNKNOWN) | needSlowData ) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     } else if (settingCommandReady) {
     					if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
                             needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
-                        } else updateStep = 39; // after +1 and %10 = 0
+                        } else updateStep = 35; // after +1 and %10 = 0
     				}
     				else {
                         if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
-                            updateStep = 39;
+                            updateStep = 35;
     					} else {
                             Timber.i("Sent keep-alive message");
     					}
@@ -215,18 +211,14 @@ public class InMotionAdapter implements IWheelAdapter {
 
 				}
                 updateStep += 1;
-                updateStep %= 40;
+                updateStep %= 10;
                 Timber.i("Step: %d", updateStep);
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 25);
     }
-	
 
-	public void resetConnection() {
-		passwordSent = false;
-	}
 	
 	public void setLightState(final boolean lightEnable) {
 		settingCommandReady = true;
@@ -355,14 +347,38 @@ public class InMotionAdapter implements IWheelAdapter {
             } else {
                 batt = 0.0;
             }
-        } else if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F ) {
-            if (mBetterPercents) {
-                if (volts > 84.00) {
-                    batt = 1.0;
-                } else if (volts > 68.5) {
-                    batt = (volts - 68.5) / 15.5;
+        } else {
+            Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+            if (model.belongToInputType( "5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F ) {
+                if (useBetterPercents) {
+                    if (volts > 84.00) {
+                        batt = 1.0;
+                    } else if (volts > 68.5) {
+                        batt = (volts - 68.5) / 15.5;
+                    } else {
+                        batt = 0.0;
+                    }
                 } else {
-                    batt = 0.0;
+                    if (volts > 82.50) {
+                        batt = 1.0;
+                    } else if (volts > 68.0) {
+                        batt = (volts - 68.0) / 14.5;
+                    } else {
+                        batt = 0.0;
+                    }
+                }
+
+
+            } else if (model == Model.V10 || model == Model.V10F || model == Model.V10S || model == Model.V10SF || model == Model.V10T || model == Model.V10FT) {
+            if (useBetterPercents) {
+                if (volts > 8350) {
+                    batt = 100;
+                } else if (volts > 6800) {
+                    batt = (volts - 6650) / 17;
+                } else if (volts > 6400) {
+                    batt = (volts - 6400) / 45;
+                } else {
+                    batt = 0;
                 }
             } else {
                 if (volts > 82.50) {
@@ -375,47 +391,26 @@ public class InMotionAdapter implements IWheelAdapter {
             }
 
 
-        } else if (model == Model.V10 || model == Model.V10F || model == Model.V10S || model == Model.V10SF || model == Model.V10T || model == Model.V10FT) {
-        if (mBetterPercents) {
-            if (volts > 8350) {
-                batt = 100;
-            } else if (volts > 6800) {
-                batt = (volts - 6650) / 17;
-            } else if (volts > 6400) {
-                batt = (volts - 6400) / 45;
-            } else {
-                batt = 0;
-            }
-        } else {
-            if (volts > 82.50) {
-                batt = 1.0;
-            } else if (volts > 68.0) {
-                batt = (volts - 68.0) / 14.5;
-            } else {
+        } else if (model.belongToInputType("6")) {
                 batt = 0.0;
-            }
-        }
-
-
-    } else if (model.belongToInputType("6")) {
-            batt = 0.0;
-        } else {
-            if (volts >= 82.00) {
-                batt = 1.0;
-            } else if (volts > 77.8) {
-                batt = ((volts - 77.8) / 4.2) * 0.2 + 0.8;
-            } else if (volts > 74.8) {
-                batt = ((volts - 74.8) / 3.0) * 0.2 + 0.6;
-            } else if (volts > 71.8) {
-                batt = ((volts - 71.8) / 3.0) * 0.2 + 0.4;
-            } else if (volts > 70.3) {
-                batt = ((volts - 70.3) / 1.5) * 0.2 + 0.2;
-            } else if (volts > 68.0) {
-                batt = ((volts - 68.0) / 2.3) * 0.2;
             } else {
-                batt = 0.0;
-            }
+                if (volts >= 82.00) {
+                    batt = 1.0;
+                } else if (volts > 77.8) {
+                    batt = ((volts - 77.8) / 4.2) * 0.2 + 0.8;
+                } else if (volts > 74.8) {
+                    batt = ((volts - 74.8) / 3.0) * 0.2 + 0.6;
+                } else if (volts > 71.8) {
+                    batt = ((volts - 71.8) / 3.0) * 0.2 + 0.4;
+                } else if (volts > 70.3) {
+                    batt = ((volts - 70.3) / 1.5) * 0.2 + 0.2;
+                } else if (volts > 68.0) {
+                    batt = ((volts - 68.0) / 2.3) * 0.2;
+                } else {
+                    batt = 0.0;
+                }
 
+            }
         }
         return batt * 100.0;
 
@@ -1285,7 +1280,7 @@ public class InMotionAdapter implements IWheelAdapter {
 				CANMessage result = CANMessage.verify(unpacker.getBuffer());
 				
                 if (result != null) { // data OK
-					
+
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
 						Status vals = result.parseFastInfoMessage(model);
                         if (vals != null)
@@ -1303,7 +1298,9 @@ public class InMotionAdapter implements IWheelAdapter {
                             model = infos.getModel();
                             outValues.add(infos);
                         }
-                    }					
+                    } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
+                        passwordSent = Integer.MAX_VALUE;
+                    }
                 } 
             }
         }
@@ -1337,7 +1334,7 @@ public class InMotionAdapter implements IWheelAdapter {
                     if (c == (byte) 0x55 && oldc == (byte) 0x55) {
                         state = UnpackerState.done;
                         updateStep = 0;
-                        oldc = c;
+                        oldc = 0;
                         Timber.i("Step reset");
                         return true;
                     }
@@ -1362,6 +1359,11 @@ public class InMotionAdapter implements IWheelAdapter {
             state = UnpackerState.unknown;
 
         }
+    }
+
+    @Override
+    public int getCellSForWheel() {
+        return 20;
     }
 
     public static InMotionAdapter getInstance() {

@@ -70,4 +70,12 @@
         android:summary="@string/gotway_negative_description"
         android:title="@string/gotway_negative_title" />
 
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/connect_beep"
+        android:summary="@string/connect_beep_description"
+        android:title="@string/connect_beep_title"
+        android:defaultValue="true"
+        android:visible="true" />
+
 </PreferenceScreen>

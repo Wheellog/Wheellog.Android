@@ -50,7 +50,7 @@
 	<string name="current">Corrente</string>
 	<string name="power">Potência</string>
 	<string name="temperature">Temperatura Sistema</string>
-	<string name="temperature2">Temperatura CPU</string>
+	<string name="temperature2">Temperatura 2</string>
 	<string name="angle">Tilt</string>
 	<string name="roll">Roll</string>
 	<string name="fan_status">Estado da ventilação</string>
@@ -130,7 +130,6 @@
 	<string name="edit_mac_addr_title">Editar MAC adress</string>
 	<string name="about_app_title">Sobre WheelLog</string>
 	<string name="settings_title">Settings</string>
-	<string name="wheel_pass_imotion">Senha monociclo (somente InMotion)</string>
 	<string name="amp">A</string>
 	<string name="max_speed_dial_title">Velocidade Máxima</string>
 	<string name="max_speed_dial_description">Velocidade máxima mostrada no indicador externo</string>

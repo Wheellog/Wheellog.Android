@@ -1,6 +1,10 @@
 package com.cooper.wheellog.utils
 
+import com.cooper.wheellog.BluetoothLeService
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
@@ -19,8 +23,11 @@ class KingsongAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        every { data.bluetoothLeService } returns
+                mockkClass(BluetoothLeService::class, relaxed = true)
     }
 
     @After
@@ -119,7 +126,6 @@ class KingsongAdapterTest {
     @Test
     fun `decode Serial number`() {
         // Arrange.
-        justRun { data.updateKSAlarmAndSpeed() }
         val type = 179.toByte() // Name and Type data
         val serial = "King1234567890123"
         val serialBytes = serial.toByteArray(Charsets.UTF_8)
@@ -148,6 +154,54 @@ class KingsongAdapterTest {
 
         // Assert.
         assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `decode real data 1`() {
+        // Arrange.
+        val byteArray1 = "aa554b532d5331382d30323035000000bb1484fd".hexToByteArray() //model name
+        val byteArray2 = "aa556919030200009f36d700140500e0a9145a5a".hexToByteArray() //life data
+        val byteArray3 = "aa550000090017011502140100004006b9145a5a".hexToByteArray() // dist/fan/time
+        val byteArray4 = "aa55000000000000000000000000400cf5145a5a".hexToByteArray() // cpu load
+        val byteArray5 = "aa55850c010000000000000016000000f6145a5a".hexToByteArray() // output
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(result2).isTrue()
+        assertThat(result3).isTrue()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        // 1st data
+        assertThat(data.name).isEqualTo("KS-S18-0205")
+        assertThat(data.model).isEqualTo("KS-S18")
+        assertThat(data.version).isEqualTo("2.05")
+        //2nd data
+        assertThat(data.speedDouble).isEqualTo(5.15)
+        assertThat(data.temperature).isEqualTo(13)
+        assertThat(data.voltageDouble).isEqualTo(65.05)
+        assertThat(data.currentDouble).isEqualTo(2.15)
+        assertThat(data.totalDistance).isEqualTo(13983)
+        assertThat(data.batteryLevel).isEqualTo(12)
+        assertThat(data.modeStr).isEqualTo("0")
+
+        //3rd data
+        assertThat(data.temperature2).isEqualTo(16)
+        assertThat(data.fanStatus).isEqualTo(0)
+        assertThat(data.chargingStatus).isEqualTo(0)
+        assertThat(data.distanceDouble).isEqualTo(0)
+        //4th data
+        assertThat(data.cpuLoad).isEqualTo(64)
+        assertThat(data.output).isEqualTo(12)
+
+        //5th data
+        assertThat(adapter.speedLimit).isEqualTo(32.05) //limit speed
     }
 
     @Test

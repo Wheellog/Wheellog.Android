@@ -19,6 +19,7 @@ class ElectroClub {
         const val LOGIN_METHOD = "login"
         const val UPLOAD_METHOD = "uploadTrack"
         const val GET_GARAGE_METHOD = "getUserGarage"
+        const val GET_GARAGE_METHOD_FILTRED = "garage"
     }
 
     private val url = "https://electro.club/api/v1"
@@ -38,7 +39,6 @@ class ElectroClub {
     fun login(email: String, password: String, success: (Boolean) -> Unit) {
         userToken = null
         userId = null
-        var nickname = ""
         val urlWithParams = Uri.parse(url)
                 .buildUpon()
                 .appendQueryParameter("method", LOGIN_METHOD)
@@ -66,6 +66,7 @@ class ElectroClub {
             override fun onResponse(call: Call, response: Response) {
                 response.use {
                     val json = JSONObject(response.body!!.string())
+                    val nickname: String
                     if (!response.isSuccessful) {
                         userToken = null
                         userId = null
@@ -84,6 +85,9 @@ class ElectroClub {
                             return
                         }
                     }
+
+                    WheelLog.AppConfig.setEcUserId(userId)
+                    WheelLog.AppConfig.setEcToken(userToken)
                     successListener?.invoke(LOGIN_METHOD, nickname)
                     success(true)
                 }
@@ -135,6 +139,9 @@ class ElectroClub {
 
     fun getAndSelectGarageByMacOrPrimary(mac: String, success: (String?) -> Unit)
     {
+        if (selectedGarage != "0")
+            return // already selected
+
         getGarage {
             val len = it.length() - 1
             var primaryId: String? = null
@@ -145,6 +152,7 @@ class ElectroClub {
                 if (m != null && m == mac) {
                     selectedGarage = it.getJSONObject(i).getString("id")
                     success(selectedGarage)
+                    successListener?.invoke(GET_GARAGE_METHOD_FILTRED, it.getJSONObject(i).getString("name"))
                     break
                 }
                 if (isPrimary) {

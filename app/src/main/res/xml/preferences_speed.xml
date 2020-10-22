@@ -15,6 +15,26 @@
         android:visible="true" />
 
     <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/fixed_percents"
+        android:summary="@string/fixed_percents_description"
+        android:title="@string/fixed_percents_title"
+        sample:dependency="use_better_percents"
+        android:visible="true" />
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="330"
+        android:key="@string/cell_voltage_tiltback"
+        android:summary="@string/cell_voltage_tiltback_description"
+        android:title="@string/cell_voltage_tiltback_title"
+        sample:dependency="fixed_percents"
+        sample:sbp_decimalPlaces="2"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="400"
+        sample:sbp_measurementUnit="V"
+        sample:sbp_minValue="250" />
+
+    <CheckBoxPreference
         android:key="@string/use_mph"
         android:summary="@string/use_mph_description"
         android:title="@string/use_mph_title" />
@@ -62,5 +82,41 @@
         sample:sbp_maxValue="60"
         sample:sbp_measurementUnit="@string/sec"
         sample:sbp_minValue="0" />
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/use_stop_music"
+        android:summary="@string/use_stop_music_description"
+        android:title="@string/use_stop_music_title"
+        android:visible="true" />
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:key="@string/battery_capacity"
+        android:summary="@string/battery_capacity_description"
+        android:title="@string/battery_capacity_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="9999"
+        sample:sbp_minValue="0"
+        sample:sbp_measurementUnit="Wh"/>
+
+    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+        android:defaultValue="0"
+        android:key="@string/charging_power"
+        android:summary="@string/charging_power_description"
+        android:title="@string/charging_power_title"
+        sample:sbp_increment="1"
+        sample:sbp_maxValue="1000"
+        sample:sbp_minValue="0"
+        sample:sbp_decimalPlaces="1"
+        sample:sbp_measurementUnit="A"/>
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/show_unknown_devices"
+        android:summary="@string/show_unknown_devices_description"
+        android:title="@string/show_unknown_devices_title"
+        android:defaultValue="false"
+        android:visible="true" />
 
 </PreferenceScreen>
