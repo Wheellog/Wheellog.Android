@@ -106,7 +106,7 @@
         android:summary="@string/charging_power_description"
         android:title="@string/charging_power_title"
         sample:sbp_increment="1"
-        sample:sbp_maxValue="100"
+        sample:sbp_maxValue="1000"
         sample:sbp_minValue="0"
         sample:sbp_decimalPlaces="1"
         sample:sbp_measurementUnit="A"/>
