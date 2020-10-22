@@ -19,7 +19,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 29
         versionCode 73
-        versionName "2.2.2beta"
+        versionName "2.2.1"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
