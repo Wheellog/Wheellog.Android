@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setWheelPreferences() {
         Timber.i("SetWheelPreferences");
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
+        getPreferencesFragment().refreshWheelSettings(WheelData.getInstance().getWheelLight(),
                 WheelData.getInstance().getWheelLed(),
                 WheelData.getInstance().getWheelHandleButton(),
                 WheelData.getInstance().getWheelMaxSpeed(),
@@ -1354,7 +1354,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                getPreferencesFragment().showMainMenu();
             }
 
             @Override
@@ -1540,9 +1540,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (((MainPreferencesFragment) getPreferencesFragment()).isMainMenu())
+                    if (getPreferencesFragment().isMainMenu())
                         mDrawer.closeDrawer(GravityCompat.START, true);
-                    else ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                    else (getPreferencesFragment().showMainMenu();
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
@@ -1638,7 +1638,7 @@ public class MainActivity extends AppCompatActivity {
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         WheelLog.AppConfig.setLogLocationData(false, true);
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        getPreferencesFragment().refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1780,7 +1780,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
                     WheelLog.AppConfig.setEcToken(null, true);
                     WheelLog.AppConfig.setEcUserId(null, true);
-                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                    getPreferencesFragment().refreshVolatileSettings();
                 }
                 break;
         }
@@ -1816,11 +1816,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Fragment getPreferencesFragment() {
+    private MainPreferencesFragment getPreferencesFragment() {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        if (frag == null) {
-            return new MainPreferencesFragment();
-        }
-        return frag;
+        return frag == null ? new MainPreferencesFragment() : (MainPreferencesFragment) frag;
     }
 }
