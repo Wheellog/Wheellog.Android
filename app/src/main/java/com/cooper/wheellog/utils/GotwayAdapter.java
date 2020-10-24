@@ -3,16 +3,110 @@ package com.cooper.wheellog.utils;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Locale;
 import timber.log.Timber;
 
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
-
+    gotwayUnpacker unpacker = new gotwayUnpacker();
     private static final double RATIO_GW = 0.875;
 
     @Override
     public boolean decode(byte[] data) {
+        Timber.i("Decode Begode");
+        WheelData wd = WheelData.getInstance();
+        wd.resetRideTime();
+
+        for (byte c : data) {
+            if (unpacker.addChar(c)) {
+                byte[] buff = unpacker.getBuffer();
+                Boolean useRatio = WheelLog.AppConfig.getUseRatio();
+                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+                int gotwayNegative = WheelLog.AppConfig.getGotwayNegative();
+                gotwayNegative = 1;
+                if (buff[18] == (byte) 0x00) { // life data
+                    Timber.i("Get new life data");
+                    int voltage = MathsUtil.shortFromBytesBE(buff, 2);
+                    int speed = (int)Math.round(MathsUtil.shortFromBytesBE(buff, 4) * 3.6);
+                    long distance = MathsUtil.shortFromBytesBE(buff, 8);
+                    int phaseCurrent = MathsUtil.shortFromBytesBE(buff, 10);
+                    int phaseCurrent2 =(data[10] * 256) + data[11];
+                    int phaseCurrent3 =((data[10]) <<8 ) | (data[11]&0xFF);
+                    byte bb1 = data[10];
+                    byte bb2 = data[11];
+                    int temperature2 = (int)Math.round(((MathsUtil.shortFromBytesBE(buff, 12)/340.0) + 35) * 100);
+                    int temperature = (int) Math.round(((((buff[12] * 256) + buff[13]) / 340.0) + 35) * 100);
+                    if (gotwayNegative == 0) {
+                        speed = Math.abs(speed);
+                        phaseCurrent = Math.abs(phaseCurrent);
+                    } else {
+                        speed = speed * gotwayNegative;
+                        phaseCurrent = phaseCurrent * gotwayNegative;
+                    }
+
+                    int battery = 0;
+                    if (useBetterPercents) {
+                        if (voltage > 6680) {
+                            battery = 100;
+                        } else if (voltage > 5440) {
+                            battery = (voltage - 5380) / 13;
+                        } else if (voltage > 5290) {
+                            battery = (int) Math.round((voltage - 5290) / 32.5);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage <= 5290) {
+                            battery = 0;
+                        } else if (voltage >= 6580) {
+                            battery = 100;
+                        } else {
+                            battery = (voltage - 5290) / 13;
+                        }
+                    }
+
+                    if (useRatio) {
+                        distance = (int)Math.round(distance * RATIO_GW);
+                        speed = (int)Math.round(speed * RATIO_GW);
+                    }
+                    voltage = (int) Math.round(getScaledVoltage (voltage));
+
+                    wd.setModel("Begode");
+                    wd.setSpeed(speed);
+                    wd.setTopSpeed(speed);
+                    wd.setDistance(distance);
+                    wd.setTemperature(temperature);
+                    wd.setPhaseCurrent(phaseCurrent);
+                    wd.setCurrent(phaseCurrent);
+                    wd.setVoltage(voltage);
+                    wd.setVoltageSag(voltage);
+                    wd.setBatteryPercent(battery);
+                    wd.updateRideTime();
+                    return true;
+                } else if (buff[18] == (byte) 0x04) { // total data
+                    Timber.i("Get new total data");
+                    int totalDistance = (int)MathsUtil.getInt4(buff, 2);
+                    if (useRatio) {
+                        wd.setTotalDistance(Math.round(totalDistance * RATIO_GW));
+                    } else {
+                        wd.setTotalDistance(totalDistance);
+                    }
+                    int pedalsMode = (buff[6]>>4) & 0x0F;
+                    int speedAlarms = buff[6] & 0x0F;
+                    int ledMode = buff[13]&0xFF;
+
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
+    public boolean decode_old(byte[] data) {
         Timber.i("Decode Begode");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
@@ -203,6 +297,135 @@ public class GotwayAdapter extends BaseAdapter {
 
         return 24;
     }
+
+    static class veteranUnpacker {
+
+        enum UnpackerState {
+            unknown,
+            flagsearch,
+            lensearch,
+            collecting,
+            done
+        }
+
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int old1 = 0;
+        int old2 = 0;
+        int old3 = 0;
+
+        int len = 0;
+        int flags = 0;
+        UnpackerState state = UnpackerState.unknown;
+
+        byte[] getBuffer() {
+            return buffer.toByteArray();
+        }
+
+        boolean addChar(int c) {
+
+            switch (state) {
+
+                case collecting:
+
+                    buffer.write(c);
+                    if (buffer.size() == len+5) {
+                        state = UnpackerState.done;
+                        Timber.i("Len %d", len);
+                        Timber.i("Step reset");
+                        return true;
+                    }
+                    break;
+
+
+                default:
+                    if (c == (byte) 0xAA && old1 == (byte) 0xAA && old2 == (byte) 0xAA && old3 == (byte) 0xAA) {
+                        buffer = new ByteArrayOutputStream();
+                        buffer.write(0xAA);
+                        buffer.write(0xAA);
+                        buffer.write(0xAA);
+                        buffer.write(0xAA);
+                        state = UnpackerState.collecting;
+                    } else if (c == (byte) 0xAA && old1 == (byte) 0xAA && old2 == (byte) 0xAA) {
+                        old3 = old2;
+                        old2 = old1;
+                    } else if (c == (byte) 0xAA && old1 == (byte) 0xAA) {
+                        old2 = old1;
+                        old3 = 0;
+                    } else {
+                        old2 = 0;
+                        old3 = 0;
+                    }
+                    old1 = c;
+
+            }
+            return false;
+        }
+
+        void reset() {
+            old1 = 0;
+            old2 = 0;
+            old3 = 0;
+            state = UnpackerState.unknown;
+
+        }
+    }
+
+    static class gotwayUnpacker {
+
+        enum UnpackerState {
+            unknown,
+            collecting,
+            done
+        }
+
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int oldc = 0;
+
+        gotwayUnpacker.UnpackerState state = UnpackerState.unknown;
+
+        byte[] getBuffer() {
+            return buffer.toByteArray();
+        }
+
+        boolean addChar(int c) {
+
+            switch (state) {
+
+                case collecting:
+
+                    buffer.write(c);
+                    if (buffer.size() == 20) {
+                        state = UnpackerState.done;
+                        oldc = 0;
+                        Timber.i("Step reset");
+                        return true;
+                    }
+                    break;
+
+
+                default:
+                    if (c == (byte) 0xAA && oldc == (byte) 0x55) {
+                        buffer = new ByteArrayOutputStream();
+                        buffer.write(0x55);
+                        buffer.write(0xAA);
+                        state = UnpackerState.collecting;
+                    }
+                    oldc = c;
+
+            }
+            return false;
+        }
+
+        void reset() {
+            oldc = 0;
+            state = UnpackerState.unknown;
+
+        }
+    }
+
+
 
     public static GotwayAdapter getInstance() {
         if (INSTANCE == null) {

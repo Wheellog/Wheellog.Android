@@ -88,6 +88,14 @@ public class MathsUtil {
     }
 
     @NotNull
+    public static int shortFromBytesBE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 2) {
+            return ((bytes[starting] & 0xFF) << 8) | (bytes[starting+1] & 0xFF);
+        }
+        return 0;
+    }
+
+    @NotNull
     public static int signedShortFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 2) {
             return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));

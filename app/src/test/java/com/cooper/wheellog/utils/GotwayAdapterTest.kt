@@ -99,7 +99,6 @@ class GotwayAdapterTest {
         assertThat(result3).isFalse()
         assertThat(abs(data.speed)).isEqualTo(0)
         assertThat(data.temperature).isEqualTo(22)
-        assertThat(data.temperature2).isEqualTo(22)
         assertThat(data.voltageDouble).isEqualTo(65.93)
         assertThat(data.phaseCurrentDouble).isEqualTo(-1.16)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
@@ -128,11 +127,10 @@ class GotwayAdapterTest {
         assertThat(result4).isFalse()
         assertThat(abs(data.speed)).isEqualTo(4)
         assertThat(data.temperature).isEqualTo(29)
-        assertThat(data.temperature2).isEqualTo(29)
         assertThat(data.voltageDouble).isEqualTo(65.6)
         assertThat(data.phaseCurrentDouble).isEqualTo(8.1)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
-        assertThat(data.totalDistance).isEqualTo(0) // wrong
+        assertThat(data.totalDistance).isEqualTo(9955) // wrong
         assertThat(data.batteryLevel).isEqualTo(97)
     }
 
