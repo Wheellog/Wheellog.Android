@@ -41,7 +41,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -56,11 +55,9 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -1540,9 +1537,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (getPreferencesFragment().isMainMenu())
+                    if (getPreferencesFragment().isMainMenu()) {
                         mDrawer.closeDrawer(GravityCompat.START, true);
-                    else (getPreferencesFragment().showMainMenu();
+                    } else {
+                        getPreferencesFragment().showMainMenu();
+                    }
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
@@ -1604,18 +1603,17 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
-        if (view_blocks == null) {
-            Set<String> view_blocks_def = new HashSet<String>();
-            view_blocks_def.add(getString(R.string.voltage));
-            view_blocks_def.add(getString(R.string.average_riding_speed));
-            view_blocks_def.add(getString(R.string.riding_time));
-            view_blocks_def.add(getString(R.string.top_speed));
-            view_blocks_def.add(getString(R.string.distance));
-            view_blocks_def.add(getString(R.string.total));
-            wheelView.updateViewBlocksVisibility(view_blocks_def);
-        } else
-            wheelView.updateViewBlocksVisibility(view_blocks);
+        String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
+        if (viewBlocksString == null) {
+            viewBlocksString = String.format("%s,%s,%s,%s,%s,%s",
+                    getString(R.string.voltage),
+                    getString(R.string.average_riding_speed),
+                    getString(R.string.riding_time),
+                    getString(R.string.top_speed),
+                    getString(R.string.distance),
+                    getString(R.string.total));
+        }
+        wheelView.updateViewBlocksVisibility(viewBlocksString);
 
         wheelView.invalidate();
         updateScreen(true);
