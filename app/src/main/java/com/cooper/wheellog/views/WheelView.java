@@ -18,9 +18,7 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.ReflectUtil;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.*;
 
 import timber.log.Timber;
@@ -258,13 +256,12 @@ public class WheelView extends View {
         }
     }
 
-    public void updateViewBlocksVisibility(String viewBlocksString) {
+    public void updateViewBlocksVisibility(String[] viewBlocks) {
         for (ViewBlockInfo block : mViewBlocks) {
             block.setEnabled(false);
             block.setIndex(-1);
         }
 
-        String[] viewBlocks = viewBlocksString.split(",");
         int index = 0;
         for (String title : viewBlocks) {
             for (ViewBlockInfo block : mViewBlocks) {

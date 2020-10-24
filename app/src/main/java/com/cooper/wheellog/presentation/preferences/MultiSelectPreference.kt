@@ -12,8 +12,12 @@ import java.util.*
 class MultiSelectPreference(context: Context, attrs: AttributeSet?)
     : DialogPreference(context, attrs) {
 
+    companion object {
+        @JvmStatic
+        val separator = ";"
+    }
+
     var entries: Array<CharSequence>?
-    private val separator: String = ","
     private var values: LinkedHashSet<String> = LinkedHashSet()
 
     init {
