@@ -3,7 +3,6 @@ package com.cooper.wheellog.presentation.preferences
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -11,12 +10,10 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
-import androidx.core.view.setPadding
 import androidx.preference.PreferenceDialogFragmentCompat
 import com.cooper.wheellog.R
 import java.util.*
 import kotlin.math.roundToInt
-
 
 class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), CompoundButton.OnCheckedChangeListener {
 
@@ -28,14 +25,15 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
     private var preferenceChanged = false
     private var entries: Array<CharSequence>? = null
 
-    override fun onDialogClosed(positiveResult: Boolean) {
-        if (positiveResult) {
-            val preference = getListPreference()
-            if (preference.callChangeListener(newValues)) {
-                preference.setValues(newValues.toList())
-            }
+    companion object {
+        @JvmStatic
+        fun newInstance(key: String): MultiSelectPreferenceDialogFragment {
+            val fragment = MultiSelectPreferenceDialogFragment()
+            val bundle = Bundle(1)
+            bundle.putString(ARG_KEY, key)
+            fragment.arguments = bundle
+            return fragment
         }
-        preferenceChanged = false
     }
 
     private fun getListPreference(): MultiSelectPreference {
@@ -44,7 +42,6 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         newValues.clear()
         if (savedInstanceState == null) {
             val preference: MultiSelectPreference = getListPreference()
@@ -61,18 +58,20 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
     }
 
     override fun onCreateDialogView(context: Context): View {
-        val scrollView = ScrollView(context)
-        scrollView.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-        layoutWithCheckboxes = LinearLayout(context)
-        layoutWithCheckboxes.orientation = LinearLayout.VERTICAL
-        layoutWithCheckboxes.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
         val paddingDP = (20 * context.resources.displayMetrics.density).roundToInt()
-        layoutWithCheckboxes.setPadding(paddingDP, paddingDP, paddingDP, paddingDP)
-        scrollView.addView(layoutWithCheckboxes)
+        layoutWithCheckboxes = LinearLayout(context).also {
+            it.orientation = LinearLayout.VERTICAL
+            it.layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            it.setPadding(paddingDP, paddingDP, paddingDP, paddingDP)
+        }
+        val scrollView = ScrollView(context).also {
+            it.layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT)
+            it.addView(layoutWithCheckboxes)
+        }
         val p = getListPreference()
         p.getValueArray().forEach { e ->
             addCheckbox(context, e, true)
@@ -98,20 +97,9 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
         layoutWithCheckboxes.addView(checkBox)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(key: String): MultiSelectPreferenceDialogFragment {
-            val fragment = MultiSelectPreferenceDialogFragment()
-            val bundle = Bundle(1)
-            bundle.putString(ARG_KEY, key)
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putStringArray(_saveStateValues, newValues.toArray() as Array<out String>?)
+        outState.putStringArray(_saveStateValues, newValues.toTypedArray())
         outState.putBoolean(_saveStateChanged, preferenceChanged)
         outState.putCharSequenceArray(_saveStateEntries, entries)
     }
@@ -135,5 +123,15 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
                 changeViewOrder(buttonView, newValues.size)
             }
         }
+    }
+
+    override fun onDialogClosed(positiveResult: Boolean) {
+        if (positiveResult) {
+            val preference = getListPreference()
+            if (preference.callChangeListener(newValues)) {
+                preference.setValues(newValues.toList())
+            }
+        }
+        preferenceChanged = false
     }
 }

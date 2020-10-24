@@ -40,7 +40,7 @@ class MultiSelectPreference(context: Context, attrs: AttributeSet?)
         notifyChanged()
     }
 
-    fun getValues(): String {
+    private fun getValues(): String {
         return values.joinToString(separator)
     }
 
@@ -69,6 +69,6 @@ class MultiSelectPreference(context: Context, attrs: AttributeSet?)
         } else if (newValue is Set<*>) {
             return super.callChangeListener(newValue.joinToString(separator))
         }
-        return false;
+        return false
     }
 }
