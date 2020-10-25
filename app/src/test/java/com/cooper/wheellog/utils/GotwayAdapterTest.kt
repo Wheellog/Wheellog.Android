@@ -76,7 +76,7 @@ class GotwayAdapterTest {
 
         val speedInKm = round(speed * 3.6 / 10).toInt()
         assertThat(data.speed).isEqualTo(speedInKm)
-        assertThat(data.temperature).isEqualTo(35)
+        assertThat(data.temperature).isEqualTo(36)
         assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent / 100.0)
         assertThat(data.voltageDouble).isEqualTo(voltage / 100.0)
         assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
