@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 class VeteranAdapterTest {
 
     private var adapter: VeteranAdapter = VeteranAdapter()
-    private var header = byteArrayOf(0xDC.toByte(), 0xA5.toByte(), 0x5C.toByte(), 0x20.toByte())
+    private var header = byteArrayOf(0xDC.toByte(), 0x5A.toByte(), 0x5C.toByte(), 0x20.toByte())
     private lateinit var data: WheelData
 
     @Before
@@ -55,32 +55,41 @@ class VeteranAdapterTest {
     @Test
     fun `decode with normal data`() {
         // Arrange.
-        val voltage = 6000.toShort()
+        val voltage = 9500.toShort()
         val speed = (1111).toShort()
-        val temperature = 99.toShort()
+        val temperature = 3599.toShort()
         val distance = 3231.toShort()
         val phaseCurrent = (8322).toShort()
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
-                byteArrayOf(6, 7) +
                 MathsUtil.getBytes(distance) +
+                byteArrayOf(0, 0) +
+                MathsUtil.getBytes(distance) +
+                byteArrayOf(0, 0) +
                 MathsUtil.getBytes(phaseCurrent) +
                 MathsUtil.getBytes(temperature) +
-                byteArrayOf(14, 15, 16, 17, 0, 0x18)
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(43, 45) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0)
         // Act.
         val result = adapter.decode(byteArray)
 
         // Assert.
         assertThat(result).isTrue()
-
-        val speedInKm = round(speed * 3.6 / 10).toInt()
-        assertThat(data.speed).isEqualTo(speedInKm)
-        assertThat(data.temperature).isEqualTo(35)
-        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent / 100.0)
-        assertThat(data.voltageDouble).isEqualTo(voltage / 100.0)
-        assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
-        assertThat(data.batteryLevel).isEqualTo(54)
+        assertThat(abs(data.speed)).isEqualTo(speed)
+        assertThat(data.temperature).isEqualTo(temperature/100)
+        assertThat(data.voltageDouble).isEqualTo(voltage/100.0)
+        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent/10.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(distance/1000.0)
+        assertThat(data.totalDistance).isEqualTo(distance)
+        assertThat(data.batteryLevel).isEqualTo(80)
+        assertThat(data.version).isEqualTo("43.45 (11053)")
     }
 
     @Test

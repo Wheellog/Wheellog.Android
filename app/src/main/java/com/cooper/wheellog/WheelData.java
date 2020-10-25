@@ -184,9 +184,12 @@ public class WheelData {
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
+            case GOTWAY_VIRTUAL:
+                return GotwayVirtualAdapter.getInstance();
             case GOTWAY:
-            case VETERAN:
                 return GotwayAdapter.getInstance();
+            case VETERAN:
+                return VeteranAdapter.getInstance();
             case KINGSONG:
                 return KingsongAdapter.getInstance();
             case NINEBOT:
@@ -1371,7 +1374,7 @@ public class WheelData {
         }
     }
 
-    void decodeResponse(byte[] data, Context mContext) {
+    public void decodeResponse(byte[] data, Context mContext) {
         mDataForLog = true;
         timestamp_raw = System.currentTimeMillis();//new Date(); //sdf.format(new Date());
 
@@ -1806,7 +1809,7 @@ public class WheelData {
 					
                     return true;
                 } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.GOTWAY);
+                    setWheelType(WHEEL_TYPE.GOTWAY_VIRTUAL);
                     BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                     BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
                     mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);

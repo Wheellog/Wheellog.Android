@@ -96,7 +96,8 @@ public class Constants {
         NINEBOT_Z,
         INMOTION,
         INMOTION_V2,
-        VETERAN;
+        VETERAN,
+        GOTWAY_VIRTUAL;
     }
 
     public enum PEBBLE_APP_SCREEN {
