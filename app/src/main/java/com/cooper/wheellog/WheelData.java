@@ -1374,7 +1374,7 @@ public class WheelData {
         }
     }
 
-    public void decodeResponse(byte[] data, Context mContext) {
+    void decodeResponse(byte[] data, Context mContext) {
         mDataForLog = true;
         timestamp_raw = System.currentTimeMillis();//new Date(); //sdf.format(new Date());
 

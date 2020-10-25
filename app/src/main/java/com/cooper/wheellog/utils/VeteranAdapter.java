@@ -68,7 +68,6 @@ public class VeteranAdapter extends BaseAdapter {
                     phaseCurrent = phaseCurrent * veteranNegative;
                 }
 
-                wd.setModel("Veteran");
                 wd.setVersion(version);
                 wd.setSpeed(speed);
                 wd.setTopSpeed(speed);

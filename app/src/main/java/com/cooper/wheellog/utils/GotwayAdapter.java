@@ -67,7 +67,6 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                     voltage = (int) Math.round(getScaledVoltage (voltage));
 
-                    wd.setModel("Begode");
                     wd.setSpeed(speed);
                     wd.setTopSpeed(speed);
                     wd.setDistance(distance);
