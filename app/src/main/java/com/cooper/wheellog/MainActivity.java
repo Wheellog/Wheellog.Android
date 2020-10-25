@@ -38,10 +38,10 @@ import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -56,11 +56,9 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -365,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setWheelPreferences() {
         Timber.i("SetWheelPreferences");
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
+        getPreferencesFragment().refreshWheelSettings(WheelData.getInstance().getWheelLight(),
                 WheelData.getInstance().getWheelLed(),
                 WheelData.getInstance().getWheelHandleButton(),
                 WheelData.getInstance().getWheelMaxSpeed(),
@@ -1354,7 +1352,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                getPreferencesFragment().showMainMenu();
             }
 
             @Override
@@ -1540,9 +1538,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (((MainPreferencesFragment) getPreferencesFragment()).isMainMenu())
+                    if (getPreferencesFragment().isMainMenu()) {
                         mDrawer.closeDrawer(GravityCompat.START, true);
-                    else ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                    } else {
+                        getPreferencesFragment().showMainMenu();
+                    }
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
@@ -1604,19 +1604,22 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
-        if (view_blocks == null) {
-            Set<String> view_blocks_def = new HashSet<String>();
-            view_blocks_def.add(getString(R.string.voltage));
-            view_blocks_def.add(getString(R.string.average_riding_speed));
-            view_blocks_def.add(getString(R.string.riding_time));
-            view_blocks_def.add(getString(R.string.top_speed));
-            view_blocks_def.add(getString(R.string.distance));
-            view_blocks_def.add(getString(R.string.total));
-            wheelView.updateViewBlocksVisibility(view_blocks_def);
-        } else
-            wheelView.updateViewBlocksVisibility(view_blocks);
+        String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
+        String[] viewBlocks;
+        if (viewBlocksString == null) {
+            viewBlocks = new String[]{
+                    getString(R.string.voltage),
+                    getString(R.string.average_riding_speed),
+                    getString(R.string.riding_time),
+                    getString(R.string.top_speed),
+                    getString(R.string.distance),
+                    getString(R.string.total)
+            };
+        } else {
+            viewBlocks = viewBlocksString.split(MultiSelectPreference.getSeparator());
+        }
 
+        wheelView.updateViewBlocksVisibility(viewBlocks);
         wheelView.invalidate();
         updateScreen(true);
     }
@@ -1638,7 +1641,7 @@ public class MainActivity extends AppCompatActivity {
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         WheelLog.AppConfig.setLogLocationData(false, true);
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        getPreferencesFragment().refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1780,7 +1783,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
                     WheelLog.AppConfig.setEcToken(null, true);
                     WheelLog.AppConfig.setEcUserId(null, true);
-                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                    getPreferencesFragment().refreshVolatileSettings();
                 }
                 break;
         }
@@ -1816,11 +1819,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Fragment getPreferencesFragment() {
+    private MainPreferencesFragment getPreferencesFragment() {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        if (frag == null) {
-            return new MainPreferencesFragment();
-        }
-        return frag;
+        return frag == null ? new MainPreferencesFragment() : (MainPreferencesFragment) frag;
     }
 }

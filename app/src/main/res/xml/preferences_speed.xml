@@ -39,11 +39,10 @@
         android:summary="@string/use_mph_description"
         android:title="@string/use_mph_title" />
 
-    <MultiSelectListPreference
-        android:key="@string/view_blocks"
-        android:defaultValue="@array/view_blocks_def"
-        android:entries="@array/view_blocks_values"
-        android:entryValues="@array/view_blocks_values"
+    <com.cooper.wheellog.presentation.preferences.MultiSelectPreference
+        android:key="@string/view_blocks_string"
+        sample:defaultValue="@array/view_blocks_def"
+        sample:entries="@array/view_blocks_values"
         android:summary="@string/view_blocks_description"
         android:dialogTitle="@string/view_blocks_title"
         android:title="@string/view_blocks_title" />

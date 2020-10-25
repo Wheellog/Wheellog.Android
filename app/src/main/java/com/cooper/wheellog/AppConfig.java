@@ -114,7 +114,7 @@ public class AppConfig extends AppConfigBase {
         put("use_stop_music", SettingsType.General);
         put("garmin_connectiq_enable", SettingsType.General);
         put("horn_mode", SettingsType.General);
-        put("view_blocks", SettingsType.General);
+        put("view_blocks_string", SettingsType.General);
         put("last_mac", SettingsType.General);
     }};
 
@@ -197,7 +197,7 @@ public class AppConfig extends AppConfigBase {
             case "use_stop_music": setUseStopMusic(getUseStopMusic(fromControlOptional), fromControlReverseOptional); break;
             case "garmin_connectiq_enable": setGarminConnectiqEnable(getGarminConnectIqEnable(fromControlOptional), fromControlReverseOptional); break;
             case "horn_mode": setHornMode(getHornMode(fromControlOptional), fromControlReverseOptional); break;
-            case "view_blocks": setViewBlocks(getViewBlocks(fromControlOptional), fromControlReverseOptional); break;
+            case "view_blocks_string": setViewBlocksString(getViewBlocksString(fromControlOptional), fromControlReverseOptional); break;
             case "last_mac": setLastMac(getLastMac(fromControlOptional), fromControlReverseOptional); break;
         }
     }
@@ -818,12 +818,12 @@ public class AppConfig extends AppConfigBase {
         setBoolean(R.string.garmin_connectiq_enable, newValue, settingsType(R.string.garmin_connectiq_enable), fromControl);
     }
 
-    public Set<String> getViewBlocks(Boolean... fromControl) {
-        return getStringSet(R.string.view_blocks, null, settingsType(R.string.view_blocks), fromControl);
+    public String getViewBlocksString(Boolean... fromControl) {
+        return getString(R.string.view_blocks_string, null, settingsType(R.string.view_blocks_string), fromControl);
     }
 
-    public void setViewBlocks(Set<String> newValue, Boolean... fromControl) {
-        setStringSet(R.string.view_blocks, newValue, settingsType(R.string.view_blocks), fromControl);
+    public void setViewBlocksString(String newValue, Boolean... fromControl) {
+        setString(R.string.view_blocks_string, newValue, settingsType(R.string.view_blocks_string), fromControl);
     }
 
     public String getLastMac(Boolean... fromControl) {

@@ -15,6 +15,8 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment;
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -28,6 +30,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private boolean mDataWarningDisplayed = false;
     private SettingsScreen currentScreen = SettingsScreen.Main;
+
+    private static final String DIALOG_FRAGMENT_TAG = "wheellog.MainPreferenceFragment.DIALOG";
 
     @Override
     public void changeWheelType() {
@@ -433,7 +437,22 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         setupScreen();
     }
 
-	private void correctWheelCheckState(String preference, boolean state) {
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        if (preference instanceof MultiSelectPreference) {
+            if (getParentFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+                return;
+            }
+            MultiSelectPreference multi = (MultiSelectPreference)preference;
+            MultiSelectPreferenceDialogFragment dialogFragment = MultiSelectPreferenceDialogFragment.newInstance(multi.getKey());
+            dialogFragment.setTargetFragment(this, 0);
+            dialogFragment.show(getParentFragmentManager(), DIALOG_FRAGMENT_TAG);
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+    }
+
+    private void correctWheelCheckState(String preference, boolean state) {
         CheckBoxPreference cbPreference = findPreference(preference);
         if (cbPreference == null)
             return;
