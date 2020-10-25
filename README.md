@@ -7,7 +7,7 @@ The following manufacturers are supported:
 - Gotway
 - Veteran
 
-![Screenshot_20201025-144325257~2](https://user-images.githubusercontent.com/73445930/97120802-84d7e380-1722-11eb-800f-e19667e3dad2.jpg)
+![wlajdm64](https://user-images.githubusercontent.com/73445930/97120898-337c2400-1723-11eb-8c75-fd51b41a8b9e.jpg)
 
 ## Pebble app code
 
