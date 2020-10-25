@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils
 
 import android.app.Activity
 import android.content.Context
+import androidx.core.math.MathUtils
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -55,27 +56,27 @@ class GotwayAdapterTest {
     fun `decode with normal data`() {
         // Arrange.
         val voltage = 6000.toShort()
-        val speed = 111.toShort()
+        val speed = (1111).toShort()
         val temperature = 99.toShort()
-        val distance = 321.toShort()
+        val distance = 3231.toShort()
+        val phaseCurrent = (8322).toShort()
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
                 byteArrayOf(6, 7) +
                 MathsUtil.getBytes(distance) +
-                byteArrayOf(10, 11) +
+                MathsUtil.getBytes(phaseCurrent) +
                 MathsUtil.getBytes(temperature) +
-                byteArrayOf(14, 15, 16, 17, 0, 0)
-
+                byteArrayOf(14, 15, 16, 17, 0, 0x18)
         // Act.
         val result = adapter.decode(byteArray)
 
         // Assert.
         assertThat(result).isTrue()
         val speedInKm = round(speed * 3.6 / 10).toInt()
-        assertThat(abs(data.speed)).isEqualTo(speedInKm)
+        assertThat(data.speed).isEqualTo(speedInKm)
         assertThat(data.temperature).isEqualTo(35)
-        assertThat(data.temperature2).isEqualTo(35)
+        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent / 100.0)
         assertThat(data.voltageDouble).isEqualTo(voltage / 100.0)
         assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
         assertThat(data.batteryLevel).isEqualTo(54)
@@ -98,9 +99,9 @@ class GotwayAdapterTest {
         assertThat(result2).isFalse()
         assertThat(result3).isFalse()
         assertThat(abs(data.speed)).isEqualTo(0)
-        assertThat(data.temperature).isEqualTo(22)
+        assertThat(data.temperature).isEqualTo(24)
         assertThat(data.voltageDouble).isEqualTo(65.93)
-        assertThat(data.phaseCurrentDouble).isEqualTo(-1.16)
+        assertThat(data.phaseCurrentDouble).isEqualTo(1.4)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
         assertThat(data.totalDistance).isEqualTo(24786)
         assertThat(data.batteryLevel).isEqualTo(100)
@@ -126,11 +127,11 @@ class GotwayAdapterTest {
         assertThat(result3).isFalse()
         assertThat(result4).isFalse()
         assertThat(abs(data.speed)).isEqualTo(4)
-        assertThat(data.temperature).isEqualTo(29)
+        assertThat(data.temperature).isEqualTo(30)
         assertThat(data.voltageDouble).isEqualTo(65.6)
         assertThat(data.phaseCurrentDouble).isEqualTo(8.1)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
-        assertThat(data.totalDistance).isEqualTo(9955) // wrong
+        assertThat(data.totalDistance).isEqualTo(9955) // fixed
         assertThat(data.batteryLevel).isEqualTo(97)
     }
 
