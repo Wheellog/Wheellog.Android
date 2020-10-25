@@ -1,4 +1,4 @@
-# WheelLog.Android
+# WheelLog.Android.AJDM
 
 Unofficial App for EUC on Android. 
 The following manufacturers are supported:
