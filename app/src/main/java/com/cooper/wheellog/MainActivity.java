@@ -1650,12 +1650,12 @@ public class MainActivity extends AppCompatActivity {
         String[] viewBlocks;
         if (viewBlocksString == null) {
             viewBlocks = new String[]{
-                    getString(R.string.top_speed),
+                    getString(R.string.voltage),
                     getString(R.string.average_riding_speed),
-                    getString(R.string.power),
-                    getString(R.string.maxpower),
+                    getString(R.string.riding_time),
+                    getString(R.string.top_speed),
                     getString(R.string.distance),
-                    getString(R.string.ride_time)
+                    getString(R.string.total)
             };
         } else {
             viewBlocks = viewBlocksString.split(MultiSelectPreference.getSeparator());
