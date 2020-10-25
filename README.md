@@ -7,7 +7,7 @@ The following manufacturers are supported:
 - Gotway
 - Veteran
 
-![image](https://user-images.githubusercontent.com/27482193/95566187-ea8d5580-0a29-11eb-8182-329764d572b7.png)
+![Screenshot_20201025-144325257~2](https://user-images.githubusercontent.com/73445930/97120802-84d7e380-1722-11eb-800f-e19667e3dad2.jpg)
 
 ## Pebble app code
 
@@ -25,7 +25,8 @@ The watch application is also available for download directly on the ConnectIQ s
 
 ## Google Play
 
-https://play.google.com/store/apps/details?id=com.cooper.wheellog
+https://play.google.com/store/apps/details?id=com.jastrebov.wldmod
+
 
 ## Previous code base
 
