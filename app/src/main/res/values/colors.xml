@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <drawable name="notification_icon_bg">#3333B5E5</drawable>
+    <drawable name="notification_icon_bg">#3c3f41</drawable>
 
-    <color name="primary">#1f3a5a</color>
-    <color name="primary_dark">#062141</color>
-    <color name="primary_light">#D1C4E9</color>
-    <color name="accent">#FF5722</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#B6B6B6</color>
-    <color name="background">#284a73</color>
-    <color name="navigation_bar">#1f3a5a</color>
-    <color name="wheelview_text">#AAFFFFFF</color>
-    <color name="wheelview_speed_text">#FFFFFF</color>
-    <color name="wheelview_main_positive_dial">#FF5722</color>
-    <color name="wheelview_main_negative_dial">#00cc00</color>
-    <color name="wheelview_battery_dial">#00cc00</color>
-    <color name="wheelview_battery_low_dial">#cccc00</color>
-    <color name="wheelview_temperature_dial">#33ccff</color>
-    <color name="wheelview_arc_dim">#30000000</color>
+    <color name="primary">#3c3f41</color>
+    <color name="primary_dark">#FF222222</color>
+    <color name="primary_light">#3c3f41</color>
+    <color name="accent">#00E5FF</color>
+    <color name="primary_text">#3c3f41</color>
+    <color name="secondary_text">#BDBDBD</color>
+    <color name="icons">#BDBDBD</color>
+    <color name="divider">#3c3f41</color>
+    <color name="background">#BDBDBD</color> // фон иконки в шторке
+    <color name="navigation_bar">#3c3f41</color>
+    <color name="wheelview_text">#BDBDBD</color>
+    <color name="wheelview_block">#3c3f41</color>
+    <color name="wheelview_textblocks">#BDBDBD</color> // цвет текста параметров
+    <color name="wheelview_speed_text">#BDBDBD</color>
+    <color name="wheelview_main_positive_dial">#FFC400</color>
+    <color name="wheelview_main_negative_dial">#D500F9</color>
+    <color name="wheelview_battery_dial">#00E676</color>
+    <color name="notification_shade">#BDBDBD</color>
+    <color name="wheelview_max_speed_dial">#F50057</color>
+    <color name="wheelview_avg_speed_dial">#CC00AA</color>
+    <color name="wheelview_battery_low_dial">#DDFF00</color>
+    <color name="wheelview_temperature_dial">#00DDFF</color>
+    <color name="wheelview_arc_dim">#BDBDBD</color>
 
 </resources>

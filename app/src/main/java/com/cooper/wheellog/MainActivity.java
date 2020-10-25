@@ -38,10 +38,10 @@ import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -56,11 +56,9 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -84,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     MenuItem miSearch;
     MenuItem miWheel;
     MenuItem miWatch;
+    MenuItem miBand;
     MenuItem miLogging;
 
     LineChart chart1;
@@ -228,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
     private DrawerLayout mDrawer;
+    public static int ButtonMiBand = 3;
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
@@ -365,12 +365,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void setWheelPreferences() {
         Timber.i("SetWheelPreferences");
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
+        getPreferencesFragment().refreshWheelSettings(WheelData.getInstance().getWheelLight(),
                 WheelData.getInstance().getWheelLed(),
                 WheelData.getInstance().getWheelHandleButton(),
                 WheelData.getInstance().getWheelMaxSpeed(),
                 WheelData.getInstance().getSpeakerVolume(),
                 WheelData.getInstance().getPedalsPosition());
+    }
+
+    private void toggleSwitchMiBand() {
+        if (ButtonMiBand < 3)
+            ButtonMiBand++;
+        else
+            ButtonMiBand = 0;
+        sendBroadcast(new Intent(Constants.ACTION_REQUEST_SWMIBAND));
+
+        switch (ButtonMiBand) {
+        case 0: showSnackBar(R.string.alarmmiband); break;
+        case 1: showSnackBar(R.string.minmiband); break;
+        case 2: showSnackBar(R.string.medmiband); break;
+        case 3: showSnackBar(R.string.maxmiband); break; }
+        setMenuIconStates();
     }
 
     private void setMenuIconStates() {
@@ -386,22 +401,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (PebbleService.isInstanceCreated()) {
-            miWatch.setIcon(R.drawable.ic_action_watch_orange);
+            miWatch.setIcon(R.drawable.ic_watch_g);
         } else {
-            miWatch.setIcon(R.drawable.ic_action_watch_white);
+            miWatch.setIcon(R.drawable.ic_watch_new);
         }
 
         if (LoggingService.isInstanceCreated()) {
             miLogging.setTitle(R.string.stop_data_service);
-            miLogging.setIcon(R.drawable.ic_action_logging_orange);
+            miLogging.setIcon(R.drawable.ic_log_new_r);
         } else {
             miLogging.setTitle(R.string.start_data_service);
-            miLogging.setIcon(R.drawable.ic_action_logging_white);
+            miLogging.setIcon(R.drawable.ic_log_new);
         }
 
         switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_orange);
+                if (WheelLog.AppConfig.getUseRec())
+                {
+                    miWheel.setIcon(R.drawable.ic_wheel_c);
+                }
+                else
+                {
+                    miWheel.setIcon(R.drawable.ic_wheel_new_g);
+                }
+        //        miWheel.setIcon(R.drawable.ic_wheel_new_g);
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 miSearch.setEnabled(false);
                 miSearch.getIcon().setAlpha(64);
@@ -418,13 +441,26 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(64);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_white);
+                miWheel.setIcon(R.drawable.ic_wheel_new);
                 miWheel.setTitle(R.string.connect_to_wheel);
                 miSearch.setEnabled(true);
                 miSearch.getIcon().setAlpha(255);
                 miLogging.setEnabled(false);
                 miLogging.getIcon().setAlpha(64);
                 break;
+        }
+        if (LoggingService.isInstanceCreated()) {
+            miLogging.setTitle(R.string.stop_data_service);
+            miLogging.setIcon(R.drawable.ic_log_new_g);
+        } else {
+            miLogging.setTitle(R.string.start_data_service);
+            miLogging.setIcon(R.drawable.ic_log_new);
+        }
+        switch (ButtonMiBand) {
+            case 0: miBand.setIcon(R.drawable.ic_mi_alarm); break;
+            case 1: miBand.setIcon(R.drawable.ic_mi_min); break;
+            case 2: miBand.setIcon(R.drawable.ic_mi_med); break;
+            case 3: miBand.setIcon(R.drawable.ic_mi_max); break;
         }
     }
 
@@ -1354,7 +1390,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                getPreferencesFragment().showMainMenu();
             }
 
             @Override
@@ -1493,6 +1529,7 @@ public class MainActivity extends AppCompatActivity {
         miSearch = mMenu.findItem(R.id.miSearch);
         miWheel = mMenu.findItem(R.id.miWheel);
         miWatch = mMenu.findItem(R.id.miWatch);
+        miBand = mMenu.findItem(R.id.miBand);
         miLogging = mMenu.findItem(R.id.miLogging);
         return true;
     }
@@ -1520,6 +1557,9 @@ public class MainActivity extends AppCompatActivity {
                 else
                     stopGarminConnectIQ();
                 return true;
+           case R.id.miBand:
+                toggleSwitchMiBand();
+                return true;
             case R.id.miSettings:
                 mDrawer.openDrawer(GravityCompat.START, true);
                 return true;
@@ -1540,9 +1580,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (((MainPreferencesFragment) getPreferencesFragment()).isMainMenu())
+                    if (getPreferencesFragment().isMainMenu()) {
                         mDrawer.closeDrawer(GravityCompat.START, true);
-                    else ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                    } else {
+                        getPreferencesFragment().showMainMenu();
+                    }
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
@@ -1604,19 +1646,22 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
-        if (view_blocks == null) {
-            Set<String> view_blocks_def = new HashSet<String>();
-            view_blocks_def.add(getString(R.string.voltage));
-            view_blocks_def.add(getString(R.string.average_riding_speed));
-            view_blocks_def.add(getString(R.string.riding_time));
-            view_blocks_def.add(getString(R.string.top_speed));
-            view_blocks_def.add(getString(R.string.distance));
-            view_blocks_def.add(getString(R.string.total));
-            wheelView.updateViewBlocksVisibility(view_blocks_def);
-        } else
-            wheelView.updateViewBlocksVisibility(view_blocks);
+        String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
+        String[] viewBlocks;
+        if (viewBlocksString == null) {
+            viewBlocks = new String[]{
+                    getString(R.string.top_speed),
+                    getString(R.string.average_riding_speed),
+                    getString(R.string.power),
+                    getString(R.string.maxpower),
+                    getString(R.string.distance),
+                    getString(R.string.ride_time)
+            };
+        } else {
+            viewBlocks = viewBlocksString.split(MultiSelectPreference.getSeparator());
+        }
 
+        wheelView.updateViewBlocksVisibility(viewBlocks);
         wheelView.invalidate();
         updateScreen(true);
     }
@@ -1638,7 +1683,7 @@ public class MainActivity extends AppCompatActivity {
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         WheelLog.AppConfig.setLogLocationData(false, true);
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        getPreferencesFragment().refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1780,7 +1825,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
                     WheelLog.AppConfig.setEcToken(null, true);
                     WheelLog.AppConfig.setEcUserId(null, true);
-                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                    getPreferencesFragment().refreshVolatileSettings();
                 }
                 break;
         }
@@ -1816,11 +1861,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Fragment getPreferencesFragment() {
+    private MainPreferencesFragment getPreferencesFragment() {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        if (frag == null) {
-            return new MainPreferencesFragment();
-        }
-        return frag;
+        return frag == null ? new MainPreferencesFragment() : (MainPreferencesFragment) frag;
     }
 }

@@ -1,7 +1,5 @@
 package com.cooper.wheellog.utils
 
-import android.app.Activity
-import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -14,7 +12,6 @@ import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 class GotwayAdapterTest {
 

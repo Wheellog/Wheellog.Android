@@ -1,40 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    android:background="@color/notification_shade"
     android:orientation="vertical">
-
-    <ImageButton
-        android:id="@+id/ib_watch"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:layout_alignParentEnd="true"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_watch_grey"
-        android:contentDescription="@string/icon_watch" />
-
-    <ImageButton
-        android:id="@+id/ib_logging"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:layout_toStartOf="@id/ib_watch"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_logging_grey"
-        android:contentDescription="@string/icon_logging" />
 
     <ImageButton
         android:id="@+id/ib_connection"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toStartOf="@id/ib_logging"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="15dp"
+        android:layout_toStartOf="@id/ib_connection"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_wheel_grey"
-        android:contentDescription="@string/icon_connection" />
+        android:contentDescription="@string/icon_connection"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:src="@drawable/ic_wheel_new" />
 
 </RelativeLayout>

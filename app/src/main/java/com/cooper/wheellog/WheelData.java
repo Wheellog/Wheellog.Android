@@ -986,6 +986,7 @@ public class WheelData {
 	public void resetTopSpeed() {
 		mTopSpeed = 0;
 		mMaxPwm = 0;
+		mMaxTemp = mTemperature;
     }
     public void resetVoltageSag() {
         Timber.i("Sag WD");
@@ -1431,7 +1432,7 @@ public class WheelData {
         if (!WheelLog.AppConfig.getUseStopMusic())
             return;
 
-        final double muteSpeedThreshold = 3.5;
+        final double muteSpeedThreshold = 7;
         double speed = getSpeedDouble();
         if (speed <= muteSpeedThreshold) {
             mLowSpeedMusicTime = 0;

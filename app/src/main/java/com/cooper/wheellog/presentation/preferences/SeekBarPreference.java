@@ -15,8 +15,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.cooper.wheellog.R;
 
-import timber.log.Timber;
-
 /**
  * Доработанный {@link androidx.preference.SeekBarPreference}, поддерживающий установку
  * значения через диалоговое окно по клику на текст с текущим значением.

@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.views.WheelView;
 
 import java.util.*;
 
@@ -48,6 +47,7 @@ public class BluetoothLeService extends Service {
     private boolean disconnectRequested = false;
     private boolean autoConnect = false;
     private NotificationUtil mNotificationHandler;
+    public static boolean ConnectSetting = false;
 
     private Timer beepTimer;
     private int timerTicks;
@@ -136,6 +136,15 @@ public class BluetoothLeService extends Service {
                         close();
                     }
                     break;
+                case Constants.ACTION_REQUEST_RECONNECT:
+                 if (WheelLog.AppConfig.getUseRec())
+                     if (mConnectionState == STATE_DISCONNECTED)
+                         connect();
+                     else {
+                         disconnect();
+                         close();
+                     }
+                    break;
             }
         }
     };
@@ -148,6 +157,7 @@ public class BluetoothLeService extends Service {
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA);
         intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_HORN);
         intentFilter.addAction(Constants.ACTION_REQUEST_CONNECTION_TOGGLE);
+        intentFilter.addAction(Constants.ACTION_REQUEST_RECONNECT);
         return intentFilter;
     }
 
@@ -659,6 +669,9 @@ public class BluetoothLeService extends Service {
         return mBluetoothDeviceAddress;
     }
 
+   // public static void setAutoReConnect(boolean reconnectOption) {
+   //     ConnectSetting = reconnectOption;
+   // }
     private void startBeepTimer(){
         //wl.acquire();
         wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");

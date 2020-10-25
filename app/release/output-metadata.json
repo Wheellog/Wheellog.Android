@@ -4,14 +4,14 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.cooper.wheellog",
+  "applicationId": "com.jastrebov.wldmod",
   "variantName": "processReleaseResources",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "versionCode": 73,
-      "versionName": "2.2.1",
+      "versionName": "2.3M",
       "outputFile": "app-release.apk"
     }
   ]

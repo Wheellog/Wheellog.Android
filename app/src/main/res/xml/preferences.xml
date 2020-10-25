@@ -3,30 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
+        android:icon="@drawable/ic_sett2_new"
         android:key="@string/speed_preferences"
-        android:title="@string/speed_settings_title"
-        android:icon="@drawable/ic_speedometer_white_24dp"/>
+        android:title="@string/speed_settings_title" />
 
     <Preference
+        android:icon="@drawable/ic_log_new"
         android:key="@string/log_preferences"
-        android:title="@string/logs_settings_title"
-        android:icon="@drawable/ic_show_chart_white_24dp"/>
+        android:title="@string/logs_settings_title" />
 
     <Preference
+        android:icon="@drawable/ic_sett4_new"
         android:key="@string/alarm_preferences"
-        android:title="@string/alarm_settings_title"
-        android:icon="@drawable/ic_vibration_white_24dp"/>
+        android:title="@string/alarm_settings_title" />
 
     <Preference
+        android:icon="@drawable/ic_watch_new"
         android:key="@string/watch_preferences"
-        android:title="@string/watch_settings_title"
-        android:icon="@drawable/ic_watch_white_24dp" />
+        android:title="@string/watch_settings_title" />
 
     <Preference
+        android:enabled="false"
+        android:icon="@drawable/ic_sett5_new"
         android:key="@string/wheel_settings"
-		android:enabled="false"
-        android:title="@string/wheel_settings_title"
-        android:icon="@drawable/ic_action_wheel_white" />
+        android:title="@string/wheel_settings_title" />
 	
 	<Preference
         android:key="@string/reset_top_speed"

@@ -5,7 +5,6 @@ import android.content.Context;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 // Add methods get and set for new settings at the end of the class
 // If the setting is common to all wheels, the 3rd parameter in get<TYPE> and set<TYPE> specify "SettingsType.General" or correct map from "controlSettings"
@@ -114,7 +113,7 @@ public class AppConfig extends AppConfigBase {
         put("use_stop_music", SettingsType.General);
         put("garmin_connectiq_enable", SettingsType.General);
         put("horn_mode", SettingsType.General);
-        put("view_blocks", SettingsType.General);
+        put("view_blocks_string", SettingsType.General);
         put("last_mac", SettingsType.General);
     }};
 
@@ -190,6 +189,7 @@ public class AppConfig extends AppConfigBase {
             case "log_location_data": setLogLocationData(getLogLocationData(fromControlOptional), fromControlReverseOptional); break;
             case "use_gps": setUseGps(getUseGps(fromControlOptional), fromControlReverseOptional); break;
             case "use_mph": setUseMph(getUseMph(fromControlOptional), fromControlReverseOptional); break;
+            case "use_rec": setUseRec(getUseRec(fromControlOptional), fromControlReverseOptional); break;
             case "use_eng": setUseEng(getUseEng(fromControlOptional), fromControlReverseOptional); break;
             case "use_pip_mode": setUsePipMode(getUsePipMode(fromControlOptional), fromControlReverseOptional); break;
             case "connection_sound": setConnectionSound(getConnectionSound(fromControlOptional), fromControlReverseOptional); break;
@@ -197,7 +197,7 @@ public class AppConfig extends AppConfigBase {
             case "use_stop_music": setUseStopMusic(getUseStopMusic(fromControlOptional), fromControlReverseOptional); break;
             case "garmin_connectiq_enable": setGarminConnectiqEnable(getGarminConnectIqEnable(fromControlOptional), fromControlReverseOptional); break;
             case "horn_mode": setHornMode(getHornMode(fromControlOptional), fromControlReverseOptional); break;
-            case "view_blocks": setViewBlocks(getViewBlocks(fromControlOptional), fromControlReverseOptional); break;
+            case "view_blocks_string": setViewBlocksString(getViewBlocksString(fromControlOptional), fromControlReverseOptional); break;
             case "last_mac": setLastMac(getLastMac(fromControlOptional), fromControlReverseOptional); break;
         }
     }
@@ -674,6 +674,14 @@ public class AppConfig extends AppConfigBase {
         setBoolean(R.string.use_gps, newValue, settingsType(R.string.use_gps), fromControl);
     }
 
+    public Boolean getUseRec (Boolean... fromControl) {
+        return getBoolean(R.string.use_rec, false, settingsType(R.string.use_rec), fromControl);
+    }
+
+    public void setUseRec(Boolean newValue, Boolean... fromControl) {
+        setBoolean(R.string.use_rec, newValue, settingsType(R.string.use_rec), fromControl);
+    }
+
     public Boolean getUseMph(Boolean... fromControl) {
         return getBoolean(R.string.use_mph, false, settingsType(R.string.use_mph), fromControl);
     }
@@ -818,12 +826,12 @@ public class AppConfig extends AppConfigBase {
         setBoolean(R.string.garmin_connectiq_enable, newValue, settingsType(R.string.garmin_connectiq_enable), fromControl);
     }
 
-    public Set<String> getViewBlocks(Boolean... fromControl) {
-        return getStringSet(R.string.view_blocks, null, settingsType(R.string.view_blocks), fromControl);
+    public String getViewBlocksString(Boolean... fromControl) {
+        return getString(R.string.view_blocks_string, null, settingsType(R.string.view_blocks_string), fromControl);
     }
 
-    public void setViewBlocks(Set<String> newValue, Boolean... fromControl) {
-        setStringSet(R.string.view_blocks, newValue, settingsType(R.string.view_blocks), fromControl);
+    public void setViewBlocksString(String newValue, Boolean... fromControl) {
+        setString(R.string.view_blocks_string, newValue, settingsType(R.string.view_blocks_string), fromControl);
     }
 
     public String getLastMac(Boolean... fromControl) {

@@ -16,10 +16,10 @@ import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.ReflectUtil;
 
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.*;
 
 import timber.log.Timber;
@@ -29,11 +29,15 @@ import static com.cooper.wheellog.utils.MathsUtil.*;
 public class WheelView extends View {
 
     private Paint outerArcPaint;
+    Paint middleArcPaint;
     Paint innerArcPaint;
+    Paint voltArcPaint;
     Paint textPaint;
 
     private final RectF outerArcRect = new RectF();
+    final RectF middleArcRect = new RectF();
     final RectF innerArcRect = new RectF();
+    final RectF voltArcRect = new RectF();
     final ViewBlockInfo[] mViewBlocks;
     float oaDiameter;
 
@@ -63,17 +67,23 @@ public class WheelView extends View {
     private Double mCurrent = 0.0;
     private Double mPwm = 0.0;
     private Double mMaxPwm = 0.0;
+    private Double mMaxCurrent = 0.0;
     private Double mAverageSpeed = 0.0;
 
     private String mWheelModel = "";
 
 
     float outerStrokeWidth;
+    float middleStrokeWidth;
     float innerStrokeWidth;
+    float voltStrokeWidth;
     float inner_outer_padding;
+    float outer_medium_padding;
+    float medium_inner_padding;
     float inner_text_padding;
     float box_top_padding;
     float box_outer_padding;
+    float box_middle_padding;
     float box_inner_padding;
     float center_x;
     float center_y;
@@ -109,22 +119,24 @@ public class WheelView extends View {
     private ViewBlockInfo[] getViewBlockInfo() {
         Boolean useMph = WheelLog.AppConfig.getUseMph();
         return new ViewBlockInfo[]{
-                new ViewBlockInfo(getResources().getString(R.string.pwm),
-                        () -> String.format(Locale.US, "%.2f%%", mPwm)),
-                new ViewBlockInfo(getResources().getString(R.string.max_pwm),
-                        () -> String.format(Locale.US, "%.2f%%", mMaxPwm)),
+
+                new ViewBlockInfo(getResources().getString(R.string.battery),
+                        () -> String.format(Locale.US, "%d " + "%%", WheelData.getInstance().getBatteryLevel()), true),
                 new ViewBlockInfo(getResources().getString(R.string.voltage),
-                        () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.volt), mVoltage)),
-                new ViewBlockInfo(getResources().getString(R.string.average_riding_speed),
-                        () -> {
-                            if (useMph) {
-                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(mAverageSpeed));
-                            } else {
-                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mAverageSpeed);
-                            }
-                        }),
-                new ViewBlockInfo(getResources().getString(R.string.riding_time),
-                        () -> mCurrentTime),
+                        () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.volt), mVoltage), true),
+                new ViewBlockInfo(getResources().getString(R.string.temperature),
+                        () -> String.format(Locale.US, "%d " + "°C", WheelData.getInstance().getTemperature()), true),
+                new ViewBlockInfo(getResources().getString(R.string.maxtemperature),
+                        () -> String.format(Locale.US, "%d " + "°C", mMaxTemperature), false),
+
+
+                new ViewBlockInfo(getResources().getString(R.string.temperature2),
+                        () -> String.format(Locale.US, "%d " + "°C", WheelData.getInstance().getTemperature2()), false),
+
+
+
+
+
                 new ViewBlockInfo(getResources().getString(R.string.top_speed),
                         () -> {
                             if (useMph) {
@@ -132,7 +144,45 @@ public class WheelView extends View {
                             } else {
                                 return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mTopSpeed);
                             }
-                        }),
+                        }, true),
+                new ViewBlockInfo(getResources().getString(R.string.average_speed),
+                        () -> {
+                            if (useMph) {
+                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble()));
+                            } else {
+                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble());
+                            }
+                        }, true),
+                new ViewBlockInfo(getResources().getString(R.string.average_riding_speed),
+                        () -> {
+                            if (useMph) {
+                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(mAverageSpeed));
+                            } else {
+                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), mAverageSpeed);
+                            }
+                        }, true),
+
+
+
+                new ViewBlockInfo(getResources().getString(R.string.pwm),
+                        () -> String.format(Locale.US, "%.2f" + "%%", mPwm)),
+                new ViewBlockInfo(getResources().getString(R.string.max_pwm),
+                        () -> String.format(Locale.US, "%.2f " + "%%", mMaxPwm)),
+
+
+
+                new ViewBlockInfo( getResources().getString(R.string.current),
+                        () -> String.format(Locale.US, "%.2f " + "A", WheelData.getInstance().getCurrentDouble()),true),
+                new ViewBlockInfo( getResources().getString(R.string.maxcurrent),
+                        () -> String.format(Locale.US, "%.2f " + "A", NotificationUtil.MaxCurrent), false),
+                new ViewBlockInfo(getResources().getString(R.string.power),
+                        () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.watt), WheelData.getInstance().getPowerDouble()), true),
+                new ViewBlockInfo(getResources().getString(R.string.maxpower),
+                        () -> String.format(Locale.US, "%.2f" + "W", NotificationUtil.MaxPower), true),
+
+
+
+
                 new ViewBlockInfo(getResources().getString(R.string.distance),
                         () -> {
                             if (useMph) {
@@ -145,6 +195,14 @@ public class WheelView extends View {
                                 }
                             }
                         }),
+                new ViewBlockInfo(getResources().getString(R.string.user_distance),
+                        () -> {
+                            if (useMph) {
+                                return String.format(Locale.US, "%.2f " + getResources().getString(R.string.milli), kmToMiles(WheelData.getInstance().getUserDistanceDouble()));
+                            } else {
+                                return String.format(Locale.US, "%.3f " + getResources().getString(R.string.km), WheelData.getInstance().getUserDistanceDouble());
+                            }
+                        }, true),
                 new ViewBlockInfo(getResources().getString(R.string.total),
                         () -> {
                             if (useMph) {
@@ -153,32 +211,12 @@ public class WheelView extends View {
                                 return String.format(Locale.US, "%.0f " + getResources().getString(R.string.km), mTotalDistance);
                             }
                         }),
-                new ViewBlockInfo(getResources().getString(R.string.current),
-                        () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.amp), mCurrent)),
-                new ViewBlockInfo(getResources().getString(R.string.power),
-                        () -> String.format(Locale.US, "%.2f " + getResources().getString(R.string.watt), WheelData.getInstance().getPowerDouble()), false),
-                new ViewBlockInfo(getResources().getString(R.string.temperature),
-                        () -> String.format(Locale.US, "%d ℃", WheelData.getInstance().getTemperature()), false),
-                new ViewBlockInfo(getResources().getString(R.string.temperature2),
-                        () -> String.format(Locale.US, "%d ℃", WheelData.getInstance().getTemperature2()), false),
-                new ViewBlockInfo(getResources().getString(R.string.average_speed),
-                        () -> {
-                            if (useMph) {
-                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble()));
-                            } else {
-                                return String.format(Locale.US, "%.1f " + getResources().getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble());
-                            }
-                        }, false),
+
+
+                new ViewBlockInfo(getResources().getString(R.string.riding_time),
+                        () -> mCurrentTime),
                 new ViewBlockInfo(getResources().getString(R.string.ride_time),
-                        () -> WheelData.getInstance().getRideTimeString(), false),
-                new ViewBlockInfo(getResources().getString(R.string.wheel_distance),
-                        () -> {
-                            if (useMph) {
-                                return String.format(Locale.US, "%.2f " + getResources().getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble()));
-                            } else {
-                                return String.format(Locale.US, "%.3f " + getResources().getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble());
-                            }
-                        }, false)
+                        () -> WheelData.getInstance().getRideTimeString(), true)
         };
     }
 
@@ -221,12 +259,17 @@ public class WheelView extends View {
                 R.styleable.WheelView,
                 0, 0);
 
-        outerStrokeWidth = a.getDimension(R.styleable.WheelView_outer_thickness, dpToPx(context, 40));
-        innerStrokeWidth = a.getDimension(R.styleable.WheelView_inner_thickness, dpToPx(context, 30));
+        outerStrokeWidth = a.getDimension(R.styleable.WheelView_outer_thickness, dpToPx(context, 30));
+        middleStrokeWidth = a.getDimension(R.styleable.WheelView_middle_thickness, dpToPx(context, 10));
+        innerStrokeWidth = a.getDimension(R.styleable.WheelView_inner_thickness, dpToPx(context, 20));
+        voltStrokeWidth = a.getDimension(R.styleable.WheelView_volt_thickness, dpToPx(context, 5));
         inner_outer_padding = a.getDimension(R.styleable.WheelView_inner_outer_padding, dpToPx(context, 5));
+        medium_inner_padding = a.getDimension(R.styleable.WheelView_medium_inner_padding, dpToPx(context, 5));
+        outer_medium_padding = a.getDimension(R.styleable.WheelView_outer_medium_padding, dpToPx(context, 5));
         inner_text_padding = a.getDimension(R.styleable.WheelView_inner_text_padding, 0);
         box_top_padding = a.getDimension(R.styleable.WheelView_box_top_padding, dpToPx(context, 20));
         box_outer_padding = a.getDimension(R.styleable.WheelView_box_outer_padding, dpToPx(context, 20));
+        box_middle_padding = a.getDimension(R.styleable.WheelView_box_middle_padding, dpToPx(context, 10));
         box_inner_padding = a.getDimension(R.styleable.WheelView_box_inner_padding, dpToPx(context, 10));
 
         outerArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -234,14 +277,26 @@ public class WheelView extends View {
         outerArcPaint.setStrokeWidth(outerStrokeWidth);
         outerArcPaint.setStyle(Paint.Style.STROKE);
 
+        middleArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        middleArcPaint.setAntiAlias(true);
+        middleArcPaint.setStrokeWidth(middleStrokeWidth);
+        middleArcPaint.setStyle(Paint.Style.STROKE);
+
         innerArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         innerArcPaint.setAntiAlias(true);
         innerArcPaint.setStrokeWidth(innerStrokeWidth);
         innerArcPaint.setStyle(Paint.Style.STROKE);
 
+        voltArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        voltArcPaint.setAntiAlias(true);
+        voltArcPaint.setStrokeWidth(voltStrokeWidth);
+        voltArcPaint.setStyle(Paint.Style.STROKE);
+
         Typeface tfTest = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 ? getResources().getFont(R.font.prime_regular)
                 : ResourcesCompat.getFont(context, R.font.prime_regular);
+
+
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(tfTest);
@@ -257,10 +312,24 @@ public class WheelView extends View {
         }
     }
 
-    public void updateViewBlocksVisibility(Set<String> viewBlocks) {
+    public void updateViewBlocksVisibility(String[] viewBlocks) {
         for (ViewBlockInfo block : mViewBlocks) {
-            block.setEnabled(viewBlocks.contains(block.getTitle()));
+            block.setEnabled(false);
+            block.setIndex(-1);
         }
+
+        int index = 0;
+        for (String title : viewBlocks) {
+            for (ViewBlockInfo block : mViewBlocks) {
+                if (block.getTitle().equals(title))
+                {
+                    block.setIndex(index++);
+                    block.setEnabled(true);
+                    break;
+                }
+            }
+        }
+        Arrays.sort(mViewBlocks);
     }
     
     public void resetBatteryLowest() {
@@ -422,11 +491,21 @@ public class WheelView extends View {
         float orRight = center_x + oaRadius;
         float orBottom = center_y + oaRadius;
 
+        float imDiameter = oaDiameter - outerStrokeWidth - middleStrokeWidth - (outer_medium_padding*2);
+        float imRadius = imDiameter / 2;
+
         outerArcRect.set(orLeft, orTop, orRight, orBottom);
         outerArcPaint.setStrokeWidth(outerStrokeWidth);
 
-        float iaDiameter = oaDiameter - outerStrokeWidth - innerStrokeWidth - (inner_outer_padding * 2);
+        float midLeft = center_x - imRadius;
+        float midTop = center_y - imRadius;
+        float midRight = center_x + imRadius;
+        float midBottom = center_y + imRadius;
+
+        float iaDiameter = imDiameter - middleStrokeWidth - innerStrokeWidth - (medium_inner_padding*2);
         float iaRadius = iaDiameter / 2;
+
+        middleArcRect.set(midLeft, midTop, midRight, midBottom);
 
         float left = center_x - iaRadius;
         float top = center_y - iaRadius;
@@ -612,12 +691,17 @@ public class WheelView extends View {
         super.onDraw(canvas);
 
         int currentDial;
+        int currentDial2;
         if (WheelLog.AppConfig.getCurrentOnDial()) {
+            currentSpeed = updateCurrentValue(targetSpeed, currentSpeed);
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent);
             currentDial = currentCurrent;
+            currentDial2 = currentSpeed;
         } else {
             currentSpeed = updateCurrentValue(targetSpeed, currentSpeed);
+            currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent);
             currentDial = currentSpeed;
+            currentDial2 = currentCurrent;
         }
         currentTemperature = updateCurrentValue(targetTemperature, currentTemperature);
         currentBattery = updateCurrentValue(targetBattery, currentBattery);
@@ -638,10 +722,41 @@ public class WheelView extends View {
         //currentSpeed = (int) Math.round(( mCurrent /(10*mMaxSpeed)) * 112);
         //########### <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,
 
-        for (int i = 0; i < currentDial; i++) {
-            float value = (float) (144 + (i * 2.25));
-            canvas.drawArc(outerArcRect, value, 1.5F, false, outerArcPaint);
+        if (currentDial < 113) {
+            canvas.drawArc(outerArcRect, 144, currentDial * 2.25F, false, outerArcPaint);
         }
+        if (currentDial > 112) {
+            canvas.drawArc(outerArcRect, 144, 112 * 2.25F, false, outerArcPaint);
+        }
+
+        //for (int i = 0; i < currentDial; i++) {
+        //    float value = (float) (144 + (i * 2.25));
+        //    canvas.drawArc(outerArcRect, value, 1.5F, false, outerArcPaint);
+        //}
+
+        //####################################################
+        //################# DRAW MIDDLE ARC ###################
+        //####################################################
+
+        middleArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_arc_dim));
+        canvas.drawArc(middleArcRect, 144, 252, false, middleArcPaint);
+
+        if (currentDial2 >= 0) {
+            middleArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_max_speed_dial));
+        } else {
+            middleArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_avg_speed_dial));
+        }
+        currentDial2 = Math.abs(currentDial2);
+        if (currentDial2 < 113) {
+            canvas.drawArc(middleArcRect, 144, currentDial2 * 2.25F, false, middleArcPaint);
+        }
+        if (currentDial2 > 112) {
+            canvas.drawArc(middleArcRect, 144, 112 * 2.25F, false, middleArcPaint);
+        }
+        //  for (int i = 0; i < currentDial2; i++) {
+        //      float value = (float) (144 + (i * 2.25));
+        //      canvas.drawArc(middleArcRect, value, 1.5F, false, middleArcPaint);
+        //  }
 
         //####################################################
         //################# DRAW INNER ARC ###################
@@ -652,15 +767,39 @@ public class WheelView extends View {
         canvas.drawArc(innerArcRect, 306, 90, false, innerArcPaint);
 
         innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_battery_dial));
-        for (int i = 0; i < 112; i++) {
-            if (i == targetBatteryLowest)
-                innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_battery_low_dial));
-            if (i == currentTemperature)
-                innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_temperature_dial));
-            if (i < currentBattery || i >= currentTemperature) {
-                float value = (144 + (i * 2.25F));
-                canvas.drawArc(innerArcRect, value, 1.5F, false, innerArcPaint);
-            }
+        canvas.drawArc(innerArcRect, 144, currentBattery * 2.25F, false, innerArcPaint);
+        innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_battery_low_dial));
+        canvas.drawArc(innerArcRect, 144, targetBatteryLowest * 2.25F, false, innerArcPaint);
+
+        float value = (currentTemperature - 112) * 2.25F * 100 / 80;
+
+        if (mTemperature > 0) {
+            innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_temperature_dial));
+            canvas.drawArc(innerArcRect, 306 - value, 90 + value, false, innerArcPaint);
+        } else {
+            innerArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_arc_dim));
+            canvas.drawArc(innerArcRect, 306, 90, false, innerArcPaint);
+        }
+
+
+        //####################################################
+        //################# DRAW VOLT ARC TEST ###################
+        //####################################################
+
+        voltArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_arc_dim));
+        canvas.drawArc(voltArcRect, 144, 252, false, voltArcPaint);
+
+        if (currentDial2 >= 0) {
+            voltArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_max_speed_dial));
+        } else {
+            voltArcPaint.setColor(getContext().getResources().getColor(R.color.wheelview_avg_speed_dial));
+        }
+        currentDial2 = Math.abs(currentDial2);
+        if (currentDial2 < 113) {
+            canvas.drawArc(voltArcRect, 144, currentDial2 * 2.25F, false, voltArcPaint);
+        }
+        if (currentDial2 > 112) {
+            canvas.drawArc(voltArcRect, 144, 112 * 2.25F, false, voltArcPaint);
         }
 
         //####################################################
@@ -688,7 +827,7 @@ public class WheelView extends View {
 
 
         if (WheelLog.AppConfig.getUseShortPwm() || isInEditMode()) {
-            String pwm = String.format("%02.0f%% / %02.0f%%",
+            String pwm = String.format("%02.0f%% | %02.0f%%",
                     WheelData.getInstance().getCurrentPwm(),
                     WheelData.getInstance().getMaxPwm());
             textPaint.setTextSize(speedTextKPHSize * 1.2F);
@@ -706,9 +845,9 @@ public class WheelView extends View {
             textPaint.setTextSize(innerArcTextSize);
             canvas.save();
             if (getWidth() > getHeight())
-                canvas.rotate((144 + (currentBattery * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
+                canvas.rotate((140 + (-3.3F * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
             else
-                canvas.rotate((144 + (currentBattery * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
+                canvas.rotate((140 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
             String bestbatteryString = String.format(Locale.US, "%02d%%", mBattery);
             canvas.drawText(bestbatteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint);
@@ -718,9 +857,9 @@ public class WheelView extends View {
             Boolean fixedPercents = WheelLog.AppConfig.getFixedPercents();
             if (WheelLog.AppConfig.getUseBetterPercents() || fixedPercents) {
                 if (getWidth() > getHeight())
-                    canvas.rotate((144 + (-3.3F * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
+                    canvas.rotate((147 + (currentBattery * 2.25F) - 180), innerArcRect.centerX(), innerArcRect.centerY());
                 else
-                    canvas.rotate((144 + (-2 * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
+                    canvas.rotate((146 + (currentBattery * 2.25F) - 180), innerArcRect.centerY(), innerArcRect.centerX());
 
                 String batteryCalculateType = "true";
                 if (fixedPercents && !WheelData.getInstance().isVoltageTiltbackUnsupported())
@@ -733,31 +872,32 @@ public class WheelView extends View {
             }
 
             if (getWidth() > getHeight())
-                canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
-            else
-                canvas.rotate((143.5F + (currentTemperature * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
-
+                canvas.rotate((138F + (120 * 2.25F)), innerArcRect.centerX(), innerArcRect.centerY());
+                else
+                    canvas.rotate((135F + (120 * 2.25F)), innerArcRect.centerY(), innerArcRect.centerX());
+                    
             String temperatureString = String.format(Locale.US, "%02d℃", mTemperature);
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
             canvas.restore();
             canvas.save();
 
             // Max temperature
-            if (getWidth() > getHeight())
-                canvas.rotate(-50F, innerArcRect.centerX(), innerArcRect.centerY());
-            else
-                canvas.rotate(-50F, innerArcRect.centerY(), innerArcRect.centerX());
-            String maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature);
-            canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
-            canvas.restore();
-            canvas.save();
+      //      if (getWidth() > getHeight())
+      //          canvas.rotate(-50F, innerArcRect.centerX(), innerArcRect.centerY());
+       //     else
+       //         canvas.rotate(-50F, innerArcRect.centerY(), innerArcRect.centerX());
+       //     String maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature);
+       //     canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint);
+       //     canvas.restore();
+       //     canvas.save();
         }
 
         // Wheel name
         canvas.drawTextOnPath(mWheelModel, modelTextPath, 0, 0, modelTextPaint);
 
-        // Draw text blocks bitmap
-        canvas.drawBitmap(mTextBoxesBitmap, 0, 0, null);
+            // Draw text blocks bitmap
+            textPaint.setColor(getContext().getResources().getColor(R.color.wheelview_block));
+            canvas.drawBitmap(mTextBoxesBitmap, 0, 0, null);
 
         refreshDisplay = currentSpeed != targetSpeed ||
                 currentCurrent != targetCurrent ||

@@ -15,6 +15,8 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment;
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -28,6 +30,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private boolean mDataWarningDisplayed = false;
     private SettingsScreen currentScreen = SettingsScreen.Main;
+
+    private static final String DIALOG_FRAGMENT_TAG = "wheellog.MainPreferenceFragment.DIALOG";
 
     @Override
     public void changeWheelType() {
@@ -108,6 +112,8 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             case R.string.use_mph:
                 context.sendBroadcast(new Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED));
                 break;
+        //    case R.string.use_rec:
+        //        break;
             case R.string.use_eng:
                 new AlertDialog.Builder(context)
                         .setTitle(R.string.use_eng_alert_title)
@@ -321,7 +327,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                             String buildTime = BuildConfig.BUILD_TIME;
                             new AlertDialog.Builder(activity)
                                     .setTitle(R.string.about_app_title)
-                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br><a href=\"https://github.com/Wheellog/Wheellog.Android/\">github.com/Wheellog/Wheellog.Android</a> <br> Thanks to all <a href=\"https://github.com/Wheellog/Wheellog.Android/contributors\">contributors</a>", versionName, buildTime)))
+                                    .setMessage(Html.fromHtml(String.format("Version %s <br>build at %s <br>by <i>Alex Jastrebov</i> <br><a href=\"hawkadmin@gmail.com\">hawkadmin@gmail.com</a> <br> Thanks to:<br>Palachzzz - consulting, build based on his project on GitHub<br>JumpMaster - project initiator<br>cedbossneo - Inmotion support<br>juliomap - Tizen support<br>MacPara - some improvements<br>datarsoja - KS alerts<br>paymicro - a lot of consulting, 12 new views, solid wheel, ec<br>Ana Alyatina - new icon & colors<br>and other contributors!", versionName, buildTime)))
                                     .setPositiveButton(android.R.string.ok, (dialog, which) -> { })
                                     .setIcon(android.R.drawable.ic_dialog_info)
                                     .show();
@@ -433,7 +439,22 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         setupScreen();
     }
 
-	private void correctWheelCheckState(String preference, boolean state) {
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        if (preference instanceof MultiSelectPreference) {
+            if (getParentFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+                return;
+            }
+            MultiSelectPreference multi = (MultiSelectPreference)preference;
+            MultiSelectPreferenceDialogFragment dialogFragment = MultiSelectPreferenceDialogFragment.newInstance(multi.getKey());
+            dialogFragment.setTargetFragment(this, 0);
+            dialogFragment.show(getParentFragmentManager(), DIALOG_FRAGMENT_TAG);
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+    }
+
+    private void correctWheelCheckState(String preference, boolean state) {
         CheckBoxPreference cbPreference = findPreference(preference);
         if (cbPreference == null)
             return;

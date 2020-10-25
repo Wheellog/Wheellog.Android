@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<drawable name="notification_icon_bg">#000000</drawable>
+
+<color name="primary">#000000</color>
+<color name="primary_dark">#FF222222</color>
+<color name="primary_light">#000000</color>
+<color name="accent">#FF5722</color>
+<color name="primary_text">#000000</color>
+<color name="secondary_text">#FFFFFF</color>
+<color name="icons">#FFFFFF</color>
+<color name="divider">#000000</color>
+<color name="background">#FF9900</color> // фон иконки в шторке
+<color name="navigation_bar">#000000</color>
+<color name="wheelview_text">#BDBDBD</color>
+<color name="wheelview_block">#000000</color>
+<color name="wheelview_textblocks">#FFFFFF</color> // цвет текста параметров
+<color name="wheelview_speed_text">#FFFFFF</color>
+<color name="wheelview_main_positive_dial">#00FF00</color>
+<color name="wheelview_main_negative_dial">#7700aa</color>
+<color name="wheelview_battery_dial">#FF9900</color>
+<color name="notification_shade">#FF9900</color>
+<color name="wheelview_max_speed_dial">#FF0000</color>
+<color name="wheelview_avg_speed_dial">#CC00AA</color>
+<color name="wheelview_battery_low_dial">#ffcc00</color>
+<color name="wheelview_temperature_dial">#00ffff</color>
+<color name="wheelview_arc_dim">#222222</color>
+
+</resources>

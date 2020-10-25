@@ -17,7 +17,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.utils.NotificationUtil;
 
 import com.garmin.android.connectiq.ConnectIQ;

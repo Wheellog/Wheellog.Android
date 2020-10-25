@@ -1,5 +1,4 @@
 package com.cooper.wheellog.utils;
-import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 

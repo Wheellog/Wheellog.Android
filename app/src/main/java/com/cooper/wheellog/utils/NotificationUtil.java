@@ -20,6 +20,8 @@ import com.cooper.wheellog.PebbleService;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class NotificationUtil {
@@ -29,8 +31,21 @@ public class NotificationUtil {
     private int notificationMessageId = R.string.disconnected;
     private double mSpeed = 0;
     private int mBatteryLevel = 0;
-    private double mDistance = 0;
+    private double mDistance = 0.0;
+    private double mPower = 0.0;
+    private double mCurrent = 0.0;
     private int mTemperature = 0;
+    private double mMaxSpeed = 0.0;
+    private double mAvgSpeed = 0.0;
+    public static double MaxCurrent = 0.0;
+    public static double MaxPower = 0.0;
+    private double mControlPower = 0.0;
+    private double mControlPowerTw = 0.0;
+    private int mControlPowerTwTest = 0;
+    private double mControlDistance = 0.0;
+    private int alarmExec = 0;
+    private double mVoltage = 0.0;
+    private boolean alarmTriggered = false;
 
     private static NotificationCompat.Builder mNotification;
     private static Notification pNotification;
@@ -43,8 +58,26 @@ public class NotificationUtil {
             mNotification = new NotificationCompat.Builder(mContext, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION);
             mInstance = this;
         }
-    }
 
+    new Timer().scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run()
+        {
+            if (mPower == mControlPower && mPower == mControlPowerTw && mPower > 0 && mDistance > 0 && mDistance == mControlDistance && mSpeed > 0) {
+                toggleReconnectWheel();
+            }
+            mControlPower = mPower;
+            mControlDistance = mDistance;
+
+            if (mControlPowerTwTest > 1)
+            {
+                mControlPowerTwTest = 0;
+                mControlPowerTw = mPower;
+            }
+            mControlPowerTwTest++;
+        }
+    }, 12000, 12000);
+        }
 //    public static NotificationUtil getInstance() {
 //        return mInstance;
 //    }
@@ -80,30 +113,60 @@ public class NotificationUtil {
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     int batteryLevel = WheelData.getInstance().getBatteryLevel();
                     int temperature = WheelData.getInstance().getTemperature();
-                    double distance = (double) Math.round(WheelData.getInstance().getDistanceDouble() * 10) / 10;
+                    double power = WheelData.getInstance().getPowerDouble();
+                    double current = WheelData.getInstance().getCurrentDouble();
+                    double voltage = WheelData.getInstance().getVoltageDouble();
+                    double distance = (double) WheelData.getInstance().getDistanceDouble();
                     double speed = (double) Math.round(WheelData.getInstance().getSpeedDouble() * 10) / 10;
+                    double maxspeed = (double) Math.round(WheelData.getInstance().getTopSpeedDouble() * 10) / 10;
+                    double avgspeed = (double) Math.round(WheelData.getInstance().getAverageRidingSpeedDouble() * 10) / 10;
+
 
                     if (mBatteryLevel != batteryLevel ||
                             mDistance != distance ||
                             mSpeed != speed ||
-                            mTemperature != temperature) {
+                            mTemperature != temperature || mPower != power || mMaxSpeed != maxspeed || mAvgSpeed != avgspeed) {
                         mSpeed = speed;
                         mBatteryLevel = batteryLevel;
                         mTemperature = temperature;
                         mDistance = distance;
-                        updateNotification();
+                        mPower = power;
+                        mCurrent = current;
+                        mVoltage = voltage;
+                        mMaxSpeed = maxspeed;
+                        mAvgSpeed = avgspeed;
+                             if (MainActivity.ButtonMiBand > 0)
+                                updateNotification();
+                             if (mCurrent > MaxCurrent)
+                                 MaxCurrent = mCurrent;
+                             if (mPower > MaxPower)
+                                 MaxPower = mPower;
                     }
                     break;
-                case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
+         	case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     updateNotification();
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     updateNotification();
                     break;
+
+               case Constants.ACTION_REQUEST_SWMIBAND:
+                    updateNotification();
+                    break;
+
+                case Constants.ACTION_ALARM_TRIGGERED:
+                    int alarmType = ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
+                    alarmExec = alarmType;
+                    alarmTriggered = true; // Чтобы перерисовать шторку
+                    updateNotification();
+                    alarmExec = 0; // Сброс значения, чтобы при другом апдейте показал не аларм
+                    break;
             }
         }
     };
-
+    public void toggleReconnectWheel() {
+        mContext.sendBroadcast(new Intent(Constants.ACTION_REQUEST_RECONNECT));
+    }
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -135,20 +198,30 @@ public class NotificationUtil {
 
         notificationView.setOnClickPendingIntent(R.id.ib_connection,
                 pendingConnectionIntent);
-        notificationView.setOnClickPendingIntent(R.id.ib_watch,
-                pendingWatchIntent);
-        notificationView.setOnClickPendingIntent(R.id.ib_logging,
-                pendingLoggingIntent);
+     //   notificationView.setOnClickPendingIntent(R.id.ib_watch,
+     //           pendingWatchIntent);
+     //   notificationView.setOnClickPendingIntent(R.id.ib_logging,
+     //           pendingLoggingIntent);
 
         switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTING:
-                notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_action_wheel_light_orange);
+                notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_wheel_new_r);
                 break;
             case BluetoothLeService.STATE_CONNECTED:
-                notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_action_wheel_orange);
+                if (LoggingService.isInstanceCreated()) {
+                    notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_log_new_g);
+                } else
+                    notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_log_new_r);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_action_wheel_grey);
+           //     if (WheelLog.AppConfig.getUseRec())
+          //      {
+         //       notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_wheel_c);
+         //       }
+         //       else
+         //           {
+                        notificationView.setImageViewResource(R.id.ib_connection, R.drawable.ic_wheel_new);
+        //            }
                 break;
         }
 
@@ -156,28 +229,145 @@ public class NotificationUtil {
 
         String title = mContext.getString(notificationMessageId);
 
-        if (mConnectionState == BluetoothLeService.STATE_CONNECTED || (mDistance + mTemperature + mBatteryLevel + mSpeed) > 0) {
-            notificationView.setTextViewText(R.id.text_message, mContext.getString(R.string.notification_text, mSpeed, mBatteryLevel, mTemperature, mDistance));
+        if (MainActivity.ButtonMiBand > 0 && (mDistance + mTemperature + mBatteryLevel + mSpeed + mPower) > 0) {
+            notificationView.setTextViewText(R.id.text_message, mContext.getString(R.string.notification_text_not, mSpeed, mBatteryLevel, mPower, mTemperature, mDistance));
         }
+        if (MainActivity.ButtonMiBand == 0 && mConnectionState == BluetoothLeService.STATE_CONNECTED) {
+            if (alarmTriggered) {
+                notificationView.setTextViewText(R.id.text_message, mContext.getString(R.string.notification_text_alarm_not, mSpeed, mCurrent, mVoltage, mBatteryLevel, mTemperature));
+            } else {
+                notificationView.setTextViewText(R.id.text_message, "Alarm mode on MiBand");
+            }
+        }
+        String titlenot = title;
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTED && (mDistance + mTemperature + mBatteryLevel + mSpeed + mPower) > 0 && MainActivity.ButtonMiBand > 0)
+            notificationView.setTextViewText(R.id.text_title, title);
 
-        notificationView.setTextViewText(R.id.text_title, title);
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTED && (mDistance + mTemperature + mBatteryLevel + mSpeed + mPower) > 0 && MainActivity.ButtonMiBand > 0)
+            titlenot = WheelData.getInstance().getRideTimeString();
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTED && (mDistance + mTemperature + mBatteryLevel + mSpeed + mPower) > 0 && MainActivity.ButtonMiBand == 0)
+            titlenot = mContext.getString(R.string.titlealarm_text);
+        if (mConnectionState == BluetoothLeService.STATE_CONNECTING || mConnectionState == BluetoothLeService.STATE_CONNECTING)
+            titlenot = title;
+        //     if (PebbleService.isInstanceCreated())
+        //         notificationView.setImageViewResource(R.id.ib_watch, R.drawable.ic_action_watch_orange);
+        //      else
+        //         notificationView.setImageViewResource(R.id.ib_watch, R.drawable.ic_action_watch_grey);
 
-        if (PebbleService.isInstanceCreated())
-            notificationView.setImageViewResource(R.id.ib_watch, R.drawable.ic_action_watch_orange);
-        else
-            notificationView.setImageViewResource(R.id.ib_watch, R.drawable.ic_action_watch_grey);
+        //    if (LoggingService.isInstanceCreated())
+        //       notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_log_new_g);
+        //   else
+        //       notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_log_new);
 
-        if (LoggingService.isInstanceCreated())
-            notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_orange);
-        else
-            notificationView.setImageViewResource(R.id.ib_logging, R.drawable.ic_action_logging_grey);
 
-        pNotification = mNotification
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setContentIntent(pendingIntent)
-                .setContent(notificationView)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build();
+        switch (MainActivity.ButtonMiBand) {
+            case 0: {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(titlenot)
+                        .setContentText(mContext.getString(R.string.notification_text_alarm, mSpeed, mCurrent, mVoltage, mBatteryLevel, mTemperature))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+            case 1: {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(titlenot)
+                        .setContentText(mContext.getString(R.string.notification_text_min, mSpeed, mBatteryLevel, mDistance))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+            case 2: {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(titlenot)
+                        .setContentText(mContext.getString(R.string.notification_text_med, mSpeed, mAvgSpeed, mBatteryLevel, mTemperature, mDistance))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+            case 3: {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(titlenot)
+                        .setContentText(mContext.getString(R.string.notification_text_max, mSpeed, mMaxSpeed, MaxPower, mBatteryLevel, mPower, mTemperature, mDistance))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+        }
+        switch (alarmExec) {
+            case 1:
+                    {
+                        pNotification = mNotification
+                                .setSmallIcon(R.drawable.ic_wheel4)
+                                .setContentIntent(pendingIntent)
+                                .setContent(notificationView)
+                                .setContentTitle(mContext.getString(R.string.titlealarm))
+                                .setContentText(mContext.getString(R.string.alarm_text_speed_v, mSpeed))
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                .build();
+                    }
+            break;
+            case 2:
+            {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(mContext.getString(R.string.titlealarm))
+                        .setContentText(mContext.getString(R.string.alarm_text_speed_v, mSpeed))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+            case 3:
+            {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(mContext.getString(R.string.titlealarm))
+                        .setContentText(mContext.getString(R.string.alarm_text_speed_v, mSpeed))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+            case 4:
+            {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(mContext.getString(R.string.titlealarm))
+                        .setContentText(mContext.getString(R.string.alarm_text_current_v, mCurrent))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+            case 5:
+            {
+                pNotification = mNotification
+                        .setSmallIcon(R.drawable.ic_wheel4)
+                        .setContentIntent(pendingIntent)
+                        .setContent(notificationView)
+                        .setContentTitle(mContext.getString(R.string.titlealarm))
+                        .setContentText(mContext.getString(R.string.alarm_text_temperature_v, mTemperature))
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .build();
+            }
+            break;
+        }
         return pNotification;
     }
 
@@ -198,6 +388,9 @@ public class NotificationUtil {
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_REQUEST_SWMIBAND);
+        intentFilter.addAction(Constants.ACTION_REQUEST_RECONNECT);
+        intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         return intentFilter;
     }
 

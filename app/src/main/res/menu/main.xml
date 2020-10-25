@@ -2,32 +2,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/miSearch"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_bluetooth_searching_white"
-        android:title="@string/search_for_wheel">
-    </item>
+        android:icon="@drawable/ic_bt_new"
+        android:title="@string/search_for_wheel"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/miWheel"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_wheel_white"
-        android:title="@string/connect_to_wheel">
-    </item>
+        android:icon="@drawable/ic_wheel_new"
+        android:title="@string/connect_to_wheel"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/miLogging"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_logging_white"
-        android:title="@string/start_data_service">
-    </item>
+        android:icon="@drawable/ic_log_new"
+        android:title="@string/start_data_service"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/miWatch"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_watch_white"
-        android:title="@string/start_pebble_service">
-    </item>
+        android:icon="@drawable/ic_watch_new"
+        android:title="@string/start_pebble_service"
+        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/miBand"
+        android:icon="@drawable/ic_mi_med"
+        android:title="@string/start_miband_alert"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/miSettings"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_settings_white"
-        android:title="@string/show_settings">
-    </item>
+        android:icon="@drawable/ic_sett3_new"
+        android:title="@string/show_settings"
+        app:showAsAction="always"></item>
 </menu>

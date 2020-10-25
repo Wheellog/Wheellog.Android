@@ -31,6 +31,19 @@
     <string name="warning_speed_period" translatable="false">warning_speed_period</string>
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
+    <string name="notification_text_min">Spd: %1$.0f k/h Batt: %2$d %% Dist: %3$.1f km</string>
+    <string name="notification_text_med">Spd: %1$.0f k/h Avg: %2$.0f k/h Bat.: %3$d %% Temp: %4$d°C Dist: %5$.1f km</string>
+    <string name="notification_text_max">Spd: %1$.0f k/h Max: %2$.0f k/h Peak: %3$.0f W Batt.: %4$d %% Out: %5$.0f W Temp: %6$d°C Dist: %7$.1f km</string>
+    <string name="notification_text_alarm">Spd: %1$.0f k/h Curr.: %2$.1f A Volt.: %3$.2f V Batt.: %4$d %% Temp: %5$d°C</string>
+    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
+    <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
+    <string name="titlealarm">Alarm Triggered!</string>
+    <string name="titlealarm_text">Alarm Mode</string>
+    <string name="alarmmiband">Alarm Mode Mi Band</string>
+    <string name="minmiband">Minimal Mode Mi Band</string>
+    <string name="medmiband">Medium Mode Mi Band</string>
+    <string name="maxmiband">Maximum Mode Mi Band</string>
+
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
@@ -63,6 +76,7 @@
 
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
+    <string name="use_rec" translatable="false">use_rec</string>
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="use_better_percents" translatable="false">use_better_percents</string>
     <string name="fixed_percents" translatable="false">fixed_percents</string>
@@ -107,7 +121,7 @@
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>
     <string name="error_bluetooth_not_initialised">Unable to initialize Bluetooth, exiting</string>
     <string name="bluetooth_required">Bluetooth is required and was not successfully enabled.</string>
-    <string name="bluetooth_direct_connect_failed">Direct connection failed. Searching for Wheel…</string>
+    <string name="bluetooth_direct_connect_failed">Please wait! Connecting to Wheel…</string>
     <string name="back_to_exit">Press BACK again to exit</string>
     <string name="scan">Scan</string>
     <string name="stop">Stop</string>
@@ -144,9 +158,12 @@
     <string name="average_speed">Avg Speed</string>
     <string name="average_riding_speed">Avg Riding</string>
     <string name="top_speed">Top Speed</string>
+    <string name="maxtemperature">Max Temp</string>
+    <string name="maxpower">Max Power</string>
     <string name="battery">Battery</string>
     <string name="output">Motor output</string>
     <string name="cpuload">CPU load</string>
+    <string name="maxcurrent">Max Current</string>
     <string name="charging_status">Charging</string>
     <string name="distance">Distance</string>
     <string name="wheel_distance">Wheel Distance</string>
@@ -221,7 +238,7 @@
     <string name="medium">Medium</string>
     <string name="soft">Soft</string>
     <string name="on_board_horn_ks">On-board (KingSong)</string>
-    <string name="bluetooth_audio_horn">via bluetooth audio</string>
+    <string name="bluetooth_audio_horn">Via bluetooth audio</string>
     <string name="speed_settings_title">Application Settings</string>
     <string name="logs_settings_title">Log Settings</string>
     <string name="alarm_settings_title">Alarm Settings</string>
@@ -241,6 +258,8 @@
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
     <string name="view_blocks" translatable="false">view_blocks</string>
+    <string name="view_blocks_string" translatable="false">view_blocks_string</string>
+    <string name="start_miband_alert">Start MiBand Alert</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>
     <string name="use_eng_alert_title">Restart required</string>
@@ -262,7 +281,7 @@
     <string name="no_connection_sound_title">Connection lost beeps period</string>
     <string name="no_connection_sound_description">Period of beeps when connection lost, 0sec - no beeps</string>
     <string name="use_stop_music_title">Auto mute</string>
-    <string name="use_stop_music_description">Auto mute at speeds below 3.5 km/h</string>
+    <string name="use_stop_music_description">Auto mute at speeds below 7 km/h</string>
     <string name="battery_capacity_title">Battery capacity</string>
     <string name="battery_capacity_description">Battery Capacity in Wh</string>
     <string name="charging_power_title">Charging power</string>
@@ -395,4 +414,11 @@
     <string name="bmsCell16">Cell 16</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="reconnect_option" translatable="false">reconnect_option</string>
+    <string name="reconnect_option_description">Wheel reconnects if error or no data update</string>
+    <string name="reconnect_option_title">Auto Reconnect</string>
+    <string name="alarm_text_speed_v">Speed alarm at %1$.0f k/h</string>
+    <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
+    <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
+
 </resources>
