@@ -751,6 +751,9 @@ public class WheelData {
         mWheelType = wheelType;
 
         if (isChanged) {
+            //Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
+            //mContext.sendBroadcast(intent);
+
             for (IDataListener hl : listeners)
                 hl.changeWheelType();
         }

@@ -30,6 +30,7 @@ class GotwayAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        every { WheelLog.AppConfig.getGotwayNegative() } returns 1
     }
 
     @After
@@ -56,10 +57,10 @@ class GotwayAdapterTest {
     fun `decode with normal data`() {
         // Arrange.
         val voltage = 6000.toShort()
-        val speed = (1111).toShort()
+        val speed = (-1111).toShort()
         val temperature = 99.toShort()
         val distance = 3231.toShort()
-        val phaseCurrent = (8322).toShort()
+        val phaseCurrent = (-8322).toShort()
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +

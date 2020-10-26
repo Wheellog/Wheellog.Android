@@ -30,6 +30,7 @@ class VeteranAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        every { WheelLog.AppConfig.getGotwayNegative() } returns 1
     }
 
     @After
@@ -56,10 +57,10 @@ class VeteranAdapterTest {
     fun `decode with normal data`() {
         // Arrange.
         val voltage = 9500.toShort()
-        val speed = (1111).toShort()
+        val speed = (-1111).toShort()
         val temperature = 3599.toShort()
         val distance = 3231.toShort()
-        val phaseCurrent = (8322).toShort()
+        val phaseCurrent = (-8322).toShort()
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
@@ -82,7 +83,7 @@ class VeteranAdapterTest {
 
         // Assert.
         assertThat(result).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(speed)
+        assertThat(data.speed).isEqualTo(speed)
         assertThat(data.temperature).isEqualTo(temperature/100)
         assertThat(data.voltageDouble).isEqualTo(voltage/100.0)
         assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent/10.0)

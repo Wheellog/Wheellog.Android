@@ -1,10 +1,6 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Locale;
 import timber.log.Timber;
 
 public class GotwayVirtualAdapter extends BaseAdapter {
@@ -25,7 +21,7 @@ public class GotwayVirtualAdapter extends BaseAdapter {
             wd.setModel("Begode");
             result = GotwayAdapter.getInstance().decode(data);
         } else return false;
-        INSTANCE = null; // not sure
+
         return result;
     }
 
