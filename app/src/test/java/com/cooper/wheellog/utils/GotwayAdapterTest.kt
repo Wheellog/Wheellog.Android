@@ -132,7 +132,7 @@ class GotwayAdapterTest {
         assertThat(data.voltageDouble).isEqualTo(65.6)
         assertThat(data.phaseCurrentDouble).isEqualTo(8.1)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
-        assertThat(data.totalDistance).isEqualTo(9955) // fixed
+        assertThat(data.totalDistance).isEqualTo(9955)
         assertThat(data.batteryLevel).isEqualTo(97)
     }
 
