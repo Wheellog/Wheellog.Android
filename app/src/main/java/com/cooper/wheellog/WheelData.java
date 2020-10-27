@@ -750,9 +750,9 @@ public class WheelData {
         boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
         if (isChanged) {
-//            Context mContext = mBluetoothLeService.getApplicationContext();
-//            Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
-//            mContext.sendBroadcast(intent);
+            Context mContext = mBluetoothLeService.getApplicationContext();
+            Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
+            mContext.sendBroadcast(intent);
             for (IDataListener hl : listeners)
                 hl.changeWheelType();
         }

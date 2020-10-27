@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
                     configureDisplay(WheelData.getInstance().getWheelType());
+                    updateScreen(true);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
