@@ -6,7 +6,6 @@ import timber.log.Timber;
 public class GotwayVirtualAdapter extends BaseAdapter {
     private static GotwayVirtualAdapter INSTANCE;
 
-
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Begode_Gotway_detect");
@@ -25,32 +24,10 @@ public class GotwayVirtualAdapter extends BaseAdapter {
         return result;
     }
 
-    @Override
-    public void updatePedalsMode(int pedalsMode) {
-        WheelData.getInstance().updatePedalsMode(pedalsMode);
-    }
-
-    @Override
-    public void updateLightMode(int lightMode) {
-
-    }
-
-    @Override
-    public void updateMaxSpeed(int wheelMaxSpeed) {
-
-    }
-
-    @Override
-    public int getCellSForWheel() {
-        return 24;
-    }
-
-
     public static GotwayVirtualAdapter getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new GotwayVirtualAdapter();
         }
         return INSTANCE;
     }
-
 }

@@ -47,18 +47,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
         return false;
     }
 
-    @Override
-    public void updatePedalsMode(int pedalsMode) {
-    }
-
-    @Override
-    public void updateLightMode(int lightMode) {
-    }
-
-    @Override
-    public void updateMaxSpeed(int wheelMaxSpeed) {
-    }
-
     public static InmotionAdapterV2 getInstance() {
         if (INSTANCE == null) {
             Timber.i("New instance");
@@ -403,18 +391,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return (byte) check;
         }
 
-        public static String toHexString(byte[] buffer) {
-            String str = "[";
-            for (int c : buffer) {
-                str += String.format("%02X", (c & 0xFF));
-            }
-            str += "]";
-            return str;
-        }
-
         static Message verify(byte[] buffer) {
-
-            Timber.i("Verify: %s", Message.toHexString(buffer));
+            Timber.i("Verify: %s", StringUtil.toHexString(buffer));
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 0, buffer.length - 1);
             byte check = calcCheck(dataBuffer);
 
@@ -425,9 +403,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 Timber.i("Check FALSE, calc: %02X, packet: %02X",check, bufferCheck);
             }
             return (check == bufferCheck) ? new Message(dataBuffer) : null;
-
         }
-
     }
 	
     static class InmotionUnpackerV2 {

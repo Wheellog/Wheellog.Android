@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import android.content.Context
 import com.cooper.wheellog.BluetoothLeService
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
@@ -23,11 +24,11 @@ class KingsongAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
+        data.wheelType = Constants.WHEEL_TYPE.KINGSONG
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        every { data.bluetoothLeService } returns
-                mockkClass(BluetoothLeService::class, relaxed = true)
     }
 
     @After
@@ -126,6 +127,7 @@ class KingsongAdapterTest {
     @Test
     fun `decode Serial number`() {
         // Arrange.
+        every { data.bluetoothLeService } returns mockkClass(BluetoothLeService::class, relaxed = true)
         val type = 179.toByte() // Name and Type data
         val serial = "King1234567890123"
         val serialBytes = serial.toByteArray(Charsets.UTF_8)
@@ -205,7 +207,6 @@ class KingsongAdapterTest {
     }
 
     @Test
-    @Ignore // TODO
     fun `update pedals mode`() {
         // Arrange.
         every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true
@@ -216,6 +217,6 @@ class KingsongAdapterTest {
         adapter.updatePedalsMode(2)
 
         // Assert.
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) }
+        verify(atLeast = 3) { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) }
     }
 }

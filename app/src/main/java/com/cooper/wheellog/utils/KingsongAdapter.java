@@ -161,18 +161,8 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().updatePedalsMode(pedalsMode);
     }
 
-    @Override
-    public void updateLightMode(int lightMode) {
-
-    }
-
-    @Override
-    public void updateMaxSpeed(int wheelMaxSpeed) {
-
-    }
-
     private boolean is84vWheel() {
-        return StringUtil.inArray(WheelData.getInstance().getModel(), new String[] { "KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || WheelData.getInstance().getModel().startsWith("ROCKW");
+        return StringUtil.inArray(WheelData.getInstance().getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || WheelData.getInstance().getModel().startsWith("ROCKW");
     }
 
     @Override
