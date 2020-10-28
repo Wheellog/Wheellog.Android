@@ -498,7 +498,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         void reset() {
             buffer = new ByteArrayOutputStream();
             oldc = 0;
-            state = InmotionAdapterV2.InmotionUnpackerV2.UnpackerState.unknown;
+            state = UnpackerState.unknown;
 
         }
     }

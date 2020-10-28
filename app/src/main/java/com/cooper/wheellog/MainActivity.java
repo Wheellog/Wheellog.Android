@@ -267,6 +267,11 @@ public class MainActivity extends AppCompatActivity {
                     Timber.i("Bluetooth state = %d", connectionState);
                     setConnectionState(connectionState);
                     break;
+                case Constants.ACTION_WHEEL_TYPE_CHANGED:
+                    Timber.i("Wheel type switched");
+                    configureDisplay(WheelData.getInstance().getWheelType());
+                    updateScreen(true);
+                    break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                         if (WheelData.getInstance().getName().isEmpty())
@@ -1800,6 +1805,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         return intentFilter;
     }
 

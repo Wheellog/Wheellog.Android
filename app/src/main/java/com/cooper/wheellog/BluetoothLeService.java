@@ -287,6 +287,7 @@ public class BluetoothLeService extends Service {
             }
 
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY ||
+                    WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY_VIRTUAL ||
                     WheelData.getInstance().getWheelType() == WHEEL_TYPE.VETERAN) {
                 byte[] value = characteristic.getValue();
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());

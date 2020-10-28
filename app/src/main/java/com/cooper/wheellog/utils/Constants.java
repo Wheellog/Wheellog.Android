@@ -5,6 +5,7 @@ import java.util.UUID;
 public class Constants {
 
     public static final String ACTION_BLUETOOTH_CONNECTION_STATE = "com.cooper.wheellog.bluetoothConnectionState";
+    public static final String ACTION_WHEEL_TYPE_CHANGED = "com.cooper.wheellog.wheelTypeChanged";
     public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.cooper.wheelTimber.wheelDataAvailable";
 	public static final String ACTION_WHEEL_SETTING_CHANGED = "com.cooper.wheelTimber.wheelSettingChanged";
     public static final String ACTION_REQUEST_KINGSONG_SERIAL_DATA = "com.cooper.wheellog.requestSerialData";
@@ -96,7 +97,8 @@ public class Constants {
         NINEBOT_Z,
         INMOTION,
         INMOTION_V2,
-        VETERAN;
+        VETERAN,
+        GOTWAY_VIRTUAL;
     }
 
     public enum PEBBLE_APP_SCREEN {
