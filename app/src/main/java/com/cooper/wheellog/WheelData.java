@@ -424,7 +424,6 @@ public class WheelData {
             data[19] = (byte) 0x5A;
             getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
-	
     }
 	
 	public void updateLightMode(int lightMode) {
@@ -1630,9 +1629,9 @@ public class WheelData {
 				mNewWheelSettings = true;
             } else if (status instanceof InMotionAdapter.Alert){
 				if (mAlert == "") {
-					mAlert = ((InMotionAdapter.Alert) status).getfullText();
+					mAlert = ((InMotionAdapter.Alert) status).getFullText();
 				} else {
-					mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getfullText();
+					mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getFullText();
 				}
 			} else {
                 mSpeed = (int) (status.getSpeed() * 360d);
@@ -1882,10 +1881,10 @@ public class WheelData {
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     Timber.i("write notify");
                     if (protoVer.compareTo("S2")==0 || protoVer.compareTo("Mini")==0){
-                        NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
+                        NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
                         //mWheelType = WHEEL_TYPE.NINEBOT;
                     } else {
-                        NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, "");
+                        NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
                     }
                     Timber.i("starting ninebot adapter");
                     return true;
@@ -1911,7 +1910,7 @@ public class WheelData {
                     Timber.i("enable notify UUID");
                     mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                     Timber.i("write notify");
-                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
+                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
                     Timber.i("starting ninebot adapter");
                     return true;
                 }

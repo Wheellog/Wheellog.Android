@@ -27,10 +27,10 @@ public class GotwayAdapter extends BaseAdapter {
                 if (buff[18] == (byte) 0x00) { // life data
                     Timber.i("Get new life data");
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
-                    int speed = (int)Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
+                    int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     long distance = MathsUtil.shortFromBytesBE(buff, 8);
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
-                    int temperature = (int)Math.round((((float)MathsUtil.signedShortFromBytesBE(buff, 12)/340.0) + 36.53)*100); // new formula based on MPU6050 datasheet
+                    int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100); // new formula based on MPU6050 datasheet
                     //int temperature = (int) Math.round(((((buff[12] * 256) + buff[13]) / 340.0) + 35) * 100); // old formula, let's leave it commented
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
@@ -62,10 +62,10 @@ public class GotwayAdapter extends BaseAdapter {
                     }
 
                     if (useRatio) {
-                        distance = (int)Math.round(distance * RATIO_GW);
-                        speed = (int)Math.round(speed * RATIO_GW);
+                        distance = (int) Math.round(distance * RATIO_GW);
+                        speed = (int) Math.round(speed * RATIO_GW);
                     }
-                    voltage = (int) Math.round(getScaledVoltage (voltage));
+                    voltage = (int) Math.round(getScaledVoltage(voltage));
 
                     wd.setSpeed(speed);
                     wd.setTopSpeed(speed);
@@ -80,15 +80,15 @@ public class GotwayAdapter extends BaseAdapter {
                     return true;
                 } else if (buff[18] == (byte) 0x04) { // total data
                     Timber.i("Get new total data");
-                    int totalDistance = (int)MathsUtil.getInt4(buff, 2);
+                    int totalDistance = (int) MathsUtil.getInt4(buff, 2);
                     if (useRatio) {
                         wd.setTotalDistance(Math.round(totalDistance * RATIO_GW));
                     } else {
                         wd.setTotalDistance(totalDistance);
                     }
-                    int pedalsMode = (buff[6]>>4) & 0x0F;
+                    int pedalsMode = (buff[6] >> 4) & 0x0F;
                     int speedAlarms = buff[6] & 0x0F;
-                    int ledMode = buff[13]&0xFF;
+                    int ledMode = buff[13] & 0xFF;
 
                     return false;
                 }
@@ -103,22 +103,13 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     @Override
-    public void updateLightMode(int lightMode) {
-
-    }
-
-    @Override
-    public void updateMaxSpeed(int wheelMaxSpeed) {
-
-    }
-
-    @Override
     public int getCellSForWheel() {
         switch (WheelLog.AppConfig.getGotwayVoltage()) {
-            case 0: return 16;
-            case 1: return 20;
+            case 0:
+                return 16;
+            case 1:
+                return 20;
         }
-
         return 24;
     }
 
@@ -129,7 +120,6 @@ public class GotwayAdapter extends BaseAdapter {
             collecting,
             done
         }
-
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int oldc = 0;
@@ -143,9 +133,7 @@ public class GotwayAdapter extends BaseAdapter {
         boolean addChar(int c) {
 
             switch (state) {
-
                 case collecting:
-
                     buffer.write(c);
                     if (buffer.size() == 20) {
                         state = UnpackerState.done;
@@ -154,8 +142,6 @@ public class GotwayAdapter extends BaseAdapter {
                         return true;
                     }
                     break;
-
-
                 default:
                     if (c == (byte) 0xAA && oldc == (byte) 0x55) {
                         buffer = new ByteArrayOutputStream();
@@ -164,7 +150,6 @@ public class GotwayAdapter extends BaseAdapter {
                         state = UnpackerState.collecting;
                     }
                     oldc = c;
-
             }
             return false;
         }
@@ -172,11 +157,8 @@ public class GotwayAdapter extends BaseAdapter {
         void reset() {
             oldc = 0;
             state = UnpackerState.unknown;
-
         }
     }
-
-
 
     public static GotwayAdapter getInstance() {
         if (INSTANCE == null) {

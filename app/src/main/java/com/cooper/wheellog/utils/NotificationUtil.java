@@ -20,8 +20,6 @@ import com.cooper.wheellog.PebbleService;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 
-
-
 public class NotificationUtil {
     private NotificationUtil mInstance;
     private Context mContext;
@@ -44,10 +42,6 @@ public class NotificationUtil {
             mInstance = this;
         }
     }
-
-//    public static NotificationUtil getInstance() {
-//        return mInstance;
-//    }
 
     public static Notification getNotification() {
         return pNotification;
