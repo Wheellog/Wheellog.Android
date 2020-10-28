@@ -1766,9 +1766,11 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
-                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
-                            mDeviceAddress,
-                            success -> null);
+                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                                mDeviceAddress,
+                                success -> null);
+                    }
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:
