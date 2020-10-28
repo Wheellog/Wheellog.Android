@@ -1,8 +1,6 @@
 package com.cooper.wheellog.utils
 
-import android.app.Activity
 import android.content.Context
-import androidx.core.math.MathUtils
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -11,11 +9,9 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
 import kotlin.math.round
-import kotlin.math.roundToInt
 
 class GotwayAdapterTest {
 
@@ -26,6 +22,7 @@ class GotwayAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
@@ -138,7 +135,6 @@ class GotwayAdapterTest {
     }
 
     @Test
-    @Ignore // TODO
     fun `update pedals mode`() {
         // Arrange.
         every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true

@@ -23,20 +23,18 @@ class GotwayVirtualAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
-        mBluetoothLeService = spyk(BluetoothLeService())
+        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY_VIRTUAL
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         mockkStatic(BluetoothLeService::class)
         every { WheelData.getInstance() } returns data
-        //every { mBluetoothLeService.applicationContext } returns Context // doesn't work
     }
 
     @After
     fun tearDown() {
         unmockkAll()
     }
-    @Ignore
     @Test
     fun `switch to gotway and decode`() {
         // Arrange.
@@ -56,7 +54,6 @@ class GotwayVirtualAdapterTest {
         assertThat(data.batteryLevel).isEqualTo(100)
     }
 
-    @Ignore
     @Test
     fun `switch to veteran`() {
         // Arrange.
@@ -70,6 +67,4 @@ class GotwayVirtualAdapterTest {
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.VETERAN)
     }
-
-
 }
