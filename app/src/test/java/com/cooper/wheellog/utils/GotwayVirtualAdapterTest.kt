@@ -18,7 +18,6 @@ class GotwayVirtualAdapterTest {
 
     private var adapter: GotwayVirtualAdapter = GotwayVirtualAdapter()
     private lateinit var data: WheelData
-    private lateinit var mBluetoothLeService: BluetoothLeService
 
     @Before
     fun setUp() {
@@ -58,11 +57,9 @@ class GotwayVirtualAdapterTest {
     fun `switch to veteran`() {
         // Arrange.
         val byteArray1 = "DC5A5C20238A0112121A00004D450005064611F2".hexToByteArray()
-        val byteArray2 = "0E1000000AF00AF0041B000300000000".hexToByteArray()
 
         // Act.
         val result1 = adapter.decode(byteArray1)
-        val result2 = adapter.decode(byteArray2)
 
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.VETERAN)
