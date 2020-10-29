@@ -901,12 +901,12 @@ public class MainActivity extends AppCompatActivity {
                 wheelView.setDistance(data.getDistanceDouble());
                 wheelView.setTotalDistance(data.getTotalDistanceDouble());
                 wheelView.setVoltage(data.getVoltageDouble());
-                wheelView.setCurrent(data.getPowerDouble());
+                wheelView.setCurrent(data.getCurrentDouble());
                 wheelView.setAverageSpeed(data.getAverageRidingSpeedDouble());
-                wheelView.redrawTextBoxes();
                 wheelView.setMaxPwm(data.getMaxPwm());
                 wheelView.setMaxTemperature(data.getMaxTemp());
                 wheelView.setPwm(data.getCalculatedPwm());
+                wheelView.redrawTextBoxes();
 
                 String profileName = WheelLog.AppConfig.getProfileName();
                 if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneral())
