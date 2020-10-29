@@ -1,6 +1,7 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -20,6 +21,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +44,7 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.cooper.wheellog.utils.StringUtil;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -76,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
         super.attachBaseContext(LocaleManager.setLocale(base));
     }
 
+    //region private variables
     ViewPageAdapter pagerAdapter;
+    TextView eventsTextView;
+    int eventsCurrentCount = 0;
+    int eventsMaxCount = 500;
 
     Menu mMenu;
     MenuItem miSearch;
@@ -222,10 +229,11 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    int viewPagerPage = 0;
+    int viewPagerPage = R.id.page_one;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
     private DrawerLayout mDrawer;
+    //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
@@ -308,11 +316,9 @@ public class MainActivity extends AppCompatActivity {
 
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-                        // show BMS page
-                        pagerAdapter.addPage(R.id.page_four);
+                        pagerAdapter.showPage(R.id.page_smart_bms);
                     } else {
-                        // hide BMS page
-                        pagerAdapter.deletePage(R.id.page_four);
+                        pagerAdapter.hidePage(R.id.page_smart_bms);
                     }
                     findViewById(R.id.indicator).invalidate();
                     break;
@@ -431,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //region SecondPage
     private LinkedHashMap<Integer, String> secondPageValues = new LinkedHashMap<>();
 
     public void setupFieldForSecondPage(int resId)
@@ -475,8 +482,10 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+    //endregion
 
     private void configureDisplay(WHEEL_TYPE wheelType) {
+        //region aaaaaaa
         tvBmsWaitText.setVisibility(View.VISIBLE);
         tvTitleBmsBattery1.setVisibility(View.GONE);
         tvTitleBmsBattery2.setVisibility(View.GONE);
@@ -604,6 +613,7 @@ public class MainActivity extends AppCompatActivity {
         tvTitleBms2Cell14.setVisibility(View.GONE);
         tvTitleBms2Cell15.setVisibility(View.GONE);
         tvTitleBms2Cell16.setVisibility(View.GONE);
+        //endregion
 
         secondPageValues.clear();
 
@@ -707,8 +717,6 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.charging);
                 break;
 
-
-
             case NINEBOT_Z:
                 setupFieldForSecondPage(R.string.speed);
                 setupFieldForSecondPage(R.string.top_speed);
@@ -732,6 +740,7 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.version);
                 setupFieldForSecondPage(R.string.serial_number);
 
+                //region aaaaaaaaa bms
                 tvBmsWaitText.setVisibility(View.GONE);
                 tvTitleBmsBattery1.setVisibility(View.VISIBLE);
                 tvTitleBmsBattery2.setVisibility(View.VISIBLE);
@@ -860,6 +869,7 @@ public class MainActivity extends AppCompatActivity {
                 tvTitleBms2Cell14.setVisibility(View.VISIBLE);
                 tvTitleBms2Cell15.setVisibility(View.GONE);
                 tvTitleBms2Cell16.setVisibility(View.GONE);
+                //endregion
                 break;
 
             case NINEBOT:
@@ -888,10 +898,11 @@ public class MainActivity extends AppCompatActivity {
         createSecondPage();
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void updateScreen(boolean updateGraph) {
         WheelData data = WheelData.getInstance();
         switch (viewPagerPage) {
-            case 0: // GUI View
+            case R.id.page_one: // GUI View
                 data.setBmsView(false);
                 wheelView.setSpeed(data.getSpeed());
                 wheelView.setBattery(data.getBatteryLevel());
@@ -915,7 +926,7 @@ public class MainActivity extends AppCompatActivity {
                     wheelView.setWheelModel(profileName);
 
                 break;
-            case 1: // Text View
+            case R.id.page_two: // Text View
                 WheelData.getInstance().setBmsView(false);
 
                 if (use_mph) {
@@ -961,7 +972,7 @@ public class MainActivity extends AppCompatActivity {
                 updateFieldForSecondPage(R.string.charging, WheelData.getInstance().getChargeTime());
                 updateSecondPage();
                 break;
-            case 2: // Graph  View
+            case R.id.page_graph: // Graph  View
                 WheelData.getInstance().setBmsView(false);
                 if (updateGraph) {
                     xAxis_labels = WheelData.getInstance().getXAxis();
@@ -1032,7 +1043,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            case 3: //BMS view
+            case R.id.page_smart_bms: //BMS view
                 WheelData.getInstance().setBmsView(true);
                 tvBms1Sn.setText(WheelData.getInstance().getBms1SerialNumber());
                 tvBms1Fw.setText(WheelData.getInstance().getBms1VersionNumber());
@@ -1169,6 +1180,39 @@ public class MainActivity extends AppCompatActivity {
         updateScreen(true);
     }
 
+    private void createPager()
+    {
+        // add pages into main view
+        ViewPager pager = findViewById(R.id.pager);
+        LayoutInflater i = getLayoutInflater();
+        i.inflate(R.layout.main_view_one, pager);
+        i.inflate(R.layout.main_view_two, pager);
+        i.inflate(R.layout.main_view_graph, pager);
+        i.inflate(R.layout.main_view_smart_bms, pager); // TODO: inflate smart bms page only if needed (after detect wheel)
+        i.inflate(R.layout.main_view_actions, pager);
+
+        // set page adapter and show 3 pages
+        pagerAdapter = new ViewPageAdapter(this);
+        pagerAdapter.showPage(R.id.page_one);
+        pagerAdapter.showPage(R.id.page_two);
+        pagerAdapter.showPage(R.id.page_graph);
+        pagerAdapter.showPage(R.id.page_actions);
+        pager.setAdapter(pagerAdapter);
+        pager.setOffscreenPageLimit(4);
+
+        LinePageIndicator titleIndicator = findViewById(R.id.indicator);
+        pagerAdapter.setPageIndicator(titleIndicator);
+        titleIndicator.setViewPager(pager);
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                viewPagerPage = pagerAdapter.getPageIdByPosition(position);
+                updateScreen(true);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (onDestroyProcess)
@@ -1200,14 +1244,9 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
                 .commit();
 
-        pagerAdapter = new ViewPageAdapter(this);
-        ViewPager pager = findViewById(R.id.pager);
-        pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(4);
+        createPager();
 
-        LinePageIndicator titleIndicator = findViewById(R.id.indicator);
-        titleIndicator.setViewPager(pager);
-        pager.addOnPageChangeListener(pageChangeListener);
+        eventsTextView = findViewById(R.id.events_textbox);
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -1570,15 +1609,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
-            viewPagerPage = position;
-            updateScreen(true);
-        }
-    };
-
     private void loadPreferences() {
         loadPreferences("");
     }
@@ -1672,6 +1702,7 @@ public class MainActivity extends AppCompatActivity {
         snackbar.setDuration(timeout);
         snackbar.setText(msg);
         snackbar.show();
+        logEvent(msg);
     }
 
     private void hideSnackBar() {
@@ -1679,6 +1710,16 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         snackbar.dismiss();
+    }
+
+    private void logEvent(String message) {
+        String formatedMessage = String.format("[time] %s\n", message);
+        if (eventsCurrentCount < eventsMaxCount) {
+            eventsTextView.append(formatedMessage);
+            eventsCurrentCount++;
+        } else {
+            eventsTextView.setText(String.format("%s%s", StringUtil.deleteFirstSentence(eventsTextView.getText()), formatedMessage));
+        }
     }
 
     private void stopLoggingService() {

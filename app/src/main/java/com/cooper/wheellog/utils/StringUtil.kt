@@ -11,5 +11,15 @@ class StringUtil {
         fun toHexString(buffer: ByteArray): String {
             return buffer.contentToString()
         }
+
+        @JvmStatic
+        fun deleteFirstSentence(text: CharSequence): CharSequence {
+            val indexOfNewLine = text.indexOfFirst { r -> r == '\n' }
+            if (indexOfNewLine != -1) {
+                return text.substring(indexOfNewLine)
+            } else {
+                return text
+            }
+        }
     }
 }

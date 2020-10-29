@@ -1,4 +1,4 @@
-<LinearLayout android:id="@+id/page_four"
+<LinearLayout android:id="@+id/page_smart_bms"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
