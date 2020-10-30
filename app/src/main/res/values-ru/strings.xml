@@ -226,7 +226,7 @@
     <string name="warning_speed_description">Предварительное предупреждение по скорости, 0 - отключить</string>
     <string name="warning_pwm_title">Предварительное предупреждение PWM</string>
     <string name="warning_pwm_description">Предварительное предупреждение по PWM, 0 - отключить</string>
-    <string name="warning_speed_period_title">Переодичность предупреждений</string>
+    <string name="warning_speed_period_title">Периодичность предупреждений</string>
     <string name="warning_speed_period_description">Период оповещений, 0 - отключить</string>
     <string name="use_short_pwm_title">Короткое отображение PWM</string>
     <string name="use_short_pwm_description">Current/Max PWM отображается около скорости</string>
@@ -240,6 +240,4 @@
     <string name="rotation_voltage_description">Напряжение при котором измерялась скорость раскрутки</string>
     <string name="use_stop_music_title">Выключение звука</string>
     <string name="use_stop_music_description">Автовыключение звука при скорости ниже 3.5 км/ч</string>
-
-
 </resources>
