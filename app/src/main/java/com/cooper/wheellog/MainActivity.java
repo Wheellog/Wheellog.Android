@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    int viewPagerPage = R.id.page_one;
+    int viewPagerPage = R.id.page_main;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
     private DrawerLayout mDrawer;
@@ -902,7 +902,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateScreen(boolean updateGraph) {
         WheelData data = WheelData.getInstance();
         switch (viewPagerPage) {
-            case R.id.page_one: // GUI View
+            case R.id.page_main: // GUI View
                 data.setBmsView(false);
                 wheelView.setSpeed(data.getSpeed());
                 wheelView.setBattery(data.getBatteryLevel());
@@ -926,7 +926,7 @@ public class MainActivity extends AppCompatActivity {
                     wheelView.setWheelModel(profileName);
 
                 break;
-            case R.id.page_two: // Text View
+            case R.id.page_params_list: // Text View
                 WheelData.getInstance().setBmsView(false);
 
                 if (use_mph) {
@@ -1185,16 +1185,16 @@ public class MainActivity extends AppCompatActivity {
         // add pages into main view
         ViewPager pager = findViewById(R.id.pager);
         LayoutInflater i = getLayoutInflater();
-        i.inflate(R.layout.main_view_one, pager);
-        i.inflate(R.layout.main_view_two, pager);
+        i.inflate(R.layout.main_view_main, pager);
+        i.inflate(R.layout.main_view_params_list, pager);
         i.inflate(R.layout.main_view_graph, pager);
         i.inflate(R.layout.main_view_smart_bms, pager); // TODO: inflate smart bms page only if needed (after detect wheel)
         i.inflate(R.layout.main_view_actions, pager);
 
         // set page adapter and show 3 pages
         pagerAdapter = new ViewPageAdapter(this);
-        pagerAdapter.showPage(R.id.page_one);
-        pagerAdapter.showPage(R.id.page_two);
+        pagerAdapter.showPage(R.id.page_main);
+        pagerAdapter.showPage(R.id.page_params_list);
         pagerAdapter.showPage(R.id.page_graph);
         pagerAdapter.showPage(R.id.page_actions);
         pager.setAdapter(pagerAdapter);
