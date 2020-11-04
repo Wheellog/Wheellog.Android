@@ -197,7 +197,7 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
 
-            // electro.club ulpoad
+            // electro.club upload
             if (WheelLog.AppConfig.getAutoUploadEc()
                     && ElectroClub.getInstance().getUserToken() != null) {
                 try {

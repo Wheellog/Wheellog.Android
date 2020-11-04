@@ -59,6 +59,7 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -306,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
-                    String settingsKey = intent.getStringExtra(Constants.INTENT_EXTRA_SETTINGS_KEY);
+                    int settingsKey = intent.getIntExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, -1);
                     loadPreferences(settingsKey);
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
@@ -1189,16 +1190,16 @@ public class MainActivity extends AppCompatActivity {
         i.inflate(R.layout.main_view_params_list, pager);
         i.inflate(R.layout.main_view_graph, pager);
         i.inflate(R.layout.main_view_smart_bms, pager); // TODO: inflate smart bms page only if needed (after detect wheel)
-        i.inflate(R.layout.main_view_actions, pager);
 
         // set page adapter and show 3 pages
         pagerAdapter = new ViewPageAdapter(this);
         pagerAdapter.showPage(R.id.page_main);
         pagerAdapter.showPage(R.id.page_params_list);
         pagerAdapter.showPage(R.id.page_graph);
-        pagerAdapter.showPage(R.id.page_actions);
         pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(4);
+
+        loadPreferences(R.string.show_page_events); // аццкий костыль
 
         LinePageIndicator titleIndicator = findViewById(R.id.indicator);
         pagerAdapter.setPageIndicator(titleIndicator);
@@ -1245,8 +1246,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         createPager();
-
-        eventsTextView = findViewById(R.id.events_textbox);
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -1610,11 +1609,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadPreferences() {
-        loadPreferences("");
+        loadPreferences(-1);
     }
 
-    private void loadPreferences(String settingsKey) {
-        switch (WheelLog.AppConfig.getResId(settingsKey)) {
+    private void loadPreferences(int settingsKey) {
+        switch (settingsKey) {
             case R.string.auto_log:
                 if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
                     MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -1637,6 +1636,19 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setEcToken(null, true);
                 }
                 break;
+            case R.string.show_page_events:
+                if (WheelLog.AppConfig.getPageEvents()) {
+                    if (findViewById(R.id.page_events) == null) {
+                        ViewPager pager = findViewById(R.id.pager);
+                        getLayoutInflater().inflate(R.layout.main_view_events, pager);
+                    }
+                    pagerAdapter.showPage(R.id.page_events);
+                    eventsTextView = findViewById(R.id.events_textbox);
+                } else {
+                    pagerAdapter.hidePage(R.id.page_events);
+                    eventsTextView = null;
+                }
+                return;
         }
 
         String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
@@ -1713,12 +1725,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logEvent(String message) {
-        String formatedMessage = String.format("[time] %s\n", message);
+        if (eventsTextView == null) {
+            return;
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String formattedMessage = String.format("[%s] %s\n", formatter.format(new Date()), message);
         if (eventsCurrentCount < eventsMaxCount) {
-            eventsTextView.append(formatedMessage);
+            eventsTextView.append(formattedMessage);
             eventsCurrentCount++;
         } else {
-            eventsTextView.setText(String.format("%s%s", StringUtil.deleteFirstSentence(eventsTextView.getText()), formatedMessage));
+            eventsTextView.setText(String.format("%s%s", StringUtil.deleteFirstSentence(eventsTextView.getText()), formattedMessage));
         }
     }
 

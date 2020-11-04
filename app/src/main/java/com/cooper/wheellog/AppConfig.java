@@ -116,6 +116,7 @@ public class AppConfig extends AppConfigBase {
         put("horn_mode", SettingsType.General);
         put("view_blocks_string", SettingsType.General);
         put("last_mac", SettingsType.General);
+        put("show_page_events", SettingsType.General);
     }};
 
     public Map<String, SettingsType> getControlSettings() {
@@ -171,6 +172,7 @@ public class AppConfig extends AppConfigBase {
             case "fixed_percents": setFixedPercents(getFixedPercents(fromControlOptional), fromControlReverseOptional); break;
             case "cell_voltage_tiltback": setCellVoltageTiltback(getCellVoltageTiltback(fromControlOptional), fromControlReverseOptional); break;
             case "current_on_dial": setCurrentOnDial(getCurrentOnDial(fromControlOptional), fromControlReverseOptional); break;
+            case "show_page_events": setPageEvents(getPageEvents(fromControlOptional), fromControlReverseOptional); break;
             case "battery_capacity": setBatteryCapacity(getBatteryCapacity(fromControlOptional), fromControlReverseOptional); break;
             case "charging_power": setChargingPower(getChargingPower(fromControlOptional), fromControlReverseOptional); break;
             case "connect_beep": setConnectBeep(getConnectBeep(fromControlOptional), fromControlReverseOptional); break;
@@ -728,6 +730,14 @@ public class AppConfig extends AppConfigBase {
 
     public void setCurrentOnDial(Boolean newValue, Boolean... fromControl) {
         setBoolean(R.string.current_on_dial, newValue, settingsType(R.string.current_on_dial), fromControl);
+    }
+
+    public Boolean getPageEvents(Boolean... fromControl) {
+        return getBoolean(R.string.show_page_events, false, settingsType(R.string.show_page_events), fromControl);
+    }
+
+    public void setPageEvents(Boolean newValue, Boolean... fromControl) {
+        setBoolean(R.string.show_page_events, newValue, settingsType(R.string.show_page_events), fromControl);
     }
 
     public Boolean getConnectionSound(Boolean... fromControl) {
