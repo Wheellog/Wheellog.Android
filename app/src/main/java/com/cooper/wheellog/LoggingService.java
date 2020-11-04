@@ -204,7 +204,7 @@ public class LoggingService extends Service
                     byte[] data = fileUtil.readBytes();
                     String[] tokens = path.split("[\\\\|/]");
                     String filename = tokens[tokens.length - 1];
-                    ElectroClub.getInstance().uploadTrack(data, filename);
+                    ElectroClub.getInstance().uploadTrack(data, filename, true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
