@@ -23,7 +23,6 @@ public class VeteranAdapter extends BaseAdapter {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
                 int veteranNegative = WheelLog.AppConfig.getGotwayNegative();
-                veteranNegative = 1; // for first step, until veteran_preference.xml will be fixed for it
                 int voltage = MathsUtil.shortFromBytesBE(buff,4);
                 int speed = MathsUtil.signedShortFromBytesBE(buff,6) * 10;
                 int distance = MathsUtil.intFromBytesRevBE(buff,8);
