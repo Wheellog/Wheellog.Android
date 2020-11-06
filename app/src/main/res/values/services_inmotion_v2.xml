@@ -4,6 +4,8 @@
         <item>00001800_0000_1000_8000_00805f9b34fb</item>
         <item>00001801_0000_1000_8000_00805f9b34fb</item>
         <item>6e400001_b5a3_f393_e0a9_e50e24dcca9e</item>
+        <item>0000ffe5_0000_1000_8000_00805f9b34fb</item>
+        <item>0000ffe0_0000_1000_8000_00805f9b34fb</item>
     </string-array>
 
     <string-array name="inmotion_v2_00001800_0000_1000_8000_00805f9b34fb">
@@ -21,4 +23,13 @@
         <item>6e400002_b5a3_f393_e0a9_e50e24dcca9e</item>
         <item>6e400003_b5a3_f393_e0a9_e50e24dcca9e</item>
     </string-array>
+
+    <string-array name="inmotion_v2_0000ffe5_0000_1000_8000_00805f9b34fb">
+        <item>0000ffe9_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
+    <string-array name="inmotion_v2_0000ffe0_0000_1000_8000_00805f9b34fb">
+        <item>0000ffe4_0000_1000_8000_00805f9b34fb</item>
+    </string-array>
+
 </resources>
