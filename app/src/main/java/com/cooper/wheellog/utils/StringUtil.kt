@@ -1,5 +1,8 @@
 package com.cooper.wheellog.utils
 
+import android.content.Context
+import org.json.JSONObject
+
 class StringUtil {
     companion object {
         @JvmStatic
@@ -10,6 +13,12 @@ class StringUtil {
         @JvmStatic
         fun toHexString(buffer: ByteArray): String {
             return buffer.contentToString()
+        }
+
+        @JvmStatic
+        fun getRawTextResource(context: Context, resId: Int): String {
+            return context.resources.openRawResource(resId)
+                    .bufferedReader().use { it.readText() }
         }
     }
 }

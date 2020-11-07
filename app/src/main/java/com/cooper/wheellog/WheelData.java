@@ -16,9 +16,14 @@ import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -1705,193 +1710,176 @@ public class WheelData {
         mBluetoothLeService = bluetoothService;
         Context mContext = bluetoothService.getApplicationContext();
         String advData = WheelLog.AppConfig.getAdvDataForWheel(deviceAddress);
-         //String wheel_Type = "";
+        String adapterName = "";
         protoVer = "";
-        if (advData.compareTo("4e421300000000ec")==0) {
+        if (advData.compareTo("4e421300000000ec") == 0) {
             protoVer = "S2";
-        } else if ((advData.compareTo("4e421400000000eb")==0) || (advData.compareTo("4e422000000000df")==0) ||
-                (advData.compareTo("4e422200000000dd")==0) || (advData.compareTo("4e4230cf")==0)
+        } else if ((advData.compareTo("4e421400000000eb") == 0) || (advData.compareTo("4e422000000000df") == 0) ||
+                (advData.compareTo("4e422200000000dd") == 0) || (advData.compareTo("4e4230cf") == 0)
                 || advData.startsWith("5600")) {
             protoVer = "Mini";
         }
 
-        Class<R.array> res = R.array.class;
-        String wheel_types[] = mContext.getResources().getStringArray(R.array.wheel_types);
-        for (String wheel_Type : wheel_types) {
-            boolean detected_wheel = true;
-            java.lang.reflect.Field services_res = null;
-            try {
-                services_res = res.getField(wheel_Type + "_services");
-            } catch (Exception ignored) {
-            }
-            int services_res_id = 0;
-            if (services_res != null)
-                try {
-                    services_res_id = services_res.getInt(null);
-                } catch (Exception ignored) {
+        boolean detected_wheel = false;
+        String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
+        try {
+            JSONArray arr = new JSONArray(text);
+            adaptersLoop:
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject services = arr.getJSONObject(i);
+                if (services.length() - 1 != mBluetoothLeService.getSupportedGattServices().size()) {
+                    continue;
                 }
-
-            String services[] = mContext.getResources().getStringArray(services_res_id);
-
-            if (services.length != mBluetoothLeService.getSupportedGattServices().size())
-                continue;
-
-            for (String service_uuid : services) {
-                UUID s_uuid = UUID.fromString(service_uuid.replace("_", "-"));
-                BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
-                if (service != null) {
-                    java.lang.reflect.Field characteristic_res = null;
-                    try {
-                        characteristic_res = res.getField(wheel_Type + "_" + service_uuid);
-                    } catch (Exception ignored) {
+                adapterName = services.getString("adapter");
+                Iterator<String> iterator = services.keys();
+                // skip adapter key
+                iterator.next();
+                adapterServicesLoop:
+                while (iterator.hasNext()) {
+                    String keyName = iterator.next();
+                    UUID s_uuid = UUID.fromString(keyName);
+                    BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
+                    if (service == null) {
+                        break;
                     }
-                    int characteristic_res_id = 0;
-                    if (characteristic_res != null)
-                        try {
-                            characteristic_res_id = characteristic_res.getInt(null);
-                        } catch (Exception ignored) {
-                        }
-                    String characteristics[] = mContext.getResources().getStringArray(characteristic_res_id);
-                    for (String characteristic_uuid : characteristics) {
-                        UUID c_uuid = UUID.fromString(characteristic_uuid.replace("_", "-"));
+                    JSONArray service_uuid = services.getJSONArray(keyName);
+                    for (int j = 0; j < service_uuid.length(); j++) {
+                        UUID c_uuid = UUID.fromString(service_uuid.getString(j));
                         BluetoothGattCharacteristic characteristic = service.getCharacteristic(c_uuid);
                         if (characteristic == null) {
-                            detected_wheel = false;
-                            break;
+                            break adapterServicesLoop;
                         }
                     }
-                } else {
-                    detected_wheel = false;
-                    break;
+                    detected_wheel = true;
+                    break adaptersLoop;
                 }
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-            if (detected_wheel) {
-				Timber.i("Protocol recognized as %s", wheel_Type);
-                if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
-                    Timber.i("It seems to be RochWheel, force to Kingsong proto");
-                    wheel_Type = mContext.getResources().getString(R.string.kingsong);
-                }
-                if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.KINGSONG);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-					
-                    return true;
-                } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.GOTWAY_VIRTUAL);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    // Let the user know it's working by making the wheel beep
-                    if (WheelLog.AppConfig.getConnectBeep())
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+        if (detected_wheel) {
+            Timber.i("Protocol recognized as %s", adapterName);
+            if (WHEEL_TYPE.GOTWAY.toString().equalsIgnoreCase(adapterName) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
+                Timber.i("It seems to be RochWheel, force to Kingsong proto");
+                adapterName = WHEEL_TYPE.KINGSONG.toString();
+            }
+            if (WHEEL_TYPE.KINGSONG.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.KINGSONG);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
 
-                    return true;
-                } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.INMOTION);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_READ_CHARACTER_UUID));
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    if (WheelLog.AppConfig.hasPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress())) {
-                        String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress());
-                        InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
-                        return true;
-                    }
-                    return false;
+                return true;
+            } else if (WHEEL_TYPE.GOTWAY.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.GOTWAY_VIRTUAL);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                // Let the user know it's working by making the wheel beep
+                if (WheelLog.AppConfig.getConnectBeep())
+                    mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
 
-                } else if (mContext.getResources().getString(R.string.inmotion_v2).equals(wheel_Type)) {
-                    Timber.i("Trying to start Inmotion V2");
-                    setWheelType(WHEEL_TYPE.INMOTION_V2);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
-                    Timber.i("service UUID");
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_READ_CHARACTER_UUID));
-                    Timber.i("read UUID");
-                    if (notifyCharacteristic == null) {
-                        Timber.i("it seems that RX UUID doesn't exist");
-                    }
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    Timber.i("notify UUID");
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_V2_DESCRIPTER_UUID));
-                    Timber.i("descr UUID");
-                    if (descriptor == null) {
-                        Timber.i("it seems that descr UUID doesn't exist");
-                    }
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    Timber.i("enable notify UUID");
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    Timber.i("write notify");
-                    InmotionAdapterV2.getInstance().startKeepAliveTimer(mBluetoothLeService);
-                    Timber.i("starting Inmotion V2 adapter");
-                    return true;
-
-                } else if (mContext.getResources().getString(R.string.ninebot_z).equals(wheel_Type)) {
-                    Timber.i("Trying to start Ninebot Z");
-                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
-                    Timber.i("service UUID");
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
-                    Timber.i("read UUID");
-                    if (notifyCharacteristic == null) {
-                        Timber.i("it seems that RX UUID doesn't exist");
-                    }
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    Timber.i("notify UUID");
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));
-                    Timber.i("descr UUID");
-                    if (descriptor == null) {
-                        Timber.i("it seems that descr UUID doesn't exist");
-                    }
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    Timber.i("enable notify UUID");
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    Timber.i("write notify");
-                    if (protoVer.compareTo("S2")==0 || protoVer.compareTo("Mini")==0){
-                        NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
-                        //mWheelType = WHEEL_TYPE.NINEBOT;
-                    } else {
-                        NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
-                    }
-                    Timber.i("starting ninebot adapter");
+                return true;
+            } else if (WHEEL_TYPE.INMOTION.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.INMOTION);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_SERVICE_UUID));
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_READ_CHARACTER_UUID));
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                if (WheelLog.AppConfig.hasPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress())) {
+                    String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress());
+                    InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
                     return true;
                 }
-                else if (mContext.getResources().getString(R.string.ninebot).equals(wheel_Type)) {
-                    Timber.i("Trying to start Ninebot");
-                    setWheelType(WHEEL_TYPE.NINEBOT);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
-                    Timber.i("service UUID");
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_READ_CHARACTER_UUID));
-                    Timber.i("read UUID");
-                    if (notifyCharacteristic == null) {
-                        Timber.i("it seems that RX UUID doesn't exist");
-                    }
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    Timber.i("notify UUID");
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_DESCRIPTER_UUID));
-                    Timber.i("descr UUID");
-                    if (descriptor == null) {
-                        Timber.i("it seems that descr UUID doesn't exist");
-                    }
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    Timber.i("enable notify UUID");
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    Timber.i("write notify");
+                return false;
+
+            } else if (WHEEL_TYPE.INMOTION_V2.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Inmotion V2");
+                setWheelType(WHEEL_TYPE.INMOTION_V2);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                Timber.i("service UUID");
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_READ_CHARACTER_UUID));
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_V2_DESCRIPTER_UUID));
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                }
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Timber.i("enable notify UUID");
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                Timber.i("write notify");
+                InmotionAdapterV2.getInstance().startKeepAliveTimer(mBluetoothLeService);
+                Timber.i("starting Inmotion V2 adapter");
+                return true;
+
+            } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Ninebot Z");
+                setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
+                Timber.i("service UUID");
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                }
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Timber.i("enable notify UUID");
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                Timber.i("write notify");
+                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
                     NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
-                    Timber.i("starting ninebot adapter");
-                    return true;
+                    //mWheelType = WHEEL_TYPE.NINEBOT;
+                } else {
+                    NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
                 }
-
+                Timber.i("starting ninebot adapter");
+                return true;
+            } else if (WHEEL_TYPE.NINEBOT.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Ninebot");
+                setWheelType(WHEEL_TYPE.NINEBOT);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
+                Timber.i("service UUID");
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_READ_CHARACTER_UUID));
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_DESCRIPTER_UUID));
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                }
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Timber.i("enable notify UUID");
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                Timber.i("write notify");
+                NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
+                Timber.i("starting ninebot adapter");
+                return true;
             }
-            else {
-                Timber.i("Protocol recognized as Unknown");
-            }
+        } else {
+            Timber.i("Protocol recognized as Unknown");
         }
         return false;
     }
