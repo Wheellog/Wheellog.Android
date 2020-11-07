@@ -203,7 +203,7 @@ class KingsongAdapterTest {
         assertThat(data.output).isEqualTo(12)
 
         //5th data
-        assertThat(adapter.speedLimit).isEqualTo(32.05) //limit speed
+        assertThat(data.speedLimit).isEqualTo(32.05) //limit speed
     }
 
     @Test
