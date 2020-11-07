@@ -11,6 +11,10 @@
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="speed_alarm1" translatable="false">speed_alarm1</string>
+    <string name="speed_alarm2" translatable="false">speed_alarm2</string>
+    <string name="speed_alarm3" translatable="false">speed_alarm3</string>
+    <string name="altered_alarms_section" translatable="false">altered_alarms_section</string>
     <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
     <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
     <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>

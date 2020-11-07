@@ -89,6 +89,9 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
             case R.string.altered_alarms:
                 hideShowSeekBarsAlarms();
                 break;
+            case R.string.use_real_pwm:
+                hideShowSeekBarsAlarms();
+                break;
             case R.string.auto_upload_ec:
                 if (WheelLog.AppConfig.getAutoUploadEc() && !mDataWarningDisplayed) {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
@@ -399,6 +402,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
         switchKsSpecificSettings(WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG);
+        hideShowSeekBarsAlarms();
     }
 
     void refreshVolatileSettings() {
@@ -501,7 +505,11 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     private void hideShowSeekBarsAlarms() {
         boolean alarmsEnabled = WheelLog.AppConfig.getAlarmsEnabled();
         boolean alteredAlarms = WheelLog.AppConfig.getAlteredAlarms();
+        boolean ksAlteredAlarms = WheelLog.AppConfig.getUseRealPwm();
         String[] seekbarPreferencesNormal = {
+                "speed_alarm1",
+                "speed_alarm2",
+                "speed_alarm3",
                 getString(R.string.alarm_1_speed),
                 getString(R.string.alarm_2_speed),
                 getString(R.string.alarm_3_speed),
@@ -513,6 +521,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         };
 
         String[] seekbarPreferencesAltered = {
+                "altered_alarms_section",
                 getString(R.string.rotation_speed),
                 getString(R.string.rotation_voltage),
                 getString(R.string.power_factor),
@@ -528,25 +537,42 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
         String[] seekbarPreferencesCommon = {
                 getString(R.string.alarm_current),
-                getString(R.string.alarm_temperature)
+                getString(R.string.alarm_temperature),
+        };
+
+
+        String[] seekbarPreferencesKs = {
+                getString(R.string.rotation_voltage),
+                getString(R.string.rotation_speed),
+                getString(R.string.power_factor),
         };
 
         for (String preference : seekbarPreferencesNormal) {
             Preference seekbar = findPreference(preference);
-            if (seekbar != null)
-                seekbar.setEnabled(alarmsEnabled && !alteredAlarms);
+            if (seekbar != null) {
+                seekbar.setVisible(alarmsEnabled && !alteredAlarms);
+            }
         }
 
         for (String preference : seekbarPreferencesAltered) {
             Preference seekbar = findPreference(preference);
-            if (seekbar != null)
-                seekbar.setEnabled(alarmsEnabled && alteredAlarms);
+            if (seekbar != null) {
+                seekbar.setVisible(alarmsEnabled && alteredAlarms);
+            }
         }
 
         for (String preference : seekbarPreferencesCommon) {
             Preference seekbar = findPreference(preference);
-            if (seekbar != null)
-                seekbar.setEnabled(alarmsEnabled);
+            if (seekbar != null) {
+                seekbar.setVisible(alarmsEnabled);
+            }
+        }
+
+        for (String preference : seekbarPreferencesKs) {
+            Preference seekbar = findPreference(preference);
+            if (seekbar != null) {
+                seekbar.setVisible(alarmsEnabled && !ksAlteredAlarms && alteredAlarms);
+            }
         }
     }
 
