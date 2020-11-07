@@ -76,7 +76,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setVersion(version);
                 wd.setSpeed(speed);
                 wd.setTopSpeed(speed);
-                wd.setDistance(distance);
+                wd.setWheelDistance(distance);
                 wd.setTotalDistance(totalDistance);
                 wd.setTemperature(temperature);
                 wd.setPhaseCurrent(phaseCurrent);

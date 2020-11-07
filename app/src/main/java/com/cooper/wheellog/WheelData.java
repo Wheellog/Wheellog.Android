@@ -116,6 +116,12 @@ public class WheelData {
     private int bms2Cell16 = 0;
     //all
     private int mSpeed;
+    private double mTorque;
+    private double mMotorPower;
+    private int mCpuTemp;
+    private int mImuTemp;
+    private double mSpeedLimit;
+    private double mCurrentLimit;
     private long mTotalDistance;
     private int mCurrent;
     private Integer mPower = null;
@@ -336,6 +342,54 @@ public class WheelData {
 
     public void setSpeed(int speed) {
         mSpeed = speed;
+    }
+
+    public double getTorque() {
+        return mTorque;
+    }
+
+    public void setTorque(double value) {
+        mTorque = value;
+    }
+
+    public double getMotorPower() {
+        return mMotorPower;
+    }
+
+    public void setMotorPower(double value) {
+        mMotorPower = value;
+    }
+
+    public int getCpuTemp() {
+        return mCpuTemp;
+    }
+
+    public void setCpuTemp(int value) {
+        mCpuTemp = value;
+    }
+
+    public int getImuTemp() {
+        return mImuTemp;
+    }
+
+    public void setImuTemp(int value) {
+        mImuTemp = value;
+    }
+
+    public double getSpeedLimit() {
+        return mSpeedLimit;
+    }
+
+    public void setSpeedLimit(double value) {
+        mSpeedLimit = value;
+    }
+
+    public double getCurrentLimit() {
+        return mCurrentLimit;
+    }
+
+    public void setCurrentLimit(double value) {
+        mCurrentLimit = value;
     }
 	
 	public boolean getWheelLight() {
@@ -1179,14 +1233,13 @@ public class WheelData {
         Timber.i("State %b", connected);
     }
 
-    public void setDistance(long distance) {
-        if (mStartTotalDistance == 0 && mTotalDistance != 0)
-            mStartTotalDistance = mTotalDistance;
-
+    public void setWheelDistance(long distance) {
         mDistance = distance;
     }
 
     public void setTotalDistance(long totalDistance) {
+        if (mStartTotalDistance == 0 && mTotalDistance != 0)
+            mStartTotalDistance = mTotalDistance;
         mTotalDistance = totalDistance;
     }
 
@@ -1581,7 +1634,7 @@ public class WheelData {
                 mAlert = (String) (status.getAlert());
 
 
-                setDistance((long) status.getDistance());
+                setTotalDistance((long) status.getDistance());
                 updateRideTime();
                 setBatteryPercent(mBattery);
                 setTopSpeed(mSpeed);
@@ -1613,7 +1666,7 @@ public class WheelData {
                 mTemperature = (int) (status.getTemperature()*10);
 
 
-                setDistance((long) status.getDistance());
+                setTotalDistance((long) status.getDistance());
                 updateRideTime();
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
@@ -1661,6 +1714,12 @@ public class WheelData {
     void reset() {
         mLowSpeedMusicTime = 0;
         mSpeed = 0;
+        mTorque = 0;
+        mMotorPower = 0;
+        mCpuTemp = 0;
+        mImuTemp = 0;
+        mSpeedLimit = 0;
+        mCurrentLimit = 0;
         mTotalDistance = 0;
         mCurrent = 0;
         mPower = null;
