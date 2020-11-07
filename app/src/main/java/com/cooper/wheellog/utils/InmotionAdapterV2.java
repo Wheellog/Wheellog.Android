@@ -276,7 +276,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
             wd.setPower(mBatPower);
-            wd.setDistance(mMileage);
+            wd.setWheelDistance(mMileage);
             //// state data
             int mPcMode = data[36] & 0x07;
             int mMcMode = (data[36]>>3)&0x07;

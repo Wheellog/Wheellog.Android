@@ -1233,7 +1233,7 @@ public class WheelData {
         Timber.i("State %b", connected);
     }
 
-    public void setDistance(long distance) {
+    public void setWheelDistance(long distance) {
         mDistance = distance;
     }
 
@@ -1634,7 +1634,7 @@ public class WheelData {
                 mAlert = (String) (status.getAlert());
 
 
-                setDistance((long) status.getDistance());
+                setTotalDistance((long) status.getDistance());
                 updateRideTime();
                 setBatteryPercent(mBattery);
                 setTopSpeed(mSpeed);
@@ -1666,7 +1666,7 @@ public class WheelData {
                 mTemperature = (int) (status.getTemperature()*10);
 
 
-                setDistance((long) status.getDistance());
+                setTotalDistance((long) status.getDistance());
                 updateRideTime();
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);

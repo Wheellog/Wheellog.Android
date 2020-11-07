@@ -876,21 +876,23 @@ public class InMotionAdapter extends BaseAdapter {
             int temperature = ex_data[32] & 0xff;
             int temperature2 = ex_data[34] & 0xff;
             int batt = batteryFromVoltage(voltage, model);
+            long totalDistance;
             long distance;
             if (model.belongToInputType("1") || model.belongToInputType("5") ||
                     model == V8 || model == Glide3 || model == V10 || model == V10F ||
                     model == V10S || model == V10SF || model == V10T || model == V10FT ||
                     model == V8F) {
-                distance = (MathsUtil.intFromBytesLE(ex_data, 44)); ///// V10F 48 byte - trip distance
+                totalDistance = (MathsUtil.intFromBytesLE(ex_data, 44)); ///// V10F 48 byte - trip distance
             } else if (model == R0) {
-                distance = (MathsUtil.longFromBytesLE(ex_data, 44));
+                totalDistance = (MathsUtil.longFromBytesLE(ex_data, 44));
 
             } else if (model == L6) {
-                distance = (MathsUtil.longFromBytesLE(ex_data, 44)) * 100;
+                totalDistance = (MathsUtil.longFromBytesLE(ex_data, 44)) * 100;
 
             } else {
-                distance = Math.round((MathsUtil.longFromBytesLE(ex_data, 44)) / 5.711016379455429E7d);
+                totalDistance = Math.round((MathsUtil.longFromBytesLE(ex_data, 44)) / 5.711016379455429E7d);
             }
+            distance = (MathsUtil.intFromBytesLE(ex_data, 48));
             int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60) & 0xF;
             WorkMode workMode = intToWorkMode(workModeInt);
             double lock = 0.0;
@@ -904,8 +906,8 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setVoltage((int)(voltage));
             wd.setBatteryPercent((int)(batt));
             wd.setCurrent((int)(current));
-            wd.setTotalDistance((long)(distance));
-            wd.setDistance((long)distance);
+            wd.setTotalDistance((long)(totalDistance));
+            wd.setWheelDistance((long)distance);
             wd.setTemperature((int)(temperature*100));
             wd.setTemperature2((int)(temperature2*100));
             wd.setModeStr(getWorkModeString(workModeInt));

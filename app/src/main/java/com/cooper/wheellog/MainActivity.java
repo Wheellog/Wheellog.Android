@@ -610,6 +610,7 @@ public class MainActivity extends AppCompatActivity {
         switch (wheelType) {
             case KINGSONG:
                 setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.dynamic_speed_limit);
                 setupFieldForSecondPage(R.string.top_speed);
                 setupFieldForSecondPage(R.string.average_speed);
                 setupFieldForSecondPage(R.string.average_riding_speed);
@@ -724,6 +725,7 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.ride_time);
                 setupFieldForSecondPage(R.string.riding_time);
                 setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
                 setupFieldForSecondPage(R.string.user_distance);
                 setupFieldForSecondPage(R.string.total_distance);
                 setupFieldForSecondPage(R.string.voltage);

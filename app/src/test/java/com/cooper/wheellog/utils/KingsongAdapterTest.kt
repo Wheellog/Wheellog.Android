@@ -197,7 +197,7 @@ class KingsongAdapterTest {
         assertThat(data.temperature2).isEqualTo(16)
         assertThat(data.fanStatus).isEqualTo(0)
         assertThat(data.chargingStatus).isEqualTo(0)
-        assertThat(data.distanceDouble).isEqualTo(0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.009)
         //4th data
         assertThat(data.cpuLoad).isEqualTo(64)
         assertThat(data.output).isEqualTo(12)

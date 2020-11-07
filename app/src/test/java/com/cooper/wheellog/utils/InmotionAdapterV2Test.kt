@@ -68,6 +68,7 @@ class InmotionAdapterV2Test {
         assertThat(data.temperature2).isEqualTo(30)
         assertThat(data.voltageDouble).isEqualTo(79.10)
         assertThat(data.currentDouble).isEqualTo(15.15)
+        assertThat(data.wheelDistanceDouble).isEqualTo(4.79)
         assertThat(data.totalDistance).isEqualTo(278800)
         assertThat(data.batteryLevel).isEqualTo(88)
         assertThat(data.powerDouble).isEqualTo(1198)
