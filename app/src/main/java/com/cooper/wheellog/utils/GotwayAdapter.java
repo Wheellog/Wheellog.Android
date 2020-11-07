@@ -11,13 +11,18 @@ public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     gotwayUnpacker unpacker = new gotwayUnpacker();
     private static final double RATIO_GW = 0.875;
+    private static long time_old = 0;
+    private static long time_new = 0;
 
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode Begode");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
-
+        time_new = System.currentTimeMillis();
+        if ((time_new-time_old) > 100) // need to reset state in case of packet loose
+            unpacker.reset();
+        time_old = time_new;
         for (byte c : data) {
             if (unpacker.addChar(c)) {
                 byte[] buff = unpacker.getBuffer();
@@ -123,7 +128,6 @@ public class GotwayAdapter extends BaseAdapter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int oldc = 0;
-
         gotwayUnpacker.UnpackerState state = UnpackerState.unknown;
 
         byte[] getBuffer() {
