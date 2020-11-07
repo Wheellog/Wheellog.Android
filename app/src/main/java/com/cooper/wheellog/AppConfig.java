@@ -67,6 +67,7 @@ public class AppConfig extends AppConfigBase {
         put("warning_speed", SettingsType.Specific);
         put("warning_pwm", SettingsType.Specific);
         put("warning_speed_period", SettingsType.Specific);
+        put("use_real_pwm", SettingsType.Specific);
         put("use_short_pwm", SettingsType.Specific);
         put("light_enabled", SettingsType.Specific);
         put("led_enabled", SettingsType.Specific);
@@ -151,6 +152,7 @@ public class AppConfig extends AppConfigBase {
             case "warning_pwm": setWarningPwm(getWarningPwm(fromControlOptional), fromControlReverseOptional); break;
             case "warning_speed_period": setWarningSpeedPeriod(getWarningSpeedPeriod(fromControlOptional), fromControlReverseOptional); break;
             case "use_short_pwm": setUseShortPwm(getUseShortPwm(fromControlOptional), fromControlReverseOptional); break;
+            case "use_real_pwm": setUseRealPwm(getUseRealPwm(fromControlOptional), fromControlReverseOptional); break;
             case "light_enabled": setLightEnabled(getLightEnabled(fromControlOptional), fromControlReverseOptional); break;
             case "led_enabled": setLedEnabled(getLedEnabled(fromControlOptional), fromControlReverseOptional); break;
             case "handle_button_disabled": setHandleButtonDisabled(getHandleButtonDisabled(fromControlOptional), fromControlReverseOptional); break;
@@ -488,6 +490,14 @@ public class AppConfig extends AppConfigBase {
 
     public void setUseShortPwm(Boolean newValue, Boolean... fromControl) {
         setBoolean(R.string.use_short_pwm, newValue, settingsType(R.string.use_short_pwm), fromControl);
+    }
+
+    public Boolean getUseRealPwm(Boolean... fromControl) {
+        return getBoolean(R.string.use_real_pwm, false, settingsType(R.string.use_real_pwm), fromControl);
+    }
+
+    public void setUseRealPwm(Boolean newValue, Boolean... fromControl) {
+        setBoolean(R.string.use_real_pwm, newValue, settingsType(R.string.use_real_pwm), fromControl);
     }
 
     public Boolean getLightEnabled(Boolean... fromControl) {

@@ -105,6 +105,13 @@
 
     <PreferenceCategory android:title="@string/altered_alarms_pref_title">
 
+        <CheckBoxPreference
+            android:enabled="true"
+            android:key="@string/use_real_pwm"
+            android:summary="@string/use_real_pwm_description"
+            android:title="@string/use_real_pwm_title"
+            android:visible="false" />
+
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="500"
             android:key="@string/rotation_speed"

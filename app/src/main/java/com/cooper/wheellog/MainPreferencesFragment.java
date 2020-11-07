@@ -37,6 +37,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     public void changeWheelType() {
         mWheelType = WheelData.getInstance().getWheelType();
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
+        switchKsSpecificSettings(WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG);
     }
 
     @Override
@@ -397,6 +398,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
 
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
+        switchKsSpecificSettings(WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG);
     }
 
     void refreshVolatileSettings() {
@@ -521,6 +523,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 getString(R.string.warning_pwm),
                 getString(R.string.warning_speed_period),
                 getString(R.string.use_short_pwm),
+                getString(R.string.use_real_pwm),
         };
 
         String[] seekbarPreferencesCommon = {
@@ -600,6 +603,18 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 if (pref != null)
                     pref.setVisible(false);
             }
+        }
+    }
+
+    private void switchKsSpecificSettings(Boolean isKs) {
+        String[] specificPreferences = {
+                getString(R.string.use_real_pwm),
+        };
+
+        for (String preference : specificPreferences) {
+            Preference pref = findPreference(preference);
+            if (pref != null)
+                pref.setVisible(isKs);
         }
     }
 
