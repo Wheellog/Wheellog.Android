@@ -332,10 +332,6 @@ public class WheelData {
         return mInstance;
     }
 
-    public double getCurrentPwm() {
-        return mCalculatedPwm * 100.0;
-    }
-
     public int getSpeed() {
         return (int)Math.round(mSpeed / 10.0);
     }
@@ -982,7 +978,9 @@ public class WheelData {
         mPhaseCurrent = value;
     }
 
-    double getCalculatedPwm() {
+    public double getCalculatedPwm() {
+        if (mWheelType == WHEEL_TYPE.KINGSONG) // it is better to write real PWM in logs and show on main screen
+            return (double)mOutput;            // because in case of disabled altered alarms we have wrong mCalculatedPWM
         return mCalculatedPwm*100.0;
     }
 
@@ -1461,7 +1459,7 @@ public class WheelData {
         setMaxTemp(mTemperature);
         mCalculatedPwm = ((float)mSpeed/100.0)/((WheelLog.AppConfig.getRotationSpeed()/WheelLog.AppConfig.getRotationVoltage()) * ((float)mVoltage/100.0) * WheelLog.AppConfig.getPowerFactor());
         if (WheelLog.AppConfig.getUseRealPwm())
-            mCalculatedPwm = mOutput;
+            mCalculatedPwm = (double)mOutput/100.0;
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);

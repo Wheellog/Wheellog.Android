@@ -700,7 +700,7 @@ public class WheelView extends View {
 
         if (WheelLog.AppConfig.getUseShortPwm() || isInEditMode()) {
             String pwm = String.format("%02.0f%% / %02.0f%%",
-                    WheelData.getInstance().getCurrentPwm(),
+                    WheelData.getInstance().getCalculatedPwm(),
                     WheelData.getInstance().getMaxPwm());
             textPaint.setTextSize(speedTextKPHSize * 1.2F);
             canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 3.3F), textPaint);
