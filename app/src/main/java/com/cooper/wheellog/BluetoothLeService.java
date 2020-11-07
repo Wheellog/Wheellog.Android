@@ -538,6 +538,7 @@ public class BluetoothLeService extends Service {
                 ks_characteristic.setWriteType(1);
                 return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
             case GOTWAY:
+            case GOTWAY_VIRTUAL:
             case VETERAN:
                 BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                 if (gw_service == null) {
