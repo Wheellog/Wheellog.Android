@@ -240,4 +240,10 @@
     <string name="rotation_voltage_description">Напряжение при котором измерялась скорость раскрутки</string>
     <string name="use_stop_music_title">Выключение звука</string>
     <string name="use_stop_music_description">Автовыключение звука при скорости ниже 3.5 км/ч</string>
+    <string name="newton">Н*м</string>
+    <string name="dynamic_current_limit">Ограничение тока</string>
+    <string name="dynamic_speed_limit">Ограничение скорости</string>
+    <string name="cpu_temp">Температура CPU</string>
+    <string name="cpuload">Температура IMU</string>
+    <string name="motor_power">Мощность мотора</string>
 </resources>
