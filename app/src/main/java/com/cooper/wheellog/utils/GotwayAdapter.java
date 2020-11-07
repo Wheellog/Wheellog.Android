@@ -12,7 +12,7 @@ public class GotwayAdapter extends BaseAdapter {
     gotwayUnpacker unpacker = new gotwayUnpacker();
     private static final double RATIO_GW = 0.875;
     private static final int WAITING_TIME = 100;
-    private static long time_old = 0;
+    private long time_old = 0;
 
     @Override
     public boolean decode(byte[] data) {
