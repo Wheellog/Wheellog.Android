@@ -10,17 +10,17 @@ import timber.log.Timber;
 public class VeteranAdapter extends BaseAdapter {
     private static VeteranAdapter INSTANCE;
     veteranUnpacker unpacker = new veteranUnpacker();
-    private static final double RATIO_GW = 0.875;
-    private static long time_old = 0;
-    private static long time_new = 0;
+    private static final int WAITING_TIME = 100;
+    private long time_old = 0;
+
 
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode Veteran");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
-        time_new = System.currentTimeMillis();
-        if ((time_new-time_old) > 100) // need to reset state in case of packet loose
+        long time_new = System.currentTimeMillis();
+        if ((time_new-time_old) > WAITING_TIME) // need to reset state in case of packet loose
             unpacker.reset();
         time_old = time_new;
 
