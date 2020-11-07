@@ -11,9 +11,6 @@ import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
-/**
- * Created by cedric on 29/12/2016.
- */
 public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
@@ -25,7 +22,28 @@ public class InMotionAdapter extends BaseAdapter {
 
     @Override
     public boolean decode(byte[] data) {
-        return WheelData.getInstance().decodeInmotion(data);
+        for (byte c : data) {
+            if (unpacker.addChar(c)) {
+                CANMessage result = CANMessage.verify(unpacker.getBuffer());
+                if (result != null) { // data OK
+                    if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
+                        return result.parseFastInfoMessage(model);
+                    } else if (result.id == CANMessage.IDValue.Alert.getValue()) {
+                        return result.parseAlertInfoMessage();
+                    } else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()) {
+                        boolean res = result.parseSlowInfoMessage();
+                        Model a = model;
+                        if (res) {
+                            needSlowData = false;
+                        }
+                        return res;
+                    } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
+                        passwordSent = Integer.MAX_VALUE;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     enum Mode {
@@ -152,8 +170,13 @@ public class InMotionAdapter extends BaseAdapter {
         }
     }
 
-    Model model = Model.UNKNOWN;
+    private static Model model = Model.UNKNOWN;
     InMotionUnpacker unpacker = new InMotionUnpacker();
+
+    private void setModel(Model value){
+        model = value;
+        int a = 0;
+    }
 
     public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String inmotionPassword) {
         TimerTask timerTask = new TimerTask() {
@@ -289,8 +312,8 @@ public class InMotionAdapter extends BaseAdapter {
         }
     }
 
-    static double batteryFromVoltage(double volts, Model model) {
-
+    static int batteryFromVoltage(int volts_i, Model model) {
+        double volts = (double)volts_i/100.0;
         double batt;
 
         if (model.belongToInputType("1") || model == R0) {
@@ -361,309 +384,115 @@ public class InMotionAdapter extends BaseAdapter {
                 }
             }
         }
-        return batt * 100.0;
+        return (int)(batt * 100.0);
     }
 
-    public static class Status {
-        private final double angle;
-        private final double roll;
-        private final double speed;
-        private final double voltage;
-        private final double batt;
-        private final double current;
-        private final double power;
-        private final double distance;
-        private final double lock;
-        private final double temperature;
-        private final double temperature2;
-        private final int workModeInt;
-
-        Status() {
-            angle = 0;
-            roll = 0;
-            speed = 0;
-            voltage = 0;
-            batt = 0;
-            current = 0;
-            power = 0;
-            distance = 0;
-            lock = 0;
-            temperature = 0;
-            temperature2 = 0;
-            workModeInt = 0;
-        }
-
-        Status(double angle, double roll, double speed, double voltage, double batt, double current, double power, double distance, double lock, double temperature, double temperature2, int workModeInt) {
-            this.angle = angle;
-            this.roll = roll;
-            this.speed = speed;
-            this.voltage = voltage;
-            this.batt = batt;
-            this.current = current;
-            this.power = power;
-            this.distance = distance;
-            this.lock = lock;
-            this.temperature = temperature;
-            this.temperature2 = temperature2;
-            this.workModeInt = workModeInt;
-        }
-
-        public double getAngle() {
-            return angle;
-        }
-
-        public double getRoll() {
-            return roll;
-        }
-
-        public double getSpeed() {
-            return speed;
-        }
-
-        public double getVoltage() {
-            return voltage;
-        }
-
-        public double getBatt() {
-            return batt;
-        }
-
-        public double getCurrent() {
-            return current;
-        }
-
-        public double getPower() {
-            return power;
-        }
-
-        public double getDistance() {
-            return distance;
-        }
-
-        public double getTemperature() {
-            return temperature;
-        }
-
-        public double getTemperature2() {
-            return temperature2;
-        }
-
-        public String getWorkModeString() {
-            switch (workModeInt) {
-                case 0:
-                    return "Idle";
-                case 1:
-                    return "Drive";
-                case 2:
-                    return "Zero";
-                case 3:
-                    return "LargeAngle";
-                case 4:
-                    return "Check";
-                case 5:
-                    return "Lock";
-                case 6:
-                    return "Error";
-                case 7:
-                    return "Carry";
-                case 8:
-                    return "RemoteControl";
-                case 9:
-                    return "Shutdown";
-                case 10:
-                    return "pomStop";
-                case 12:
-                    return "Unlock";
-                default:
-                    return "Unknown";
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "Status{" +
-                    "angle=" + angle +
-                    ", roll=" + roll +
-                    ", speed=" + speed +
-                    ", voltage=" + voltage +
-                    ", batt=" + batt +
-                    ", current=" + current +
-                    ", power=" + power +
-                    ", distance=" + distance +
-                    ", lock=" + lock +
-                    ", temperature=" + temperature +
-                    ", temperature2=" + temperature2 +
-                    ", workmode=" + workModeInt +
-                    '}';
+    private static String getWorkModeString(int value) {
+        switch (value) {
+            case 0:
+                return "Idle";
+            case 1:
+                return "Drive";
+            case 2:
+                return "Zero";
+            case 3:
+                return "LargeAngle";
+            case 4:
+                return "Check";
+            case 5:
+                return "Lock";
+            case 6:
+                return "Error";
+            case 7:
+                return "Carry";
+            case 8:
+                return "RemoteControl";
+            case 9:
+                return "Shutdown";
+            case 10:
+                return "pomStop";
+            case 12:
+                return "Unlock";
+            default:
+                return "Unknown";
         }
     }
 
-    public static class Alert extends Status {
-        private final String fullText;
-
-        Alert(int alertId, double alertValue, double alertValue2, String fullText) {
-            super();
-            this.fullText = fullText;
-        }
-
-        public String getFullText() {
-            return fullText;
-        }
-    }
-
-    public static class Infos extends Status {
-        private final String serialNumber;
-        private final Model model;
-        private final String version;
-        private final boolean light;
-        private final boolean led;
-        private final boolean handleButtonDisabled;
-        private final int maxSpeed;
-        private final int speakerVolume;
-        private final int tiltHorizon;
-
-
-        Infos(String serialNumber, Model model, String version, boolean light, boolean led, boolean handleButtonDisabled, int maxSpeed, int speakerVolume, int tiltHorizon) {
-            super();
-            this.serialNumber = serialNumber;
-            this.model = model;
-            this.version = version;
-            this.light = light;
-            this.led = led;
-            this.handleButtonDisabled = handleButtonDisabled;
-            this.maxSpeed = maxSpeed;
-            this.speakerVolume = speakerVolume;
-            this.tiltHorizon = tiltHorizon;
-        }
-
-        public boolean getLightState() {
-            return light;
-        }
-
-        public boolean getLedState() {
-            return led;
-        }
-
-        public boolean getHandleButtonState() {
-            return handleButtonDisabled;
-        }
-
-        public int getMaxSpeedState() {
-            return maxSpeed;
-        }
-
-        public int getSpeakerVolumeState() {
-            return speakerVolume;
-        }
-
-        public String getSerialNumber() {
-            return serialNumber;
-        }
-
-        public Model getModel() {
-            return model;
-        }
-
-        public int getTiltHorizon() {
-            return tiltHorizon;
-        }
-
-        public String getModelString() {
-            switch (model.getValue()) {
-                case "0":
-                    return "Inmotion R1N";
-                case "1":
-                    return "Inmotion R1S";
-                case "2":
-                    return "Inmotion R1CF";
-                case "3":
-                    return "Inmotion R1AP";
-                case "4":
-                    return "Inmotion R1EX";
-                case "5":
-                    return "Inmotion R1Sample";
-                case "6":
-                    return "Inmotion R1T";
-                case "7":
-                    return "Inmotion R10";
-                case "10":
-                    return "Inmotion V3";
-                case "11":
-                    return "Inmotion V3C";
-                case "12":
-                    return "Inmotion V3PRO";
-                case "13":
-                    return "Inmotion V3S";
-                case "21":
-                    return "Inmotion R2N";
-                case "22":
-                    return "Inmotion R2S";
-                case "23":
-                    return "Inmotion R2Sample";
-                case "20":
-                    return "Inmotion R2";
-                case "24":
-                    return "Inmotion R2EX";
-                case "30":
-                    return "Inmotion R0";
-                case "60":
-                    return "Inmotion L6";
-                case "61":
-                    return "Inmotion Lively";
-                case "50":
-                    return "Inmotion V5";
-                case "51":
-                    return "Inmotion V5PLUS";
-                case "52":
-                    return "Inmotion V5F";
-                case "53":
-                    return "Inmotion V5D";
-                case "80":
-                    return "Inmotion V8";
-                case "85":
-                    return "Solowheel Glide 3";
-                case "86":
-                    return "Inmotion V8F";
-                case "100":
-                    return "Inmotion V10S";
-                case "101":
-                    return "Inmotion V10SF";
-                case "140":
-                    return "Inmotion V10";
-                case "141":
-                    return "Inmotion V10F";
-                case "142":
-                    return "Inmotion V10T";
-                case "143":
-                    return "Inmotion V10FT";
-                default:
-                    return "Unknown";
-            }
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        @Override
-        public String toString() {
-            return "Infos{" +
-                    "serialNumber='" + serialNumber + '\'' +
-                    ", model=" + model +
-                    ", version='" + version + '\'' +
-                    ", light='" + light + '\'' +
-                    ", led='" + led + '\'' +
-                    ", handleButton='" + handleButtonDisabled + '\'' +
-                    ", maxspeed='" + maxSpeed + '\'' +
-                    ", speakervolume='" + speakerVolume + '\'' +
-                    ", pedals='" + tiltHorizon + '\'' +
-                    '}';
+    public static String getModelString(Model model) {
+        switch (model.getValue()) {
+            case "0":
+                return "Inmotion R1N";
+            case "1":
+                return "Inmotion R1S";
+            case "2":
+                return "Inmotion R1CF";
+            case "3":
+                return "Inmotion R1AP";
+            case "4":
+                return "Inmotion R1EX";
+            case "5":
+                return "Inmotion R1Sample";
+            case "6":
+                return "Inmotion R1T";
+            case "7":
+                return "Inmotion R10";
+            case "10":
+                return "Inmotion V3";
+            case "11":
+                return "Inmotion V3C";
+            case "12":
+                return "Inmotion V3PRO";
+            case "13":
+                return "Inmotion V3S";
+            case "21":
+                return "Inmotion R2N";
+            case "22":
+                return "Inmotion R2S";
+            case "23":
+                return "Inmotion R2Sample";
+            case "20":
+                return "Inmotion R2";
+            case "24":
+                return "Inmotion R2EX";
+            case "30":
+                return "Inmotion R0";
+            case "60":
+                return "Inmotion L6";
+            case "61":
+                return "Inmotion Lively";
+            case "50":
+                return "Inmotion V5";
+            case "51":
+                return "Inmotion V5PLUS";
+            case "52":
+                return "Inmotion V5F";
+            case "53":
+                return "Inmotion V5D";
+            case "80":
+                return "Inmotion V8";
+            case "85":
+                return "Solowheel Glide 3";
+            case "86":
+                return "Inmotion V8F";
+            case "100":
+                return "Inmotion V10S";
+            case "101":
+                return "Inmotion V10SF";
+            case "140":
+                return "Inmotion V10";
+            case "141":
+                return "Inmotion V10F";
+            case "142":
+                return "Inmotion V10T";
+            case "143":
+                return "Inmotion V10FT";
+            default:
+                return "Unknown";
         }
     }
 
-    /**
-     * Created by cedric on 29/12/2016.
-     */
+
+
     public static class CANMessage {
         enum CanFormat {
             StandardFormat(0),
@@ -1036,32 +865,31 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
-        Status parseFastInfoMessage(Model model) {
-            if (ex_data == null) return null;
+        boolean parseFastInfoMessage(Model model) {
+            if (ex_data == null) return false;
             double angle = (double) (MathsUtil.intFromBytesLE(ex_data, 0)) / 65536.0;
             double roll = (double) (MathsUtil.intFromBytesLE(ex_data, 72)) / 90.0;
-            double speed = ((double) (MathsUtil.signedIntFromBytesLE(ex_data, 12)) + (double) (MathsUtil.signedIntFromBytesLE(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
+            double speed = ((double) (MathsUtil.intFromBytesLE(ex_data, 12)) + (double) (MathsUtil.intFromBytesLE(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
             speed = Math.abs(speed);
-            double voltage = (double) (MathsUtil.intFromBytesLE(ex_data, 24)) / 100.0;
-            double current = (double) (MathsUtil.signedIntFromBytesLE(ex_data, 20)) / 100.0;
-            double temperature = ex_data[32] & 0xff;
-            double temperature2 = ex_data[34] & 0xff;
-            double batt = batteryFromVoltage(voltage, model);
-            double power = voltage * current;
-            double distance;
+            int voltage = (int)MathsUtil.intFromBytesLE(ex_data, 24);
+            int current = (int)MathsUtil.signedIntFromBytesLE(ex_data, 20);
+            int temperature = ex_data[32] & 0xff;
+            int temperature2 = ex_data[34] & 0xff;
+            int batt = batteryFromVoltage(voltage, model);
+            long distance;
             if (model.belongToInputType("1") || model.belongToInputType("5") ||
                     model == V8 || model == Glide3 || model == V10 || model == V10F ||
                     model == V10S || model == V10SF || model == V10T || model == V10FT ||
                     model == V8F) {
-                distance = (double) (MathsUtil.intFromBytesLE(ex_data, 44)) / 1000.0d; ///// V10F 48 byte - trip distance
+                distance = (MathsUtil.intFromBytesLE(ex_data, 44)); ///// V10F 48 byte - trip distance
             } else if (model == R0) {
-                distance = (double) (MathsUtil.longFromBytesLE(ex_data, 44)) / 1000.0d;
+                distance = (MathsUtil.longFromBytesLE(ex_data, 44));
 
             } else if (model == L6) {
-                distance = (double) (MathsUtil.longFromBytesLE(ex_data, 44)) / 10.0;
+                distance = (MathsUtil.longFromBytesLE(ex_data, 44)) * 100;
 
             } else {
-                distance = (double) (MathsUtil.longFromBytesLE(ex_data, 44)) / 5.711016379455429E7d;
+                distance = Math.round((MathsUtil.longFromBytesLE(ex_data, 44)) / 5.711016379455429E7d);
             }
             int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60) & 0xF;
             WorkMode workMode = intToWorkMode(workModeInt);
@@ -1069,11 +897,23 @@ public class InMotionAdapter extends BaseAdapter {
             if (workMode == WorkMode.lock) {
                 lock = 1.0;
             }
+            WheelData wd = WheelData.getInstance();
+            wd.setAngle(angle);
+            wd.setRoll(roll);
+            wd.setSpeed((int)(speed * 360d));
+            wd.setVoltage((int)(voltage));
+            wd.setBatteryPercent((int)(batt));
+            wd.setCurrent((int)(current));
+            wd.setTotalDistance((long)(distance));
+            wd.setDistance((long)distance);
+            wd.setTemperature((int)(temperature*100));
+            wd.setTemperature2((int)(temperature2*100));
+            wd.setModeStr(getWorkModeString(workModeInt));
 
-            return new Status(angle, roll, speed, voltage, batt, current, power, distance, lock, temperature, temperature2, workModeInt);
+            return true;
         }
 
-        Alert parseAlertInfoMessage() {
+        boolean parseAlertInfoMessage() {
             int alertId = (int) data[0];
             double alertValue = (double) ((data[3] * 256) | (data[2] & 0xFF));
             double alertValue2 = (double) ((data[7] * 256 * 256 * 256) | ((data[6] & 0xFF) * 256 * 256) | ((data[5] & 0xFF) * 256) | (data[4] & 0xFF));
@@ -1110,14 +950,16 @@ public class InMotionAdapter extends BaseAdapter {
                 default:
                     fullText = String.format(Locale.ENGLISH, "Unknown Alert %.2f %.2f, please contact palachzzz, hex %s", alertValue, alertValue2, hex.toString());
             }
-            return new Alert(alertId, alertValue, alertValue2, fullText);
+            WheelData wd = WheelData.getInstance();
+            wd.setAlert(fullText);
+            return true;
         }
 
 
-        Infos parseSlowInfoMessage() {
-            if (ex_data == null) return null;
-            Model model = Model.findByBytes(ex_data);  // CarType is just model.rawValue
-            if (model == UNKNOWN) model = V8;
+        boolean parseSlowInfoMessage() {
+            if (ex_data == null) return false;
+            Model lmodel = Model.findByBytes(ex_data);  // CarType is just model.rawValue
+            if (lmodel == UNKNOWN) lmodel = V8;
             int v0 = ex_data[27] & 0xFF;
             int v1 = ex_data[26] & 0xFF;
             int v2 = ((ex_data[25] & 0xFF) * 256) | (ex_data[24] & 0xFF);
@@ -1143,43 +985,26 @@ public class InMotionAdapter extends BaseAdapter {
             for (int j = 0; j < 8; j++) {
                 serialNumber += String.format("%02X", ex_data[7 - j]);
             }
-            return new Infos(serialNumber, model, version, light, led, handlebutton, maxspeed, speakervolume, pedals);
+
+            WheelData wd = WheelData.getInstance();
+            wd.setSerial(serialNumber);
+            wd.setModel(getModelString(lmodel));
+            wd.setVersion(version);
+            wd.setWheelLightEnabled(light);
+            wd.setWheelLedEnabled(led);
+            wd.setWheelButtonDisabled(handlebutton);
+            wd.setWheelMaxSpeed(maxspeed);
+            wd.setWheelSpeakerVolume(speakervolume);
+            wd.setWheelTiltHorizon(pedals);
+            wd.setNewWheelSettings(true);
+            wd.setDataForLog(false);
+            getInstance().setModel(lmodel);
+            return true;
         }
 
         public byte[] getData() {
             return data;
         }
-    }
-
-    public ArrayList<Status> charUpdated(byte[] data) {
-        ArrayList<Status> outValues = new ArrayList<>();
-
-        for (byte c : data) {
-            if (unpacker.addChar(c)) {
-                CANMessage result = CANMessage.verify(unpacker.getBuffer());
-                if (result != null) { // data OK
-                    if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
-                        Status vals = result.parseFastInfoMessage(model);
-                        if (vals != null)
-                            outValues.add(vals);
-                    } else if (result.id == CANMessage.IDValue.Alert.getValue()) {
-                        Alert alert = result.parseAlertInfoMessage();
-                        if (alert != null)
-                            outValues.add(alert);
-                    } else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()) {
-                        Infos infos = result.parseSlowInfoMessage();
-                        if (infos != null) {
-                            needSlowData = false;
-                            model = infos.getModel();
-                            outValues.add(infos);
-                        }
-                    } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
-                        passwordSent = Integer.MAX_VALUE;
-                    }
-                }
-            }
-        }
-        return outValues;
     }
 
     static class InMotionUnpacker {

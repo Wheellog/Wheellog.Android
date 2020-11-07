@@ -779,11 +779,11 @@ public class AppConfig extends AppConfigBase {
     }
 
     public int getMaxSpeed(Boolean... fromControl) {
-        return getInt(R.string.max_speed, 30, settingsType(R.string.max_speed), fromControl) * 10;
+        return getInt(R.string.max_speed, 30, settingsType(R.string.max_speed), fromControl);
     }
 
     public void setMaxSpeed(int newValue, Boolean... fromControl) {
-        setInt(R.string.max_speed, newValue / 10, settingsType(R.string.max_speed), fromControl);
+        setInt(R.string.max_speed, newValue, settingsType(R.string.max_speed), fromControl);
     }
 
     public Boolean getUseRatio(Boolean... fromControl) {
