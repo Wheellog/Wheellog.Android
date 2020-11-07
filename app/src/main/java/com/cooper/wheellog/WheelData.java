@@ -781,7 +781,6 @@ public class WheelData {
         return mModeStr;
     }
 
-
     public void setModeStr(String value) {
         mModeStr = value;
     }
@@ -825,6 +824,14 @@ public class WheelData {
 		String nAlert = mAlert;
 		mAlert = "";
         return nAlert;
+    }
+
+    public void setAlert(String value) {
+        if (mAlert == "") {
+            mAlert = value;
+        } else {
+            mAlert += " | " + mAlert;
+        }
     }
 
     public String getSerial() {
@@ -1389,6 +1396,16 @@ public class WheelData {
 
         if (!new_data)
 			return;
+        resetRideTime();
+        updateRideTime();
+        setTopSpeed(mSpeed);
+        setVoltageSag(mVoltage);
+        setMaxTemp(mTemperature);
+        mCalculatedPwm = ((float)mSpeed/100.0)/((WheelLog.AppConfig.getRotationSpeed()/WheelLog.AppConfig.getRotationVoltage()) * ((float)mVoltage/100.0) * WheelLog.AppConfig.getPowerFactor());
+        setMaxPwm(mCalculatedPwm);
+        if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
+            mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
+        }
 
 		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 		if (mDataForLog) {
@@ -1401,8 +1418,7 @@ public class WheelData {
 		}
 		
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
-			
-			
+
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
             currentAxis.add((float) getCurrentDouble());
@@ -1414,12 +1430,6 @@ public class WheelData {
                 xAxis.remove(0);
             }
 			
-        }
-        setMaxTemp(mTemperature);
-        mCalculatedPwm = ((float)mSpeed/100.0)/((WheelLog.AppConfig.getRotationSpeed()/WheelLog.AppConfig.getRotationVoltage()) * ((float)mVoltage/100.0) * WheelLog.AppConfig.getPowerFactor());
-        setMaxPwm(mCalculatedPwm);
-        if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
 
         if (WheelLog.AppConfig.getAlarmsEnabled())
@@ -1610,50 +1620,13 @@ public class WheelData {
         return true;
     }
 
-    public boolean decodeInmotion(byte[] data) {
-        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
-		if (statuses.size() < 1) return false;
-        resetRideTime();
-        for (InMotionAdapter.Status status: statuses) {
-            Timber.i(status.toString());
-            if (status instanceof InMotionAdapter.Infos) {
-				mWheelLightEnabled = ((InMotionAdapter.Infos) status).getLightState();
-				mWheelLedEnabled = ((InMotionAdapter.Infos) status).getLedState();
-				mWheelButtonDisabled = ((InMotionAdapter.Infos) status).getHandleButtonState();
-				mWheelMaxSpeed = ((InMotionAdapter.Infos) status).getMaxSpeedState();
-				mWheelSpeakerVolume = ((InMotionAdapter.Infos) status).getSpeakerVolumeState();
-				mWheelTiltHorizon = ((InMotionAdapter.Infos) status).getTiltHorizon(); 
-                mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
-                mModel = ((InMotionAdapter.Infos) status).getModelString();
-                mVersion = ((InMotionAdapter.Infos) status).getVersion();
-				mNewWheelSettings = true;
-            } else if (status instanceof InMotionAdapter.Alert){
-				if (mAlert == "") {
-					mAlert = ((InMotionAdapter.Alert) status).getFullText();
-				} else {
-					mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getFullText();
-				}
-			} else {
-                mSpeed = (int) (status.getSpeed() * 360d);
-                mVoltage = (int) (status.getVoltage() * 100d);
-                mCurrent = (int) (status.getCurrent() * 100d);
-				mTemperature = (int) (status.getTemperature() * 100d);
-				mTemperature2 = (int) (status.getTemperature2() * 100d);
-				mTotalDistance = (long) (status.getDistance()*1000d);
-				mAngle = (double) (status.getAngle()); 
-				mRoll = (double) (status.getRoll()); 
-				
-				mModeStr = status.getWorkModeString();
-                setBatteryPercent((int) status.getBatt());
-                setDistance((long) status.getDistance());
-				
-                updateRideTime();
-                setTopSpeed(mSpeed);
-                setVoltageSag(mVoltage);
-            }
-        }
-        return true;
-    }
+    public void setWheelLightEnabled(boolean value) {mWheelLightEnabled = value;}
+    public void setWheelLedEnabled(boolean value) {mWheelLedEnabled = value;}
+    public void setWheelButtonDisabled(boolean value) {mWheelButtonDisabled = value;}
+    public void setNewWheelSettings(boolean value) {mNewWheelSettings = value;}
+    public void setDataForLog(boolean value) {mDataForLog = value;}
+    public void setWheelSpeakerVolume(int value) {mWheelSpeakerVolume = value;}
+    public void setWheelTiltHorizon(int value) {mWheelTiltHorizon = value;}
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
