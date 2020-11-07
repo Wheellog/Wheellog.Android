@@ -830,7 +830,7 @@ public class WheelData {
         if (mAlert == "") {
             mAlert = value;
         } else {
-            mAlert = mAlert + " | " + mAlert;
+            mAlert += " | " + mAlert;
         }
     }
 
