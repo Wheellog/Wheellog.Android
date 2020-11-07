@@ -98,7 +98,7 @@ class KingsongAdapterTest {
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
         assertThat(data.topSpeedDouble).isEqualTo(topSpeed / 100.0)
         assertThat(data.fanStatus).isEqualTo(fanStatus)
@@ -119,7 +119,7 @@ class KingsongAdapterTest {
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.name).isEqualTo(name)
         assertThat(data.model).isEqualTo(model)
     }
@@ -140,7 +140,7 @@ class KingsongAdapterTest {
         val result = adapter.decode(byteArray)
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.serial.trimEnd('\u0000')).isEqualTo(serial)
     }
 
@@ -175,9 +175,9 @@ class KingsongAdapterTest {
         val result5 = adapter.decode(byteArray5)
 
         // Assert.
-        assertThat(result1).isTrue()
+        assertThat(result1).isFalse()
         assertThat(result2).isTrue()
-        assertThat(result3).isTrue()
+        assertThat(result3).isFalse()
         assertThat(result4).isFalse()
         assertThat(result5).isFalse()
         // 1st data
