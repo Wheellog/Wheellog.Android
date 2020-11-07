@@ -166,6 +166,12 @@
     <string name="fan_status">Fan Status</string>
     <string name="mode">Mode</string>
     <string name="total_distance">Total Distance</string>
+    <string name="torque">Torque</string>
+    <string name="dynamic_speed_limit">Speed Limit</string>
+    <string name="dynamic_current_limit">Current Limit</string>
+    <string name="cpu_temp">CPU temp</string>
+    <string name="imu_temp">IMU temp</string>
+    <string name="motor_power">Motor Power</string>
     <string name="total">Total</string>
     <string name="name">Name</string>
     <string name="model">Model</string>
@@ -235,6 +241,7 @@
     <string name="about_app_title">About WheelLog</string>
     <string name="settings_title">Settings</string>
     <string name="amp">A</string>
+    <string name="newton">N*m</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
     <string name="dial_measurements"></string>
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>

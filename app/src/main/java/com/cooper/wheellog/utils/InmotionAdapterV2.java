@@ -227,7 +227,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
             hour = (int) (mPowerOnTime/ 3600);
             String mPowerOnTimeStr = String.format("%d:%02d:%02d",hour,min,sec);
             wd.setTotalDistance(mTotal*10);
-            wd.setDistance(mTotal*10);
             return false;
         }
 
@@ -260,8 +259,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mCpuTemp = (data[34] & 0xff) + 80 - 256;
             int mImuTemp = (data[35] & 0xff) + 80 - 256;
             wd.setVoltage(mVoltage);
+            wd.setTorque((double)mTorque/100.0);
+            wd.setMotorPower((double)mMotPower);
+            wd.setCpuTemp(mCpuTemp);
+            wd.setImuTemp(mImuTemp);
             wd.setCurrent(mCurrent);
             wd.setSpeed(mSpeed);
+            wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
+            wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
             wd.setBatteryPercent(mBatLevel);
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mBoardTemp * 100);
@@ -271,6 +276,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
             wd.setPower(mBatPower);
+            wd.setWheelDistance(mMileage);
             //// state data
             int mPcMode = data[36] & 0x07;
             int mMcMode = (data[36]>>3)&0x07;
