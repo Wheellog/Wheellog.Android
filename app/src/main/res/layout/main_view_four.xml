@@ -27,7 +27,7 @@
             <TextView
                 android:id="@+id/tvTitleBmsBattery1"
                 android:visibility="visible"
-                android:layout_width="0sp"
+                app:layout_gravity="center_horizontal|center_vertical"
                 android:textSize="20sp"
                 style="@style/StatsBMS.Title"
                 app:layout_columnSpan="2"
@@ -36,7 +36,7 @@
             <TextView
                 android:id="@+id/tvTitleBmsBattery2"
                 android:visibility="visible"
-                android:layout_width="0sp"
+                app:layout_gravity="center_horizontal|center_vertical"
                 android:textSize="20sp"
                 style="@style/StatsBMS.Title"
                 app:layout_columnSpan="2"
