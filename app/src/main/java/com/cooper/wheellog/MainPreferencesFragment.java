@@ -187,7 +187,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
 
         if (WheelLog.AppConfig.getControlSettings().containsKey(key) && !WheelLog.AppConfig.getIsInProgressControlsMigration()) {
             Intent intent = new Intent(Constants.ACTION_PREFERENCE_CHANGED);
-            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, key);
+            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(key));
             context.sendBroadcast(intent);
         }
     }

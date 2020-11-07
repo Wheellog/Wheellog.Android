@@ -20,5 +20,15 @@ class StringUtil {
             return context.resources.openRawResource(resId)
                     .bufferedReader().use { it.readText() }
         }
+
+        @JvmStatic
+        fun deleteFirstSentence(text: CharSequence): CharSequence {
+            val indexOfNewLine = text.indexOfFirst { r -> r == '\n' }
+            if (indexOfNewLine != -1) {
+                return text.substring(indexOfNewLine)
+            } else {
+                return text
+            }
+        }
     }
 }

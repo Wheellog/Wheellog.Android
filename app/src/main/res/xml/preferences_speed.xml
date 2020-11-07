@@ -39,30 +39,41 @@
         android:summary="@string/use_mph_description"
         android:title="@string/use_mph_title" />
 
-    <com.cooper.wheellog.presentation.preferences.MultiSelectPreference
-        android:key="@string/view_blocks_string"
-        sample:defaultValue="@array/view_blocks_def"
-        sample:entries="@array/view_blocks_values"
-        android:summary="@string/view_blocks_description"
-        android:dialogTitle="@string/view_blocks_title"
-        android:title="@string/view_blocks_title" />
+    <PreferenceCategory
+        android:title="@string/main_view_category">
+        <com.cooper.wheellog.presentation.preferences.MultiSelectPreference
+            android:key="@string/view_blocks_string"
+            sample:defaultValue="@array/view_blocks_def"
+            sample:entries="@array/view_blocks_values"
+            android:summary="@string/view_blocks_description"
+            android:dialogTitle="@string/view_blocks_title"
+            android:title="@string/view_blocks_title" />
 
-    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-        android:defaultValue="30"
-        android:enabled="true"
-        android:key="@string/max_speed"
-        android:summary="@string/max_speed_dial_description"
-        android:title="@string/max_speed_dial_title"
-        sample:sbp_increment="1"
-        sample:sbp_maxValue="100"
-        sample:sbp_measurementUnit="@string/dial_measurements"
-        sample:sbp_minValue="10" />
+        <com.cooper.wheellog.presentation.preferences.SeekBarPreference
+            android:defaultValue="30"
+            android:enabled="true"
+            android:key="@string/max_speed"
+            android:summary="@string/max_speed_dial_description"
+            android:title="@string/max_speed_dial_title"
+            sample:sbp_increment="1"
+            sample:sbp_maxValue="100"
+            sample:sbp_measurementUnit="@string/dial_measurements"
+            sample:sbp_minValue="10" />
+
+        <CheckBoxPreference
+            android:enabled="true"
+            android:key="@string/current_on_dial"
+            android:summary="@string/current_on_dial_description"
+            android:title="@string/current_on_dial_title" />
+    </PreferenceCategory>
 
     <CheckBoxPreference
         android:enabled="true"
-        android:key="@string/current_on_dial"
-        android:summary="@string/current_on_dial_description"
-        android:title="@string/current_on_dial_title" />
+        android:key="@string/show_page_events"
+        android:summary="@string/show_page_events_description"
+        android:title="@string/show_page_events_title"
+        android:defaultValue="false"
+        android:visible="true" />
 
     <CheckBoxPreference
         android:enabled="true"
