@@ -979,9 +979,7 @@ public class WheelData {
     }
 
     public double getCalculatedPwm() {
-        if (mWheelType == WHEEL_TYPE.KINGSONG) // it is better to write real PWM in logs and show on main screen
-            return (double)mOutput;            // because in case of disabled altered alarms we have wrong mCalculatedPWM
-        return mCalculatedPwm*100.0;
+        return mCalculatedPwm * 100.0;
     }
 
     public double getMaxPwm() {
