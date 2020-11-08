@@ -34,7 +34,6 @@
     <string name="warning_pwm" translatable="false">warning_pwm</string>
     <string name="warning_speed_period" translatable="false">warning_speed_period</string>
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
-    <string name="use_real_pwm" translatable="false">use_real_pwm</string>
 
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
@@ -310,8 +309,6 @@
     <string name="warning_pwm_description">Advance PWM warning, 0 - off</string>
     <string name="warning_speed_period_title">Frequency of warnings</string>
     <string name="warning_speed_period_description">Notification period, 0 - off</string>
-    <string name="use_real_pwm_title">Use wheel PWM</string>
-    <string name="use_real_pwm_description">Use real wheel PWM for alarms (KS-only)</string>
     <string name="use_short_pwm_title">Short display of PWM</string>
     <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>

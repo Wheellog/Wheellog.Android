@@ -37,7 +37,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     public void changeWheelType() {
         mWheelType = WheelData.getInstance().getWheelType();
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
-        switchKsSpecificSettings(WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG);
+        hideShowSeekBarsAlarms();
     }
 
     @Override
@@ -87,9 +87,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 break;
             case R.string.alarms_enabled:
             case R.string.altered_alarms:
-                hideShowSeekBarsAlarms();
-                break;
-            case R.string.use_real_pwm:
                 hideShowSeekBarsAlarms();
                 break;
             case R.string.auto_upload_ec:
@@ -401,7 +398,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
 
         switchSpecificSettings(WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown);
-        switchKsSpecificSettings(WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG);
         hideShowSeekBarsAlarms();
     }
 
@@ -505,11 +501,11 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     private void hideShowSeekBarsAlarms() {
         boolean alarmsEnabled = WheelLog.AppConfig.getAlarmsEnabled();
         boolean alteredAlarms = WheelLog.AppConfig.getAlteredAlarms();
-        boolean ksAlteredAlarms = WheelLog.AppConfig.getUseRealPwm();
+        boolean ksAlteredAlarms = (WheelData.getInstance().getWheelType()==WHEEL_TYPE.KINGSONG);
         String[] seekbarPreferencesNormal = {
-                "speed_alarm1",
-                "speed_alarm2",
-                "speed_alarm3",
+                getString(R.string.speed_alarm1),
+                getString(R.string.speed_alarm2),
+                getString(R.string.speed_alarm3),
                 getString(R.string.alarm_1_speed),
                 getString(R.string.alarm_2_speed),
                 getString(R.string.alarm_3_speed),
@@ -521,7 +517,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         };
 
         String[] seekbarPreferencesAltered = {
-                "altered_alarms_section",
+                getString(R.string.altered_alarms_section),
                 getString(R.string.rotation_speed),
                 getString(R.string.rotation_voltage),
                 getString(R.string.power_factor),
@@ -532,7 +528,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                 getString(R.string.warning_pwm),
                 getString(R.string.warning_speed_period),
                 getString(R.string.use_short_pwm),
-                getString(R.string.use_real_pwm),
         };
 
         String[] seekbarPreferencesCommon = {
@@ -632,17 +627,6 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
         }
     }
 
-    private void switchKsSpecificSettings(Boolean isKs) {
-        String[] specificPreferences = {
-                getString(R.string.use_real_pwm),
-        };
-
-        for (String preference : specificPreferences) {
-            Preference pref = findPreference(preference);
-            if (pref != null)
-                pref.setVisible(isKs);
-        }
-    }
 
     private enum SettingsScreen {
         Main,
