@@ -501,7 +501,7 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
     private void hideShowSeekBarsAlarms() {
         boolean alarmsEnabled = WheelLog.AppConfig.getAlarmsEnabled();
         boolean alteredAlarms = WheelLog.AppConfig.getAlteredAlarms();
-        boolean ksAlteredAlarms = (WheelData.getInstance().getWheelType()==WHEEL_TYPE.KINGSONG);
+        boolean ksAlteredAlarms = WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG;
         String[] seekbarPreferencesNormal = {
                 getString(R.string.speed_alarm1),
                 getString(R.string.speed_alarm2),
