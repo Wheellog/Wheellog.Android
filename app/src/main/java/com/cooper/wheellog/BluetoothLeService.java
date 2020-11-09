@@ -287,6 +287,7 @@ public class BluetoothLeService extends Service {
             }
 
             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY ||
+                    WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY_VIRTUAL ||
                     WheelData.getInstance().getWheelType() == WHEEL_TYPE.VETERAN) {
                 byte[] value = characteristic.getValue();
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());
@@ -537,6 +538,7 @@ public class BluetoothLeService extends Service {
                 ks_characteristic.setWriteType(1);
                 return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
             case GOTWAY:
+            case GOTWAY_VIRTUAL:
             case VETERAN:
                 BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
                 if (gw_service == null) {

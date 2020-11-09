@@ -8,6 +8,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
@@ -95,25 +97,35 @@ class ElectroClub {
         })
     }
 
-    fun uploadTrack(data: ByteArray, fileName: String) {
+    fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean) {
         if (userToken == null)
         {
             lastError = "Missing parameters"
             errorListener?.invoke(UPLOAD_METHOD, lastError)
             return
         }
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault())
+        val currentLocalTime = calendar.time
+        val date = SimpleDateFormat("Z", Locale.getDefault())
+        var localTime = date.format(currentLocalTime)
+        localTime = StringBuilder(localTime).insert(localTime.length - 2, ":").toString()
         val mediaType = "text/csv".toMediaTypeOrNull()
-        val body: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+        val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("method", UPLOAD_METHOD)
                 .addFormDataPart("access_token", accessToken)
                 .addFormDataPart("user_token", userToken!!)
                 .addFormDataPart("file", fileName, data.toRequestBody(mediaType))
-                .addFormDataPart("garage_id", selectedGarage)
-                .build()
+                .addFormDataPart("time_zone", localTime)
+        if (selectedGarage != "0") {
+            bodyBuilder.addFormDataPart("garage_id", selectedGarage)
+        }
+        if (verified) {
+            bodyBuilder.addFormDataPart("verified", "1")
+        }
 
         val request = Request.Builder()
                 .url(url)
-                .method("POST", body)
+                .method("POST", bodyBuilder.build())
                 .build()
 
         client.newCall(request).enqueue(object : Callback {

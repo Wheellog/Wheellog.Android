@@ -16,9 +16,14 @@ import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -111,6 +116,12 @@ public class WheelData {
     private int bms2Cell16 = 0;
     //all
     private int mSpeed;
+    private double mTorque;
+    private double mMotorPower;
+    private int mCpuTemp;
+    private int mImuTemp;
+    private double mSpeedLimit;
+    private double mCurrentLimit;
     private long mTotalDistance;
     private int mCurrent;
     private Integer mPower = null;
@@ -184,9 +195,12 @@ public class WheelData {
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
+            case GOTWAY_VIRTUAL:
+                return GotwayVirtualAdapter.getInstance();
             case GOTWAY:
-            case VETERAN:
                 return GotwayAdapter.getInstance();
+            case VETERAN:
+                return VeteranAdapter.getInstance();
             case KINGSONG:
                 return KingsongAdapter.getInstance();
             case NINEBOT:
@@ -318,16 +332,60 @@ public class WheelData {
         return mInstance;
     }
 
-    public double getCurrentPwm() {
-        return mCalculatedPwm * 100.0;
-    }
-
     public int getSpeed() {
         return (int)Math.round(mSpeed / 10.0);
     }
 
     public void setSpeed(int speed) {
         mSpeed = speed;
+    }
+
+    public double getTorque() {
+        return mTorque;
+    }
+
+    public void setTorque(double value) {
+        mTorque = value;
+    }
+
+    public double getMotorPower() {
+        return mMotorPower;
+    }
+
+    public void setMotorPower(double value) {
+        mMotorPower = value;
+    }
+
+    public int getCpuTemp() {
+        return mCpuTemp;
+    }
+
+    public void setCpuTemp(int value) {
+        mCpuTemp = value;
+    }
+
+    public int getImuTemp() {
+        return mImuTemp;
+    }
+
+    public void setImuTemp(int value) {
+        mImuTemp = value;
+    }
+
+    public double getSpeedLimit() {
+        return mSpeedLimit;
+    }
+
+    public void setSpeedLimit(double value) {
+        mSpeedLimit = value;
+    }
+
+    public double getCurrentLimit() {
+        return mCurrentLimit;
+    }
+
+    public void setCurrentLimit(double value) {
+        mCurrentLimit = value;
     }
 	
 	public boolean getWheelLight() {
@@ -380,29 +438,29 @@ public class WheelData {
 		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (pedalsMode) {
 				case 0:
-					mBluetoothLeService.writeBluetoothGattCharacteristic("h".getBytes());
+					getBluetoothLeService().writeBluetoothGattCharacteristic("h".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;
-				case 1: 
-					mBluetoothLeService.writeBluetoothGattCharacteristic("f".getBytes());
+				case 1:
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("f".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;
-				case 2: 
-					mBluetoothLeService.writeBluetoothGattCharacteristic("s".getBytes());
+				case 2:
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("s".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;	
@@ -419,38 +477,37 @@ public class WheelData {
             data[17] = (byte) 0x15;
             data[18] = (byte) 0x5A;
             data[19] = (byte) 0x5A;
-            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
-	
     }
 	
 	public void updateLightMode(int lightMode) {
 		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (lightMode) {
 				case 0:
-					mBluetoothLeService.writeBluetoothGattCharacteristic("E".getBytes());
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("E".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;
-				case 1: 
-					mBluetoothLeService.writeBluetoothGattCharacteristic("Q".getBytes());
+				case 1:
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("Q".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;
-				case 2: 
-					mBluetoothLeService.writeBluetoothGattCharacteristic("T".getBytes());
+				case 2:
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("T".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;	
@@ -467,7 +524,7 @@ public class WheelData {
             data[17] = (byte) 0x14;
             data[18] = (byte) 0x5A;
             data[19] = (byte) 0x5A;
-            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
 	
     }
@@ -482,7 +539,7 @@ public class WheelData {
             data[17] = (byte) 0x14;
             data[18] = (byte) 0x5A;
             data[19] = (byte) 0x5A;
-            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
 		
     }
@@ -497,7 +554,7 @@ public class WheelData {
             data[17] = (byte) 0x14;
             data[18] = (byte) 0x5A;
             data[19] = (byte) 0x5A;
-            mBluetoothLeService.writeBluetoothGattCharacteristic(data);
+            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
 		
     }
@@ -507,30 +564,30 @@ public class WheelData {
 		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			switch (alarmMode) {
 				case 0:
-					mBluetoothLeService.writeBluetoothGattCharacteristic("u".getBytes());
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("u".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 
 					break;
-				case 1: 
-					mBluetoothLeService.writeBluetoothGattCharacteristic("i".getBytes());
+				case 1:
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("i".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;
-				case 2: 
-					mBluetoothLeService.writeBluetoothGattCharacteristic("o".getBytes());
+				case 2:
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("o".getBytes());
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                         }
                     }, 100);
 					break;	
@@ -542,11 +599,11 @@ public class WheelData {
 	public void updateCalibration() {
 		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
 			//mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-			mBluetoothLeService.writeBluetoothGattCharacteristic("c".getBytes());
+            getBluetoothLeService().writeBluetoothGattCharacteristic("c".getBytes());
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mBluetoothLeService.writeBluetoothGattCharacteristic("y".getBytes());
+                    getBluetoothLeService().writeBluetoothGattCharacteristic("y".getBytes());
                 }
             }, 300);
 
@@ -578,62 +635,62 @@ public class WheelData {
 				int wheelMaxSpeed2 = wheelMaxSpeed;
                 hhh[0] = (byte)((wheelMaxSpeed2/10)+0x30);
                 lll[0] = (byte)((wheelMaxSpeed2%10)+0x30);
-                mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("W".getBytes());
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("W".getBytes());
                     }
                 }, 100);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("Y".getBytes());
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("Y".getBytes());
                     }
                 }, 200);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic(hhh);
+                        getBluetoothLeService().writeBluetoothGattCharacteristic(hhh);
                     }
                 }, 300);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic(lll);
+                        getBluetoothLeService().writeBluetoothGattCharacteristic(lll);
                     }
                 }, 400);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                     }
                 }, 500);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                     }
                 }, 600);
 
 			} else {
-				mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("\"".getBytes()); // "
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("\"".getBytes()); // "
                     }
                 }, 100);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                     }
                 }, 200);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+                        getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
                     }
                 }, 300);
 
@@ -746,8 +803,10 @@ public class WheelData {
     public void setWheelType(WHEEL_TYPE wheelType) {
         boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
-
         if (isChanged) {
+            Context mContext = getBluetoothLeService().getApplicationContext();
+            Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
+            mContext.sendBroadcast(intent);
             for (IDataListener hl : listeners)
                 hl.changeWheelType();
         }
@@ -776,7 +835,6 @@ public class WheelData {
 	public String getModeStr() {
         return mModeStr;
     }
-
 
     public void setModeStr(String value) {
         mModeStr = value;
@@ -821,6 +879,14 @@ public class WheelData {
 		String nAlert = mAlert;
 		mAlert = "";
         return nAlert;
+    }
+
+    public void setAlert(String value) {
+        if (mAlert == "") {
+            mAlert = value;
+        } else {
+            mAlert += " | " + mAlert;
+        }
     }
 
     public String getSerial() {
@@ -912,8 +978,8 @@ public class WheelData {
         mPhaseCurrent = value;
     }
 
-    double getCalculatedPwm() {
-        return mCalculatedPwm*100.0;
+    public double getCalculatedPwm() {
+        return mCalculatedPwm * 100.0;
     }
 
     public double getMaxPwm() {
@@ -954,10 +1020,10 @@ public class WheelData {
 	
 	public double getUserDistanceDouble() {
 		if (mUserDistance == 0 && mTotalDistance != 0 )  {
-			Context mContext = mBluetoothLeService.getApplicationContext();
-			mUserDistance = WheelLog.AppConfig.getUserDistance(mBluetoothLeService.getBluetoothDeviceAddress());
+			Context mContext = getBluetoothLeService().getApplicationContext();
+			mUserDistance = WheelLog.AppConfig.getUserDistance(getBluetoothLeService().getBluetoothDeviceAddress());
 			if (mUserDistance == 0) {
-				WheelLog.AppConfig.setUserDistance(mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);
+				WheelLog.AppConfig.setUserDistance(getBluetoothLeService().getBluetoothDeviceAddress(), mTotalDistance);
 				mUserDistance = mTotalDistance;
 			}
 		}
@@ -965,8 +1031,8 @@ public class WheelData {
     }
 
     public String getMac() {
-        return mBluetoothLeService != null
-                ? mBluetoothLeService.getBluetoothDeviceAddress()
+        return getBluetoothLeService() != null
+                ? getBluetoothLeService().getBluetoothDeviceAddress()
                 : "default";
     }
 
@@ -976,8 +1042,8 @@ public class WheelData {
 
     public void resetUserDistance() {
 		if (mTotalDistance != 0)  {
-			Context mContext = mBluetoothLeService.getApplicationContext();
-            WheelLog.AppConfig.setUserDistance(mBluetoothLeService.getBluetoothDeviceAddress(), mTotalDistance);
+			Context mContext = getBluetoothLeService().getApplicationContext();
+            WheelLog.AppConfig.setUserDistance(getBluetoothLeService().getBluetoothDeviceAddress(), mTotalDistance);
 			mUserDistance = mTotalDistance;
 		}
 
@@ -1163,14 +1229,13 @@ public class WheelData {
         Timber.i("State %b", connected);
     }
 
-    public void setDistance(long distance) {
-        if (mStartTotalDistance == 0 && mTotalDistance != 0)
-            mStartTotalDistance = mTotalDistance;
-
+    public void setWheelDistance(long distance) {
         mDistance = distance;
     }
 
     public void setTotalDistance(long totalDistance) {
+        if (mStartTotalDistance == 0 && mTotalDistance != 0)
+            mStartTotalDistance = mTotalDistance;
         mTotalDistance = totalDistance;
     }
 
@@ -1385,6 +1450,20 @@ public class WheelData {
 
         if (!new_data)
 			return;
+        resetRideTime();
+        updateRideTime();
+        setTopSpeed(mSpeed);
+        setVoltageSag(mVoltage);
+        setMaxTemp(mTemperature);
+        if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            mCalculatedPwm = (double)mOutput/100.0;
+        } else {
+            mCalculatedPwm = ((float) mSpeed / 100.0) / ((WheelLog.AppConfig.getRotationSpeed() / WheelLog.AppConfig.getRotationVoltage()) * ((float) mVoltage / 100.0) * WheelLog.AppConfig.getPowerFactor());
+        }
+        setMaxPwm(mCalculatedPwm);
+        if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
+            mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
+        }
 
 		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 		if (mDataForLog) {
@@ -1397,8 +1476,7 @@ public class WheelData {
 		}
 		
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
-			
-			
+
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
             currentAxis.add((float) getCurrentDouble());
@@ -1410,12 +1488,6 @@ public class WheelData {
                 xAxis.remove(0);
             }
 			
-        }
-        setMaxTemp(mTemperature);
-        mCalculatedPwm = ((float)mSpeed/100.0)/((WheelLog.AppConfig.getRotationSpeed()/WheelLog.AppConfig.getRotationVoltage()) * ((float)mVoltage/100.0) * WheelLog.AppConfig.getPowerFactor());
-        setMaxPwm(mCalculatedPwm);
-        if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
         }
 
         if (WheelLog.AppConfig.getAlarmsEnabled())
@@ -1562,7 +1634,7 @@ public class WheelData {
                 mAlert = (String) (status.getAlert());
 
 
-                setDistance((long) status.getDistance());
+                setTotalDistance((long) status.getDistance());
                 updateRideTime();
                 setBatteryPercent(mBattery);
                 setTopSpeed(mSpeed);
@@ -1594,7 +1666,7 @@ public class WheelData {
                 mTemperature = (int) (status.getTemperature()*10);
 
 
-                setDistance((long) status.getDistance());
+                setTotalDistance((long) status.getDistance());
                 updateRideTime();
                 setTopSpeed(mSpeed);
                 setVoltageSag(mVoltage);
@@ -1606,50 +1678,13 @@ public class WheelData {
         return true;
     }
 
-    public boolean decodeInmotion(byte[] data) {
-        ArrayList<InMotionAdapter.Status> statuses = InMotionAdapter.getInstance().charUpdated(data);
-		if (statuses.size() < 1) return false;
-        resetRideTime();
-        for (InMotionAdapter.Status status: statuses) {
-            Timber.i(status.toString());
-            if (status instanceof InMotionAdapter.Infos) {
-				mWheelLightEnabled = ((InMotionAdapter.Infos) status).getLightState();
-				mWheelLedEnabled = ((InMotionAdapter.Infos) status).getLedState();
-				mWheelButtonDisabled = ((InMotionAdapter.Infos) status).getHandleButtonState();
-				mWheelMaxSpeed = ((InMotionAdapter.Infos) status).getMaxSpeedState();
-				mWheelSpeakerVolume = ((InMotionAdapter.Infos) status).getSpeakerVolumeState();
-				mWheelTiltHorizon = ((InMotionAdapter.Infos) status).getTiltHorizon(); 
-                mSerialNumber = ((InMotionAdapter.Infos) status).getSerialNumber();
-                mModel = ((InMotionAdapter.Infos) status).getModelString();
-                mVersion = ((InMotionAdapter.Infos) status).getVersion();
-				mNewWheelSettings = true;
-            } else if (status instanceof InMotionAdapter.Alert){
-				if (mAlert == "") {
-					mAlert = ((InMotionAdapter.Alert) status).getfullText();
-				} else {
-					mAlert = mAlert + " | " + ((InMotionAdapter.Alert) status).getfullText();
-				}
-			} else {
-                mSpeed = (int) (status.getSpeed() * 360d);
-                mVoltage = (int) (status.getVoltage() * 100d);
-                mCurrent = (int) (status.getCurrent() * 100d);
-				mTemperature = (int) (status.getTemperature() * 100d);
-				mTemperature2 = (int) (status.getTemperature2() * 100d);
-				mTotalDistance = (long) (status.getDistance()*1000d);
-				mAngle = (double) (status.getAngle()); 
-				mRoll = (double) (status.getRoll()); 
-				
-				mModeStr = status.getWorkModeString();
-                setBatteryPercent((int) status.getBatt());
-                setDistance((long) status.getDistance());
-				
-                updateRideTime();
-                setTopSpeed(mSpeed);
-                setVoltageSag(mVoltage);
-            }
-        }
-        return true;
-    }
+    public void setWheelLightEnabled(boolean value) {mWheelLightEnabled = value;}
+    public void setWheelLedEnabled(boolean value) {mWheelLedEnabled = value;}
+    public void setWheelButtonDisabled(boolean value) {mWheelButtonDisabled = value;}
+    public void setNewWheelSettings(boolean value) {mNewWheelSettings = value;}
+    public void setDataForLog(boolean value) {mDataForLog = value;}
+    public void setWheelSpeakerVolume(int value) {mWheelSpeakerVolume = value;}
+    public void setWheelTiltHorizon(int value) {mWheelTiltHorizon = value;}
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
@@ -1679,6 +1714,12 @@ public class WheelData {
     void reset() {
         mLowSpeedMusicTime = 0;
         mSpeed = 0;
+        mTorque = 0;
+        mMotorPower = 0;
+        mCpuTemp = 0;
+        mImuTemp = 0;
+        mSpeedLimit = 0;
+        mCurrentLimit = 0;
         mTotalDistance = 0;
         mCurrent = 0;
         mPower = null;
@@ -1728,193 +1769,176 @@ public class WheelData {
         mBluetoothLeService = bluetoothService;
         Context mContext = bluetoothService.getApplicationContext();
         String advData = WheelLog.AppConfig.getAdvDataForWheel(deviceAddress);
-         //String wheel_Type = "";
+        String adapterName = "";
         protoVer = "";
-        if (advData.compareTo("4e421300000000ec")==0) {
+        if (advData.compareTo("4e421300000000ec") == 0) {
             protoVer = "S2";
-        } else if ((advData.compareTo("4e421400000000eb")==0) || (advData.compareTo("4e422000000000df")==0) ||
-                (advData.compareTo("4e422200000000dd")==0) || (advData.compareTo("4e4230cf")==0)
+        } else if ((advData.compareTo("4e421400000000eb") == 0) || (advData.compareTo("4e422000000000df") == 0) ||
+                (advData.compareTo("4e422200000000dd") == 0) || (advData.compareTo("4e4230cf") == 0)
                 || advData.startsWith("5600")) {
             protoVer = "Mini";
         }
 
-        Class<R.array> res = R.array.class;
-        String wheel_types[] = mContext.getResources().getStringArray(R.array.wheel_types);
-        for (String wheel_Type : wheel_types) {
-            boolean detected_wheel = true;
-            java.lang.reflect.Field services_res = null;
-            try {
-                services_res = res.getField(wheel_Type + "_services");
-            } catch (Exception ignored) {
-            }
-            int services_res_id = 0;
-            if (services_res != null)
-                try {
-                    services_res_id = services_res.getInt(null);
-                } catch (Exception ignored) {
+        boolean detected_wheel = false;
+        String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
+        try {
+            JSONArray arr = new JSONArray(text);
+            adaptersLoop:
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject services = arr.getJSONObject(i);
+                if (services.length() - 1 != mBluetoothLeService.getSupportedGattServices().size()) {
+                    continue;
                 }
-
-            String services[] = mContext.getResources().getStringArray(services_res_id);
-
-            if (services.length != mBluetoothLeService.getSupportedGattServices().size())
-                continue;
-
-            for (String service_uuid : services) {
-                UUID s_uuid = UUID.fromString(service_uuid.replace("_", "-"));
-                BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
-                if (service != null) {
-                    java.lang.reflect.Field characteristic_res = null;
-                    try {
-                        characteristic_res = res.getField(wheel_Type + "_" + service_uuid);
-                    } catch (Exception ignored) {
+                adapterName = services.getString("adapter");
+                Iterator<String> iterator = services.keys();
+                // skip adapter key
+                iterator.next();
+                adapterServicesLoop:
+                while (iterator.hasNext()) {
+                    String keyName = iterator.next();
+                    UUID s_uuid = UUID.fromString(keyName);
+                    BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
+                    if (service == null) {
+                        break;
                     }
-                    int characteristic_res_id = 0;
-                    if (characteristic_res != null)
-                        try {
-                            characteristic_res_id = characteristic_res.getInt(null);
-                        } catch (Exception ignored) {
-                        }
-                    String characteristics[] = mContext.getResources().getStringArray(characteristic_res_id);
-                    for (String characteristic_uuid : characteristics) {
-                        UUID c_uuid = UUID.fromString(characteristic_uuid.replace("_", "-"));
+                    JSONArray service_uuid = services.getJSONArray(keyName);
+                    for (int j = 0; j < service_uuid.length(); j++) {
+                        UUID c_uuid = UUID.fromString(service_uuid.getString(j));
                         BluetoothGattCharacteristic characteristic = service.getCharacteristic(c_uuid);
                         if (characteristic == null) {
-                            detected_wheel = false;
-                            break;
+                            break adapterServicesLoop;
                         }
                     }
+                    detected_wheel = true;
+                    break adaptersLoop;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (detected_wheel) {
+            Timber.i("Protocol recognized as %s", adapterName);
+            if (WHEEL_TYPE.GOTWAY.toString().equalsIgnoreCase(adapterName) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
+                Timber.i("It seems to be RochWheel, force to Kingsong proto");
+                adapterName = WHEEL_TYPE.KINGSONG.toString();
+            }
+            if (WHEEL_TYPE.KINGSONG.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.KINGSONG);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+
+                return true;
+            } else if (WHEEL_TYPE.GOTWAY.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.GOTWAY_VIRTUAL);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                // Let the user know it's working by making the wheel beep
+                if (WheelLog.AppConfig.getConnectBeep())
+                    mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
+
+                return true;
+            } else if (WHEEL_TYPE.INMOTION.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.INMOTION);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_SERVICE_UUID));
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_READ_CHARACTER_UUID));
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                if (WheelLog.AppConfig.hasPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress())) {
+                    String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress());
+                    InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
+                    return true;
+                }
+                return false;
+
+            } else if (WHEEL_TYPE.INMOTION_V2.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Inmotion V2");
+                setWheelType(WHEEL_TYPE.INMOTION_V2);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                Timber.i("service UUID");
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_READ_CHARACTER_UUID));
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_V2_DESCRIPTER_UUID));
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                }
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Timber.i("enable notify UUID");
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                Timber.i("write notify");
+                InmotionAdapterV2.getInstance().startKeepAliveTimer(mBluetoothLeService);
+                Timber.i("starting Inmotion V2 adapter");
+                return true;
+
+            } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Ninebot Z");
+                setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
+                Timber.i("service UUID");
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                }
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Timber.i("enable notify UUID");
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                Timber.i("write notify");
+                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
+                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
+                    //mWheelType = WHEEL_TYPE.NINEBOT;
                 } else {
-                    detected_wheel = false;
-                    break;
+                    NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
                 }
+                Timber.i("starting ninebot adapter");
+                return true;
+            } else if (WHEEL_TYPE.NINEBOT.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Ninebot");
+                setWheelType(WHEEL_TYPE.NINEBOT);
+                BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
+                Timber.i("service UUID");
+                BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_READ_CHARACTER_UUID));
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_DESCRIPTER_UUID));
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                }
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                Timber.i("enable notify UUID");
+                mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
+                Timber.i("write notify");
+                NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
+                Timber.i("starting ninebot adapter");
+                return true;
             }
-
-            if (detected_wheel) {
-				Timber.i("Protocol recognized as %s", wheel_Type);
-                if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
-                    Timber.i("It seems to be RochWheel, force to Kingsong proto");
-                    wheel_Type = mContext.getResources().getString(R.string.kingsong);
-                }
-                if (mContext.getResources().getString(R.string.kingsong).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.KINGSONG);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID));
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-					
-                    return true;
-                } else if (mContext.getResources().getString(R.string.gotway).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.GOTWAY);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    // Let the user know it's working by making the wheel beep
-                    if (WheelLog.AppConfig.getConnectBeep())
-                        mBluetoothLeService.writeBluetoothGattCharacteristic("b".getBytes());
-
-                    return true;
-                } else if (mContext.getResources().getString(R.string.inmotion).equals(wheel_Type)) {
-                    setWheelType(WHEEL_TYPE.INMOTION);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_SERVICE_UUID));
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_READ_CHARACTER_UUID));
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    if (WheelLog.AppConfig.hasPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress())) {
-                        String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress());
-                        InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
-                        return true;
-                    }
-                    return false;
-
-                } else if (mContext.getResources().getString(R.string.inmotion_v2).equals(wheel_Type)) {
-                    Timber.i("Trying to start Inmotion V2");
-                    setWheelType(WHEEL_TYPE.INMOTION_V2);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
-                    Timber.i("service UUID");
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_READ_CHARACTER_UUID));
-                    Timber.i("read UUID");
-                    if (notifyCharacteristic == null) {
-                        Timber.i("it seems that RX UUID doesn't exist");
-                    }
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    Timber.i("notify UUID");
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_V2_DESCRIPTER_UUID));
-                    Timber.i("descr UUID");
-                    if (descriptor == null) {
-                        Timber.i("it seems that descr UUID doesn't exist");
-                    }
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    Timber.i("enable notify UUID");
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    Timber.i("write notify");
-                    InmotionAdapterV2.getInstance().startKeepAliveTimer(mBluetoothLeService);
-                    Timber.i("starting Inmotion V2 adapter");
-                    return true;
-
-                } else if (mContext.getResources().getString(R.string.ninebot_z).equals(wheel_Type)) {
-                    Timber.i("Trying to start Ninebot Z");
-                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
-                    Timber.i("service UUID");
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
-                    Timber.i("read UUID");
-                    if (notifyCharacteristic == null) {
-                        Timber.i("it seems that RX UUID doesn't exist");
-                    }
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    Timber.i("notify UUID");
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_Z_DESCRIPTER_UUID));
-                    Timber.i("descr UUID");
-                    if (descriptor == null) {
-                        Timber.i("it seems that descr UUID doesn't exist");
-                    }
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    Timber.i("enable notify UUID");
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    Timber.i("write notify");
-                    if (protoVer.compareTo("S2")==0 || protoVer.compareTo("Mini")==0){
-                        NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
-                        //mWheelType = WHEEL_TYPE.NINEBOT;
-                    } else {
-                        NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, "");
-                    }
-                    Timber.i("starting ninebot adapter");
-                    return true;
-                }
-                else if (mContext.getResources().getString(R.string.ninebot).equals(wheel_Type)) {
-                    Timber.i("Trying to start Ninebot");
-                    setWheelType(WHEEL_TYPE.NINEBOT);
-                    BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
-                    Timber.i("service UUID");
-                    BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_READ_CHARACTER_UUID));
-                    Timber.i("read UUID");
-                    if (notifyCharacteristic == null) {
-                        Timber.i("it seems that RX UUID doesn't exist");
-                    }
-                    mBluetoothLeService.setCharacteristicNotification(notifyCharacteristic, true);
-                    Timber.i("notify UUID");
-                    BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.NINEBOT_DESCRIPTER_UUID));
-                    Timber.i("descr UUID");
-                    if (descriptor == null) {
-                        Timber.i("it seems that descr UUID doesn't exist");
-                    }
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    Timber.i("enable notify UUID");
-                    mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                    Timber.i("write notify");
-                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService,"", protoVer);
-                    Timber.i("starting ninebot adapter");
-                    return true;
-                }
-
-            }
-            else {
-                Timber.i("Protocol recognized as Unknown");
-            }
+        } else {
+            Timber.i("Protocol recognized as Unknown");
         }
         return false;
     }

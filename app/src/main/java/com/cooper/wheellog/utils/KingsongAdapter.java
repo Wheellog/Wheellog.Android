@@ -94,13 +94,13 @@ public class KingsongAdapter extends BaseAdapter {
                 return true;
             } else if ((data[16] & 255) == 0xB9) { // Distance/Time/Fan Data
                 long distance = MathsUtil.getInt4R(data, 2);
-                wd.setDistance(distance);
+                wd.setWheelDistance(distance);
                 wd.updateRideTime();
                 wd.setTopSpeed(MathsUtil.getInt2R(data, 8));
                 wd.setFanStatus(data[12]);
                 wd.setChargingStatus(data[13]);
                 wd.setTemperature2(MathsUtil.getInt2R(data, 14));
-                return true;
+                return false;
             } else if ((data[16] & 255) == 187) { // Name and Type data
                 int end = 0;
                 int i = 0;
@@ -123,7 +123,7 @@ public class KingsongAdapter extends BaseAdapter {
                     wd.setVersion(String.format(Locale.US, "%.2f", ((double) (Integer.parseInt(ss[ss.length - 1]) / 100.0))));
                 } catch (Exception ignored) {
                 }
-                return true;
+                return false;
             } else if ((data[16] & 255) == 179) { // Serial Number
                 byte[] sndata = new byte[18];
                 System.arraycopy(data, 2, sndata, 0, 14);
@@ -131,13 +131,14 @@ public class KingsongAdapter extends BaseAdapter {
                 sndata[17] = (byte) 0;
                 wd.setSerial(new String(sndata));
                 updateKSAlarmAndSpeed();
-                return true;
+                return false;
             } else if ((data[16] & 255) == 0xF5) { //cpu load
                 wd.setCpuLoad(data[14]);
                 wd.setOutput(data[15]);
                 return false;
             } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
                 mSpeedLimit = MathsUtil.getInt2R(data, 2) / 100.0;
+                wd.setSpeedLimit(mSpeedLimit);
                 return false;
             } else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 wd.setWheelMaxSpeed(data[10] & 255);
@@ -161,18 +162,8 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().updatePedalsMode(pedalsMode);
     }
 
-    @Override
-    public void updateLightMode(int lightMode) {
-
-    }
-
-    @Override
-    public void updateMaxSpeed(int wheelMaxSpeed) {
-
-    }
-
     private boolean is84vWheel() {
-        return StringUtil.inArray(WheelData.getInstance().getModel(), new String[] { "KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || WheelData.getInstance().getModel().startsWith("ROCKW");
+        return StringUtil.inArray(WheelData.getInstance().getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"}) || WheelData.getInstance().getModel().startsWith("ROCKW");
     }
 
     @Override

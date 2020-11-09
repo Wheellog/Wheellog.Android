@@ -39,14 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-
-            <include layout="@layout/main_view_one" />
-
-            <include layout="@layout/main_view_two" />
-
-            <include layout="@layout/main_view_three" />
-
-            <include layout="@layout/main_view_four" />
         </androidx.viewpager.widget.ViewPager>
 
         <com.viewpagerindicator.LinePageIndicator

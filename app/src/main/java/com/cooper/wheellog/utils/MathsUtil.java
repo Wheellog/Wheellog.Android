@@ -63,7 +63,20 @@ public class MathsUtil {
         return result;
     }
 
-    @NotNull
+    public static long longFromBytesLE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 8) {
+            return (((((((((((((long) (bytes[starting + 7] & 255) << 8
+                    | (long) (bytes[starting + 6] & 255))) << 8
+                    | (long) (bytes[starting + 5] & 255))) << 8
+                    | (long) (bytes[starting + 4] & 255))) << 8
+                    | (long) (bytes[starting + 3] & 255))) << 8
+                    | (long) (bytes[starting + 2] & 255))) << 8
+                    | (long) (bytes[starting + 1] & 255))) << 8
+                    | (long) (bytes[starting] & 255);
+        }
+        return 0;
+    }
+
     public static long signedIntFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 4) {
             return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
@@ -71,7 +84,6 @@ public class MathsUtil {
         return 0;
     }
 
-    @NotNull
     public static int intFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 4) {
             return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
@@ -79,7 +91,13 @@ public class MathsUtil {
         return 0;
     }
 
-    @NotNull
+    public static int intFromBytesRevBE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 4) {
+            return (((bytes[starting+2] & 0xFF) << 24) | ((bytes[starting+3] & 0xFF) << 16) | ((bytes[starting] & 0xFF) << 8) | (bytes[starting+1] & 0xFF));
+        }
+        return 0;
+    }
+
     public static int shortFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 2) {
             return ((bytes[starting+1] & 0xFF) << 8) | (bytes[starting] & 0xFF);
@@ -87,12 +105,25 @@ public class MathsUtil {
         return 0;
     }
 
-    @NotNull
+    public static int shortFromBytesBE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 2) {
+            return ((bytes[starting] & 0xFF) << 8) | (bytes[starting+1] & 0xFF);
+        }
+        return 0;
+    }
+
+    public static int signedShortFromBytesBE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 2) {
+            return (bytes[starting] << 8) | (bytes[starting+1] & 0xFF);
+        }
+        return 0;
+    }
+
+
     public static int signedShortFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 2) {
             return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));
         }
         return 0;
     }
-
 }

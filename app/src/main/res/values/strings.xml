@@ -11,6 +11,10 @@
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="speed_alarm1" translatable="false">speed_alarm1</string>
+    <string name="speed_alarm2" translatable="false">speed_alarm2</string>
+    <string name="speed_alarm3" translatable="false">speed_alarm3</string>
+    <string name="altered_alarms_section" translatable="false">altered_alarms_section</string>
     <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
     <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
     <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
@@ -166,6 +170,12 @@
     <string name="fan_status">Fan Status</string>
     <string name="mode">Mode</string>
     <string name="total_distance">Total Distance</string>
+    <string name="torque">Torque</string>
+    <string name="dynamic_speed_limit">Speed Limit</string>
+    <string name="dynamic_current_limit">Current Limit</string>
+    <string name="cpu_temp">CPU temp</string>
+    <string name="imu_temp">IMU temp</string>
+    <string name="motor_power">Motor Power</string>
     <string name="total">Total</string>
     <string name="name">Name</string>
     <string name="model">Model</string>
@@ -235,12 +245,13 @@
     <string name="about_app_title">About WheelLog</string>
     <string name="settings_title">Settings</string>
     <string name="amp">A</string>
+    <string name="newton">N*m</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
     <string name="dial_measurements"></string>
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
-    <string name="view_blocks" translatable="false">view_blocks</string>
+    <string name="view_blocks_string" translatable="false">view_blocks_string</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>
     <string name="use_eng_alert_title">Restart required</string>
@@ -298,8 +309,8 @@
     <string name="warning_pwm_description">Advance PWM warning, 0 - off</string>
     <string name="warning_speed_period_title">Frequency of warnings</string>
     <string name="warning_speed_period_description">Notification period, 0 - off</string>
-    <string name="use_short_pwm_title">Short display of PWM</string>.
-    <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>.
+    <string name="use_short_pwm_title">Short display of PWM</string>
+    <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>
     <string name="speed_alarm2_phone_title">Speed Alarm 2</string>
@@ -395,4 +406,8 @@
     <string name="bmsCell16">Cell 16</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
+    <string name="show_page_events" translatable="false">show_page_events</string>
+    <string name="show_page_events_description">Show the events page</string>
+    <string name="show_page_events_title">Events page</string>
+    <string name="main_view_category">Main view</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -20,6 +21,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,10 +40,11 @@ import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.KingsongAdapter;
+import com.cooper.wheellog.utils.StringUtil;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -56,11 +59,10 @@ import com.viewpagerindicator.LinePageIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnPermissionDenied;
@@ -78,7 +80,11 @@ public class MainActivity extends AppCompatActivity {
         super.attachBaseContext(LocaleManager.setLocale(base));
     }
 
+    //region private variables
     ViewPageAdapter pagerAdapter;
+    TextView eventsTextView;
+    int eventsCurrentCount = 0;
+    int eventsMaxCount = 500;
 
     Menu mMenu;
     MenuItem miSearch;
@@ -90,124 +96,63 @@ public class MainActivity extends AppCompatActivity {
 
     WheelView wheelView;
 
-    TextView tvBmsWaitText;
-    TextView tvTitleBmsBattery1;
-    TextView tvTitleBmsBattery2;
-    TextView tvTitleBms1Sn;
     TextView tvBms1Sn;
-    TextView tvTitleBms2Sn;
     TextView tvBms2Sn;
-    TextView tvTitleBms1Fw;
     TextView tvBms1Fw;
-    TextView tvTitleBms2Fw;
     TextView tvBms2Fw;
-    TextView tvTitleBms1FactoryCap;
     TextView tvBms1FactoryCap;
-    TextView tvTitleBms2FactoryCap;
     TextView tvBms2FactoryCap;
-    TextView tvTitleBms1ActualCap;
     TextView tvBms1ActualCap;
-    TextView tvTitleBms2ActualCap;
     TextView tvBms2ActualCap;
-    TextView tvTitleBms1Cycles;
     TextView tvBms1Cycles;
-    TextView tvTitleBms2Cycles;
     TextView tvBms2Cycles;
-    TextView tvTitleBms1ChrgCount;
     TextView tvBms1ChrgCount;
-    TextView tvTitleBms2ChrgCount;
     TextView tvBms2ChrgCount;
-    TextView tvTitleBms1MfgDate;
     TextView tvBms1MfgDate;
-    TextView tvTitleBms2MfgDate;
     TextView tvBms2MfgDate;
-    TextView tvTitleBms1Status;
     TextView tvBms1Status;
-    TextView tvTitleBms2Status;
     TextView tvBms2Status;
-    TextView tvTitleBms1RemCap;
     TextView tvBms1RemCap;
-    TextView tvTitleBms2RemCap;
     TextView tvBms2RemCap;
-    TextView tvTitleBms1RemPerc;
     TextView tvBms1RemPerc;
-    TextView tvTitleBms2RemPerc;
     TextView tvBms2RemPerc;
-    TextView tvTitleBms1Current;
     TextView tvBms1Current;
-    TextView tvTitleBms2Current;
     TextView tvBms2Current;
-    TextView tvTitleBms1Voltage;
     TextView tvBms1Voltage;
-    TextView tvTitleBms2Voltage;
     TextView tvBms2Voltage;
-    TextView tvTitleBms1Temp1;
     TextView tvBms1Temp1;
-    TextView tvTitleBms2Temp1;
     TextView tvBms2Temp1;
-    TextView tvTitleBms1Temp2;
     TextView tvBms1Temp2;
-    TextView tvTitleBms2Temp2;
     TextView tvBms2Temp2;
-    TextView tvTitleBms1Health;
     TextView tvBms1Health;
-    TextView tvTitleBms2Health;
     TextView tvBms2Health;
-    TextView tvTitleBms1Cell1;
     TextView tvBms1Cell1;
-    TextView tvTitleBms2Cell1;
     TextView tvBms2Cell1;
-    TextView tvTitleBms1Cell2;
     TextView tvBms1Cell2;
-    TextView tvTitleBms2Cell2;
     TextView tvBms2Cell2;
-    TextView tvTitleBms1Cell3;
     TextView tvBms1Cell3;
-    TextView tvTitleBms2Cell3;
     TextView tvBms2Cell3;
-    TextView tvTitleBms1Cell4;
     TextView tvBms1Cell4;
-    TextView tvTitleBms2Cell4;
     TextView tvBms2Cell4;
-    TextView tvTitleBms1Cell5;
     TextView tvBms1Cell5;
-    TextView tvTitleBms2Cell5;
     TextView tvBms2Cell5;
-    TextView tvTitleBms1Cell6;
     TextView tvBms1Cell6;
-    TextView tvTitleBms2Cell6;
     TextView tvBms2Cell6;
-    TextView tvTitleBms1Cell7;
     TextView tvBms1Cell7;
-    TextView tvTitleBms2Cell7;
     TextView tvBms2Cell7;
-    TextView tvTitleBms1Cell8;
     TextView tvBms1Cell8;
-    TextView tvTitleBms2Cell8;
     TextView tvBms2Cell8;
-    TextView tvTitleBms1Cell9;
     TextView tvBms1Cell9;
-    TextView tvTitleBms2Cell9;
     TextView tvBms2Cell9;
-    TextView tvTitleBms1Cell10;
     TextView tvBms1Cell10;
-    TextView tvTitleBms2Cell10;
     TextView tvBms2Cell10;
-    TextView tvTitleBms1Cell11;
     TextView tvBms1Cell11;
-    TextView tvTitleBms2Cell11;
     TextView tvBms2Cell11;
-    TextView tvTitleBms1Cell12;
     TextView tvBms1Cell12;
-    TextView tvTitleBms2Cell12;
     TextView tvBms2Cell12;
-    TextView tvTitleBms1Cell13;
     TextView tvBms1Cell13;
-    TextView tvTitleBms2Cell13;
     TextView tvBms2Cell13;
-    TextView tvTitleBms1Cell14;
     TextView tvBms1Cell14;
-    TextView tvTitleBms2Cell14;
     TextView tvBms2Cell14;
     TextView tvTitleBms1Cell15;
     TextView tvBms1Cell15;
@@ -224,10 +169,11 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    int viewPagerPage = 0;
+    int viewPagerPage = R.id.page_main;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
     private DrawerLayout mDrawer;
+    //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
@@ -269,6 +215,11 @@ public class MainActivity extends AppCompatActivity {
                     Timber.i("Bluetooth state = %d", connectionState);
                     setConnectionState(connectionState);
                     break;
+                case Constants.ACTION_WHEEL_TYPE_CHANGED:
+                    Timber.i("Wheel type switched");
+                    configureDisplay(WheelData.getInstance().getWheelType());
+                    updateScreen(true);
+                    break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                         if (WheelData.getInstance().getName().isEmpty())
@@ -295,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     break;
                 case Constants.ACTION_PREFERENCE_CHANGED:
-                    String settingsKey = intent.getStringExtra(Constants.INTENT_EXTRA_SETTINGS_KEY);
+                    int settingsKey = intent.getIntExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, -1);
                     loadPreferences(settingsKey);
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
@@ -305,11 +256,9 @@ public class MainActivity extends AppCompatActivity {
 
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-                        // show BMS page
-                        pagerAdapter.addPage(R.id.page_four);
+                        pagerAdapter.showPage(R.id.page_smart_bms);
                     } else {
-                        // hide BMS page
-                        pagerAdapter.deletePage(R.id.page_four);
+                        pagerAdapter.hidePage(R.id.page_smart_bms);
                     }
                     findViewById(R.id.indicator).invalidate();
                     break;
@@ -365,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setWheelPreferences() {
         Timber.i("SetWheelPreferences");
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshWheelSettings(WheelData.getInstance().getWheelLight(),
+        getPreferencesFragment().refreshWheelSettings(WheelData.getInstance().getWheelLight(),
                 WheelData.getInstance().getWheelLed(),
                 WheelData.getInstance().getWheelHandleButton(),
                 WheelData.getInstance().getWheelMaxSpeed(),
@@ -428,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //region SecondPage
     private LinkedHashMap<Integer, String> secondPageValues = new LinkedHashMap<>();
 
     public void setupFieldForSecondPage(int resId)
@@ -472,133 +422,15 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+    //endregion
 
     private void configureDisplay(WHEEL_TYPE wheelType) {
-        tvBmsWaitText.setVisibility(View.VISIBLE);
-        tvTitleBmsBattery1.setVisibility(View.GONE);
-        tvTitleBmsBattery2.setVisibility(View.GONE);
-        tvBms1Sn.setVisibility(View.GONE);
-        tvBms1Fw.setVisibility(View.GONE);
-        tvBms1FactoryCap.setVisibility(View.GONE);
-        tvBms1ActualCap.setVisibility(View.GONE);
-        tvBms1Cycles.setVisibility(View.GONE);
-        tvBms1ChrgCount.setVisibility(View.GONE);
-        tvBms1MfgDate.setVisibility(View.GONE);
-        tvBms1Status.setVisibility(View.GONE);
-        tvBms1RemCap.setVisibility(View.GONE);
-        tvBms1RemPerc.setVisibility(View.GONE);
-        tvBms1Current.setVisibility(View.GONE);
-        tvBms1Voltage.setVisibility(View.GONE);
-        tvBms1Temp1.setVisibility(View.GONE);
-        tvBms1Temp2.setVisibility(View.GONE);
-        tvBms1Health.setVisibility(View.GONE);
-        tvBms1Cell1.setVisibility(View.GONE);
-        tvBms1Cell2.setVisibility(View.GONE);
-        tvBms1Cell3.setVisibility(View.GONE);
-        tvBms1Cell4.setVisibility(View.GONE);
-        tvBms1Cell5.setVisibility(View.GONE);
-        tvBms1Cell6.setVisibility(View.GONE);
-        tvBms1Cell7.setVisibility(View.GONE);
-        tvBms1Cell8.setVisibility(View.GONE);
-        tvBms1Cell9.setVisibility(View.GONE);
-        tvBms1Cell10.setVisibility(View.GONE);
-        tvBms1Cell11.setVisibility(View.GONE);
-        tvBms1Cell12.setVisibility(View.GONE);
-        tvBms1Cell13.setVisibility(View.GONE);
-        tvBms1Cell14.setVisibility(View.GONE);
         tvBms1Cell15.setVisibility(View.GONE);
         tvBms1Cell16.setVisibility(View.GONE);
-        tvBms2Sn.setVisibility(View.GONE);
-        tvBms2Fw.setVisibility(View.GONE);
-        tvBms2FactoryCap.setVisibility(View.GONE);
-        tvBms2ActualCap.setVisibility(View.GONE);
-        tvBms2Cycles.setVisibility(View.GONE);
-        tvBms2ChrgCount.setVisibility(View.GONE);
-        tvBms2MfgDate.setVisibility(View.GONE);
-        tvBms2Status.setVisibility(View.GONE);
-        tvBms2RemCap.setVisibility(View.GONE);
-        tvBms2RemPerc.setVisibility(View.GONE);
-        tvBms2Current.setVisibility(View.GONE);
-        tvBms2Voltage.setVisibility(View.GONE);
-        tvBms2Temp1.setVisibility(View.GONE);
-        tvBms2Temp2.setVisibility(View.GONE);
-        tvBms2Health.setVisibility(View.GONE);
-        tvBms2Cell1.setVisibility(View.GONE);
-        tvBms2Cell2.setVisibility(View.GONE);
-        tvBms2Cell3.setVisibility(View.GONE);
-        tvBms2Cell4.setVisibility(View.GONE);
-        tvBms2Cell5.setVisibility(View.GONE);
-        tvBms2Cell6.setVisibility(View.GONE);
-        tvBms2Cell7.setVisibility(View.GONE);
-        tvBms2Cell8.setVisibility(View.GONE);
-        tvBms2Cell9.setVisibility(View.GONE);
-        tvBms2Cell10.setVisibility(View.GONE);
-        tvBms2Cell11.setVisibility(View.GONE);
-        tvBms2Cell12.setVisibility(View.GONE);
-        tvBms2Cell13.setVisibility(View.GONE);
-        tvBms2Cell14.setVisibility(View.GONE);
         tvBms2Cell15.setVisibility(View.GONE);
         tvBms2Cell16.setVisibility(View.GONE);
-        tvTitleBms1Sn.setVisibility(View.GONE);
-        tvTitleBms1Fw.setVisibility(View.GONE);
-        tvTitleBms1FactoryCap.setVisibility(View.GONE);
-        tvTitleBms1ActualCap.setVisibility(View.GONE);
-        tvTitleBms1Cycles.setVisibility(View.GONE);
-        tvTitleBms1ChrgCount.setVisibility(View.GONE);
-        tvTitleBms1MfgDate.setVisibility(View.GONE);
-        tvTitleBms1Status.setVisibility(View.GONE);
-        tvTitleBms1RemCap.setVisibility(View.GONE);
-        tvTitleBms1RemPerc.setVisibility(View.GONE);
-        tvTitleBms1Current.setVisibility(View.GONE);
-        tvTitleBms1Voltage.setVisibility(View.GONE);
-        tvTitleBms1Temp1.setVisibility(View.GONE);
-        tvTitleBms1Temp2.setVisibility(View.GONE);
-        tvTitleBms1Health.setVisibility(View.GONE);
-        tvTitleBms1Cell1.setVisibility(View.GONE);
-        tvTitleBms1Cell2.setVisibility(View.GONE);
-        tvTitleBms1Cell3.setVisibility(View.GONE);
-        tvTitleBms1Cell4.setVisibility(View.GONE);
-        tvTitleBms1Cell5.setVisibility(View.GONE);
-        tvTitleBms1Cell6.setVisibility(View.GONE);
-        tvTitleBms1Cell7.setVisibility(View.GONE);
-        tvTitleBms1Cell8.setVisibility(View.GONE);
-        tvTitleBms1Cell9.setVisibility(View.GONE);
-        tvTitleBms1Cell10.setVisibility(View.GONE);
-        tvTitleBms1Cell11.setVisibility(View.GONE);
-        tvTitleBms1Cell12.setVisibility(View.GONE);
-        tvTitleBms1Cell13.setVisibility(View.GONE);
-        tvTitleBms1Cell14.setVisibility(View.GONE);
         tvTitleBms1Cell15.setVisibility(View.GONE);
         tvTitleBms1Cell16.setVisibility(View.GONE);
-        tvTitleBms2Sn.setVisibility(View.GONE);
-        tvTitleBms2Fw.setVisibility(View.GONE);
-        tvTitleBms2FactoryCap.setVisibility(View.GONE);
-        tvTitleBms2ActualCap.setVisibility(View.GONE);
-        tvTitleBms2Cycles.setVisibility(View.GONE);
-        tvTitleBms2ChrgCount.setVisibility(View.GONE);
-        tvTitleBms2MfgDate.setVisibility(View.GONE);
-        tvTitleBms2Status.setVisibility(View.GONE);
-        tvTitleBms2RemCap.setVisibility(View.GONE);
-        tvTitleBms2RemPerc.setVisibility(View.GONE);
-        tvTitleBms2Current.setVisibility(View.GONE);
-        tvTitleBms2Voltage.setVisibility(View.GONE);
-        tvTitleBms2Temp1.setVisibility(View.GONE);
-        tvTitleBms2Temp2.setVisibility(View.GONE);
-        tvTitleBms2Health.setVisibility(View.GONE);
-        tvTitleBms2Cell1.setVisibility(View.GONE);
-        tvTitleBms2Cell2.setVisibility(View.GONE);
-        tvTitleBms2Cell3.setVisibility(View.GONE);
-        tvTitleBms2Cell4.setVisibility(View.GONE);
-        tvTitleBms2Cell5.setVisibility(View.GONE);
-        tvTitleBms2Cell6.setVisibility(View.GONE);
-        tvTitleBms2Cell7.setVisibility(View.GONE);
-        tvTitleBms2Cell8.setVisibility(View.GONE);
-        tvTitleBms2Cell9.setVisibility(View.GONE);
-        tvTitleBms2Cell10.setVisibility(View.GONE);
-        tvTitleBms2Cell11.setVisibility(View.GONE);
-        tvTitleBms2Cell12.setVisibility(View.GONE);
-        tvTitleBms2Cell13.setVisibility(View.GONE);
-        tvTitleBms2Cell14.setVisibility(View.GONE);
         tvTitleBms2Cell15.setVisibility(View.GONE);
         tvTitleBms2Cell16.setVisibility(View.GONE);
 
@@ -607,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
         switch (wheelType) {
             case KINGSONG:
                 setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.dynamic_speed_limit);
                 setupFieldForSecondPage(R.string.top_speed);
                 setupFieldForSecondPage(R.string.average_speed);
                 setupFieldForSecondPage(R.string.average_riding_speed);
@@ -654,6 +487,7 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.charging);
                 setupFieldForSecondPage(R.string.model);
                 setupFieldForSecondPage(R.string.version);
+                setupFieldForSecondPage(R.string.charging);
                 break;
 
             case GOTWAY:
@@ -673,10 +507,40 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.voltage_sag);
                 setupFieldForSecondPage(R.string.current);
                 setupFieldForSecondPage(R.string.power);
-                setupFieldForSecondPage(R.string.charging);
                 break;
 
             case INMOTION_V2:
+                setupFieldForSecondPage(R.string.speed);
+                setupFieldForSecondPage(R.string.dynamic_speed_limit);
+                setupFieldForSecondPage(R.string.torque);
+                setupFieldForSecondPage(R.string.top_speed);
+                setupFieldForSecondPage(R.string.average_speed);
+                setupFieldForSecondPage(R.string.average_riding_speed);
+                setupFieldForSecondPage(R.string.battery);
+                setupFieldForSecondPage(R.string.temperature);
+                setupFieldForSecondPage(R.string.temperature2);
+                setupFieldForSecondPage(R.string.cpu_temp);
+                setupFieldForSecondPage(R.string.imu_temp);
+                setupFieldForSecondPage(R.string.angle);
+                setupFieldForSecondPage(R.string.roll);
+                setupFieldForSecondPage(R.string.ride_time);
+                setupFieldForSecondPage(R.string.riding_time);
+                setupFieldForSecondPage(R.string.distance);
+                setupFieldForSecondPage(R.string.wheel_distance);
+                setupFieldForSecondPage(R.string.user_distance);
+                setupFieldForSecondPage(R.string.total_distance);
+                setupFieldForSecondPage(R.string.voltage);
+                setupFieldForSecondPage(R.string.voltage_sag);
+                setupFieldForSecondPage(R.string.current);
+                setupFieldForSecondPage(R.string.dynamic_current_limit);
+                setupFieldForSecondPage(R.string.power);
+                setupFieldForSecondPage(R.string.motor_power);
+                setupFieldForSecondPage(R.string.mode);
+                setupFieldForSecondPage(R.string.model);
+                setupFieldForSecondPage(R.string.version);
+                setupFieldForSecondPage(R.string.serial_number);
+                break;
+
             case INMOTION:
                 setupFieldForSecondPage(R.string.speed);
                 setupFieldForSecondPage(R.string.top_speed);
@@ -701,10 +565,7 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.model);
                 setupFieldForSecondPage(R.string.version);
                 setupFieldForSecondPage(R.string.serial_number);
-                setupFieldForSecondPage(R.string.charging);
                 break;
-
-
 
             case NINEBOT_Z:
                 setupFieldForSecondPage(R.string.speed);
@@ -713,12 +574,9 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.average_riding_speed);
                 setupFieldForSecondPage(R.string.battery);
                 setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.angle);
-                setupFieldForSecondPage(R.string.roll);
                 setupFieldForSecondPage(R.string.ride_time);
                 setupFieldForSecondPage(R.string.riding_time);
                 setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.wheel_distance);
                 setupFieldForSecondPage(R.string.user_distance);
                 setupFieldForSecondPage(R.string.total_distance);
                 setupFieldForSecondPage(R.string.voltage);
@@ -729,132 +587,12 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.version);
                 setupFieldForSecondPage(R.string.serial_number);
 
-                tvBmsWaitText.setVisibility(View.GONE);
-                tvTitleBmsBattery1.setVisibility(View.VISIBLE);
-                tvTitleBmsBattery2.setVisibility(View.VISIBLE);
-
-                tvBms1Sn.setVisibility(View.VISIBLE);
-                tvBms1Fw.setVisibility(View.VISIBLE);
-                tvBms1FactoryCap.setVisibility(View.VISIBLE);
-                tvBms1ActualCap.setVisibility(View.VISIBLE);
-                tvBms1Cycles.setVisibility(View.VISIBLE);
-                tvBms1ChrgCount.setVisibility(View.VISIBLE);
-                tvBms1MfgDate.setVisibility(View.VISIBLE);
-                tvBms1Status.setVisibility(View.VISIBLE);
-                tvBms1RemCap.setVisibility(View.VISIBLE);
-                tvBms1RemPerc.setVisibility(View.VISIBLE);
-                tvBms1Current.setVisibility(View.VISIBLE);
-                tvBms1Voltage.setVisibility(View.VISIBLE);
-                tvBms1Temp1.setVisibility(View.VISIBLE);
-                tvBms1Temp2.setVisibility(View.VISIBLE);
-                tvBms1Health.setVisibility(View.VISIBLE);
-                tvBms1Cell1.setVisibility(View.VISIBLE);
-                tvBms1Cell2.setVisibility(View.VISIBLE);
-                tvBms1Cell3.setVisibility(View.VISIBLE);
-                tvBms1Cell4.setVisibility(View.VISIBLE);
-                tvBms1Cell5.setVisibility(View.VISIBLE);
-                tvBms1Cell6.setVisibility(View.VISIBLE);
-                tvBms1Cell7.setVisibility(View.VISIBLE);
-                tvBms1Cell8.setVisibility(View.VISIBLE);
-                tvBms1Cell9.setVisibility(View.VISIBLE);
-                tvBms1Cell10.setVisibility(View.VISIBLE);
-                tvBms1Cell11.setVisibility(View.VISIBLE);
-                tvBms1Cell12.setVisibility(View.VISIBLE);
-                tvBms1Cell13.setVisibility(View.VISIBLE);
-                tvBms1Cell14.setVisibility(View.VISIBLE);
                 tvBms1Cell15.setVisibility(View.GONE);
                 tvBms1Cell16.setVisibility(View.GONE);
-                tvBms2Sn.setVisibility(View.VISIBLE);
-                tvBms2Fw.setVisibility(View.VISIBLE);
-                tvBms2FactoryCap.setVisibility(View.VISIBLE);
-                tvBms2ActualCap.setVisibility(View.VISIBLE);
-                tvBms2Cycles.setVisibility(View.VISIBLE);
-                tvBms2ChrgCount.setVisibility(View.VISIBLE);
-                tvBms2MfgDate.setVisibility(View.VISIBLE);
-                tvBms2Status.setVisibility(View.VISIBLE);
-                tvBms2RemCap.setVisibility(View.VISIBLE);
-                tvBms2RemPerc.setVisibility(View.VISIBLE);
-                tvBms2Current.setVisibility(View.VISIBLE);
-                tvBms2Voltage.setVisibility(View.VISIBLE);
-                tvBms2Temp1.setVisibility(View.VISIBLE);
-                tvBms2Temp2.setVisibility(View.VISIBLE);
-                tvBms2Health.setVisibility(View.VISIBLE);
-                tvBms2Cell1.setVisibility(View.VISIBLE);
-                tvBms2Cell2.setVisibility(View.VISIBLE);
-                tvBms2Cell3.setVisibility(View.VISIBLE);
-                tvBms2Cell4.setVisibility(View.VISIBLE);
-                tvBms2Cell5.setVisibility(View.VISIBLE);
-                tvBms2Cell6.setVisibility(View.VISIBLE);
-                tvBms2Cell7.setVisibility(View.VISIBLE);
-                tvBms2Cell8.setVisibility(View.VISIBLE);
-                tvBms2Cell9.setVisibility(View.VISIBLE);
-                tvBms2Cell10.setVisibility(View.VISIBLE);
-                tvBms2Cell11.setVisibility(View.VISIBLE);
-                tvBms2Cell12.setVisibility(View.VISIBLE);
-                tvBms2Cell13.setVisibility(View.VISIBLE);
-                tvBms2Cell14.setVisibility(View.VISIBLE);
                 tvBms2Cell15.setVisibility(View.GONE);
                 tvBms2Cell16.setVisibility(View.GONE);
-                tvTitleBms1Sn.setVisibility(View.VISIBLE);
-                tvTitleBms1Fw.setVisibility(View.VISIBLE);
-                tvTitleBms1FactoryCap.setVisibility(View.VISIBLE);
-                tvTitleBms1ActualCap.setVisibility(View.VISIBLE);
-                tvTitleBms1Cycles.setVisibility(View.VISIBLE);
-                tvTitleBms1ChrgCount.setVisibility(View.VISIBLE);
-                tvTitleBms1MfgDate.setVisibility(View.VISIBLE);
-                tvTitleBms1Status.setVisibility(View.VISIBLE);
-                tvTitleBms1RemCap.setVisibility(View.VISIBLE);
-                tvTitleBms1RemPerc.setVisibility(View.VISIBLE);
-                tvTitleBms1Current.setVisibility(View.VISIBLE);
-                tvTitleBms1Voltage.setVisibility(View.VISIBLE);
-                tvTitleBms1Temp1.setVisibility(View.VISIBLE);
-                tvTitleBms1Temp2.setVisibility(View.VISIBLE);
-                tvTitleBms1Health.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell1.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell2.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell3.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell4.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell5.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell6.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell7.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell8.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell9.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell10.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell11.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell12.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell13.setVisibility(View.VISIBLE);
-                tvTitleBms1Cell14.setVisibility(View.VISIBLE);
                 tvTitleBms1Cell15.setVisibility(View.GONE);
                 tvTitleBms1Cell16.setVisibility(View.GONE);
-                tvTitleBms2Sn.setVisibility(View.VISIBLE);
-                tvTitleBms2Fw.setVisibility(View.VISIBLE);
-                tvTitleBms2FactoryCap.setVisibility(View.VISIBLE);
-                tvTitleBms2ActualCap.setVisibility(View.VISIBLE);
-                tvTitleBms2Cycles.setVisibility(View.VISIBLE);
-                tvTitleBms2ChrgCount.setVisibility(View.VISIBLE);
-                tvTitleBms2MfgDate.setVisibility(View.VISIBLE);
-                tvTitleBms2Status.setVisibility(View.VISIBLE);
-                tvTitleBms2RemCap.setVisibility(View.VISIBLE);
-                tvTitleBms2RemPerc.setVisibility(View.VISIBLE);
-                tvTitleBms2Current.setVisibility(View.VISIBLE);
-                tvTitleBms2Voltage.setVisibility(View.VISIBLE);
-                tvTitleBms2Temp1.setVisibility(View.VISIBLE);
-                tvTitleBms2Temp2.setVisibility(View.VISIBLE);
-                tvTitleBms2Health.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell1.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell2.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell3.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell4.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell5.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell6.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell7.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell8.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell9.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell10.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell11.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell12.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell13.setVisibility(View.VISIBLE);
-                tvTitleBms2Cell14.setVisibility(View.VISIBLE);
                 tvTitleBms2Cell15.setVisibility(View.GONE);
                 tvTitleBms2Cell16.setVisibility(View.GONE);
                 break;
@@ -866,8 +604,6 @@ public class MainActivity extends AppCompatActivity {
                 setupFieldForSecondPage(R.string.average_riding_speed);
                 setupFieldForSecondPage(R.string.battery);
                 setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.angle);
-                setupFieldForSecondPage(R.string.roll);
                 setupFieldForSecondPage(R.string.ride_time);
                 setupFieldForSecondPage(R.string.riding_time);
                 setupFieldForSecondPage(R.string.distance);
@@ -885,10 +621,11 @@ public class MainActivity extends AppCompatActivity {
         createSecondPage();
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void updateScreen(boolean updateGraph) {
         WheelData data = WheelData.getInstance();
         switch (viewPagerPage) {
-            case 0: // GUI View
+            case R.id.page_main: // GUI View
                 data.setBmsView(false);
                 wheelView.setSpeed(data.getSpeed());
                 wheelView.setBattery(data.getBatteryLevel());
@@ -898,12 +635,12 @@ public class MainActivity extends AppCompatActivity {
                 wheelView.setDistance(data.getDistanceDouble());
                 wheelView.setTotalDistance(data.getTotalDistanceDouble());
                 wheelView.setVoltage(data.getVoltageDouble());
-                wheelView.setCurrent(data.getPowerDouble());
+                wheelView.setCurrent(data.getCurrentDouble());
                 wheelView.setAverageSpeed(data.getAverageRidingSpeedDouble());
-                wheelView.redrawTextBoxes();
                 wheelView.setMaxPwm(data.getMaxPwm());
                 wheelView.setMaxTemperature(data.getMaxTemp());
                 wheelView.setPwm(data.getCalculatedPwm());
+                wheelView.redrawTextBoxes();
 
                 String profileName = WheelLog.AppConfig.getProfileName();
                 if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneral())
@@ -912,7 +649,7 @@ public class MainActivity extends AppCompatActivity {
                     wheelView.setWheelModel(profileName);
 
                 break;
-            case 1: // Text View
+            case R.id.page_params_list: // Text View
                 WheelData.getInstance().setBmsView(false);
 
                 if (use_mph) {
@@ -920,6 +657,7 @@ public class MainActivity extends AppCompatActivity {
                     updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
                     updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble())));
                     updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageRidingSpeedDouble())));
+                    updateFieldForSecondPage(R.string.dynamic_speed_limit, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getSpeedLimit())));
                     updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getDistanceDouble())));
                     updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble())));
                     updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getUserDistanceDouble())));
@@ -929,6 +667,7 @@ public class MainActivity extends AppCompatActivity {
                     updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getTopSpeedDouble()));
                     updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble()));
                     updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageRidingSpeedDouble()));
+                    updateFieldForSecondPage(R.string.dynamic_speed_limit, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getSpeedLimit()));
                     updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getDistanceDouble()));
                     updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble()));
                     updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getUserDistanceDouble()));
@@ -939,10 +678,15 @@ public class MainActivity extends AppCompatActivity {
                 updateFieldForSecondPage(R.string.voltage_sag, String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageSagDouble()));
                 updateFieldForSecondPage(R.string.temperature, String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
                 updateFieldForSecondPage(R.string.temperature2, String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
+                updateFieldForSecondPage(R.string.cpu_temp, String.format(Locale.US, "%d°C", WheelData.getInstance().getCpuTemp()));
+                updateFieldForSecondPage(R.string.imu_temp, String.format(Locale.US, "%d°C", WheelData.getInstance().getImuTemp()));
                 updateFieldForSecondPage(R.string.angle, String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
                 updateFieldForSecondPage(R.string.roll, String.format(Locale.US, "%.2f°", WheelData.getInstance().getRoll()));
                 updateFieldForSecondPage(R.string.current, String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentDouble()));
+                updateFieldForSecondPage(R.string.dynamic_current_limit, String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentLimit()));
+                updateFieldForSecondPage(R.string.torque, String.format(Locale.US, "%.2f " + getString(R.string.newton), WheelData.getInstance().getTorque()));
                 updateFieldForSecondPage(R.string.power, String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
+                updateFieldForSecondPage(R.string.motor_power, String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getMotorPower()));
                 updateFieldForSecondPage(R.string.battery, String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
                 updateFieldForSecondPage(R.string.fan_status, WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
                 updateFieldForSecondPage(R.string.charging_status, WheelData.getInstance().getChargingStatus() == 0 ? getString(R.string.discharging) : getString(R.string.charging));
@@ -958,7 +702,7 @@ public class MainActivity extends AppCompatActivity {
                 updateFieldForSecondPage(R.string.charging, WheelData.getInstance().getChargeTime());
                 updateSecondPage();
                 break;
-            case 2: // Graph  View
+            case R.id.page_graph: // Graph  View
                 WheelData.getInstance().setBmsView(false);
                 if (updateGraph) {
                     xAxis_labels = WheelData.getInstance().getXAxis();
@@ -1029,7 +773,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            case 3: //BMS view
+            case R.id.page_smart_bms: //BMS view
                 WheelData.getInstance().setBmsView(true);
                 tvBms1Sn.setText(WheelData.getInstance().getBms1SerialNumber());
                 tvBms1Fw.setText(WheelData.getInstance().getBms1VersionNumber());
@@ -1166,6 +910,39 @@ public class MainActivity extends AppCompatActivity {
         updateScreen(true);
     }
 
+    private void createPager()
+    {
+        // add pages into main view
+        ViewPager pager = findViewById(R.id.pager);
+        LayoutInflater i = getLayoutInflater();
+        i.inflate(R.layout.main_view_main, pager);
+        i.inflate(R.layout.main_view_params_list, pager);
+        i.inflate(R.layout.main_view_graph, pager);
+        i.inflate(R.layout.main_view_smart_bms, pager); // TODO: inflate smart bms page only if needed (after detect wheel)
+
+        // set page adapter and show 3 pages
+        pagerAdapter = new ViewPageAdapter(this);
+        pagerAdapter.showPage(R.id.page_main);
+        pagerAdapter.showPage(R.id.page_params_list);
+        pagerAdapter.showPage(R.id.page_graph);
+        pager.setAdapter(pagerAdapter);
+        pager.setOffscreenPageLimit(4);
+
+        loadPreferences(R.string.show_page_events); // аццкий костыль
+
+        LinePageIndicator titleIndicator = findViewById(R.id.indicator);
+        pagerAdapter.setPageIndicator(titleIndicator);
+        titleIndicator.setViewPager(pager);
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                viewPagerPage = pagerAdapter.getPageIdByPosition(position);
+                updateScreen(true);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (onDestroyProcess)
@@ -1197,14 +974,7 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
                 .commit();
 
-        pagerAdapter = new ViewPageAdapter(this);
-        ViewPager pager = findViewById(R.id.pager);
-        pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(4);
-
-        LinePageIndicator titleIndicator = findViewById(R.id.indicator);
-        titleIndicator.setViewPager(pager);
-        pager.addOnPageChangeListener(pageChangeListener);
+        createPager();
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -1214,124 +984,63 @@ public class MainActivity extends AppCompatActivity {
         wheelView = (WheelView) findViewById(R.id.wheelView);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        tvBmsWaitText = (TextView) findViewById(R.id.tvBmsWaitText);
-        tvTitleBmsBattery1 = (TextView) findViewById(R.id.tvTitleBmsBattery1);
-        tvTitleBmsBattery2 = (TextView) findViewById(R.id.tvTitleBmsBattery2);
-        tvTitleBms1Sn = (TextView) findViewById(R.id.tvTitleBms1Sn);
         tvBms1Sn = (TextView) findViewById(R.id.tvBms1Sn);
-        tvTitleBms2Sn = (TextView) findViewById(R.id.tvTitleBms2Sn);
         tvBms2Sn = (TextView) findViewById(R.id.tvBms2Sn);
-        tvTitleBms1Fw = (TextView) findViewById(R.id.tvTitleBms1Fw);
         tvBms1Fw = (TextView) findViewById(R.id.tvBms1Fw);
-        tvTitleBms2Fw = (TextView) findViewById(R.id.tvTitleBms2Fw);
         tvBms2Fw = (TextView) findViewById(R.id.tvBms2Fw);
-        tvTitleBms1FactoryCap = (TextView) findViewById(R.id.tvTitleBms1FactoryCap);
         tvBms1FactoryCap = (TextView) findViewById(R.id.tvBms1FactoryCap);
-        tvTitleBms2FactoryCap = (TextView) findViewById(R.id.tvTitleBms2FactoryCap);
         tvBms2FactoryCap = (TextView) findViewById(R.id.tvBms2FactoryCap);
-        tvTitleBms1ActualCap = (TextView) findViewById(R.id.tvTitleBms1ActualCap);
         tvBms1ActualCap = (TextView) findViewById(R.id.tvBms1ActualCap);
-        tvTitleBms2ActualCap = (TextView) findViewById(R.id.tvTitleBms2ActualCap);
         tvBms2ActualCap = (TextView) findViewById(R.id.tvBms2ActualCap);
-        tvTitleBms1Cycles = (TextView) findViewById(R.id.tvTitleBms1Cycles);
         tvBms1Cycles = (TextView) findViewById(R.id.tvBms1Cycles);
-        tvTitleBms2Cycles = (TextView) findViewById(R.id.tvTitleBms2Cycles);
         tvBms2Cycles = (TextView) findViewById(R.id.tvBms2Cycles);
-        tvTitleBms1ChrgCount = (TextView) findViewById(R.id.tvTitleBms1ChrgCount);
         tvBms1ChrgCount = (TextView) findViewById(R.id.tvBms1ChrgCount);
-        tvTitleBms2ChrgCount = (TextView) findViewById(R.id.tvTitleBms2ChrgCount);
         tvBms2ChrgCount = (TextView) findViewById(R.id.tvBms2ChrgCount);
-        tvTitleBms1MfgDate = (TextView) findViewById(R.id.tvTitleBms1MfgDate);
         tvBms1MfgDate = (TextView) findViewById(R.id.tvBms1MfgDate);
-        tvTitleBms2MfgDate = (TextView) findViewById(R.id.tvTitleBms2MfgDate);
         tvBms2MfgDate = (TextView) findViewById(R.id.tvBms2MfgDate);
-        tvTitleBms1Status = (TextView) findViewById(R.id.tvTitleBms1Status);
         tvBms1Status = (TextView) findViewById(R.id.tvBms1Status);
-        tvTitleBms2Status = (TextView) findViewById(R.id.tvTitleBms2Status);
         tvBms2Status = (TextView) findViewById(R.id.tvBms2Status);
-        tvTitleBms1RemCap = (TextView) findViewById(R.id.tvTitleBms1RemCap);
         tvBms1RemCap = (TextView) findViewById(R.id.tvBms1RemCap);
-        tvTitleBms2RemCap = (TextView) findViewById(R.id.tvTitleBms2RemCap);
         tvBms2RemCap = (TextView) findViewById(R.id.tvBms2RemCap);
-        tvTitleBms1RemPerc = (TextView) findViewById(R.id.tvTitleBms1RemPerc);
         tvBms1RemPerc = (TextView) findViewById(R.id.tvBms1RemPerc);
-        tvTitleBms2RemPerc = (TextView) findViewById(R.id.tvTitleBms2RemPerc);
         tvBms2RemPerc = (TextView) findViewById(R.id.tvBms2RemPerc);
-        tvTitleBms1Current = (TextView) findViewById(R.id.tvTitleBms1Current);
         tvBms1Current = (TextView) findViewById(R.id.tvBms1Current);
-        tvTitleBms2Current = (TextView) findViewById(R.id.tvTitleBms2Current);
         tvBms2Current = (TextView) findViewById(R.id.tvBms2Current);
-        tvTitleBms1Voltage = (TextView) findViewById(R.id.tvTitleBms1Voltage);
         tvBms1Voltage = (TextView) findViewById(R.id.tvBms1Voltage);
-        tvTitleBms2Voltage = (TextView) findViewById(R.id.tvTitleBms2Voltage);
         tvBms2Voltage = (TextView) findViewById(R.id.tvBms2Voltage);
-        tvTitleBms1Temp1 = (TextView) findViewById(R.id.tvTitleBms1Temp1);
         tvBms1Temp1 = (TextView) findViewById(R.id.tvBms1Temp1);
-        tvTitleBms2Temp1 = (TextView) findViewById(R.id.tvTitleBms2Temp1);
         tvBms2Temp1 = (TextView) findViewById(R.id.tvBms2Temp1);
-        tvTitleBms1Temp2 = (TextView) findViewById(R.id.tvTitleBms1Temp2);
         tvBms1Temp2 = (TextView) findViewById(R.id.tvBms1Temp2);
-        tvTitleBms2Temp2 = (TextView) findViewById(R.id.tvTitleBms2Temp2);
         tvBms2Temp2 = (TextView) findViewById(R.id.tvBms2Temp2);
-        tvTitleBms1Health = (TextView) findViewById(R.id.tvTitleBms1Health);
         tvBms1Health = (TextView) findViewById(R.id.tvBms1Health);
-        tvTitleBms2Health = (TextView) findViewById(R.id.tvTitleBms2Health);
         tvBms2Health = (TextView) findViewById(R.id.tvBms2Health);
-        tvTitleBms1Cell1 = (TextView) findViewById(R.id.tvTitleBms1Cell1);
         tvBms1Cell1 = (TextView) findViewById(R.id.tvBms1Cell1);
-        tvTitleBms2Cell1 = (TextView) findViewById(R.id.tvTitleBms2Cell1);
         tvBms2Cell1 = (TextView) findViewById(R.id.tvBms2Cell1);
-        tvTitleBms1Cell2 = (TextView) findViewById(R.id.tvTitleBms1Cell2);
         tvBms1Cell2 = (TextView) findViewById(R.id.tvBms1Cell2);
-        tvTitleBms2Cell2 = (TextView) findViewById(R.id.tvTitleBms2Cell2);
         tvBms2Cell2 = (TextView) findViewById(R.id.tvBms2Cell2);
-        tvTitleBms1Cell3 = (TextView) findViewById(R.id.tvTitleBms1Cell3);
         tvBms1Cell3 = (TextView) findViewById(R.id.tvBms1Cell3);
-        tvTitleBms2Cell3 = (TextView) findViewById(R.id.tvTitleBms2Cell3);
         tvBms2Cell3 = (TextView) findViewById(R.id.tvBms2Cell3);
-        tvTitleBms1Cell4 = (TextView) findViewById(R.id.tvTitleBms1Cell4);
         tvBms1Cell4 = (TextView) findViewById(R.id.tvBms1Cell4);
-        tvTitleBms2Cell4 = (TextView) findViewById(R.id.tvTitleBms2Cell4);
         tvBms2Cell4 = (TextView) findViewById(R.id.tvBms2Cell4);
-        tvTitleBms1Cell5 = (TextView) findViewById(R.id.tvTitleBms1Cell5);
         tvBms1Cell5 = (TextView) findViewById(R.id.tvBms1Cell5);
-        tvTitleBms2Cell5 = (TextView) findViewById(R.id.tvTitleBms2Cell5);
         tvBms2Cell5 = (TextView) findViewById(R.id.tvBms2Cell5);
-        tvTitleBms1Cell6 = (TextView) findViewById(R.id.tvTitleBms1Cell6);
         tvBms1Cell6 = (TextView) findViewById(R.id.tvBms1Cell6);
-        tvTitleBms2Cell6 = (TextView) findViewById(R.id.tvTitleBms2Cell6);
         tvBms2Cell6 = (TextView) findViewById(R.id.tvBms2Cell6);
-        tvTitleBms1Cell7 = (TextView) findViewById(R.id.tvTitleBms1Cell7);
         tvBms1Cell7 = (TextView) findViewById(R.id.tvBms1Cell7);
-        tvTitleBms2Cell7 = (TextView) findViewById(R.id.tvTitleBms2Cell7);
         tvBms2Cell7 = (TextView) findViewById(R.id.tvBms2Cell7);
-        tvTitleBms1Cell8 = (TextView) findViewById(R.id.tvTitleBms1Cell8);
         tvBms1Cell8 = (TextView) findViewById(R.id.tvBms1Cell8);
-        tvTitleBms2Cell8 = (TextView) findViewById(R.id.tvTitleBms2Cell8);
         tvBms2Cell8 = (TextView) findViewById(R.id.tvBms2Cell8);
-        tvTitleBms1Cell9 = (TextView) findViewById(R.id.tvTitleBms1Cell9);
         tvBms1Cell9 = (TextView) findViewById(R.id.tvBms1Cell9);
-        tvTitleBms2Cell9 = (TextView) findViewById(R.id.tvTitleBms2Cell9);
         tvBms2Cell9 = (TextView) findViewById(R.id.tvBms2Cell9);
-        tvTitleBms1Cell10 = (TextView) findViewById(R.id.tvTitleBms1Cell10);
         tvBms1Cell10 = (TextView) findViewById(R.id.tvBms1Cell10);
-        tvTitleBms2Cell10 = (TextView) findViewById(R.id.tvTitleBms2Cell10);
         tvBms2Cell10 = (TextView) findViewById(R.id.tvBms2Cell10);
-        tvTitleBms1Cell11 = (TextView) findViewById(R.id.tvTitleBms1Cell11);
         tvBms1Cell11 = (TextView) findViewById(R.id.tvBms1Cell11);
-        tvTitleBms2Cell11 = (TextView) findViewById(R.id.tvTitleBms2Cell11);
         tvBms2Cell11 = (TextView) findViewById(R.id.tvBms2Cell11);
-        tvTitleBms1Cell12 = (TextView) findViewById(R.id.tvTitleBms1Cell12);
         tvBms1Cell12 = (TextView) findViewById(R.id.tvBms1Cell12);
-        tvTitleBms2Cell12 = (TextView) findViewById(R.id.tvTitleBms2Cell12);
         tvBms2Cell12 = (TextView) findViewById(R.id.tvBms2Cell12);
-        tvTitleBms1Cell13 = (TextView) findViewById(R.id.tvTitleBms1Cell13);
         tvBms1Cell13 = (TextView) findViewById(R.id.tvBms1Cell13);
-        tvTitleBms2Cell13 = (TextView) findViewById(R.id.tvTitleBms2Cell13);
         tvBms2Cell13 = (TextView) findViewById(R.id.tvBms2Cell13);
-        tvTitleBms1Cell14 = (TextView) findViewById(R.id.tvTitleBms1Cell14);
         tvBms1Cell14 = (TextView) findViewById(R.id.tvBms1Cell14);
-        tvTitleBms2Cell14 = (TextView) findViewById(R.id.tvTitleBms2Cell14);
         tvBms2Cell14 = (TextView) findViewById(R.id.tvBms2Cell14);
         tvTitleBms1Cell15 = (TextView) findViewById(R.id.tvTitleBms1Cell15);
         tvBms1Cell15 = (TextView) findViewById(R.id.tvBms1Cell15);
@@ -1354,7 +1063,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                getPreferencesFragment().showMainMenu();
             }
 
             @Override
@@ -1540,9 +1249,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (((MainPreferencesFragment) getPreferencesFragment()).isMainMenu())
+                    if (getPreferencesFragment().isMainMenu()) {
                         mDrawer.closeDrawer(GravityCompat.START, true);
-                    else ((MainPreferencesFragment) getPreferencesFragment()).showMainMenu();
+                    } else {
+                        getPreferencesFragment().showMainMenu();
+                    }
                 } else {
                     if (doubleBackToExitPressedOnce) {
                         finish();
@@ -1565,21 +1276,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ViewPager.SimpleOnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
-            viewPagerPage = position;
-            updateScreen(true);
-        }
-    };
-
     private void loadPreferences() {
-        loadPreferences("");
+        loadPreferences(-1);
     }
 
-    private void loadPreferences(String settingsKey) {
-        switch (WheelLog.AppConfig.getResId(settingsKey)) {
+    private void loadPreferences(int settingsKey) {
+        switch (settingsKey) {
             case R.string.auto_log:
                 if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
                     MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
@@ -1602,21 +1304,37 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setEcToken(null, true);
                 }
                 break;
+            case R.string.show_page_events:
+                if (WheelLog.AppConfig.getPageEvents()) {
+                    if (findViewById(R.id.page_events) == null) {
+                        ViewPager pager = findViewById(R.id.pager);
+                        getLayoutInflater().inflate(R.layout.main_view_events, pager);
+                    }
+                    pagerAdapter.showPage(R.id.page_events);
+                    eventsTextView = findViewById(R.id.events_textbox);
+                } else {
+                    pagerAdapter.hidePage(R.id.page_events);
+                    eventsTextView = null;
+                }
+                return;
         }
 
-        Set<String> view_blocks = WheelLog.AppConfig.getViewBlocks();
-        if (view_blocks == null) {
-            Set<String> view_blocks_def = new HashSet<String>();
-            view_blocks_def.add(getString(R.string.voltage));
-            view_blocks_def.add(getString(R.string.average_riding_speed));
-            view_blocks_def.add(getString(R.string.riding_time));
-            view_blocks_def.add(getString(R.string.top_speed));
-            view_blocks_def.add(getString(R.string.distance));
-            view_blocks_def.add(getString(R.string.total));
-            wheelView.updateViewBlocksVisibility(view_blocks_def);
-        } else
-            wheelView.updateViewBlocksVisibility(view_blocks);
+        String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
+        String[] viewBlocks;
+        if (viewBlocksString == null) {
+            viewBlocks = new String[]{
+                    getString(R.string.voltage),
+                    getString(R.string.average_riding_speed),
+                    getString(R.string.riding_time),
+                    getString(R.string.top_speed),
+                    getString(R.string.distance),
+                    getString(R.string.total)
+            };
+        } else {
+            viewBlocks = viewBlocksString.split(MultiSelectPreference.getSeparator());
+        }
 
+        wheelView.updateViewBlocksVisibility(viewBlocks);
         wheelView.invalidate();
         updateScreen(true);
     }
@@ -1638,7 +1356,7 @@ public class MainActivity extends AppCompatActivity {
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         WheelLog.AppConfig.setLogLocationData(false, true);
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        getPreferencesFragment().refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1664,6 +1382,7 @@ public class MainActivity extends AppCompatActivity {
         snackbar.setDuration(timeout);
         snackbar.setText(msg);
         snackbar.show();
+        logEvent(msg);
     }
 
     private void hideSnackBar() {
@@ -1671,6 +1390,20 @@ public class MainActivity extends AppCompatActivity {
             return;
 
         snackbar.dismiss();
+    }
+
+    private void logEvent(String message) {
+        if (eventsTextView == null) {
+            return;
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String formattedMessage = String.format("[%s] %s\n", formatter.format(new Date()), message);
+        if (eventsCurrentCount < eventsMaxCount) {
+            eventsTextView.append(formattedMessage);
+            eventsCurrentCount++;
+        } else {
+            eventsTextView.setText(String.format("%s%s", StringUtil.deleteFirstSentence(eventsTextView.getText()), formattedMessage));
+        }
     }
 
     private void stopLoggingService() {
@@ -1758,9 +1491,11 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
-                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
-                            mDeviceAddress,
-                            success -> null);
+                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                                mDeviceAddress,
+                                success -> null);
+                    }
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:
@@ -1780,7 +1515,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setAutoUploadEc(false, true);
                     WheelLog.AppConfig.setEcToken(null, true);
                     WheelLog.AppConfig.setEcUserId(null, true);
-                    ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+                    getPreferencesFragment().refreshVolatileSettings();
                 }
                 break;
         }
@@ -1797,6 +1532,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         return intentFilter;
     }
 
@@ -1816,11 +1552,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Fragment getPreferencesFragment() {
+    private MainPreferencesFragment getPreferencesFragment() {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        if (frag == null) {
-            return new MainPreferencesFragment();
-        }
-        return frag;
+        return frag == null ? new MainPreferencesFragment() : (MainPreferencesFragment) frag;
     }
 }
