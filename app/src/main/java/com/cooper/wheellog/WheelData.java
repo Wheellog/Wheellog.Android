@@ -332,10 +332,6 @@ public class WheelData {
         return mInstance;
     }
 
-    public double getCurrentPwm() {
-        return mCalculatedPwm * 100.0;
-    }
-
     public int getSpeed() {
         return (int)Math.round(mSpeed / 10.0);
     }
@@ -982,8 +978,8 @@ public class WheelData {
         mPhaseCurrent = value;
     }
 
-    double getCalculatedPwm() {
-        return mCalculatedPwm*100.0;
+    public double getCalculatedPwm() {
+        return mCalculatedPwm * 100.0;
     }
 
     public double getMaxPwm() {
@@ -1459,7 +1455,11 @@ public class WheelData {
         setTopSpeed(mSpeed);
         setVoltageSag(mVoltage);
         setMaxTemp(mTemperature);
-        mCalculatedPwm = ((float)mSpeed/100.0)/((WheelLog.AppConfig.getRotationSpeed()/WheelLog.AppConfig.getRotationVoltage()) * ((float)mVoltage/100.0) * WheelLog.AppConfig.getPowerFactor());
+        if (mWheelType == WHEEL_TYPE.KINGSONG) {
+            mCalculatedPwm = (double)mOutput/100.0;
+        } else {
+            mCalculatedPwm = ((float) mSpeed / 100.0) / ((WheelLog.AppConfig.getRotationSpeed() / WheelLog.AppConfig.getRotationVoltage()) * ((float) mVoltage / 100.0) * WheelLog.AppConfig.getPowerFactor());
+        }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
             mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);

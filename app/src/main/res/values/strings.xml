@@ -11,6 +11,10 @@
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="speed_alarm1" translatable="false">speed_alarm1</string>
+    <string name="speed_alarm2" translatable="false">speed_alarm2</string>
+    <string name="speed_alarm3" translatable="false">speed_alarm3</string>
+    <string name="altered_alarms_section" translatable="false">altered_alarms_section</string>
     <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
     <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
     <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
@@ -305,8 +309,8 @@
     <string name="warning_pwm_description">Advance PWM warning, 0 - off</string>
     <string name="warning_speed_period_title">Frequency of warnings</string>
     <string name="warning_speed_period_description">Notification period, 0 - off</string>
-    <string name="use_short_pwm_title">Short display of PWM</string>.
-    <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>.
+    <string name="use_short_pwm_title">Short display of PWM</string>
+    <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>
     <string name="speed_alarm2_phone_title">Speed Alarm 2</string>

@@ -25,7 +25,9 @@
         android:summary="@string/altered_alarms_description"
         android:title="@string/altered_alarms_title" />
 
-    <PreferenceCategory android:title="@string/speed_alarm1_phone_title">
+    <PreferenceCategory
+        android:title="@string/speed_alarm1_phone_title"
+        android:key="@string/speed_alarm1">
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="29"
@@ -51,7 +53,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/speed_alarm2_phone_title">
+    <PreferenceCategory
+        android:title="@string/speed_alarm2_phone_title"
+        android:key="@string/speed_alarm2">
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="0"
@@ -77,7 +81,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/speed_alarm3_phone_title">
+    <PreferenceCategory
+        android:title="@string/speed_alarm3_phone_title"
+        android:key="@string/speed_alarm3">
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="0"
@@ -103,7 +109,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/altered_alarms_pref_title">
+    <PreferenceCategory
+        android:title="@string/altered_alarms_pref_title"
+        android:key="@string/altered_alarms_section" >
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="500"
