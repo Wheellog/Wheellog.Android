@@ -505,7 +505,7 @@ public class WheelView extends View {
             redrawTextBoxes();
         }
 
-        versionPaint.setTextSize(Math.round(Math.max(getWidth(), getHeight()) / 50.0));
+        versionPaint.setTextSize(Math.round(getHeight() / 50.0));
 
         refresh();
     }
