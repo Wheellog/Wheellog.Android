@@ -67,7 +67,7 @@ public class WheelView extends View {
     private Double mAverageSpeed = 0.0;
 
     private String mWheelModel = "";
-    private String versionString = String.format("ver %s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TIME);
+    private String versionString = String.format("ver %s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE);
 
     float outerStrokeWidth;
     float innerStrokeWidth;

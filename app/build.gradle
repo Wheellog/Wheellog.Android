@@ -21,6 +21,7 @@ android {
         versionCode 74
         versionName "2.2.4beta"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
+        buildConfigField 'String', 'BUILD_DATE', 'new java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
