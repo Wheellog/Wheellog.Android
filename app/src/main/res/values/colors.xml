@@ -13,6 +13,7 @@
     <color name="background">#284a73</color>
     <color name="navigation_bar">#1f3a5a</color>
     <color name="wheelview_text">#AAFFFFFF</color>
+    <color name="wheelview_versiontext">#70FFFF77</color>
     <color name="wheelview_speed_text">#FFFFFF</color>
     <color name="wheelview_main_positive_dial">#FF5722</color>
     <color name="wheelview_main_negative_dial">#00cc00</color>

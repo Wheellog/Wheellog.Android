@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.math.MathUtils;
 
 import com.cooper.wheellog.AppConfig;
+import com.cooper.wheellog.BuildConfig;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -41,6 +42,7 @@ public class WheelView extends View {
     final RectF temperatureTextRect = new RectF();
     Path modelTextPath;
     Paint modelTextPaint;
+    Paint versionPaint;
 
     float speedTextSize;
     float speedTextKPHSize;
@@ -65,7 +67,7 @@ public class WheelView extends View {
     private Double mAverageSpeed = 0.0;
 
     private String mWheelModel = "";
-
+    private String versionString = String.format("ver %s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE);
 
     float outerStrokeWidth;
     float innerStrokeWidth;
@@ -247,6 +249,11 @@ public class WheelView extends View {
 
         modelTextPaint = new Paint(textPaint);
         modelTextPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
+
+        versionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        versionPaint.setTextAlign(Paint.Align.RIGHT);
+        versionPaint.setColor(getContext().getResources().getColor(R.color.wheelview_versiontext));
+        versionPaint.setTypeface(tfTest);
     }
 
     public void setWheelModel(String mWheelModel) {
@@ -497,6 +504,8 @@ public class WheelView extends View {
         if ((landscape && (float) w / h > 1.4) || (!landscape && (float) h / w > 1.1)) {
             redrawTextBoxes();
         }
+
+        versionPaint.setTextSize(Math.round(getHeight() / 50.0));
 
         refresh();
     }
@@ -774,6 +783,13 @@ public class WheelView extends View {
                 currentCurrent != targetCurrent ||
                 currentBattery != targetBattery ||
                 currentTemperature != targetTemperature;
+
+        if (getWidth() * 1.2 < getHeight()) {
+            canvas.drawText(versionString,
+                    getWidth() - getPaddingRight(),
+                    getHeight() - getPaddingBottom(),
+                    versionPaint);
+        }
     }
 
     private int updateCurrentValue(int target, int current) {
