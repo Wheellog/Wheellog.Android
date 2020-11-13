@@ -252,7 +252,7 @@ public class WheelView extends View {
 
         versionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         versionPaint.setTextAlign(Paint.Align.RIGHT);
-        versionPaint.setColor(0x70FFFF77);
+        versionPaint.setColor(getContext().getResources().getColor(R.color.wheelview_versiontext));
         versionPaint.setTypeface(tfTest);
     }
 
