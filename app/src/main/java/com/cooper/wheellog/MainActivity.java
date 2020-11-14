@@ -45,6 +45,7 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.StringUtil;
+import com.cooper.wheellog.views.DoubleClickListener;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -983,6 +984,17 @@ public class MainActivity extends AppCompatActivity {
 
         wheelView = (WheelView) findViewById(R.id.wheelView);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        wheelView.setOnClickListener(new DoubleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+            }
+
+            @Override
+            public void onDoubleClick(View v) {
+                WheelData.getInstance().updateLed(!WheelData.getInstance().getWheelLed());
+            }
+        });
 
         tvBms1Sn = (TextView) findViewById(R.id.tvBms1Sn);
         tvBms2Sn = (TextView) findViewById(R.id.tvBms2Sn);
