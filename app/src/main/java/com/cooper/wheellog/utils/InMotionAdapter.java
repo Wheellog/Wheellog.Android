@@ -219,6 +219,12 @@ public class InMotionAdapter extends BaseAdapter {
         keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 25);
     }
 
+    @Override
+    public void switchFlashlight() {
+        boolean light = !WheelData.getInstance().getWheelLight();
+        WheelData.getInstance().setWheelLightEnabled(light);
+        setLightState(light);
+    }
 
     public void setLightState(final boolean lightEnable) {
         settingCommandReady = true;
@@ -992,6 +998,7 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setSerial(serialNumber);
             wd.setModel(getModelString(lmodel));
             wd.setVersion(version);
+
             wd.setWheelLightEnabled(light);
             wd.setWheelLedEnabled(led);
             wd.setWheelButtonDisabled(handlebutton);

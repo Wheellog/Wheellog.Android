@@ -992,7 +992,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDoubleClick(View v) {
-                WheelData.getInstance().updateLed(!WheelData.getInstance().getWheelLed());
+                WheelData.getInstance().getAdapter().switchFlashlight();
             }
         });
 

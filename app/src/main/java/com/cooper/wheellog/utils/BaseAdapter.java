@@ -6,8 +6,10 @@ public abstract class BaseAdapter {
     public void updatePedalsMode(int pedalsMode) {
     }
 
-    public void updateLightMode(int lightMode) {
-        // TODO from WheelData
+    public void setLightMode(int lightMode) {
+    }
+
+    public void switchFlashlight() {
     }
 
     public void updateMaxSpeed(int wheelMaxSpeed) {

@@ -18,6 +18,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment;
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference;
+import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.KingsongAdapter;
@@ -150,8 +151,10 @@ public class MainPreferencesFragment extends PreferenceFragmentCompat implements
                     WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.getPedalsMode());
                 break;
             case R.string.light_mode:
-                if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
-                    WheelData.getInstance().updateLightMode(WheelLog.AppConfig.getLightMode());
+                BaseAdapter adapter = WheelData.getInstance().getAdapter();
+                if (adapter != null) {
+                    adapter.setLightMode(WheelLog.AppConfig.getLightMode());
+                }
                 break;
             case R.string.alarm_mode:
                 if (!WheelLog.AppConfig.getIsInProgressControlsMigration())
