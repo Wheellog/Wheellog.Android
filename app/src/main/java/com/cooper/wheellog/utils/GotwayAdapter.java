@@ -1,53 +1,3 @@
-/*
-    Gotway/Begode reverse-engineered protocol
-
-    Gotway uses byte stream from a serial port via Serial-to-BLE adapter.
-    There are two types of frames, A and B. Normally they alternate.
-    Most numeric values are encoded as Big Endian (BE) 16 or 32 bit integers.
-    The protocol has no checksums.
-
-    Since the BLE adapter has no serial flow control and has limited input buffer,
-    data come in variable-size chunks with arbitrary delays between chunks. Some
-    bytes may even be lost in case of BLE transmit buffer overflow.
-
-    So never assume that a chunk starts from a frame header, or has a frame footer.
-    Do not use any delays to find frame boundaries. And always check for both header,
-    footer and optionally verify data ranges where possible.
-
-         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-        -----------------------------------------------------------------------
-     A: 55 AA 19 F0 00 00 00 00 00 00 01 2C FD CA 00 01 FF F8 00 18 5A 5A 5A 5A
-     B: 55 AA 00 0A 4A 12 48 00 1C 20 00 2A 00 03 00 07 00 08 04 18 5A 5A 5A 5A
-     A: 55 AA 19 F0 00 00 00 00 00 00 00 F0 FD D2 00 01 FF F8 00 18 5A 5A 5A 5A
-     B: 55 AA 00 0A 4A 12 48 00 1C 20 00 2A 00 03 00 07 00 08 04 18 5A 5A 5A 5A
-        ....
-
-    Frame A:
-        Bytes 0-1:   frame header, 55 AA
-        Bytes 2-3:   BE voltage, fixed point, 1/100th (assumes 67.2 battery, rescale for other voltages)
-        Bytes 4-5:   BE speed, fixed point, 3.6 * value / 100 km/h
-        Bytes 6-9:   BE distance, 32bit fixed point, meters
-        Bytes 10-11: BE current, signed fixed point, 1/100th amperes
-        Bytes 12-13: BE temperature, (value / 340 + 36.53) / 100, Celsius degrees (MPU6050 native data)
-        Bytes 14-17: unknown
-        Byte  18:    frame type, 00 for frame A
-        Byte  19:    18 (unknown, maybe different for some wheels or be a part of frame footer)
-        Bytes 20-23: frame footer, 5A 5A 5A 5A
-
-    Frame B:
-        Bytes 0-1:   frame header, 55 AA
-        Bytes 2-5:   BE total distance, 32bit fixed point, meters
-        Byte  6:     pedals mode (high nibble), speed alarms (low nibble) (unconfirmed)
-        Bytes 7-12:  unknown
-        Byte  13:    LED mode (unconfirmed)
-        Bytes 14-17: unknown
-        Byte  18:    frame type, 04 for frame B
-        Byte  19:    18 (unknown, maybe different for some wheels or be a part of frame footer)
-        Bytes 20-23: frame footer, 5A 5A 5A 5A
-
-    Unknown bytes may carry out other data, but currently not used by the parser.
-*/
-
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
@@ -59,7 +9,7 @@ import timber.log.Timber;
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     gotwayUnpacker unpacker = new gotwayUnpacker();
-    private static final double RATIO_GW = 0.875; // MCM5 only correction
+    private static final double RATIO_GW = 0.875;
 
     @Override
     public boolean decode(byte[] data) {
@@ -71,7 +21,7 @@ public class GotwayAdapter extends BaseAdapter {
 
         for (byte c : data) {
             if (unpacker.addChar(c)) {
-                // Full frame assembled, process it and continue collecting remaining bytes
+
                 byte[] buff = unpacker.getBuffer();
                 Boolean useRatio = WheelLog.AppConfig.getUseRatio();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
@@ -82,8 +32,7 @@ public class GotwayAdapter extends BaseAdapter {
 
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
-                    // FIXME: distance should read 4 bytes, otherwise after 65km it will be reset to zero
-                    long distance = MathsUtil.shortFromBytesBE(buff, 8);
+                    long distance = MathsUtil.getInt4(buff, 6);
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);
 
@@ -122,12 +71,6 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                     voltage = (int) Math.round(getScaledVoltage(voltage));
 
-                    // Optionally validate ranges here and ignore whole frame on errors
-                    // For example:
-                    // if (speed > reasonableMaxValue) {
-                    //     continue;
-                    // }
-
                     wd.setSpeed(speed);
                     wd.setTopSpeed(speed);
                     wd.setWheelDistance(distance);
@@ -139,7 +82,6 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setBatteryPercent(battery);
                     wd.updateRideTime();
 
-                    // Set flag and continue collecting remaining bytes from input buffer
                     newDataFound = true;
 
                 } else if (buff[18] == (byte) 0x04) {
@@ -152,17 +94,14 @@ public class GotwayAdapter extends BaseAdapter {
                         wd.setTotalDistance(totalDistance);
                     }
 
-                    // Currently unused
                     int pedalsMode = (buff[6] >> 4) & 0x0F;
                     int speedAlarms = buff[6] & 0x0F;
                     int ledMode = buff[13] & 0xFF;
 
-                    // Continue collecting remaining bytes from input buffer
                 }
             }
         }
 
-        // Whole data chunk is processed, return the result
         return newDataFound;
     }
 
@@ -192,7 +131,7 @@ public class GotwayAdapter extends BaseAdapter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         gotwayUnpacker.UnpackerState state = UnpackerState.unknown;
-        int prevc = -1;
+        int oldc = -1;
 
         byte[] getBuffer() {
             return buffer.toByteArray();
@@ -202,7 +141,7 @@ public class GotwayAdapter extends BaseAdapter {
             switch (state) {
                 case collecting:
                     buffer.write(c);
-                    prevc = c;
+                    oldc = c;
                     int size = buffer.size();
                     if ((size == 20 && c != (byte) 0x18) || (size > 20 && size <= 24 && c != (byte) 0x5A)) {
                         Timber.i("Invalid frame footer (expected 18 5A 5A 5A 5A)");
@@ -216,14 +155,14 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                     break;
                 default:
-                    if (c == (byte) 0xAA && prevc == (byte) 0x55) {
+                    if (c == (byte) 0xAA && oldc == (byte) 0x55) {
                         Timber.i("Frame header found (55 AA), collecting data");
                         buffer = new ByteArrayOutputStream();
                         buffer.write(0x55);
                         buffer.write(0xAA);
                         state = UnpackerState.collecting;
                     }
-                    prevc = c;
+                    oldc = c;
             }
             return false;
         }
@@ -240,3 +179,50 @@ public class GotwayAdapter extends BaseAdapter {
         return value * (1 + (0.25 * WheelLog.AppConfig.getGotwayVoltage()));
     }
 }
+
+
+/*
+    Gotway/Begode reverse-engineered protocol
+
+    Gotway uses byte stream from a serial port via Serial-to-BLE adapter.
+    There are two types of frames, A and B. Normally they alternate.
+    Most numeric values are encoded as Big Endian (BE) 16 or 32 bit integers.
+    The protocol has no checksums.
+
+    Since the BLE adapter has no serial flow control and has limited input buffer,
+    data come in variable-size chunks with arbitrary delays between chunks. Some
+    bytes may even be lost in case of BLE transmit buffer overflow.
+
+         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+        -----------------------------------------------------------------------
+     A: 55 AA 19 F0 00 00 00 00 00 00 01 2C FD CA 00 01 FF F8 00 18 5A 5A 5A 5A
+     B: 55 AA 00 0A 4A 12 48 00 1C 20 00 2A 00 03 00 07 00 08 04 18 5A 5A 5A 5A
+     A: 55 AA 19 F0 00 00 00 00 00 00 00 F0 FD D2 00 01 FF F8 00 18 5A 5A 5A 5A
+     B: 55 AA 00 0A 4A 12 48 00 1C 20 00 2A 00 03 00 07 00 08 04 18 5A 5A 5A 5A
+        ....
+
+    Frame A:
+        Bytes 0-1:   frame header, 55 AA
+        Bytes 2-3:   BE voltage, fixed point, 1/100th (assumes 67.2 battery, rescale for other voltages)
+        Bytes 4-5:   BE speed, fixed point, 3.6 * value / 100 km/h
+        Bytes 6-9:   BE distance, 32bit fixed point, meters
+        Bytes 10-11: BE current, signed fixed point, 1/100th amperes
+        Bytes 12-13: BE temperature, (value / 340 + 36.53) / 100, Celsius degrees (MPU6050 native data)
+        Bytes 14-17: unknown
+        Byte  18:    frame type, 00 for frame A
+        Byte  19:    18 frame footer
+        Bytes 20-23: frame footer, 5A 5A 5A 5A
+
+    Frame B:
+        Bytes 0-1:   frame header, 55 AA
+        Bytes 2-5:   BE total distance, 32bit fixed point, meters
+        Byte  6:     pedals mode (high nibble), speed alarms (low nibble)
+        Bytes 7-12:  unknown
+        Byte  13:    LED mode
+        Bytes 14-17: unknown
+        Byte  18:    frame type, 04 for frame B
+        Byte  19:    18 frame footer
+        Bytes 20-23: frame footer, 5A 5A 5A 5A
+
+    Unknown bytes may carry out other data, but currently not used by the parser.
+*/

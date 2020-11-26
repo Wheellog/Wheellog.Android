@@ -23,7 +23,7 @@ public class VeteranAdapter extends BaseAdapter {
         if ((time_new-time_old) > WAITING_TIME) // need to reset state in case of packet loose
             unpacker.reset();
         time_old = time_new;
-
+        boolean newDataFound = false;
         for (byte c : data) {
             if (unpacker.addChar(c)) {
                 byte[] buff = unpacker.getBuffer();
@@ -86,10 +86,10 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setBatteryPercent(battery);
                 wd.setChargingStatus(chargeMode);
                 wd.updateRideTime();
-                return true;
+                newDataFound = true;
             }
         }
-        return false;
+        return newDataFound;
     }
 
     @Override

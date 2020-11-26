@@ -61,11 +61,11 @@ class GotwayAdapterTest {
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
-                byteArrayOf(6, 7) +
+                byteArrayOf(0, 0) +
                 MathsUtil.getBytes(distance) +
                 MathsUtil.getBytes(phaseCurrent) +
                 MathsUtil.getBytes(temperature) +
-                byteArrayOf(14, 15, 16, 17, 0, 0x18)
+                byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
         // Act.
         val result = adapter.decode(byteArray)
 
@@ -94,8 +94,8 @@ class GotwayAdapterTest {
         val result3 = adapter.decode(byteArray3)
 
         // Assert.
-        assertThat(result1).isTrue()
-        assertThat(result2).isFalse()
+        assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
         assertThat(result3).isFalse()
         assertThat(abs(data.speed)).isEqualTo(0)
         assertThat(data.temperature).isEqualTo(24)
@@ -121,8 +121,8 @@ class GotwayAdapterTest {
         val result4 = adapter.decode(byteArray4)
 
         // Assert.
-        assertThat(result1).isTrue()
-        assertThat(result2).isFalse()
+        assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
         assertThat(result3).isFalse()
         assertThat(result4).isFalse()
         assertThat(abs(data.speed)).isEqualTo(4)

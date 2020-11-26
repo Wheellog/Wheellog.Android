@@ -346,12 +346,12 @@ public class InMotionAdapter extends BaseAdapter {
                 }
             } else if (model == Model.V10 || model == Model.V10F || model == Model.V10S || model == Model.V10SF || model == Model.V10T || model == Model.V10FT) {
                 if (useBetterPercents) {
-                    if (volts > 8350) {
-                        batt = 100;
-                    } else if (volts > 6800) {
-                        batt = (volts - 6650) / 17;
-                    } else if (volts > 6400) {
-                        batt = (volts - 6400) / 45;
+                    if (volts > 83.50) {
+                        batt = 1.00;
+                    } else if (volts > 68.00) {
+                        batt = (volts - 66.50) / 17;
+                    } else if (volts > 64.00) {
+                        batt = (volts - 64.00) / 45;
                     } else {
                         batt = 0;
                     }
