@@ -27,7 +27,7 @@ class GotwayAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        every { WheelLog.AppConfig.getGotwayNegative() } returns 1
+        every { WheelLog.AppConfig.gotwayNegative } returns 1
     }
 
     @After

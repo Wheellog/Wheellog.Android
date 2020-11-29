@@ -15,6 +15,7 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 
@@ -78,7 +79,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             }
             R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.alarmMode)
             R.string.strobe_mode -> WheelData.getInstance().updateStrobe(WheelLog.AppConfig.strobeMode)
-            R.string.led_mode ->  WheelData.getInstance().updateLedMode(WheelLog.AppConfig.ledMode)
+            R.string.led_mode -> WheelData.getInstance().updateLedMode(WheelLog.AppConfig.ledMode)
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
@@ -520,245 +521,236 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     key = mac + getString(R.string.disable_phone_vibrate)
                     title = getString(R.string.disable_phone_vibrate_title)
                     summary = getString(R.string.disable_phone_vibration_description)
-                    dependency = mac + getString(R.string.alarms_enabled)
                 },
                 CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.disable_phone_beep)
                     title = getString(R.string.disable_phone_beep_title)
                     summary = getString(R.string.disable_phone_beep_description)
-                    dependency = mac + getString(R.string.alarms_enabled)
                 },
                 CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.altered_alarms)
                     title = getString(R.string.altered_alarms_title)
                     summary = getString(R.string.altered_alarms_description)
-                    dependency = mac + getString(R.string.alarms_enabled)
                 },
-                PreferenceCategory(context).apply {
-                    key = getString(R.string.speed_alarm1)
-                    title = getString(R.string.speed_alarm1_phone_title)
-                    arrayOf(
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_1_speed)
-                                title = getString(R.string.speed)
-                                summary = getString(R.string.speed_trigger_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = getString(R.string.kmh)
-                                increment = 1
-                                setDefaultValue(29)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_1_battery)
-                                title = getString(R.string.alarm_1_battery_title)
-                                summary = getString(R.string.alarm_1_battery_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(100)
-                            }
-                    ).forEach {
-                        addPreference(it)
-                    }
-                },
-                PreferenceCategory(context).apply {
-                    key = getString(R.string.speed_alarm2)
-                    title = getString(R.string.speed_alarm2_phone_title)
-                    arrayOf(
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_2_speed)
-                                title = getString(R.string.speed)
-                                summary = getString(R.string.speed_trigger_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = getString(R.string.kmh)
-                                increment = 1
-                                setDefaultValue(0)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_2_battery)
-                                title = getString(R.string.alarm_2_battery_title)
-                                summary = getString(R.string.alarm_1_battery_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(0)
-                            }
-                    ).forEach {
-                        addPreference(it)
-                    }
-                },
-                PreferenceCategory(context).apply {
-                    key = getString(R.string.speed_alarm3)
-                    title = getString(R.string.speed_alarm3_phone_title)
-                    arrayOf(
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_3_speed)
-                                title = getString(R.string.speed)
-                                summary = getString(R.string.speed_trigger_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = getString(R.string.kmh)
-                                increment = 1
-                                setDefaultValue(0)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_3_battery)
-                                title = getString(R.string.alarm_3_battery_title)
-                                summary = getString(R.string.alarm_1_battery_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(0)
-                            }
-                    ).forEach {
-                        addPreference(it)
-                    }
-                },
-                PreferenceCategory(context).apply {
-                    key = getString(R.string.speed_alarm3)
-                    title = getString(R.string.speed_alarm3_phone_title)
-                    arrayOf(
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.rotation_speed)
-                                title = getString(R.string.rotation_speed_title)
-                                summary = getString(R.string.rotation_speed_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 2000
-                                decimalPlaces = 1
-                                unit = getString(R.string.kmh)
-                                increment = 1
-                                setDefaultValue(500)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.rotation_voltage)
-                                title = getString(R.string.rotation_voltage_title)
-                                summary = getString(R.string.rotation_voltage_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 1200
-                                decimalPlaces = 1
-                                unit = getString(R.string.volt)
-                                increment = 1
-                                setDefaultValue(840)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.power_factor)
-                                title = getString(R.string.power_factor_title)
-                                summary = getString(R.string.power_factor_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(90)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_factor1)
-                                title = getString(R.string.alarm_factor1_title)
-                                summary = getString(R.string.alarm_factor1_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(80)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_factor2)
-                                title = getString(R.string.alarm_factor2_title)
-                                summary = getString(R.string.alarm_factor2_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(90)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_factor3)
-                                title = getString(R.string.alarm_factor3_title)
-                                summary = getString(R.string.alarm_factor3_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(95)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.warning_speed)
-                                title = getString(R.string.warning_speed_title)
-                                summary = getString(R.string.warning_speed_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(0)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.warning_pwm)
-                                title = getString(R.string.warning_pwm_title)
-                                summary = getString(R.string.warning_pwm_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 100
-                                unit = "%"
-                                increment = 1
-                                setDefaultValue(0)
-                            },
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.warning_speed_period)
-                                title = getString(R.string.warning_speed_period_title)
-                                summary = getString(R.string.warning_speed_period_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 60
-                                unit = getString(R.string.sec)
-                                increment = 1
-                                setDefaultValue(0)
-                            },
-                            CheckBoxPreference(context).apply {
-                                key = mac + getString(R.string.use_short_pwm)
-                                title = getString(R.string.use_short_pwm_title)
-                                summary = getString(R.string.use_short_pwm_description)
-                            }
-                    ).forEach {
-                        addPreference(it)
-                    }
-                },
-                PreferenceCategory(context).apply {
-                    title = getString(R.string.temperature_alarm_title)
-                    arrayOf(
-                            SeekBarPreference(context).apply {
-                                key = mac + getString(R.string.alarm_temperature)
-                                title = getString(R.string.temperature_title)
-                                summary = getString(R.string.alarm_temperature_description)
-                                dependency = mac + getString(R.string.alarms_enabled)
-                                min = 0
-                                max = 120
-                                unit = "°"
-                                increment = 1
-                                setDefaultValue(60)
-                            }
-                    ).forEach {
-                        addPreference(it)
-                    }
-                }
+                addPreferenceCategory(getString(R.string.speed_alarm1_phone_title),
+                        arrayOf(
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_1_speed)
+                                    title = getString(R.string.speed)
+                                    summary = getString(R.string.speed_trigger_description)
+                                    min = 0
+                                    max = 100
+                                    unit = getString(R.string.kmh)
+                                    increment = 1
+                                    setDefaultValue(29)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_1_battery)
+                                    title = getString(R.string.alarm_1_battery_title)
+                                    summary = getString(R.string.alarm_1_battery_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(100)
+                                })),
+                addPreferenceCategory(getString(R.string.speed_alarm2_phone_title),
+                        arrayOf(
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_2_speed)
+                                    title = getString(R.string.speed)
+                                    summary = getString(R.string.speed_trigger_description)
+                                    min = 0
+                                    max = 100
+                                    unit = getString(R.string.kmh)
+                                    increment = 1
+                                    setDefaultValue(0)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_2_battery)
+                                    title = getString(R.string.alarm_2_battery_title)
+                                    summary = getString(R.string.alarm_1_battery_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(0)
+                                })),
+                addPreferenceCategory(getString(R.string.speed_alarm3_phone_title),
+                        arrayOf(
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_3_speed)
+                                    title = getString(R.string.speed)
+                                    summary = getString(R.string.speed_trigger_description)
+                                    min = 0
+                                    max = 100
+                                    unit = getString(R.string.kmh)
+                                    increment = 1
+                                    setDefaultValue(0)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_3_battery)
+                                    title = getString(R.string.alarm_3_battery_title)
+                                    summary = getString(R.string.alarm_1_battery_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(0)
+                                })),
+                addPreferenceCategory(getString(R.string.speed_alarm3_phone_title),
+                        arrayOf(
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.rotation_speed)
+                                    title = getString(R.string.rotation_speed_title)
+                                    summary = getString(R.string.rotation_speed_description)
+                                    min = 0
+                                    max = 2000
+                                    decimalPlaces = 1
+                                    unit = getString(R.string.kmh)
+                                    increment = 1
+                                    setDefaultValue(500)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.rotation_voltage)
+                                    title = getString(R.string.rotation_voltage_title)
+                                    summary = getString(R.string.rotation_voltage_description)
+                                    min = 0
+                                    max = 1200
+                                    decimalPlaces = 1
+                                    unit = getString(R.string.volt)
+                                    increment = 1
+                                    setDefaultValue(840)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.power_factor)
+                                    title = getString(R.string.power_factor_title)
+                                    summary = getString(R.string.power_factor_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(90)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_factor1)
+                                    title = getString(R.string.alarm_factor1_title)
+                                    summary = getString(R.string.alarm_factor1_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(80)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_factor2)
+                                    title = getString(R.string.alarm_factor2_title)
+                                    summary = getString(R.string.alarm_factor2_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(90)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_factor3)
+                                    title = getString(R.string.alarm_factor3_title)
+                                    summary = getString(R.string.alarm_factor3_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(95)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.warning_speed)
+                                    title = getString(R.string.warning_speed_title)
+                                    summary = getString(R.string.warning_speed_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(0)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.warning_pwm)
+                                    title = getString(R.string.warning_pwm_title)
+                                    summary = getString(R.string.warning_pwm_description)
+                                    min = 0
+                                    max = 100
+                                    unit = "%"
+                                    increment = 1
+                                    setDefaultValue(0)
+                                },
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.warning_speed_period)
+                                    title = getString(R.string.warning_speed_period_title)
+                                    summary = getString(R.string.warning_speed_period_description)
+                                    min = 0
+                                    max = 60
+                                    unit = getString(R.string.sec)
+                                    increment = 1
+                                    setDefaultValue(0)
+                                },
+                                CheckBoxPreference(context).apply {
+                                    key = mac + getString(R.string.use_short_pwm)
+                                    title = getString(R.string.use_short_pwm_title)
+                                    summary = getString(R.string.use_short_pwm_description)
+                                })),
+                addPreferenceCategory(getString(R.string.temperature_alarm_title),
+                        arrayOf(
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_temperature)
+                                    title = getString(R.string.temperature_title)
+                                    summary = getString(R.string.alarm_temperature_description)
+                                    min = 0
+                                    max = 120
+                                    unit = "°"
+                                    increment = 1
+                                    setDefaultValue(60)
+                                }))
         ).forEach {
             preferenceScreen.addPreference(it)
+            if (preferenceScreen.preferenceCount > 1 && it.title != mac + getString(R.string.use_short_pwm)) {
+                it.dependency = mac + getString(R.string.alarms_enabled)
+            }
         }
+    }
+
+    private fun addPreferenceCategory(title: String, insidePrefs: Array<Preference>): PreferenceCategory {
+        return PreferenceCategory(context).apply {
+            this.title = title
+            isVisible = true
+            GlobalScope.launch {
+                // waiting attaching to preferenceScreen
+                for (i in 1..100) {
+                    if (!isShown) {
+                        delay(5)
+                    } else {
+                        insidePrefs.forEach {
+                            addPreference(it)
+                        }
+                        return@launch
+                    }
+                }
+            }
+        }
+    }
+
+    private fun Preference.setDependencyAfterShown(value: String) {
+        val wdField = Preference::class.java.getDeclaredField("mDependency")
+        wdField.isAccessible = true
+        wdField[this] = value
+//        GlobalScope.launch {
+//            for (i in 1..100) {
+//                if (!isShown) {
+//                    delay(5)
+//                } else {
+//                    dependency = value
+//                    return@launch
+//                }
+//            }
+//        }
     }
 
     fun refreshVolatileSettings() {

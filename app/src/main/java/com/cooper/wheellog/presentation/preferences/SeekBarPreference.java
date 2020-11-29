@@ -73,7 +73,9 @@ public class SeekBarPreference extends Preference {
             if (mDecimalPlaces < 0)
                 mDecimalPlaces = 0;
             mMeasurementUnit = a.getString(R.styleable.SeekBarPreference_sbp_measurementUnit);
-            mSeekBarValue = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "defaultValue", DEFAULT_CURRENT_VALUE);
+            mSeekBarValue = attrs != null
+                    ? attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "defaultValue", DEFAULT_CURRENT_VALUE)
+                    : DEFAULT_CURRENT_VALUE;
         } finally {
             a.recycle();
         }
