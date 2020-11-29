@@ -13,15 +13,15 @@ import java.util.Set;
 //
 // Do not forget to add "switchSettingSpecific" method and "controlSettings" fields as needed
 // If you need a reaction to a change in the setting, you can describe it in "MainPreferencesFragment.onSharedPreferenceChanged" method
-public class AppConfig extends AppConfigBase {
-    private AppConfig(Context context) {
+class AppConfigOld extends AppConfigBase {
+    private AppConfigOld(Context context) {
         super(context);
     }
 
-    private static AppConfig INSTANCE;
-    public static AppConfig getInstance(Context context) {
+    private static AppConfigOld INSTANCE;
+    public static AppConfigOld getInstance(Context context) {
         if (INSTANCE == null)
-            INSTANCE = new AppConfig(context);
+            INSTANCE = new AppConfigOld(context);
 
         return INSTANCE;
     }

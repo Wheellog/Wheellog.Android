@@ -21,7 +21,7 @@ public class WheelLog extends Application {
 
     @Override
     protected void attachBaseContext(Context base) {
-        AppConfig = AppConfig.getInstance(base);
+        AppConfig = new AppConfig(base);
         localeManager = new LocaleManager(base);
         super.attachBaseContext(localeManager.setLocale(base));
     }

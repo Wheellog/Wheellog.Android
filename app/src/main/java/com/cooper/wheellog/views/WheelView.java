@@ -187,7 +187,7 @@ public class WheelView extends View {
         super(context, attrs);
 
         if (isInEditMode()) {
-            WheelLog.AppConfig = AppConfig.getInstance(context);
+            WheelLog.AppConfig = new AppConfig(context);
             mSpeed = 380;
             targetSpeed = Math.round(((float) mSpeed / 500) * 112);
             currentSpeed = targetSpeed;

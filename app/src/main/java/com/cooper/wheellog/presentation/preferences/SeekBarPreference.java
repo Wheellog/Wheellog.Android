@@ -66,8 +66,7 @@ public class SeekBarPreference extends Preference {
         try {
             mMin = a.getInt(R.styleable.SeekBarPreference_sbp_minValue, DEFAULT_MIN_VALUE);
             mSeekBarIncrement = a.getInt(R.styleable.SeekBarPreference_sbp_increment, DEFAULT_INTERVAL);
-            int saved_maxValue = a.getInt(R.styleable.SeekBarPreference_sbp_maxValue, DEFAULT_MAX_VALUE);
-            mMax = saved_maxValue;// (saved_maxValue - mMin) / mSeekBarIncrement;
+            mMax = a.getInt(R.styleable.SeekBarPreference_sbp_maxValue, DEFAULT_MAX_VALUE);
             mDecimalPlaces = a.getInt(R.styleable.SeekBarPreference_sbp_decimalPlaces, DEFAULT_DECIMAL_PLACES);
             if (mDecimalPlaces > 3)
                 mDecimalPlaces = 3;
@@ -78,6 +77,46 @@ public class SeekBarPreference extends Preference {
         } finally {
             a.recycle();
         }
+    }
+
+    public void setMin(int value) {
+        mMin = value;
+    }
+
+    public int getMin() {
+        return mMin;
+    }
+
+    public void setIncrement(int value) {
+        mSeekBarIncrement = value;
+    }
+
+    public int getIncrement() {
+        return mSeekBarIncrement;
+    }
+
+    public void setMax(int value) {
+        mMax = value;
+    }
+
+    public int getMax() {
+        return mMax;
+    }
+
+    public void setUnit(String value) {
+        mMeasurementUnit = value;
+    }
+
+    public String getUnit() {
+        return mMeasurementUnit;
+    }
+
+    public void setDecimalPlaces(int value) {
+        mDecimalPlaces = value;
+    }
+
+    public int getDecimalPlaces() {
+        return mDecimalPlaces;
     }
 
     @Override

@@ -108,10 +108,11 @@ public class ScanActivity extends AppCompatActivity {
             intent.putExtra("MAC", deviceAddress);
             intent.putExtra("NAME", deviceName);
             intent.putExtra("ADV", advData);
-            WheelLog.AppConfig.setAdvDataForWheel(deviceAddress, advData);
+            WheelLog.AppConfig.setLastMac(deviceAddress);
+            WheelLog.AppConfig.setAdvDataForWheel(advData);
             setResult(RESULT_OK, intent);
             //Set password for inmotion
-            WheelLog.AppConfig.setPasswordForWheel(deviceAddress, "");
+            WheelLog.AppConfig.setPasswordForWheel("");
             finish();
 
         }
