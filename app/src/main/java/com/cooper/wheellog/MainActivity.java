@@ -41,6 +41,7 @@ import androidx.gridlayout.widget.GridLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
+import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -988,11 +989,15 @@ public class MainActivity extends AppCompatActivity {
         wheelView.setOnClickListener(new DoubleClickListener() {
             @Override
             public void onSingleClick(View v) {
+                // TODO например проигрывание гудка. Опционально конечно же.
             }
 
             @Override
             public void onDoubleClick(View v) {
-                WheelData.getInstance().getAdapter().switchFlashlight();
+                BaseAdapter adapter = WheelData.getInstance().getAdapter();
+                if (adapter != null) {
+                    adapter.switchFlashlight();
+                }
             }
         });
 
