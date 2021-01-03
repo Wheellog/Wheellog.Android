@@ -44,13 +44,7 @@ class GotwayVirtualAdapterTest {
 
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.GOTWAY)
-        assertThat(result1).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(0)
-        assertThat(data.temperature).isEqualTo(24)
-        assertThat(data.voltageDouble).isEqualTo(65.93)
-        assertThat(data.phaseCurrentDouble).isEqualTo(1.4)
-        assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
-        assertThat(data.batteryLevel).isEqualTo(100)
+        
     }
 
     @Test
