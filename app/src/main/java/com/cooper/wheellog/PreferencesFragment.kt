@@ -879,7 +879,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         )
 
         for (preference in specificPreferences) {
-            (findPreference(preference) as Preference?)?.isVisible = isVisible
+            findPreference<Preference>(preference)?.isVisible = isVisible
         }
 
         // Hide inaccessible settings for VoltageTiltbackUnsupported wheels
@@ -890,7 +890,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     getString(R.string.battery_capacity),
                     getString(R.string.charging_power))
             for (preference in preferences) {
-                (findPreference(preference) as Preference?)?.isVisible = false
+                findPreference<Preference>(preference)?.isVisible = false
             }
         }
     }
