@@ -19,12 +19,17 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 
 
-class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
+class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener, IDataListener {
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
+    }
+
+    override fun changeWheelType() {
+        switchSpecificSettingsIsVisible()
+        hideShowSeekBarsAlarms()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -261,6 +266,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             }
         }
 
+        switchSpecificSettingsIsVisible()
         hideShowSeekBarsAlarms()
     }
 
@@ -598,7 +604,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     increment = 1
                                     setDefaultValue(0)
                                 })),
-                addPreferenceCategory(getString(R.string.speed_alarm3_phone_title),
+                addPreferenceCategory(getString(R.string.altered_alarms_pref_title),
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.rotation_speed)
@@ -737,22 +743,6 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
-    private fun Preference.setDependencyAfterShown(value: String) {
-        val wdField = Preference::class.java.getDeclaredField("mDependency")
-        wdField.isAccessible = true
-        wdField[this] = value
-//        GlobalScope.launch {
-//            for (i in 1..100) {
-//                if (!isShown) {
-//                    delay(5)
-//                } else {
-//                    dependency = value
-//                    return@launch
-//                }
-//            }
-//        }
-    }
-
     fun refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctCheckState(getString(R.string.auto_log))
@@ -874,6 +864,35 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     override fun onPause() {
         preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onPause()
+    }
+
+    private fun switchSpecificSettingsIsVisible() {
+        val isVisible = WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown
+        val specificPreferences = arrayOf(
+                getString(R.string.alarm_preferences),
+                getString(R.string.wheel_settings),
+                getString(R.string.reset_top_speed),
+                getString(R.string.reset_lowest_battery),
+                getString(R.string.reset_user_distance),
+                getString(R.string.last_mac),
+                getString(R.string.profile_name)
+        )
+
+        for (preference in specificPreferences) {
+            (findPreference(preference) as Preference?)?.isVisible = isVisible
+        }
+
+        // Hide inaccessible settings for VoltageTiltbackUnsupported wheels
+        if (WheelData.getInstance().isVoltageTiltbackUnsupported) {
+            val preferences = arrayOf(
+                    getString(R.string.fixed_percents),
+                    getString(R.string.cell_voltage_tiltback),
+                    getString(R.string.battery_capacity),
+                    getString(R.string.charging_power))
+            for (preference in preferences) {
+                (findPreference(preference) as Preference?)?.isVisible = false
+            }
+        }
     }
 
     private enum class SettingsScreen {
