@@ -420,6 +420,10 @@ public class WheelData {
         mBtName = btName;
     }
 
+    public String getBtName() {
+        return mBtName;
+    }
+
     public void updateLight(boolean enabledLight) {
 		if (mWheelLightEnabled != enabledLight) {
 			mWheelLightEnabled = enabledLight;
