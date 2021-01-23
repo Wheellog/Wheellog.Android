@@ -77,13 +77,13 @@ public class NinebotAdapter extends BaseAdapter {
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_decoding");
-        ArrayList<NinebotAdapter.Status> statuses = NinebotAdapter.getInstance().charUpdated(data);
+        ArrayList<NinebotAdapter.Status> statuses = charUpdated(data);
         if (statuses.size() < 1) {
             return false;
         }
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
-        for (NinebotAdapter.Status status: statuses) {
+        for (NinebotAdapter.Status status : statuses) {
             Timber.i(status.toString());
             if (status instanceof NinebotAdapter.serialNumberStatus) {
                 wd.setSerial(((serialNumberStatus) status).getSerialNumber());

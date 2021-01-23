@@ -131,8 +131,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_z decoding");
         WheelData wd = WheelData.getInstance();
-        NinebotZAdapter.getInstance().setBmsReadingMode(wd.getBmsView());
-        ArrayList<NinebotZAdapter.Status> statuses = NinebotZAdapter.getInstance().charUpdated(data);
+        setBmsReadingMode(wd.getBmsView());
+        ArrayList<NinebotZAdapter.Status> statuses = charUpdated(data);
         if (statuses.size() < 1) {
             return false;
         }
