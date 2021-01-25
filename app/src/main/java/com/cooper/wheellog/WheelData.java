@@ -1034,8 +1034,8 @@ public class WheelData {
     }
 
     public void resetBmsData() {
-        mBms1 = new Bms();
-        mBms2 = new Bms();
+        mBms1.reset();
+        mBms2.reset();
     }
 
     ArrayList<String> getXAxis() {
