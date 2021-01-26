@@ -1,5 +1,4 @@
 package com.cooper.wheellog.utils;
-import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
@@ -160,6 +159,30 @@ public class KingsongAdapter extends BaseAdapter {
     @Override
     public void updatePedalsMode(int pedalsMode) {
         WheelData.getInstance().updatePedalsMode(pedalsMode);
+    }
+
+    @Override
+    public void switchFlashlight() {
+        int lightMode = WheelLog.AppConfig.getLightMode() + 1;
+        if (lightMode > 2) {
+            lightMode = 0;
+        }
+        WheelLog.AppConfig.setLightMode(lightMode);
+        setLightMode(lightMode);
+    }
+
+    @Override
+    public void setLightMode(int lightMode) {
+        byte[] data = new byte[20];
+        data[0] = (byte) 0xAA;
+        data[1] = (byte) 0x55;
+        data[2] = (byte) (lightMode + 0x12);
+        data[3] = (byte) 0x01;
+        data[16] = (byte) 0x73;
+        data[17] = (byte) 0x14;
+        data[18] = (byte) 0x5A;
+        data[19] = (byte) 0x5A;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 
     private boolean is84vWheel() {

@@ -1,9 +1,12 @@
 package com.cooper.wheellog.utils;
 
+import android.os.Handler;
+
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
+
 import timber.log.Timber;
 
 public class GotwayAdapter extends BaseAdapter {
@@ -108,6 +111,34 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void updatePedalsMode(int pedalsMode) {
         WheelData.getInstance().updatePedalsMode(pedalsMode);
+    }
+
+    @Override
+    public void switchFlashlight() {
+        int lightMode = WheelLog.AppConfig.getLightMode() + 1;
+        if (lightMode > 2) {
+            lightMode = 0;
+        }
+        WheelLog.AppConfig.setLightMode(lightMode);
+        setLightMode(lightMode);
+    }
+
+    @Override
+    public void setLightMode(int lightMode) {
+        switch (lightMode) {
+            case 0:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("E".getBytes());
+                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
+                break;
+            case 1:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("Q".getBytes());
+                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
+                break;
+            case 2:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("T".getBytes());
+                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
+                break;
+        }
     }
 
     @Override

@@ -484,54 +484,6 @@ public class WheelData {
             getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
     }
-	
-	public void updateLightMode(int lightMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-			switch (lightMode) {
-				case 0:
-                    getBluetoothLeService().writeBluetoothGattCharacteristic("E".getBytes());
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-                        }
-                    }, 100);
-					break;
-				case 1:
-                    getBluetoothLeService().writeBluetoothGattCharacteristic("Q".getBytes());
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-                        }
-                    }, 100);
-					break;
-				case 2:
-                    getBluetoothLeService().writeBluetoothGattCharacteristic("T".getBytes());
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-                        }
-                    }, 100);
-					break;	
-			}			
-		}
-		
-		if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            byte[] data = new byte[20];
-            data[0] = (byte) 0xAA;
-            data[1] = (byte) 0x55;
-			data[2] = (byte) (lightMode + 0x12);
-			data[3] = (byte) 0x01;
-            data[16] = (byte) 0x73;
-            data[17] = (byte) 0x14;
-            data[18] = (byte) 0x5A;
-            data[19] = (byte) 0x5A;
-            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
-		}
-	
-    }
 
 	public void updateStrobe(int strobeMode) {
 		if (mWheelType == WHEEL_TYPE.KINGSONG) {
@@ -560,7 +512,6 @@ public class WheelData {
             data[19] = (byte) 0x5A;
             getBluetoothLeService().writeBluetoothGattCharacteristic(data);
 		}
-		
     }
 	
 	
@@ -1682,6 +1633,7 @@ public class WheelData {
         return true;
     }
 
+    // TODO only for inmotion... fix me
     public void setWheelLightEnabled(boolean value) {mWheelLightEnabled = value;}
     public void setWheelLedEnabled(boolean value) {mWheelLedEnabled = value;}
     public void setWheelButtonDisabled(boolean value) {mWheelButtonDisabled = value;}
