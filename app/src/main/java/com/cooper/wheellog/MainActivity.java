@@ -255,7 +255,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
+                            && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
                         pagerAdapter.showPage(R.id.page_smart_bms);
                     } else {
                         pagerAdapter.hidePage(R.id.page_smart_bms);
