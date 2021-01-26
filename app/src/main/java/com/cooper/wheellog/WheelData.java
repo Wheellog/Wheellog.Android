@@ -1564,7 +1564,6 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
-                setWheelType(WHEEL_TYPE.NINEBOT_Z);
                 BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
                 Timber.i("service UUID");
                 BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
@@ -1585,9 +1584,10 @@ public class WheelData {
                 Timber.i("write notify");
                 if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
                     NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
-                    //mWheelType = WHEEL_TYPE.NINEBOT;
+                    setWheelType(WHEEL_TYPE.NINEBOT);
                 } else {
                     NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
+                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
                 }
                 Timber.i("starting ninebot adapter");
                 return true;
