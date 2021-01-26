@@ -999,7 +999,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int batt = MathsUtil.shortFromBytesLE(data, 8);
             int speed = MathsUtil.shortFromBytesLE(data, 10);
             int distance = MathsUtil.intFromBytesLE(data, 14);
-            int temperature = MathsUtil.shortFromBytesLE(data, 22);
+            int temperature = MathsUtil.signedShortFromBytesLE(data, 22);
             int voltage = MathsUtil.shortFromBytesLE(data, 24);
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
             int power = voltage * current;
