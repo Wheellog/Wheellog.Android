@@ -49,8 +49,8 @@ public class WheelData {
     private ArrayList<Float> speedAxis = new ArrayList<>();
 
     // BMS
-    private Bms mBms1 = new Bms();
-    private Bms mBms2 = new Bms();
+    private NinebotBms mNinebotBms1 = new NinebotBms();
+    private NinebotBms mNinebotBms2 = new NinebotBms();
 
     //all
     private int mSpeed;
@@ -1016,12 +1016,12 @@ public class WheelData {
         return mTotalDistance;
     }
 
-    public Bms getBms1() {
-        return mBms1;
+    public NinebotBms getBms1() {
+        return mNinebotBms1;
     }
 
-    public Bms getBms2() {
-        return mBms2;
+    public NinebotBms getBms2() {
+        return mNinebotBms2;
     }
 
     public void setBmsView(boolean bmsView){
@@ -1034,8 +1034,8 @@ public class WheelData {
     }
 
     public void resetBmsData() {
-        mBms1.reset();
-        mBms2.reset();
+        mNinebotBms1.reset();
+        mNinebotBms2.reset();
     }
 
     ArrayList<String> getXAxis() {

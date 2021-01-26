@@ -1,6 +1,6 @@
 package com.cooper.wheellog.utils
 
-class Bms {
+class NinebotBms {
     lateinit var serialNumber: String
     lateinit var versionNumber: String
     var factoryCap: Int = 0

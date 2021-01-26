@@ -149,7 +149,7 @@ public class NinebotZAdapter extends BaseAdapter {
             } else if (status instanceof NinebotZAdapter.bmsStatusSn) {
                 wd.setDataForLog(false);
                 bmsStatusSn sn = (NinebotZAdapter.bmsStatusSn) status;
-                Bms bms = sn.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
+                NinebotBms bms = sn.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
                 bms.setSerialNumber(sn.getSerialNumber());
                 bms.setVersionNumber(sn.getVersionNumber());
                 bms.setFactoryCap(sn.getFactoryCap());
@@ -160,7 +160,7 @@ public class NinebotZAdapter extends BaseAdapter {
             } else if (status instanceof NinebotZAdapter.bmsStatusLife) {
                 wd.setDataForLog(false);
                 bmsStatusLife life = (NinebotZAdapter.bmsStatusLife) status;
-                Bms bms = life.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
+                NinebotBms bms = life.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
                 bms.setStatus(life.getBmsStatus());
                 bms.setRemCap(life.getRemCap());
                 bms.setRemPerc(life.getRemPerc());
@@ -173,7 +173,7 @@ public class NinebotZAdapter extends BaseAdapter {
             } else if (status instanceof NinebotZAdapter.bmsStatusCells) {
                 wd.setDataForLog(false);
                 bmsStatusCells cells = (NinebotZAdapter.bmsStatusCells) status;
-                Bms bms = cells.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
+                NinebotBms bms = cells.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
                 bms.getCells()[0] = cells.getCell1() / 1000.0;
                 bms.getCells()[1] = cells.getCell2() / 1000.0;
                 bms.getCells()[2] = cells.getCell3() / 1000.0;
