@@ -34,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
 public class WheelData {
-    private List<IDataListener> listeners = new ArrayList<IDataListener>();
-
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
 	private Timer ridingTimerControl;
@@ -183,10 +181,6 @@ public class WheelData {
         //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
         audioTrack.play();
 
-    }
-
-    public void addListener(IDataListener toAdd) {
-        listeners.add(toAdd);
     }
 
     static void initiate() {
@@ -704,8 +698,6 @@ public class WheelData {
             Context mContext = getBluetoothLeService().getApplicationContext();
             Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
             mContext.sendBroadcast(intent);
-            for (IDataListener hl : listeners)
-                hl.changeWheelType();
         }
     }
 

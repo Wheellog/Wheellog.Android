@@ -64,6 +64,7 @@
     <string name="auto_upload" translatable="false">auto_upload</string>
     <string name="log_location_data" translatable="false">log_location_data</string>
     <string name="use_gps" translatable="false">use_gps</string>
+    <string name="use_raw_data" translatable="false">use_raw_data</string>
 
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
@@ -339,6 +340,8 @@
     <string name="log_location_decription">Include location data within the logs</string>
     <string name="use_gps_title">Use GPS for location</string>
     <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
+    <string name="use_raw_title">Write Raw data</string>
+    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="on_off_strobe">Off/On/Strobe</string>
     <string name="soft_medium_hard">Soft/Medium/Hard</string>
     <string name="alarm_settings_description">Alarm settings</string>

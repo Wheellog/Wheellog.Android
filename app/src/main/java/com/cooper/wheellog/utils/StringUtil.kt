@@ -12,7 +12,12 @@ class StringUtil {
 
         @JvmStatic
         fun toHexString(buffer: ByteArray): String {
-            return "[" + buffer.joinToString("") { "%02x".format(it) } + "]"
+            return "[" + toHexStringRaw(buffer) + "]"
+        }
+
+        @JvmStatic
+        fun toHexStringRaw(buffer: ByteArray): String {
+            return buffer.joinToString("") { "%02x".format(it) }
         }
 
         @JvmStatic
