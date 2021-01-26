@@ -1098,7 +1098,9 @@ public class WheelData {
             double maxVoltage = getMaxVoltageForWheel();
             double minVoltage = getVoltageTiltbackForWheel();
             double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
-            battery = (int)((getVoltageDouble() - minVoltage) / voltagePercentStep);
+            if (voltagePercentStep != 0) {
+                battery = (int) ((getVoltageDouble() - minVoltage) / voltagePercentStep);
+            }
         }
 
         mBattery = battery;
@@ -1448,7 +1450,7 @@ public class WheelData {
         String advData = WheelLog.AppConfig.getAdvDataForWheel(deviceAddress);
         String adapterName = "";
         protoVer = "";
-        if (advData.compareTo("4e421300000000ec") == 0) {
+        if (advData.compareTo("4e421300000000ec") == 0 || advData.compareTo("4e421302000000ea") == 0) {
             protoVer = "S2";
         } else if ((advData.compareTo("4e421400000000eb") == 0) || (advData.compareTo("4e422000000000df") == 0) ||
                 (advData.compareTo("4e422200000000dd") == 0) || (advData.compareTo("4e4230cf") == 0)
@@ -1616,6 +1618,12 @@ public class WheelData {
             }
         } else {
             Timber.i("Protocol recognized as Unknown");
+            for (BluetoothGattService service : mBluetoothLeService.getSupportedGattServices()) {
+                Timber.i("Service: %s", service.getUuid().toString());
+                for (BluetoothGattCharacteristic characteristics : service.getCharacteristics()) {
+                    Timber.i("Characteristics: %s", characteristics.getUuid().toString());
+                }
+            }
         }
         return false;
     }

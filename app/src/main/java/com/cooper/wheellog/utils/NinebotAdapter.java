@@ -96,14 +96,10 @@ public class NinebotAdapter extends BaseAdapter {
                 int battery = status.getBatt();
                 wd.setSpeed(speed);
                 wd.setVoltage(voltage);
-                wd.setBatteryPercent(battery);
                 wd.setCurrent(status.getCurrent());
                 wd.setTotalDistance(status.getDistance());
                 wd.setTemperature(status.getTemperature() * 10);
-                wd.setTotalDistance(status.getDistance());
                 wd.updateRideTime();
-                wd.setTopSpeed(speed);
-                wd.setVoltageSag(voltage);
                 wd.setBatteryPercent(battery);
             }
         }

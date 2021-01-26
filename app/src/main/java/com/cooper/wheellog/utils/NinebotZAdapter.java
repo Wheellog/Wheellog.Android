@@ -192,21 +192,15 @@ public class NinebotZAdapter extends BaseAdapter {
                 bms.getCells()[15] = cells.getCell16() / 1000.0;
             } else {
                 wd.setDataForLog(true);
-                int speed = status.getSpeed();
-                int battery = status.getBatt();
                 int voltage = status.getVoltage();
-                wd.setSpeed(speed);
+                wd.setSpeed(status.getSpeed());
                 wd.setVoltage(voltage);
-                wd.setBatteryPercent(battery);
                 wd.setCurrent(status.getCurrent());
                 wd.setTotalDistance(status.getDistance());
                 wd.setTemperature(status.getTemperature() * 10);
                 wd.setAlert(status.getAlert());
-
-                wd.setTotalDistance((long) status.getDistance());
                 wd.updateRideTime();
-                wd.setBatteryPercent(battery);
-                wd.setTopSpeed(speed);
+                wd.setBatteryPercent(status.getBatt());
                 wd.setVoltageSag(voltage);
             }
         }
