@@ -257,7 +257,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
+                            && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
                         pagerAdapter.showPage(R.id.page_smart_bms);
                     } else {
                         pagerAdapter.hidePage(R.id.page_smart_bms);
@@ -776,60 +777,60 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.page_smart_bms: //BMS view
-                WheelData.getInstance().setBmsView(true);
-                tvBms1Sn.setText(WheelData.getInstance().getBms1SerialNumber());
-                tvBms1Fw.setText(WheelData.getInstance().getBms1VersionNumber());
-                tvBms1FactoryCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getBms1FactoryCap()));
-                tvBms1ActualCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getBms1ActualCap()));
-                tvBms1Cycles.setText(String.format(Locale.US, "%d", WheelData.getInstance().getBms1FullCycles()));
-                tvBms1ChrgCount.setText(String.format(Locale.US, "%d", WheelData.getInstance().getBms1ChargeCount()));
-                tvBms1MfgDate.setText(WheelData.getInstance().getBms1MfgDateStr());
-                tvBms1Status.setText(String.format(Locale.US, "%d", WheelData.getInstance().getBms1Status()));
-                tvBms1RemCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getBms1RemCap()));
-                tvBms1RemPerc.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getBms1RemPerc()));
-                tvBms1Current.setText(String.format(Locale.US, "%.2f A", WheelData.getInstance().getBms1Current()));
-                tvBms1Voltage.setText(String.format(Locale.US, "%.2f V", WheelData.getInstance().getBms1Voltage()));
-                tvBms1Temp1.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getBms1Temp1()));
-                tvBms1Temp2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getBms1Temp2()));
-                tvBms1Health.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getBms1Health()));
-                int balanceMap = WheelData.getInstance().getBms1BalanceMap();
+                data.setBmsView(true);
+                tvBms1Sn.setText(data.getBms1().getSerialNumber());
+                tvBms1Fw.setText(data.getBms1().getVersionNumber());
+                tvBms1FactoryCap.setText(String.format(Locale.US, "%d mAh", data.getBms1().getFactoryCap()));
+                tvBms1ActualCap.setText(String.format(Locale.US, "%d mAh", data.getBms1().getActualCap()));
+                tvBms1Cycles.setText(String.format(Locale.US, "%d", data.getBms1().getFullCycles()));
+                tvBms1ChrgCount.setText(String.format(Locale.US, "%d", data.getBms1().getChargeCount()));
+                tvBms1MfgDate.setText(data.getBms1().getMfgDateStr());
+                tvBms1Status.setText(String.format(Locale.US, "%d", data.getBms1().getStatus()));
+                tvBms1RemCap.setText(String.format(Locale.US, "%d mAh", data.getBms1().getRemCap()));
+                tvBms1RemPerc.setText(String.format(Locale.US, "%d %%", data.getBms1().getRemPerc()));
+                tvBms1Current.setText(String.format(Locale.US, "%.2f A", data.getBms1().getCurrent()));
+                tvBms1Voltage.setText(String.format(Locale.US, "%.2f V", data.getBms1().getVoltage()));
+                tvBms1Temp1.setText(String.format(Locale.US, "%d°C", data.getBms1().getTemp1()));
+                tvBms1Temp2.setText(String.format(Locale.US, "%d°C", data.getBms1().getTemp2()));
+                tvBms1Health.setText(String.format(Locale.US, "%d %%", data.getBms1().getHealth()));
+                int balanceMap = data.getBms1().getBalanceMap();
                 String bal = "";
                 if (((balanceMap) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell1.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell1(), bal));
+                tvBms1Cell1.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[0], bal));
                 if (((balanceMap >> 1) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell2.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell2(), bal));
+                tvBms1Cell2.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[1], bal));
                 if (((balanceMap >> 2) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell3.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell3(), bal));
+                tvBms1Cell3.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[2], bal));
                 if (((balanceMap >> 3) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell4.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell4(), bal));
+                tvBms1Cell4.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[3], bal));
                 if (((balanceMap >> 4) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell5.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell5(), bal));
+                tvBms1Cell5.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[4], bal));
                 if (((balanceMap >> 5) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell6.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell6(), bal));
+                tvBms1Cell6.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[5], bal));
                 if (((balanceMap >> 6) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell7.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell7(), bal));
+                tvBms1Cell7.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[6], bal));
                 if (((balanceMap >> 7) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell8.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell8(), bal));
+                tvBms1Cell8.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[7], bal));
                 if (((balanceMap >> 8) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell9.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell9(), bal));
+                tvBms1Cell9.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[8], bal));
                 if (((balanceMap >> 9) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell10.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell10(), bal));
+                tvBms1Cell10.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[9], bal));
                 if (((balanceMap >> 10) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell11.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell11(), bal));
+                tvBms1Cell11.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[10], bal));
                 if (((balanceMap >> 11) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell12.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell12(), bal));
+                tvBms1Cell12.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[11], bal));
                 if (((balanceMap >> 12) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell13.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell13(), bal));
+                tvBms1Cell13.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[12], bal));
                 if (((balanceMap >> 13) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell14.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell14(), bal));
-                if (WheelData.getInstance().getBms1Cell15() == 0.0) {
+                tvBms1Cell14.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[13], bal));
+                if (data.getBms1().getCells()[14] == 0.0) {
                     tvBms1Cell15.setVisibility(View.GONE);
                     tvTitleBms1Cell15.setVisibility(View.GONE);
                 } else {
                     tvBms1Cell15.setVisibility(View.VISIBLE);
                     tvTitleBms1Cell15.setVisibility(View.VISIBLE);
                 }
-                if (WheelData.getInstance().getBms1Cell16() == 0.0) {
+                if (data.getBms1().getCells()[15] == 0.0) {
                     tvBms1Cell16.setVisibility(View.GONE);
                     tvTitleBms1Cell16.setVisibility(View.GONE);
                 } else {
@@ -837,61 +838,61 @@ public class MainActivity extends AppCompatActivity {
                     tvTitleBms1Cell16.setVisibility(View.VISIBLE);
                 }
                 if (((balanceMap >> 14) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell15.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell15(), bal));
+                tvBms1Cell15.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[14], bal));
                 if (((balanceMap >> 15) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell16.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell16(), bal));
-                tvBms2Sn.setText(WheelData.getInstance().getbms2SerialNumber());
-                tvBms2Fw.setText(WheelData.getInstance().getbms2VersionNumber());
-                tvBms2FactoryCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getbms2FactoryCap()));
-                tvBms2ActualCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getbms2ActualCap()));
-                tvBms2Cycles.setText(String.format(Locale.US, "%d", WheelData.getInstance().getbms2FullCycles()));
-                tvBms2ChrgCount.setText(String.format(Locale.US, "%d", WheelData.getInstance().getbms2ChargeCount()));
-                tvBms2MfgDate.setText(WheelData.getInstance().getbms2MfgDateStr());
-                tvBms2Status.setText(String.format(Locale.US, "%d", WheelData.getInstance().getbms2Status()));
-                tvBms2RemCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getbms2RemCap()));
-                tvBms2RemPerc.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getbms2RemPerc()));
-                tvBms2Current.setText(String.format(Locale.US, "%.2f A", WheelData.getInstance().getbms2Current()));
-                tvBms2Voltage.setText(String.format(Locale.US, "%.2f V", WheelData.getInstance().getbms2Voltage()));
-                tvBms2Temp1.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getbms2Temp1()));
-                tvBms2Temp2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getbms2Temp2()));
-                tvBms2Health.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getbms2Health()));
-                balanceMap = WheelData.getInstance().getbms2BalanceMap();
+                tvBms1Cell16.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[15], bal));
+                tvBms2Sn.setText(data.getBms2().getSerialNumber());
+                tvBms2Fw.setText(data.getBms2().getVersionNumber());
+                tvBms2FactoryCap.setText(String.format(Locale.US, "%d mAh", data.getBms2().getFactoryCap()));
+                tvBms2ActualCap.setText(String.format(Locale.US, "%d mAh", data.getBms2().getActualCap()));
+                tvBms2Cycles.setText(String.format(Locale.US, "%d", data.getBms2().getFullCycles()));
+                tvBms2ChrgCount.setText(String.format(Locale.US, "%d", data.getBms2().getChargeCount()));
+                tvBms2MfgDate.setText(data.getBms2().getMfgDateStr());
+                tvBms2Status.setText(String.format(Locale.US, "%d", data.getBms2().getStatus()));
+                tvBms2RemCap.setText(String.format(Locale.US, "%d mAh", data.getBms2().getRemCap()));
+                tvBms2RemPerc.setText(String.format(Locale.US, "%d %%", data.getBms2().getRemPerc()));
+                tvBms2Current.setText(String.format(Locale.US, "%.2f A", data.getBms2().getCurrent()));
+                tvBms2Voltage.setText(String.format(Locale.US, "%.2f V", data.getBms2().getVoltage()));
+                tvBms2Temp1.setText(String.format(Locale.US, "%d°C", data.getBms2().getTemp1()));
+                tvBms2Temp2.setText(String.format(Locale.US, "%d°C", data.getBms2().getTemp2()));
+                tvBms2Health.setText(String.format(Locale.US, "%d %%", data.getBms2().getHealth()));
+                balanceMap = data.getBms2().getBalanceMap();
                 if (((balanceMap) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell1.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell1(), bal));
+                tvBms2Cell1.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[0], bal));
                 if (((balanceMap >> 1) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell2.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell2(), bal));
+                tvBms2Cell2.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[1], bal));
                 if (((balanceMap >> 2) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell3.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell3(), bal));
+                tvBms2Cell3.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[2], bal));
                 if (((balanceMap >> 3) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell4.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell4(), bal));
+                tvBms2Cell4.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[3], bal));
                 if (((balanceMap >> 4) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell5.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell5(), bal));
+                tvBms2Cell5.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[4], bal));
                 if (((balanceMap >> 5) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell6.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell6(), bal));
+                tvBms2Cell6.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[5], bal));
                 if (((balanceMap >> 6) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell7.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell7(), bal));
+                tvBms2Cell7.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[6], bal));
                 if (((balanceMap >> 7) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell8.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell8(), bal));
+                tvBms2Cell8.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[7], bal));
                 if (((balanceMap >> 8) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell9.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell9(), bal));
+                tvBms2Cell9.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[8], bal));
                 if (((balanceMap >> 9) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell10.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell10(), bal));
+                tvBms2Cell10.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[9], bal));
                 if (((balanceMap >> 10) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell11.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell11(), bal));
+                tvBms2Cell11.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[10], bal));
                 if (((balanceMap >> 11) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell12.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell12(), bal));
+                tvBms2Cell12.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[11], bal));
                 if (((balanceMap >> 12) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell13.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell13(), bal));
+                tvBms2Cell13.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[12], bal));
                 if (((balanceMap >> 13) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell14.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell14(), bal));
-                if (WheelData.getInstance().getbms2Cell15() == 0.0) {
+                tvBms2Cell14.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[13], bal));
+                if (data.getBms2().getCells()[14] == 0.0) {
                     tvBms2Cell15.setVisibility(View.GONE);
                     tvTitleBms2Cell15.setVisibility(View.GONE);
                 } else {
                     tvBms2Cell15.setVisibility(View.VISIBLE);
                     tvTitleBms2Cell15.setVisibility(View.VISIBLE);
                 }
-                if (WheelData.getInstance().getbms2Cell16() == 0.0) {
+                if (data.getBms2().getCells()[15] == 0.0) {
                     tvBms2Cell16.setVisibility(View.GONE);
                     tvTitleBms2Cell16.setVisibility(View.GONE);
                 } else {
@@ -899,9 +900,9 @@ public class MainActivity extends AppCompatActivity {
                     tvTitleBms2Cell16.setVisibility(View.VISIBLE);
                 }
                 if (((balanceMap >> 14) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell15.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell15(), bal));
+                tvBms2Cell15.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[14], bal));
                 if (((balanceMap >> 15) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell16.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell16(), bal));
+                tvBms2Cell16.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[15], bal));
 
         }
     }
