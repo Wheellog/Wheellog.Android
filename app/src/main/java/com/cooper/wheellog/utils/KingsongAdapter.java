@@ -185,11 +185,18 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 
+    private Boolean is84vCache;
+
     private boolean is84vWheel() {
+        if (is84vCache != null) {
+            return is84vCache;
+        }
+
         WheelData wd = WheelData.getInstance();
-        return StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"})
-                || wd.getModel().startsWith("ROCKW") // support rockwheel models
+        is84vCache = StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"})
+                || wd.getModel().startsWith("ROCKW")
                 || wd.getBtName().compareTo("RW") == 0;
+        return is84vCache;
     }
 
     @Override
