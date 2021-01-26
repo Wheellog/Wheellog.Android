@@ -78,9 +78,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             R.string.pedals_adjustment -> WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
             R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.pedalsMode)
             R.string.light_mode -> {
-                WheelData.getInstance().updateLightMode(WheelLog.AppConfig.lightMode)
-                /*val adapter = WheelData.getInstance().adapter
-                adapter?.setLightMode(WheelLog.AppConfig.lightMode)*/
+                WheelData.getInstance().adapter?.setLightMode(WheelLog.AppConfig.lightMode)
             }
             R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.alarmMode)
             R.string.strobe_mode -> WheelData.getInstance().updateStrobe(WheelLog.AppConfig.strobeMode)
