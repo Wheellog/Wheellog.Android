@@ -287,8 +287,7 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothLeService.STATE_CONNECTED:
                 configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    WheelLog.AppConfig.changeSettingsSpecific(mDeviceAddress);
-                    WheelLog.AppConfig.setLastMac(mDeviceAddress, true);
+                    WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
                         ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), s -> null);
                     }
@@ -317,12 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setWheelPreferences() {
         Timber.i("SetWheelPreferences");
-        getPreferencesFragment().refreshWheelSettings(WheelData.getInstance().getWheelLight(),
-                WheelData.getInstance().getWheelLed(),
-                WheelData.getInstance().getWheelHandleButton(),
-                WheelData.getInstance().getWheelMaxSpeed(),
-                WheelData.getInstance().getSpeakerVolume(),
-                WheelData.getInstance().getPedalsPosition());
+        getPreferencesFragment().refreshWheelSettings();
     }
 
     private void setMenuIconStates() {
@@ -646,7 +640,7 @@ public class MainActivity extends AppCompatActivity {
                 wheelView.redrawTextBoxes();
 
                 String profileName = WheelLog.AppConfig.getProfileName();
-                if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneral())
+                if (profileName == null || profileName.trim().equals(""))
                     wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
                 else
                     wheelView.setWheelModel(profileName);
@@ -955,7 +949,6 @@ public class MainActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
-        WheelLog.AppConfig.initGeneralSettingsSpecific();
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
@@ -1121,18 +1114,9 @@ public class MainActivity extends AppCompatActivity {
 
         loadPreferences();
 
-        if (WheelLog.AppConfig.isFirstRun()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mDrawer.openDrawer(GravityCompat.START, true);
-                }
-            }, 1000);
-        }
-
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
+            //finish();
         }
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
@@ -1144,7 +1128,7 @@ public class MainActivity extends AppCompatActivity {
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
+            //finish();
         } else if (!mBluetoothAdapter.isEnabled()) {
             // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
             // fire an intent to display a dialog asking the user to grant permission to enable it.
@@ -1319,7 +1303,7 @@ public class MainActivity extends AppCompatActivity {
                     // logout after uncheck
                     ElectroClub.getInstance().setUserToken(null);
                     ElectroClub.getInstance().setUserId(null);
-                    WheelLog.AppConfig.setEcToken(null, true);
+                    WheelLog.AppConfig.setEcToken(null);
                 }
                 break;
             case R.string.show_page_events:
@@ -1367,13 +1351,13 @@ public class MainActivity extends AppCompatActivity {
 
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
-        WheelLog.AppConfig.setAutoLog(false, true);
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
+        WheelLog.AppConfig.setAutoLog(false);
+        getPreferencesFragment().refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
-        WheelLog.AppConfig.setLogLocationData(false, true);
+        WheelLog.AppConfig.setLogLocationData(false);
         getPreferencesFragment().refreshVolatileSettings();
     }
 
@@ -1526,13 +1510,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case RESULT_AUTH_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken(), true);
-                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId(), true);
+                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken());
+                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId());
                     ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
                 } else {
-                    WheelLog.AppConfig.setAutoUploadEc(false, true);
-                    WheelLog.AppConfig.setEcToken(null, true);
-                    WheelLog.AppConfig.setEcUserId(null, true);
+                    WheelLog.AppConfig.setAutoUploadEc(false);
+                    WheelLog.AppConfig.setEcToken(null);
+                    WheelLog.AppConfig.setEcUserId(null);
                     getPreferencesFragment().refreshVolatileSettings();
                 }
                 break;
@@ -1570,8 +1554,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private MainPreferencesFragment getPreferencesFragment() {
+    private PreferencesFragment getPreferencesFragment() {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        return frag == null ? new MainPreferencesFragment() : (MainPreferencesFragment) frag;
+        return frag == null ? new PreferencesFragment() : (PreferencesFragment) frag;
     }
 }

@@ -917,10 +917,9 @@ public class WheelData {
 	
 	public double getUserDistanceDouble() {
 		if (mUserDistance == 0 && mTotalDistance != 0 )  {
-			Context mContext = getBluetoothLeService().getApplicationContext();
-			mUserDistance = WheelLog.AppConfig.getUserDistance(getBluetoothLeService().getBluetoothDeviceAddress());
+			mUserDistance = WheelLog.AppConfig.getUserDistance();
 			if (mUserDistance == 0) {
-				WheelLog.AppConfig.setUserDistance(getBluetoothLeService().getBluetoothDeviceAddress(), mTotalDistance);
+				WheelLog.AppConfig.setUserDistance(mTotalDistance);
 				mUserDistance = mTotalDistance;
 			}
 		}
@@ -939,11 +938,9 @@ public class WheelData {
 
     public void resetUserDistance() {
 		if (mTotalDistance != 0)  {
-			Context mContext = getBluetoothLeService().getApplicationContext();
-            WheelLog.AppConfig.setUserDistance(getBluetoothLeService().getBluetoothDeviceAddress(), mTotalDistance);
+            WheelLog.AppConfig.setUserDistance(mTotalDistance);
 			mUserDistance = mTotalDistance;
 		}
-
     }
 	
 	public void resetTopSpeed() {
@@ -1399,7 +1396,8 @@ public class WheelData {
 
         mBluetoothLeService = bluetoothService;
         Context mContext = bluetoothService.getApplicationContext();
-        String advData = WheelLog.AppConfig.getAdvDataForWheel(deviceAddress);
+        WheelLog.AppConfig.setLastMac(deviceAddress);
+        String advData = WheelLog.AppConfig.getAdvDataForWheel();
         String adapterName = "";
         protoVer = "";
         if (advData.compareTo("4e421300000000ec") == 0 || advData.compareTo("4e421302000000ea") == 0) {
@@ -1482,8 +1480,8 @@ public class WheelData {
                 BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(UUID.fromString(Constants.INMOTION_DESCRIPTER_UUID));
                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
-                if (WheelLog.AppConfig.hasPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress())) {
-                    String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel(mBluetoothLeService.getBluetoothDeviceAddress());
+                String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel();
+                if (inmotionPassword.length() > 0) {
                     InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
                     return true;
                 }
@@ -1568,6 +1566,7 @@ public class WheelData {
                 return true;
             }
         } else {
+            WheelLog.AppConfig.setLastMac("");
             Timber.i("Protocol recognized as Unknown");
             for (BluetoothGattService service : mBluetoothLeService.getSupportedGattServices()) {
                 Timber.i("Service: %s", service.getUuid().toString());

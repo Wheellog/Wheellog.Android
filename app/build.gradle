@@ -74,6 +74,9 @@ dependencies {
     implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'com.google.guava:guava:29.0-android'
+    // coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.google.truth:truth:1.0.1'
