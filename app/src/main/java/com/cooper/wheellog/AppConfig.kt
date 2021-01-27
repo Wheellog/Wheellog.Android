@@ -321,8 +321,7 @@ class AppConfig(var context: Context) {
         return if (resName == null || resName === "") {
             -1
         } else try {
-            val idField: Field = String()::class.java.getDeclaredField(resName)
-            idField.getInt(idField)
+            context.resources.getIdentifier(resName, "string", context.packageName)
         } catch (e: Exception) {
             e.printStackTrace()
             -1

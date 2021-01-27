@@ -11,6 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.*
 import com.cooper.wheellog.ElectroClub.Companion.instance
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
@@ -22,6 +24,7 @@ import timber.log.Timber
 class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener, IDataListener {
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
+    private val DIALOG_FRAGMENT_TAG = "wheellog.MainPreferenceFragment.DIALOG"
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -30,6 +33,19 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     override fun changeWheelType() {
         switchSpecificSettingsIsVisible()
         hideShowSeekBarsAlarms()
+    }
+
+    override fun onDisplayPreferenceDialog(preference: Preference?) {
+        if (preference is MultiSelectPreference) {
+            if (parentFragmentManager.findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+                return
+            }
+            val dialogFragment = newInstance(preference.key)
+            dialogFragment.setTargetFragment(this, 0)
+            dialogFragment.show(parentFragmentManager, DIALOG_FRAGMENT_TAG)
+        } else {
+            super.onDisplayPreferenceDialog(preference)
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -90,7 +106,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
         }
 
-        if (key?.indexOf(WheelData.getInstance().mac) == 0) {
+        if (key?.indexOf(WheelData.getInstance().mac) != 0) {
             val intent = Intent(Constants.ACTION_PREFERENCE_CHANGED)
             intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(key))
             context?.sendBroadcast(intent)

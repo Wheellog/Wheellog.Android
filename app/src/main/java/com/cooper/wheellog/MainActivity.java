@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
+                    getPreferencesFragment().changeWheelType();
                     configureDisplay(WheelData.getInstance().getWheelType());
                     updateScreen(true);
                     break;
