@@ -357,14 +357,18 @@ class AppConfig(var context: Context) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any?> getValue(key: String, defaultValue: T): T {
-        return when (defaultValue) {
-            is String? -> sharedPreferences.getString(key, defaultValue) as T
-            is String -> sharedPreferences.getString(key, defaultValue) as T
-            is Int -> sharedPreferences.getInt(key, defaultValue) as T
-            is Float -> sharedPreferences.getFloat(key, defaultValue) as T
-            is Boolean -> sharedPreferences.getBoolean(key, defaultValue) as T
-            is Long -> sharedPreferences.getLong(key, defaultValue) as T
-            else -> defaultValue
+        return try {
+            when (defaultValue) {
+                is String? -> sharedPreferences.getString(key, defaultValue) as T
+                is String -> sharedPreferences.getString(key, defaultValue) as T
+                is Int -> sharedPreferences.getInt(key, defaultValue) as T
+                is Float -> sharedPreferences.getFloat(key, defaultValue) as T
+                is Boolean -> sharedPreferences.getBoolean(key, defaultValue) as T
+                is Long -> sharedPreferences.getLong(key, defaultValue) as T
+                else -> defaultValue
+            }
+        } catch (ex: ClassCastException) {
+            defaultValue
         }
     }
 }
