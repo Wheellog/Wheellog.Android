@@ -135,8 +135,6 @@
 	<string name="max_speed_dial_description">Максималната скорост показвана на външния ринг</string>
 	<string name="use_mph_title">Скорост и дистанция в мили</string>
 	<string name="use_mph_description">Показвай скоростта и дистанцията в мили вместо в километри</string>
-	<string name="use_eng_title">English</string>
-	<string name="use_eng_description">Use English language instead of Android system language</string>
 	<string name="enable_alarms_title">Включи алармите</string>
 	<string name="enable_alarms_description">Разреши нателефона да вибрира като предупреждение</string>
 	<string name="disable_phone_vibrate_title">Изключи вибрацията на телефона</string>

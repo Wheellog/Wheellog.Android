@@ -135,8 +135,6 @@
 	<string name="max_speed_dial_description">Vitesse max affiché sur le graphique</string>
 	<string name="use_mph_title">Vitesse et distance en miles</string>
 	<string name="use_mph_description">Affiche la vitesse et la distance en miles plutôt qu\'en kilomètres</string>
-	<string name="use_eng_title">English</string>
-	<string name="use_eng_description">Use English language instead of Android system language</string>
 	<string name="enable_alarms_title">Activation des alarmes</string>
 	<string name="enable_alarms_description">Faire vibrer le téléphone</string>
 	<string name="disable_phone_vibrate_title">Désactiver la vibration du téléphone</string>

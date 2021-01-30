@@ -192,7 +192,6 @@
     <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
-    <string name="use_eng_title">English</string>
     <string name="use_pip_mode_description">Переходить в режим картинка-в-картинке вместо сворачивания</string>
     <string name="use_pip_mode_title">Картинка-в-Картинке</string>
     <string name="voltage_sag">Просадка напряжения</string>

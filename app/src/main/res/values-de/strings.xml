@@ -135,8 +135,6 @@
 	<string name="max_speed_dial_description">Max. angezeigte Geschwindigkeit (Tachometer)</string>
 	<string name="use_mph_title">Geschwindigkeit und Entfernung in Meilen</string>
 	<string name="use_mph_description">Zeige Geschwindigkeit und Entfernung in Meilen anstatt Kilometer</string>
-	<string name="use_eng_title">English</string>
-	<string name="use_eng_description">Use English language instead of Android system language</string>
 	<string name="enable_alarms_title">Alarme aktivieren</string>
 	<string name="enable_alarms_description">Das Telefon darf vibrieren</string>
 	<string name="disable_phone_vibrate_title">Telefonvibration deaktivieren</string>
