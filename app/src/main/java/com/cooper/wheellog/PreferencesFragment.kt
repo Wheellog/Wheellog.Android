@@ -345,7 +345,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_auto)
                     setEntries(R.array.light_mode_ks)
                     setEntryValues(R.array.light_mode_values)
-                    setDefaultValue("0")
+                    setValueIndex(0)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.strobe_mode)
@@ -353,7 +353,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.strobe_mode_ks)
                     setEntryValues(R.array.strobe_mode_values)
-                    setDefaultValue("0")
+                    setValueIndex(0)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.led_mode)
@@ -361,7 +361,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.led_mode)
                     setEntryValues(R.array.led_mode_values)
-                    setDefaultValue("1")
+                    setValueIndex(0)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -369,7 +369,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setDefaultValue("1")
+                    setValueIndex(1)
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -441,7 +441,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_strobe)
                     setEntries(R.array.light_mode_gw)
                     setEntryValues(R.array.light_mode_values)
-                    setDefaultValue("0")
+                    setValueIndex(0)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.alarm_mode)
@@ -449,7 +449,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.alarm_settings_title)
                     setEntries(R.array.alarm_mode_gw)
                     setEntryValues(R.array.alarm_mode_values)
-                    setDefaultValue("0")
+                    setValueIndex(1)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -457,7 +457,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setDefaultValue("1")
+                    setValueIndex(1)
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -488,7 +488,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.battary_voltage_description)
                     setEntries(R.array.gotway_voltage)
                     setEntryValues(R.array.gotway_voltage_values)
-                    setDefaultValue("1")
+                    setValueIndex(1)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.gotway_negative)
@@ -496,7 +496,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setDefaultValue("0")
+                    setValueIndex(1)
                 },
                 CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
@@ -523,7 +523,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setDefaultValue("0")
+                    setValueIndex(1)
                 }
         ).forEach {
             preferenceScreen.addPreference(it)
