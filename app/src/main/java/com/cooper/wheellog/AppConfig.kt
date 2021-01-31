@@ -9,6 +9,16 @@ class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private var specificPrefix: String = "default"
 
+    init {
+        // Clear all preferences if they are incompatible
+        val version = getValue("versionSettings", -1)
+        val currentVer = 1;
+        if (version < currentVer) {
+            sharedPreferences.edit().clear().commit()
+            setValue("versionSettings", currentVer)
+        }
+    }
+
     //region -=[ general settings ]=-    
     //region application
     var useEng: Boolean
@@ -24,8 +34,8 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.fixed_percents, value)
 
     var cellVoltageTiltback: Int
-        get() = getValue(R.string.cell_voltage_tiltback, 330) / 100
-        set(value) = setValue(R.string.cell_voltage_tiltback, value * 100)
+        get() = getValue(R.string.cell_voltage_tiltback, 330)
+        set(value) = setValue(R.string.cell_voltage_tiltback, value)
 
     var useMph: Boolean
         get() = getValue(R.string.use_mph, false)
@@ -52,8 +62,8 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.connection_sound, value)
 
     var noConnectionSound: Int
-        get() = getValue(R.string.no_connection_sound, 0) * 1000
-        set(value) = setValue(R.string.no_connection_sound, value / 1000)
+        get() = getValue(R.string.no_connection_sound, 0)
+        set(value) = setValue(R.string.no_connection_sound, value)
 
     var useStopMusic: Boolean
         get() = getValue(R.string.use_stop_music, false)
@@ -64,8 +74,8 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.battery_capacity, value)
 
     var chargingPower: Int
-        get() = getValue(R.string.charging_power, 0) / 10
-        set(value) = setValue(R.string.charging_power, value * 10)
+        get() = getValue(R.string.charging_power, 0)
+        set(value) = setValue(R.string.charging_power, value)
 
     var showUnknownDevices: Boolean
         get() = getValue(R.string.show_unknown_devices, false)
@@ -138,76 +148,76 @@ class AppConfig(var context: Context) {
         set(value) = setSpecific(R.string.altered_alarms, value)
 
     var alarm1Speed: Int
-        get() = getSpecific(R.string.alarm_1_speed, 29) * 100
-        set(value) = setSpecific(R.string.alarm_1_speed, value / 100)
+        get() = getSpecific(R.string.alarm_1_speed, 29)
+        set(value) = setSpecific(R.string.alarm_1_speed, value)
 
     var alarm1Battery: Int
         get() = getSpecific(R.string.alarm_1_battery, 100)
         set(value) = setSpecific(R.string.alarm_1_battery, value)
 
     var alarm2Speed: Int
-        get() = getSpecific(R.string.alarm_2_speed, 0) * 100
-        set(value) = setSpecific(R.string.alarm_2_speed, value / 100)
+        get() = getSpecific(R.string.alarm_2_speed, 0)
+        set(value) = setSpecific(R.string.alarm_2_speed, value)
 
     var alarm2Battery: Int
         get() = getSpecific(R.string.alarm_2_battery, 0)
         set(value) = setSpecific(R.string.alarm_2_battery, value)
 
     var alarm3Speed: Int
-        get() = getSpecific(R.string.alarm_3_speed, 0) * 100
-        set(value) = setSpecific(R.string.alarm_3_speed, value / 100)
+        get() = getSpecific(R.string.alarm_3_speed, 0)
+        set(value) = setSpecific(R.string.alarm_3_speed, value)
 
     var alarm3Battery: Int
         get() = getSpecific(R.string.alarm_3_battery, 0)
         set(value) = setSpecific(R.string.alarm_3_battery, value)
 
     var alarmTemperature
-        get() = getSpecific(R.string.alarm_temperature, 0) * 100
-        set(value) = setSpecific(R.string.alarm_temperature, value / 100)
+        get() = getSpecific(R.string.alarm_temperature, 0)
+        set(value) = setSpecific(R.string.alarm_temperature, value)
 
     var rotationSpeed
-        get() = getSpecific(R.string.rotation_speed, 500) / 10
-        set(value) = setSpecific(R.string.rotation_speed, value * 10)
+        get() = getSpecific(R.string.rotation_speed, 500)
+        set(value) = setSpecific(R.string.rotation_speed, value)
 
     var rotationVoltage
-        get() = getSpecific(R.string.rotation_voltage, 840) / 10
-        set(value) = setSpecific(R.string.rotation_voltage, value * 10)
+        get() = getSpecific(R.string.rotation_voltage, 840)
+        set(value) = setSpecific(R.string.rotation_voltage, value)
 
     var powerFactor
-        get() = getSpecific(R.string.power_factor, 90) / 100
-        set(value) = setSpecific(R.string.power_factor, value * 100)
+        get() = getSpecific(R.string.power_factor, 90)
+        set(value) = setSpecific(R.string.power_factor, value)
 
     var alarmFactor1
-        get() = getSpecific(R.string.alarm_factor1, 80) / 100
-        set(value) = setSpecific(R.string.alarm_factor1, value * 100)
+        get() = getSpecific(R.string.alarm_factor1, 80)
+        set(value) = setSpecific(R.string.alarm_factor1, value)
 
     var alarmFactor2
-        get() = getSpecific(R.string.alarm_factor2, 90) / 100
-        set(value) = setSpecific(R.string.alarm_factor2, value * 100)
+        get() = getSpecific(R.string.alarm_factor2, 90)
+        set(value) = setSpecific(R.string.alarm_factor2, value)
 
     var alarmFactor3
-        get() = getSpecific(R.string.alarm_factor3, 95) / 100
-        set(value) = setSpecific(R.string.alarm_factor3, value * 100)
+        get() = getSpecific(R.string.alarm_factor3, 95)
+        set(value) = setSpecific(R.string.alarm_factor3, value)
 
     var warningSpeed
         get() = getSpecific(R.string.warning_speed, 0)
         set(value) = setSpecific(R.string.warning_speed, value)
 
     var warningPwm
-        get() = getSpecific(R.string.warning_pwm, 0) / 100
-        set(value) = setSpecific(R.string.warning_pwm, value * 100)
+        get() = getSpecific(R.string.warning_pwm, 0)
+        set(value) = setSpecific(R.string.warning_pwm, value)
 
     var warningSpeedPeriod
-        get() = getSpecific(R.string.warning_speed_period, 0) * 1000
-        set(value) = setSpecific(R.string.warning_speed_period, value / 1000)
+        get() = getSpecific(R.string.warning_speed_period, 0)
+        set(value) = setSpecific(R.string.warning_speed_period, value)
 
     var useShortPwm
         get() = getSpecific(R.string.use_short_pwm, false)
         set(value) = setSpecific(R.string.use_short_pwm, value)
 
     var alarmCurrent
-        get() = getSpecific(R.string.warning_pwm, 0) * 100
-        set(value) = setSpecific(R.string.warning_pwm, value / 100)
+        get() = getSpecific(R.string.alarm_current, 0)
+        set(value) = setSpecific(R.string.alarm_current, value)
     //endregion
     
     //region inmotion

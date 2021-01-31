@@ -752,7 +752,7 @@ public class WheelData {
             return 0;
         }
 
-        return WheelLog.AppConfig.getCellVoltageTiltback() * adapter.getCellSForWheel();
+        return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellSForWheel();
     }
 
     public boolean isVoltageTiltbackUnsupported() {
@@ -765,7 +765,7 @@ public class WheelData {
         double whInOneV = WheelLog.AppConfig.getBatteryCapacity() / (maxVoltage - minVoltage);
         double needToMax = maxVoltage - getVoltageDouble();
         double needToMaxInWh = needToMax * whInOneV;
-        double chargePower = maxVoltage * WheelLog.AppConfig.getChargingPower();
+        double chargePower = maxVoltage * WheelLog.AppConfig.getChargingPower() / 10d;
         int chargeTime = (int) (needToMaxInWh / chargePower * 60);
         return getSpeed() == 0
                 ? String.format(Locale.US, "~%d min", chargeTime)
@@ -1115,18 +1115,18 @@ public class WheelData {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
             if (WheelLog.AppConfig.getAlteredAlarms()) {
-                if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor3()) {
+                if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor3() / 100d) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor2()) {
+                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor2() / 100d) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1()) {
+                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
                 } else {
-                    double warningPwm = WheelLog.AppConfig.getWarningPwm();
-                    int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod();
+                    double warningPwm = WheelLog.AppConfig.getWarningPwm() / 100d;
+                    int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
                     if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
                         mLastPlayWarningSpeedTime = System.currentTimeMillis();
                         playRecommendSpeed(mContext);
@@ -1162,13 +1162,13 @@ public class WheelData {
             }
         }
 
-        int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent();
+        int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
         if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
             raiseAlarm(ALARM_TYPE.CURRENT, mContext);
         }
 
-        int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature();
+        int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature() * 100;
         if (alarmTemperature > 0 && mTemperature >= alarmTemperature && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
             raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
@@ -1234,7 +1234,10 @@ public class WheelData {
         if (mWheelType == WHEEL_TYPE.KINGSONG) {
             mCalculatedPwm = (double)mOutput/100.0;
         } else {
-            mCalculatedPwm = ((float) mSpeed / 100.0) / ((WheelLog.AppConfig.getRotationSpeed() / WheelLog.AppConfig.getRotationVoltage()) * ((float) mVoltage / 100.0) * WheelLog.AppConfig.getPowerFactor());
+            double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
+            double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;
+            double powerFactor = WheelLog.AppConfig.getPowerFactor() / 100d;
+            mCalculatedPwm = mSpeed / (rotationSpeed / rotationVoltage * mVoltage * powerFactor);
         }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
