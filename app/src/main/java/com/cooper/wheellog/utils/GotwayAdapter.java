@@ -207,7 +207,11 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     private double getScaledVoltage(double value) {
-        return value * (1 + (0.25 * Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage())));
+        int voltage = 0;
+        if (!WheelLog.AppConfig.getGotwayVoltage().equals("")) {
+            voltage = Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage());
+        }
+        return value * (1 + (0.25 * voltage));
     }
 }
 
