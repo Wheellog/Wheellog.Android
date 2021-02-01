@@ -986,8 +986,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSingleClick(View v) {
                 if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
-                    // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.warning_pwm);
-                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.warning_pwm);
+                    // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
+                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
                     mp.start();
                     mp.setOnCompletionListener(MediaPlayer::release);
                 }
