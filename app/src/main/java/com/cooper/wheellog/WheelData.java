@@ -1141,19 +1141,19 @@ public class WheelData {
             } else {
                 int alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
                 int alarm1Battery = WheelLog.AppConfig.getAlarm1Battery();
-                if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && mSpeed >= alarm1Speed) {
+                if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && getSpeedDouble() >= alarm1Speed) {
                     startSpeedAlarmCount();
                     raiseAlarm(ALARM_TYPE.SPEED1, mContext);
                 } else {
                     int alarm2Speed = WheelLog.AppConfig.getAlarm2Speed();
                     int alarm2Battery = WheelLog.AppConfig.getAlarm2Battery();
-                    if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && mSpeed >= alarm2Speed) {
+                    if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && getSpeedDouble() >= alarm2Speed) {
                         startSpeedAlarmCount();
                         raiseAlarm(ALARM_TYPE.SPEED2, mContext);
                     } else {
                         int alarm3Speed = WheelLog.AppConfig.getAlarm3Speed();
                         int alarm3Battery = WheelLog.AppConfig.getAlarm3Battery();
-                        if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && mSpeed >= alarm3Speed) {
+                        if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && getSpeedDouble() >= alarm3Speed) {
                             startSpeedAlarmCount();
                             raiseAlarm(ALARM_TYPE.SPEED3, mContext);
                         }
