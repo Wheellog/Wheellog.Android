@@ -30,7 +30,7 @@ public class VeteranAdapter extends BaseAdapter {
             if (unpacker.addChar(c)) {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                int veteranNegative = WheelLog.AppConfig.getGotwayNegative();
+                int veteranNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
                 int voltage = MathsUtil.shortFromBytesBE(buff,4);
                 int speed = MathsUtil.signedShortFromBytesBE(buff,6) * 10;
                 int distance = MathsUtil.intFromBytesRevBE(buff,8);
@@ -101,11 +101,11 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        int lightMode = WheelLog.AppConfig.getLightMode() + 1;
+        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
         if (lightMode > 2) {
             lightMode = 0;
         }
-        WheelLog.AppConfig.setLightMode(lightMode);
+        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
 

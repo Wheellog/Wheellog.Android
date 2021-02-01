@@ -92,13 +92,11 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             R.string.wheel_max_speed -> WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
             R.string.speaker_volume -> WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
             R.string.pedals_adjustment -> WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
-            R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.pedalsMode)
-            R.string.light_mode -> {
-                WheelData.getInstance().adapter?.setLightMode(WheelLog.AppConfig.lightMode)
-            }
-            R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.alarmMode)
-            R.string.strobe_mode -> WheelData.getInstance().updateStrobe(WheelLog.AppConfig.strobeMode)
-            R.string.led_mode -> WheelData.getInstance().updateLedMode(WheelLog.AppConfig.ledMode)
+            R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
+            R.string.light_mode -> WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
+            R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
+            R.string.strobe_mode -> WheelData.getInstance().updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
+            R.string.led_mode -> WheelData.getInstance().updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
@@ -345,7 +343,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_auto)
                     setEntries(R.array.light_mode_ks)
                     setEntryValues(R.array.light_mode_values)
-                    setValueIndex(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.strobe_mode)
@@ -353,7 +351,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.strobe_mode_ks)
                     setEntryValues(R.array.strobe_mode_values)
-                    setValueIndex(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.led_mode)
@@ -361,7 +359,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.led_mode)
                     setEntryValues(R.array.led_mode_values)
-                    setValueIndex(0)
+                    setDefaultValue("1")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -369,7 +367,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setValueIndex(1)
+                    setDefaultValue("1")
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -441,7 +439,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_strobe)
                     setEntries(R.array.light_mode_gw)
                     setEntryValues(R.array.light_mode_values)
-                    setValueIndex(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.alarm_mode)
@@ -449,7 +447,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.alarm_settings_title)
                     setEntries(R.array.alarm_mode_gw)
                     setEntryValues(R.array.alarm_mode_values)
-                    setValueIndex(1)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -457,7 +455,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setValueIndex(1)
+                    setDefaultValue("1")
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -488,7 +486,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.battary_voltage_description)
                     setEntries(R.array.gotway_voltage)
                     setEntryValues(R.array.gotway_voltage_values)
-                    setValueIndex(1)
+                    setDefaultValue("1")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.gotway_negative)
@@ -496,7 +494,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setValueIndex(1)
+                    setDefaultValue("0")
                 },
                 CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
@@ -523,7 +521,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setValueIndex(1)
+                    setDefaultValue("0")
                 }
         ).forEach {
             preferenceScreen.addPreference(it)

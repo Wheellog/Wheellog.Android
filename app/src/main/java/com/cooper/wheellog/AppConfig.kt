@@ -16,8 +16,6 @@ class AppConfig(var context: Context) {
         if (version < currentVer) {
             sharedPreferences.edit().clear().commit()
             setValue("versionSettings", currentVer)
-            PreferenceManager.setDefaultValues(context, R.xml.preferences, true)
-        } else {
             PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
         }
     }
@@ -242,20 +240,20 @@ class AppConfig(var context: Context) {
     //endregion
     
     //region kingsong
-    var lightMode: Int
-        get() = getSpecific(R.string.light_mode, 0)
+    var lightMode: String // ListPreference only works with string parameters and writes them as string
+        get() = getSpecific(R.string.light_mode, "0")
         set(value) = setSpecific(R.string.light_mode, value)
 
-    var strobeMode: Int
-        get() = getSpecific(R.string.strobe_mode, 0)
+    var strobeMode: String // ListPreference only works with string parameters and writes them as string
+        get() = getSpecific(R.string.strobe_mode, "0")
         set(value) = setSpecific(R.string.strobe_mode, value)
 
-    var ledMode: Int
-        get() = getSpecific(R.string.led_mode, 0)
+    var ledMode: String // ListPreference only works with string parameters and writes them as string
+        get() = getSpecific(R.string.led_mode, "0")
         set(value) = setSpecific(R.string.led_mode, value)
 
-    var pedalsMode: Int
-        get() = getSpecific(R.string.pedals_mode, 0)
+    var pedalsMode: String // ListPreference only works with string parameters and writes them as string
+        get() = getSpecific(R.string.pedals_mode, "0")
         set(value) = setSpecific(R.string.pedals_mode, value)
 
     var wheelMaxSpeed: Int
@@ -280,20 +278,20 @@ class AppConfig(var context: Context) {
     //endregion
     
     //region begode
-    var alarmMode: Int
-        get() = getSpecific(R.string.alarm_mode, 0)
+    var alarmMode: String // ListPreference only works with string parameters
+        get() = getSpecific(R.string.alarm_mode, "0")
         set(value) = setSpecific(R.string.alarm_mode, value)
     
     var useRatio: Boolean
         get() = getSpecific(R.string.use_ratio, false)
         set(value) = setSpecific(R.string.use_ratio, value)
 
-    var gotwayVoltage: Int
-        get() = getSpecific(R.string.gotway_voltage, 1)
+    var gotwayVoltage: String // ListPreference only works with string parameters
+        get() = getSpecific(R.string.gotway_voltage, "1")
         set(value) = setSpecific(R.string.gotway_voltage, value)
 
-    var gotwayNegative: Int
-        get() = getSpecific(R.string.gotway_negative, 0)
+    var gotwayNegative: String // ListPreference only works with string parameter
+        get() = getSpecific(R.string.gotway_negative, "0")
         set(value) = setSpecific(R.string.gotway_negative, value)
 
     var connectBeep: Boolean
