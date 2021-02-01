@@ -129,4 +129,12 @@
         android:defaultValue="false"
         android:visible="true" />
 
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/beep_on_single_tap"
+        android:summary="@string/beep_on_single_tap_description"
+        android:title="@string/beep_on_single_tap_title"
+        android:defaultValue="false"
+        android:visible="true" />
+
 </PreferenceScreen>

@@ -716,6 +716,18 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     title = getString(R.string.use_short_pwm_title)
                                     summary = getString(R.string.use_short_pwm_description)
                                 })),
+                addPreferenceCategory(getString(R.string.current_alarm_title),
+                        arrayOf(
+                                SeekBarPreference(context).apply {
+                                    key = mac + getString(R.string.alarm_current)
+                                    title = getString(R.string.current_title)
+                                    summary = getString(R.string.alarm_current_description)
+                                    min = 0
+                                    max = 300
+                                    unit = getString(R.string.amp)
+                                    increment = 1
+                                    setDefaultValue(35)
+                                })),
                 addPreferenceCategory(getString(R.string.temperature_alarm_title),
                         arrayOf(
                                 SeekBarPreference(context).apply {

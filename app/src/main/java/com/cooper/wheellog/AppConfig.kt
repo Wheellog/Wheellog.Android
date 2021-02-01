@@ -3,7 +3,6 @@ package com.cooper.wheellog
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import java.lang.reflect.Field
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -81,6 +80,10 @@ class AppConfig(var context: Context) {
     var showUnknownDevices: Boolean
         get() = getValue(R.string.show_unknown_devices, false)
         set(value) = setValue(R.string.show_unknown_devices, value)
+
+    var useBeepOnSingleTap: Boolean
+        get() = getValue(R.string.beep_on_single_tap, false)
+        set(value) = setValue(R.string.beep_on_single_tap, value)
     //endregion
 
     //region logs

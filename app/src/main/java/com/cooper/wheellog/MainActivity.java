@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -984,7 +985,12 @@ public class MainActivity extends AppCompatActivity {
         wheelView.setOnClickListener(new DoubleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                // TODO например проигрывание гудка. Опционально конечно же.
+                if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
+                    // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.warning_pwm);
+                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.warning_pwm);
+                    mp.start();
+                    mp.setOnCompletionListener(MediaPlayer::release);
+                }
             }
 
             @Override
