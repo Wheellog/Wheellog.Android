@@ -16,6 +16,9 @@ class AppConfig(var context: Context) {
         if (version < currentVer) {
             sharedPreferences.edit().clear().commit()
             setValue("versionSettings", currentVer)
+            PreferenceManager.setDefaultValues(context, R.xml.preferences, true)
+        } else {
+            PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
         }
     }
 
