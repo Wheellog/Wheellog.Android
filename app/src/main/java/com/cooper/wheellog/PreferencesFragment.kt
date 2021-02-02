@@ -53,7 +53,8 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             return
         }
 
-        when (WheelLog.AppConfig.getResId(key)) {
+        val resId = key?.replace(WheelData.getInstance().mac + "_", "")
+        when (WheelLog.AppConfig.getResId(resId)) {
             R.string.ec_token -> instance.userToken = WheelLog.AppConfig.ecToken
             R.string.ec_user_id -> instance.userId = WheelLog.AppConfig.ecUserId
             R.string.connection_sound -> hideShowSeekBarsApp()
@@ -106,7 +107,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
 
         if (key?.indexOf(WheelData.getInstance().mac) != 0) {
             val intent = Intent(Constants.ACTION_PREFERENCE_CHANGED)
-            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(key))
+            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(resId))
             context?.sendBroadcast(intent)
         }
     }
@@ -552,6 +553,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.altered_alarms_description)
                 },
                 addPreferenceCategory(getString(R.string.speed_alarm1_phone_title),
+                        mac + getString(R.string.speed_alarm1),
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.alarm_1_speed)
@@ -574,6 +576,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     setDefaultValue(100)
                                 })),
                 addPreferenceCategory(getString(R.string.speed_alarm2_phone_title),
+                        mac + getString(R.string.speed_alarm2),
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.alarm_2_speed)
@@ -596,6 +599,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     setDefaultValue(0)
                                 })),
                 addPreferenceCategory(getString(R.string.speed_alarm3_phone_title),
+                        mac + getString(R.string.speed_alarm3),
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.alarm_3_speed)
@@ -618,6 +622,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     setDefaultValue(0)
                                 })),
                 addPreferenceCategory(getString(R.string.altered_alarms_pref_title),
+                        mac + getString(R.string.altered_alarms_section),
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.rotation_speed)
@@ -710,13 +715,8 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     unit = getString(R.string.sec)
                                     increment = 1
                                     setDefaultValue(0)
-                                },
-                                CheckBoxPreference(context).apply {
-                                    key = mac + getString(R.string.use_short_pwm)
-                                    title = getString(R.string.use_short_pwm_title)
-                                    summary = getString(R.string.use_short_pwm_description)
                                 })),
-                addPreferenceCategory(getString(R.string.current_alarm_title),
+                addPreferenceCategory(getString(R.string.current_alarm_title), null,
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.alarm_current)
@@ -728,7 +728,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                     increment = 1
                                     setDefaultValue(35)
                                 })),
-                addPreferenceCategory(getString(R.string.temperature_alarm_title),
+                addPreferenceCategory(getString(R.string.temperature_alarm_title), null,
                         arrayOf(
                                 SeekBarPreference(context).apply {
                                     key = mac + getString(R.string.alarm_temperature)
@@ -748,9 +748,10 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
-    private fun addPreferenceCategory(title: String, insidePrefs: Array<Preference>): PreferenceCategory {
+    private fun addPreferenceCategory(title: String, key: String?, insidePrefs: Array<Preference>): PreferenceCategory {
         return PreferenceCategory(context).apply {
             this.title = title
+            this.key = key
             isVisible = true
             GlobalScope.launch {
                 // waiting attaching to preferenceScreen
@@ -838,17 +839,18 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                 getString(R.string.rotation_voltage),
                 getString(R.string.rotation_speed),
                 getString(R.string.power_factor))
+        val mac = WheelData.getInstance().mac + "_"
         for (preference in seekbarPreferencesNormal) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled && !alteredAlarms
+            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && !alteredAlarms
         }
         for (preference in seekbarPreferencesAltered) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled && alteredAlarms
+            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && alteredAlarms
         }
         for (preference in seekbarPreferencesCommon) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled
+            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled
         }
         for (preference in seekbarPreferencesKs) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled && !ksAlteredAlarms && alteredAlarms
+            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && !ksAlteredAlarms && alteredAlarms
         }
     }
 

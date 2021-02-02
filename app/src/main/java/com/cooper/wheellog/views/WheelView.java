@@ -107,6 +107,11 @@ public class WheelView extends View {
         }
     };
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
     private ViewBlockInfo[] getViewBlockInfo() {
         Boolean useMph = WheelLog.AppConfig.getUseMph();
         return new ViewBlockInfo[]{

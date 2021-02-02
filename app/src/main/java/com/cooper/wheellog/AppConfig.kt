@@ -131,6 +131,10 @@ class AppConfig(var context: Context) {
     var useGps: Boolean
         get() = getValue(R.string.use_gps, false)
         set(value) = setValue(R.string.use_gps, value)
+
+    var useShortPwm
+        get() = getValue(R.string.use_short_pwm, false)
+        set(value) = setValue(R.string.use_short_pwm, value)
     //endregion
 
     //region -=[ specific settings ]=-
@@ -214,10 +218,6 @@ class AppConfig(var context: Context) {
     var warningSpeedPeriod
         get() = getSpecific(R.string.warning_speed_period, 0)
         set(value) = setSpecific(R.string.warning_speed_period, value)
-
-    var useShortPwm
-        get() = getSpecific(R.string.use_short_pwm, false)
-        set(value) = setSpecific(R.string.use_short_pwm, value)
 
     var alarmCurrent
         get() = getSpecific(R.string.alarm_current, 0)
