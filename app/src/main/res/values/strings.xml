@@ -83,7 +83,7 @@
     <string name="max_speed" translatable="false">max_speed</string>
 	<string name="use_ratio" translatable="false">use_ratio</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
-    <string name="beep_on_single_tap" translatable="false">use_bell_on_single_tap</string>
+    <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
