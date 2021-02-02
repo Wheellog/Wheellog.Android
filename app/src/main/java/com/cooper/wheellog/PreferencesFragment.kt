@@ -742,7 +742,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                 }))
         ).forEach {
             preferenceScreen.addPreference(it)
-            if (preferenceScreen.preferenceCount > 1 && it.title != mac + getString(R.string.use_short_pwm)) {
+            if (preferenceScreen.preferenceCount > 1) {
                 it.dependency = mac + getString(R.string.alarms_enabled)
             }
         }
@@ -807,49 +807,32 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         val alarmsEnabled = WheelLog.AppConfig.alarmsEnabled
         val alteredAlarms = WheelLog.AppConfig.alteredAlarms
         val ksAlteredAlarms = WheelData.getInstance().wheelType == WHEEL_TYPE.KINGSONG
-        val seekbarPreferencesNormal = arrayOf(
+        val categoryPreferencesNormal = arrayOf(
                 getString(R.string.speed_alarm1),
                 getString(R.string.speed_alarm2),
-                getString(R.string.speed_alarm3),
-                getString(R.string.alarm_1_speed),
-                getString(R.string.alarm_2_speed),
-                getString(R.string.alarm_3_speed),
-                getString(R.string.alarm_1_battery),
-                getString(R.string.alarm_2_battery),
-                getString(R.string.alarm_3_battery),
+                getString(R.string.speed_alarm3)
+        )
+        val preferencesCommon = arrayOf(
                 getString(R.string.alarm_current),
                 getString(R.string.alarm_temperature)
         )
-        val seekbarPreferencesAltered = arrayOf(
-                getString(R.string.altered_alarms_section),
-                getString(R.string.rotation_speed),
-                getString(R.string.rotation_voltage),
-                getString(R.string.power_factor),
-                getString(R.string.alarm_factor1),
-                getString(R.string.alarm_factor2),
-                getString(R.string.alarm_factor3),
-                getString(R.string.warning_speed),
-                getString(R.string.warning_pwm),
-                getString(R.string.warning_speed_period),
-                getString(R.string.use_short_pwm))
-        val seekbarPreferencesCommon = arrayOf(
-                getString(R.string.alarm_current),
-                getString(R.string.alarm_temperature))
-        val seekbarPreferencesKs = arrayOf(
+        val preferencesKs = arrayOf(
                 getString(R.string.rotation_voltage),
                 getString(R.string.rotation_speed),
-                getString(R.string.power_factor))
+                getString(R.string.power_factor)
+        )
         val mac = WheelData.getInstance().mac + "_"
-        for (preference in seekbarPreferencesNormal) {
-            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && !alteredAlarms
+        if (alteredAlarms) {
+            for (preference in categoryPreferencesNormal) {
+                findPreference<PreferenceCategory>(mac + preference)?.isVisible = alarmsEnabled
+            }
+        } else {
+            findPreference<PreferenceCategory>(mac + getString(R.string.altered_alarms_section))?.isVisible = alarmsEnabled
         }
-        for (preference in seekbarPreferencesAltered) {
-            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && alteredAlarms
-        }
-        for (preference in seekbarPreferencesCommon) {
+        for (preference in preferencesCommon) {
             findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled
         }
-        for (preference in seekbarPreferencesKs) {
+        for (preference in preferencesKs) {
             findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && !ksAlteredAlarms && alteredAlarms
         }
     }
