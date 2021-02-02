@@ -188,7 +188,7 @@ public class KingsongAdapter extends BaseAdapter {
     private boolean is84vWheel() {
         WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "RW", "KS-18LH", "KS-S18"})
-                || wd.getModel().startsWith("ROCKW") // support rockwheel models
+                || wd.getName().startsWith("ROCKW") // support rockwheel models
                 || wd.getBtName().compareTo("RW") == 0;
     }
 
