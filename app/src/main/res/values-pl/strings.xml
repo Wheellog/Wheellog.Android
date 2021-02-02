@@ -135,8 +135,6 @@
 	<string name="max_speed_dial_description">Maksymalna prędkość wyświetlana na prędkościomierzu</string>
 	<string name="use_mph_title">Prędkość i dystans w milach</string>
 	<string name="use_mph_description">Pokazuj prędkość i dystans w milach zamiast w kilometrach</string>
-	<string name="use_eng_title">English</string>
-	<string name="use_eng_description">Use English language instead of Android system language</string>
 	<string name="enable_alarms_title">Włącz alarmy</string>
 	<string name="enable_alarms_description">Włącz wibrację telefonu jako ostrzeżenie</string>
 	<string name="disable_phone_vibrate_title">Wyłącz wibrację telefonu</string>

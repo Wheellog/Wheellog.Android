@@ -135,8 +135,6 @@
 	<string name="max_speed_dial_description">Maximální rychlost zobrazená ciferníku</string>
 	<string name="use_mph_title">Rychlost a vzdálenost v mílích</string>
 	<string name="use_mph_description">Zobrazit míle místo kilometrů.</string>
-	<string name="use_eng_title">English</string>
-	<string name="use_eng_description">Use English language instead of Android system language</string>
 	<string name="enable_alarms_title">Zapnout upozornění</string>
 	<string name="enable_alarms_description">Zapnout vibrace zprávy jako upozornění.</string>
 	<string name="disable_phone_vibrate_title">Vypnout vybrace telefonu</string>

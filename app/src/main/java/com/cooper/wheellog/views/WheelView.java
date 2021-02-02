@@ -612,7 +612,7 @@ public class WheelView extends View {
         boxTextHeight = boundaryOfText.height();
 
         Paint paint = new Paint(textPaint);
-        paint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
+        paint.setColor(getResources().getColor(R.color.wheelview_text));
 
         try {
             int i = 0;
@@ -777,7 +777,7 @@ public class WheelView extends View {
         canvas.drawTextOnPath(mWheelModel, modelTextPath, 0, 0, modelTextPaint);
 
         // Draw text blocks bitmap
-        canvas.drawBitmap(mTextBoxesBitmap, 0, 0, null);
+        canvas.drawBitmap(mTextBoxesBitmap, 0, 0, textPaint);
 
         refreshDisplay = currentSpeed != targetSpeed ||
                 currentCurrent != targetCurrent ||
