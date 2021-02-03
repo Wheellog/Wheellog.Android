@@ -756,7 +756,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             GlobalScope.launch {
                 // waiting attaching to preferenceScreen
                 for (i in 1..100) {
-                    if (!isShown) {
+                    if (parent == null) {
                         delay(5)
                     } else {
                         insidePrefs.forEach {
@@ -822,13 +822,10 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                 getString(R.string.power_factor)
         )
         val mac = WheelData.getInstance().mac + "_"
-        if (alteredAlarms) {
-            for (preference in categoryPreferencesNormal) {
-                findPreference<PreferenceCategory>(mac + preference)?.isVisible = alarmsEnabled
-            }
-        } else {
-            findPreference<PreferenceCategory>(mac + getString(R.string.altered_alarms_section))?.isVisible = alarmsEnabled
+        for (preference in categoryPreferencesNormal) {
+            findPreference<PreferenceCategory>(mac + preference)?.isVisible = alarmsEnabled && !alteredAlarms
         }
+        findPreference<PreferenceCategory>(mac + getString(R.string.altered_alarms_section))?.isVisible = alarmsEnabled && alteredAlarms
         for (preference in preferencesCommon) {
             findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled
         }
