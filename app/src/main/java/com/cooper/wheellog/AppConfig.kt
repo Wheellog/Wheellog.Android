@@ -11,7 +11,7 @@ class AppConfig(var context: Context) {
     init {
         // Clear all preferences if they are incompatible
         val version = getValue("versionSettings", -1)
-        val currentVer = 1;
+        val currentVer = 1
         if (version < currentVer) {
             sharedPreferences.edit().clear().commit()
             setValue("versionSettings", currentVer)
