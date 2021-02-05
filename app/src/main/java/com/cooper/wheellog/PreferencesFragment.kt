@@ -10,7 +10,6 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.*
-import com.cooper.wheellog.ElectroClub.Companion.instance
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
@@ -20,11 +19,10 @@ import com.cooper.wheellog.utils.KingsongAdapter
 import kotlinx.coroutines.*
 import timber.log.Timber
 
-
 class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener, IDataListener {
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
-    private val DIALOG_FRAGMENT_TAG = "wheellog.MainPreferenceFragment.DIALOG"
+    private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -32,17 +30,17 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
 
     override fun changeWheelType() {
         switchSpecificSettingsIsVisible()
-        hideShowSeekBarsAlarms()
+        switchAlarmsIsVisible()
     }
 
     override fun onDisplayPreferenceDialog(preference: Preference?) {
         if (preference is MultiSelectPreference) {
-            if (parentFragmentManager.findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+            if (parentFragmentManager.findFragmentByTag(dialogTag) != null) {
                 return
             }
             val dialogFragment = newInstance(preference.key)
             dialogFragment.setTargetFragment(this, 0)
-            dialogFragment.show(parentFragmentManager, DIALOG_FRAGMENT_TAG)
+            dialogFragment.show(parentFragmentManager, dialogTag)
         } else {
             super.onDisplayPreferenceDialog(preference)
         }
@@ -53,11 +51,12 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             return
         }
 
-        when (WheelLog.AppConfig.getResId(key)) {
-            R.string.ec_token -> instance.userToken = WheelLog.AppConfig.ecToken
-            R.string.ec_user_id -> instance.userId = WheelLog.AppConfig.ecUserId
-            R.string.connection_sound -> hideShowSeekBarsApp()
-            R.string.alarms_enabled, R.string.altered_alarms -> hideShowSeekBarsAlarms()
+        val resId = key?.replace(WheelData.getInstance().mac + "_", "")
+        when (WheelLog.AppConfig.getResId(resId)) {
+            R.string.ec_token -> ElectroClub.instance.userToken = WheelLog.AppConfig.ecToken
+            R.string.ec_user_id -> ElectroClub.instance.userId = WheelLog.AppConfig.ecUserId
+            R.string.connection_sound -> switchConnectionSoundIsVisible()
+            R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
                 if (WheelLog.AppConfig.autoUploadEc && !mDataWarningDisplayed) {
                     WheelLog.AppConfig.autoUploadEc = false
@@ -92,13 +91,11 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             R.string.wheel_max_speed -> WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
             R.string.speaker_volume -> WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
             R.string.pedals_adjustment -> WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
-            R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(WheelLog.AppConfig.pedalsMode)
-            R.string.light_mode -> {
-                WheelData.getInstance().adapter?.setLightMode(WheelLog.AppConfig.lightMode)
-            }
-            R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(WheelLog.AppConfig.alarmMode)
-            R.string.strobe_mode -> WheelData.getInstance().updateStrobe(WheelLog.AppConfig.strobeMode)
-            R.string.led_mode -> WheelData.getInstance().updateLedMode(WheelLog.AppConfig.ledMode)
+            R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
+            R.string.light_mode -> WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
+            R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
+            R.string.strobe_mode -> WheelData.getInstance().updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
+            R.string.led_mode -> WheelData.getInstance().updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
@@ -108,7 +105,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
 
         if (key?.indexOf(WheelData.getInstance().mac) != 0) {
             val intent = Intent(Constants.ACTION_PREFERENCE_CHANGED)
-            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(key))
+            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(resId))
             context?.sendBroadcast(intent)
         }
     }
@@ -263,14 +260,14 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)
-                hideShowSeekBarsApp()
+                switchConnectionSoundIsVisible()
             }
             SettingsScreen.Logs -> {
                 tb.title = getText(R.string.logs_settings_title)
             }
             SettingsScreen.Alarms -> {
                 tb.title = getText(R.string.alarm_settings_title)
-                hideShowSeekBarsAlarms()
+                switchAlarmsIsVisible()
             }
             SettingsScreen.Watch -> {
                 tb.title = getText(R.string.watch_settings_title)
@@ -281,7 +278,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
 
         switchSpecificSettingsIsVisible()
-        hideShowSeekBarsAlarms()
+        switchAlarmsIsVisible()
     }
 
     private fun preferenceNinebotZ(mac: String) {
@@ -328,6 +325,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     max = 80
                     unit = "°"
                     increment = 1
+                    decimalPlaces = 1
                     setDefaultValue(0)
                 }
         ).forEach {
@@ -344,7 +342,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_auto)
                     setEntries(R.array.light_mode_ks)
                     setEntryValues(R.array.light_mode_values)
-                    setDefaultValue(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.strobe_mode)
@@ -352,7 +350,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.strobe_mode_ks)
                     setEntryValues(R.array.strobe_mode_values)
-                    setDefaultValue(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.led_mode)
@@ -360,7 +358,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.led_mode)
                     setEntryValues(R.array.led_mode_values)
-                    setDefaultValue(1)
+                    setDefaultValue("1")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -368,7 +366,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setDefaultValue(1)
+                    setDefaultValue("1")
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -440,7 +438,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_strobe)
                     setEntries(R.array.light_mode_gw)
                     setEntryValues(R.array.light_mode_values)
-                    setDefaultValue(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.alarm_mode)
@@ -448,7 +446,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.alarm_settings_title)
                     setEntries(R.array.alarm_mode_gw)
                     setEntryValues(R.array.alarm_mode_values)
-                    setDefaultValue(0)
+                    setDefaultValue("0")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -456,7 +454,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setDefaultValue(1)
+                    setDefaultValue("1")
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -487,7 +485,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.battary_voltage_description)
                     setEntries(R.array.gotway_voltage)
                     setEntryValues(R.array.gotway_voltage_values)
-                    setDefaultValue(1)
+                    setDefaultValue("1")
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.gotway_negative)
@@ -495,7 +493,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setDefaultValue(0)
+                    setDefaultValue("0")
                 },
                 CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
@@ -522,7 +520,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setDefaultValue(0)
+                    setDefaultValue("0")
                 }
         ).forEach {
             preferenceScreen.addPreference(it)
@@ -553,198 +551,204 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.altered_alarms_description)
                 },
                 addPreferenceCategory(getString(R.string.speed_alarm1_phone_title),
-                        arrayOf(
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_1_speed)
-                                    title = getString(R.string.speed)
-                                    summary = getString(R.string.speed_trigger_description)
-                                    min = 0
-                                    max = 100
-                                    unit = getString(R.string.kmh)
-                                    increment = 1
-                                    setDefaultValue(29)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_1_battery)
-                                    title = getString(R.string.alarm_1_battery_title)
-                                    summary = getString(R.string.alarm_1_battery_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(100)
-                                })),
+                        mac + getString(R.string.speed_alarm1),
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_1_speed)
+                            title = getString(R.string.speed)
+                            summary = getString(R.string.speed_trigger_description)
+                            min = 0
+                            max = 100
+                            unit = getString(R.string.kmh)
+                            increment = 1
+                            setDefaultValue(29)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_1_battery)
+                            title = getString(R.string.alarm_1_battery_title)
+                            summary = getString(R.string.alarm_1_battery_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(100)
+                        }),
                 addPreferenceCategory(getString(R.string.speed_alarm2_phone_title),
-                        arrayOf(
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_2_speed)
-                                    title = getString(R.string.speed)
-                                    summary = getString(R.string.speed_trigger_description)
-                                    min = 0
-                                    max = 100
-                                    unit = getString(R.string.kmh)
-                                    increment = 1
-                                    setDefaultValue(0)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_2_battery)
-                                    title = getString(R.string.alarm_2_battery_title)
-                                    summary = getString(R.string.alarm_1_battery_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(0)
-                                })),
+                        mac + getString(R.string.speed_alarm2),
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_2_speed)
+                            title = getString(R.string.speed)
+                            summary = getString(R.string.speed_trigger_description)
+                            min = 0
+                            max = 100
+                            unit = getString(R.string.kmh)
+                            increment = 1
+                            setDefaultValue(0)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_2_battery)
+                            title = getString(R.string.alarm_2_battery_title)
+                            summary = getString(R.string.alarm_1_battery_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(0)
+                        }),
                 addPreferenceCategory(getString(R.string.speed_alarm3_phone_title),
-                        arrayOf(
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_3_speed)
-                                    title = getString(R.string.speed)
-                                    summary = getString(R.string.speed_trigger_description)
-                                    min = 0
-                                    max = 100
-                                    unit = getString(R.string.kmh)
-                                    increment = 1
-                                    setDefaultValue(0)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_3_battery)
-                                    title = getString(R.string.alarm_3_battery_title)
-                                    summary = getString(R.string.alarm_1_battery_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(0)
-                                })),
+                        mac + getString(R.string.speed_alarm3),
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_3_speed)
+                            title = getString(R.string.speed)
+                            summary = getString(R.string.speed_trigger_description)
+                            min = 0
+                            max = 100
+                            unit = getString(R.string.kmh)
+                            increment = 1
+                            setDefaultValue(0)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_3_battery)
+                            title = getString(R.string.alarm_3_battery_title)
+                            summary = getString(R.string.alarm_1_battery_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(0)
+                        }),
                 addPreferenceCategory(getString(R.string.altered_alarms_pref_title),
-                        arrayOf(
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.rotation_speed)
-                                    title = getString(R.string.rotation_speed_title)
-                                    summary = getString(R.string.rotation_speed_description)
-                                    min = 0
-                                    max = 2000
-                                    decimalPlaces = 1
-                                    unit = getString(R.string.kmh)
-                                    increment = 1
-                                    setDefaultValue(500)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.rotation_voltage)
-                                    title = getString(R.string.rotation_voltage_title)
-                                    summary = getString(R.string.rotation_voltage_description)
-                                    min = 0
-                                    max = 1200
-                                    decimalPlaces = 1
-                                    unit = getString(R.string.volt)
-                                    increment = 1
-                                    setDefaultValue(840)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.power_factor)
-                                    title = getString(R.string.power_factor_title)
-                                    summary = getString(R.string.power_factor_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(90)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_factor1)
-                                    title = getString(R.string.alarm_factor1_title)
-                                    summary = getString(R.string.alarm_factor1_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(80)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_factor2)
-                                    title = getString(R.string.alarm_factor2_title)
-                                    summary = getString(R.string.alarm_factor2_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(90)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_factor3)
-                                    title = getString(R.string.alarm_factor3_title)
-                                    summary = getString(R.string.alarm_factor3_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(95)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.warning_speed)
-                                    title = getString(R.string.warning_speed_title)
-                                    summary = getString(R.string.warning_speed_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(0)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.warning_pwm)
-                                    title = getString(R.string.warning_pwm_title)
-                                    summary = getString(R.string.warning_pwm_description)
-                                    min = 0
-                                    max = 100
-                                    unit = "%"
-                                    increment = 1
-                                    setDefaultValue(0)
-                                },
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.warning_speed_period)
-                                    title = getString(R.string.warning_speed_period_title)
-                                    summary = getString(R.string.warning_speed_period_description)
-                                    min = 0
-                                    max = 60
-                                    unit = getString(R.string.sec)
-                                    increment = 1
-                                    setDefaultValue(0)
-                                },
-                                CheckBoxPreference(context).apply {
-                                    key = mac + getString(R.string.use_short_pwm)
-                                    title = getString(R.string.use_short_pwm_title)
-                                    summary = getString(R.string.use_short_pwm_description)
-                                })),
-                addPreferenceCategory(getString(R.string.temperature_alarm_title),
-                        arrayOf(
-                                SeekBarPreference(context).apply {
-                                    key = mac + getString(R.string.alarm_temperature)
-                                    title = getString(R.string.temperature_title)
-                                    summary = getString(R.string.alarm_temperature_description)
-                                    min = 0
-                                    max = 120
-                                    unit = "°"
-                                    increment = 1
-                                    setDefaultValue(60)
-                                }))
+                        mac + getString(R.string.altered_alarms_section),
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.rotation_speed)
+                            title = getString(R.string.rotation_speed_title)
+                            summary = getString(R.string.rotation_speed_description)
+                            min = 0
+                            max = 2000
+                            decimalPlaces = 1
+                            unit = getString(R.string.kmh)
+                            increment = 1
+                            setDefaultValue(500)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.rotation_voltage)
+                            title = getString(R.string.rotation_voltage_title)
+                            summary = getString(R.string.rotation_voltage_description)
+                            min = 0
+                            max = 1200
+                            decimalPlaces = 1
+                            unit = getString(R.string.volt)
+                            increment = 1
+                            setDefaultValue(840)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.power_factor)
+                            title = getString(R.string.power_factor_title)
+                            summary = getString(R.string.power_factor_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(90)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_factor1)
+                            title = getString(R.string.alarm_factor1_title)
+                            summary = getString(R.string.alarm_factor1_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(80)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_factor2)
+                            title = getString(R.string.alarm_factor2_title)
+                            summary = getString(R.string.alarm_factor2_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(90)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_factor3)
+                            title = getString(R.string.alarm_factor3_title)
+                            summary = getString(R.string.alarm_factor3_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(95)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.warning_speed)
+                            title = getString(R.string.warning_speed_title)
+                            summary = getString(R.string.warning_speed_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(0)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.warning_pwm)
+                            title = getString(R.string.warning_pwm_title)
+                            summary = getString(R.string.warning_pwm_description)
+                            min = 0
+                            max = 100
+                            unit = "%"
+                            increment = 1
+                            setDefaultValue(0)
+                        },
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.warning_speed_period)
+                            title = getString(R.string.warning_speed_period_title)
+                            summary = getString(R.string.warning_speed_period_description)
+                            min = 0
+                            max = 60
+                            unit = getString(R.string.sec)
+                            increment = 1
+                            setDefaultValue(0)
+                        }),
+                addPreferenceCategory(getString(R.string.current_alarm_title), null,
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_current)
+                            title = getString(R.string.current_title)
+                            summary = getString(R.string.alarm_current_description)
+                            min = 0
+                            max = 300
+                            unit = getString(R.string.amp)
+                            increment = 1
+                            setDefaultValue(35)
+                        }),
+                addPreferenceCategory(getString(R.string.temperature_alarm_title), null,
+                        SeekBarPreference(context).apply {
+                            key = mac + getString(R.string.alarm_temperature)
+                            title = getString(R.string.temperature_title)
+                            summary = getString(R.string.alarm_temperature_description)
+                            min = 0
+                            max = 120
+                            unit = "°"
+                            increment = 1
+                            setDefaultValue(60)
+                        })
         ).forEach {
             preferenceScreen.addPreference(it)
-            if (preferenceScreen.preferenceCount > 1 && it.title != mac + getString(R.string.use_short_pwm)) {
+            if (preferenceScreen.preferenceCount > 1) {
                 it.dependency = mac + getString(R.string.alarms_enabled)
             }
         }
     }
 
-    private fun addPreferenceCategory(title: String, insidePrefs: Array<Preference>): PreferenceCategory {
+    private fun addPreferenceCategory(title: String, key: String?, vararg insidePrefs: Preference): PreferenceCategory {
         return PreferenceCategory(context).apply {
             this.title = title
+            this.key = key
             isVisible = true
             GlobalScope.launch {
                 // waiting attaching to preferenceScreen
                 for (i in 1..100) {
-                    if (!isShown) {
+                    if (parent == null) {
                         delay(5)
                     } else {
                         insidePrefs.forEach {
@@ -789,67 +793,6 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
 
     private fun correctWheelBarState(preference: String, stateInt: Int) {
         findPreference<SeekBarPreference>(preference)?.value = stateInt
-    }
-
-    private fun hideShowSeekBarsAlarms() {
-        val alarmsEnabled = WheelLog.AppConfig.alarmsEnabled
-        val alteredAlarms = WheelLog.AppConfig.alteredAlarms
-        val ksAlteredAlarms = WheelData.getInstance().wheelType == WHEEL_TYPE.KINGSONG
-        val seekbarPreferencesNormal = arrayOf(
-                getString(R.string.speed_alarm1),
-                getString(R.string.speed_alarm2),
-                getString(R.string.speed_alarm3),
-                getString(R.string.alarm_1_speed),
-                getString(R.string.alarm_2_speed),
-                getString(R.string.alarm_3_speed),
-                getString(R.string.alarm_1_battery),
-                getString(R.string.alarm_2_battery),
-                getString(R.string.alarm_3_battery),
-                getString(R.string.alarm_current),
-                getString(R.string.alarm_temperature)
-        )
-        val seekbarPreferencesAltered = arrayOf(
-                getString(R.string.altered_alarms_section),
-                getString(R.string.rotation_speed),
-                getString(R.string.rotation_voltage),
-                getString(R.string.power_factor),
-                getString(R.string.alarm_factor1),
-                getString(R.string.alarm_factor2),
-                getString(R.string.alarm_factor3),
-                getString(R.string.warning_speed),
-                getString(R.string.warning_pwm),
-                getString(R.string.warning_speed_period),
-                getString(R.string.use_short_pwm))
-        val seekbarPreferencesCommon = arrayOf(
-                getString(R.string.alarm_current),
-                getString(R.string.alarm_temperature))
-        val seekbarPreferencesKs = arrayOf(
-                getString(R.string.rotation_voltage),
-                getString(R.string.rotation_speed),
-                getString(R.string.power_factor))
-        for (preference in seekbarPreferencesNormal) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled && !alteredAlarms
-        }
-        for (preference in seekbarPreferencesAltered) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled && alteredAlarms
-        }
-        for (preference in seekbarPreferencesCommon) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled
-        }
-        for (preference in seekbarPreferencesKs) {
-            findPreference<Preference>(preference)?.isVisible = alarmsEnabled && !ksAlteredAlarms && alteredAlarms
-        }
-    }
-
-    private fun hideShowSeekBarsApp() {
-        val connectSound = WheelLog.AppConfig.connectionSound
-        val seekbarPreferences = arrayOf(
-                getString(R.string.no_connection_sound)
-        )
-        for (preference in seekbarPreferences) {
-            val seekbar = findPreference<SeekBarPreference>(preference)
-            if (seekbar != null) seekbar.isEnabled = connectSound
-        }
     }
 
     fun isMainMenu(): Boolean {
@@ -907,6 +850,42 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                 findPreference<Preference>(preference)?.isVisible = false
             }
         }
+    }
+
+    private fun switchAlarmsIsVisible() {
+        val alarmsEnabled = WheelLog.AppConfig.alarmsEnabled
+        val alteredAlarms = WheelLog.AppConfig.alteredAlarms
+        val ksAlteredAlarms = WheelData.getInstance().wheelType == WHEEL_TYPE.KINGSONG
+        val categoryPreferencesNormal = arrayOf(
+                getString(R.string.speed_alarm1),
+                getString(R.string.speed_alarm2),
+                getString(R.string.speed_alarm3)
+        )
+        val preferencesCommon = arrayOf(
+                getString(R.string.alarm_current),
+                getString(R.string.alarm_temperature)
+        )
+        val preferencesKs = arrayOf(
+                getString(R.string.rotation_voltage),
+                getString(R.string.rotation_speed),
+                getString(R.string.power_factor)
+        )
+        val mac = WheelData.getInstance().mac + "_"
+        for (preference in categoryPreferencesNormal) {
+            findPreference<PreferenceCategory>(mac + preference)?.isVisible = alarmsEnabled && !alteredAlarms
+        }
+        findPreference<PreferenceCategory>(mac + getString(R.string.altered_alarms_section))?.isVisible = alarmsEnabled && alteredAlarms
+        for (preference in preferencesCommon) {
+            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled
+        }
+        for (preference in preferencesKs) {
+            findPreference<Preference>(mac + preference)?.isVisible = alarmsEnabled && !ksAlteredAlarms && alteredAlarms
+        }
+    }
+
+    private fun switchConnectionSoundIsVisible() {
+        findPreference<SeekBarPreference>(getString(R.string.no_connection_sound))?.isEnabled =
+                WheelLog.AppConfig.connectionSound
     }
 
     private enum class SettingsScreen {

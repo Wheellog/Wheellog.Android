@@ -65,6 +65,14 @@
             android:key="@string/current_on_dial"
             android:summary="@string/current_on_dial_description"
             android:title="@string/current_on_dial_title" />
+
+        <CheckBoxPreference
+            android:enabled="true"
+            android:key="@string/use_short_pwm"
+            android:summary="@string/use_short_pwm_description"
+            android:title="@string/use_short_pwm_title"
+            android:defaultValue="false"
+            android:visible="true" />
     </PreferenceCategory>
 
     <CheckBoxPreference
@@ -126,6 +134,14 @@
         android:key="@string/show_unknown_devices"
         android:summary="@string/show_unknown_devices_description"
         android:title="@string/show_unknown_devices_title"
+        android:defaultValue="false"
+        android:visible="true" />
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/beep_on_single_tap"
+        android:summary="@string/beep_on_single_tap_description"
+        android:title="@string/beep_on_single_tap_title"
         android:defaultValue="false"
         android:visible="true" />
 

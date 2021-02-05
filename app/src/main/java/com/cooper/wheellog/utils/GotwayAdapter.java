@@ -28,7 +28,7 @@ public class GotwayAdapter extends BaseAdapter {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useRatio = WheelLog.AppConfig.getUseRatio();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                int gotwayNegative = WheelLog.AppConfig.getGotwayNegative();
+                int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
 
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
@@ -115,11 +115,11 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        int lightMode = WheelLog.AppConfig.getLightMode() + 1;
+        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
         if (lightMode > 2) {
             lightMode = 0;
         }
-        WheelLog.AppConfig.setLightMode(lightMode);
+        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
 
@@ -144,9 +144,9 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public int getCellSForWheel() {
         switch (WheelLog.AppConfig.getGotwayVoltage()) {
-            case 0:
+            case "0":
                 return 16;
-            case 1:
+            case "1":
                 return 20;
         }
         return 24;
@@ -207,7 +207,11 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     private double getScaledVoltage(double value) {
-        return value * (1 + (0.25 * WheelLog.AppConfig.getGotwayVoltage()));
+        int voltage = 0;
+        if (!WheelLog.AppConfig.getGotwayVoltage().equals("")) {
+            voltage = Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage());
+        }
+        return value * (1 + (0.25 * voltage));
     }
 }
 

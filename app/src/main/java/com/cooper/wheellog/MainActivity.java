@@ -15,15 +15,18 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextClock;
 import android.widget.TextView;
@@ -46,7 +49,6 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.StringUtil;
-import com.cooper.wheellog.views.DoubleClickListener;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -981,18 +983,34 @@ public class MainActivity extends AppCompatActivity {
         wheelView = (WheelView) findViewById(R.id.wheelView);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        wheelView.setOnClickListener(new DoubleClickListener() {
-            @Override
-            public void onSingleClick(View v) {
-                // TODO например проигрывание гудка. Опционально конечно же.
-            }
-
-            @Override
-            public void onDoubleClick(View v) {
-                BaseAdapter adapter = WheelData.getInstance().getAdapter();
-                if (adapter != null) {
-                    adapter.switchFlashlight();
+        wheelView.setOnTouchListener(new View.OnTouchListener() {
+            private final GestureDetector gestureDetector = new GestureDetector(
+                    MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    BaseAdapter adapter = WheelData.getInstance().getAdapter();
+                    if (adapter != null) {
+                        adapter.switchFlashlight();
+                    }
+                    return super.onDoubleTap(e);
                 }
+
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
+                        // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
+                        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+                        mp.start();
+                        mp.setOnCompletionListener(MediaPlayer::release);
+                        return true;
+                    }
+                    return super.onSingleTapConfirmed(e);
+                }
+            });
+
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
             }
         });
 

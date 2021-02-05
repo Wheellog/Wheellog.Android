@@ -164,7 +164,7 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             Boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
-            int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
+            int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
 
                 Timber.i("Connected to GATT server.");
@@ -666,7 +666,7 @@ public class BluetoothLeService extends Service {
         wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
         wl.acquire(300000);
         timerTicks = 0;
-        final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
+        final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
         TimerTask beepTimerTask = new TimerTask() {
             @Override
             public void run() {

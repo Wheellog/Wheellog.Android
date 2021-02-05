@@ -163,11 +163,11 @@ public class KingsongAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        int lightMode = WheelLog.AppConfig.getLightMode() + 1;
+        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
         if (lightMode > 2) {
             lightMode = 0;
         }
-        WheelLog.AppConfig.setLightMode(lightMode);
+        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
 
