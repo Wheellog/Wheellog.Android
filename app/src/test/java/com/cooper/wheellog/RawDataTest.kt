@@ -33,6 +33,7 @@ class RawDataTest {
     @Test
     fun `GW - decode with normal data`() {
         // Arrange.
+        every { WheelLog.AppConfig.gotwayNegative } returns "1"
         val adapter = GotwayAdapter()
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         val inputStream: InputStream = File("src/test/resources/rawDecodeTest.csv").inputStream()
