@@ -90,7 +90,7 @@ public class WheelData {
 	private String mModeStr = "Unknown";
 	private String mBtName = "";
 
-	private String mAlert = "";
+	private StringBuilder mAlert = new StringBuilder();
 
 //    private int mVersion; # sorry King, but INT not good for Inmo
 	private String mVersion = "";
@@ -765,17 +765,20 @@ public class WheelData {
     }
 
 	String getAlert() {
-		String nAlert = mAlert;
-		mAlert = "";
+		String nAlert = mAlert.toString();
+		mAlert = new StringBuilder();
         return nAlert;
     }
 
     public void setAlert(String value) {
-        if (mAlert == "") {
-            mAlert = value;
-        } else {
-            mAlert += " | " + mAlert;
+        if (mAlert.length() != 0) {
+            if (mAlert.length() > 1000) {
+                mAlert = new StringBuilder("... | ");
+            } else {
+                mAlert.append(" | ");
+            }
         }
+        mAlert.append(value);
     }
 
     public String getSerial() {
