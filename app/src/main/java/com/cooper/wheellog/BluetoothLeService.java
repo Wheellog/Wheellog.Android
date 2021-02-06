@@ -287,14 +287,17 @@ public class BluetoothLeService extends Service {
 
         // RAW data
         if (WheelLog.AppConfig.getEnableRawData()) {
+            if (fileUtilRawData == null) {
+                fileUtilRawData = new FileUtil(getApplicationContext());
+            }
             if (fileUtilRawData.isNull()) {
-                String fileNameForRawData = sdf.format(new Date()) + ".csv";
+                String fileNameForRawData = "RAW_" + sdf.format(new Date()) + ".csv";
                 fileUtilRawData.prepareFile(fileNameForRawData, WheelData.getInstance().getMac());
             }
             fileUtilRawData.writeLine(String.format(Locale.US, "%s,%s",
                     sdf.format(WheelData.getInstance().getTimeStamp()),
                     StringUtil.toHexStringRaw(characteristic.getValue())));
-        } else if (!fileUtilRawData.isNull()) {
+        } else if (fileUtilRawData != null && !fileUtilRawData.isNull()) {
             fileUtilRawData.close();
         }
 
@@ -381,7 +384,9 @@ public class BluetoothLeService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        fileUtilRawData.close();
+        if (fileUtilRawData != null) {
+            fileUtilRawData.close();
+        }
         stopBeepTimer();
         if (mBluetoothGatt != null &&
                 mConnectionState != STATE_DISCONNECTED)
