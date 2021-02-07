@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 finish();
             }
 
-            loadPreferences();
+            loadPreferences(-1);
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);
@@ -1096,7 +1096,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         setupSharedPreferences();
 
-        loadPreferences();
+        loadPreferences(-1);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
@@ -1258,11 +1258,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        loadPreferences(WheelLog.AppConfig.getResId(key));
-    }
-
-    private void loadPreferences() {
-        loadPreferences(-1);
+        int settingsKey = WheelLog.AppConfig.getResId(key);
+        if (settingsKey > 0) {
+            loadPreferences(settingsKey);
+        }
     }
 
     private void loadPreferences(int settingsKey) {

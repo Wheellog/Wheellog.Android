@@ -43,8 +43,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:name=".SettingsActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:configChanges="smallestScreenSize|screenLayout|orientation|screenSize"
