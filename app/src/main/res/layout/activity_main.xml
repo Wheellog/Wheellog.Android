@@ -1,74 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main_view"
+    android:animateLayoutChanges="true"
+    tools:context="com.cooper.wheellog.MainActivity">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/main_view"
-        android:animateLayoutChanges="true"
-        tools:context="com.cooper.wheellog.MainActivity">
+        android:layout_height="wrap_content"
+        app:titleTextColor="@android:color/white">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:minHeight="?attr/actionBarSize"
+        <android.widget.TextClock
+            android:id="@+id/textClock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleTextColor="@android:color/white">
+            android:format12Hour="HH:mm:ss"
+            android:format24Hour="HH:mm:ss"
+            android:gravity="start"
+            android:maxLines="1"
+            android:textColor="@color/wheelview_text"
+            android:textSize="29sp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
 
-            <android.widget.TextClock
-                android:id="@+id/textClock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:format12Hour="HH:mm:ss"
-                android:format24Hour="HH:mm:ss"
-                android:gravity="start"
-                android:maxLines="1"
-                android:textColor="@color/wheelview_text"
-                android:textSize="29sp"
-                android:textStyle="bold" />
-        </androidx.appcompat.widget.Toolbar>
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-        </androidx.viewpager.widget.ViewPager>
-
-        <com.viewpagerindicator.LinePageIndicator
-            android:id="@+id/indicator"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            app:strokeWidth="4dp"
-            app:lineWidth="50dp"
-            app:unselectedColor="@color/wheelview_arc_dim"
-            app:selectedColor="@color/accent"
-            style="@style/LinePageIndicatorStyle"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/settings_layout"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:orientation="vertical"
-        android:background="#CC000000">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/preference_toolbar"
-            android:minHeight="?attr/actionBarSize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:titleTextColor="@android:color/white" />
-        <FrameLayout
-            android:id="@+id/settings_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </androidx.viewpager.widget.ViewPager>
 
-</androidx.drawerlayout.widget.DrawerLayout>
+    <com.viewpagerindicator.LinePageIndicator
+        android:id="@+id/indicator"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:strokeWidth="4dp"
+        app:lineWidth="50dp"
+        app:unselectedColor="@color/wheelview_arc_dim"
+        app:selectedColor="@color/accent"
+        style="@style/LinePageIndicatorStyle"/>
+</LinearLayout>

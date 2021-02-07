@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     int viewPagerPage = R.id.page_main;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
-    private DrawerLayout mDrawer;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
@@ -966,7 +965,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         wheelView = (WheelView) findViewById(R.id.wheelView);
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         wheelView.setOnTouchListener(new View.OnTouchListener() {
             private final GestureDetector gestureDetector = new GestureDetector(
@@ -1228,14 +1226,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        View settings_layout = findViewById(R.id.settings_layout);
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
-                if (mDrawer.isDrawerOpen(settings_layout)) {
-                    mDrawer.closeDrawers();
-                } else {
-                    mDrawer.openDrawer(GravityCompat.START, true);
-                }
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (doubleBackToExitPressedOnce) {
@@ -1282,20 +1275,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 if (WheelLog.AppConfig.getLogLocationData())
                     MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
                 break;
-//            case R.string.auto_upload_ec:
-//                if (WheelLog.AppConfig.getAutoUploadEc()) {
-//                    if (ElectroClub.getInstance().getUserToken() == null)
-//                        startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
-//                    else
-//                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null); // TODO check user token
-//                } else {
-//                    // TODO: need to implement a logout
-//                    // logout after uncheck
-//                    ElectroClub.getInstance().setUserToken(null);
-//                    ElectroClub.getInstance().setUserId(null);
-//                    WheelLog.AppConfig.setEcToken(null);
-//                }
-//                break;
             case R.string.show_page_events:
                 if (WheelLog.AppConfig.getPageEvents()) {
                     if (findViewById(R.id.page_events) == null) {
