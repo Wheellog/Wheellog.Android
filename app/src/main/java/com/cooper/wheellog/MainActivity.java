@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
@@ -41,6 +42,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
@@ -76,7 +78,7 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static AudioManager audioManager = null;
 
     @Override
@@ -221,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
-                    getPreferencesFragment().changeWheelType();
                     configureDisplay(WheelData.getInstance().getWheelType());
                     updateScreen(true);
                     break;
@@ -231,9 +232,6 @@ public class MainActivity extends AppCompatActivity {
                             sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
                         else if (WheelData.getInstance().getSerial().isEmpty())
                             sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
-                    }
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS)) {
-                        setWheelPreferences();
                     }
                     updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
@@ -249,10 +247,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     setMenuIconStates();
-                    break;
-                case Constants.ACTION_PREFERENCE_CHANGED:
-                    int settingsKey = intent.getIntExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, -1);
-                    loadPreferences(settingsKey);
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
@@ -315,11 +309,6 @@ public class MainActivity extends AppCompatActivity {
         }
         mConnectionState = connectionState;
         setMenuIconStates();
-    }
-
-    private void setWheelPreferences() {
-        Timber.i("SetWheelPreferences");
-        getPreferencesFragment().refreshWheelSettings();
     }
 
     private void setMenuIconStates() {
@@ -969,10 +958,6 @@ public class MainActivity extends AppCompatActivity {
             return null;
         });
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
-                .commit();
-
         createPager();
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
@@ -1081,26 +1066,6 @@ public class MainActivity extends AppCompatActivity {
         tvTitleBms2Cell16 = (TextView) findViewById(R.id.tvTitleBms2Cell16);
         tvBms2Cell16 = (TextView) findViewById(R.id.tvBms2Cell16);
 
-
-        mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                getPreferencesFragment().showMainMenu();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
         Typeface typefacePrime = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 ? getResources().getFont(R.font.prime)
                 : ResourcesCompat.getFont(this, R.font.prime);
@@ -1130,6 +1095,8 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(getResources().getColor(android.R.color.white));
         xAxis.setValueFormatter(chartAxisValueFormatter);
+
+        setupSharedPreferences();
 
         loadPreferences();
 
@@ -1196,6 +1163,8 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000, 100) {
@@ -1251,7 +1220,7 @@ public class MainActivity extends AppCompatActivity {
                     stopGarminConnectIQ();
                 return true;
             case R.id.miSettings:
-                mDrawer.openDrawer(GravityCompat.START, true);
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1269,32 +1238,34 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case KeyEvent.KEYCODE_BACK:
-                if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (getPreferencesFragment().isMainMenu()) {
-                        mDrawer.closeDrawer(GravityCompat.START, true);
-                    } else {
-                        getPreferencesFragment().showMainMenu();
-                    }
-                } else {
-                    if (doubleBackToExitPressedOnce) {
-                        finish();
-                        return true;
-                    }
-
-                    doubleBackToExitPressedOnce = true;
-                    showSnackBar(R.string.back_to_exit);
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            doubleBackToExitPressedOnce = false;
-                        }
-                    }, 2000);
+                if (doubleBackToExitPressedOnce) {
+                    finish();
+                    return true;
                 }
+
+                doubleBackToExitPressedOnce = true;
+                showSnackBar(R.string.back_to_exit);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, 2000);
                 return true;
             default:
                 return super.onKeyDown(keyCode, event);
         }
+    }
+
+    private void setupSharedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        loadPreferences(WheelLog.AppConfig.getResId(key));
     }
 
     private void loadPreferences() {
@@ -1311,20 +1282,20 @@ public class MainActivity extends AppCompatActivity {
                 if (WheelLog.AppConfig.getLogLocationData())
                     MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
                 break;
-            case R.string.auto_upload_ec:
-                if (WheelLog.AppConfig.getAutoUploadEc()) {
-                    if (ElectroClub.getInstance().getUserToken() == null)
-                        startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
-                    else
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null); // TODO check user token
-                } else {
-                    // TODO: need to implement a logout
-                    // logout after uncheck
-                    ElectroClub.getInstance().setUserToken(null);
-                    ElectroClub.getInstance().setUserId(null);
-                    WheelLog.AppConfig.setEcToken(null);
-                }
-                break;
+//            case R.string.auto_upload_ec:
+//                if (WheelLog.AppConfig.getAutoUploadEc()) {
+//                    if (ElectroClub.getInstance().getUserToken() == null)
+//                        startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
+//                    else
+//                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null); // TODO check user token
+//                } else {
+//                    // TODO: need to implement a logout
+//                    // logout after uncheck
+//                    ElectroClub.getInstance().setUserToken(null);
+//                    ElectroClub.getInstance().setUserId(null);
+//                    WheelLog.AppConfig.setEcToken(null);
+//                }
+//                break;
             case R.string.show_page_events:
                 if (WheelLog.AppConfig.getPageEvents()) {
                     if (findViewById(R.id.page_events) == null) {
@@ -1371,13 +1342,11 @@ public class MainActivity extends AppCompatActivity {
     @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void storagePermissionDenied() {
         WheelLog.AppConfig.setAutoLog(false);
-        getPreferencesFragment().refreshVolatileSettings();
     }
 
     @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
     void locationPermissionDenied() {
         WheelLog.AppConfig.setLogLocationData(false);
-        getPreferencesFragment().refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1527,18 +1496,6 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 break;
-            case RESULT_AUTH_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken());
-                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId());
-                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
-                } else {
-                    WheelLog.AppConfig.setAutoUploadEc(false);
-                    WheelLog.AppConfig.setEcToken(null);
-                    WheelLog.AppConfig.setEcUserId(null);
-                    getPreferencesFragment().refreshVolatileSettings();
-                }
-                break;
         }
     }
 
@@ -1548,7 +1505,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
         intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
@@ -1572,9 +1528,4 @@ public class MainActivity extends AppCompatActivity {
             return 0;
         }
     };
-
-    private PreferencesFragment getPreferencesFragment() {
-        Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        return frag == null ? new PreferencesFragment() : (PreferencesFragment) frag;
-    }
 }

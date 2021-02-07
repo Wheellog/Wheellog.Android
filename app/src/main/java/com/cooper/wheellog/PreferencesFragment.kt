@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,6 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.*
+import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
@@ -46,6 +48,25 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Timber.i("onActivityResult")
+        when (requestCode) {
+            MainActivity.RESULT_AUTH_REQUEST -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    WheelLog.AppConfig.ecToken = ElectroClub.instance.userToken
+                    WheelLog.AppConfig.ecUserId = ElectroClub.instance.userId
+                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                } else {
+                    WheelLog.AppConfig.autoUploadEc = false
+                    WheelLog.AppConfig.ecToken = null
+                    WheelLog.AppConfig.ecUserId = null
+                    refreshVolatileSettings()
+                }
+            }
+        }
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (context == null) {
             return
@@ -67,9 +88,20 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                 mDataWarningDisplayed = true
                                 WheelLog.AppConfig.autoUploadEc = true
                                 refreshVolatileSettings()
+                                if (ElectroClub.instance.userToken == null) {
+                                    startActivityForResult(Intent(activity, LoginActivity::class.java), MainActivity.RESULT_AUTH_REQUEST)
+                                } else {
+                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { s: String? -> null }
+                                }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = false
+                                // TODO check user token
+                                // TODO: need to implement a logout
+                                // logout after uncheck
+                                ElectroClub.instance.userToken = null
+                                ElectroClub.instance.userId = null
+                                WheelLog.AppConfig.ecToken = null
                                 refreshVolatileSettings()
                             }
                             .setIcon(android.R.drawable.ic_dialog_info)
@@ -101,12 +133,6 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
-        }
-
-        if (key?.indexOf(WheelData.getInstance().mac) != 0) {
-            val intent = Intent(Constants.ACTION_PREFERENCE_CHANGED)
-            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(resId))
-            context?.sendBroadcast(intent)
         }
     }
 
@@ -768,15 +794,6 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             correctCheckState(getString(R.string.auto_upload))
             correctCheckState(getString(R.string.auto_upload_ec))
         }
-    }
-
-    fun refreshWheelSettings() {
-        correctWheelCheckState(getString(R.string.light_enabled), WheelData.getInstance().wheelLight)
-        correctWheelCheckState(getString(R.string.led_enabled), WheelData.getInstance().wheelLed)
-        correctWheelCheckState(getString(R.string.handle_button_disabled), WheelData.getInstance().wheelHandleButton)
-        correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().wheelMaxSpeed)
-        correctWheelBarState(getString(R.string.speaker_volume), WheelData.getInstance().speakerVolume)
-        correctWheelBarState(getString(R.string.pedals_adjustment), WheelData.getInstance().pedalsPosition)
     }
 
     private fun correctCheckState(preference: String) {
