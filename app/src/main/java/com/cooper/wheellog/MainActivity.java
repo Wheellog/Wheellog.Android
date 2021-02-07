@@ -182,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
-    protected static final int RESULT_AUTH_REQUEST = 50;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 

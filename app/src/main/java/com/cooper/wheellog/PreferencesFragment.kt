@@ -24,6 +24,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
+    private val authRequestCode = 50
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -52,7 +53,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         super.onActivityResult(requestCode, resultCode, data)
         Timber.i("onActivityResult")
         when (requestCode) {
-            MainActivity.RESULT_AUTH_REQUEST -> {
+            authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
                     WheelLog.AppConfig.ecToken = ElectroClub.instance.userToken
                     WheelLog.AppConfig.ecUserId = ElectroClub.instance.userId
@@ -89,7 +90,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                 WheelLog.AppConfig.autoUploadEc = true
                                 refreshVolatileSettings()
                                 if (ElectroClub.instance.userToken == null) {
-                                    startActivityForResult(Intent(activity, LoginActivity::class.java), MainActivity.RESULT_AUTH_REQUEST)
+                                    startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
                                     ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
                                 }
@@ -787,7 +788,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
-    fun refreshVolatileSettings() {
+    private fun refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctCheckState(getString(R.string.auto_log))
             correctCheckState(getString(R.string.log_location_data))
@@ -802,18 +803,6 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                 ?: return
         val checkState = checkBoxPreference.isChecked
         if (settingState != checkState) checkBoxPreference.isChecked = settingState
-    }
-
-    private fun correctWheelCheckState(preference: String, state: Boolean) {
-        findPreference<CheckBoxPreference>(preference)?.isChecked = state
-    }
-
-    private fun correctWheelBarState(preference: String, stateInt: Int) {
-        findPreference<SeekBarPreference>(preference)?.value = stateInt
-    }
-
-    fun isMainMenu(): Boolean {
-        return currentScreen == SettingsScreen.Main
     }
 
     fun showMainMenu() {
