@@ -513,7 +513,7 @@ public class BluetoothLeService extends Service {
 
 
     public boolean writeBluetoothGattCharacteristic(byte[] cmd) {
-        if (this.mBluetoothGatt == null) {
+        if (this.mBluetoothGatt == null || cmd == null) {
             return false;
         }
 		StringBuilder stringBuilder = new StringBuilder(cmd.length);
