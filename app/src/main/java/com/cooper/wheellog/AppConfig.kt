@@ -105,6 +105,10 @@ class AppConfig(var context: Context) {
     var ecToken: String?
         get() = getValue(R.string.ec_token, null)
         set(value) = setValue(R.string.ec_token, value)
+
+    var enableRawData: Boolean
+        get() = getValue(R.string.use_raw_data, false)
+        set(value) = setValue(R.string.use_raw_data, value)
     //endregion    
     
     //region watch

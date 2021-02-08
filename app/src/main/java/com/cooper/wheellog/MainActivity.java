@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             loadPreferences();
+
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);

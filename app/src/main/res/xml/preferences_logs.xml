@@ -22,4 +22,9 @@
         android:title="@string/use_gps_title"
         android:summary="@string/use_gps_description" />
 
+    <CheckBoxPreference
+        android:key="@string/use_raw_data"
+        android:title="@string/use_raw_title"
+        android:summary="@string/use_raw_description" />
+
 </PreferenceScreen>
