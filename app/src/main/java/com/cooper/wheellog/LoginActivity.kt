@@ -13,9 +13,12 @@ import com.google.android.material.textfield.TextInputLayout
 
 
 class LoginActivity : AppCompatActivity() {
+    lateinit var dialog: AlertDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setResult(RESULT_CANCELED, Intent())
         val nullParent: ViewGroup? = null
         val convertView = layoutInflater.inflate(R.layout.activity_login, nullParent)
         val email = convertView.findViewById<TextInputLayout>(R.id.editTextTextEmailAddress)
@@ -25,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         val title = convertView.findViewById<TextView>(R.id.alertTitle)
         title.text = "electro.club"
 
-        AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
+        dialog = AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
                 .setView(convertView)
                 .setCancelable(false)
                 .show()
@@ -40,13 +43,11 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 } else {
                     password.startAnimation(shakeError())
-                    setResult(RESULT_CANCELED, Intent())
                 }
             }
         }
 
         cancel.setOnClickListener {
-            setResult(RESULT_CANCELED, Intent())
             finish()
         }
     }
@@ -56,5 +57,12 @@ class LoginActivity : AppCompatActivity() {
         shake.duration = 500
         shake.interpolator = CycleInterpolator(7F)
         return shake
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (dialog.isShowing) {
+            dialog.dismiss()
+        }
     }
 }
