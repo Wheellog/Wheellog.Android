@@ -34,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
 public class WheelData {
-    private List<IDataListener> listeners = new ArrayList<IDataListener>();
-
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
 	private Timer ridingTimerControl;
@@ -92,7 +90,7 @@ public class WheelData {
 	private String mModeStr = "Unknown";
 	private String mBtName = "";
 
-	private String mAlert = "";
+	private StringBuilder mAlert = new StringBuilder();
 
 //    private int mVersion; # sorry King, but INT not good for Inmo
 	private String mVersion = "";
@@ -183,10 +181,6 @@ public class WheelData {
         //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
         audioTrack.play();
 
-    }
-
-    public void addListener(IDataListener toAdd) {
-        listeners.add(toAdd);
     }
 
     static void initiate() {
@@ -704,8 +698,6 @@ public class WheelData {
             Context mContext = getBluetoothLeService().getApplicationContext();
             Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
             mContext.sendBroadcast(intent);
-            for (IDataListener hl : listeners)
-                hl.changeWheelType();
         }
     }
 
@@ -773,17 +765,20 @@ public class WheelData {
     }
 
 	String getAlert() {
-		String nAlert = mAlert;
-		mAlert = "";
+		String nAlert = mAlert.toString();
+		mAlert = new StringBuilder();
         return nAlert;
     }
 
     public void setAlert(String value) {
-        if (mAlert == "") {
-            mAlert = value;
-        } else {
-            mAlert += " | " + mAlert;
+        if (mAlert.length() != 0) {
+            if (mAlert.length() > 1000) {
+                mAlert = new StringBuilder("... | ");
+            } else {
+                mAlert.append(" | ");
+            }
         }
+        mAlert.append(value);
     }
 
     public String getSerial() {

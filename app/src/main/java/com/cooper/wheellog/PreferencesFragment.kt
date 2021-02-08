@@ -20,7 +20,7 @@ import com.cooper.wheellog.utils.KingsongAdapter
 import kotlinx.coroutines.*
 import timber.log.Timber
 
-class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener, IDataListener {
+class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
@@ -31,7 +31,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         changeWheelType()
     }
 
-    override fun changeWheelType() {
+    fun changeWheelType() {
         switchSpecificSettingsIsVisible()
         switchAlarmsIsVisible()
     }

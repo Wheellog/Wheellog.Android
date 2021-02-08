@@ -114,6 +114,8 @@
     <string name="log_location_decription">Добавить текущую позицию в лог.</string>
     <string name="use_gps_title">Использование GPS</string>
     <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, а если параметр отключен, используются данные сотовой связи.</string>
+    <string name="use_raw_title">Запись Raw данных</string>
+    <string name="use_raw_description">Исходные данные колеса записывается в отдельный CSV-файл.</string>
     <string name="on_off_strobe">Выкл./Вкл./Строб</string>
     <string name="soft_medium_hard">Мягкие/Средние/Жесткие</string>
     <string name="alarm_mode_title">Режим предупреждения</string>

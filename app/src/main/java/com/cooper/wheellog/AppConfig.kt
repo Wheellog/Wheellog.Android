@@ -12,8 +12,7 @@ class AppConfig(var context: Context) {
         // Clear all preferences if they are incompatible
         val version = getValue("versionSettings", -1)
         val currentVer = 1
-        if (version < currentVer) {
-            sharedPreferences.edit().clear().commit()
+        if (version < currentVer && sharedPreferences.edit()?.clear()?.commit() == true) {
             setValue("versionSettings", currentVer)
             PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
         }
@@ -106,6 +105,10 @@ class AppConfig(var context: Context) {
     var ecToken: String?
         get() = getValue(R.string.ec_token, null)
         set(value) = setValue(R.string.ec_token, value)
+
+    var enableRawData: Boolean
+        get() = getValue(R.string.use_raw_data, false)
+        set(value) = setValue(R.string.use_raw_data, value)
     //endregion    
     
     //region watch
