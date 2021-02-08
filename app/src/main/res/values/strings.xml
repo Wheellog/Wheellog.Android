@@ -413,4 +413,5 @@
     <string name="main_view_category">Main view</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
+    <string name="bug_report">Bug report</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
@@ -52,6 +52,14 @@
         android:key="@string/profile_name"
         android:enabled="true"
         android:title="@string/profile_name_title" />
+
+    <Preference
+        android:title="@string/bug_report"
+        app:icon="@drawable/ic_baseline_bug_report_24">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/Wheellog/Wheellog.Android/issues" />
+    </Preference>
 
     <Preference
         android:key="@string/about"

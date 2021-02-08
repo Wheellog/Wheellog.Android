@@ -323,9 +323,16 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     private fun preferenceInmotion(mac: String) {
         arrayOf(
                 CheckBoxPreference(context).apply {
+                    key = mac + getString(R.string.light_enabled)
+                    title = getString(R.string.on_headlight_title)
+                    summary = getString(R.string.on_headlight_description)
+                    isChecked = WheelLog.AppConfig.lightEnabled
+                },
+                CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.led_enabled)
                     title = getString(R.string.leds_settings_title)
                     summary = getString(R.string.leds_settings_description)
+                    isVisible = !WheelData.getInstance().model.startsWith("V5")
                     isChecked = WheelLog.AppConfig.ledEnabled
                 },
                 CheckBoxPreference(context).apply {
