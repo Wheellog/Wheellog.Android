@@ -291,11 +291,11 @@ public class BluetoothLeService extends Service {
                 fileUtilRawData = new FileUtil(getApplicationContext());
             }
             if (fileUtilRawData.isNull()) {
-                String fileNameForRawData = "RAW_" + sdf.format(new Date()) + ".csv";
+                String fileNameForRawData = "RAW_" + sdf.format(System.currentTimeMillis()) + ".csv";
                 fileUtilRawData.prepareFile(fileNameForRawData, WheelData.getInstance().getMac());
             }
             fileUtilRawData.writeLine(String.format(Locale.US, "%s,%s",
-                    sdf.format(WheelData.getInstance().getTimeStamp()),
+                    sdf.format(System.currentTimeMillis()),
                     StringUtil.toHexStringRaw(characteristic.getValue())));
         } else if (fileUtilRawData != null && !fileUtilRawData.isNull()) {
             fileUtilRawData.close();
