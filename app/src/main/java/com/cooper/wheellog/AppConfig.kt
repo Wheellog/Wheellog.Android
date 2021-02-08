@@ -12,8 +12,7 @@ class AppConfig(var context: Context) {
         // Clear all preferences if they are incompatible
         val version = getValue("versionSettings", -1)
         val currentVer = 1
-        if (version < currentVer) {
-            sharedPreferences.edit().clear().commit()
+        if (version < currentVer && sharedPreferences.edit()?.clear()?.commit() == true) {
             setValue("versionSettings", currentVer)
             PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
         }
