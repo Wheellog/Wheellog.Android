@@ -2,6 +2,7 @@ package com.cooper.wheellog;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -1217,7 +1218,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     stopGarminConnectIQ();
                 return true;
             case R.id.miSettings:
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class),
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                                    ? ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                                    : null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
