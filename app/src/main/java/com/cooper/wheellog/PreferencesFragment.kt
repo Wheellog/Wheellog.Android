@@ -1,15 +1,19 @@
 package com.cooper.wheellog
 
+import android.Manifest
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker.*
 import androidx.preference.*
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
@@ -20,7 +24,7 @@ import com.cooper.wheellog.utils.KingsongAdapter
 import kotlinx.coroutines.*
 import timber.log.Timber
 
-class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
+class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
@@ -29,9 +33,10 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
         changeWheelType()
+        checkAndRequestPermissions()
     }
 
-    fun changeWheelType() {
+    private fun changeWheelType() {
         switchSpecificSettingsIsVisible()
         switchAlarmsIsVisible()
     }
@@ -68,13 +73,41 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
+    private fun requestPermissionsEx(permissions: Array<String>, code: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity?.requestPermissions(permissions, code)
+        } else {
+            ActivityCompat.requestPermissions(activity as Activity, permissions, code)
+        }
+    }
+
+    private fun checkAndRequestPermissions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
+            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+                    SettingsActivity.permissionWriteCode)
+        }
+        if (WheelLog.AppConfig.logLocationData) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                requestPermissionsEx(
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        SettingsActivity.permissionLocationCode)
+            } else {
+                requestPermissionsEx(
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                        SettingsActivity.permissionLocationCode)
+            }
+        }
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (context == null) {
             return
         }
 
-        val resId = key?.replace(WheelData.getInstance().mac + "_", "")
-        when (WheelLog.AppConfig.getResId(resId)) {
+        val resName = key?.replace(WheelData.getInstance().mac + "_", "")
+        when (WheelLog.AppConfig.getResId(resName)) {
+            R.string.auto_log, R.string.use_raw_data, R.string.log_location_data -> checkAndRequestPermissions()
             R.string.ec_token -> ElectroClub.instance.userToken = WheelLog.AppConfig.ecToken
             R.string.ec_user_id -> ElectroClub.instance.userId = WheelLog.AppConfig.ecUserId
             R.string.connection_sound -> switchConnectionSoundIsVisible()
@@ -795,9 +828,10 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
-    private fun refreshVolatileSettings() {
+    fun refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctCheckState(getString(R.string.auto_log))
+            correctCheckState(getString(R.string.use_raw_data))
             correctCheckState(getString(R.string.log_location_data))
             correctCheckState(getString(R.string.auto_upload))
             correctCheckState(getString(R.string.auto_upload_ec))
@@ -812,7 +846,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         if (settingState != checkState) checkBoxPreference.isChecked = settingState
     }
 
-    fun showMainMenu() {
+    private fun showMainMenu() {
         preferenceScreen.removeAll()
         addPreferencesFromResource(R.xml.preferences)
         val wheelButton: Preference = findPreference(getString(R.string.wheel_settings))
