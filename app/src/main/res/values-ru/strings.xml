@@ -252,4 +252,5 @@
     <string name="main_view_category">Главный экран</string>
     <string name="beep_on_single_tap_title">Гудок при одиночном тапе</string>
     <string name="beep_on_single_tap_description">Одиночный тап на главном экране будет проигрывать гудок</string>
+    <string name="bug_report">Отчет об ошибке</string>
 </resources>

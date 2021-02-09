@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -23,9 +24,11 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
+    private val authRequestCode = 50
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
+        changeWheelType()
     }
 
     fun changeWheelType() {
@@ -43,6 +46,25 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             dialogFragment.show(parentFragmentManager, dialogTag)
         } else {
             super.onDisplayPreferenceDialog(preference)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Timber.i("onActivityResult")
+        when (requestCode) {
+            authRequestCode -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    WheelLog.AppConfig.ecToken = ElectroClub.instance.userToken
+                    WheelLog.AppConfig.ecUserId = ElectroClub.instance.userId
+                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                } else {
+                    WheelLog.AppConfig.autoUploadEc = false
+                    WheelLog.AppConfig.ecToken = null
+                    WheelLog.AppConfig.ecUserId = null
+                    refreshVolatileSettings()
+                }
+            }
         }
     }
 
@@ -67,9 +89,20 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                                 mDataWarningDisplayed = true
                                 WheelLog.AppConfig.autoUploadEc = true
                                 refreshVolatileSettings()
+                                if (ElectroClub.instance.userToken == null) {
+                                    startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
+                                } else {
+                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                                }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = false
+                                // TODO check user token
+                                // TODO: need to implement a logout
+                                // logout after uncheck
+                                ElectroClub.instance.userToken = null
+                                ElectroClub.instance.userId = null
+                                WheelLog.AppConfig.ecToken = null
                                 refreshVolatileSettings()
                             }
                             .setIcon(android.R.drawable.ic_dialog_info)
@@ -101,12 +134,6 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
-        }
-
-        if (key?.indexOf(WheelData.getInstance().mac) != 0) {
-            val intent = Intent(Constants.ACTION_PREFERENCE_CHANGED)
-            intent.putExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, WheelLog.AppConfig.getResId(resId))
-            context?.sendBroadcast(intent)
         }
     }
 
@@ -296,9 +323,16 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
     private fun preferenceInmotion(mac: String) {
         arrayOf(
                 CheckBoxPreference(context).apply {
+                    key = mac + getString(R.string.light_enabled)
+                    title = getString(R.string.on_headlight_title)
+                    summary = getString(R.string.on_headlight_description)
+                    isChecked = WheelLog.AppConfig.lightEnabled
+                },
+                CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.led_enabled)
                     title = getString(R.string.leds_settings_title)
                     summary = getString(R.string.leds_settings_description)
+                    isVisible = !WheelData.getInstance().model.startsWith("V5")
                     isChecked = WheelLog.AppConfig.ledEnabled
                 },
                 CheckBoxPreference(context).apply {
@@ -761,7 +795,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
-    fun refreshVolatileSettings() {
+    private fun refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctCheckState(getString(R.string.auto_log))
             correctCheckState(getString(R.string.log_location_data))
@@ -770,33 +804,12 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
         }
     }
 
-    fun refreshWheelSettings() {
-        correctWheelCheckState(getString(R.string.light_enabled), WheelData.getInstance().wheelLight)
-        correctWheelCheckState(getString(R.string.led_enabled), WheelData.getInstance().wheelLed)
-        correctWheelCheckState(getString(R.string.handle_button_disabled), WheelData.getInstance().wheelHandleButton)
-        correctWheelBarState(getString(R.string.wheel_max_speed), WheelData.getInstance().wheelMaxSpeed)
-        correctWheelBarState(getString(R.string.speaker_volume), WheelData.getInstance().speakerVolume)
-        correctWheelBarState(getString(R.string.pedals_adjustment), WheelData.getInstance().pedalsPosition)
-    }
-
     private fun correctCheckState(preference: String) {
         val settingState = WheelLog.AppConfig.getValue(preference, false)
         val checkBoxPreference = findPreference<CheckBoxPreference>(preference)
                 ?: return
         val checkState = checkBoxPreference.isChecked
         if (settingState != checkState) checkBoxPreference.isChecked = settingState
-    }
-
-    private fun correctWheelCheckState(preference: String, state: Boolean) {
-        findPreference<CheckBoxPreference>(preference)?.isChecked = state
-    }
-
-    private fun correctWheelBarState(preference: String, stateInt: Int) {
-        findPreference<SeekBarPreference>(preference)?.value = stateInt
-    }
-
-    fun isMainMenu(): Boolean {
-        return currentScreen == SettingsScreen.Main
     }
 
     fun showMainMenu() {

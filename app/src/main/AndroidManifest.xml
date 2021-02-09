@@ -9,51 +9,55 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- Permissions needed for Samsung Gear watches -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Permissions needed for Samsung Gear watches -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-feature android:name="android.hardware.location.gps" />  <!-- Desde API21 es necesario -->
+    <uses-feature android:name="android.hardware.location.gps" /> <!-- Desde API21 es necesario -->
     <uses-permission android:name="com.samsung.wmanager.APP" />
     <uses-permission android:name="com.samsung.wmanager.ENABLE_NOTIFICATION" />
-    <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK"/>
-    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
+    <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK" />
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
     <uses-permission android:name="android.permission.SET_DEBUG_APP" />
     <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Companion" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <supports-screens
-        android:smallScreens="true"
-        android:normalScreens="true"
+        android:anyDensity="true"
         android:largeScreens="true"
-        android:xlargeScreens="true"
-        android:anyDensity="true"/>
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
     <application
         android:name=".WheelLog"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_scheme"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/backup_scheme">
-
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".SettingsActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:configChanges="smallestScreenSize|screenLayout|orientation|screenSize"
             android:launchMode="singleTask">
-            <layout android:defaultHeight="400dp"
+            <layout
                 android:defaultWidth="200dp"
+                android:defaultHeight="400dp"
                 android:gravity="top"
-                android:minHeight="200dp"
-                android:minWidth="200dp" />
+                android:minWidth="200dp"
+                android:minHeight="200dp" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -63,13 +67,12 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.Transparent" />
+
         <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
-        <service android:name=".LoggingService" />
-        <!-- Services needed for Samsung Gear watches -->
-        <service android:name="com.cooper.wheellog.GearService" />
-        <!-- Services needed for Garmin ConnectIQ devices -->
-        <service android:name="com.cooper.wheellog.GarminConnectIQ" />
+        <service android:name=".LoggingService" /> <!-- Services needed for Samsung Gear watches -->
+        <service android:name=".GearService" /> <!-- Services needed for Garmin ConnectIQ devices -->
+        <service android:name=".GarminConnectIQ" />
 
         <receiver
             android:name=".PebbleBroadcastReceiver"
@@ -88,20 +91,24 @@
                 <action android:name="com.cooper.wheellog.notificationLoggingButton" />
                 <action android:name="com.cooper.wheellog.notificationWatchButton" />
             </intent-filter>
-        </receiver>
-        <!-- Receivers needed for Samsung Gear watches -->
-        <receiver android:name = "com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
+        </receiver> <!-- Receivers needed for Samsung Gear watches -->
+        <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.SERVICE_CONNECTION_REQUESTED" />
             </intent-filter>
         </receiver>
-        <receiver android:name = "com.samsung.android.sdk.accessory.RegisterUponInstallReceiver">
+        <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.REGISTER_AGENT" />
             </intent-filter>
         </receiver>
-        <meta-data android:name="AccessoryServicesLocation" android:value="/res/xml/sapservices.xml" />
-        <meta-data android:name="GearAppType" android:value="wgt" />
 
+        <meta-data
+            android:name="AccessoryServicesLocation"
+            android:value="/res/xml/sapservices.xml" />
+        <meta-data
+            android:name="GearAppType"
+            android:value="wgt" />
     </application>
+
 </manifest>
