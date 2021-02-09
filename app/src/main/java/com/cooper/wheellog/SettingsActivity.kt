@@ -32,7 +32,10 @@ class SettingsActivity : AppCompatActivity() {
         }
         // Denied
         when (requestCode) {
-            permissionWriteCode -> WheelLog.AppConfig.autoLog = false
+            permissionWriteCode -> {
+                WheelLog.AppConfig.autoLog = false
+                WheelLog.AppConfig.enableRawData = false
+            }
             permissionLocationCode -> WheelLog.AppConfig.logLocationData = false
         }
         fragment.refreshVolatileSettings()

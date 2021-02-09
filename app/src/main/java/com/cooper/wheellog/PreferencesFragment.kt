@@ -82,7 +82,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun checkAndRequestPermissions() {
-        if (WheelLog.AppConfig.autoLog && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
             requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
                     SettingsActivity.permissionWriteCode)
         }
@@ -106,7 +107,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
         val resName = key?.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
-            R.string.auto_log, R.string.log_location_data -> checkAndRequestPermissions()
+            R.string.auto_log, R.string.use_raw_data, R.string.log_location_data -> checkAndRequestPermissions()
             R.string.ec_token -> ElectroClub.instance.userToken = WheelLog.AppConfig.ecToken
             R.string.ec_user_id -> ElectroClub.instance.userId = WheelLog.AppConfig.ecUserId
             R.string.connection_sound -> switchConnectionSoundIsVisible()
@@ -830,6 +831,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     fun refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctCheckState(getString(R.string.auto_log))
+            correctCheckState(getString(R.string.use_raw_data))
             correctCheckState(getString(R.string.log_location_data))
             correctCheckState(getString(R.string.auto_upload))
             correctCheckState(getString(R.string.auto_upload_ec))
