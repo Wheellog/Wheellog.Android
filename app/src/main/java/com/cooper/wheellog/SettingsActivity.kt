@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.PermissionChecker
@@ -11,6 +12,10 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private lateinit var fragment: PreferencesFragment
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(LocaleManager.setLocale(base))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
