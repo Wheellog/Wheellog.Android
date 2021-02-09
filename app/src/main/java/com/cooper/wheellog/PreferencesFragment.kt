@@ -342,6 +342,16 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     isChecked = WheelLog.AppConfig.handleButtonDisabled
                 },
                 SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.wheel_max_speed)
+                    title = getString(R.string.tilt_back_description)
+                    summary = getString(R.string.max_speed_title)
+                    min = 3
+                    max = 45
+                    unit = getString(R.string.kmh)
+                    increment = 1
+                    setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
+                },
+                SeekBarPreference(context).apply {
                     key = mac + getString(R.string.speaker_volume)
                     title = getString(R.string.speaker_volume_title)
                     summary = getString(R.string.speaker_volume_description)
@@ -360,7 +370,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     unit = "°"
                     increment = 1
                     decimalPlaces = 1
-                    setDefaultValue(0)
+                    setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
                 }
         ).forEach {
             preferenceScreen.addPreference(it)
@@ -376,7 +386,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_auto)
                     setEntries(R.array.light_mode_ks)
                     setEntryValues(R.array.light_mode_values)
-                    setDefaultValue("0")
+                    setDefaultValue(WheelLog.AppConfig.lightMode)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.strobe_mode)
@@ -384,7 +394,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.strobe_mode_ks)
                     setEntryValues(R.array.strobe_mode_values)
-                    setDefaultValue("0")
+                    setDefaultValue(WheelLog.AppConfig.strobeMode)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.led_mode)
@@ -392,7 +402,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off)
                     setEntries(R.array.led_mode)
                     setEntryValues(R.array.led_mode_values)
-                    setDefaultValue("1")
+                    setDefaultValue(WheelLog.AppConfig.ledMode)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -400,7 +410,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setDefaultValue("1")
+                    setDefaultValue(WheelLog.AppConfig.pedalsMode)
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -410,7 +420,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     max = 50
                     min = 0
                     unit = getString(R.string.kmh)
-                    setDefaultValue(0)
+                    setDefaultValue(WheelLog.AppConfig.maxSpeed)
                     if (alertsUpdated) {
                         value = WheelData.getInstance().wheelMaxSpeed
                     }
@@ -423,7 +433,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     max = 50
                     min = 0
                     unit = getString(R.string.kmh)
-                    setDefaultValue(0)
+                    setDefaultValue(WheelLog.AppConfig.wheelKsAlarm3)
                     if (alertsUpdated) {
                         value = WheelLog.AppConfig.wheelKsAlarm3
                     }
@@ -436,7 +446,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     max = 50
                     min = 0
                     unit = getString(R.string.kmh)
-                    setDefaultValue(0)
+                    setDefaultValue(WheelLog.AppConfig.wheelKsAlarm2)
                     if (alertsUpdated) {
                         value = WheelLog.AppConfig.wheelKsAlarm2
                     }
@@ -449,7 +459,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     max = 50
                     min = 0
                     unit = getString(R.string.kmh)
-                    setDefaultValue(0)
+                    setDefaultValue(WheelLog.AppConfig.wheelKsAlarm1)
                     if (alertsUpdated) {
                         value = WheelLog.AppConfig.wheelKsAlarm1
                     }
@@ -472,7 +482,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.on_off_strobe)
                     setEntries(R.array.light_mode_gw)
                     setEntryValues(R.array.light_mode_values)
-                    setDefaultValue("0")
+                    setDefaultValue(WheelLog.AppConfig.lightMode)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.alarm_mode)
@@ -480,7 +490,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.alarm_settings_title)
                     setEntries(R.array.alarm_mode_gw)
                     setEntryValues(R.array.alarm_mode_values)
-                    setDefaultValue("0")
+                    setDefaultValue(WheelLog.AppConfig.alarmMode)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
@@ -488,7 +498,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.soft_medium_hard)
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
-                    setDefaultValue("1")
+                    setDefaultValue(WheelLog.AppConfig.pedalsMode)
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
@@ -498,7 +508,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     min = 0
                     increment = 1
                     unit = getString(R.string.kmh)
-                    setDefaultValue(30)
+                    setDefaultValue(WheelLog.AppConfig.maxSpeed)
                 },
                 Preference(context).apply {
                     key = mac + getString(R.string.start_calibration)
@@ -519,7 +529,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.battary_voltage_description)
                     setEntries(R.array.gotway_voltage)
                     setEntryValues(R.array.gotway_voltage_values)
-                    setDefaultValue("1")
+                    setDefaultValue(WheelLog.AppConfig.gotwayVoltage)
                 },
                 ListPreference(context).apply {
                     key = mac + getString(R.string.gotway_negative)
@@ -527,7 +537,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setDefaultValue("0")
+                    setDefaultValue(WheelLog.AppConfig.gotwayNegative)
                 },
                 CheckBoxPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
@@ -554,7 +564,7 @@ class PreferencesFragment: PreferenceFragmentCompat(), OnSharedPreferenceChangeL
                     summary = getString(R.string.gotway_negative_description)
                     setEntries(R.array.gotway_negative)
                     setEntryValues(R.array.gotway_negative_values)
-                    setDefaultValue("0")
+                    setDefaultValue(WheelLog.AppConfig.gotwayNegative)
                 }
         ).forEach {
             preferenceScreen.addPreference(it)
