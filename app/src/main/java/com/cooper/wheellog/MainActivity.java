@@ -39,9 +39,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
@@ -1269,14 +1266,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private void loadPreferences(int settingsKey) {
         switch (settingsKey) {
-            case R.string.auto_log:
-                if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-                    MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
-                break;
-            case R.string.log_location_data:
-                if (WheelLog.AppConfig.getLogLocationData())
-                    MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
-                break;
             case R.string.show_page_events:
                 if (WheelLog.AppConfig.getPageEvents()) {
                     if (findViewById(R.id.page_events) == null) {
@@ -1310,24 +1299,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         wheelView.updateViewBlocksVisibility(viewBlocks);
         wheelView.invalidate();
         updateScreen(true);
-    }
-
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void acquireStoragePermission() {
-    }
-
-    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION})
-    void acquireLocationPermission() {
-    }
-
-    @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void storagePermissionDenied() {
-        WheelLog.AppConfig.setAutoLog(false);
-    }
-
-    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
-    void locationPermissionDenied() {
-        WheelLog.AppConfig.setLogLocationData(false);
     }
 
     private void showSnackBar(int msg) {
