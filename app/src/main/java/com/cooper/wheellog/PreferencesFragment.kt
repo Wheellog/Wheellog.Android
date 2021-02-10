@@ -376,8 +376,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 },
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
-                    title = getString(R.string.tilt_back_description)
-                    summary = getString(R.string.max_speed_title)
+                    title = getString(R.string.max_speed_title)
+                    summary = getString(R.string.tilt_back_description)
                     min = 3
                     max = 45
                     unit = getString(R.string.kmh)
