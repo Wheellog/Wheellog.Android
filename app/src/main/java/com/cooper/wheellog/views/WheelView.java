@@ -66,6 +66,7 @@ public class WheelView extends View {
     private Double mMaxPwm = 0.0;
     private Double mAverageSpeed = 0.0;
 
+    private boolean useMph;
     private String mWheelModel = "";
     private String versionString = String.format("ver %s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE);
 
@@ -113,7 +114,6 @@ public class WheelView extends View {
     }
 
     private ViewBlockInfo[] getViewBlockInfo() {
-        Boolean useMph = WheelLog.AppConfig.getUseMph();
         return new ViewBlockInfo[]{
                 new ViewBlockInfo(getResources().getString(R.string.pwm),
                         () -> String.format(Locale.US, "%.2f%%", mPwm)),
@@ -220,6 +220,7 @@ public class WheelView extends View {
             }
         }
 
+        useMph = WheelLog.AppConfig.getUseMph();
         mViewBlocks = getViewBlockInfo();
 
         TypedArray a = getContext().getTheme().obtainStyledAttributes(
@@ -285,6 +286,7 @@ public class WheelView extends View {
                 }
             }
         }
+        useMph = WheelLog.AppConfig.getUseMph();
         Arrays.sort(mViewBlocks);
     }
     
