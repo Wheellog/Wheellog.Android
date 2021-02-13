@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -61,6 +62,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +71,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
@@ -978,10 +979,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent e) {
                     if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
-                        // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
-                        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
-                        mp.start();
-                        mp.setOnCompletionListener(MediaPlayer::release);
+                        playBeep(false);
                         return true;
                     }
                     return super.onSingleTapConfirmed(e);
@@ -1225,10 +1223,40 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    private void playBeep (boolean onlyDefault) {
+        Uri beepFile = WheelLog.AppConfig.getBeepFile();
+        // selected file
+        if (!onlyDefault &&  WheelLog.AppConfig.getUseCustomBeep() && beepFile != Uri.EMPTY) {
+        //ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            MediaPlayer mp = new MediaPlayer();
+            try {
+                mp.setDataSource(getApplicationContext(), beepFile);
+                mp.setOnPreparedListener(MediaPlayer::start);
+                mp.prepareAsync();
+                mp.setOnCompletionListener(MediaPlayer::release);
+            } catch (IOException e) {
+                e.printStackTrace();
+                playBeep(true);
+            }
+        } else {
+            // default beep
+            // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+            mp.start();
+            mp.setOnCompletionListener(MediaPlayer::release);
+        }
+    }
+
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_CAMERA:
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                    playBeep(false);
+                }
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (doubleBackToExitPressedOnce) {

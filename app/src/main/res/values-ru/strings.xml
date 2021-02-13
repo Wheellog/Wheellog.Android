@@ -252,5 +252,8 @@
     <string name="main_view_category">Главный экран</string>
     <string name="beep_on_single_tap_title">Гудок при одиночном тапе</string>
     <string name="beep_on_single_tap_description">Одиночный тап на главном экране будет проигрывать гудок</string>
+    <string name="beep_on_volume_up_title">Гудок как кнопка камеры</string>
+    <string name="beep_on_volume_up_description">Нажатие на кнопку камеры или горомкость вверх будет проигрывать гудок</string>
+    <string name="custom_beep_title">Выбрать файл гудка</string>
     <string name="bug_report">Отчет об ошибке</string>
 </resources>

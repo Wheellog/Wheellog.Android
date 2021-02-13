@@ -85,6 +85,9 @@
     <string name="use_ratio" translatable="false">use_ratio</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
+    <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
+    <string name="custom_beep" translatable="false">custom_beep</string>
+    <string name="beep_file" translatable="false">beep_file</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -416,5 +419,8 @@
     <string name="main_view_category">Main view</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
+    <string name="beep_on_volume_up_title">Beep on camera key</string>
+    <string name="beep_on_volume_up_description">Pressing the camera button or the volume up button will play a beep</string>
+    <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
 </resources>
