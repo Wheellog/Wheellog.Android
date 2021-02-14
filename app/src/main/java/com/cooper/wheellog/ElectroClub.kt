@@ -31,16 +31,12 @@ class ElectroClub {
             .readTimeout(60, TimeUnit.SECONDS)
             .build()
 
-    var userToken: String? = null
-    var userId: String? = null
     var lastError: String? = null
     var selectedGarage: String = "0"
     var errorListener: ((String?, String?)->Unit)? = null
     var successListener: ((String?, Any?)->Unit)? = null
 
     fun login(email: String, password: String, success: (Boolean) -> Unit) {
-        userToken = null
-        userId = null
         val urlWithParams = Uri.parse(url)
                 .buildUpon()
                 .appendQueryParameter("method", LOGIN_METHOD)
@@ -57,8 +53,8 @@ class ElectroClub {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                userToken = null
-                userId = null
+                WheelLog.AppConfig.ecUserId = null
+                WheelLog.AppConfig.ecToken = null
                 lastError = "[unexpected] " + e.message
                 errorListener?.invoke(LOGIN_METHOD, lastError)
                 e.printStackTrace()
@@ -66,39 +62,38 @@ class ElectroClub {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                var userToken: String? = null
+                var userId: String? = null
+                var nickname = ""
                 response.use {
                     val json = JSONObject(response.body!!.string())
-                    val nickname: String
                     if (!response.isSuccessful) {
-                        userToken = null
-                        userId = null
                         parseError(json)
-                        errorListener?.invoke(LOGIN_METHOD, lastError)
-                        return
                     } else {
                         val userObj = json.getObjectSafe("data")?.getObjectSafe("user")
                         if (userObj != null) {
                             userToken = userObj.getString("user_token")
                             userId = userObj.getString("user_id")
                             nickname = userObj.getString("nickname")
-                        } else {
-                            userToken = null
-                            userId = null
-                            return
                         }
                     }
 
                     WheelLog.AppConfig.ecUserId = userId
                     WheelLog.AppConfig.ecToken = userToken
-                    successListener?.invoke(LOGIN_METHOD, nickname)
-                    success(true)
+                    if (userId == null || userToken == null) {
+                        errorListener?.invoke(LOGIN_METHOD, lastError)
+                        success(false)
+                    } else {
+                        successListener?.invoke(LOGIN_METHOD, nickname)
+                        success(true)
+                    }
                 }
             }
         })
     }
 
     fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean) {
-        if (userToken == null)
+        if (WheelLog.AppConfig.ecToken == null)
         {
             lastError = "Missing parameters"
             errorListener?.invoke(UPLOAD_METHOD, lastError)
@@ -113,7 +108,7 @@ class ElectroClub {
         val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("method", UPLOAD_METHOD)
                 .addFormDataPart("access_token", accessToken)
-                .addFormDataPart("user_token", userToken!!)
+                .addFormDataPart("user_token", WheelLog.AppConfig.ecToken!!)
                 .addFormDataPart("file", fileName, data.toRequestBody(mediaType))
                 .addFormDataPart("time_zone", localTime)
         if (selectedGarage != "0") {
@@ -156,20 +151,20 @@ class ElectroClub {
 
         getGarage {
             val len = it.length() - 1
-            var primaryId: String? = null
+            //var primaryId: String? = null
             for (i in 0..len) {
                 val g = it.getJSONObject(i)
                 val m = g.getStringSafe("MAC")
-                val isPrimary = g.getStringSafe("primary") == "1"
+                //val isPrimary = g.getStringSafe("primary") == "1"
                 if (m != null && m == mac) {
                     selectedGarage = it.getJSONObject(i).getString("id")
                     success(selectedGarage)
                     successListener?.invoke(GET_GARAGE_METHOD_FILTRED, it.getJSONObject(i).getString("name"))
                     break
                 }
-                if (isPrimary) {
-                    primaryId = it.getJSONObject(i).getString("id")
-                }
+//                if (isPrimary) {
+//                    primaryId = it.getJSONObject(i).getString("id")
+//                }
             }
 
             // TODO todo todo need UI
@@ -182,7 +177,7 @@ class ElectroClub {
     }
 
     fun getGarage(success: (JSONArray) -> Unit) {
-        if (userToken == null || userId == null)
+        if (WheelLog.AppConfig.ecToken == null || WheelLog.AppConfig.ecUserId == null)
         {
             lastError = "Missing parameters"
             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
@@ -192,8 +187,8 @@ class ElectroClub {
                 .buildUpon()
                 .appendQueryParameter("method", GET_GARAGE_METHOD)
                 .appendQueryParameter("access_token", accessToken)
-                .appendQueryParameter("user_token", userToken)
-                .appendQueryParameter("user_id", userId)
+                .appendQueryParameter("user_token", WheelLog.AppConfig.ecToken)
+                .appendQueryParameter("user_id", WheelLog.AppConfig.ecUserId)
                 .build()
                 .toString()
 
@@ -225,7 +220,7 @@ class ElectroClub {
                         val transportList = data.getJSONArray("transport_list")
                         success(transportList)
                     }
-                    successListener?.invoke(GET_GARAGE_METHOD, userToken)
+                    successListener?.invoke(GET_GARAGE_METHOD, WheelLog.AppConfig.ecToken)
                 }
             }
         })

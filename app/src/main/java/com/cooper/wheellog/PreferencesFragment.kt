@@ -60,8 +60,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         when (requestCode) {
             authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    WheelLog.AppConfig.ecToken = ElectroClub.instance.userToken
-                    WheelLog.AppConfig.ecUserId = ElectroClub.instance.userId
                     ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
                 } else {
                     WheelLog.AppConfig.autoUploadEc = false
@@ -108,8 +106,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         val resName = key?.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data -> checkAndRequestPermissions()
-            R.string.ec_token -> ElectroClub.instance.userToken = WheelLog.AppConfig.ecToken
-            R.string.ec_user_id -> ElectroClub.instance.userId = WheelLog.AppConfig.ecUserId
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
@@ -122,7 +118,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 mDataWarningDisplayed = true
                                 WheelLog.AppConfig.autoUploadEc = true
                                 refreshVolatileSettings()
-                                if (ElectroClub.instance.userToken == null) {
+                                if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
                                     ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
@@ -133,8 +129,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 // TODO check user token
                                 // TODO: need to implement a logout
                                 // logout after uncheck
-                                ElectroClub.instance.userToken = null
-                                ElectroClub.instance.userId = null
                                 WheelLog.AppConfig.ecToken = null
                                 refreshVolatileSettings()
                             }

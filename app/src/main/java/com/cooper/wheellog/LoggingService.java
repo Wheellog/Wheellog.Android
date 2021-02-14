@@ -197,7 +197,7 @@ public class LoggingService extends Service
 
             // electro.club upload
             if (WheelLog.AppConfig.getAutoUploadEc()
-                    && ElectroClub.getInstance().getUserToken() != null) {
+                    && WheelLog.AppConfig.getEcToken() != null) {
                 try {
                     byte[] data = fileUtil.readBytes();
                     String[] tokens = path.split("[\\\\|/]");
