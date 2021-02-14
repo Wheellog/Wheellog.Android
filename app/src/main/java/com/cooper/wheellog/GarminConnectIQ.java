@@ -10,7 +10,6 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -18,8 +17,9 @@ import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.KingsongAdapter;
-import com.cooper.wheellog.utils.NotificationUtil;
 
+import com.cooper.wheellog.utils.NotificationUtil;
+import com.cooper.wheellog.utils.SomeUtil;
 import com.garmin.android.connectiq.ConnectIQ;
 import com.garmin.android.connectiq.ConnectIQ.ConnectIQListener;
 import com.garmin.android.connectiq.ConnectIQ.IQApplicationEventListener;
@@ -40,9 +40,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import fi.iki.elonen.NanoHTTPD;
-
-import static com.cooper.wheellog.utils.Constants.ACTION_REQUEST_KINGSONG_HORN;
-
 
 public class GarminConnectIQ extends Service implements IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     public static final String TAG = GarminConnectIQ.class.getSimpleName();
@@ -127,13 +124,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         mMyApp = new IQApp(APP_ID);
         mConnectIQ = ConnectIQ.getInstance(this, IQConnectType.WIRELESS);
         mConnectIQ.initialize(this, true, this);
-/*        mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
-                .build();
-*/
         startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
-        //startForeground(Constants.NOTIFICATION_ID_GARMIN_CONNECT, mNotification);
         return START_STICKY;
     }
 
@@ -153,8 +144,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         }
 
         stopWebServer();
-        stopForeground(true);
-        stopSelf();
+        stopForeground(false);
         instance = null;
     }
 
@@ -438,18 +428,10 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         Context context = getApplicationContext();
 
         int horn_mode = WheelLog.AppConfig.getHornMode();
-        if (horn_mode == 1) {
-            final Intent hornIntent = new Intent(ACTION_REQUEST_KINGSONG_HORN);
-            context.sendBroadcast(hornIntent);
+        if (horn_mode == 1 && WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.KINGSONG) {
+            KingsongAdapter.getInstance().horn();
         } else if (horn_mode == 2) {
-            MediaPlayer mp = MediaPlayer.create(context, R.raw.bicycle_bell);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                }
-            });
+            SomeUtil.playSound(context, R.raw.bicycle_bell);
         }
     }
 

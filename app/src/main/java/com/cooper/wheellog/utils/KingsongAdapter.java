@@ -267,4 +267,37 @@ public class KingsongAdapter extends BaseAdapter {
     public Boolean getKSAlertsAndSpeedupdated() {
         return mKSAlertsAndSpeedupdated;
     }
+
+    public void horn() {
+        byte[] data = new byte[20];
+        data[0] = (byte) -86;
+        data[1] = (byte) 85;
+        data[16] = (byte) -120;
+        data[17] = (byte) 20;
+        data[18] = (byte) 90;
+        data[19] = (byte) 90;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    public void requestNameData() {
+        byte[] data = new byte[20];
+        data[0] = (byte) -86;
+        data[1] = (byte) 85;
+        data[16] = (byte) -101;
+        data[17] = (byte) 20;
+        data[18] = (byte) 90;
+        data[19] = (byte) 90;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    public void requestSerialData() {
+        byte[] data = new byte[20];
+        data[0] = (byte) -86;
+        data[1] = (byte) 85;
+        data[16] = (byte) 99;
+        data[17] = (byte) 20;
+        data[18] = (byte) 90;
+        data[19] = (byte) 90;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
 }

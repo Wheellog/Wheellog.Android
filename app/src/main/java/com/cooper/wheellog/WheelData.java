@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Vibrator;
 
@@ -24,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -158,6 +156,10 @@ public class WheelData {
 
     public BluetoothLeService getBluetoothLeService() {
         return mBluetoothLeService;
+    }
+
+    public void setBluetoothLeService(BluetoothLeService value) {
+        mBluetoothLeService = value;
     }
 
     void playBeep(ALARM_TYPE type) {
@@ -1094,18 +1096,6 @@ public class WheelData {
         timerCurrent.schedule(stopCurrentAlarmExecuring, 170);
     }
 
-    private void playWarningSpeed(Context mContext) {
-        MediaPlayer mp1 = MediaPlayer.create(mContext, R.raw.sound_warning_speed);
-        mp1.start();
-        mp1.setOnCompletionListener(mp11 -> mp11.release());
-    }
-
-    private void playRecommendSpeed(Context mContext) {
-        MediaPlayer mp1 = MediaPlayer.create(mContext, R.raw.warning_pwm);
-        mp1.start();
-        mp1.setOnCompletionListener(mp11 -> mp11.release());
-    }
-
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
         if (!mSpeedAlarmExecuting) {
@@ -1124,12 +1114,12 @@ public class WheelData {
                     int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
                     if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
                         mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                        playRecommendSpeed(mContext);
+                        SomeUtil.playSound(mContext, R.raw.warning_pwm);
                     } else {
                         int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
                         if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
                             mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                            playWarningSpeed(mContext);
+                            SomeUtil.playSound(mContext, R.raw.sound_warning_speed);
                         }
                     }
                 }
@@ -1250,7 +1240,6 @@ public class WheelData {
 		}
 		
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
-
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
             currentAxis.add((float) getCurrentDouble());
@@ -1261,7 +1250,6 @@ public class WheelData {
                 currentAxis.remove(0);
                 xAxis.remove(0);
             }
-			
         }
 
         if (WheelLog.AppConfig.getAlarmsEnabled())
@@ -1313,22 +1301,21 @@ public class WheelData {
     public void setWheelTiltHorizon(int value) {mWheelTiltHorizon = value;}
 
     void full_reset() {
-        if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
-        if (mWheelType == WHEEL_TYPE.INMOTION_V2) InmotionAdapterV2.getInstance().stopTimer();
+        if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
+        if (mWheelType == WHEEL_TYPE.INMOTION_V2) InmotionAdapterV2.stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
-            if (protoVer.compareTo("S2")==0) {
+            if (protoVer.compareTo("S2") == 0) {
                 Timber.i("Ninebot S2 stop!");
-                NinebotAdapter.getInstance().stopTimer();
-            } else if (protoVer.compareTo("Mini")==0) {
+                NinebotAdapter.stopTimer();
+            } else if (protoVer.compareTo("Mini") == 0) {
                 Timber.i("Ninebot Mini stop!");
-                NinebotAdapter.getInstance().stopTimer();
-            }   else {
+                NinebotAdapter.stopTimer();
+            } else {
                 Timber.i("Ninebot Z stop!");
-                NinebotZAdapter.getInstance().stopTimer();
+                NinebotZAdapter.stopTimer();
             }
         }
-        if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.getInstance().stopTimer();
-        mBluetoothLeService = null;
+        if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.stopTimer();
         mWheelType = WHEEL_TYPE.Unknown;
         xAxis.clear();
         speedAxis.clear();
@@ -1389,20 +1376,15 @@ public class WheelData {
 	
     }
 
-    boolean detectWheel(BluetoothLeService bluetoothService, String deviceAddress) {
-        //audioTrack.write(buffer, 20000, buffer.length);
-
-        mBluetoothLeService = bluetoothService;
-        Context mContext = bluetoothService.getApplicationContext();
+    boolean detectWheel(String deviceAddress) {
+        Context mContext = getBluetoothLeService().getApplicationContext();
         WheelLog.AppConfig.setLastMac(deviceAddress);
         String advData = WheelLog.AppConfig.getAdvDataForWheel();
         String adapterName = "";
         protoVer = "";
-        if (advData.compareTo("4e421300000000ec") == 0 || advData.compareTo("4e421302000000ea") == 0) {
+        if (StringUtil.inArray(advData, new String[] {"4e421300000000ec", "4e421302000000ea", })) {
             protoVer = "S2";
-        } else if ((advData.compareTo("4e421400000000eb") == 0) || (advData.compareTo("4e422000000000df") == 0) ||
-                (advData.compareTo("4e422200000000dd") == 0) || (advData.compareTo("4e4230cf") == 0)
-                || advData.startsWith("5600")) {
+        } else if (StringUtil.inArray(advData, new String[] {"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf", "5600"})) {
             protoVer = "Mini";
         }
 
