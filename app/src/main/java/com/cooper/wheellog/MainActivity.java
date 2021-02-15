@@ -1224,10 +1224,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     private void playBeep (boolean onlyDefault) {
+        // no mute
+        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        // max volume
+//        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+
         Uri beepFile = WheelLog.AppConfig.getBeepFile();
         // selected file
         if (!onlyDefault &&  WheelLog.AppConfig.getUseCustomBeep() && beepFile != Uri.EMPTY) {
-        //ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             MediaPlayer mp = new MediaPlayer();
             try {
                 mp.setDataSource(getApplicationContext(), beepFile);
@@ -1247,16 +1253,24 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_CAMERA:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                    playBeep(false);
+                    return true;
+                }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                return true;
-            case KeyEvent.KEYCODE_VOLUME_UP:
-            case KeyEvent.KEYCODE_CAMERA:
-                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    playBeep(false);
-                }
                 return true;
             case KeyEvent.KEYCODE_BACK:
                 if (doubleBackToExitPressedOnce) {
