@@ -62,9 +62,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 if (resultCode == Activity.RESULT_OK) {
                     ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac, activity as Activity) { }
                 } else {
-                    WheelLog.AppConfig.autoUploadEc = false
-                    WheelLog.AppConfig.ecToken = null
-                    WheelLog.AppConfig.ecUserId = null
+                    ElectroClub.instance.logout()
                     refreshVolatileSettings()
                 }
             }

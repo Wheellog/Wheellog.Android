@@ -155,8 +155,8 @@ class ElectroClub {
 
     fun getAndSelectGarageByMacOrPrimary(mac: String, activity: Activity, success: (String?) -> Unit)
     {
-        if (WheelLog.AppConfig.ecGarage != null)
-            return // already selected
+        if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null)
+            return // not connected or already selected
 
         getGarage { transportList ->
             val transport = transportList.find { it.mac == mac }
