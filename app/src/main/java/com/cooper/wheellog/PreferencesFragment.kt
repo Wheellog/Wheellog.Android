@@ -109,6 +109,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
+                // TODO check user token
                 if (WheelLog.AppConfig.autoUploadEc && !mDataWarningDisplayed) {
                     WheelLog.AppConfig.autoUploadEc = false
                     AlertDialog.Builder(requireContext())
@@ -121,20 +122,23 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) {
+
+                                    }
                                 }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = false
-                                // TODO check user token
-                                // TODO: need to implement a logout
-                                // logout after uncheck
                                 WheelLog.AppConfig.ecToken = null
-                                refreshVolatileSettings()
                             }
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                 } else {
+                    // logout after uncheck
+                    if (!WheelLog.AppConfig.autoUploadEc) {
+                        WheelLog.AppConfig.ecToken = null
+                        WheelLog.AppConfig.ecUserId = null
+                    }
                     mDataWarningDisplayed = false
                 }
             }
