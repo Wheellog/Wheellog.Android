@@ -120,7 +120,7 @@ class ElectroClub {
                 .addFormDataPart("user_token", WheelLog.AppConfig.ecToken!!)
                 .addFormDataPart("file", fileName, data.toRequestBody(mediaType))
                 .addFormDataPart("time_zone", localTime)
-        if (WheelLog.AppConfig.ecGarage != null) {
+        if (WheelLog.AppConfig.ecGarage != null && WheelLog.AppConfig.ecGarage != "0") {
             bodyBuilder.addFormDataPart("garage_id", WheelLog.AppConfig.ecGarage!!)
         }
         if (verified) {
@@ -153,8 +153,7 @@ class ElectroClub {
         })
     }
 
-    fun getAndSelectGarageByMacOrPrimary(mac: String, activity: Activity, success: (String?) -> Unit)
-    {
+    fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, activity: Activity, success: (String?) -> Unit) {
         if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null)
             return // not connected or already selected
 
@@ -169,17 +168,29 @@ class ElectroClub {
 
             // UI with list select garage if mac isn't found
             activity.runOnUiThread {
-                AlertDialog.Builder(activity).apply {
-                    setTitle(activity.getString(R.string.ec_choose_transport))
-                    setItems(transportList.map { it.name }.toTypedArray()) { _, which ->
-                        val selected = transportList[which].id
-                        WheelLog.AppConfig.ecGarage = selected
-                        success(selected)
-                        successListener?.invoke(GET_GARAGE_METHOD_FILTRED, transportList[which].name)
-                    }
-                    create()
-                    show()
-                }
+                var selectedTransport: Transport? = null
+                AlertDialog.Builder(activity)
+                        .setTitle(activity.getString(R.string.ec_choose_transport))
+                        .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
+                            if (which != -1) {
+                                selectedTransport = transportList[which]
+                            }
+                        }
+                        .setPositiveButton(android.R.string.yes) { _, which ->
+                            if (selectedTransport != null) {
+                                WheelLog.AppConfig.ecGarage = selectedTransport!!.id
+                                success(selectedTransport!!.id)
+                                successListener?.invoke(GET_GARAGE_METHOD_FILTRED, selectedTransport!!.name)
+                            } else {
+                                errorListener?.invoke(GET_GARAGE_METHOD_FILTRED, "selected item not valid")
+                            }
+                        }
+                        .setNegativeButton(android.R.string.no) { _, _ ->
+                            WheelLog.AppConfig.ecGarage = "0"
+                            successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
+                        }
+                        .create()
+                        .show()
             }
         }
     }

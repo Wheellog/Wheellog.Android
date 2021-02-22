@@ -60,7 +60,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         when (requestCode) {
             authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac, activity as Activity) { }
+                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                 } else {
                     ElectroClub.instance.logout()
                     refreshVolatileSettings()
@@ -120,7 +120,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac, activity as Activity) { }
+                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                                 }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
