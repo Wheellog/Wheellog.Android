@@ -255,7 +255,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             )
                         }
                     }
-                    preferenceForAllWheel(mac)
+                    if (WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown) {
+                        preferenceForAllWheel(mac)
+                    }
                     setupScreen()
                     true
                 }
