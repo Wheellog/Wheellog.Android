@@ -106,6 +106,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.ec_token, null)
         set(value) = setValue(R.string.ec_token, value)
 
+    var ecGarage: String?
+        get() = getValue(R.string.ec_garage, null)
+        set(value) = setValue(R.string.ec_garage, value)
+
     var enableRawData: Boolean
         get() = getValue(R.string.use_raw_data, false)
         set(value) = setValue(R.string.use_raw_data, value)

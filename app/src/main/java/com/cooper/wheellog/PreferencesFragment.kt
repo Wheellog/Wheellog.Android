@@ -60,7 +60,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         when (requestCode) {
             authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac, activity as Activity) { }
                 } else {
                     WheelLog.AppConfig.autoUploadEc = false
                     WheelLog.AppConfig.ecToken = null
@@ -122,22 +122,20 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) {
-
-                                    }
+                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac, activity as Activity) { }
                                 }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = false
-                                WheelLog.AppConfig.ecToken = null
+                                ElectroClub.instance.logout()
+                                refreshVolatileSettings()
                             }
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                 } else {
                     // logout after uncheck
                     if (!WheelLog.AppConfig.autoUploadEc) {
-                        WheelLog.AppConfig.ecToken = null
-                        WheelLog.AppConfig.ecUserId = null
+                        ElectroClub.instance.logout()
                     }
                     mDataWarningDisplayed = false
                 }

@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), s -> null);
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
                 }
                 hideSnackBar();
@@ -1436,6 +1436,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
                         ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
                                 mDeviceAddress,
+                                this,
                                 success -> null);
                     }
                 }
