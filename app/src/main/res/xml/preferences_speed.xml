@@ -108,27 +108,6 @@
         android:title="@string/use_stop_music_title"
         android:visible="true" />
 
-    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-        android:defaultValue="0"
-        android:key="@string/battery_capacity"
-        android:summary="@string/battery_capacity_description"
-        android:title="@string/battery_capacity_title"
-        sample:sbp_increment="1"
-        sample:sbp_maxValue="9999"
-        sample:sbp_minValue="0"
-        sample:sbp_measurementUnit="Wh"/>
-
-    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-        android:defaultValue="0"
-        android:key="@string/charging_power"
-        android:summary="@string/charging_power_description"
-        android:title="@string/charging_power_title"
-        sample:sbp_increment="1"
-        sample:sbp_maxValue="1000"
-        sample:sbp_minValue="0"
-        sample:sbp_decimalPlaces="1"
-        sample:sbp_measurementUnit="A"/>
-
     <CheckBoxPreference
         android:enabled="true"
         android:key="@string/show_unknown_devices"
