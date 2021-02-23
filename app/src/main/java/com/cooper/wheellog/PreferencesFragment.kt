@@ -453,7 +453,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     max = 50
                     min = 0
                     unit = getString(R.string.kmh)
-                    setDefaultValue(WheelLog.AppConfig.maxSpeed)
+                    setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
                     if (alertsUpdated) {
                         value = WheelData.getInstance().wheelMaxSpeed
                     }
@@ -541,7 +541,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     min = 0
                     increment = 1
                     unit = getString(R.string.kmh)
-                    setDefaultValue(WheelLog.AppConfig.maxSpeed)
+                    setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
                 },
                 Preference(context).apply {
                     key = mac + getString(R.string.start_calibration)
