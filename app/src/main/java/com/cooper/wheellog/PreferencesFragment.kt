@@ -255,6 +255,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             )
                         }
                     }
+                    if (WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown) {
+                        preferenceForAllWheel(mac)
+                    }
                     setupScreen()
                     true
                 }
@@ -599,6 +602,34 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setEntryValues(R.array.gotway_negative_values)
                     setDefaultValue(WheelLog.AppConfig.gotwayNegative)
                 }
+        ).forEach {
+            preferenceScreen.addPreference(it)
+        }
+    }
+
+    private fun preferenceForAllWheel(mac: String) {
+        arrayOf(
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.battery_capacity)
+                    title = getString(R.string.battery_capacity_title)
+                    summary = getString(R.string.battery_capacity_description)
+                    increment = 1
+                    max = 9999
+                    min = 0
+                    unit = "Wh"
+                    setDefaultValue(0)
+                },
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.charging_power)
+                    title = getString(R.string.charging_power_title)
+                    summary = getString(R.string.charging_power_description)
+                    increment = 1
+                    max = 1000
+                    min = 0
+                    unit = "A"
+                    decimalPlaces = 1
+                    setDefaultValue(0)
+                },
         ).forEach {
             preferenceScreen.addPreference(it)
         }

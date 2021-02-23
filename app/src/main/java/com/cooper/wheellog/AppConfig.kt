@@ -68,14 +68,6 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_stop_music, false)
         set(value) = setValue(R.string.use_stop_music, value)
 
-    var batteryCapacity: Int
-        get() = getValue(R.string.battery_capacity, 0)
-        set(value) = setValue(R.string.battery_capacity, value)
-
-    var chargingPower: Int
-        get() = getValue(R.string.charging_power, 0)
-        set(value) = setValue(R.string.charging_power, value)
-
     var showUnknownDevices: Boolean
         get() = getValue(R.string.show_unknown_devices, false)
         set(value) = setValue(R.string.show_unknown_devices, value)
@@ -312,6 +304,14 @@ class AppConfig(var context: Context) {
     var profileName: String
         get() = getSpecific(R.string.profile_name, "")
         set(value) = setSpecific(R.string.profile_name, value)
+
+    var batteryCapacity: Int
+        get() = getSpecific(R.string.battery_capacity, 0)
+        set(value) = setSpecific(R.string.battery_capacity, value)
+
+    var chargingPower: Int
+        get() = getSpecific(R.string.charging_power, 0)
+        set(value) = setSpecific(R.string.charging_power, value)
     //endregion
 
     //region -=[ custom settings ]=-
