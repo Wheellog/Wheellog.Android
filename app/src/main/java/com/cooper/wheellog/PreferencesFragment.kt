@@ -207,11 +207,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 val alarmButton: Preference? = findPreference(getString(R.string.alarm_preferences))
                 val watchButton: Preference? = findPreference(getString(R.string.watch_preferences))
                 val wheelButton: Preference? = findPreference(getString(R.string.wheel_settings))
-                val resetTopButton: Preference? = findPreference(getString(R.string.reset_top_speed))
-                val resetLowestBatteryButton: Preference? = findPreference(getString(R.string.reset_lowest_battery))
-                val resetUserDistanceButton: Preference? = findPreference(getString(R.string.reset_user_distance))
-                val lastMacButton: Preference? = findPreference(getString(R.string.last_mac))
-                val profileNameButton: Preference? = findPreference(getString(R.string.profile_name))
+                val tripButton: Preference? = findPreference(getString(R.string.trip_settings))
                 val aboutButton: Preference? = findPreference(getString(R.string.about))
                 speedButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Speed
@@ -277,17 +273,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setupScreen()
                     true
                 }
-                resetTopButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    WheelData.getInstance().resetTopSpeed()
-                    true
-                }
-                resetLowestBatteryButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    WheelData.getInstance().resetVoltageSag()
-                    activity?.sendBroadcast(Intent(Constants.ACTION_PREFERENCE_RESET))
-                    true
-                }
-                resetUserDistanceButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    WheelData.getInstance().resetUserDistance()
+                tripButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    currentScreen = SettingsScreen.Trip
+                    preferenceScreen.removeAll()
+                    addPreferencesFromResource(R.xml.preferences_trip)
+                    setupScreen()
                     true
                 }
                 aboutButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -301,6 +291,25 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .show()
                     true
                 }
+            }
+            SettingsScreen.Speed -> {
+                tb.title = getText(R.string.speed_settings_title)
+                switchConnectionSoundIsVisible()
+            }
+            SettingsScreen.Logs -> {
+                tb.title = getText(R.string.logs_settings_title)
+            }
+            SettingsScreen.Alarms -> {
+                tb.title = getText(R.string.alarm_settings_title)
+                switchAlarmsIsVisible()
+            }
+            SettingsScreen.Watch -> {
+                tb.title = getText(R.string.watch_settings_title)
+            }
+            SettingsScreen.Wheel -> {
+                tb.title = getText(R.string.wheel_settings_title)
+                val lastMacButton: Preference? = findPreference(getString(R.string.last_mac))
+                val profileNameButton: Preference? = findPreference(getString(R.string.profile_name))
                 lastMacButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     val builder = AlertDialog.Builder(requireActivity())
                     builder.setTitle(getText(R.string.edit_mac_addr_title))
@@ -355,6 +364,25 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Wheel -> {
                 tb.title = getText(R.string.wheel_settings_title)
+			}
+            SettingsScreen.Trip -> {
+                tb.title = getText(R.string.trip_settings_title)
+                val resetTopButton: Preference? = findPreference(getString(R.string.reset_top_speed))
+                val resetLowestBatteryButton: Preference? = findPreference(getString(R.string.reset_lowest_battery))
+                val resetUserDistanceButton: Preference? = findPreference(getString(R.string.reset_user_distance))
+                resetTopButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    WheelData.getInstance().resetTopSpeed()
+                    true
+                }
+                resetLowestBatteryButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    WheelData.getInstance().resetVoltageSag()
+                    activity?.sendBroadcast(Intent(Constants.ACTION_PREFERENCE_RESET))
+                    true
+                }
+                resetUserDistanceButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    WheelData.getInstance().resetUserDistance()
+                    true
+                }
             }
         }
 
@@ -664,6 +692,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     decimalPlaces = 1
                     setDefaultValue(0)
                 },
+                Preference(context).apply {
+                    key = getString(R.string.last_mac)
+                    title = getString(R.string.edit_mac_addr_title)
+                },
+                Preference(context).apply {
+                    key = getString(R.string.profile_name)
+                    title = getString(R.string.profile_name_title)
+                }
         ).forEach {
             preferenceScreen.addPreference(it)
         }
@@ -948,11 +984,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private fun switchSpecificSettingsIsVisible() {
         val isVisible = WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown
         val specificPreferences = arrayOf(
+                getString(R.string.trip_settings),
                 getString(R.string.alarm_preferences),
                 getString(R.string.wheel_settings),
-                getString(R.string.reset_top_speed),
-                getString(R.string.reset_lowest_battery),
-                getString(R.string.reset_user_distance),
                 getString(R.string.last_mac),
                 getString(R.string.profile_name)
         )
@@ -1011,6 +1045,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private enum class SettingsScreen {
-        Main, Speed, Logs, Alarms, Watch, Wheel
+        Main, Speed, Logs, Alarms, Watch, Wheel, Trip
     }
 }
