@@ -125,6 +125,11 @@
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="battery_voltage_title">Напряжение батареи</string>
     <string name="battary_voltage_description">67В/84В/100В</string>
+    <string name="gotway_negative_title">Отрицательный ток и скорость</string>
+    <string name="gotway_negative_description">Когда вы едете прямо, если скорость и ток отрицательные - попробуйте изменить настройку на противоположную или выберите абсолютное значение</string>
+    <string name="absolute">Абсолютный (всегда положительный)</string>
+    <string name="reverse">Обратный</string>
+    <string name="straight">Прямой</string>
     <string name="off_level_1_alarm">35 км/ч + 80% PWM</string>
     <string name="off_level_2_alarm">Только 80% PWM</string>
     <string name="on_level_alarm">30 + 35 км/ч + 80% PWM</string>
