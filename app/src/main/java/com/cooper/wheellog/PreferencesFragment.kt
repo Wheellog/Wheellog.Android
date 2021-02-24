@@ -404,20 +404,20 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     private fun preferenceInmotion(mac: String) {
         arrayOf(
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.light_enabled)
                     title = getString(R.string.on_headlight_title)
                     summary = getString(R.string.on_headlight_description)
                     isChecked = WheelLog.AppConfig.lightEnabled
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.led_enabled)
                     title = getString(R.string.leds_settings_title)
                     summary = getString(R.string.leds_settings_description)
                     isVisible = !WheelData.getInstance().model.startsWith("V5")
                     isChecked = WheelLog.AppConfig.ledEnabled
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.handle_button_disabled)
                     title = getString(R.string.disable_handle_button_title)
                     summary = getString(R.string.disable_handle_button_description)
@@ -562,7 +562,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         value = WheelLog.AppConfig.wheelKsAlarm1
                     }
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.ks18l_scaler)
                     title = getString(R.string.ks18l_scaler_title)
                     summary = getString(R.string.ks18l_scaler_description)
@@ -616,7 +616,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         true
                     }
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.use_ratio)
                     title = getString(R.string.is_gotway_mcm_title)
                     summary = getString(R.string.is_gotway_mcm_description)
@@ -637,7 +637,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setEntryValues(R.array.gotway_negative_values)
                     setDefaultValue(WheelLog.AppConfig.gotwayNegative)
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
                     title = getString(R.string.connect_beep_title)
                     summary = getString(R.string.connect_beep_description)
@@ -650,7 +650,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     private fun preferenceVeteran(mac: String) {
         arrayOf(
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
                     title = getString(R.string.connect_beep_title)
                     summary = getString(R.string.connect_beep_description)
@@ -708,22 +708,22 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private fun preferenceAlarms() {
         val mac = WheelData.getInstance().mac + "_"
         arrayOf(
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.alarms_enabled)
                     title = getString(R.string.enable_alarms_title)
                     summary = getString(R.string.enable_alarms_description)
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.disable_phone_vibrate)
                     title = getString(R.string.disable_phone_vibrate_title)
                     summary = getString(R.string.disable_phone_vibration_description)
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.disable_phone_beep)
                     title = getString(R.string.disable_phone_beep_title)
                     summary = getString(R.string.disable_phone_beep_description)
                 },
-                CheckBoxPreference(context).apply {
+                SwitchPreference(context).apply {
                     key = mac + getString(R.string.altered_alarms)
                     title = getString(R.string.altered_alarms_title)
                     summary = getString(R.string.altered_alarms_description)
@@ -951,10 +951,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     private fun correctCheckState(preference: String) {
         val settingState = WheelLog.AppConfig.getValue(preference, false)
-        val checkBoxPreference = findPreference<CheckBoxPreference>(preference)
+        val twoStatePreference = findPreference<TwoStatePreference>(preference)
                 ?: return
-        val checkState = checkBoxPreference.isChecked
-        if (settingState != checkState) checkBoxPreference.isChecked = settingState
+        val checkState = twoStatePreference.isChecked
+        if (settingState != checkState) twoStatePreference.isChecked = settingState
     }
 
     private fun showMainMenu() {

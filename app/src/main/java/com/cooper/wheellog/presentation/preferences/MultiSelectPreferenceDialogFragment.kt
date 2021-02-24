@@ -36,15 +36,15 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
         }
     }
 
-    private fun getListPreference(): MultiSelectPreference {
-        return preference as MultiSelectPreference
+    private fun getListPreference(): MultiSelectPreference? {
+        return preference as MultiSelectPreference?
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         newValues.clear()
         if (savedInstanceState == null) {
-            val preference: MultiSelectPreference = getListPreference()
+            val preference = getListPreference() ?: return
             newValues = preference.getValueArray()
             preferenceChanged = false
             entries = preference.entries
@@ -73,6 +73,10 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
             it.addView(layoutWithCheckboxes)
         }
         val p = getListPreference()
+        if (p == null) {
+            dismiss()
+            return scrollView
+        }
         p.getValueArray().forEach { e ->
             addCheckbox(context, e, true)
         }
@@ -128,7 +132,7 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
             val preference = getListPreference()
-            if (preference.callChangeListener(newValues)) {
+            if (preference != null && preference.callChangeListener(newValues)) {
                 preference.setValues(newValues.toList())
             }
         }

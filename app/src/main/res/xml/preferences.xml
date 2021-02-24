@@ -15,18 +15,18 @@
     <Preference
         android:key="@string/alarm_preferences"
         android:title="@string/alarm_settings_title"
-        android:icon="@drawable/ic_vibration_white_24dp"/>
+        android:icon="@drawable/ic_baseline_vibration_24"/>
 
     <Preference
         android:key="@string/watch_preferences"
         android:title="@string/watch_settings_title"
-        android:icon="@drawable/ic_watch_white_24dp" />
+        android:icon="@drawable/ic_baseline_watch_24" />
 
     <Preference
         android:key="@string/wheel_settings"
 		android:enabled="true"
         android:title="@string/wheel_settings_title"
-        android:icon="@drawable/ic_action_wheel_white" />
+        android:icon="@drawable/ic_wheel_white_24" />
 
     <Preference
         android:enabled="true"
