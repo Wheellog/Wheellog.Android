@@ -192,13 +192,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
 
         val tb: Toolbar = requireActivity().findViewById(R.id.preference_toolbar)
-        if (currentScreen == SettingsScreen.Main) {
-            tb.navigationIcon = null
-        } else {
-            tb.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-            tb.setNavigationOnClickListener { showMainMenu() }
-        }
 
+        tb.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
+        tb.setNavigationOnClickListener {
+            if (currentScreen != SettingsScreen.Main) {
+                showMainMenu()
+            } else {
+                activity?.finish()
+            }
+        }
         when (currentScreen) {
             SettingsScreen.Main -> {
                 tb.title = getText(R.string.settings_title)
