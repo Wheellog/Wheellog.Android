@@ -827,7 +827,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             max = 300
                             unit = getString(R.string.amp)
                             increment = 1
-                            setDefaultValue(35)
+                            setDefaultValue(WheelLog.AppConfig.alarmCurrent)
                         }),
                 addPreferenceCategory(getString(R.string.temperature_alarm_title), null,
                         SeekBarPreference(context).apply {
@@ -838,7 +838,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             max = 120
                             unit = "°"
                             increment = 1
-                            setDefaultValue(60)
+                            setDefaultValue(WheelLog.AppConfig.alarmTemperature)
                         })
         ).forEach {
             preferenceScreen.addPreference(it)
