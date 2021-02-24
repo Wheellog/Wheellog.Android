@@ -420,7 +420,7 @@
     <string name="beep_category">Beep</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
-    <string name="beep_on_volume_up_title">Beep on camera key</string>
+    <string name="beep_on_volume_up_title">Beep on volume keys</string>
     <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
