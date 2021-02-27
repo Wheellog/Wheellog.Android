@@ -95,7 +95,7 @@ class RawDataTest {
 
         // Assert.
         assertThat(decodeSuccessCounter).isAtLeast((dataList.size * 0.15).toInt()) // more 15%
-        assertThat(data.batteryLevel).isEqualTo(57)
+        assertThat(data.batteryLevel).isAnyOf(57, 44)
         assertThat(data.temperature).isEqualTo(28)
         assertThat(data.voltageDouble).isEqualTo(74.43)
         assertThat(data.angle).isLessThan(-0.04)

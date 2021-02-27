@@ -265,4 +265,146 @@ class InmotionAdapterTest {
         assertThat(data.angle).isEqualTo(0.079986572265625)
         assertThat(data.roll).isEqualTo(16.133333333333333)
     }
+
+    @Test
+    fun `light commands`() {
+        // Arrange.
+        val expectedOn = "aaaa0d01a5550f010000000000000008050000805555".hexToByteArray()
+        val expectedOff = "aaaa0d01a5550f0000000000000000080500007f5555".hexToByteArray()
+
+        // Act.
+        adapter.setLightState(true)
+        val actualOn = adapter.settingCommand
+        adapter.setLightState(false)
+        val actualOff = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualOn).isEqualTo(expectedOn)
+        assertThat(actualOff).isEqualTo(expectedOff)
+    }
+
+    @Test
+    fun `led command`() {
+        // Arrange.
+        val expectedOn = "aaaa1601a5550fb20000000f00000008050000495555".hexToByteArray()
+        val expectedOff = "aaaa1601a5550fb200000010000000080500004a5555".hexToByteArray()
+
+        // Act.
+        adapter.setLedState(true)
+        val actualOn = adapter.settingCommand
+        adapter.setLedState(false)
+        val actualOff = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualOn).isEqualTo(expectedOn)
+        assertThat(actualOff).isEqualTo(expectedOff)
+    }
+
+    @Test
+    fun `handle button state command`() {
+        // Arrange.
+        val expectedOn = "aaaa2E01a5550f000000000000000008050000a05555".hexToByteArray()
+        val expectedOff = "aaaa2E01a5550f010000000000000008050000a15555".hexToByteArray()
+
+        // Act.
+        adapter.setHandleButtonState(true)
+        val actualOn = adapter.settingCommand
+        adapter.setHandleButtonState(false)
+        val actualOff = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualOn).isEqualTo(expectedOn)
+        assertThat(actualOff).isEqualTo(expectedOff)
+    }
+
+    @Test
+    fun `max speed command`() {
+        // Arrange.
+        val expected00 = "aaaa1501a5550f010000000000000008050000885555".hexToByteArray()
+        val expected10 = "aaaa1501a5550f010000001027000008050000bf5555".hexToByteArray()
+        val expected20 = "aaaa1501a5550f01000000204e000008050000f65555".hexToByteArray()
+        val expected25 = "aaaa1501a5550f01000000a861000008050000915555".hexToByteArray()
+        val expected35 = "aaaa1501a5550f01000000b888000008050000c85555".hexToByteArray()
+
+        // Act.
+        adapter.setMaxSpeedState(0)
+        val actual00 = adapter.settingCommand
+        adapter.setMaxSpeedState(10)
+        val actual10 = adapter.settingCommand
+        adapter.setMaxSpeedState(20)
+        val actual20 = adapter.settingCommand
+        adapter.setMaxSpeedState(25)
+        val actual25 = adapter.settingCommand
+        adapter.setMaxSpeedState(35)
+        val actual35 = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual00).isEqualTo(expected00)
+        assertThat(actual10).isEqualTo(expected10)
+        assertThat(actual20).isEqualTo(expected20)
+        assertThat(actual25).isEqualTo(expected25)
+        assertThat(actual35).isEqualTo(expected35)
+    }
+
+    @Test
+    fun `tilt horizon command`() {
+        // Arrange.
+        val expected0 = "aaaa1501a5550f000000000000000008050000875555".hexToByteArray()
+        val expected80 = "aaaa1501a5550f0000000000000800080500008f5555".hexToByteArray()
+        val expectedMinus80 = "aaaa1501a5550f000000000000f8ff080500007e5555".hexToByteArray()
+
+        // Act.
+        adapter.setTiltHorizon(0)
+        val actual0 = adapter.settingCommand
+        adapter.setTiltHorizon(80)
+        val actual80 = adapter.settingCommand
+        adapter.setTiltHorizon(-80)
+        val actualMinus80 = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual0).isEqualTo(expected0)
+        assertThat(actual80).isEqualTo(expected80)
+        assertThat(actualMinus80).isEqualTo(expectedMinus80)
+    }
+
+    @Test
+    fun `speaker volume command`() {
+        // Arrange.
+        val expected0 = "aaaa0a06a5550f000000000000000008050000815555".hexToByteArray()
+        val expected55 = "aaaa0a06a5550f7c1500000000000008050000125555".hexToByteArray()
+        val expected100 = "aaaa0a06a5550f102700000000000008050000b85555".hexToByteArray()
+
+        // Act.
+        adapter.setSpeakerVolumeState(0)
+        val actual0 = adapter.settingCommand
+        adapter.setSpeakerVolumeState(55)
+        val actual55 = adapter.settingCommand
+        adapter.setSpeakerVolumeState(100)
+        val actual100 = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual0).isEqualTo(expected0)
+        assertThat(actual55).isEqualTo(expected55)
+        assertThat(actual100).isEqualTo(expected100)
+    }
+
+    @Test
+    fun `power off command`() {
+        // Arrange.
+        val expected = "aaaa1601a5550fb200000005000000080500003f5555".hexToByteArray()
+
+        // Act.
+        adapter.powerOff()
+        val actual = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual).isEqualTo(expected)
+    }
 }

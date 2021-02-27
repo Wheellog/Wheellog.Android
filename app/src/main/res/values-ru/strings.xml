@@ -258,4 +258,6 @@
     <string name="beep_on_single_tap_title">Гудок при одиночном тапе</string>
     <string name="beep_on_single_tap_description">Одиночный тап на главном экране будет проигрывать гудок</string>
     <string name="bug_report">Отчет об ошибке</string>
+    <string name="power_off">Выключить колесо</string>
+    <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
 </resources>

@@ -16,9 +16,9 @@ public class InMotionAdapter extends BaseAdapter {
     private Timer keepAliveTimer;
     private int passwordSent = 0;
     private boolean needSlowData = true;
-    private boolean settingCommandReady = false;
+    protected boolean settingCommandReady = false;
     private static int updateStep = 0;
-    private byte[] settingCommand;
+    protected byte[] settingCommand;
 
     @Override
     public boolean decode(byte[] data) {
@@ -189,7 +189,7 @@ public class InMotionAdapter extends BaseAdapter {
                             passwordSent++;
                         } else updateStep = 35;
 
-                    } else if ((model == UNKNOWN) | needSlowData) {
+                    } else if (model == UNKNOWN | needSlowData) {
                         if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
                         } else updateStep = 35;
@@ -255,6 +255,11 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(tiltHorizon).writeBuffer();
 
+    }
+
+    public void powerOff() {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
     }
 
     static Mode intToMode(int mode) {
@@ -542,7 +547,8 @@ public class InMotionAdapter extends BaseAdapter {
             HandleButton(0x0F55012E),
             MaxSpeed(0x0F550115),
             SpeakerVolume(0x0F55060A),
-            Alert(0x0F780101);
+            Alert(0x0F780101),
+            PowerOff(0x0F550116);
 
             private final int value;
 
@@ -760,6 +766,16 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
+        public static CANMessage powerOff() {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.PowerOff.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0xB2, 0, 0, 0, 5, 0, 0, 0};
+            return msg;
+        }
+
         public static CANMessage setHandleButton(boolean on) {
             CANMessage msg = new CANMessage();
             byte enable = 1;
@@ -776,13 +792,12 @@ public class InMotionAdapter extends BaseAdapter {
 
         public static CANMessage setMaxSpeed(int maxSpeed) {
             CANMessage msg = new CANMessage();
-            int lowByte = (maxSpeed * 1000) & 0xFF;
-            int highByte = ((maxSpeed * 1000) / 0x100) & 0xFF;
+            byte[] value = MathsUtil.getBytes((short)(maxSpeed * 1000));
             msg.len = 8;
             msg.id = IDValue.MaxSpeed.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{(byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) lowByte, (byte) highByte, (byte) 0x00, (byte) 0x00};
+			msg.data = new byte[]{1, 0, 0, 0, value[1], value[0], 0, 0};
 			
             return msg;
         }
@@ -813,16 +828,14 @@ public class InMotionAdapter extends BaseAdapter {
 
         public static CANMessage setTiltHorizon(int tiltHorizon) {
             CANMessage msg = new CANMessage();
-            int tilt = (tiltHorizon * 65536) / 10;
-            int llowByte = (tilt) & 0xFF;
-            int lhighByte = (tilt >> 8) & 0xFF;
-            int hlowByte = (tilt >> 16) & 0xFF;
-            int hhighByte = (tilt >> 24) & 0xFF;
+            int tilt = tiltHorizon * 65536 / 10;
+
+            byte[] t = MathsUtil.getBytes(tilt);
             msg.len = 8;
             msg.id = IDValue.MaxSpeed.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
-			msg.data = new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) llowByte, (byte) lhighByte, (byte) hlowByte, (byte) hhighByte};
+			msg.data = new byte[]{0, 0, 0, 0, t[3], t[2], t[1], t[0]};
 
             return msg;
         }
