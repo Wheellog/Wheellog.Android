@@ -61,6 +61,7 @@
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
+    <string name="ec_garage" translatable="false">ec_garage</string>
     <string name="auto_upload" translatable="false">auto_upload</string>
     <string name="log_location_data" translatable="false">log_location_data</string>
     <string name="use_gps" translatable="false">use_gps</string>
@@ -417,4 +418,5 @@
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
     <string name="bug_report">Bug report</string>
+    <string name="ec_choose_transport">[ec] Choose an transport</string>
 </resources>

@@ -69,7 +69,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
@@ -282,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), s -> null);
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
                 }
                 hideSnackBar();
@@ -1434,8 +1433,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(
                                 mDeviceAddress,
+                                this,
                                 success -> null);
                     }
                 }

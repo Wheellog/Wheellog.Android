@@ -1,11 +1,12 @@
 package com.cooper.wheellog
 
+import android.app.Activity
 import android.net.Uri
+import androidx.appcompat.app.AlertDialog
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -31,16 +32,11 @@ class ElectroClub {
             .readTimeout(60, TimeUnit.SECONDS)
             .build()
 
-    var userToken: String? = null
-    var userId: String? = null
     var lastError: String? = null
-    var selectedGarage: String = "0"
     var errorListener: ((String?, String?)->Unit)? = null
     var successListener: ((String?, Any?)->Unit)? = null
 
     fun login(email: String, password: String, success: (Boolean) -> Unit) {
-        userToken = null
-        userId = null
         val urlWithParams = Uri.parse(url)
                 .buildUpon()
                 .appendQueryParameter("method", LOGIN_METHOD)
@@ -57,8 +53,8 @@ class ElectroClub {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                userToken = null
-                userId = null
+                WheelLog.AppConfig.ecUserId = null
+                WheelLog.AppConfig.ecToken = null
                 lastError = "[unexpected] " + e.message
                 errorListener?.invoke(LOGIN_METHOD, lastError)
                 e.printStackTrace()
@@ -66,39 +62,47 @@ class ElectroClub {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                var userToken: String? = null
+                var userId: String? = null
+                var nickname = ""
                 response.use {
                     val json = JSONObject(response.body!!.string())
-                    val nickname: String
                     if (!response.isSuccessful) {
-                        userToken = null
-                        userId = null
                         parseError(json)
-                        errorListener?.invoke(LOGIN_METHOD, lastError)
-                        return
                     } else {
                         val userObj = json.getObjectSafe("data")?.getObjectSafe("user")
                         if (userObj != null) {
                             userToken = userObj.getString("user_token")
                             userId = userObj.getString("user_id")
                             nickname = userObj.getString("nickname")
-                        } else {
-                            userToken = null
-                            userId = null
-                            return
                         }
                     }
 
                     WheelLog.AppConfig.ecUserId = userId
                     WheelLog.AppConfig.ecToken = userToken
-                    successListener?.invoke(LOGIN_METHOD, nickname)
-                    success(true)
+                    if (userId == null || userToken == null) {
+                        errorListener?.invoke(LOGIN_METHOD, lastError)
+                        success(false)
+                    } else {
+                        successListener?.invoke(LOGIN_METHOD, nickname)
+                        success(true)
+                    }
                 }
             }
         })
     }
 
+    fun logout() {
+        WheelLog.AppConfig.apply {
+            ecToken = null
+            ecUserId = null
+            ecGarage = null
+            autoUploadEc = false
+        }
+    }
+
     fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean) {
-        if (userToken == null)
+        if (WheelLog.AppConfig.ecToken == null)
         {
             lastError = "Missing parameters"
             errorListener?.invoke(UPLOAD_METHOD, lastError)
@@ -113,11 +117,11 @@ class ElectroClub {
         val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("method", UPLOAD_METHOD)
                 .addFormDataPart("access_token", accessToken)
-                .addFormDataPart("user_token", userToken!!)
+                .addFormDataPart("user_token", WheelLog.AppConfig.ecToken!!)
                 .addFormDataPart("file", fileName, data.toRequestBody(mediaType))
                 .addFormDataPart("time_zone", localTime)
-        if (selectedGarage != "0") {
-            bodyBuilder.addFormDataPart("garage_id", selectedGarage)
+        if (WheelLog.AppConfig.ecGarage != null && WheelLog.AppConfig.ecGarage != "0") {
+            bodyBuilder.addFormDataPart("garage_id", WheelLog.AppConfig.ecGarage!!)
         }
         if (verified) {
             bodyBuilder.addFormDataPart("verified", "1")
@@ -149,40 +153,50 @@ class ElectroClub {
         })
     }
 
-    fun getAndSelectGarageByMacOrPrimary(mac: String, success: (String?) -> Unit)
-    {
-        if (selectedGarage != "0")
-            return // already selected
+    fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, activity: Activity, success: (String?) -> Unit) {
+        if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null)
+            return // not connected or already selected
 
-        getGarage {
-            val len = it.length() - 1
-            var primaryId: String? = null
-            for (i in 0..len) {
-                val g = it.getJSONObject(i)
-                val m = g.getStringSafe("MAC")
-                val isPrimary = g.getStringSafe("primary") == "1"
-                if (m != null && m == mac) {
-                    selectedGarage = it.getJSONObject(i).getString("id")
-                    success(selectedGarage)
-                    successListener?.invoke(GET_GARAGE_METHOD_FILTRED, it.getJSONObject(i).getString("name"))
-                    break
-                }
-                if (isPrimary) {
-                    primaryId = it.getJSONObject(i).getString("id")
-                }
+        getGarage { transportList ->
+            val transport = transportList.find { it.mac == mac }
+            if (transport != null) {
+                WheelLog.AppConfig.ecGarage = transport.id
+                success(transport.id)
+                successListener?.invoke(GET_GARAGE_METHOD_FILTRED, transport.name)
+                return@getGarage
             }
 
-            // TODO todo todo need UI
-            /*if (primaryId != null)
-            {
-                selectedGarage = primaryId
-                success(selectedGarage)
-            }*/
+            // UI with list select garage if mac isn't found
+            activity.runOnUiThread {
+                var selectedTransport: Transport? = null
+                AlertDialog.Builder(activity)
+                        .setTitle(activity.getString(R.string.ec_choose_transport))
+                        .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
+                            if (which != -1) {
+                                selectedTransport = transportList[which]
+                            }
+                        }
+                        .setPositiveButton(android.R.string.yes) { _, which ->
+                            if (selectedTransport != null) {
+                                WheelLog.AppConfig.ecGarage = selectedTransport!!.id
+                                success(selectedTransport!!.id)
+                                successListener?.invoke(GET_GARAGE_METHOD_FILTRED, selectedTransport!!.name)
+                            } else {
+                                errorListener?.invoke(GET_GARAGE_METHOD_FILTRED, "selected item not valid")
+                            }
+                        }
+                        .setNegativeButton(android.R.string.no) { _, _ ->
+                            WheelLog.AppConfig.ecGarage = "0"
+                            successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
+                        }
+                        .create()
+                        .show()
+            }
         }
     }
 
-    fun getGarage(success: (JSONArray) -> Unit) {
-        if (userToken == null || userId == null)
+    private fun getGarage(success: (Array<Transport>) -> Unit) {
+        if (WheelLog.AppConfig.ecToken == null || WheelLog.AppConfig.ecUserId == null)
         {
             lastError = "Missing parameters"
             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
@@ -192,8 +206,8 @@ class ElectroClub {
                 .buildUpon()
                 .appendQueryParameter("method", GET_GARAGE_METHOD)
                 .appendQueryParameter("access_token", accessToken)
-                .appendQueryParameter("user_token", userToken)
-                .appendQueryParameter("user_id", userId)
+                .appendQueryParameter("user_token", WheelLog.AppConfig.ecToken)
+                .appendQueryParameter("user_id", WheelLog.AppConfig.ecUserId)
                 .build()
                 .toString()
 
@@ -222,10 +236,20 @@ class ElectroClub {
                             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
                             return
                         }
-                        val transportList = data.getJSONArray("transport_list")
+                        val transportListJson = data.getJSONArray("transport_list")
+                        val transportList = Array(transportListJson.length()) { Transport() }
+                        val len = transportListJson.length() - 1
+                        for (i in 0..len) {
+                            val t = transportListJson.getJSONObject(i)
+                            transportList[i].apply {
+                                id = t.getString("id")
+                                name = t.getString("name")
+                                mac = t.getStringSafe("MAC")
+                            }
+                        }
                         success(transportList)
                     }
-                    successListener?.invoke(GET_GARAGE_METHOD, userToken)
+                    successListener?.invoke(GET_GARAGE_METHOD, WheelLog.AppConfig.ecToken)
                 }
             }
         })
@@ -250,5 +274,11 @@ class ElectroClub {
             return this.getString(name)
         }
         return null
+    }
+
+    private class Transport {
+        var id: String = ""
+        var name: String = ""
+        var mac: String? = null
     }
 }
