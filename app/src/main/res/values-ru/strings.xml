@@ -255,8 +255,12 @@
     <string name="show_page_events_description">Показать страницу событий</string>
     <string name="show_page_events_title">Страница событий</string>
     <string name="main_view_category">Главный экран</string>
+    <string name="beep_category">Гудок</string>
     <string name="beep_on_single_tap_title">Гудок при одиночном тапе</string>
     <string name="beep_on_single_tap_description">Одиночный тап на главном экране будет проигрывать гудок</string>
+    <string name="beep_on_volume_up_title">Гудок на кнопки громкости</string>
+    <string name="beep_on_volume_up_description">Кнопки громкости будут проигрывать гудок. С включенной опцией изменить громкость в приложении будет нельзя.</string>
+    <string name="custom_beep_title">Выбрать файл гудка</string>
     <string name="bug_report">Отчет об ошибке</string>
     <string name="ec_choose_transport">[ec] Выберите транспорт</string>
 </resources>

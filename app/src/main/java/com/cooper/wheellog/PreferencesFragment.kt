@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
@@ -29,6 +30,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
     private val authRequestCode = 50
+    private val mediaRequestCode = 60
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -56,7 +58,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Timber.i("onActivityResult")
+        Timber.i("Settings onActivityResult $resultCode")
         when (requestCode) {
             authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
@@ -64,6 +66,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 } else {
                     ElectroClub.instance.logout()
                     refreshVolatileSettings()
+                }
+            }
+            mediaRequestCode -> {
+                val pref = findPreference<Preference>(getString(R.string.custom_beep))
+                if (resultCode == Activity.RESULT_OK && data?.data != null) {
+                    pref?.summary = data.data?.path ?: "default"
+                    WheelLog.AppConfig.beepFile = data.data!!
+                } else {
+                    pref?.summary = "default"
+                    WheelLog.AppConfig.beepFile = Uri.EMPTY
+                    WheelLog.AppConfig.useCustomBeep = false
                 }
             }
         }
@@ -80,7 +93,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private fun checkAndRequestPermissions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
                 && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
-            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     SettingsActivity.permissionWriteCode)
         }
         if (WheelLog.AppConfig.logLocationData) {
@@ -161,6 +174,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
+            R.string.custom_beep -> if (WheelLog.AppConfig.useCustomBeep) {
+                // TODO: check for android sdk < 29
+                // if (checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                // requestPermissionsEx(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), SettingsActivity.permissionReadStorage)
+                val intent = Intent("android.intent.action.OPEN_DOCUMENT")
+                intent.type = "audio/*"
+                startActivityForResult(intent, mediaRequestCode)
+            }
         }
     }
 
@@ -317,6 +338,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)
+                findPreference<CheckBoxPreference>(getString(R.string.custom_beep))?.summary =
+                        WheelLog.AppConfig.beepFile.lastPathSegment
                 switchConnectionSoundIsVisible()
             }
             SettingsScreen.Logs -> {

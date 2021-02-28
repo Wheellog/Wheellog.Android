@@ -116,6 +116,8 @@
         android:defaultValue="false"
         android:visible="true" />
 
+    <PreferenceCategory
+        android:title="@string/beep_category">
     <CheckBoxPreference
         android:enabled="true"
         android:key="@string/beep_on_single_tap"
@@ -123,5 +125,18 @@
         android:title="@string/beep_on_single_tap_title"
         android:defaultValue="false"
         android:visible="true" />
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/beep_on_volume_up"
+        android:summary="@string/beep_on_volume_up_description"
+        android:title="@string/beep_on_volume_up_title"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="@string/custom_beep"
+        android:title="@string/custom_beep_title"
+        android:defaultValue="false" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

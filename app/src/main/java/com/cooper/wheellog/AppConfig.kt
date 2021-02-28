@@ -2,6 +2,7 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.preference.PreferenceManager
 
 class AppConfig(var context: Context) {
@@ -75,6 +76,18 @@ class AppConfig(var context: Context) {
     var useBeepOnSingleTap: Boolean
         get() = getValue(R.string.beep_on_single_tap, false)
         set(value) = setValue(R.string.beep_on_single_tap, value)
+
+    var useBeepOnVolumeUp: Boolean
+        get() = getValue(R.string.beep_on_volume_up, false)
+        set(value) = setValue(R.string.beep_on_volume_up, value)
+
+    var useCustomBeep: Boolean
+        get() = getValue(R.string.custom_beep, false)
+        set(value) = setValue(R.string.custom_beep, value)
+
+    var beepFile: Uri
+        get() = Uri.parse(getValue(R.string.beep_file, ""))
+        set(value) = setValue(R.string.beep_file, value.toString())
     //endregion
 
     //region logs
