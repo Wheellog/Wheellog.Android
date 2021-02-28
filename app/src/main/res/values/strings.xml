@@ -425,5 +425,7 @@
     <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
+    <string name="power_off">Power off</string>
+    <string name="power_off_message">The wheel will be off. Are you sure?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
 </resources>

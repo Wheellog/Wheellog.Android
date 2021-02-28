@@ -262,5 +262,7 @@
     <string name="beep_on_volume_up_description">Кнопки громкости будут проигрывать гудок. С включенной опцией изменить громкость в приложении будет нельзя.</string>
     <string name="custom_beep_title">Выбрать файл гудка</string>
     <string name="bug_report">Отчет об ошибке</string>
+    <string name="power_off">Выключить колесо</string>
+    <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
     <string name="ec_choose_transport">[ec] Выберите транспорт</string>
 </resources>

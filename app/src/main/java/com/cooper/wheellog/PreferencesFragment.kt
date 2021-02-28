@@ -21,6 +21,7 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogF
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
+import com.cooper.wheellog.utils.InMotionAdapter
 import com.cooper.wheellog.utils.KingsongAdapter
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -424,6 +425,22 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     increment = 1
                     decimalPlaces = 1
                     setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
+                },
+                Preference(context).apply {
+                    setIcon(R.drawable.ic_baseline_power_off_24)
+                    title = getString(R.string.power_off)
+                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                        AlertDialog.Builder(requireContext())
+                                .setTitle(getString(R.string.power_off))
+                                .setMessage(getString(R.string.power_off_message))
+                                .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                    InMotionAdapter.getInstance().powerOff()
+                                }
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(R.drawable.ic_baseline_power_off_24)
+                                .show()
+                        true
+                    }
                 }
         ).forEach {
             preferenceScreen.addPreference(it)
