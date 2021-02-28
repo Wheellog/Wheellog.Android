@@ -350,7 +350,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)
-                findPreference<CheckBoxPreference>(getString(R.string.custom_beep))?.summary =
+                findPreference<SwitchPreference>(getString(R.string.custom_beep))?.summary =
                         WheelLog.AppConfig.beepFile.lastPathSegment
                 switchConnectionSoundIsVisible()
             }
