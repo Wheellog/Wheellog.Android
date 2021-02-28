@@ -43,3 +43,4 @@ captures/
 .idea/dictionaries/*
 .idea/copyright/*
 private.properties
+app/release/*
