@@ -61,6 +61,7 @@
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
+    <string name="ec_garage" translatable="false">ec_garage</string>
     <string name="auto_upload" translatable="false">auto_upload</string>
     <string name="log_location_data" translatable="false">log_location_data</string>
     <string name="use_gps" translatable="false">use_gps</string>
@@ -85,6 +86,9 @@
     <string name="use_ratio" translatable="false">use_ratio</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
+    <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
+    <string name="custom_beep" translatable="false">custom_beep</string>
+    <string name="beep_file" translatable="false">beep_file</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -414,9 +418,14 @@
     <string name="show_page_events_description">Show the events page</string>
     <string name="show_page_events_title">Events page</string>
     <string name="main_view_category">Main view</string>
+    <string name="beep_category">Beep</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
+    <string name="beep_on_volume_up_title">Beep on volume keys</string>
+    <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
+    <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
     <string name="power_off">Power off</string>
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
+    <string name="ec_choose_transport">[ec] Choose an transport</string>
 </resources>

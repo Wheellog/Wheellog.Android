@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -61,6 +62,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +71,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
@@ -282,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), s -> null);
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
                 }
                 hideSnackBar();
@@ -978,10 +979,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent e) {
                     if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
-                        // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
-                        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
-                        mp.start();
-                        mp.setOnCompletionListener(MediaPlayer::release);
+                        playBeep(false);
                         return true;
                     }
                     return super.onSingleTapConfirmed(e);
@@ -1225,6 +1223,50 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    private void playBeep (boolean onlyDefault) {
+        // no mute
+        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        // max volume
+//        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+
+        Uri beepFile = WheelLog.AppConfig.getBeepFile();
+        // selected file
+        if (!onlyDefault &&  WheelLog.AppConfig.getUseCustomBeep() && beepFile != Uri.EMPTY) {
+            MediaPlayer mp = new MediaPlayer();
+            try {
+                mp.setDataSource(getApplicationContext(), beepFile);
+                mp.setOnPreparedListener(MediaPlayer::start);
+                mp.prepareAsync();
+                mp.setOnCompletionListener(MediaPlayer::release);
+            } catch (IOException e) {
+                e.printStackTrace();
+                playBeep(true);
+            }
+        } else {
+            // default beep
+            // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+            mp.start();
+            mp.setOnCompletionListener(MediaPlayer::release);
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_CAMERA:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                    playBeep(false);
+                    return true;
+                }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
@@ -1434,8 +1476,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(
                                 mDeviceAddress,
+                                this,
                                 success -> null);
                     }
                 }

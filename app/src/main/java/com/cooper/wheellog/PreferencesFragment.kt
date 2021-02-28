@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
@@ -30,6 +31,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
     private val authRequestCode = 50
+    private val mediaRequestCode = 60
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -57,18 +59,25 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Timber.i("onActivityResult")
+        Timber.i("Settings onActivityResult $resultCode")
         when (requestCode) {
             authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    WheelLog.AppConfig.ecToken = ElectroClub.instance.userToken
-                    WheelLog.AppConfig.ecUserId = ElectroClub.instance.userId
-                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                 } else {
-                    WheelLog.AppConfig.autoUploadEc = false
-                    WheelLog.AppConfig.ecToken = null
-                    WheelLog.AppConfig.ecUserId = null
+                    ElectroClub.instance.logout()
                     refreshVolatileSettings()
+                }
+            }
+            mediaRequestCode -> {
+                val pref = findPreference<Preference>(getString(R.string.custom_beep))
+                if (resultCode == Activity.RESULT_OK && data?.data != null) {
+                    pref?.summary = data.data?.path ?: "default"
+                    WheelLog.AppConfig.beepFile = data.data!!
+                } else {
+                    pref?.summary = "default"
+                    WheelLog.AppConfig.beepFile = Uri.EMPTY
+                    WheelLog.AppConfig.useCustomBeep = false
                 }
             }
         }
@@ -85,7 +94,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private fun checkAndRequestPermissions() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
                 && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
-            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     SettingsActivity.permissionWriteCode)
         }
         if (WheelLog.AppConfig.logLocationData) {
@@ -109,11 +118,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         val resName = key?.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data -> checkAndRequestPermissions()
-            R.string.ec_token -> ElectroClub.instance.userToken = WheelLog.AppConfig.ecToken
-            R.string.ec_user_id -> ElectroClub.instance.userId = WheelLog.AppConfig.ecUserId
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
+                // TODO check user token
                 if (WheelLog.AppConfig.autoUploadEc && !mDataWarningDisplayed) {
                     WheelLog.AppConfig.autoUploadEc = false
                     AlertDialog.Builder(requireContext())
@@ -123,25 +131,24 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 mDataWarningDisplayed = true
                                 WheelLog.AppConfig.autoUploadEc = true
                                 refreshVolatileSettings()
-                                if (ElectroClub.instance.userToken == null) {
+                                if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrPrimary(WheelData.getInstance().mac) { }
+                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                                 }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = false
-                                // TODO check user token
-                                // TODO: need to implement a logout
-                                // logout after uncheck
-                                ElectroClub.instance.userToken = null
-                                ElectroClub.instance.userId = null
-                                WheelLog.AppConfig.ecToken = null
+                                ElectroClub.instance.logout()
                                 refreshVolatileSettings()
                             }
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                 } else {
+                    // logout after uncheck
+                    if (!WheelLog.AppConfig.autoUploadEc) {
+                        ElectroClub.instance.logout()
+                    }
                     mDataWarningDisplayed = false
                 }
             }
@@ -168,6 +175,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
+            R.string.custom_beep -> if (WheelLog.AppConfig.useCustomBeep) {
+                // TODO: check for android sdk < 29
+                // if (checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                // requestPermissionsEx(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), SettingsActivity.permissionReadStorage)
+                val intent = Intent("android.intent.action.OPEN_DOCUMENT")
+                intent.type = "audio/*"
+                startActivityForResult(intent, mediaRequestCode)
+            }
         }
     }
 
@@ -324,6 +339,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)
+                findPreference<CheckBoxPreference>(getString(R.string.custom_beep))?.summary =
+                        WheelLog.AppConfig.beepFile.lastPathSegment
                 switchConnectionSoundIsVisible()
             }
             SettingsScreen.Logs -> {
