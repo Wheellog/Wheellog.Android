@@ -19,8 +19,9 @@ android {
         minSdkVersion 18
         targetSdkVersion 29
         versionCode 74
-        versionName "2.2.3"
+        versionName "2.2.4beta"
         buildConfigField 'String', 'BUILD_TIME', 'new java.text.SimpleDateFormat("HH:mm dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
+        buildConfigField 'String', 'BUILD_DATE', 'new java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.US).format(new java.util.Date(' + System.currentTimeMillis() +'L))'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
@@ -73,6 +74,10 @@ dependencies {
     implementation 'com.github.hotchemi:permissionsdispatcher:2.2.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'com.google.guava:guava:29.0-android'
+    // coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'com.google.truth:truth:1.0.1'

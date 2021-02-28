@@ -1,5 +1,7 @@
 package com.cooper.wheellog.utils;
 
+import android.os.Handler;
+
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
@@ -23,12 +25,12 @@ public class VeteranAdapter extends BaseAdapter {
         if ((time_new-time_old) > WAITING_TIME) // need to reset state in case of packet loose
             unpacker.reset();
         time_old = time_new;
-
+        boolean newDataFound = false;
         for (byte c : data) {
             if (unpacker.addChar(c)) {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                int veteranNegative = WheelLog.AppConfig.getGotwayNegative();
+                int veteranNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
                 int voltage = MathsUtil.shortFromBytesBE(buff,4);
                 int speed = MathsUtil.signedShortFromBytesBE(buff,6) * 10;
                 int distance = MathsUtil.intFromBytesRevBE(buff,8);
@@ -86,10 +88,10 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setBatteryPercent(battery);
                 wd.setChargingStatus(chargeMode);
                 wd.updateRideTime();
-                return true;
+                newDataFound = true;
             }
         }
-        return false;
+        return newDataFound;
     }
 
     @Override
@@ -98,8 +100,31 @@ public class VeteranAdapter extends BaseAdapter {
     }
 
     @Override
-    public void updateLightMode(int lightMode) {
+    public void switchFlashlight() {
+        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
+        if (lightMode > 2) {
+            lightMode = 0;
+        }
+        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+        setLightMode(lightMode);
+    }
 
+    @Override
+    public void setLightMode(int lightMode) {
+        switch (lightMode) {
+            case 0:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("E".getBytes());
+                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
+                break;
+            case 1:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("Q".getBytes());
+                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
+                break;
+            case 2:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("T".getBytes());
+                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
+                break;
+        }
     }
 
     @Override

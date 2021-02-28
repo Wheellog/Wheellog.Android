@@ -65,6 +65,14 @@
             android:key="@string/current_on_dial"
             android:summary="@string/current_on_dial_description"
             android:title="@string/current_on_dial_title" />
+
+        <CheckBoxPreference
+            android:enabled="true"
+            android:key="@string/use_short_pwm"
+            android:summary="@string/use_short_pwm_description"
+            android:title="@string/use_short_pwm_title"
+            android:defaultValue="false"
+            android:visible="true" />
     </PreferenceCategory>
 
     <CheckBoxPreference
@@ -100,27 +108,6 @@
         android:title="@string/use_stop_music_title"
         android:visible="true" />
 
-    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-        android:defaultValue="0"
-        android:key="@string/battery_capacity"
-        android:summary="@string/battery_capacity_description"
-        android:title="@string/battery_capacity_title"
-        sample:sbp_increment="1"
-        sample:sbp_maxValue="9999"
-        sample:sbp_minValue="0"
-        sample:sbp_measurementUnit="Wh"/>
-
-    <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-        android:defaultValue="0"
-        android:key="@string/charging_power"
-        android:summary="@string/charging_power_description"
-        android:title="@string/charging_power_title"
-        sample:sbp_increment="1"
-        sample:sbp_maxValue="1000"
-        sample:sbp_minValue="0"
-        sample:sbp_decimalPlaces="1"
-        sample:sbp_measurementUnit="A"/>
-
     <CheckBoxPreference
         android:enabled="true"
         android:key="@string/show_unknown_devices"
@@ -128,5 +115,28 @@
         android:title="@string/show_unknown_devices_title"
         android:defaultValue="false"
         android:visible="true" />
+
+    <PreferenceCategory
+        android:title="@string/beep_category">
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/beep_on_single_tap"
+        android:summary="@string/beep_on_single_tap_description"
+        android:title="@string/beep_on_single_tap_title"
+        android:defaultValue="false"
+        android:visible="true" />
+
+    <CheckBoxPreference
+        android:enabled="true"
+        android:key="@string/beep_on_volume_up"
+        android:summary="@string/beep_on_volume_up_description"
+        android:title="@string/beep_on_volume_up_title"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="@string/custom_beep"
+        android:title="@string/custom_beep_title"
+        android:defaultValue="false" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

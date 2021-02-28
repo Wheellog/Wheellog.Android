@@ -135,8 +135,6 @@
 	<string name="max_speed_dial_description">Η μέγιστη ταχύτητα που εμφανίζεται στον εξωτερικό επιλογέα</string>
 	<string name="use_mph_title">Ταχύτητα και απόσταση σε μίλια</string>
 	<string name="use_mph_description">Δείξτε την ταχύτητα και την απόσταση σε μίλια και όχι σε χιλιόμετρα</string>
-	<string name="use_eng_title">English</string>
-	<string name="use_eng_description">Use English language instead of Android system language</string>
 	<string name="enable_alarms_title">Ενεργοποίηση συναγερμών</string>
 	<string name="enable_alarms_description">Επιτρέψτε στο κινητό να δονείται</string>
 	<string name="disable_phone_vibrate_title">Απενεργοποίηση δόνησης κινητού</string>

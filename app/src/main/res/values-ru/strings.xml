@@ -114,6 +114,8 @@
     <string name="log_location_decription">Добавить текущую позицию в лог.</string>
     <string name="use_gps_title">Использование GPS</string>
     <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, а если параметр отключен, используются данные сотовой связи.</string>
+    <string name="use_raw_title">Запись Raw данных</string>
+    <string name="use_raw_description">Исходные данные колеса записывается в отдельный CSV-файл.</string>
     <string name="on_off_strobe">Выкл./Вкл./Строб</string>
     <string name="soft_medium_hard">Мягкие/Средние/Жесткие</string>
     <string name="alarm_mode_title">Режим предупреждения</string>
@@ -123,6 +125,11 @@
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="battery_voltage_title">Напряжение батареи</string>
     <string name="battary_voltage_description">67В/84В/100В</string>
+    <string name="gotway_negative_title">Отрицательный ток и скорость</string>
+    <string name="gotway_negative_description">Когда вы едете прямо, если скорость и ток отрицательные - попробуйте изменить настройку на противоположную или выберите абсолютное значение</string>
+    <string name="absolute">Абсолютный (всегда положительный)</string>
+    <string name="reverse">Обратный</string>
+    <string name="straight">Прямой</string>
     <string name="off_level_1_alarm">35 км/ч + 80% PWM</string>
     <string name="off_level_2_alarm">Только 80% PWM</string>
     <string name="on_level_alarm">30 + 35 км/ч + 80% PWM</string>
@@ -192,7 +199,6 @@
     <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
-    <string name="use_eng_title">English</string>
     <string name="use_pip_mode_description">Переходить в режим картинка-в-картинке вместо сворачивания</string>
     <string name="use_pip_mode_title">Картинка-в-Картинке</string>
     <string name="voltage_sag">Просадка напряжения</string>
@@ -249,4 +255,14 @@
     <string name="show_page_events_description">Показать страницу событий</string>
     <string name="show_page_events_title">Страница событий</string>
     <string name="main_view_category">Главный экран</string>
+    <string name="beep_category">Гудок</string>
+    <string name="beep_on_single_tap_title">Гудок при одиночном тапе</string>
+    <string name="beep_on_single_tap_description">Одиночный тап на главном экране будет проигрывать гудок</string>
+    <string name="beep_on_volume_up_title">Гудок на кнопки громкости</string>
+    <string name="beep_on_volume_up_description">Кнопки громкости будут проигрывать гудок. С включенной опцией изменить громкость в приложении будет нельзя.</string>
+    <string name="custom_beep_title">Выбрать файл гудка</string>
+    <string name="bug_report">Отчет об ошибке</string>
+    <string name="power_off">Выключить колесо</string>
+    <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
+    <string name="ec_choose_transport">[ec] Выберите транспорт</string>
 </resources>

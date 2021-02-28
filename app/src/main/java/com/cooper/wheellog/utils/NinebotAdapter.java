@@ -77,7 +77,33 @@ public class NinebotAdapter extends BaseAdapter {
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_decoding");
-        return WheelData.getInstance().decodeNinebot(data);
+        ArrayList<NinebotAdapter.Status> statuses = charUpdated(data);
+        if (statuses.size() < 1) {
+            return false;
+        }
+        WheelData wd = WheelData.getInstance();
+        wd.resetRideTime();
+        for (NinebotAdapter.Status status : statuses) {
+            Timber.i(status.toString());
+            if (status instanceof NinebotAdapter.serialNumberStatus) {
+                wd.setSerial(((serialNumberStatus) status).getSerialNumber());
+                wd.setModel("Ninebot " + wd.getProtoVer());
+            } else if (status instanceof NinebotAdapter.versionStatus) {
+                wd.setVersion(((NinebotAdapter.versionStatus) status).getVersion());
+            } else {
+                int speed = status.getSpeed();
+                int voltage = status.getVoltage();
+                int battery = status.getBatt();
+                wd.setSpeed(speed);
+                wd.setVoltage(voltage);
+                wd.setCurrent(status.getCurrent());
+                wd.setTotalDistance(status.getDistance());
+                wd.setTemperature(status.getTemperature() * 10);
+                wd.updateRideTime();
+                wd.setBatteryPercent(battery);
+            }
+        }
+        return true;
     }
 
     public static class Status {

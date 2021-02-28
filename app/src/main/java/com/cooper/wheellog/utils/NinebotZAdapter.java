@@ -130,7 +130,81 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_z decoding");
-        return WheelData.getInstance().decodeNinebotZ(data);
+        WheelData wd = WheelData.getInstance();
+        setBmsReadingMode(wd.getBmsView());
+        ArrayList<NinebotZAdapter.Status> statuses = charUpdated(data);
+        if (statuses.size() < 1) {
+            return false;
+        }
+        wd.resetRideTime();
+        for (NinebotZAdapter.Status status : statuses) {
+            Timber.i(status.toString());
+            if (status instanceof NinebotZAdapter.serialNumberStatus) {
+                wd.setSerial(((NinebotZAdapter.serialNumberStatus) status).getSerialNumber());
+                wd.setModel("Ninebot Z");
+                wd.setDataForLog(false);
+            } else if (status instanceof NinebotZAdapter.versionStatus) {
+                wd.setVersion(((NinebotZAdapter.versionStatus) status).getVersion());
+                wd.setDataForLog(false);
+            } else if (status instanceof NinebotZAdapter.bmsStatusSn) {
+                wd.setDataForLog(false);
+                bmsStatusSn sn = (NinebotZAdapter.bmsStatusSn) status;
+                NinebotBms bms = sn.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
+                bms.setSerialNumber(sn.getSerialNumber());
+                bms.setVersionNumber(sn.getVersionNumber());
+                bms.setFactoryCap(sn.getFactoryCap());
+                bms.setActualCap(sn.getActualCap());
+                bms.setFullCycles(sn.getFullCycles());
+                bms.setChargeCount(sn.getChargeCount());
+                bms.setMfgDateStr(sn.getMfgDateStr());
+            } else if (status instanceof NinebotZAdapter.bmsStatusLife) {
+                wd.setDataForLog(false);
+                bmsStatusLife life = (NinebotZAdapter.bmsStatusLife) status;
+                NinebotBms bms = life.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
+                bms.setStatus(life.getBmsStatus());
+                bms.setRemCap(life.getRemCap());
+                bms.setRemPerc(life.getRemPerc());
+                bms.setCurrent(life.getBmsCurrent() / 100.0);
+                bms.setVoltage(life.getBmsVoltage() / 100.0);
+                bms.setTemp1(life.getBmsTemp1());
+                bms.setTemp2(life.getBmsTemp2());
+                bms.setBalanceMap(life.getBalanceMap());
+                bms.setHealth(life.getHealth());
+            } else if (status instanceof NinebotZAdapter.bmsStatusCells) {
+                wd.setDataForLog(false);
+                bmsStatusCells cells = (NinebotZAdapter.bmsStatusCells) status;
+                NinebotBms bms = cells.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
+                bms.getCells()[0] = cells.getCell1() / 1000.0;
+                bms.getCells()[1] = cells.getCell2() / 1000.0;
+                bms.getCells()[2] = cells.getCell3() / 1000.0;
+                bms.getCells()[3] = cells.getCell4() / 1000.0;
+                bms.getCells()[4] = cells.getCell5() / 1000.0;
+                bms.getCells()[5] = cells.getCell6() / 1000.0;
+                bms.getCells()[6] = cells.getCell7() / 1000.0;
+                bms.getCells()[7] = cells.getCell8() / 1000.0;
+                bms.getCells()[8] = cells.getCell9() / 1000.0;
+                bms.getCells()[9] = cells.getCell10() / 1000.0;
+                bms.getCells()[10] = cells.getCell11() / 1000.0;
+                bms.getCells()[11] = cells.getCell12() / 1000.0;
+                bms.getCells()[12] = cells.getCell13() / 1000.0;
+                bms.getCells()[13] = cells.getCell14() / 1000.0;
+                bms.getCells()[14] = cells.getCell15() / 1000.0;
+                bms.getCells()[15] = cells.getCell16() / 1000.0;
+            } else {
+                wd.setDataForLog(true);
+                int voltage = status.getVoltage();
+                wd.setSpeed(status.getSpeed());
+                wd.setVoltage(voltage);
+                wd.setCurrent(status.getCurrent());
+                wd.setTotalDistance(status.getDistance());
+                wd.setTemperature(status.getTemperature() * 10);
+                wd.setAlert(status.getAlert());
+                wd.updateRideTime();
+                wd.setBatteryPercent(status.getBatt());
+                wd.setVoltageSag(voltage);
+            }
+        }
+        return true;
     }
 
     public static class Status {
@@ -925,7 +999,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int batt = MathsUtil.shortFromBytesLE(data, 8);
             int speed = MathsUtil.shortFromBytesLE(data, 10);
             int distance = MathsUtil.intFromBytesLE(data, 14);
-            int temperature = MathsUtil.shortFromBytesLE(data, 22);
+            int temperature = MathsUtil.signedShortFromBytesLE(data, 22);
             int voltage = MathsUtil.shortFromBytesLE(data, 24);
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
             int power = voltage * current;

@@ -24,6 +24,7 @@ import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.views.WheelView;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import timber.log.Timber;
@@ -54,6 +55,8 @@ public class BluetoothLeService extends Service {
     PowerManager mgr;
     PowerManager.WakeLock wl;
 
+    FileUtil fileUtilRawData;
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -164,7 +167,7 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             Boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
-            int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
+            int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
 
                 Timber.i("Connected to GATT server.");
@@ -278,48 +281,65 @@ public class BluetoothLeService extends Service {
     };
 
     private void readData(BluetoothGattCharacteristic characteristic, int status) {
-        if (status == BluetoothGatt.GATT_SUCCESS) {
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
-                    byte[] value = characteristic.getValue();
-                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
-                }
-            }
+        if (status != BluetoothGatt.GATT_SUCCESS) {
+            return;
+        }
 
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY ||
-                    WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY_VIRTUAL ||
-                    WheelData.getInstance().getWheelType() == WHEEL_TYPE.VETERAN) {
+        // RAW data
+        if (WheelLog.AppConfig.getEnableRawData()) {
+            if (fileUtilRawData == null) {
+                fileUtilRawData = new FileUtil(getApplicationContext());
+            }
+            if (fileUtilRawData.isNull()) {
+                String fileNameForRawData = "RAW_" + sdf.format(System.currentTimeMillis()) + ".csv";
+                fileUtilRawData.prepareFile(fileNameForRawData, WheelData.getInstance().getMac());
+            }
+            fileUtilRawData.writeLine(String.format(Locale.US, "%s,%s",
+                    sdf.format(System.currentTimeMillis()),
+                    StringUtil.toHexStringRaw(characteristic.getValue())));
+        } else if (fileUtilRawData != null && !fileUtilRawData.isNull()) {
+            fileUtilRawData.close();
+        }
+
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
+            if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
                 byte[] value = characteristic.getValue();
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());
             }
+        }
 
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                byte[] value = characteristic.getValue();
-                if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
-                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
-                }
-            }
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY ||
+                WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY_VIRTUAL ||
+                WheelData.getInstance().getWheelType() == WHEEL_TYPE.VETERAN) {
+            byte[] value = characteristic.getValue();
+            WheelData.getInstance().decodeResponse(value, getApplicationContext());
+        }
 
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
-                byte[] value = characteristic.getValue();
-                if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
-                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
-                }
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
+            byte[] value = characteristic.getValue();
+            if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
+                WheelData.getInstance().decodeResponse(value, getApplicationContext());
             }
+        }
 
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-                byte[] value = characteristic.getValue();
-                if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
-                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
-                }
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
+            byte[] value = characteristic.getValue();
+            if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
+                WheelData.getInstance().decodeResponse(value, getApplicationContext());
             }
-            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT) {
-                byte[] value = characteristic.getValue();
-                if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID)) {
-                    WheelData.getInstance().decodeResponse(value, getApplicationContext());
-                }
-            }
+        }
 
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+            byte[] value = characteristic.getValue();
+            if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
+                WheelData.getInstance().decodeResponse(value, getApplicationContext());
+            }
+        }
+        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT) {
+            byte[] value = characteristic.getValue();
+            if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID)) {
+                WheelData.getInstance().decodeResponse(value, getApplicationContext());
+            }
         }
     }
 
@@ -363,6 +383,10 @@ public class BluetoothLeService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        if (fileUtilRawData != null) {
+            fileUtilRawData.close();
+        }
         stopBeepTimer();
         if (mBluetoothGatt != null &&
                 mConnectionState != STATE_DISCONNECTED)
@@ -513,7 +537,7 @@ public class BluetoothLeService extends Service {
 
 
     public boolean writeBluetoothGattCharacteristic(byte[] cmd) {
-        if (this.mBluetoothGatt == null) {
+        if (this.mBluetoothGatt == null || cmd == null) {
             return false;
         }
 		StringBuilder stringBuilder = new StringBuilder(cmd.length);
@@ -666,7 +690,7 @@ public class BluetoothLeService extends Service {
         wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
         wl.acquire(300000);
         timerTicks = 0;
-        final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound();
+        final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
         TimerTask beepTimerTask = new TimerTask() {
             @Override
             public void run() {

@@ -4,8 +4,8 @@
     <string name="log_preferences" translatable="false">log_preferences</string>
     <string name="alarm_preferences" translatable="false">alarm_preferences</string>
     <string name="watch_preferences" translatable="false">watch_preferences</string>
-    <string name="wheel_settings" translatable="false">wheel_settings</string> 
-	<string name="trip_settings" translatable="false">trip_settings</string>
+    <string name="wheel_settings" translatable="false">wheel_settings</string>
+    <string name="trip_settings" translatable="false">trip_settings</string>
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
@@ -22,7 +22,7 @@
     <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
-	<string name="alarm_temperature" translatable="false">alarm_temperature</string>
+    <string name="alarm_temperature" translatable="false">alarm_temperature</string>
     <string name="altered_alarms" translatable="false">altered_alarms</string>
     <string name="rotation_speed" translatable="false">rotation_speed</string>
     <string name="rotation_voltage" translatable="false">rotation_voltage</string>
@@ -41,14 +41,14 @@
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
-	<string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
-	<string name="pedals_mode" translatable="false">pedals_mode</string>
-	<string name="light_mode" translatable="false">light_mode</string>
-	<string name="strobe_mode" translatable="false">strobe_mode</string>
-	<string name="led_mode" translatable="false">led_mode</string>
-	<string name="start_calibration" translatable="false">start_calibration</string>
-	<string name="alarm_mode" translatable="false">alarm_mode</string>
-	<string name="gotway_84v" translatable="false">gotway_84v</string>
+    <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
+    <string name="pedals_mode" translatable="false">pedals_mode</string>
+    <string name="light_mode" translatable="false">light_mode</string>
+    <string name="strobe_mode" translatable="false">strobe_mode</string>
+    <string name="led_mode" translatable="false">led_mode</string>
+    <string name="start_calibration" translatable="false">start_calibration</string>
+    <string name="alarm_mode" translatable="false">alarm_mode</string>
+    <string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
     <string name="gotway_negative" translatable="false">gotway_negative</string>
     <string name="no_settings" translatable="false">no_settings</string>
@@ -61,9 +61,11 @@
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
+    <string name="ec_garage" translatable="false">ec_garage</string>
     <string name="auto_upload" translatable="false">auto_upload</string>
     <string name="log_location_data" translatable="false">log_location_data</string>
     <string name="use_gps" translatable="false">use_gps</string>
+    <string name="use_raw_data" translatable="false">use_raw_data</string>
 
     // SPEED PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
@@ -81,16 +83,20 @@
     <string name="show_unknown_devices" translatable="false">show_unknown_devices</string>
     <string name="connect_beep" translatable="false">connect_beep</string>
     <string name="max_speed" translatable="false">max_speed</string>
-	<string name="use_ratio" translatable="false">use_ratio</string>
+    <string name="use_ratio" translatable="false">use_ratio</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
+    <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
+    <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
+    <string name="custom_beep" translatable="false">custom_beep</string>
+    <string name="beep_file" translatable="false">beep_file</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
     <string name="garmin_connectiq_enable" translatable="false">garmin_connectiq_enable</string>
 
-	// TRIP PREFERENCES
-	<string name="reset_top_speed" translatable="false">reset_top_speed</string>
-	<string name="reset_user_distance" translatable="false">reset_user_distance</string>
+    // TRIP PREFERENCES
+    <string name="reset_top_speed" translatable="false">reset_top_speed</string>
+    <string name="reset_user_distance" translatable="false">reset_user_distance</string>
     <string name="reset_lowest_battery" translatable="false">reset_lowest_battery</string>
     <string name="last_mac" translatable="false">last_mac</string>
     <string name="profile_name" translatable="false">profile_name</string>
@@ -205,7 +211,7 @@
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
     <string name="horn_mode_title">Horn Mode</string>
     <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
-    <string name="tilt_back_description" >Tiltback speed</string>
+    <string name="tilt_back_description">Tiltback speed</string>
     <string name="max_speed_title">Wheel speed limit</string>
     <string name="alert1_title">1st Alert Speed</string>
     <string name="alert2_title">2nd Alert Speed</string>
@@ -256,14 +262,14 @@
     <string name="view_blocks_description">Show info blocks below speedometer</string>
     <string name="use_eng_alert_title">Restart required</string>
     <string name="use_eng_alert_description">Please restart the application to apply the language change</string>
-    <string name="use_eng_title">English</string>
-    <string name="use_eng_description">Use English language instead of Android system language</string>
+    <string name="use_eng_title" translatable="false">English</string>
+    <string name="use_eng_description" translatable="false">Use English language instead of Android system language</string>
     <string name="use_better_percents_title">Improved percents</string>
     <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
     <string name="fixed_percents_title">Fixed percents</string>.
-    <string name="fixed_percents_description">Use fixed formula for battery percents calculation instead of wheel vendor formula</string>.
+    <string name="fixed_percents_description">Use fixed formula for battery percents calculation instead of wheel vendor formula</string>
     <string name="cell_voltage_tiltback_title">Tiltback voltage</string>.
-    <string name="cell_voltage_tiltback_description">Voltage per 1 cell, where the wheel tiltback the pedals</string>.
+    <string name="cell_voltage_tiltback_description">Voltage per 1 cell, where the wheel tiltback the pedals</string>
     <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
     <string name="current_on_dial_title">Current on main dial</string>
@@ -338,6 +344,8 @@
     <string name="log_location_decription">Include location data within the logs</string>
     <string name="use_gps_title">Use GPS for location</string>
     <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
+    <string name="use_raw_title">Write Raw data</string>
+    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="on_off_strobe">Off/On/Strobe</string>
     <string name="soft_medium_hard">Soft/Medium/Hard</string>
     <string name="alarm_settings_description">Alarm settings</string>
@@ -410,4 +418,14 @@
     <string name="show_page_events_description">Show the events page</string>
     <string name="show_page_events_title">Events page</string>
     <string name="main_view_category">Main view</string>
+    <string name="beep_category">Beep</string>
+    <string name="beep_on_single_tap_title">Beep on single tap</string>
+    <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
+    <string name="beep_on_volume_up_title">Beep on volume keys</string>
+    <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
+    <string name="custom_beep_title">Select beep file</string>
+    <string name="bug_report">Bug report</string>
+    <string name="power_off">Power off</string>
+    <string name="power_off_message">The wheel will be off. Are you sure?</string>
+    <string name="ec_choose_transport">[ec] Choose an transport</string>
 </resources>

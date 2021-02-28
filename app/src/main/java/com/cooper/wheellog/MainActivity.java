@@ -2,6 +2,7 @@ package com.cooper.wheellog;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -10,20 +11,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextClock;
 import android.widget.TextView;
@@ -34,13 +40,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
+import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -57,6 +62,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,14 +71,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static AudioManager audioManager = null;
 
     @Override
@@ -172,12 +177,10 @@ public class MainActivity extends AppCompatActivity {
     int viewPagerPage = R.id.page_main;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
-    private DrawerLayout mDrawer;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
-    protected static final int RESULT_AUTH_REQUEST = 50;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -190,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
 
-            loadPreferences();
+            loadPreferences(-1);
             if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
                     mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                 mBluetoothLeService.setDeviceAddress(mDeviceAddress);
@@ -227,9 +230,6 @@ public class MainActivity extends AppCompatActivity {
                         else if (WheelData.getInstance().getSerial().isEmpty())
                             sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
                     }
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS)) {
-                        setWheelPreferences();
-                    }
                     updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
@@ -245,17 +245,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                     setMenuIconStates();
                     break;
-                case Constants.ACTION_PREFERENCE_CHANGED:
-                    int settingsKey = intent.getIntExtra(Constants.INTENT_EXTRA_SETTINGS_KEY, -1);
-                    loadPreferences(settingsKey);
-                    break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
                     wheelView.resetBatteryLowest();
                     break;
 
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
+                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
+                            && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
                         pagerAdapter.showPage(R.id.page_smart_bms);
                     } else {
                         pagerAdapter.hidePage(R.id.page_smart_bms);
@@ -284,10 +281,9 @@ public class MainActivity extends AppCompatActivity {
             case BluetoothLeService.STATE_CONNECTED:
                 configureDisplay(WheelData.getInstance().getWheelType());
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    WheelLog.AppConfig.changeSettingsSpecific(mDeviceAddress);
-                    WheelLog.AppConfig.setLastMac(mDeviceAddress, true);
+                    WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(WheelLog.AppConfig.getLastMac(), s -> null);
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
                 }
                 hideSnackBar();
@@ -310,16 +306,6 @@ public class MainActivity extends AppCompatActivity {
         }
         mConnectionState = connectionState;
         setMenuIconStates();
-    }
-
-    private void setWheelPreferences() {
-        Timber.i("SetWheelPreferences");
-        getPreferencesFragment().refreshWheelSettings(WheelData.getInstance().getWheelLight(),
-                WheelData.getInstance().getWheelLed(),
-                WheelData.getInstance().getWheelHandleButton(),
-                WheelData.getInstance().getWheelMaxSpeed(),
-                WheelData.getInstance().getSpeakerVolume(),
-                WheelData.getInstance().getPedalsPosition());
     }
 
     private void setMenuIconStates() {
@@ -643,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
                 wheelView.redrawTextBoxes();
 
                 String profileName = WheelLog.AppConfig.getProfileName();
-                if (profileName == null || profileName.trim() == "" || WheelLog.AppConfig.isGeneral())
+                if (profileName == null || profileName.trim().equals(""))
                     wheelView.setWheelModel(data.getModel().equals("") ? data.getName() : data.getModel());
                 else
                     wheelView.setWheelModel(profileName);
@@ -774,60 +760,60 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.page_smart_bms: //BMS view
-                WheelData.getInstance().setBmsView(true);
-                tvBms1Sn.setText(WheelData.getInstance().getBms1SerialNumber());
-                tvBms1Fw.setText(WheelData.getInstance().getBms1VersionNumber());
-                tvBms1FactoryCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getBms1FactoryCap()));
-                tvBms1ActualCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getBms1ActualCap()));
-                tvBms1Cycles.setText(String.format(Locale.US, "%d", WheelData.getInstance().getBms1FullCycles()));
-                tvBms1ChrgCount.setText(String.format(Locale.US, "%d", WheelData.getInstance().getBms1ChargeCount()));
-                tvBms1MfgDate.setText(WheelData.getInstance().getBms1MfgDateStr());
-                tvBms1Status.setText(String.format(Locale.US, "%d", WheelData.getInstance().getBms1Status()));
-                tvBms1RemCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getBms1RemCap()));
-                tvBms1RemPerc.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getBms1RemPerc()));
-                tvBms1Current.setText(String.format(Locale.US, "%.2f A", WheelData.getInstance().getBms1Current()));
-                tvBms1Voltage.setText(String.format(Locale.US, "%.2f V", WheelData.getInstance().getBms1Voltage()));
-                tvBms1Temp1.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getBms1Temp1()));
-                tvBms1Temp2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getBms1Temp2()));
-                tvBms1Health.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getBms1Health()));
-                int balanceMap = WheelData.getInstance().getBms1BalanceMap();
+                data.setBmsView(true);
+                tvBms1Sn.setText(data.getBms1().getSerialNumber());
+                tvBms1Fw.setText(data.getBms1().getVersionNumber());
+                tvBms1FactoryCap.setText(String.format(Locale.US, "%d mAh", data.getBms1().getFactoryCap()));
+                tvBms1ActualCap.setText(String.format(Locale.US, "%d mAh", data.getBms1().getActualCap()));
+                tvBms1Cycles.setText(String.format(Locale.US, "%d", data.getBms1().getFullCycles()));
+                tvBms1ChrgCount.setText(String.format(Locale.US, "%d", data.getBms1().getChargeCount()));
+                tvBms1MfgDate.setText(data.getBms1().getMfgDateStr());
+                tvBms1Status.setText(String.format(Locale.US, "%d", data.getBms1().getStatus()));
+                tvBms1RemCap.setText(String.format(Locale.US, "%d mAh", data.getBms1().getRemCap()));
+                tvBms1RemPerc.setText(String.format(Locale.US, "%d %%", data.getBms1().getRemPerc()));
+                tvBms1Current.setText(String.format(Locale.US, "%.2f A", data.getBms1().getCurrent()));
+                tvBms1Voltage.setText(String.format(Locale.US, "%.2f V", data.getBms1().getVoltage()));
+                tvBms1Temp1.setText(String.format(Locale.US, "%d°C", data.getBms1().getTemp1()));
+                tvBms1Temp2.setText(String.format(Locale.US, "%d°C", data.getBms1().getTemp2()));
+                tvBms1Health.setText(String.format(Locale.US, "%d %%", data.getBms1().getHealth()));
+                int balanceMap = data.getBms1().getBalanceMap();
                 String bal = "";
                 if (((balanceMap) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell1.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell1(), bal));
+                tvBms1Cell1.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[0], bal));
                 if (((balanceMap >> 1) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell2.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell2(), bal));
+                tvBms1Cell2.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[1], bal));
                 if (((balanceMap >> 2) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell3.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell3(), bal));
+                tvBms1Cell3.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[2], bal));
                 if (((balanceMap >> 3) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell4.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell4(), bal));
+                tvBms1Cell4.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[3], bal));
                 if (((balanceMap >> 4) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell5.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell5(), bal));
+                tvBms1Cell5.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[4], bal));
                 if (((balanceMap >> 5) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell6.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell6(), bal));
+                tvBms1Cell6.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[5], bal));
                 if (((balanceMap >> 6) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell7.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell7(), bal));
+                tvBms1Cell7.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[6], bal));
                 if (((balanceMap >> 7) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell8.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell8(), bal));
+                tvBms1Cell8.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[7], bal));
                 if (((balanceMap >> 8) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell9.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell9(), bal));
+                tvBms1Cell9.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[8], bal));
                 if (((balanceMap >> 9) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell10.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell10(), bal));
+                tvBms1Cell10.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[9], bal));
                 if (((balanceMap >> 10) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell11.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell11(), bal));
+                tvBms1Cell11.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[10], bal));
                 if (((balanceMap >> 11) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell12.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell12(), bal));
+                tvBms1Cell12.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[11], bal));
                 if (((balanceMap >> 12) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell13.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell13(), bal));
+                tvBms1Cell13.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[12], bal));
                 if (((balanceMap >> 13) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell14.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell14(), bal));
-                if (WheelData.getInstance().getBms1Cell15() == 0.0) {
+                tvBms1Cell14.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[13], bal));
+                if (data.getBms1().getCells()[14] == 0.0) {
                     tvBms1Cell15.setVisibility(View.GONE);
                     tvTitleBms1Cell15.setVisibility(View.GONE);
                 } else {
                     tvBms1Cell15.setVisibility(View.VISIBLE);
                     tvTitleBms1Cell15.setVisibility(View.VISIBLE);
                 }
-                if (WheelData.getInstance().getBms1Cell16() == 0.0) {
+                if (data.getBms1().getCells()[15] == 0.0) {
                     tvBms1Cell16.setVisibility(View.GONE);
                     tvTitleBms1Cell16.setVisibility(View.GONE);
                 } else {
@@ -835,61 +821,61 @@ public class MainActivity extends AppCompatActivity {
                     tvTitleBms1Cell16.setVisibility(View.VISIBLE);
                 }
                 if (((balanceMap >> 14) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell15.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell15(), bal));
+                tvBms1Cell15.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[14], bal));
                 if (((balanceMap >> 15) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms1Cell16.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getBms1Cell16(), bal));
-                tvBms2Sn.setText(WheelData.getInstance().getbms2SerialNumber());
-                tvBms2Fw.setText(WheelData.getInstance().getbms2VersionNumber());
-                tvBms2FactoryCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getbms2FactoryCap()));
-                tvBms2ActualCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getbms2ActualCap()));
-                tvBms2Cycles.setText(String.format(Locale.US, "%d", WheelData.getInstance().getbms2FullCycles()));
-                tvBms2ChrgCount.setText(String.format(Locale.US, "%d", WheelData.getInstance().getbms2ChargeCount()));
-                tvBms2MfgDate.setText(WheelData.getInstance().getbms2MfgDateStr());
-                tvBms2Status.setText(String.format(Locale.US, "%d", WheelData.getInstance().getbms2Status()));
-                tvBms2RemCap.setText(String.format(Locale.US, "%d mAh", WheelData.getInstance().getbms2RemCap()));
-                tvBms2RemPerc.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getbms2RemPerc()));
-                tvBms2Current.setText(String.format(Locale.US, "%.2f A", WheelData.getInstance().getbms2Current()));
-                tvBms2Voltage.setText(String.format(Locale.US, "%.2f V", WheelData.getInstance().getbms2Voltage()));
-                tvBms2Temp1.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getbms2Temp1()));
-                tvBms2Temp2.setText(String.format(Locale.US, "%d°C", WheelData.getInstance().getbms2Temp2()));
-                tvBms2Health.setText(String.format(Locale.US, "%d %%", WheelData.getInstance().getbms2Health()));
-                balanceMap = WheelData.getInstance().getbms2BalanceMap();
+                tvBms1Cell16.setText(String.format(Locale.US, "%.3f V %s", data.getBms1().getCells()[15], bal));
+                tvBms2Sn.setText(data.getBms2().getSerialNumber());
+                tvBms2Fw.setText(data.getBms2().getVersionNumber());
+                tvBms2FactoryCap.setText(String.format(Locale.US, "%d mAh", data.getBms2().getFactoryCap()));
+                tvBms2ActualCap.setText(String.format(Locale.US, "%d mAh", data.getBms2().getActualCap()));
+                tvBms2Cycles.setText(String.format(Locale.US, "%d", data.getBms2().getFullCycles()));
+                tvBms2ChrgCount.setText(String.format(Locale.US, "%d", data.getBms2().getChargeCount()));
+                tvBms2MfgDate.setText(data.getBms2().getMfgDateStr());
+                tvBms2Status.setText(String.format(Locale.US, "%d", data.getBms2().getStatus()));
+                tvBms2RemCap.setText(String.format(Locale.US, "%d mAh", data.getBms2().getRemCap()));
+                tvBms2RemPerc.setText(String.format(Locale.US, "%d %%", data.getBms2().getRemPerc()));
+                tvBms2Current.setText(String.format(Locale.US, "%.2f A", data.getBms2().getCurrent()));
+                tvBms2Voltage.setText(String.format(Locale.US, "%.2f V", data.getBms2().getVoltage()));
+                tvBms2Temp1.setText(String.format(Locale.US, "%d°C", data.getBms2().getTemp1()));
+                tvBms2Temp2.setText(String.format(Locale.US, "%d°C", data.getBms2().getTemp2()));
+                tvBms2Health.setText(String.format(Locale.US, "%d %%", data.getBms2().getHealth()));
+                balanceMap = data.getBms2().getBalanceMap();
                 if (((balanceMap) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell1.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell1(), bal));
+                tvBms2Cell1.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[0], bal));
                 if (((balanceMap >> 1) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell2.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell2(), bal));
+                tvBms2Cell2.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[1], bal));
                 if (((balanceMap >> 2) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell3.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell3(), bal));
+                tvBms2Cell3.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[2], bal));
                 if (((balanceMap >> 3) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell4.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell4(), bal));
+                tvBms2Cell4.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[3], bal));
                 if (((balanceMap >> 4) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell5.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell5(), bal));
+                tvBms2Cell5.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[4], bal));
                 if (((balanceMap >> 5) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell6.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell6(), bal));
+                tvBms2Cell6.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[5], bal));
                 if (((balanceMap >> 6) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell7.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell7(), bal));
+                tvBms2Cell7.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[6], bal));
                 if (((balanceMap >> 7) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell8.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell8(), bal));
+                tvBms2Cell8.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[7], bal));
                 if (((balanceMap >> 8) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell9.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell9(), bal));
+                tvBms2Cell9.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[8], bal));
                 if (((balanceMap >> 9) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell10.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell10(), bal));
+                tvBms2Cell10.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[9], bal));
                 if (((balanceMap >> 10) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell11.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell11(), bal));
+                tvBms2Cell11.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[10], bal));
                 if (((balanceMap >> 11) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell12.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell12(), bal));
+                tvBms2Cell12.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[11], bal));
                 if (((balanceMap >> 12) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell13.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell13(), bal));
+                tvBms2Cell13.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[12], bal));
                 if (((balanceMap >> 13) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell14.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell14(), bal));
-                if (WheelData.getInstance().getbms2Cell15() == 0.0) {
+                tvBms2Cell14.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[13], bal));
+                if (data.getBms2().getCells()[14] == 0.0) {
                     tvBms2Cell15.setVisibility(View.GONE);
                     tvTitleBms2Cell15.setVisibility(View.GONE);
                 } else {
                     tvBms2Cell15.setVisibility(View.VISIBLE);
                     tvTitleBms2Cell15.setVisibility(View.VISIBLE);
                 }
-                if (WheelData.getInstance().getbms2Cell16() == 0.0) {
+                if (data.getBms2().getCells()[15] == 0.0) {
                     tvBms2Cell16.setVisibility(View.GONE);
                     tvTitleBms2Cell16.setVisibility(View.GONE);
                 } else {
@@ -897,9 +883,9 @@ public class MainActivity extends AppCompatActivity {
                     tvTitleBms2Cell16.setVisibility(View.VISIBLE);
                 }
                 if (((balanceMap >> 14) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell15.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell15(), bal));
+                tvBms2Cell15.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[14], bal));
                 if (((balanceMap >> 15) & 0x01) == 1) bal = "[B]"; else bal = "";
-                tvBms2Cell16.setText(String.format(Locale.US, "%.3f V %s", WheelData.getInstance().getbms2Cell16(), bal));
+                tvBms2Cell16.setText(String.format(Locale.US, "%.3f V %s", data.getBms2().getCells()[15], bal));
 
         }
     }
@@ -952,7 +938,6 @@ public class MainActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
-        WheelLog.AppConfig.initGeneralSettingsSpecific();
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
@@ -970,10 +955,6 @@ public class MainActivity extends AppCompatActivity {
             return null;
         });
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.settings_frame, getPreferencesFragment(), Constants.PREFERENCES_FRAGMENT_TAG)
-                .commit();
-
         createPager();
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
@@ -982,7 +963,34 @@ public class MainActivity extends AppCompatActivity {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         wheelView = (WheelView) findViewById(R.id.wheelView);
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        wheelView.setOnTouchListener(new View.OnTouchListener() {
+            private final GestureDetector gestureDetector = new GestureDetector(
+                    MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    BaseAdapter adapter = WheelData.getInstance().getAdapter();
+                    if (adapter != null) {
+                        adapter.switchFlashlight();
+                    }
+                    return super.onDoubleTap(e);
+                }
+
+                @Override
+                public boolean onSingleTapConfirmed(MotionEvent e) {
+                    if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
+                        playBeep(false);
+                        return true;
+                    }
+                    return super.onSingleTapConfirmed(e);
+                }
+            });
+
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
+        });
 
         tvBms1Sn = (TextView) findViewById(R.id.tvBms1Sn);
         tvBms2Sn = (TextView) findViewById(R.id.tvBms2Sn);
@@ -1051,26 +1059,6 @@ public class MainActivity extends AppCompatActivity {
         tvTitleBms2Cell16 = (TextView) findViewById(R.id.tvTitleBms2Cell16);
         tvBms2Cell16 = (TextView) findViewById(R.id.tvBms2Cell16);
 
-
-        mDrawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                getPreferencesFragment().showMainMenu();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
         Typeface typefacePrime = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 ? getResources().getFont(R.font.prime)
                 : ResourcesCompat.getFont(this, R.font.prime);
@@ -1101,20 +1089,13 @@ public class MainActivity extends AppCompatActivity {
         xAxis.setTextColor(getResources().getColor(android.R.color.white));
         xAxis.setValueFormatter(chartAxisValueFormatter);
 
-        loadPreferences();
+        setupSharedPreferences();
 
-        if (WheelLog.AppConfig.isFirstRun()) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mDrawer.openDrawer(GravityCompat.START, true);
-                }
-            }, 1000);
-        }
+        loadPreferences(-1);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
+            //finish();
         }
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
@@ -1126,7 +1107,7 @@ public class MainActivity extends AppCompatActivity {
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
+            //finish();
         } else if (!mBluetoothAdapter.isEnabled()) {
             // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
             // fire an intent to display a dialog asking the user to grant permission to enable it.
@@ -1175,6 +1156,8 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
             mBluetoothLeService = null;
         }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000, 100) {
@@ -1230,80 +1213,101 @@ public class MainActivity extends AppCompatActivity {
                     stopGarminConnectIQ();
                 return true;
             case R.id.miSettings:
-                mDrawer.openDrawer(GravityCompat.START, true);
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class),
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                                    ? ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                                    : null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void playBeep (boolean onlyDefault) {
+        // no mute
+        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        // max volume
+//        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+
+        Uri beepFile = WheelLog.AppConfig.getBeepFile();
+        // selected file
+        if (!onlyDefault &&  WheelLog.AppConfig.getUseCustomBeep() && beepFile != Uri.EMPTY) {
+            MediaPlayer mp = new MediaPlayer();
+            try {
+                mp.setDataSource(getApplicationContext(), beepFile);
+                mp.setOnPreparedListener(MediaPlayer::start);
+                mp.prepareAsync();
+                mp.setOnCompletionListener(MediaPlayer::release);
+            } catch (IOException e) {
+                e.printStackTrace();
+                playBeep(true);
+            }
+        } else {
+            // default beep
+            // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+            mp.start();
+            mp.setOnCompletionListener(MediaPlayer::release);
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_CAMERA:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                    playBeep(false);
+                    return true;
+                }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        View settings_layout = findViewById(R.id.settings_layout);
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
-                if (mDrawer.isDrawerOpen(settings_layout)) {
-                    mDrawer.closeDrawers();
-                } else {
-                    mDrawer.openDrawer(GravityCompat.START, true);
-                }
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 return true;
             case KeyEvent.KEYCODE_BACK:
-                if (mDrawer.isDrawerOpen(settings_layout)) {
-                    if (getPreferencesFragment().isMainMenu()) {
-                        mDrawer.closeDrawer(GravityCompat.START, true);
-                    } else {
-                        getPreferencesFragment().showMainMenu();
-                    }
-                } else {
-                    if (doubleBackToExitPressedOnce) {
-                        finish();
-                        return true;
-                    }
-
-                    doubleBackToExitPressedOnce = true;
-                    showSnackBar(R.string.back_to_exit);
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            doubleBackToExitPressedOnce = false;
-                        }
-                    }, 2000);
+                if (doubleBackToExitPressedOnce) {
+                    finish();
+                    return true;
                 }
+
+                doubleBackToExitPressedOnce = true;
+                showSnackBar(R.string.back_to_exit);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, 2000);
                 return true;
             default:
                 return super.onKeyDown(keyCode, event);
         }
     }
 
-    private void loadPreferences() {
-        loadPreferences(-1);
+    private void setupSharedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        int settingsKey = WheelLog.AppConfig.getResId(key);
+        if (settingsKey > 0) {
+            loadPreferences(settingsKey);
+        }
     }
 
     private void loadPreferences(int settingsKey) {
         switch (settingsKey) {
-            case R.string.auto_log:
-                if (WheelLog.AppConfig.getAutoLog() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-                    MainActivityPermissionsDispatcher.acquireStoragePermissionWithCheck(this);
-                break;
-            case R.string.log_location_data:
-                if (WheelLog.AppConfig.getLogLocationData())
-                    MainActivityPermissionsDispatcher.acquireLocationPermissionWithCheck(this);
-                break;
-            case R.string.auto_upload_ec:
-                if (WheelLog.AppConfig.getAutoUploadEc()) {
-                    if (ElectroClub.getInstance().getUserToken() == null)
-                        startActivityForResult(new Intent(MainActivity.this, LoginActivity.class), RESULT_AUTH_REQUEST);
-                    else
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null); // TODO check user token
-                } else {
-                    // TODO: need to implement a logout
-                    // logout after uncheck
-                    ElectroClub.getInstance().setUserToken(null);
-                    ElectroClub.getInstance().setUserId(null);
-                    WheelLog.AppConfig.setEcToken(null, true);
-                }
-                break;
             case R.string.show_page_events:
                 if (WheelLog.AppConfig.getPageEvents()) {
                     if (findViewById(R.id.page_events) == null) {
@@ -1337,26 +1341,6 @@ public class MainActivity extends AppCompatActivity {
         wheelView.updateViewBlocksVisibility(viewBlocks);
         wheelView.invalidate();
         updateScreen(true);
-    }
-
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void acquireStoragePermission() {
-    }
-
-    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION})
-    void acquireLocationPermission() {
-    }
-
-    @OnPermissionDenied({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void storagePermissionDenied() {
-        WheelLog.AppConfig.setAutoLog(false, true);
-        ((MainPreferencesFragment) getPreferencesFragment()).refreshVolatileSettings();
-    }
-
-    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
-    void locationPermissionDenied() {
-        WheelLog.AppConfig.setLogLocationData(false, true);
-        getPreferencesFragment().refreshVolatileSettings();
     }
 
     private void showSnackBar(int msg) {
@@ -1492,8 +1476,9 @@ public class MainActivity extends AppCompatActivity {
                     mBluetoothLeService.close();
                     toggleConnectToWheel();
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(
                                 mDeviceAddress,
+                                this,
                                 success -> null);
                     }
                 }
@@ -1506,18 +1491,6 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 break;
-            case RESULT_AUTH_REQUEST:
-                if (resultCode == RESULT_OK) {
-                    WheelLog.AppConfig.setEcToken(ElectroClub.getInstance().getUserToken(), true);
-                    WheelLog.AppConfig.setEcUserId(ElectroClub.getInstance().getUserId(), true);
-                    ElectroClub.getInstance().getAndSelectGarageByMacOrPrimary(mDeviceAddress, s -> null);
-                } else {
-                    WheelLog.AppConfig.setAutoUploadEc(false, true);
-                    WheelLog.AppConfig.setEcToken(null, true);
-                    WheelLog.AppConfig.setEcUserId(null, true);
-                    getPreferencesFragment().refreshVolatileSettings();
-                }
-                break;
         }
     }
 
@@ -1527,7 +1500,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PREFERENCE_CHANGED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
         intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
@@ -1551,9 +1523,4 @@ public class MainActivity extends AppCompatActivity {
             return 0;
         }
     };
-
-    private MainPreferencesFragment getPreferencesFragment() {
-        Fragment frag = getSupportFragmentManager().findFragmentByTag(Constants.PREFERENCES_FRAGMENT_TAG);
-        return frag == null ? new MainPreferencesFragment() : (MainPreferencesFragment) frag;
-    }
 }

@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.math.MathUtils;
 
 import com.cooper.wheellog.AppConfig;
+import com.cooper.wheellog.BuildConfig;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -41,6 +42,7 @@ public class WheelView extends View {
     final RectF temperatureTextRect = new RectF();
     Path modelTextPath;
     Paint modelTextPaint;
+    Paint versionPaint;
 
     float speedTextSize;
     float speedTextKPHSize;
@@ -64,8 +66,9 @@ public class WheelView extends View {
     private Double mMaxPwm = 0.0;
     private Double mAverageSpeed = 0.0;
 
+    private boolean useMph;
     private String mWheelModel = "";
-
+    private String versionString = String.format("ver %s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE);
 
     float outerStrokeWidth;
     float innerStrokeWidth;
@@ -105,8 +108,12 @@ public class WheelView extends View {
         }
     };
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
     private ViewBlockInfo[] getViewBlockInfo() {
-        Boolean useMph = WheelLog.AppConfig.getUseMph();
         return new ViewBlockInfo[]{
                 new ViewBlockInfo(getResources().getString(R.string.pwm),
                         () -> String.format(Locale.US, "%.2f%%", mPwm)),
@@ -185,7 +192,7 @@ public class WheelView extends View {
         super(context, attrs);
 
         if (isInEditMode()) {
-            WheelLog.AppConfig = AppConfig.getInstance(context);
+            WheelLog.AppConfig = new AppConfig(context);
             mSpeed = 380;
             targetSpeed = Math.round(((float) mSpeed / 500) * 112);
             currentSpeed = targetSpeed;
@@ -213,6 +220,7 @@ public class WheelView extends View {
             }
         }
 
+        useMph = WheelLog.AppConfig.getUseMph();
         mViewBlocks = getViewBlockInfo();
 
         TypedArray a = getContext().getTheme().obtainStyledAttributes(
@@ -247,6 +255,11 @@ public class WheelView extends View {
 
         modelTextPaint = new Paint(textPaint);
         modelTextPaint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
+
+        versionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        versionPaint.setTextAlign(Paint.Align.RIGHT);
+        versionPaint.setColor(getContext().getResources().getColor(R.color.wheelview_versiontext));
+        versionPaint.setTypeface(tfTest);
     }
 
     public void setWheelModel(String mWheelModel) {
@@ -273,6 +286,7 @@ public class WheelView extends View {
                 }
             }
         }
+        useMph = WheelLog.AppConfig.getUseMph();
         Arrays.sort(mViewBlocks);
     }
     
@@ -498,6 +512,8 @@ public class WheelView extends View {
             redrawTextBoxes();
         }
 
+        versionPaint.setTextSize(Math.round(getHeight() / 50.0));
+
         refresh();
     }
 
@@ -603,7 +619,7 @@ public class WheelView extends View {
         boxTextHeight = boundaryOfText.height();
 
         Paint paint = new Paint(textPaint);
-        paint.setColor(getContext().getResources().getColor(R.color.wheelview_text));
+        paint.setColor(getResources().getColor(R.color.wheelview_text));
 
         try {
             int i = 0;
@@ -768,12 +784,19 @@ public class WheelView extends View {
         canvas.drawTextOnPath(mWheelModel, modelTextPath, 0, 0, modelTextPaint);
 
         // Draw text blocks bitmap
-        canvas.drawBitmap(mTextBoxesBitmap, 0, 0, null);
+        canvas.drawBitmap(mTextBoxesBitmap, 0, 0, textPaint);
 
         refreshDisplay = currentSpeed != targetSpeed ||
                 currentCurrent != targetCurrent ||
                 currentBattery != targetBattery ||
                 currentTemperature != targetTemperature;
+
+        if (getWidth() * 1.2 < getHeight()) {
+            canvas.drawText(versionString,
+                    getWidth() - getPaddingRight(),
+                    getHeight() - getPaddingBottom(),
+                    versionPaint);
+        }
     }
 
     private int updateCurrentValue(int target, int current) {
