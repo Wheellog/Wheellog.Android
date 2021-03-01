@@ -1095,7 +1095,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         loadPreferences(-1);
 
         if (!WheelLog.AppConfig.getPrivatePolicyAccepted()) {
-            startActivityForResult(new Intent(MainActivity.this, PrivacyPolicyActivity.class), 666);
+            startActivityForResult(new Intent(MainActivity.this, PrivacyPolicyActivity.class), ResultPrivatePolicy);
         }
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
