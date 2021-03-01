@@ -88,6 +88,10 @@ class AppConfig(var context: Context) {
     var beepFile: Uri
         get() = Uri.parse(getValue(R.string.beep_file, ""))
         set(value) = setValue(R.string.beep_file, value.toString())
+
+    var privatePolicyAccepted: Boolean
+        get() = getValue(R.string.private_policy_accepted, false)
+        set(value) = setValue(R.string.private_policy_accepted, value)
     //endregion
 
     //region logs
