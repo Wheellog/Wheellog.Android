@@ -125,7 +125,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         }
                     }
                     .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
-                        WheelLog.AppConfig.logLocationData = false
                         WheelLog.AppConfig.useGps = false
                         refreshVolatileSettings()
                     }
@@ -142,7 +141,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
         val resName = key?.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
-            R.string.auto_log, R.string.use_raw_data, R.string.use_gps -> checkAndRequestPermissions()
+            R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
@@ -952,6 +951,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             correctCheckState(getString(R.string.auto_log))
             correctCheckState(getString(R.string.use_raw_data))
             correctCheckState(getString(R.string.log_location_data))
+            correctCheckState(getString(R.string.use_gps))
             correctCheckState(getString(R.string.auto_upload))
             correctCheckState(getString(R.string.auto_upload_ec))
         }
