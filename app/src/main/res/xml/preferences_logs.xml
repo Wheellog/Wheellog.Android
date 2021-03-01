@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
+    <SwitchPreference
+        android:icon="@drawable/ic_baseline_magic_log_24"
         android:key="@string/auto_log"
-        android:title="@string/auto_log_title"
-        android:summary="@string/auto_log_description" />
+        android:summary="@string/auto_log_description"
+        android:title="@string/auto_log_title" />
 
-    <CheckBoxPreference
+    <SwitchPreference
+        android:icon="@drawable/ic_baseline_cloud_upload_24"
         android:key="@string/auto_upload_ec"
-        android:title="@string/auto_upload_log_ec_title"
-        android:summary="@string/auto_upload_log_ec_description" />
+        android:summary="@string/auto_upload_log_ec_description"
+        android:title="@string/auto_upload_log_ec_title" />
 
-    <CheckBoxPreference
+    <SwitchPreference
+        android:icon="@drawable/ic_baseline_location_on_24"
         android:key="@string/log_location_data"
-        android:title="@string/log_location_title"
-        android:summary="@string/log_location_decription" />
+        android:summary="@string/log_location_decription"
+        android:title="@string/log_location_title" />
 
-    <CheckBoxPreference
-        android:key="@string/use_gps"
+    <SwitchPreference
         android:dependency="log_location_data"
-        android:title="@string/use_gps_title"
-        android:summary="@string/use_gps_description" />
+        android:icon="@drawable/ic_baseline_gps_24"
+        android:key="@string/use_gps"
+        android:summary="@string/use_gps_description"
+        android:title="@string/use_gps_title" />
 
-    <CheckBoxPreference
+    <SwitchPreference
+        android:icon="@drawable/ic_baseline_raw_on_24"
         android:key="@string/use_raw_data"
-        android:title="@string/use_raw_title"
-        android:summary="@string/use_raw_description" />
+        android:summary="@string/use_raw_description"
+        android:title="@string/use_raw_title" />
 
 </PreferenceScreen>

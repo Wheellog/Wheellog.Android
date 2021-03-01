@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<Preference
-        android:key="@string/reset_top_speed"
+		android:key="@string/reset_top_speed"
 		android:enabled="true"
-        android:title="Reset Top Speed" />
+		android:title="@string/reset_top_speed_title" />
 
 	<Preference
-        android:key="@string/reset_user_distance"
 		android:enabled="true"
-        android:title="Reset User Distance" />
+		android:key="@string/reset_lowest_battery"
+		android:title="@string/reset_lowest_battery_title"
+		app:icon="@drawable/ic_baseline_power_off_24" />
+
+	<Preference
+		android:enabled="true"
+		android:key="@string/reset_user_distance"
+		android:title="@string/reset_user_distance_title"
+		app:icon="@drawable/ic_baseline_wrong_location_24" />
 
 </PreferenceScreen>

@@ -9,7 +9,8 @@
         android:key="@string/horn_mode"
         android:summary="@string/horn_mode_description"
         android:title="@string/horn_mode_title" />
-    <CheckBoxPreference
+
+    <SwitchPreference
         android:defaultValue="false"
         android:key="@string/garmin_connectiq_enable"
         android:summary="@string/garmin_connectiq_enable_description"
