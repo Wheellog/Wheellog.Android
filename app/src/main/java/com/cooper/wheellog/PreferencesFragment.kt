@@ -99,14 +99,36 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
         if (WheelLog.AppConfig.logLocationData) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                requestPermissionsEx(
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        SettingsActivity.permissionLocationCode)
+                if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+                    return
+                }
             } else {
-                requestPermissionsEx(
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                        SettingsActivity.permissionLocationCode)
+                if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
+                        && checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PERMISSION_GRANTED) {
+                    return
+                }
             }
+            AlertDialog.Builder(requireContext())
+                    .setTitle(getString(R.string.log_location_title))
+                    .setMessage(getString(R.string.log_location_pop_up))
+                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            requestPermissionsEx(
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                    SettingsActivity.permissionLocationCode)
+                        } else {
+                            requestPermissionsEx(
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                                    SettingsActivity.permissionLocationCode)
+                        }
+                    }
+                    .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
+                        WheelLog.AppConfig.logLocationData = false
+                        WheelLog.AppConfig.useGps = false
+                        refreshVolatileSettings()
+                    }
+                    .setIcon(R.drawable.ic_baseline_location_on_24)
+                    .show()
         }
     }
 
