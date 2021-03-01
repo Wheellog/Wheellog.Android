@@ -127,6 +127,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         WheelLog.AppConfig.useGps = false
                         refreshVolatileSettings()
                     }
+                    .setCancelable(false)
                     .setIcon(R.drawable.ic_baseline_location_on_24)
                     .show()
         }
@@ -164,6 +165,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 ElectroClub.instance.logout()
                                 refreshVolatileSettings()
                             }
+                            .setCancelable(false)
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                 } else {
