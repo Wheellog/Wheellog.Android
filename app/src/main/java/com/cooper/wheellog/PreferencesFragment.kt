@@ -70,14 +70,20 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             mediaRequestCode -> {
-                val pref = findPreference<Preference>(getString(R.string.custom_beep))
+                val pref = findPreference<SwitchPreference>(getString(R.string.custom_beep))
+                var isDefault = true
                 if (resultCode == Activity.RESULT_OK && data?.data != null) {
-                    pref?.summary = data.data?.path ?: "default"
-                    WheelLog.AppConfig.beepFile = data.data!!
-                } else {
+                    isDefault = data.data == null
+                    if (!isDefault) {
+                        pref?.summary = data.data?.path
+                        WheelLog.AppConfig.beepFile = data.data!!
+                    }
+                }
+                if (isDefault) {
                     pref?.summary = "default"
                     WheelLog.AppConfig.beepFile = Uri.EMPTY
                     WheelLog.AppConfig.useCustomBeep = false
+                    pref?.isChecked = false
                 }
             }
         }
