@@ -92,10 +92,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun checkAndRequestPermissions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
-            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    SettingsActivity.permissionWriteCode)
+        if (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                    && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
+                requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        SettingsActivity.permissionWriteCode)
+            }
         }
         if (WheelLog.AppConfig.useGps) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
