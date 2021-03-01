@@ -45,7 +45,7 @@ class SettingsActivity : AppCompatActivity() {
                 WheelLog.AppConfig.autoLog = false
                 WheelLog.AppConfig.enableRawData = false
             }
-            permissionLocationCode -> WheelLog.AppConfig.logLocationData = false
+            permissionLocationCode -> WheelLog.AppConfig.useGps = false
         }
         fragment.refreshVolatileSettings()
     }

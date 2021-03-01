@@ -92,21 +92,45 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun checkAndRequestPermissions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
-            requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    SettingsActivity.permissionWriteCode)
-        }
-        if (WheelLog.AppConfig.logLocationData) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                requestPermissionsEx(
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        SettingsActivity.permissionLocationCode)
-            } else {
-                requestPermissionsEx(
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                        SettingsActivity.permissionLocationCode)
+        if (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                    && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
+                requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        SettingsActivity.permissionWriteCode)
             }
+        }
+        if (WheelLog.AppConfig.useGps) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+                    return
+                }
+            } else {
+                if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
+                        && checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PERMISSION_GRANTED) {
+                    return
+                }
+            }
+            AlertDialog.Builder(requireContext())
+                    .setTitle(getString(R.string.log_location_title))
+                    .setMessage(getString(R.string.log_location_pop_up))
+                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            requestPermissionsEx(
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                    SettingsActivity.permissionLocationCode)
+                        } else {
+                            requestPermissionsEx(
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                                    SettingsActivity.permissionLocationCode)
+                        }
+                    }
+                    .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
+                        WheelLog.AppConfig.useGps = false
+                        refreshVolatileSettings()
+                    }
+                    .setCancelable(false)
+                    .setIcon(R.drawable.ic_baseline_gps_24)
+                    .show()
         }
     }
 
@@ -117,7 +141,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
         val resName = key?.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
-            R.string.auto_log, R.string.use_raw_data, R.string.log_location_data -> checkAndRequestPermissions()
+            R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
@@ -142,6 +166,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 ElectroClub.instance.logout()
                                 refreshVolatileSettings()
                             }
+                            .setCancelable(false)
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                 } else {
@@ -926,6 +951,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             correctCheckState(getString(R.string.auto_log))
             correctCheckState(getString(R.string.use_raw_data))
             correctCheckState(getString(R.string.log_location_data))
+            correctCheckState(getString(R.string.use_gps))
             correctCheckState(getString(R.string.auto_upload))
             correctCheckState(getString(R.string.auto_upload_ec))
         }

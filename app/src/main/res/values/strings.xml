@@ -89,6 +89,7 @@
     <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
+    <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -429,5 +430,9 @@
     <string name="power_off">Power off</string>
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
+    <string name="private_policy_title">Private policy</string>
+    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
+    <string name="private_policy_agree">I read and agree</string>
     <string name="current_mac">MAC address</string>
+    <string name="log_location_pop_up">This app collects location data to enable GPS data in CSV logs when WheelLog is running in the background or when the screen is off. GPS data is not collected when EUC is disconnected.</string>
 </resources>

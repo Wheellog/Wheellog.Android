@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
+    protected static final int ResultPrivatePolicy = 666;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -1093,6 +1094,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         loadPreferences(-1);
 
+        if (!WheelLog.AppConfig.getPrivatePolicyAccepted()) {
+            startActivityForResult(new Intent(MainActivity.this, PrivacyPolicyActivity.class), ResultPrivatePolicy);
+        }
+
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             //finish();
@@ -1488,6 +1493,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     startBluetoothService();
                 else {
                     Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+            case ResultPrivatePolicy:
+                if (resultCode == RESULT_OK) {
+                    WheelLog.AppConfig.setPrivatePolicyAccepted(true);
+                } else {
                     finish();
                 }
                 break;

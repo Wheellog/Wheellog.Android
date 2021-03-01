@@ -265,5 +265,9 @@
     <string name="power_off">Выключить колесо</string>
     <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
     <string name="ec_choose_transport">[ec] Выберите транспорт</string>
+    <string name="private_policy_title">Политика конфиденциальности</string>
+    <string name="private_policy"><![CDATA[Перед использованием приложения вы должны принять <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Политику конфиденциальности</a> и <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Условия и положения</a>]]></string>
+    <string name="private_policy_agree">Я прочитал и согласен</string>
     <string name="current_mac">MAC адрес</string>
+    <string name="log_location_pop_up">Это приложение собирает данные о местоположении, чтобы включить данные GPS в журналы CSV, когда WheelLog работает в фоновом режиме или когда экран выключен. Данные GPS не собираются, когда EUC отключен.</string>
 </resources>
