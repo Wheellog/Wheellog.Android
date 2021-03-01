@@ -97,7 +97,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     SettingsActivity.permissionWriteCode)
         }
-        if (WheelLog.AppConfig.logLocationData) {
+        if (WheelLog.AppConfig.useGps) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
                     return
@@ -128,7 +128,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         refreshVolatileSettings()
                     }
                     .setCancelable(false)
-                    .setIcon(R.drawable.ic_baseline_location_on_24)
+                    .setIcon(R.drawable.ic_baseline_gps_24)
                     .show()
         }
     }
@@ -140,7 +140,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
         val resName = key?.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
-            R.string.auto_log, R.string.use_raw_data, R.string.log_location_data -> checkAndRequestPermissions()
+            R.string.auto_log, R.string.use_raw_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> switchAlarmsIsVisible()
             R.string.auto_upload_ec -> {
