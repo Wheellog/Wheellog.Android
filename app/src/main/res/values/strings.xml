@@ -243,6 +243,7 @@
     <string name="alarm_settings_title">Alarm Settings</string>
     <string name="watch_settings_title">Watch Preferences</string>
     <string name="wheel_settings_title">Wheel Settings</string>
+    <string name="trip_settings_title">Trip Settings</string>
     <string name="reset_top_speed_title">Reset top speed and PWM</string>
     <string name="reset_lowest_battery_title">Reset battery sag</string>
     <string name="reset_user_distance_title">Reset user distance</string>
@@ -428,4 +429,5 @@
     <string name="power_off">Power off</string>
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
+    <string name="current_mac">MAC address</string>
 </resources>

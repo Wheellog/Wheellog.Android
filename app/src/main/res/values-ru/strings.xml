@@ -71,7 +71,7 @@
     <string name="alarm_settings_title">Настройки сигналов</string>
     <string name="watch_settings_title">Настройки часов</string>
     <string name="wheel_settings_title">Настройки колеса</string>
-
+    <string name="trip_settings_title">Настройки поездки</string>
     <string name="reset_user_distance_title">Обнулить мой пробег</string>
     <string name="edit_mac_addr_title">Изменить MAC адрес</string>
     <string name="profile_name_title">Изменить имя профиля</string>
@@ -265,4 +265,5 @@
     <string name="power_off">Выключить колесо</string>
     <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
     <string name="ec_choose_transport">[ec] Выберите транспорт</string>
+    <string name="current_mac">MAC адрес</string>
 </resources>

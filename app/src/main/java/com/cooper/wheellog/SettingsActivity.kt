@@ -1,9 +1,11 @@
 package com.cooper.wheellog
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.PermissionChecker
+import androidx.core.content.res.ResourcesCompat
 
 class SettingsActivity : AppCompatActivity() {
     companion object {
@@ -20,6 +22,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
+
+        val typefacePrime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime) else ResourcesCompat.getFont(this, R.font.prime)!!
 
         if (savedInstanceState == null) {
             fragment = PreferencesFragment()

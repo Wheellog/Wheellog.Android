@@ -2,19 +2,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sample="http://schemas.android.com/apk/res-auto">
 
-    <CheckBoxPreference
+    <SwitchPreference
+        android:icon="@drawable/ic_baseline_translate_24"
         android:key="@string/use_eng"
         android:summary="@string/use_eng_description"
         android:title="@string/use_eng_title" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
         android:key="@string/use_better_percents"
         android:summary="@string/use_better_percents_description"
         android:title="@string/use_better_percents_title"
         android:visible="true" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
         android:key="@string/fixed_percents"
         android:summary="@string/fixed_percents_description"
@@ -34,7 +35,7 @@
         sample:sbp_measurementUnit="V"
         sample:sbp_minValue="250" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="@string/use_mph"
         android:summary="@string/use_mph_description"
         android:title="@string/use_mph_title" />
@@ -42,12 +43,14 @@
     <PreferenceCategory
         android:title="@string/main_view_category">
         <com.cooper.wheellog.presentation.preferences.MultiSelectPreference
+            android:dialogIcon="@drawable/ic_baseline_dashboard_customize_24"
+            android:dialogTitle="@string/view_blocks_title"
             android:key="@string/view_blocks_string"
+            android:summary="@string/view_blocks_description"
+            android:title="@string/view_blocks_title"
             sample:defaultValue="@array/view_blocks_def"
             sample:entries="@array/view_blocks_values"
-            android:summary="@string/view_blocks_description"
-            android:dialogTitle="@string/view_blocks_title"
-            android:title="@string/view_blocks_title" />
+            sample:icon="@drawable/ic_baseline_dashboard_customize_24" />
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
             android:defaultValue="30"
@@ -60,31 +63,33 @@
             sample:sbp_measurementUnit="@string/dial_measurements"
             sample:sbp_minValue="10" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:enabled="true"
             android:key="@string/current_on_dial"
             android:summary="@string/current_on_dial_description"
             android:title="@string/current_on_dial_title" />
 
-        <CheckBoxPreference
+        <SwitchPreference
+            android:defaultValue="false"
             android:enabled="true"
             android:key="@string/use_short_pwm"
             android:summary="@string/use_short_pwm_description"
             android:title="@string/use_short_pwm_title"
-            android:defaultValue="false"
             android:visible="true" />
     </PreferenceCategory>
 
-    <CheckBoxPreference
+    <SwitchPreference
+        android:defaultValue="false"
         android:enabled="true"
+        android:icon="@drawable/ic_baseline_event_note_24"
         android:key="@string/show_page_events"
         android:summary="@string/show_page_events_description"
         android:title="@string/show_page_events_title"
-        android:defaultValue="false"
         android:visible="true" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
+        android:icon="@drawable/ic_baseline_music_note_24"
         android:key="@string/connection_sound"
         android:summary="@string/connection_sound_description"
         android:title="@string/connection_sound_title" />
@@ -99,16 +104,18 @@
         sample:sbp_increment="1"
         sample:sbp_maxValue="60"
         sample:sbp_measurementUnit="@string/sec"
-        sample:sbp_minValue="0" />
+        sample:sbp_minValue="0"
+        sample:singleLineTitle="false" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
+        android:icon="@drawable/ic_baseline_volume_off_24"
         android:key="@string/use_stop_music"
         android:summary="@string/use_stop_music_description"
         android:title="@string/use_stop_music_title"
         android:visible="true" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
         android:key="@string/show_unknown_devices"
         android:summary="@string/show_unknown_devices_description"
@@ -118,7 +125,7 @@
 
     <PreferenceCategory
         android:title="@string/beep_category">
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
         android:key="@string/beep_on_single_tap"
         android:summary="@string/beep_on_single_tap_description"
@@ -126,14 +133,14 @@
         android:defaultValue="false"
         android:visible="true" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:enabled="true"
         android:key="@string/beep_on_volume_up"
         android:summary="@string/beep_on_volume_up_description"
         android:title="@string/beep_on_volume_up_title"
         android:defaultValue="false" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="@string/custom_beep"
         android:title="@string/custom_beep_title"
         android:defaultValue="false" />

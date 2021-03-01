@@ -35,5 +35,10 @@ class StringUtil {
                 return text
             }
         }
+
+        @JvmStatic
+        fun isCorrectMac(mac: String): Boolean {
+            return Regex("^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$").matches(mac)
+        }
     }
 }

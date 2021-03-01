@@ -4,30 +4,25 @@
         android:id="@+id/miSearch"
         app:showAsAction="always"
         android:icon="@drawable/ic_action_bluetooth_searching_white"
-        android:title="@string/search_for_wheel">
-    </item>
+        android:title="@string/search_for_wheel" />
     <item
         android:id="@+id/miWheel"
         app:showAsAction="always"
-        android:icon="@drawable/ic_action_wheel_white"
-        android:title="@string/connect_to_wheel">
-    </item>
+        android:icon="@drawable/ic_wheel_white_24"
+        android:title="@string/connect_to_wheel" />
     <item
         android:id="@+id/miLogging"
         app:showAsAction="always"
         android:icon="@drawable/ic_action_logging_white"
-        android:title="@string/start_data_service">
-    </item>
+        android:title="@string/start_data_service"/>
     <item
         android:id="@+id/miWatch"
         app:showAsAction="always"
         android:icon="@drawable/ic_action_watch_white"
-        android:title="@string/start_pebble_service">
-    </item>
+        android:title="@string/start_pebble_service" />
     <item
         android:id="@+id/miSettings"
         app:showAsAction="always"
-        android:icon="@drawable/ic_action_settings_white"
-        android:title="@string/show_settings">
-    </item>
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/show_settings" />
 </menu>
