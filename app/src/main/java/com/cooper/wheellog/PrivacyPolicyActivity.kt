@@ -1,13 +1,12 @@
 package com.cooper.wheellog
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.View
-import android.view.animation.CycleInterpolator
-import android.view.animation.TranslateAnimation
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.CompoundButton
@@ -17,6 +16,10 @@ import androidx.appcompat.app.AppCompatActivity
 
 class PrivacyPolicyActivity : AppCompatActivity() {
     lateinit var dialog: AlertDialog
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(LocaleManager.setLocale(base))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
