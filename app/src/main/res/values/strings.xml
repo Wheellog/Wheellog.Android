@@ -429,4 +429,5 @@
     <string name="power_off">Power off</string>
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
+    <string name="current_mac">MAC address</string>
 </resources>

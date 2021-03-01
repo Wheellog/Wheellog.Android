@@ -265,4 +265,5 @@
     <string name="power_off">Выключить колесо</string>
     <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
     <string name="ec_choose_transport">[ec] Выберите транспорт</string>
+    <string name="current_mac">MAC адрес</string>
 </resources>

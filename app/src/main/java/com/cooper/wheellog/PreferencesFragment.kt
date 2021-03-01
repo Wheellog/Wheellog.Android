@@ -310,27 +310,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Wheel -> {
                 tb.title = getText(R.string.wheel_settings_title)
-                val lastMacButton: Preference? = findPreference(getString(R.string.last_mac))
                 val profileNameButton: Preference? = findPreference(getString(R.string.profile_name))
-                lastMacButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    val builder = AlertDialog.Builder(requireActivity())
-                    builder.setTitle(getText(R.string.edit_mac_addr_title))
-                    val input = EditText(activity)
-                    input.inputType = InputType.TYPE_CLASS_TEXT
-                    input.setText(WheelLog.AppConfig.lastMac)
-                    builder.setView(input)
-                    builder.setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                        val deviceAddress = input.text.toString()
-                        WheelLog.AppConfig.lastMac = deviceAddress
-                        // the wait is needed so that the lastmac is written exactly before it.
-                        // because all properties are written asynchronously
-                        Thread.sleep(1)
-                        WheelLog.AppConfig.passwordForWheel = ""
-                    }
-                    builder.setNegativeButton(android.R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.cancel() }
-                    builder.show()
-                    true
-                }
                 profileNameButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     val builder = AlertDialog.Builder(requireActivity())
                     builder.setTitle(getText(R.string.profile_name_title))
@@ -695,12 +675,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setDefaultValue(0)
                 },
                 Preference(context).apply {
-                    key = getString(R.string.last_mac)
-                    title = getString(R.string.edit_mac_addr_title)
-                },
-                Preference(context).apply {
                     key = getString(R.string.profile_name)
                     title = getString(R.string.profile_name_title)
+                },
+                Preference(context).apply {
+                    title = getString(R.string.current_mac)
+                    summary = mac
                 }
         ).forEach {
             preferenceScreen.addPreference(it)
