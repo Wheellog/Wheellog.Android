@@ -5,10 +5,12 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
 
@@ -1280,14 +1282,31 @@ public class WheelData {
         final double muteSpeedThreshold = 3.5;
         double speed = getSpeedDouble();
         if (speed <= muteSpeedThreshold) {
-            mLowSpeedMusicTime = 0;
-            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+            if (!isHeadphonesPlugged()) {
+                mLowSpeedMusicTime = 0;
+                MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+            }
         } else {
             if (mLowSpeedMusicTime == 0)
                 mLowSpeedMusicTime = System.currentTimeMillis();
 
             if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= 1500)
                 MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        }
+    }
+
+    private boolean isHeadphonesPlugged() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return MainActivity.audioManager.isWiredHeadsetOn();
+        } else {
+            AudioDeviceInfo[] audioDevices = MainActivity.audioManager.getDevices(AudioManager.GET_DEVICES_ALL);
+            for (AudioDeviceInfo deviceInfo : audioDevices) {
+                if (deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                        || deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
