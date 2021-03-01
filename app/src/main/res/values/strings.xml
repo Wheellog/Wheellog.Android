@@ -430,6 +430,6 @@
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
-    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions">Terms & Conditions</a>]]></string>
+    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="private_policy_agree">I read and agree</string>
 </resources>
