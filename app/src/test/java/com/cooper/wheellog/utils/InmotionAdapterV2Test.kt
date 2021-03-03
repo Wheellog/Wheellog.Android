@@ -83,4 +83,57 @@ class InmotionAdapterV2Test {
     }
 
 
+    @Test
+    fun `decode with v11 escape data`() {
+        // Arrange.
+        val byteArray1 = "aaaa1431843020a5a50068025207870080009400882c5fc4b000d7001000f4ff2b037c1564190000d9d9492b00000000000000000000a5a5".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(6.16)
+        assertThat(data.temperature).isEqualTo(20)
+        assertThat(data.temperature2).isEqualTo(39)
+        assertThat(data.imuTemp).isEqualTo(41)
+        assertThat(data.cpuTemp).isEqualTo(41)
+        assertThat(data.motorPower).isEqualTo(128.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(18.74)
+        assertThat(data.voltageDouble).isEqualTo(82.40)
+        assertThat(data.currentDouble).isEqualTo(1.65)
+        assertThat(data.wheelDistanceDouble).isEqualTo(1.48)
+        assertThat(data.batteryLevel).isEqualTo(95)
+        assertThat(data.powerDouble).isEqualTo(135.0)
+        assertThat(data.angle).isEqualTo(0.16)
+        assertThat(data.roll).isEqualTo(8.11)
+    }
+
+    @Test
+    fun `decode with v11 escape data2`() {
+        // Arrange.
+        val byteArray1 = "aaaa143184a5aa1e8100640b1301650059001504a0234cc0b000ce00180000007c007c1564190000d1d3492b00000000000000000000a5a5".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(29.16)
+        assertThat(data.temperature).isEqualTo(16)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(35)
+        assertThat(data.cpuTemp).isEqualTo(33)
+        assertThat(data.motorPower).isEqualTo(89.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(2.75)
+        assertThat(data.voltageDouble).isEqualTo(78.50)
+        assertThat(data.currentDouble).isEqualTo(1.29)
+        assertThat(data.wheelDistanceDouble).isEqualTo(10.45)
+        assertThat(data.batteryLevel).isEqualTo(76)
+        assertThat(data.powerDouble).isEqualTo(101.0)
+        assertThat(data.angle).isEqualTo(0.24)
+        assertThat(data.roll).isEqualTo(1.24)
+    }
+
+
 }
