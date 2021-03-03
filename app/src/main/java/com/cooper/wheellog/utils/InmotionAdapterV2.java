@@ -434,7 +434,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
 
         boolean addChar(int c) {
-            if ((c != (byte)0xA5) || oldc == (byte)0xA5){
+            if (c != (byte)0xA5 || oldc == (byte)0xA5){
 
                 switch (state) {
 
@@ -514,6 +514,5 @@ public class InmotionAdapterV2 extends BaseAdapter {
     }
 
 }
-
 
 
