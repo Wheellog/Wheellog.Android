@@ -56,7 +56,7 @@ public class BluetoothLeService extends Service {
     PowerManager.WakeLock wl;
 
     FileUtil fileUtilRawData;
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         @Override
@@ -291,7 +291,7 @@ public class BluetoothLeService extends Service {
                 fileUtilRawData = new FileUtil(getApplicationContext());
             }
             if (fileUtilRawData.isNull()) {
-                String fileNameForRawData = "RAW_" + sdf.format(System.currentTimeMillis()) + ".csv";
+                String fileNameForRawData = "RAW_" + sdf.format(new Date()) + ".csv";
                 fileUtilRawData.prepareFile(fileNameForRawData, WheelData.getInstance().getMac());
             }
             fileUtilRawData.writeLine(String.format(Locale.US, "%s,%s",
