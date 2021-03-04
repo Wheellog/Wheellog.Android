@@ -681,7 +681,7 @@ public class WheelData {
         return mChargingStatus = charging;
     }
 
-    boolean isConnected() {
+    public boolean isConnected() {
         return mConnectionState;
     }
 

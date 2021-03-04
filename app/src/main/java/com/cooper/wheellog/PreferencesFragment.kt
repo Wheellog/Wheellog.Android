@@ -327,6 +327,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)
+                findPreference<SwitchPreference>(getString(R.string.custom_beep))?.summary =
+                        WheelLog.AppConfig.beepFile.lastPathSegment
                 switchConnectionSoundIsVisible()
             }
             SettingsScreen.Logs -> {
@@ -359,25 +361,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     true
                 }
             }
-            SettingsScreen.Speed -> {
-                tb.title = getText(R.string.speed_settings_title)
-                findPreference<SwitchPreference>(getString(R.string.custom_beep))?.summary =
-                        WheelLog.AppConfig.beepFile.lastPathSegment
-                switchConnectionSoundIsVisible()
-            }
-            SettingsScreen.Logs -> {
-                tb.title = getText(R.string.logs_settings_title)
-            }
-            SettingsScreen.Alarms -> {
-                tb.title = getText(R.string.alarm_settings_title)
-                switchAlarmsIsVisible()
-            }
-            SettingsScreen.Watch -> {
-                tb.title = getText(R.string.watch_settings_title)
-            }
-            SettingsScreen.Wheel -> {
-                tb.title = getText(R.string.wheel_settings_title)
-			}
             SettingsScreen.Trip -> {
                 tb.title = getText(R.string.trip_settings_title)
                 val resetTopButton: Preference? = findPreference(getString(R.string.reset_top_speed))
