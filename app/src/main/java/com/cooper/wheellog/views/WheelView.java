@@ -17,6 +17,7 @@ import com.cooper.wheellog.BuildConfig;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.ReflectUtil;
 
 import java.lang.reflect.Field;
@@ -199,13 +200,13 @@ public class WheelView extends View {
 
             mTemperature = 35;
             mMaxTemperature = 70;
-            targetTemperature = 112 - Math.round(((float) 40 / 80) * mTemperature);
+            targetTemperature = 112 - Math.round(40f / 80f * MathUtils.clamp(mTemperature, 0 , 80));
             currentTemperature = targetTemperature;
 
             mBattery = 50;
             mBatteryLowest = 30;
             targetBatteryLowest = 10;
-            targetBattery = Math.round(((float) 40 / 100) * mBattery);
+            targetBattery = Math.round(40f / 100f *  MathUtils.clamp(mBattery, 0 , 100));
             currentBattery = targetBattery;
             mWheelModel = "GotInSong Z10";
             try {
@@ -216,12 +217,14 @@ public class WheelView extends View {
 
                 ReflectUtil.SetPrivateField(wd, "mCalculatedPwm", 0.05d);
                 ReflectUtil.SetPrivateField(wd, "mMaxPwm", 0.97d);
+                ReflectUtil.SetPrivateField(wd, "mConnectionState", true);
             } catch (Exception ignored) {
             }
         }
 
         useMph = WheelLog.AppConfig.getUseMph();
         mViewBlocks = getViewBlockInfo();
+        updateViewBlocksVisibility();
 
         TypedArray a = getContext().getTheme().obtainStyledAttributes(
                 attrs,
@@ -269,7 +272,21 @@ public class WheelView extends View {
         }
     }
 
-    public void updateViewBlocksVisibility(String[] viewBlocks) {
+    public void updateViewBlocksVisibility() {
+        String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
+        String[] viewBlocks;
+        if (viewBlocksString == null) {
+            viewBlocks = new String[]{
+                    getResources().getString(R.string.voltage),
+                    getResources().getString(R.string.average_riding_speed),
+                    getResources().getString(R.string.riding_time),
+                    getResources().getString(R.string.top_speed),
+                    getResources().getString(R.string.distance),
+                    getResources().getString(R.string.total)
+            };
+        } else {
+            viewBlocks = viewBlocksString.split(MultiSelectPreference.getSeparator());
+        }
         for (ViewBlockInfo block : mViewBlocks) {
             block.setEnabled(false);
             block.setIndex(-1);
@@ -312,24 +329,21 @@ public class WheelView extends View {
             return;
 
         mBattery = MathUtils.clamp(battery, 0, 100);
-
-        targetBattery = Math.round(((float) 40 / 100) * mBattery);
+        targetBattery = Math.round(40f / 100f * mBattery);
         if (mBattery > 0) {
             mBatteryLowest = Math.min(mBatteryLowest, mBattery);
-            //mBatteryLowest = mBattery - 28;
         } else {
             mBatteryLowest = mBatteryLowest > 100 ? mBatteryLowest : mBattery;
         }
-
-        targetBatteryLowest = Math.round(((float) 40 / 100) * mBatteryLowest);
+        targetBatteryLowest = Math.round(40f / 100f * mBatteryLowest);
         refresh();
     }
 
     public void setTemperature(int temperature) {
         if (mTemperature == temperature)
             return;
-        mTemperature = MathUtils.clamp(temperature, 0, 80);
-        targetTemperature = 112 - Math.round(((float) 40 / 80) * mTemperature);
+        mTemperature = MathUtils.clamp(temperature, -100, 100);
+        targetTemperature = 112 - Math.round(40f / 80f * MathUtils.clamp(mTemperature, 0 , 80));
         refresh();
     }
 
@@ -728,8 +742,7 @@ public class WheelView extends View {
         //####################################################
         //######## DRAW BATTERY AND TEMPERATURE TEXT #########
         //####################################################
-
-        if (mTemperature > 0 && mBattery > -1) {
+        if (WheelData.getInstance().isConnected()) {
             textPaint.setTextSize(innerArcTextSize);
             canvas.save();
             if (getWidth() > getHeight())

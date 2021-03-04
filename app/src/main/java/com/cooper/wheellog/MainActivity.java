@@ -44,7 +44,6 @@ import androidx.gridlayout.widget.GridLayout;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
@@ -1325,27 +1324,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     pagerAdapter.hidePage(R.id.page_events);
                     eventsTextView = null;
                 }
-                return;
+                break;
+            case R.string.view_blocks_string:
+                wheelView.updateViewBlocksVisibility();
+                wheelView.invalidate();
+                updateScreen(true);
+                break;
         }
-
-        String viewBlocksString = WheelLog.AppConfig.getViewBlocksString();
-        String[] viewBlocks;
-        if (viewBlocksString == null) {
-            viewBlocks = new String[]{
-                    getString(R.string.voltage),
-                    getString(R.string.average_riding_speed),
-                    getString(R.string.riding_time),
-                    getString(R.string.top_speed),
-                    getString(R.string.distance),
-                    getString(R.string.total)
-            };
-        } else {
-            viewBlocks = viewBlocksString.split(MultiSelectPreference.getSeparator());
-        }
-
-        wheelView.updateViewBlocksVisibility(viewBlocks);
-        wheelView.invalidate();
-        updateScreen(true);
     }
 
     private void showSnackBar(int msg) {
