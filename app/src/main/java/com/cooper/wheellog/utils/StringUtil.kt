@@ -29,16 +29,16 @@ class StringUtil {
         @JvmStatic
         fun deleteFirstSentence(text: CharSequence): CharSequence {
             val indexOfNewLine = text.indexOfFirst { r -> r == '\n' }
-            if (indexOfNewLine != -1) {
-                return text.substring(indexOfNewLine)
+            return if (indexOfNewLine != -1) {
+                text.substring(indexOfNewLine + 1)
             } else {
-                return text
+                text
             }
         }
 
         @JvmStatic
         fun isCorrectMac(mac: String): Boolean {
-            return Regex("^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$").matches(mac)
+            return Regex("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$").matches(mac)
         }
     }
 }
