@@ -260,6 +260,7 @@ public class BluetoothLeService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        startForeground(Constants.MAIN_NOTIFICATION_ID, MainActivity.notificationHandler.buildNotification());
         return mBinder;
     }
 

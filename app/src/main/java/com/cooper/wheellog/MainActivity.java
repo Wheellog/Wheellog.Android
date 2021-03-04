@@ -43,7 +43,6 @@ import androidx.gridlayout.widget.GridLayout;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 
-import com.cooper.wheellog.presentation.preferences.MultiSelectPreference;
 import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
-    private NotificationUtil mNotificationHandler;
+    public static NotificationUtil notificationHandler;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
@@ -266,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                                 KingsongAdapter.getInstance().requestNameData();
                             }
-                            mNotificationHandler.setNotificationMessageId(R.string.connected);
+                            notificationHandler.setNotificationMessageId(R.string.connected);
                             break;
                         case BluetoothLeService.STATE_DISCONNECTED:
                             switch (WheelData.getInstance().getWheelType()) {
@@ -279,17 +278,17 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                                 case NINEBOT:
                                     NinebotAdapter.newInstance();
                             }
-                            mNotificationHandler.setNotificationMessageId(R.string.disconnected);
+                            notificationHandler.setNotificationMessageId(R.string.disconnected);
                             break;
                         case BluetoothLeService.STATE_CONNECTING:
                             if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
-                                mNotificationHandler.setNotificationMessageId(R.string.searching);
+                                notificationHandler.setNotificationMessageId(R.string.searching);
                             } else {
-                                mNotificationHandler.setNotificationMessageId(R.string.connecting);
+                                notificationHandler.setNotificationMessageId(R.string.connecting);
                             }
                             break;
                     }
-                    mNotificationHandler.updateNotification();
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
@@ -298,11 +297,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
-                    mNotificationHandler.updateNotification();
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
-                    mNotificationHandler.updateNotification();
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
@@ -313,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         }
                     }
                     setMenuIconStates();
-                    mNotificationHandler.updateNotification();
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
@@ -1177,8 +1176,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             startBluetoothService();
         }
 
-        mNotificationHandler = new NotificationUtil(this);
-        mNotificationHandler.updateNotification();
+        notificationHandler = new NotificationUtil(this);
+        notificationHandler.updateNotification();
     }
 
     @Override

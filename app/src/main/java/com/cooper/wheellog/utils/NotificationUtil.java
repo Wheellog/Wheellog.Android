@@ -55,7 +55,7 @@ public class NotificationUtil {
         notificationManager.createNotificationChannel(channel);
     }
 
-    private Notification buildNotification() {
+    public Notification buildNotification() {
         Intent notificationIntent = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
         RemoteViews notificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_base);
@@ -122,10 +122,8 @@ public class NotificationUtil {
         return pNotification = mNotification
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
-                .setShowWhen(false)
+                .setContent(notificationView)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                .setCustomContentView(notificationView)
                 .build();
     }
 
