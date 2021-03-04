@@ -176,7 +176,7 @@ class ElectroClub {
                                 selectedTransport = transportList[which]
                             }
                         }
-                        .setPositiveButton(android.R.string.yes) { _, which ->
+                        .setPositiveButton(android.R.string.yes) { _, _ ->
                             if (selectedTransport != null) {
                                 WheelLog.AppConfig.ecGarage = selectedTransport!!.id
                                 success(selectedTransport!!.id)

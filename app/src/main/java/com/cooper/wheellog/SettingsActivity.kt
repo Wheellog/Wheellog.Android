@@ -23,8 +23,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
 
-        val typefacePrime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime) else ResourcesCompat.getFont(this, R.font.prime)!!
-
         if (savedInstanceState == null) {
             fragment = PreferencesFragment()
             supportFragmentManager
