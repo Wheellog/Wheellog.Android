@@ -270,4 +270,5 @@
     <string name="private_policy_agree">Я прочитал и согласен</string>
     <string name="current_mac">MAC адрес</string>
     <string name="log_location_pop_up">Это приложение собирает данные о местоположении, чтобы включить данные GPS в журналы CSV, когда WheelLog работает в фоновом режиме или когда экран выключен. Данные GPS не собираются, когда EUC отключен.</string>
+    <string name="tts_error">Error when creates TTS</string>
 </resources>

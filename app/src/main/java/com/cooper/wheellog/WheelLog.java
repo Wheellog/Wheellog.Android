@@ -5,9 +5,12 @@ import timber.log.Timber;
 import android.content.Context;
 import android.content.res.Configuration;
 
+import com.cooper.wheellog.utils.TTS;
+
 public class WheelLog extends Application {
     public static LocaleManager localeManager;
     public static AppConfig AppConfig;
+    public static TTS Tts;
 
     @Override
     public void onCreate() {
@@ -22,7 +25,9 @@ public class WheelLog extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         AppConfig = new AppConfig(base);
+        Tts = new TTS(base);
         localeManager = new LocaleManager(base);
+
         super.attachBaseContext(localeManager.setLocale(base));
     }
 
