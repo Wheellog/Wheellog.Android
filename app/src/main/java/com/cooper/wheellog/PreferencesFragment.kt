@@ -279,7 +279,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             preferenceNinebotZ(mac)
                         }
                         WHEEL_TYPE.INMOTION -> {
-                            preferenceInmotion(mac)
+                            preferenceInmotion(mac, WheelData.getInstance().model)
                         }
                         WHEEL_TYPE.KINGSONG -> {
                             preferenceKingsong(mac)
@@ -398,37 +398,100 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
     }
 
-    private fun preferenceInmotion(mac: String) {
-        arrayOf(
+    private fun preferenceInmotion(mac: String, model: String) {
+        val prefs: MutableList<Preference> = arrayListOf()
+        prefs.add(
                 SwitchPreference(context).apply {
                     key = mac + getString(R.string.light_enabled)
                     title = getString(R.string.on_headlight_title)
                     summary = getString(R.string.on_headlight_description)
                     isChecked = WheelLog.AppConfig.lightEnabled
-                },
-                SwitchPreference(context).apply {
-                    key = mac + getString(R.string.led_enabled)
-                    title = getString(R.string.leds_settings_title)
-                    summary = getString(R.string.leds_settings_description)
-                    isVisible = !WheelData.getInstance().model.startsWith("V5")
-                    isChecked = WheelLog.AppConfig.ledEnabled
-                },
+                }
+        )
+        if (model.compareTo("Inmotion V8") == 0 ||
+                model.compareTo("Solowheel Glide 3") == 0 ||
+                model.compareTo("Inmotion V8F") == 0 ||
+                model.compareTo("Inmotion V10S") == 0 ||
+                model.compareTo("Inmotion V10SF") == 0 ||
+                model.compareTo("Inmotion V10") == 0 ||
+                model.compareTo("Inmotion V10F") == 0 ||
+                model.compareTo("Inmotion V10T") == 0 ||
+                model.compareTo("Inmotion V10FT") == 0) {
+            prefs.add(
+                    SwitchPreference(context).apply {
+                        key = mac + getString(R.string.led_enabled)
+                        title = getString(R.string.leds_settings_title)
+                        summary = getString(R.string.leds_settings_description)
+                        isVisible = !WheelData.getInstance().model.startsWith("V5")
+                        isChecked = WheelLog.AppConfig.ledEnabled
+                    },
+            )
+        }
+        prefs.add(
                 SwitchPreference(context).apply {
                     key = mac + getString(R.string.handle_button_disabled)
                     title = getString(R.string.disable_handle_button_title)
                     summary = getString(R.string.disable_handle_button_description)
                     isChecked = WheelLog.AppConfig.handleButtonDisabled
-                },
-                SeekBarPreference(context).apply {
-                    key = mac + getString(R.string.wheel_max_speed)
-                    title = getString(R.string.max_speed_title)
-                    summary = getString(R.string.tilt_back_description)
-                    min = 3
-                    max = 45
-                    unit = getString(R.string.kmh)
-                    increment = 1
-                    setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
-                },
+                }
+        )
+        if (model.compareTo("Inmotion V8") == 0 ||
+                model.compareTo("Solowheel Glide 3") == 0) {
+            SeekBarPreference(context).apply {
+                key = mac + getString(R.string.wheel_max_speed)
+                title = getString(R.string.max_speed_title)
+                summary = getString(R.string.tilt_back_description)
+                min = 3
+                max = 35
+                unit = getString(R.string.kmh)
+                increment = 1
+                setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
+            }
+        } else if (model.compareTo("Inmotion V5F") == 0 ||
+                model.compareTo("Solowheel Glide 2") == 0 ||
+                model.compareTo("Inmotion V5") == 0 ||
+                model.compareTo("Inmotion V5PLUS") == 0 ||
+                model.compareTo("Inmotion V5D") == 0) {
+            SeekBarPreference(context).apply {
+                key = mac + getString(R.string.wheel_max_speed)
+                title = getString(R.string.max_speed_title)
+                summary = getString(R.string.tilt_back_description)
+                min = 3
+                max = 25
+                unit = getString(R.string.kmh)
+                increment = 1
+                setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
+            }
+        } else if (model.compareTo("Inmotion V8F") == 0 ||
+                model.compareTo("Inmotion V10S") == 0 ||
+                model.compareTo("Inmotion V10SF") == 0 ||
+                model.compareTo("Inmotion V10") == 0 ||
+                model.compareTo("Inmotion V10F") == 0 ||
+                model.compareTo("Inmotion V10T") == 0 ||
+                model.compareTo("Inmotion V10FT") == 0) {
+            SeekBarPreference(context).apply {
+                key = mac + getString(R.string.wheel_max_speed)
+                title = getString(R.string.max_speed_title)
+                summary = getString(R.string.tilt_back_description)
+                min = 3
+                max = 45
+                unit = getString(R.string.kmh)
+                increment = 1
+                setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
+            }
+        } else {
+            SeekBarPreference(context).apply {
+                key = mac + getString(R.string.wheel_max_speed)
+                title = getString(R.string.max_speed_title)
+                summary = getString(R.string.tilt_back_description)
+                min = 3
+                max = 70
+                unit = getString(R.string.kmh)
+                increment = 1
+                setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
+            }
+        }
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.speaker_volume)
                     title = getString(R.string.speaker_volume_title)
@@ -438,7 +501,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     unit = "%"
                     increment = 1
                     setDefaultValue(WheelLog.AppConfig.speakerVolume)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.pedals_adjustment)
                     title = getString(R.string.pedal_horizont_title)
@@ -449,7 +514,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     increment = 1
                     decimalPlaces = 1
                     setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
-                },
+                }
+        )
+        prefs.add(
                 Preference(context).apply {
                     setIcon(R.drawable.ic_baseline_power_off_24)
                     title = getString(R.string.power_off)
@@ -466,10 +533,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         true
                     }
                 }
-        ).forEach {
+        )
+        prefs.toTypedArray().forEach {
             preferenceScreen.addPreference(it)
         }
     }
+
+
 
     private fun preferenceKingsong(mac: String) {
         val alertsUpdated = KingsongAdapter.getInstance().ksAlertsAndSpeedupdated
