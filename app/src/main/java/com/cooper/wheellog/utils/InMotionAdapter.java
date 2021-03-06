@@ -814,6 +814,18 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
+        public static CANMessage setPedalHardness(int pedalHardness) {
+            byte[] value = MathsUtil.getBytes((short)(pedalHardness * 1000));
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.RideMode.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x00, value[1], value[0] , (byte) 0x00, (byte) 0x00};
+
+            return msg;
+        }
+
         public static CANMessage setSpeakerVolume(int speakerVolume) {
             CANMessage msg = new CANMessage();
             int lowByte = (speakerVolume * 100) & 0xFF;
