@@ -279,7 +279,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             preferenceNinebotZ(mac)
                         }
                         WHEEL_TYPE.INMOTION -> {
-                            preferenceInmotion(mac, WheelData.getInstance().model)
+                            preferenceInmotion(mac)
                         }
                         WHEEL_TYPE.KINGSONG -> {
                             preferenceKingsong(mac)
@@ -398,7 +398,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
     }
 
-    private fun preferenceInmotion(mac: String, model: String) {
+    private fun preferenceInmotion(mac: String) {
         val prefs: MutableList<Preference> = arrayListOf()
         prefs.add(
                 SwitchPreference(context).apply {
