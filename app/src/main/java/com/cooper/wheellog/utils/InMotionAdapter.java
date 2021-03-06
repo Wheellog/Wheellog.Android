@@ -65,6 +65,64 @@ public class InMotionAdapter extends BaseAdapter {
         }
     }
 
+    public int getMaxSpeed() {
+        switch (model) {
+            case R1N:
+            case R1S:
+            case R1CF:
+            case R1AP:
+            case R1EX:
+            case R1Sample:
+            case R1T:
+            case R10:
+            case V3:
+            case V3C:
+            case V3PRO:
+            case V3S:
+            case R2N:
+            case R2S:
+            case R2Sample:
+            case R2:
+            case R2EX:
+            case R0:
+            case L6:
+            case Lively:
+            case V5:
+            case V5PLUS:
+            case V5F:
+            case V5D:
+                return 25;
+            case V8:
+            case V8F:
+            case Glide3:
+                return 35;
+            case V10S:
+            case V10SF:
+            case V10:
+            case V10F:
+            case V10T:
+            case V10FT:
+                return 45;
+        }
+        return 70;
+    }
+
+    public boolean getLedThere() {
+        switch (model) {
+            case Glide3:
+            case V8:
+            case V8F:
+            case V10S:
+            case V10SF:
+            case V10T:
+            case V10:
+            case V10F:
+            case V10FT:
+                return true;
+        }
+        return false;
+    }
+
     public enum Model {
         R1N("0", 3812.0d),
         R1S("1", 1000.0d),

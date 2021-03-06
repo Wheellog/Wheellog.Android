@@ -408,21 +408,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     isChecked = WheelLog.AppConfig.lightEnabled
                 }
         )
-        if (model.compareTo("Inmotion V8") == 0 ||
-                model.compareTo("Solowheel Glide 3") == 0 ||
-                model.compareTo("Inmotion V8F") == 0 ||
-                model.compareTo("Inmotion V10S") == 0 ||
-                model.compareTo("Inmotion V10SF") == 0 ||
-                model.compareTo("Inmotion V10") == 0 ||
-                model.compareTo("Inmotion V10F") == 0 ||
-                model.compareTo("Inmotion V10T") == 0 ||
-                model.compareTo("Inmotion V10FT") == 0) {
+        if (InMotionAdapter.getInstance().ledThere) {
             prefs.add(
                     SwitchPreference(context).apply {
                         key = mac + getString(R.string.led_enabled)
                         title = getString(R.string.leds_settings_title)
                         summary = getString(R.string.leds_settings_description)
-                        isVisible = !WheelData.getInstance().model.startsWith("V5")
                         isChecked = WheelLog.AppConfig.ledEnabled
                     },
             )
@@ -435,32 +426,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     isChecked = WheelLog.AppConfig.handleButtonDisabled
                 }
         )
-        var maxSpeed = 70
-        if (model.compareTo("Inmotion V8") == 0 ||
-                model.compareTo("Solowheel Glide 3") == 0) {
-            maxSpeed = 35
-        } else if (model.compareTo("Inmotion V5F") == 0 ||
-                model.compareTo("Solowheel Glide 2") == 0 ||
-                model.compareTo("Inmotion V5") == 0 ||
-                model.compareTo("Inmotion V5PLUS") == 0 ||
-                model.compareTo("Inmotion V5D") == 0) {
-            maxSpeed = 25
-        } else if (model.compareTo("Inmotion V8F") == 0 ||
-                model.compareTo("Inmotion V10S") == 0 ||
-                model.compareTo("Inmotion V10SF") == 0 ||
-                model.compareTo("Inmotion V10") == 0 ||
-                model.compareTo("Inmotion V10F") == 0 ||
-                model.compareTo("Inmotion V10T") == 0 ||
-                model.compareTo("Inmotion V10FT") == 0) {
-            maxSpeed = 45
-        }
         prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
                     title = getString(R.string.max_speed_title)
                     summary = getString(R.string.tilt_back_description)
                     min = 3
-                    max = maxSpeed
+                    max = InMotionAdapter.getInstance().maxSpeed
                     unit = getString(R.string.kmh)
                     increment = 1
                     setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
