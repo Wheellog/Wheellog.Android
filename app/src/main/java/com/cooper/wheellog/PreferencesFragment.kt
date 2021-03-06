@@ -399,36 +399,46 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun preferenceInmotion(mac: String) {
-        arrayOf(
+        val prefs: MutableList<Preference> = arrayListOf()
+        prefs.add(
                 SwitchPreference(context).apply {
                     key = mac + getString(R.string.light_enabled)
                     title = getString(R.string.on_headlight_title)
                     summary = getString(R.string.on_headlight_description)
                     isChecked = WheelLog.AppConfig.lightEnabled
-                },
-                SwitchPreference(context).apply {
-                    key = mac + getString(R.string.led_enabled)
-                    title = getString(R.string.leds_settings_title)
-                    summary = getString(R.string.leds_settings_description)
-                    isVisible = !WheelData.getInstance().model.startsWith("V5")
-                    isChecked = WheelLog.AppConfig.ledEnabled
-                },
+                }
+        )
+        if (InMotionAdapter.getInstance().ledThere) {
+            prefs.add(
+                    SwitchPreference(context).apply {
+                        key = mac + getString(R.string.led_enabled)
+                        title = getString(R.string.leds_settings_title)
+                        summary = getString(R.string.leds_settings_description)
+                        isChecked = WheelLog.AppConfig.ledEnabled
+                    },
+            )
+        }
+        prefs.add(
                 SwitchPreference(context).apply {
                     key = mac + getString(R.string.handle_button_disabled)
                     title = getString(R.string.disable_handle_button_title)
                     summary = getString(R.string.disable_handle_button_description)
                     isChecked = WheelLog.AppConfig.handleButtonDisabled
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
                     title = getString(R.string.max_speed_title)
                     summary = getString(R.string.tilt_back_description)
                     min = 3
-                    max = 45
+                    max = InMotionAdapter.getInstance().maxSpeed
                     unit = getString(R.string.kmh)
                     increment = 1
                     setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.speaker_volume)
                     title = getString(R.string.speaker_volume_title)
@@ -438,7 +448,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     unit = "%"
                     increment = 1
                     setDefaultValue(WheelLog.AppConfig.speakerVolume)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.pedals_adjustment)
                     title = getString(R.string.pedal_horizont_title)
@@ -449,24 +461,29 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     increment = 1
                     decimalPlaces = 1
                     setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
-                },
-                Preference(context).apply {
-                    setIcon(R.drawable.ic_baseline_power_off_24)
-                    title = getString(R.string.power_off)
-                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                        AlertDialog.Builder(requireContext())
-                                .setTitle(getString(R.string.power_off))
-                                .setMessage(getString(R.string.power_off_message))
-                                .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                    InMotionAdapter.getInstance().powerOff()
-                                }
-                                .setNegativeButton(android.R.string.no, null)
-                                .setIcon(R.drawable.ic_baseline_power_off_24)
-                                .show()
-                        true
-                    }
                 }
-        ).forEach {
+        )
+        if (WheelData.getInstance().speed < 5) {
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_power_off_24)
+                        title = getString(R.string.power_off)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.power_off))
+                                    .setMessage(getString(R.string.power_off_message))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        InMotionAdapter.getInstance().powerOff()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+        }
+        prefs.toTypedArray().forEach {
             preferenceScreen.addPreference(it)
         }
     }
