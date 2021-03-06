@@ -463,30 +463,30 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
                 }
         )
-        prefs.add(
-                Preference(context).apply {
-                    setIcon(R.drawable.ic_baseline_power_off_24)
-                    title = getString(R.string.power_off)
-                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                        AlertDialog.Builder(requireContext())
-                                .setTitle(getString(R.string.power_off))
-                                .setMessage(getString(R.string.power_off_message))
-                                .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                    InMotionAdapter.getInstance().powerOff()
-                                }
-                                .setNegativeButton(android.R.string.no, null)
-                                .setIcon(R.drawable.ic_baseline_power_off_24)
-                                .show()
-                        true
+        if (WheelData.getInstance().speed < 5) {
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_power_off_24)
+                        title = getString(R.string.power_off)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.power_off))
+                                    .setMessage(getString(R.string.power_off_message))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        InMotionAdapter.getInstance().powerOff()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .show()
+                            true
+                        }
                     }
-                }
-        )
+            )
+        }
         prefs.toTypedArray().forEach {
             preferenceScreen.addPreference(it)
         }
     }
-
-
 
     private fun preferenceKingsong(mac: String) {
         val alertsUpdated = KingsongAdapter.getInstance().ksAlertsAndSpeedupdated
