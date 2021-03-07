@@ -269,7 +269,6 @@ LocationListener locationListener = new LocationListener() {
         catch(Exception exc) {
             Log.e(TAG, "initialization failed");
             exc.printStackTrace();
-            stopForeground(true);
             stopSelf();
         }
 
@@ -280,13 +279,6 @@ LocationListener locationListener = new LocationListener() {
         super.onStartCommand(intent, flags, startId);
         Toast.makeText(getBaseContext(), "Gear Service started", Toast.LENGTH_LONG).show();
         Log.i(TAG, "started");
-        /*mNotification = new android.support.v4.app.NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_MIN)
-                .build();
-        */
-        //startForeground(Constants.NOTIFICATION_ID_GEAR, mNotification);
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
         return START_STICKY;
     }
 
@@ -298,9 +290,6 @@ LocationListener locationListener = new LocationListener() {
 
     @Override
     public void onDestroy() {
-        stopForeground(true);
-        stopSelf();
-
     }
 
 }
