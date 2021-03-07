@@ -532,6 +532,36 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     }
             )
         }
+        if (WheelData.getInstance().speed < 1) {
+            prefs.add(
+                    Preference(context).apply {
+                        //setIcon(R.drawable.ic_baseline_power_off_24)
+                        title = getString(R.string.wheel_calibration)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.wheel_calibration))
+                                    .setMessage(getString(R.string.wheel_calibration_message))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        InMotionAdapter.getInstance().wheelCalibration()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+//                                    .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+
+        }
+        prefs.add(
+                Preference(context).apply {
+                    //setIcon(R.drawable.ic_baseline_power_off_24)
+                    title = getString(R.string.wheel_beep)
+                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                        InMotionAdapter.getInstance().wheelBeep()
+                    }
+                }
+        )
         prefs.toTypedArray().forEach {
             preferenceScreen.addPreference(it)
         }

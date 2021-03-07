@@ -323,6 +323,16 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
     }
 
+    public void wheelCalibration() {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.wheelCalibration().writeBuffer();
+    }
+
+    public void wheelBeep() {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.wheelBeep().writeBuffer();
+    }
+
     static Mode intToMode(int mode) {
         if ((mode & 16) != 0) {
             return Mode.rookie;
@@ -600,16 +610,14 @@ public class InMotionAdapter extends BaseAdapter {
             NoOp(0),
             GetFastInfo(0x0F550113),
             GetSlowInfo(0x0F550114),
-            //RemoteControl(0x0F550116),
             RideMode(0x0F550115),
+            RemoteControl(0x0F550116),
+            Calibration(0x0F550119),
             PinCode(0x0F550307),
             Light(0x0F55010D),
-            Led(0x0F550116),
             HandleButton(0x0F55012E),
-            MaxSpeed(0x0F550115),
             SpeakerVolume(0x0F55060A),
-            Alert(0x0F780101),
-            PowerOff(0x0F550116);
+            Alert(0x0F780101);
 
             private final int value;
 
@@ -820,17 +828,37 @@ public class InMotionAdapter extends BaseAdapter {
                 enable = 0x0F;
             }
             msg.len = 8;
-            msg.id = IDValue.Led.getValue();
+            msg.id = IDValue.RemoteControl.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
             msg.data = new byte[]{(byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00, enable, (byte) 0x00, (byte) 0x00, (byte) 0x00};
             return msg;
         }
 
+        public static CANMessage wheelBeep() {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.RemoteControl.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x11, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+            return msg;
+        }
+
+        public static CANMessage wheelCalibration() {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.Calibration.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0x32, (byte) 0x54, (byte) 0x76, (byte) 0x98, (byte) 0x11, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+            return msg;
+        }
+
         public static CANMessage powerOff() {
             CANMessage msg = new CANMessage();
             msg.len = 8;
-            msg.id = IDValue.PowerOff.getValue();
+            msg.id = IDValue.RemoteControl.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
             msg.data = new byte[]{(byte) 0xB2, 0, 0, 0, 5, 0, 0, 0};
@@ -855,7 +883,7 @@ public class InMotionAdapter extends BaseAdapter {
             CANMessage msg = new CANMessage();
             byte[] value = MathsUtil.getBytes((short)(maxSpeed * 1000));
             msg.len = 8;
-            msg.id = IDValue.MaxSpeed.getValue();
+            msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{1, 0, 0, 0, value[1], value[0], 0, 0};

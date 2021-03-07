@@ -274,4 +274,7 @@
     <string name="ride_mode_description">Вкл - Классик/Оффроад, Выкл - Комфорт/Онроад</string>
     <string name="pedal_hardness_title">Жесткость педалей</string>
     <string name="pedal_hardness_description">Чем выше число, тем жестче. 4% равны 0% в официальном приложении.</string>
+    <string name="wheel_beep">Гудок колесом</string>
+    <string name="wheel_calibration">Калибровка колеса</string>
+    <string name="wheel_calibration_message">Установите колесо в парковочный режим (на крыло) перед калибровкой, продолжить?</string>
 </resources>
