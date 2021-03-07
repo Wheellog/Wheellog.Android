@@ -1068,6 +1068,7 @@ public class InMotionAdapter extends BaseAdapter {
             boolean led = false;
             boolean handlebutton = false;
             boolean rideMode = false;
+            int pedalHardness = 100;
             int pedals = (int) (Math.round((MathsUtil.intFromBytesLE(ex_data, 56)) / 6553.6));
             maxspeed = (((ex_data[61] & 0xFF) * 256) | (ex_data[60] & 0xFF)) / 1000;
             if (ex_data.length > 126) {
@@ -1082,11 +1083,13 @@ public class InMotionAdapter extends BaseAdapter {
             if (ex_data.length > 132) {
                 rideMode = ex_data[132] == 1;
             }
+            if (ex_data.length > 124) {
+                pedalHardness = (ex_data[124]-28) & 0xFF; // 0x80 = 128 = 100% -maximum, 0x20 = 32 - minimum
+            }
 
             for (int j = 0; j < 8; j++) {
                 serialNumber += String.format("%02X", ex_data[7 - j]);
             }
-            int pedalHardness = ex_data[124]-28; // 0x80 = 128 = 100% -maximum, 0x20 = 32 - minimum
 
             WheelData wd = WheelData.getInstance();
             wd.setSerial(serialNumber);

@@ -383,7 +383,7 @@
     <string name="ride_mode_title">Ride mode</string>
     <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
     <string name="pedal_hardness_title">Hardness of platform</string>
-    <string name="pedal_hardness_description">Bigger number - more hardness</string>
+    <string name="pedal_hardness_description">Bigger number - more hardness, 4% is equal to 0% in official app</string>
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>

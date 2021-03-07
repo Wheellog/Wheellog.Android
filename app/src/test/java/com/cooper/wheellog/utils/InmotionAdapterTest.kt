@@ -162,6 +162,8 @@ class InmotionAdapterTest {
         assertThat(data.wheelMaxSpeed).isEqualTo(45)
         assertThat(data.speakerVolume).isEqualTo(100)
         assertThat(data.pedalsPosition).isEqualTo(0)
+        assertThat(data.pedalHardness).isEqualTo(100)
+        assertThat(data.rideMode).isFalse()
 
         assertThat(result11).isFalse()
         assertThat(result12).isFalse()
@@ -244,6 +246,8 @@ class InmotionAdapterTest {
         assertThat(data.wheelMaxSpeed).isEqualTo(45)
         assertThat(data.speakerVolume).isEqualTo(100)
         assertThat(data.pedalsPosition).isEqualTo(0)
+        assertThat(data.pedalHardness).isEqualTo(100)
+        assertThat(data.rideMode).isFalse()
 
         assertThat(result11).isFalse()
         assertThat(result12).isFalse()
