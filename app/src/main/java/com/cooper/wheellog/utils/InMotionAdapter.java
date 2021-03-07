@@ -112,7 +112,7 @@ public class InMotionAdapter extends BaseAdapter {
             case V10F:
             case V10T:
             case V10FT:
-                return 55;
+                return 45;
         }
         return 70;
     }
