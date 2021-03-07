@@ -36,7 +36,6 @@ public class InMotionAdapter extends BaseAdapter {
                 continue;
             }
             // data OK
-            String news = "";
             CANMessage.IDValue idValue = CANMessage.IDValue.NoOp;
             for (CANMessage.IDValue id: CANMessage.IDValue.values()) {
                 if (id.value == result.id) {
@@ -51,7 +50,6 @@ public class InMotionAdapter extends BaseAdapter {
                     return result.parseAlertInfoMessage();
                 case GetSlowInfo:
                     boolean res = result.parseSlowInfoMessage();
-                    Model a = model;
                     if (res) {
                         needSlowData = false;
                     }
@@ -59,43 +57,49 @@ public class InMotionAdapter extends BaseAdapter {
                 case PinCode:
                     passwordSent = Integer.MAX_VALUE;
                     break;
-                case Calibration:
-                    news = result.data[0] == 1
-                            ? mContext.getString(R.string.calibration_success)
-                            : mContext.getString(R.string.calibration_fail);
-                    break;
-                case RideMode:
-                    news = result.data[0] == 1
-                            ? mContext.getString(R.string.ridemode_success)
-                            : mContext.getString(R.string.ridemode_fail);
-                    break;
-                case RemoteControl:
-                    news = result.data[0] == 1
-                            ? mContext.getString(R.string.remotecontrol_success)
-                            : mContext.getString(R.string.remotecontrol_fail);
-                    break;
-                case Light:
-                    news = result.data[0] == 1
-                            ? mContext.getString(R.string.light_success)
-                            : mContext.getString(R.string.light_fail);
-                    break;
-                case HandleButton:
-                    news = result.data[0] == 1
-                            ? mContext.getString(R.string.handlebutton_success)
-                            : mContext.getString(R.string.handlebutton_fail);
-                    break;
-                case SpeakerVolume:
-                    news = result.data[0] == 1
-                            ? mContext.getString(R.string.speakervolume_success)
-                            : mContext.getString(R.string.speakervolume_fail);
-                    break;
             }
 
-            if (news.length() > 0) {
-                Timber.i("News to send: %s, sending Intent", news);
-                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
-                mContext.sendBroadcast(intent);
+            if (mContext != null) {
+                String news = null;
+                switch (idValue) {
+                    case Calibration:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.calibration_success)
+                                : mContext.getString(R.string.calibration_fail);
+                        break;
+                    case RideMode:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.ridemode_success)
+                                : mContext.getString(R.string.ridemode_fail);
+                        break;
+                    case RemoteControl:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.remotecontrol_success)
+                                : mContext.getString(R.string.remotecontrol_fail);
+                        break;
+                    case Light:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.light_success)
+                                : mContext.getString(R.string.light_fail);
+                        break;
+                    case HandleButton:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.handlebutton_success)
+                                : mContext.getString(R.string.handlebutton_fail);
+                        break;
+                    case SpeakerVolume:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.speakervolume_success)
+                                : mContext.getString(R.string.speakervolume_fail);
+                        break;
+                }
+
+                if (news != null) {
+                    Timber.i("News to send: %s, sending Intent", news);
+                    Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                    intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
+                    mContext.sendBroadcast(intent);
+                }
             }
         }
         return false;
