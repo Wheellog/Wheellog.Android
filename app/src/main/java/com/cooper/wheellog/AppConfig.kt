@@ -258,7 +258,7 @@ class AppConfig(var context: Context) {
         set(value) = setSpecific(R.string.pedals_adjustment, value)
 
     var pedalHardness: Int
-        get() = getSpecific(R.string.pedal_hardness, 4096)
+        get() = getSpecific(R.string.pedal_hardness, 100)
         set(value) = setSpecific(R.string.pedal_hardness, value)
 
     var rideMode: Boolean

@@ -49,6 +49,7 @@ public class BluetoothLeService extends Service {
     PowerManager.WakeLock wl;
     FileUtil fileUtilRawData;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
+    SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
     private final String wakeLogTag = "WhellLog:WakeLockTag";
     private final IBinder mBinder = new LocalBinder();
 
@@ -179,7 +180,7 @@ public class BluetoothLeService extends Service {
                 fileUtilRawData.prepareFile(fileNameForRawData, WheelData.getInstance().getMac());
             }
             fileUtilRawData.writeLine(String.format(Locale.US, "%s,%s",
-                    sdf.format(System.currentTimeMillis()),
+                    sdf2.format(System.currentTimeMillis()),
                     StringUtil.toHexStringRaw(characteristic.getValue())));
         } else if (fileUtilRawData != null && !fileUtilRawData.isNull()) {
             fileUtilRawData.close();

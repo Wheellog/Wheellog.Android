@@ -880,7 +880,7 @@ public class InMotionAdapter extends BaseAdapter {
         }
 
         public static CANMessage setPedalHardness(int pedalHardness) {
-            byte[] value = MathsUtil.getBytes((short)(pedalHardness));
+            byte[] value = MathsUtil.getBytes((short)((pedalHardness+28)<<5));
             CANMessage msg = new CANMessage();
             msg.len = 8;
             msg.id = IDValue.RideMode.getValue();
@@ -1067,6 +1067,7 @@ public class InMotionAdapter extends BaseAdapter {
             boolean light = ex_data[80] == 1;
             boolean led = false;
             boolean handlebutton = false;
+            boolean rideMode = false;
             int pedals = (int) (Math.round((MathsUtil.intFromBytesLE(ex_data, 56)) / 6553.6));
             maxspeed = (((ex_data[61] & 0xFF) * 256) | (ex_data[60] & 0xFF)) / 1000;
             if (ex_data.length > 126) {
@@ -1078,10 +1079,14 @@ public class InMotionAdapter extends BaseAdapter {
             if (ex_data.length > 129) {
                 handlebutton = ex_data[129] != 1;
             }
+            if (ex_data.length > 132) {
+                rideMode = ex_data[132] == 1;
+            }
 
             for (int j = 0; j < 8; j++) {
                 serialNumber += String.format("%02X", ex_data[7 - j]);
             }
+            int pedalHardness = ex_data[124]-28; // 0x80 = 128 = 100% -maximum, 0x20 = 32 - minimum
 
             WheelData wd = WheelData.getInstance();
             wd.setSerial(serialNumber);
@@ -1094,6 +1099,8 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setWheelMaxSpeed(maxspeed);
             wd.setWheelSpeakerVolume(speakervolume);
             wd.setWheelTiltHorizon(pedals);
+            wd.setWheelRideMode(rideMode);
+            wd.setWheelPedalHardness(pedalHardness);
             wd.setNewWheelSettings(true);
             wd.setDataForLog(false);
             getInstance().setModel(lmodel);

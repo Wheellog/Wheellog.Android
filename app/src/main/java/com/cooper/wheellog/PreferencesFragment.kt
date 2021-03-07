@@ -190,14 +190,38 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .show()
-            R.string.light_enabled -> WheelData.getInstance().updateLight(WheelLog.AppConfig.lightEnabled)
-            R.string.led_enabled -> WheelData.getInstance().updateLed(WheelLog.AppConfig.ledEnabled)
-            R.string.handle_button_disabled -> WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.handleButtonDisabled)
-            R.string.wheel_max_speed -> WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
-            R.string.speaker_volume -> WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
-            R.string.pedals_adjustment -> WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
-            R.string.pedal_hardness -> WheelData.getInstance().updatePedalHardness(WheelLog.AppConfig.pedalHardness)
-            R.string.ride_mode -> WheelData.getInstance().updateRideMode(WheelLog.AppConfig.rideMode)
+            R.string.light_enabled -> {
+                WheelData.getInstance().updateLight(WheelLog.AppConfig.lightEnabled)
+                correctCheckState(key!!)
+            }
+            R.string.led_enabled -> {
+                WheelData.getInstance().updateLed(WheelLog.AppConfig.ledEnabled)
+                correctCheckState(key!!)
+            }
+            R.string.handle_button_disabled -> {
+                WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.handleButtonDisabled)
+                correctCheckState(key!!)
+            }
+            R.string.wheel_max_speed -> {
+                WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
+                correctSeekBarState(key!!)
+            }
+            R.string.speaker_volume -> {
+                WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
+                correctSeekBarState(key!!)
+            }
+            R.string.pedals_adjustment -> {
+                WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
+                correctSeekBarState(key!!)
+            }
+            R.string.pedal_hardness -> {
+                WheelData.getInstance().updatePedalHardness(WheelLog.AppConfig.pedalHardness)
+                correctSeekBarState(key!!)
+            }
+            R.string.ride_mode -> {
+                WheelData.getInstance().updateRideMode(WheelLog.AppConfig.rideMode)
+                correctCheckState(key!!)
+            }
             R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
             R.string.light_mode -> WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
             R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
@@ -479,8 +503,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         key = mac + getString(R.string.pedal_hardness)
                         title = getString(R.string.pedal_hardness_title)
                         summary = getString(R.string.pedal_hardness_description)
-                        min = 0
-                        max = 4096
+                        min = 4
+                        max = 100
                         unit = "%"
                         increment = 1
                         setDefaultValue(WheelLog.AppConfig.pedalHardness)
@@ -994,6 +1018,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 ?: return
         val checkState = twoStatePreference.isChecked
         if (settingState != checkState) twoStatePreference.isChecked = settingState
+    }
+
+    private fun correctSeekBarState(preference: String) {
+        val settingState = WheelLog.AppConfig.getValue(preference, 0)
+        val sbPreference = findPreference<SeekBarPreference>(preference)
+                ?: return
+        val sbState = sbPreference.value
+        if (settingState != sbState) sbPreference.value = settingState
     }
 
     private fun showMainMenu() {

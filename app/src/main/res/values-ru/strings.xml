@@ -273,5 +273,5 @@
     <string name="ride_mode_title">Режим педалей</string>
     <string name="ride_mode_description">Вкл - Классик/Оффроад, Выкл - Комфорт/Онроад</string>
     <string name="pedal_hardness_title">Жесткость педалей</string>
-    <string name="pedal_hardness_description">Чем выше число, тем жестче (4096 - 100%)</string>
+    <string name="pedal_hardness_description">Чем выше число, тем жестче</string>
 </resources>
