@@ -399,6 +399,47 @@ class InmotionAdapterTest {
     }
 
     @Test
+    fun `pedal hardness command`() {
+        // Arrange.
+        val expected4 = "AAAA1501A5550F060000000004000008050000915555".hexToByteArray()
+        val expected46 = "AAAA1501A5550F060000004009000008050000D65555".hexToByteArray()
+        val expected100 = "AAAA1501A5550F0600000000100000080500009D5555".hexToByteArray()
+
+        // Act.
+        adapter.setPedalHardness(4)
+        val actual4 = adapter.settingCommand
+        adapter.setPedalHardness(46)
+        val actual46 = adapter.settingCommand
+        adapter.setPedalHardness(100)
+        val actual100 = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual4).isEqualTo(expected4)
+        assertThat(actual46).isEqualTo(expected46)
+        assertThat(actual100).isEqualTo(expected100)
+    }
+
+
+    @Test
+    fun `ride mode command`() {
+        // Arrange.
+        val expected_comfort = "aaaa1501a5550f0a0000000000000008050000915555".hexToByteArray()
+        val expected_classic = "aaaa1501a5550f0a0000000100000008050000925555".hexToByteArray()
+
+        // Act.
+        adapter.setRideMode(true)
+        val actual_classic = adapter.settingCommand
+        adapter.setRideMode(false)
+        val actual_comfort = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual_classic).isEqualTo(expected_classic)
+        assertThat(actual_comfort).isEqualTo(expected_comfort)
+    }
+
+    @Test
     fun `power off command`() {
         // Arrange.
         val expected = "aaaa1601a5550fb200000005000000080500003f5555".hexToByteArray()
