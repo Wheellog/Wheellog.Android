@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
+import com.cooper.wheellog.MainActivity;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -20,57 +21,87 @@ public class InMotionAdapter extends BaseAdapter {
     private Timer keepAliveTimer;
     private int passwordSent = 0;
     private boolean needSlowData = true;
+    private Context mContext;
     protected boolean settingCommandReady = false;
     private static int updateStep = 0;
     protected byte[] settingCommand;
 
     @Override
-    public boolean decode(byte[] data, Context mContext) {
-        for (byte c : data) {
-            if (unpacker.addChar(c)) {
-                CANMessage result = CANMessage.verify(unpacker.getBuffer());
-                if (result != null) { // data OK
-                    String news = "";
-                    if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
-                        return result.parseFastInfoMessage(model);
-                    } else if (result.id == CANMessage.IDValue.Alert.getValue()) {
-                        return result.parseAlertInfoMessage();
-                    } else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()) {
-                        boolean res = result.parseSlowInfoMessage();
-                        Model a = model;
-                        if (res) {
-                            needSlowData = false;
-                        }
-                        return res;
-                    } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
-                        passwordSent = Integer.MAX_VALUE;
-                    } else if (result.id == CANMessage.IDValue.Calibration.getValue()) {
-                        if (result.data[0] == 0x01) news = mContext.getString(R.string.calibration_success);
-                        else news = mContext.getString(R.string.calibration_fail);
-                    } else if (result.id == CANMessage.IDValue.RideMode.getValue()) {
-                        if (result.data[0] == 0x01) news = mContext.getString(R.string.ridemode_success);
-                        else news = mContext.getString(R.string.ridemode_fail);
-                    } else if (result.id == CANMessage.IDValue.RemoteControl.getValue()) {
-                        if (result.data[0] == 0x01) news = mContext.getString(R.string.remotecontrol_success);
-                        else news = mContext.getString(R.string.remotecontrol_fail);
-                    } else if (result.id == CANMessage.IDValue.Light.getValue()) {
-                        if (result.data[0] == 0x01) news = mContext.getString(R.string.light_success);
-                        else news = mContext.getString(R.string.light_fail);
-                    } else if (result.id == CANMessage.IDValue.HandleButton.getValue()) {
-                        if (result.data[0] == 0x01) news = mContext.getString(R.string.handlebutton_success);
-                        else news = mContext.getString(R.string.handlebutton_fail);
-                    } else if (result.id == CANMessage.IDValue.SpeakerVolume.getValue()) {
-                        if (result.data[0] == 0x01) news = mContext.getString(R.string.speakervolume_success);
-                        else news = mContext.getString(R.string.speakervolume_fail);
-                    }
+    public void setContext(Context context) {
+        this.mContext = context;
+    }
 
-                    if (news.compareTo("") != 0) {
-                        Timber.i("News to send: %s, sending Intent", news);
-                        Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                        intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
-                        mContext.sendBroadcast(intent);
-                    }
+    @Override
+    public boolean decode(byte[] data) {
+        for (byte c : data) {
+            if (!unpacker.addChar(c)) {
+                continue;
+            }
+            CANMessage result = CANMessage.verify(unpacker.getBuffer());
+            if (result == null) {
+                continue;
+            }
+            // data OK
+            String news = "";
+            CANMessage.IDValue idValue = CANMessage.IDValue.NoOp;
+            for (CANMessage.IDValue id: CANMessage.IDValue.values()) {
+                if (id.value == result.id) {
+                    idValue = id;
+                    break;
                 }
+            }
+            switch (idValue) {
+                case GetFastInfo:
+                    return result.parseFastInfoMessage(model);
+                case Alert:
+                    return result.parseAlertInfoMessage();
+                case GetSlowInfo:
+                    boolean res = result.parseSlowInfoMessage();
+                    Model a = model;
+                    if (res) {
+                        needSlowData = false;
+                    }
+                    return res;
+                case PinCode:
+                    passwordSent = Integer.MAX_VALUE;
+                    break;
+                case Calibration:
+                    news = result.data[0] == 1
+                            ? mContext.getString(R.string.calibration_success)
+                            : mContext.getString(R.string.calibration_fail);
+                    break;
+                case RideMode:
+                    news = result.data[0] == 1
+                            ? mContext.getString(R.string.ridemode_success)
+                            : mContext.getString(R.string.ridemode_fail);
+                    break;
+                case RemoteControl:
+                    news = result.data[0] == 1
+                            ? mContext.getString(R.string.remotecontrol_success)
+                            : mContext.getString(R.string.remotecontrol_fail);
+                    break;
+                case Light:
+                    news = result.data[0] == 1
+                            ? mContext.getString(R.string.light_success)
+                            : mContext.getString(R.string.light_fail);
+                    break;
+                case HandleButton:
+                    news = result.data[0] == 1
+                            ? mContext.getString(R.string.handlebutton_success)
+                            : mContext.getString(R.string.handlebutton_fail);
+                    break;
+                case SpeakerVolume:
+                    news = result.data[0] == 1
+                            ? mContext.getString(R.string.speakervolume_success)
+                            : mContext.getString(R.string.speakervolume_fail);
+                    break;
+            }
+
+            if (news.length() > 0) {
+                Timber.i("News to send: %s, sending Intent", news);
+                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
+                mContext.sendBroadcast(intent);
             }
         }
         return false;

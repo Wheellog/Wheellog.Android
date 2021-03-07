@@ -22,7 +22,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     InmotionUnpackerV2 unpacker = new InmotionUnpackerV2();
 
     @Override
-    public boolean decode(byte[] data, Context mContext) {
+    public boolean decode(byte[] data) {
         for (byte c : data) {
             if (unpacker.addChar(c)) {
 

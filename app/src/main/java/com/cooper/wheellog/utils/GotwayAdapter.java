@@ -16,7 +16,7 @@ public class GotwayAdapter extends BaseAdapter {
     private static final double RATIO_GW = 0.875;
 
     @Override
-    public boolean decode(byte[] data, Context mContext) {
+    public boolean decode(byte[] data) {
         Timber.i("Decode Gotway/Begode");
 
         WheelData wd = WheelData.getInstance();

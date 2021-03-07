@@ -16,9 +16,8 @@ public class VeteranAdapter extends BaseAdapter {
     private static final int WAITING_TIME = 100;
     private long time_old = 0;
 
-
     @Override
-    public boolean decode(byte[] data, Context mContext) {
+    public boolean decode(byte[] data) {
         Timber.i("Decode Veteran");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();

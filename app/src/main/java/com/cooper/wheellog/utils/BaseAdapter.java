@@ -3,7 +3,10 @@ package com.cooper.wheellog.utils;
 import android.content.Context;
 
 public abstract class BaseAdapter {
-    public abstract boolean decode(byte[] data, Context mContext);
+    public void setContext(Context context) {
+    }
+
+    public abstract boolean decode(byte[] data);
 
     public void updatePedalsMode(int pedalsMode) {
     }

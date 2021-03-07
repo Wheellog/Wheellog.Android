@@ -128,7 +128,7 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
-    public boolean decode(byte[] data, Context mContext) {
+    public boolean decode(byte[] data) {
         Timber.i("Ninebot_z decoding");
         WheelData wd = WheelData.getInstance();
         setBmsReadingMode(wd.getBmsView());

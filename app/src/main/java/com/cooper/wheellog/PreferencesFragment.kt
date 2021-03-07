@@ -141,11 +141,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (context == null) {
+        if (context == null || key == null) {
             return
         }
 
-        val resName = key?.replace(WheelData.getInstance().mac + "_", "")
+        val resName = key.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
@@ -192,35 +192,35 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .show()
             R.string.light_enabled -> {
                 WheelData.getInstance().updateLight(WheelLog.AppConfig.lightEnabled)
-                correctCheckState(key!!)
+                correctCheckState(key)
             }
             R.string.led_enabled -> {
                 WheelData.getInstance().updateLed(WheelLog.AppConfig.ledEnabled)
-                correctCheckState(key!!)
+                correctCheckState(key)
             }
             R.string.handle_button_disabled -> {
                 WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.handleButtonDisabled)
-                correctCheckState(key!!)
+                correctCheckState(key)
             }
             R.string.wheel_max_speed -> {
                 WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
-                correctSeekBarState(key!!)
+                correctSeekBarState(key)
             }
             R.string.speaker_volume -> {
                 WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
-                correctSeekBarState(key!!)
+                correctSeekBarState(key)
             }
             R.string.pedals_adjustment -> {
                 WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
-                correctSeekBarState(key!!)
+                correctSeekBarState(key)
             }
             R.string.pedal_hardness -> {
                 WheelData.getInstance().updatePedalHardness(WheelLog.AppConfig.pedalHardness)
-                correctSeekBarState(key!!)
+                correctSeekBarState(key)
             }
             R.string.ride_mode -> {
                 WheelData.getInstance().updateRideMode(WheelLog.AppConfig.rideMode)
-                correctCheckState(key!!)
+                correctCheckState(key)
             }
             R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
             R.string.light_mode -> WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))

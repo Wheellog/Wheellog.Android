@@ -76,7 +76,7 @@ public class NinebotAdapter extends BaseAdapter {
     }
 
     @Override
-    public boolean decode(byte[] data, Context mContext) {
+    public boolean decode(byte[] data) {
         Timber.i("Ninebot_decoding");
         ArrayList<NinebotAdapter.Status> statuses = charUpdated(data);
         if (statuses.size() < 1) {

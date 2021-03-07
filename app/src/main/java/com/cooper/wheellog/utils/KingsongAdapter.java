@@ -19,7 +19,7 @@ public class KingsongAdapter extends BaseAdapter {
     private double mSpeedLimit;
 
     @Override
-    public boolean decode(byte[] data, Context mContext) {
+    public boolean decode(byte[] data) {
         Timber.i("Decode KingSong");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
