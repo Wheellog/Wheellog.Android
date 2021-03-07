@@ -270,4 +270,8 @@
     <string name="private_policy_agree">Я прочитал и согласен</string>
     <string name="current_mac">MAC адрес</string>
     <string name="log_location_pop_up">Это приложение собирает данные о местоположении, чтобы включить данные GPS в журналы CSV, когда WheelLog работает в фоновом режиме или когда экран выключен. Данные GPS не собираются, когда EUC отключен.</string>
+    <string name="ride_mode_title">Режим педалей</string>
+    <string name="ride_mode_description">Вкл - Классик/Оффроад, Выкл - Комфорт/Онроад</string>
+    <string name="pedal_hardness_title">Жесткость педалей</string>
+    <string name="pedal_hardness_description">Чем выше число, тем жестче (4096 - 100%)</string>
 </resources>

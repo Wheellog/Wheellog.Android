@@ -196,6 +196,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_max_speed -> WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
             R.string.speaker_volume -> WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
             R.string.pedals_adjustment -> WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
+            R.string.pedal_hardness -> WheelData.getInstance().updatePedalHardness(WheelLog.AppConfig.pedalHardness)
+            R.string.ride_mode -> WheelData.getInstance().updateRideMode(WheelLog.AppConfig.rideMode)
             R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
             R.string.light_mode -> WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
             R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
@@ -463,6 +465,29 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
                 }
         )
+        if (InMotionAdapter.getInstance().wheelModesWheel) {
+            prefs.add(
+                    SwitchPreference(context).apply {
+                        key = mac + getString(R.string.ride_mode)
+                        title = getString(R.string.ride_mode_title)
+                        summary = getString(R.string.ride_mode_description)
+                        isChecked = WheelLog.AppConfig.rideMode
+                    }
+            )
+            prefs.add(
+                    SeekBarPreference(context).apply {
+                        key = mac + getString(R.string.pedal_hardness)
+                        title = getString(R.string.pedal_hardness_title)
+                        summary = getString(R.string.pedal_hardness_description)
+                        min = 0
+                        max = 4096
+                        unit = "%"
+                        increment = 1
+                        setDefaultValue(WheelLog.AppConfig.pedalHardness)
+                    }
+            )
+        }
+
         if (WheelData.getInstance().speed < 5) {
             prefs.add(
                     Preference(context).apply {

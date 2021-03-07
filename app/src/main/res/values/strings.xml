@@ -42,6 +42,8 @@
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
     <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
+    <string name="pedal_hardness" translatable="false">pedal_hardness</string>
+    <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
     <string name="light_mode" translatable="false">light_mode</string>
     <string name="strobe_mode" translatable="false">strobe_mode</string>
@@ -378,6 +380,10 @@
     <string name="speaker_volume_description">Change built-in speaker volume</string>
     <string name="pedal_horizont_title">Pedals</string>
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
+    <string name="ride_mode_title">Ride mode</string>
+    <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
+    <string name="pedal_hardness_title">Hardness of platform</string>
+    <string name="pedal_hardness_description">Bigger number - more hardness (4096 = 100%)</string>
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>

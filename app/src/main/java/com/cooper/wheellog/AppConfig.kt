@@ -256,6 +256,14 @@ class AppConfig(var context: Context) {
     var pedalsAdjustment: Int
         get() = getSpecific(R.string.pedals_adjustment, 0)
         set(value) = setSpecific(R.string.pedals_adjustment, value)
+
+    var pedalHardness: Int
+        get() = getSpecific(R.string.pedal_hardness, 4096)
+        set(value) = setSpecific(R.string.pedal_hardness, value)
+
+    var rideMode: Boolean
+        get() = getSpecific(R.string.ride_mode, false)
+        set(value) = setSpecific(R.string.ride_mode, value)
     //endregion
     
     //region kingsong

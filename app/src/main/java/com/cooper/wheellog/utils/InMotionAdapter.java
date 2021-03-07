@@ -103,6 +103,20 @@ public class InMotionAdapter extends BaseAdapter {
         return false;
     }
 
+    public boolean getWheelModesWheel() {
+        switch (model) {
+            case V8F:
+            case V10S:
+            case V10SF:
+            case V10T:
+            case V10:
+            case V10F:
+            case V10FT:
+                return true;
+        }
+        return false;
+    }
+
     public enum Model {
         R1N("0", 3812.0d),
         R1S("1", 1000.0d),
@@ -292,7 +306,16 @@ public class InMotionAdapter extends BaseAdapter {
     public void setTiltHorizon(final int tiltHorizon) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(tiltHorizon).writeBuffer();
+    }
 
+    public void setPedalHardness(final int pedalHardness) {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.setPedalHardness(pedalHardness).writeBuffer();
+    }
+
+    public void setRideMode(final boolean rideMode) {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.setRideMode(rideMode).writeBuffer();
     }
 
     public void powerOff() {
@@ -840,27 +863,30 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setRideMode(int rideMode) {
+        public static CANMessage setRideMode(boolean rideMode) {
             /// rideMode =0 -Comfort, =1 -Classic
+            byte classic = 0;
+            if (rideMode) {
+                classic = 1;
+            }
             CANMessage msg = new CANMessage();
             msg.len = 8;
             msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
-            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) rideMode, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
+            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) classic, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
 
             return msg;
         }
 
         public static CANMessage setPedalHardness(int pedalHardness) {
-            byte[] value = MathsUtil.getBytes((short)(pedalHardness * 1000));
+            byte[] value = MathsUtil.getBytes((short)(pedalHardness));
             CANMessage msg = new CANMessage();
             msg.len = 8;
             msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
             msg.data = new byte[]{(byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x00, value[1], value[0] , (byte) 0x00, (byte) 0x00};
-
             return msg;
         }
 

@@ -105,6 +105,8 @@ public class WheelData {
 	private int mWheelMaxSpeed = 0;
 	private int mWheelSpeakerVolume = 50;
 	private int mWheelTiltHorizon = 0;
+    private int mWheelPedalHardness = 4096;
+    private boolean mWheelRideMode = false;
 
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
@@ -346,6 +348,14 @@ public class WheelData {
 	
 	public int getPedalsPosition() {
         return mWheelTiltHorizon;
+    }
+
+    public int getPedalHardness() {
+        return mWheelPedalHardness;
+    }
+
+    public boolean getRideMode() {
+        return mWheelRideMode;
     }
 
     public void setBtName(String btName) {
@@ -609,7 +619,21 @@ public class WheelData {
 			InMotionAdapter.getInstance().setTiltHorizon(pedalAdjustment);
 		}
     }
-	
+
+    public void updatePedalHardness(int pedalHardness) {
+        if (mWheelPedalHardness != pedalHardness) {
+            mWheelPedalHardness = pedalHardness;
+            InMotionAdapter.getInstance().setPedalHardness(pedalHardness);
+        }
+    }
+
+    public void updateRideMode(boolean rideMode) {
+        if (mWheelRideMode != rideMode) {
+            mWheelRideMode = rideMode;
+            InMotionAdapter.getInstance().setRideMode(rideMode);
+        }
+    }
+
     public int getTemperature() {
         return mTemperature / 100;
     }
@@ -1311,6 +1335,10 @@ public class WheelData {
     public void setDataForLog(boolean value) {mDataForLog = value;}
     public void setWheelSpeakerVolume(int value) {mWheelSpeakerVolume = value;}
     public void setWheelTiltHorizon(int value) {mWheelTiltHorizon = value;}
+    public void setWheelPedalHardness(int value) {mWheelPedalHardness = value;}
+    public void setWheelRideMode(boolean value) {mWheelRideMode = value;}
+
+
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.getInstance().stopTimer();
@@ -1379,6 +1407,8 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
 		mWheelTiltHorizon = 0;
+		mWheelPedalHardness = 4096;
+        mWheelRideMode = false;
 		mWheelLightEnabled = false;
 		mWheelLedEnabled = false;
 		mWheelButtonDisabled = false;
