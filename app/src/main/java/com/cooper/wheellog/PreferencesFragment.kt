@@ -512,7 +512,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             )
         }
 
-        if (WheelData.getInstance().speed < 5) {
+        if (WheelData.getInstance().speed < 1) {
             prefs.add(
                     Preference(context).apply {
                         setIcon(R.drawable.ic_baseline_power_off_24)
@@ -531,11 +531,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         }
                     }
             )
-        }
-        if (WheelData.getInstance().speed < 1) {
             prefs.add(
                     Preference(context).apply {
-                        //setIcon(R.drawable.ic_baseline_power_off_24)
+                        setIcon(R.drawable.ic_baseline_calibration_24)
                         title = getString(R.string.wheel_calibration)
                         onPreferenceClickListener = Preference.OnPreferenceClickListener {
                             AlertDialog.Builder(requireContext())
@@ -546,17 +544,16 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                         true
                                     }
                                     .setNegativeButton(android.R.string.no, null)
-//                                    .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .setIcon(R.drawable.ic_baseline_calibration_24)
                                     .show()
                             true
                         }
                     }
             )
-
         }
         prefs.add(
                 Preference(context).apply {
-                    //setIcon(R.drawable.ic_baseline_power_off_24)
+                    setIcon(R.drawable.ic_baseline_horn_512)
                     title = getString(R.string.wheel_beep)
                     onPreferenceClickListener = Preference.OnPreferenceClickListener {
                         InMotionAdapter.getInstance().wheelBeep()
