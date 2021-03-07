@@ -3,7 +3,11 @@ package com.cooper.wheellog.utils;
 import android.content.Context;
 
 public abstract class BaseAdapter {
-    public void setContext(Context context) {
+    protected Context mContext;
+
+    public BaseAdapter setContext(Context context) {
+        mContext = context;
+        return this;
     }
 
     public abstract boolean decode(byte[] data);

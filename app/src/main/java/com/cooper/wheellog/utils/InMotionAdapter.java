@@ -21,15 +21,9 @@ public class InMotionAdapter extends BaseAdapter {
     private Timer keepAliveTimer;
     private int passwordSent = 0;
     private boolean needSlowData = true;
-    private Context mContext;
     protected boolean settingCommandReady = false;
     private static int updateStep = 0;
     protected byte[] settingCommand;
-
-    @Override
-    public void setContext(Context context) {
-        this.mContext = context;
-    }
 
     @Override
     public boolean decode(byte[] data) {
