@@ -4,6 +4,7 @@ import com.cooper.wheellog.WheelLog;
 
 import java.util.Locale;
 import timber.log.Timber;
+import android.content.Context;
 
 public class KingsongAdapter extends BaseAdapter {
     private static KingsongAdapter INSTANCE;
@@ -18,7 +19,7 @@ public class KingsongAdapter extends BaseAdapter {
     private double mSpeedLimit;
 
     @Override
-    public boolean decode(byte[] data) {
+    public boolean decode(byte[] data, Context mContext) {
         Timber.i("Decode KingSong");
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();

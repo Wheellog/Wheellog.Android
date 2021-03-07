@@ -303,6 +303,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     setMenuIconStates();
                     notificationHandler.updateNotification();
                     break;
+                case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
+                    Timber.i("Received news");
+                    showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 3500);
+                    break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
@@ -1542,6 +1546,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);

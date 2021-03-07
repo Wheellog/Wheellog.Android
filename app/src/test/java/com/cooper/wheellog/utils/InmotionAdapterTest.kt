@@ -452,4 +452,32 @@ class InmotionAdapterTest {
         assertThat(adapter.settingCommandReady).isEqualTo(true)
         assertThat(actual).isEqualTo(expected)
     }
+
+    @Test
+    fun `wheel calibration command`() {
+        // Arrange.
+        val expected = "aaaa1901a5550f3254769800000000080500001f5555".hexToByteArray()
+
+        // Act.
+        adapter.wheelCalibration()
+        val actual = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun `wheel beep command`() {
+        // Arrange.
+        val expected = "aaaa1601a5550fb200000011000000080500004b5555".hexToByteArray()
+
+        // Act.
+        adapter.wheelBeep()
+        val actual = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual).isEqualTo(expected)
+    }
 }

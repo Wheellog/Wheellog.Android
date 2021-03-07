@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
+import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
@@ -8,6 +9,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import timber.log.Timber;
+
+import android.content.Intent;
+import android.content.Context;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
@@ -21,11 +25,12 @@ public class InMotionAdapter extends BaseAdapter {
     protected byte[] settingCommand;
 
     @Override
-    public boolean decode(byte[] data) {
+    public boolean decode(byte[] data, Context mContext) {
         for (byte c : data) {
             if (unpacker.addChar(c)) {
                 CANMessage result = CANMessage.verify(unpacker.getBuffer());
                 if (result != null) { // data OK
+                    String news = "";
                     if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
                         return result.parseFastInfoMessage(model);
                     } else if (result.id == CANMessage.IDValue.Alert.getValue()) {
@@ -39,6 +44,31 @@ public class InMotionAdapter extends BaseAdapter {
                         return res;
                     } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
                         passwordSent = Integer.MAX_VALUE;
+                    } else if (result.id == CANMessage.IDValue.Calibration.getValue()) {
+                        if (result.data[0] == 0x01) news = mContext.getString(R.string.calibration_success);
+                        else news = mContext.getString(R.string.calibration_fail);
+                    } else if (result.id == CANMessage.IDValue.RideMode.getValue()) {
+                        if (result.data[0] == 0x01) news = mContext.getString(R.string.ridemode_success);
+                        else news = mContext.getString(R.string.ridemode_fail);
+                    } else if (result.id == CANMessage.IDValue.RemoteControl.getValue()) {
+                        if (result.data[0] == 0x01) news = mContext.getString(R.string.remotecontrol_success);
+                        else news = mContext.getString(R.string.remotecontrol_fail);
+                    } else if (result.id == CANMessage.IDValue.Light.getValue()) {
+                        if (result.data[0] == 0x01) news = mContext.getString(R.string.light_success);
+                        else news = mContext.getString(R.string.light_fail);
+                    } else if (result.id == CANMessage.IDValue.HandleButton.getValue()) {
+                        if (result.data[0] == 0x01) news = mContext.getString(R.string.handlebutton_success);
+                        else news = mContext.getString(R.string.handlebutton_fail);
+                    } else if (result.id == CANMessage.IDValue.SpeakerVolume.getValue()) {
+                        if (result.data[0] == 0x01) news = mContext.getString(R.string.speakervolume_success);
+                        else news = mContext.getString(R.string.speakervolume_fail);
+                    }
+
+                    if (news.compareTo("") != 0) {
+                        Timber.i("News to send: %s, sending Intent", news);
+                        Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                        intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
+                        mContext.sendBroadcast(intent);
                     }
                 }
             }
@@ -82,7 +112,7 @@ public class InMotionAdapter extends BaseAdapter {
             case V10F:
             case V10T:
             case V10FT:
-                return 45;
+                return 55;
         }
         return 70;
     }
@@ -851,7 +881,7 @@ public class InMotionAdapter extends BaseAdapter {
             msg.id = IDValue.Calibration.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
-            msg.data = new byte[]{(byte) 0x32, (byte) 0x54, (byte) 0x76, (byte) 0x98, (byte) 0x11, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+            msg.data = new byte[]{(byte) 0x32, (byte) 0x54, (byte) 0x76, (byte) 0x98, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
             return msg;
         }
 
@@ -936,7 +966,7 @@ public class InMotionAdapter extends BaseAdapter {
 
             byte[] t = MathsUtil.getBytes(tilt);
             msg.len = 8;
-            msg.id = IDValue.MaxSpeed.getValue();
+            msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{0, 0, 0, 0, t[3], t[2], t[1], t[0]};

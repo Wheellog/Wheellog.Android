@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import timber.log.Timber;
+import android.content.Context;
 
 /**
  * Created by palachzzz on Dec 2019.
@@ -75,7 +76,7 @@ public class NinebotAdapter extends BaseAdapter {
     }
 
     @Override
-    public boolean decode(byte[] data) {
+    public boolean decode(byte[] data, Context mContext) {
         Timber.i("Ninebot_decoding");
         ArrayList<NinebotAdapter.Status> statuses = charUpdated(data);
         if (statuses.size() < 1) {

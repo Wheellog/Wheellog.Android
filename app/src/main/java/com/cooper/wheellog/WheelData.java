@@ -1232,7 +1232,7 @@ public class WheelData {
         Timber.i("Received: " + stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
         Timber.i("Decode, proto: %s", protoVer);
-        boolean new_data = getAdapter().decode(data);
+        boolean new_data = getAdapter().decode(data, mContext);
 
         if (!new_data)
 			return;

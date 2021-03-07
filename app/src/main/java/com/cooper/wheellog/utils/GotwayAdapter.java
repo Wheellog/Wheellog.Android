@@ -8,6 +8,7 @@ import com.cooper.wheellog.WheelLog;
 import java.io.ByteArrayOutputStream;
 
 import timber.log.Timber;
+import android.content.Context;
 
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
@@ -15,7 +16,7 @@ public class GotwayAdapter extends BaseAdapter {
     private static final double RATIO_GW = 0.875;
 
     @Override
-    public boolean decode(byte[] data) {
+    public boolean decode(byte[] data, Context mContext) {
         Timber.i("Decode Gotway/Begode");
 
         WheelData wd = WheelData.getInstance();
