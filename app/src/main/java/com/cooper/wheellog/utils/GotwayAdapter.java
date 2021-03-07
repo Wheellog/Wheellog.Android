@@ -8,7 +8,6 @@ import com.cooper.wheellog.WheelLog;
 import java.io.ByteArrayOutputStream;
 
 import timber.log.Timber;
-import android.content.Context;
 
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;

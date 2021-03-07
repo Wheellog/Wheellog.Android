@@ -2,7 +2,6 @@ package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
 import timber.log.Timber;
-import android.content.Context;
 
 public class GotwayVirtualAdapter extends BaseAdapter {
     private static GotwayVirtualAdapter INSTANCE;

@@ -4,7 +4,6 @@ import com.cooper.wheellog.WheelLog;
 
 import java.util.Locale;
 import timber.log.Timber;
-import android.content.Context;
 
 public class KingsongAdapter extends BaseAdapter {
     private static KingsongAdapter INSTANCE;

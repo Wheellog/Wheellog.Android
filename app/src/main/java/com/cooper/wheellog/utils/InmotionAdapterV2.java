@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import timber.log.Timber;
-import android.content.Context;
 
 public class InmotionAdapterV2 extends BaseAdapter {
     private static InmotionAdapterV2 INSTANCE;
