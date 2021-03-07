@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -48,7 +47,7 @@ import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.StringUtil;
+import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -167,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     TextView tvTitleBms2Cell16;
     TextView tvBms2Cell16;
 
-    private BluetoothLeService mBluetoothLeService;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
@@ -176,47 +174,121 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     int viewPagerPage = R.id.page_main;
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
+    private SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+    public static NotificationUtil notificationHandler;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
     protected static final int ResultPrivatePolicy = 666;
 
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+    private static Boolean onDestroyProcess = false;
 
+    private BluetoothLeService getBluetoothLeService() {
+        return WheelData.getInstance().getBluetoothLeService();
+    }
+
+    private final ServiceConnection mBluetoothServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                Timber.e(getResources().getString(R.string.error_bluetooth_not_initialised));
-                Toast.makeText(MainActivity.this, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show();
-                finish();
-            }
+            if (componentName.getClassName().equals(BluetoothLeService.class.getName())) {
+                BluetoothLeService bluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+                WheelData.getInstance().setBluetoothLeService(bluetoothLeService);
 
-            loadPreferences(-1);
-            if (mBluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
-                    mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                mBluetoothLeService.setDeviceAddress(mDeviceAddress);
-                toggleConnectToWheel();
+                if (!bluetoothLeService.initialize()) {
+                    Timber.e(getResources().getString(R.string.error_bluetooth_not_initialised));
+                    Toast.makeText(MainActivity.this, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                loadPreferences(-1);
+                if (bluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED &&
+                        mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
+                    bluetoothLeService.setDeviceAddress(mDeviceAddress);
+                    toggleConnectToWheel();
+                }
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
-            finish();
+            if (componentName.getClassName().equals(BluetoothLeService.class.getName())) {
+                WheelData.getInstance().setBluetoothLeService(null);
+                WheelData.getInstance().setConnected(false);
+                Timber.e("BluetoothLeService disconnected");
+            }
         }
     };
 
-    private final BroadcastReceiver mBluetoothUpdateReceiver = new BroadcastReceiver() {
+    private void setConnectionState(int connectionState) {
+        switch (connectionState) {
+            case BluetoothLeService.STATE_CONNECTED:
+                configureDisplay(WheelData.getInstance().getWheelType());
+                if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
+                    WheelLog.AppConfig.setLastMac(mDeviceAddress);
+                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
+                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
+                    }
+                }
+                hideSnackBar();
+                break;
+            case BluetoothLeService.STATE_CONNECTING:
+                if (mConnectionState == BluetoothLeService.STATE_CONNECTING) {
+                    showSnackBar(R.string.bluetooth_direct_connect_failed);
+                } else if (getBluetoothLeService() != null && getBluetoothLeService().getDisconnectTime() != null) {
+                    showSnackBar(
+                            getString(R.string.connection_lost_at,
+                                    timeFormatter.format(getBluetoothLeService().getDisconnectTime())),
+                            Snackbar.LENGTH_INDEFINITE);
+                }
+                break;
+            case BluetoothLeService.STATE_DISCONNECTED:
+                break;
+        }
+        mConnectionState = connectionState;
+        setMenuIconStates();
+    }
+
+    private final BroadcastReceiver mMainBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             switch (intent.getAction()) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
                     Timber.i("Bluetooth state = %d", connectionState);
                     setConnectionState(connectionState);
+                    WheelData.getInstance().setConnected(connectionState == BluetoothLeService.STATE_CONNECTED);
+                    switch (connectionState) {
+                        case BluetoothLeService.STATE_CONNECTED:
+                            if (!LoggingService.isInstanceCreated() && WheelLog.AppConfig.getAutoLog()) {
+                                toggleLoggingService();
+                            }
+                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
+                                KingsongAdapter.getInstance().requestNameData();
+                            }
+                            notificationHandler.setNotificationMessageId(R.string.connected);
+                            break;
+                        case BluetoothLeService.STATE_DISCONNECTED:
+                            switch (WheelData.getInstance().getWheelType()) {
+                                case INMOTION:
+                                    InMotionAdapter.newInstance();
+                                case INMOTION_V2:
+                                    InmotionAdapterV2.newInstance();
+                                case NINEBOT_Z:
+                                    NinebotZAdapter.newInstance();
+                                case NINEBOT:
+                                    NinebotAdapter.newInstance();
+                            }
+                            notificationHandler.setNotificationMessageId(R.string.disconnected);
+                            break;
+                        case BluetoothLeService.STATE_CONNECTING:
+                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
+                                notificationHandler.setNotificationMessageId(R.string.searching);
+                            } else {
+                                notificationHandler.setNotificationMessageId(R.string.connecting);
+                            }
+                            break;
+                    }
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
@@ -224,16 +296,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     updateScreen(true);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                        if (WheelData.getInstance().getName().isEmpty())
-                            sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
-                        else if (WheelData.getInstance().getSerial().isEmpty())
-                            sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA));
-                    }
                     updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
@@ -244,12 +312,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         }
                     }
                     setMenuIconStates();
+                    notificationHandler.updateNotification();
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
                     wheelView.resetBatteryLowest();
                     break;
-
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
                             && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
@@ -271,41 +339,33 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                         showSnackBar(getResources().getString(R.string.alarm_text_temperature), 3000);
                     }
                     break;
+                case Constants.NOTIFICATION_BUTTON_CONNECTION:
+                    toggleConnectToWheel();
+                    break;
+                case Constants.NOTIFICATION_BUTTON_LOGGING:
+                    toggleLogging();
+                    break;
+                case Constants.NOTIFICATION_BUTTON_WATCH:
+                    toggleWatch();
+                    break;
             }
         }
     };
 
+    private void toggleWatch() {
+        togglePebbleService();
+        if (WheelLog.AppConfig.getGarminConnectIqEnable())
+            toggleGarminConnectIQ();
+        else
+            stopGarminConnectIQ();
+    }
 
-    private void setConnectionState(int connectionState) {
-        switch (connectionState) {
-            case BluetoothLeService.STATE_CONNECTED:
-                configureDisplay(WheelData.getInstance().getWheelType());
-                if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    WheelLog.AppConfig.setLastMac(mDeviceAddress);
-                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
-                    }
-                }
-                hideSnackBar();
-                break;
-            case BluetoothLeService.STATE_CONNECTING:
-                if (mConnectionState == BluetoothLeService.STATE_CONNECTING) {
-                    showSnackBar(R.string.bluetooth_direct_connect_failed);
-
-                } else {
-                    if (mBluetoothLeService.getDisconnectTime() != null) {
-                        showSnackBar(
-                                getString(R.string.connection_lost_at,
-                                        new SimpleDateFormat("HH:mm:ss", Locale.US).format(mBluetoothLeService.getDisconnectTime())),
-                                Snackbar.LENGTH_INDEFINITE);
-                    }
-                }
-                break;
-            case BluetoothLeService.STATE_DISCONNECTED:
-                break;
+    private void toggleLogging() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            toggleLoggingService();
+        } else {
+            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithCheck(this);
         }
-        mConnectionState = connectionState;
-        setMenuIconStates();
     }
 
     private void setMenuIconStates() {
@@ -931,8 +991,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (onDestroyProcess)
+        if (onDestroyProcess) {
             android.os.Process.killProcess(android.os.Process.myPid());
+            return;
+        }
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -958,7 +1020,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         createPager();
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -1062,10 +1124,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         Typeface typefacePrime = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 ? getResources().getFont(R.font.prime)
                 : ResourcesCompat.getFont(this, R.font.prime);
-        TextClock textClock = (TextClock) findViewById(R.id.textClock);
+        TextClock textClock = findViewById(R.id.textClock);
         textClock.setTypeface(typefacePrime);
 
-        chart1 = (LineChart) findViewById(R.id.chart);
+        chart1 = findViewById(R.id.chart);
         chart1.setDrawGridBackground(false);
         chart1.getDescription().setEnabled(false);
         chart1.setHardwareAccelerationEnabled(true);
@@ -1077,8 +1139,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         YAxis leftAxis = chart1.getAxisLeft();
         YAxis rightAxis = chart1.getAxisRight();
-        leftAxis.setAxisMinValue(0f);
-        rightAxis.setAxisMinValue(0f);
+        leftAxis.setAxisMinimum(0f);
+        rightAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(false);
         rightAxis.setDrawGridLines(false);
         leftAxis.setTextColor(getResources().getColor(android.R.color.white));
@@ -1099,19 +1161,12 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            //finish();
         }
 
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
         // Checks if Bluetooth is supported on the device.
+        mBluetoothAdapter = BluetoothLeService.getAdapter(this);
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            //finish();
         } else if (!mBluetoothAdapter.isEnabled()) {
             // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
             // fire an intent to display a dialog asking the user to grant permission to enable it.
@@ -1120,19 +1175,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         } else {
             startBluetoothService();
         }
+
+        notificationHandler = new NotificationUtil(this);
+        notificationHandler.updateNotification();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mBluetoothLeService != null &&
-                mConnectionState != mBluetoothLeService.getConnectionState())
-            setConnectionState(mBluetoothLeService.getConnectionState());
+        if (getBluetoothLeService() != null && mConnectionState != getBluetoothLeService().getConnectionState()) {
+            setConnectionState(getBluetoothLeService().getConnectionState());
+        }
 
-        if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown)
+        if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
             configureDisplay(WheelData.getInstance().getWheelType());
+        }
 
-        registerReceiver(mBluetoothUpdateReceiver, makeIntentFilter());
+        registerReceiver(mMainBroadcastReceiver, makeIntentFilter());
         updateScreen(true);
     }
 
@@ -1144,10 +1203,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     public void onPause() {
         super.onPause();
-        unregisterReceiver(mBluetoothUpdateReceiver);
+        unregisterReceiver(mMainBroadcastReceiver);
     }
-
-    private static Boolean onDestroyProcess = false;
 
     @Override
     protected void onDestroy() {
@@ -1155,31 +1212,27 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         stopGarminConnectIQ();
         stopLoggingService();
         WheelData.getInstance().full_reset();
-        if (mBluetoothLeService != null) {
-            unbindService(mServiceConnection);
-            stopService(new Intent(getApplicationContext(), BluetoothLeService.class));
-            mBluetoothLeService = null;
+        if (getBluetoothLeService() != null) {
+            unbindService(mBluetoothServiceConnection);
+            WheelData.getInstance().setBluetoothLeService(null);
         }
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
         onDestroyProcess = true;
-        new CountDownTimer(60000, 100) {
-
+        new CountDownTimer(60000 /* 1 min */, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                // do something after 1s
+                if (!LoggingService.isInstanceCreated()) {
+                    onFinish();
+                }
             }
-
             @Override
             public void onFinish() {
-
                 android.os.Process.killProcess(android.os.Process.myPid());
-                // do something end times 5s
             }
 
         }.start();
-
     }
 
     @Override
@@ -1203,18 +1256,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    toggleLoggingService();
-                } else {
-                    MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithCheck(this);
-                }
+                toggleLogging();
                 return true;
             case R.id.miWatch:
-                togglePebbleService();
-                if (WheelLog.AppConfig.getGarminConnectIqEnable())
-                    toggleGarminConnectIQ();
-                else
-                    stopGarminConnectIQ();
+                toggleWatch();
                 return true;
             case R.id.miSettings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class),
@@ -1250,10 +1295,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         } else {
             // default beep
-            // TODO: заменить на SomeUtil.playSound(getApplicationContext(), R.raw.beep);
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.beep);
-            mp.start();
-            mp.setOnCompletionListener(MediaPlayer::release);
+            SomeUtil.playSound(getApplicationContext(), R.raw.beep);
         }
     }
 
@@ -1347,10 +1389,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             snackbar = Snackbar
                     .make(mainView, "", Snackbar.LENGTH_LONG);
             snackbar.getView().setBackgroundResource(R.color.primary_dark);
-            snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                }
+            snackbar.setAction(android.R.string.ok, view -> {
             });
         }
         snackbar.setDuration(timeout);
@@ -1370,8 +1409,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (eventsTextView == null) {
             return;
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        String formattedMessage = String.format("[%s] %s\n", formatter.format(new Date()), message);
+        String formattedMessage = String.format("[%s] %s%n", timeFormatter.format(new Date()), message);
         if (eventsCurrentCount < eventsMaxCount) {
             eventsTextView.append(formattedMessage);
             eventsCurrentCount++;
@@ -1380,6 +1418,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    //region services
     private void stopLoggingService() {
         if (LoggingService.isInstanceCreated())
             toggleLoggingService();
@@ -1392,11 +1431,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
-
         if (LoggingService.isInstanceCreated())
             stopService(dataLoggerServiceIntent);
         else if (mConnectionState == BluetoothLeService.STATE_CONNECTED)
-            ContextCompat.startForegroundService(this, dataLoggerServiceIntent);
+            startService(dataLoggerServiceIntent);
     }
 
     private void stopPebbleService() {
@@ -1427,12 +1465,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     private void startBluetoothService() {
         Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
-        ContextCompat.startForegroundService(this, bluetoothServiceIntent);
-        bindService(bluetoothServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE);
     }
+    //endregion
 
     private void toggleConnectToWheel() {
-        sendBroadcast(new Intent(Constants.ACTION_REQUEST_CONNECTION_TOGGLE));
+        if (getBluetoothLeService() != null) {
+            getBluetoothLeService().toggleConnectToWheel();
+        }
     }
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -1453,17 +1493,17 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         Timber.i("onActivityResult");
         switch (requestCode) {
             case RESULT_DEVICE_SCAN_REQUEST:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK && getBluetoothLeService() != null) {
                     mDeviceAddress = data.getStringExtra("MAC");
                     Timber.i("Device selected = %s", mDeviceAddress);
                     String mDeviceName = data.getStringExtra("NAME");
                     Timber.i("Device selected = %s", mDeviceName);
-                    mBluetoothLeService.setDeviceAddress(mDeviceAddress);
+                    getBluetoothLeService().setDeviceAddress(mDeviceAddress);
                     WheelData.getInstance().full_reset();
                     WheelData.getInstance().setBtName(mDeviceName);
                     updateScreen(true);
                     setMenuIconStates();
-                    mBluetoothLeService.close();
+                    getBluetoothLeService().close();
                     toggleConnectToWheel();
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
                         ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(
@@ -1502,6 +1542,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
         return intentFilter;
     }
 

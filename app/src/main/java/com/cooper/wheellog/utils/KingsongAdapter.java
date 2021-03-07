@@ -267,4 +267,32 @@ public class KingsongAdapter extends BaseAdapter {
     public Boolean getKSAlertsAndSpeedupdated() {
         return mKSAlertsAndSpeedupdated;
     }
+
+    private byte[] getEmptyRequest() {
+        return new byte[]{(byte) 0xAA, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x5A, 0x5A};
+    }
+
+    public void horn() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0x88;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    public void requestNameData() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0x9B;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    public void requestSerialData() {
+        byte[] data = getEmptyRequest();
+        data[16] = 0x63;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    public void requestAlarmSettingsAndMaxSpeed() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0x98;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
 }

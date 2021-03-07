@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -122,6 +123,7 @@ public class LoggingService extends Service
             return START_STICKY;
         }
 
+        String locationHeaderString = "";
         if (logLocationData) {
             mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -151,25 +153,22 @@ public class LoggingService extends Service
             }
 
             if (logLocationData) {
-                fileUtil.writeLine("date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
+                locationHeaderString = "latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,";
                 mLocation = getLastBestLocation();
                 mLocationProvider = LocationManager.NETWORK_PROVIDER;
-                if (useGPS)
+                if (useGPS) {
                     mLocationProvider = LocationManager.GPS_PROVIDER;
+                }
                 // Acquire a reference to the system Location Manager
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
-            } else
-                fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
+            }
         }
-        else {
-            fileUtil.writeLine("date,time,speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
-        }
+        fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
         Timber.i("DataLogger Started");
 
         return START_STICKY;
@@ -212,7 +211,6 @@ public class LoggingService extends Service
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
-        stopSelf();
         Timber.i("DataLogger Stopped");
     }
 
@@ -230,6 +228,7 @@ public class LoggingService extends Service
     }
 
     private void updateFile() {
+        String LocationDataString = "";
         if (logLocationData) {
             String longitude = "";
             String latitude = "";
@@ -239,7 +238,7 @@ public class LoggingService extends Service
             if (mLocation != null) {
                 longitude = String.valueOf(mLocation.getLongitude());
                 latitude = String.valueOf(mLocation.getLatitude());
-                gpsSpeed = String.valueOf(mLocation.getSpeed()*3.6);
+                gpsSpeed = String.valueOf(mLocation.getSpeed() * 3.6);
                 gpsAlt = String.valueOf(mLocation.getAltitude());
                 gpsBearing = String.valueOf(mLocation.getBearing());
                 if (mLastLocation != null)
@@ -247,52 +246,36 @@ public class LoggingService extends Service
 
                 mLastLocation = mLocation;
             }
-            fileUtil.writeLine(String.format(Locale.US, "%s,%s,%s,%s,%s,%s,%.0f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
-                            sdf.format(WheelData.getInstance().getTimeStamp()),
-                            latitude,
-                            longitude,
-                            gpsSpeed,
-                            gpsAlt,
-                            gpsBearing,
-                            mLocationDistance,
-                            WheelData.getInstance().getSpeedDouble(),
-                            WheelData.getInstance().getVoltageDouble(),
-                            WheelData.getInstance().getPhaseCurrentDouble(),
-                            WheelData.getInstance().getCurrentDouble(),
-                            WheelData.getInstance().getPowerDouble(),
-                            WheelData.getInstance().getTorque(),
-                            WheelData.getInstance().getCalculatedPwm(),
-                            WheelData.getInstance().getBatteryLevel(),
-                            WheelData.getInstance().getDistance(),
-							WheelData.getInstance().getTotalDistance(),
-                            WheelData.getInstance().getTemperature(),
-							WheelData.getInstance().getTemperature2(),
-							WheelData.getInstance().getAngle(),
-							WheelData.getInstance().getRoll(),
-							WheelData.getInstance().getModeStr(),
-							WheelData.getInstance().getAlert()
-                    ));
-        } else {
-            fileUtil.writeLine(String.format(Locale.US, "%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
-                            sdf.format(WheelData.getInstance().getTimeStamp()),
-                            WheelData.getInstance().getSpeedDouble(),
-                            WheelData.getInstance().getVoltageDouble(),
-                            WheelData.getInstance().getPhaseCurrentDouble(),
-                            WheelData.getInstance().getCurrentDouble(),
-                            WheelData.getInstance().getPowerDouble(),
-                            WheelData.getInstance().getTorque(),
-                            WheelData.getInstance().getCalculatedPwm(),
-                            WheelData.getInstance().getBatteryLevel(),
-                            WheelData.getInstance().getDistance(),
-							WheelData.getInstance().getTotalDistance(),
-                            WheelData.getInstance().getTemperature(),
-							WheelData.getInstance().getTemperature2(),
-							WheelData.getInstance().getAngle(),
-							WheelData.getInstance().getRoll(),
-							WheelData.getInstance().getModeStr(),
-							WheelData.getInstance().getAlert()
-                    ));
+            LocationDataString = String.format(Locale.US, "%s,%s,%s,%s,%s,%.0f,",
+                    latitude,
+                    longitude,
+                    gpsSpeed,
+                    gpsAlt,
+                    gpsBearing,
+                    mLocationDistance
+            );
         }
+        WheelData wd = WheelData.getInstance();
+        fileUtil.writeLine(String.format(Locale.US, "%s,%s%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
+                sdf.format(WheelData.getInstance().getTimeStamp()),
+                LocationDataString,
+                wd.getSpeedDouble(),
+                wd.getVoltageDouble(),
+                wd.getPhaseCurrentDouble(),
+                wd.getCurrentDouble(),
+                wd.getPowerDouble(),
+                wd.getTorque(),
+                wd.getCalculatedPwm(),
+                wd.getBatteryLevel(),
+                wd.getDistance(),
+                wd.getTotalDistance(),
+                wd.getTemperature(),
+                wd.getTemperature2(),
+                wd.getAngle(),
+                wd.getRoll(),
+                wd.getModeStr(),
+                wd.getAlert()
+        ));
     }
 
     // Define a listener that responds to location updates

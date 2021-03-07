@@ -10,19 +10,14 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
-import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.views.WheelView;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,7 +30,6 @@ import timber.log.Timber;
  */
 public class BluetoothLeService extends Service {
 
-    private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
@@ -48,141 +42,41 @@ public class BluetoothLeService extends Service {
 
     private boolean disconnectRequested = false;
     private boolean autoConnect = false;
-    private NotificationUtil mNotificationHandler;
 
     private Timer beepTimer;
     private int timerTicks;
     PowerManager mgr;
     PowerManager.WakeLock wl;
-
     FileUtil fileUtilRawData;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
-
-    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            switch (intent.getAction()) {
-                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
-                    int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, STATE_DISCONNECTED);
-                    switch (connectionState) {
-                        case STATE_CONNECTED:
-                            mConnectionState = STATE_CONNECTED;
-                            if (!LoggingService.isInstanceCreated() && WheelLog.AppConfig.getAutoLog())
-                                startService(new Intent(getApplicationContext(), LoggingService.class));
-							if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                                Timber.i("Sending King Name request");
-								sendBroadcast(new Intent(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA));
-                            }
-                            break;
-                        case STATE_DISCONNECTED:
-                            mConnectionState = STATE_DISCONNECTED;
-                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                                InMotionAdapter.newInstance();
-                            }
-                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
-                                InmotionAdapterV2.newInstance();
-                            }
-                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-                                NinebotZAdapter.newInstance();
-                            }
-                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT) {
-                                NinebotAdapter.newInstance();
-                            }
-                            break;
-                        case STATE_CONNECTING:
-                            mConnectionState = STATE_CONNECTING;
-                            break;
-                    }
-                    break;
-                case Constants.ACTION_REQUEST_KINGSONG_NAME_DATA:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                        byte[] data = new byte[20];
-                        data[0] = (byte) -86;
-                        data[1] = (byte) 85;
-                        data[16] = (byte) -101;
-                        data[17] = (byte) 20;
-                        data[18] = (byte) 90;
-                        data[19] = (byte) 90;
-                        writeBluetoothGattCharacteristic(data);
-                    }
-                    break;
-                case Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                        byte[] data = new byte[20];
-                        data[0] = (byte) -86;
-                        data[1] = (byte) 85;
-                        data[16] = (byte) 99;
-                        data[17] = (byte) 20;
-                        data[18] = (byte) 90;
-                        data[19] = (byte) 90;
-                        writeBluetoothGattCharacteristic(data);
-                    }
-                    break;
-                case Constants.ACTION_REQUEST_KINGSONG_HORN:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                        byte[] data = new byte[20];
-                        data[0] = (byte) -86;
-                        data[1] = (byte) 85;
-                        data[16] = (byte) -120;
-                        data[17] = (byte) 20;
-                        data[18] = (byte) 90;
-                        data[19] = (byte) 90;
-                        writeBluetoothGattCharacteristic(data);
-                    }
-                    break;
-                case Constants.ACTION_REQUEST_CONNECTION_TOGGLE:
-                    if (mConnectionState == STATE_DISCONNECTED)
-                        connect();
-                    else {
-                        disconnect();
-                        close();
-                    }
-                    break;
-            }
-        }
-    };
-
-
-    private IntentFilter makeIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
-        intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_SERIAL_DATA);
-        intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_NAME_DATA);
-        intentFilter.addAction(Constants.ACTION_REQUEST_KINGSONG_HORN);
-        intentFilter.addAction(Constants.ACTION_REQUEST_CONNECTION_TOGGLE);
-        return intentFilter;
-    }
+    private final String wakeLogTag = "WhellLog:WakeLockTag";
+    private final IBinder mBinder = new LocalBinder();
 
     public int getConnectionState() {
         return mConnectionState;
     }
 
-
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
-
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             Boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
             int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-
                 Timber.i("Connected to GATT server.");
                 if (connectionSound) {
-                    if (noConnectionSound >0) {
+                    if (noConnectionSound > 0) {
                         stopBeepTimer();
                     }
                     if (wl != null) {
                         wl.release();
                         wl = null;
                     }
-                    wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
-                    wl.acquire();
-                    playConnect();
-
+                    wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag);
+                    wl.acquire(5 * 60 * 1000L /*5 minutes*/);
+                    SomeUtil.playSound(getApplicationContext(), R.raw.sound_connect);
                 }
                 mDisconnectTime = null;
                 // Attempts to discover services after successful connection.
@@ -193,12 +87,12 @@ public class BluetoothLeService extends Service {
                 if (mConnectionState == STATE_CONNECTED) {
                     mDisconnectTime = Calendar.getInstance().getTime();
                     if (connectionSound) {
-                        playDisconnect();
+                        SomeUtil.playSound(getApplicationContext(), R.raw.sound_disconnect);
                         if (wl != null) {
                             wl.release();
                             wl = null;
                         }
-                        if (noConnectionSound >0) {
+                        if (noConnectionSound > 0) {
                             startBeepTimer();
                         }
                     }
@@ -206,39 +100,29 @@ public class BluetoothLeService extends Service {
                 if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     Timber.i("Trying to reconnect");
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                                InMotionAdapter.getInstance().stopTimer();
-                        }
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
-                        InmotionAdapterV2.getInstance().stopTimer();
-                    }
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-                        NinebotZAdapter.getInstance().resetConnection();
-                    }
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT) {
-                        NinebotAdapter.getInstance().resetConnection();
+                    switch (WheelData.getInstance().getWheelType()) {
+                        case INMOTION:
+                            InMotionAdapter.stopTimer();
+                        case INMOTION_V2:
+                            InmotionAdapterV2.stopTimer();
+                        case NINEBOT_Z:
+                            NinebotZAdapter.getInstance().resetConnection();
+                        case NINEBOT:
+                            NinebotAdapter.getInstance().resetConnection();
                     }
                     if (!autoConnect) {
                         autoConnect = true;
                         mBluetoothGatt.close();
                         mBluetoothGatt = mBluetoothGatt.getDevice().connectGatt(BluetoothLeService.this, autoConnect, mGattCallback);
-						//if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-                        //        InMotionAdapter.getInstance().resetConnection();
-                        //}
-                        //if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-                        //    NinebotZAdapter.getInstance().resetConnection();
-                        //}
-                        broadcastConnectionUpdate(STATE_CONNECTING, true);
-                    } else
-                        broadcastConnectionUpdate(STATE_CONNECTING, true);
+                    }
+                    broadcastConnectionUpdate(STATE_CONNECTING, true);
                 } else {
                     Timber.i("Disconnected");
                     mConnectionState = STATE_DISCONNECTED;
                     broadcastConnectionUpdate(STATE_DISCONNECTED);
                 }
-            }
-            else
-                Toast.makeText(BluetoothLeService.this, "Unknown Connection State\rState = " + String.valueOf(newState), Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(BluetoothLeService.this, "Unknown Connection State\rState = " + newState, Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -247,7 +131,7 @@ public class BluetoothLeService extends Service {
             Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
-                boolean recognisedWheel = WheelData.getInstance().detectWheel(BluetoothLeService.this, mBluetoothDeviceAddress);
+                boolean recognisedWheel = WheelData.getInstance().detectWheel(mBluetoothDeviceAddress);
                 if (recognisedWheel) {
                     sendBroadcast(new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED));
                     mConnectionState = STATE_CONNECTED;
@@ -301,45 +185,44 @@ public class BluetoothLeService extends Service {
             fileUtilRawData.close();
         }
 
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-            if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
-                byte[] value = characteristic.getValue();
+        WheelData wd = WheelData.getInstance();
+        byte[] value = characteristic.getValue();
+        switch (wd.getWheelType()) {
+            case KINGSONG:
+                if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
+                    wd.decodeResponse(value, getApplicationContext());
+                    if (WheelData.getInstance().getName().isEmpty()) {
+                        KingsongAdapter.getInstance().requestNameData();
+                    } else if (WheelData.getInstance().getSerial().isEmpty()) {
+                        KingsongAdapter.getInstance().requestSerialData();
+                    }
+                }
+                break;
+            case GOTWAY:
+            case GOTWAY_VIRTUAL:
+            case VETERAN:
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());
-            }
-        }
-
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY ||
-                WheelData.getInstance().getWheelType() == WHEEL_TYPE.GOTWAY_VIRTUAL ||
-                WheelData.getInstance().getWheelType() == WHEEL_TYPE.VETERAN) {
-            byte[] value = characteristic.getValue();
-            WheelData.getInstance().decodeResponse(value, getApplicationContext());
-        }
-
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION) {
-            byte[] value = characteristic.getValue();
-            if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
-                WheelData.getInstance().decodeResponse(value, getApplicationContext());
-            }
-        }
-
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.INMOTION_V2) {
-            byte[] value = characteristic.getValue();
-            if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
-                WheelData.getInstance().decodeResponse(value, getApplicationContext());
-            }
-        }
-
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z) {
-            byte[] value = characteristic.getValue();
-            if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
-                WheelData.getInstance().decodeResponse(value, getApplicationContext());
-            }
-        }
-        if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT) {
-            byte[] value = characteristic.getValue();
-            if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID)) {
-                WheelData.getInstance().decodeResponse(value, getApplicationContext());
-            }
+                break;
+            case INMOTION:
+                if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
+                    wd.decodeResponse(value, getApplicationContext());
+                }
+                break;
+            case INMOTION_V2:
+                if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
+                    wd.decodeResponse(value, getApplicationContext());
+                }
+                break;
+            case NINEBOT_Z:
+                if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
+                    wd.decodeResponse(value, getApplicationContext());
+                }
+                break;
+            case NINEBOT:
+                if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID)) {
+                    wd.decodeResponse(value, getApplicationContext());
+                }
+                break;
         }
     }
 
@@ -348,11 +231,23 @@ public class BluetoothLeService extends Service {
     }
 
     private void broadcastConnectionUpdate(int connectionState, boolean auto_connect) {
-        WheelData.getInstance().setConnected(connectionState == STATE_CONNECTED);
+        switch (connectionState) {
+            case STATE_CONNECTED:
+                mConnectionState = STATE_CONNECTED;
+                break;
+            case STATE_DISCONNECTED:
+                mConnectionState = STATE_DISCONNECTED;
+                break;
+            case STATE_CONNECTING:
+                mConnectionState = STATE_CONNECTING;
+                break;
+        }
+
         final Intent intent = new Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState);
-        if (auto_connect)
+        if (auto_connect) {
             intent.putExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT, true);
+        }
         sendBroadcast(intent);
     }
 
@@ -364,20 +259,9 @@ public class BluetoothLeService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        startForeground(Constants.MAIN_NOTIFICATION_ID, MainActivity.notificationHandler.buildNotification());
         return mBinder;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        mNotificationHandler = new NotificationUtil(this);
-        registerReceiver(messageReceiver, makeIntentFilter());
-        startForeground(Constants.MAIN_NOTIFICATION_ID, mNotificationHandler.buildNotification());
-        mgr = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
-
-
-        //startBeepTimer(); //<<<<<<<<<<<<<<<<<
-
-        return START_STICKY;
     }
 
     @Override
@@ -388,19 +272,11 @@ public class BluetoothLeService extends Service {
             fileUtilRawData.close();
         }
         stopBeepTimer();
-        if (mBluetoothGatt != null &&
-                mConnectionState != STATE_DISCONNECTED)
+        if (mBluetoothGatt != null && mConnectionState != STATE_DISCONNECTED) {
             mBluetoothGatt.disconnect();
-        close();
-        if (mNotificationHandler != null) {
-            mNotificationHandler.unregisterReceiver();
         }
-        unregisterReceiver(messageReceiver);
-        stopForeground(true);
-        stopSelf();
+        close();
     }
-
-    private final IBinder mBinder = new LocalBinder();
 
     /**
      * Initializes a reference to the local Bluetooth adapter.
@@ -408,21 +284,11 @@ public class BluetoothLeService extends Service {
      * @return Return true if the initialization is successful.
      */
     public boolean initialize() {
-        if (mBluetoothManager == null) {
-            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            if (mBluetoothManager == null) {
-                Timber.i("Unable to initialize BluetoothManager.");
-                return false;
-            }
-        }
-        if (mBluetoothAdapter == null)
-            mBluetoothAdapter = mBluetoothManager.getAdapter();
-
+        mBluetoothAdapter = getAdapter(getApplicationContext());
         if (mBluetoothAdapter == null) {
             Timber.i("Unable to obtain a BluetoothAdapter.");
             return false;
         }
-
         return true;
     }
 
@@ -435,12 +301,11 @@ public class BluetoothLeService extends Service {
      * Connects to the GATT server hosted on the Bluetooth LE device.
      *
      * @return Return true if the connection is initiated successfully. The connection result
-     *         is reported asynchronously through the
-     *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     *         callback.
+     * is reported asynchronously through the
+     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
+     * callback.
      */
-
-    public boolean connect() { //final String address) {
+    public boolean connect() {
         disconnectRequested = false;
         autoConnect = false;
         mDisconnectTime = null;
@@ -453,6 +318,7 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt != null && mBluetoothGatt.getDevice().getAddress().equals(mBluetoothDeviceAddress)) {
             Timber.i("Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
+                WheelData.getInstance().setBtName(mBluetoothGatt.getDevice().getName());
                 mConnectionState = STATE_CONNECTING;
                 broadcastConnectionUpdate(mConnectionState);
                 return true;
@@ -503,48 +369,35 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt = null;
     }
 
-//    /**
-//     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-//     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-//     * callback.
-//     *
-//     * @param characteristic The characteristic to read from.
-//     */
-//    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
-//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-//            Timber.w(TAG, "BluetoothAdapter not initialized");
-//            return;
-//        }
-//        mBluetoothGatt.readCharacteristic(characteristic);
-//    }
+    public void toggleConnectToWheel() {
+        if (mConnectionState == STATE_DISCONNECTED)
+            connect();
+        else {
+            disconnect();
+            close();
+        }
+    }
 
-//    /**
-//     * Enables or disables notification on a give characteristic.
-//     *
-//     * @param characteristic Characteristic to act on.
-//     * @param enabled If true, enable notification.  False otherwise.
-//     */
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
         Timber.i("Set characteristic start");
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Timber.i("BluetoothAdapter not initialized");
             return;
         }
-        boolean succ = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-        Timber.i("Set characteristic %b", succ);
+        boolean success = mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        Timber.i("Set characteristic %b", success);
     }
-
 
     public boolean writeBluetoothGattCharacteristic(byte[] cmd) {
         if (this.mBluetoothGatt == null || cmd == null) {
             return false;
         }
-		StringBuilder stringBuilder = new StringBuilder(cmd.length);
-        for (byte aData : cmd)
+        StringBuilder stringBuilder = new StringBuilder(cmd.length);
+        for (byte aData : cmd) {
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
-        Timber.i("Transmitted: " + stringBuilder.toString());
-		
+        }
+        Timber.i("Transmitted: %s", stringBuilder.toString());
+
         switch (WheelData.getInstance().getWheelType()) {
             case KINGSONG:
                 BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
@@ -605,8 +458,6 @@ public class BluetoothLeService extends Service {
                 nb_characteristic.setValue(cmd);
                 Timber.i("writeBluetoothGattCharacteristic writeType = %d", nb_characteristic.getWriteType());
                 return this.mBluetoothGatt.writeCharacteristic(nb_characteristic);
-
-
             case INMOTION:
                 BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID));
                 if (im_service == null) {
@@ -634,7 +485,7 @@ public class BluetoothLeService extends Service {
                 if (i3 > 0) {
                     System.arraycopy(cmd, i2 * 20, buf, 0, i3);
                     im_characteristic.setValue(buf);
-                    if(!this.mBluetoothGatt.writeCharacteristic(im_characteristic)) return false;
+                    if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic)) return false;
                 }
                 Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
                 return true;
@@ -657,14 +508,14 @@ public class BluetoothLeService extends Service {
     }
 
     public void writeBluetoothGattDescriptor(BluetoothGattDescriptor descriptor) {
-        boolean succ = mBluetoothGatt.writeDescriptor(descriptor);
-        Timber.i("Write descriptor %b", succ);
+        boolean success = mBluetoothGatt.writeDescriptor(descriptor);
+        Timber.i("Write descriptor %b", success);
     }
 
     public Date getDisconnectTime() {
         return mDisconnectTime;
     }
-    
+
     /**
      * Retrieves a list of supported GATT services on the connected device. This should be
      * invoked only after {@code BluetoothGatt#discoverServices()} completes successfully.
@@ -685,34 +536,27 @@ public class BluetoothLeService extends Service {
         return mBluetoothDeviceAddress;
     }
 
-    private void startBeepTimer(){
-        //wl.acquire();
-        wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLockTag");
-        wl.acquire(300000);
+    private void startBeepTimer() {
+        wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag);
+        wl.acquire(5 * 60 * 1000L /*5 minutes*/);
         timerTicks = 0;
         final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
         TimerTask beepTimerTask = new TimerTask() {
             @Override
             public void run() {
-                timerTicks +=1;
-                if (timerTicks* noConnectionSound > 300000){
+                timerTicks++;
+                if (timerTicks * noConnectionSound > 300000) {
                     stopBeepTimer();
                 }
-                MediaPlayer mp3 = MediaPlayer.create(getApplicationContext(), R.raw.sound_no_connection);
-                mp3.start();
-                mp3.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp3) {
-                        mp3.release();
-                    }
-                });
+                SomeUtil.playSound(getApplicationContext(), R.raw.sound_no_connection);
 
             }
         };
         beepTimer = new Timer();
         beepTimer.scheduleAtFixedRate(beepTimerTask, noConnectionSound, noConnectionSound);
     }
-    private void stopBeepTimer(){
+
+    private void stopBeepTimer() {
         if (wl != null) {
             wl.release();
             wl = null;
@@ -723,24 +567,17 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    private void playConnect(){
-        MediaPlayer mp1 = MediaPlayer.create(getApplicationContext(), R.raw.sound_connect);
-        mp1.start();
-        mp1.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp1) {
-                mp1.release();
-            }
-        });
-    }
-    private void playDisconnect(){
-        MediaPlayer mp2 = MediaPlayer.create(getApplicationContext(), R.raw.sound_disconnect);
-        mp2.start();
-        mp2.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp2) {
-                mp2.release();
-            }
-        });
+    public static BluetoothAdapter getAdapter(Context context) {
+        BluetoothManager bluetoothManager =
+                (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bluetoothManager == null) {
+            Timber.i("Unable to initialize BluetoothManager.");
+            return null;
+        }
+        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+        if (bluetoothAdapter == null) {
+            Timber.i("Unable to obtain a BluetoothAdapter.");
+        }
+        return bluetoothAdapter;
     }
 }

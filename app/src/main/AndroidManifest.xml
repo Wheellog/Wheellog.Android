@@ -88,15 +88,7 @@
                 <action android:name="com.getpebble.action.app.RECEIVE_NACK" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".utils.NotificationUtil$notificationButtonListener"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.cooper.wheellog.notificationConnectionButton" />
-                <action android:name="com.cooper.wheellog.notificationLoggingButton" />
-                <action android:name="com.cooper.wheellog.notificationWatchButton" />
-            </intent-filter>
-        </receiver> <!-- Receivers needed for Samsung Gear watches -->
+        <!-- Receivers needed for Samsung Gear watches -->
         <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.SERVICE_CONNECTION_REQUESTED" />
