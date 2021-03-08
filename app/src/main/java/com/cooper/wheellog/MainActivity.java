@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     break;
                 case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
                     Timber.i("Received news");
-                    showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 3500);
+                    showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
