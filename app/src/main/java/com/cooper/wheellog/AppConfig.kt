@@ -81,6 +81,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.beep_on_volume_up, false)
         set(value) = setValue(R.string.beep_on_volume_up, value)
 
+    var beepByWheel: Boolean
+        get() = getValue(R.string.beep_by_wheel, false)
+        set(value) = setValue(R.string.beep_by_wheel, value)
+
     var useCustomBeep: Boolean
         get() = getValue(R.string.custom_beep, false)
         set(value) = setValue(R.string.custom_beep, value)

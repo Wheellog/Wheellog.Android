@@ -550,16 +550,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     }
             )
         }
-        prefs.add(
-                Preference(context).apply {
-                    setIcon(R.drawable.ic_baseline_horn_512)
-                    title = getString(R.string.wheel_beep)
-                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                        InMotionAdapter.getInstance().wheelBeep()
-                        true
-                    }
-                }
-        )
         prefs.toTypedArray().forEach {
             preferenceScreen.addPreference(it)
         }

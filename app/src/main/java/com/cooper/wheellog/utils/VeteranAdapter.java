@@ -136,6 +136,11 @@ public class VeteranAdapter extends BaseAdapter {
         return 24;
     }
 
+    @Override
+    public void wheelBeep() {
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+    }
+
     static class veteranUnpacker {
 
         enum UnpackerState {

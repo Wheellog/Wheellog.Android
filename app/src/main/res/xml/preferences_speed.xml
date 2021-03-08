@@ -141,6 +141,13 @@
         android:defaultValue="false" />
 
     <SwitchPreference
+            android:enabled="true"
+            android:key="@string/beep_by_wheel"
+            android:summary="@string/beep_by_wheel_description"
+            android:title="@string/beep_by_wheel_title"
+            android:defaultValue="false" />
+
+    <SwitchPreference
         android:key="@string/custom_beep"
         android:title="@string/custom_beep_title"
         android:defaultValue="false" />

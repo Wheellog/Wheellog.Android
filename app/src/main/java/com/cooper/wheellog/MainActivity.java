@@ -1045,7 +1045,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent e) {
                     if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
-                        playBeep(false);
+                        if (WheelLog.AppConfig.getBeepByWheel()) {
+                            WheelData.getInstance().wheelBeep();
+                        } else {
+                            playBeep(false);
+                        }
                         return true;
                     }
                     return super.onSingleTapConfirmed(e);
@@ -1310,7 +1314,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             case KeyEvent.KEYCODE_CAMERA:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    playBeep(false);
+                    if (WheelLog.AppConfig.getBeepByWheel()) {
+                        WheelData.getInstance().wheelBeep();
+                    } else {
+                        playBeep(false);
+                    }
                     return true;
                 }
         }

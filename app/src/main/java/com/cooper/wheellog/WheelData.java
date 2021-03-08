@@ -386,6 +386,10 @@ public class WheelData {
 			InMotionAdapter.getInstance().setLedState(enabledLed);
 		}
     }
+
+    public void wheelBeep() {
+        getAdapter().wheelBeep();
+    }
 	
 	public void updatePedalsMode(int pedalsMode) {
 		if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {

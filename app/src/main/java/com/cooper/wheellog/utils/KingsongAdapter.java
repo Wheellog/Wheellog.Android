@@ -272,7 +272,8 @@ public class KingsongAdapter extends BaseAdapter {
         return new byte[]{(byte) 0xAA, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x5A, 0x5A};
     }
 
-    public void horn() {
+    @Override
+    public void wheelBeep() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x88;
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);

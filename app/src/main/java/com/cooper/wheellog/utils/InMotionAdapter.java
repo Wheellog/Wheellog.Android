@@ -387,6 +387,7 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.wheelCalibration().writeBuffer();
     }
 
+    @Override
     public void wheelBeep() {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.wheelBeep().writeBuffer();

@@ -428,10 +428,10 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         Context context = getApplicationContext();
 
         int horn_mode = WheelLog.AppConfig.getHornMode();
-        if (horn_mode == 1 && WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.KINGSONG) {
-            KingsongAdapter.getInstance().horn();
+        if (horn_mode == 1) {
+            WheelData.getInstance().wheelBeep();
         } else if (horn_mode == 2) {
-            SomeUtil.playSound(context, R.raw.bicycle_bell);
+            SomeUtil.playSound(context, R.raw.bicycle_bell); // todo need to fix and align with general beep settings
         }
     }
 

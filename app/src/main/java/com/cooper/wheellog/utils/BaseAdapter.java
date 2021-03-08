@@ -21,6 +21,9 @@ public abstract class BaseAdapter {
     public void switchFlashlight() {
     }
 
+    public void wheelBeep() {
+    }
+
     public void updateMaxSpeed(int wheelMaxSpeed) {
         // TODO from WheelData
     }
