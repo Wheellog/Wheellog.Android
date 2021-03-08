@@ -1045,11 +1045,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent e) {
                     if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
-                        if (WheelLog.AppConfig.getBeepByWheel()) {
-                            WheelData.getInstance().wheelBeep();
-                        } else {
-                            playBeep(false);
-                        }
+                        SomeUtil.playBeep(getApplicationContext());
                         return true;
                     }
                     return super.onSingleTapConfirmed(e);
@@ -1280,33 +1276,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    private void playBeep (boolean onlyDefault) {
-        // no mute
-        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-        // max volume
-//        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-//        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-
-        Uri beepFile = WheelLog.AppConfig.getBeepFile();
-        // selected file
-        if (!onlyDefault &&  WheelLog.AppConfig.getUseCustomBeep() && beepFile != Uri.EMPTY) {
-            MediaPlayer mp = new MediaPlayer();
-            try {
-                mp.setDataSource(getApplicationContext(), beepFile);
-                mp.setOnPreparedListener(MediaPlayer::start);
-                mp.prepareAsync();
-                mp.setOnCompletionListener(MediaPlayer::release);
-            } catch (IOException e) {
-                e.printStackTrace();
-                playBeep(true);
-            }
-        } else {
-            // default beep
-            SomeUtil.playSound(getApplicationContext(), R.raw.beep);
-        }
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -1314,11 +1283,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             case KeyEvent.KEYCODE_CAMERA:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    if (WheelLog.AppConfig.getBeepByWheel()) {
-                        WheelData.getInstance().wheelBeep();
-                    } else {
-                        playBeep(false);
-                    }
+                    SomeUtil.playBeep(getApplicationContext());
                     return true;
                 }
         }
