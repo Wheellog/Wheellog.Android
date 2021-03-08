@@ -390,7 +390,13 @@ public class InMotionAdapter extends BaseAdapter {
     @Override
     public void wheelBeep() {
         settingCommandReady = true;
-        settingCommand = InMotionAdapter.CANMessage.wheelBeep().writeBuffer();
+        if (getWheelModesWheel()) settingCommand = InMotionAdapter.CANMessage.wheelBeep().writeBuffer();
+        else settingCommand = InMotionAdapter.CANMessage.playSound((byte) 4).writeBuffer(); // old wheels like V8 and V5F don't have beep command, so let's play sound instead
+    }
+
+    public void wheelSound(byte soundNumber) {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.playSound(soundNumber).writeBuffer();
     }
 
     static Mode intToMode(int mode) {
@@ -677,6 +683,7 @@ public class InMotionAdapter extends BaseAdapter {
             Light(0x0F55010D),
             HandleButton(0x0F55012E),
             SpeakerVolume(0x0F55060A),
+            PlaySound(0x0F550609),
             Alert(0x0F780101);
 
             private final int value;
@@ -948,6 +955,17 @@ public class InMotionAdapter extends BaseAdapter {
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{1, 0, 0, 0, value[1], value[0], 0, 0};
 			
+            return msg;
+        }
+
+        public static CANMessage playSound(byte soundNumber) {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.PlaySound.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{soundNumber, 0, 0, 0, 0, 0, 0, 0};
+
             return msg;
         }
 

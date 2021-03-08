@@ -480,4 +480,19 @@ class InmotionAdapterTest {
         assertThat(adapter.settingCommandReady).isEqualTo(true)
         assertThat(actual).isEqualTo(expected)
     }
+
+    @Test
+    fun `play sound command`() {
+        // Arrange.
+        val expected = "AAAA0906A5550F020000000000000008050000825555".hexToByteArray()
+
+        // Act.
+        adapter.wheelSound(2)
+        val actual = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual).isEqualTo(expected)
+    }
+
 }
