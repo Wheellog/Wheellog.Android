@@ -1542,7 +1542,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
-        intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);

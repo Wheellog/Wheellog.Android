@@ -541,7 +541,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                     .setMessage(getString(R.string.wheel_calibration_message))
                                     .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
                                         InMotionAdapter.getInstance().wheelCalibration()
-                                        true
                                     }
                                     .setNegativeButton(android.R.string.no, null)
                                     .setIcon(R.drawable.ic_baseline_calibration_24)
