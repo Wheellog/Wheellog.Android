@@ -75,9 +75,9 @@
 
         <service android:name=".PebbleService" />
         <service android:name=".BluetoothLeService" />
-        <service android:name=".LoggingService" /> <!-- Services needed for Samsung Gear watches -->
-        <service android:name=".GearService" /> <!-- Services needed for Garmin ConnectIQ devices -->
-        <service android:name=".GarminConnectIQ" />
+        <service android:name=".LoggingService" />
+        <service android:name="com.cooper.wheellog.GearService" /> <!-- Services needed for Samsung Gear watches -->
+        <service android:name="com.cooper.wheellog.GarminConnectIQ" /> <!-- Services needed for Garmin ConnectIQ devices -->
 
         <receiver
             android:name=".PebbleBroadcastReceiver"

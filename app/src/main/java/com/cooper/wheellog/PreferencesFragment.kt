@@ -877,7 +877,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             summary = getString(R.string.warning_speed_description)
                             min = 0
                             max = 100
-                            unit = "%"
+                            unit = getString(R.string.kmh)
                             increment = 1
                             setDefaultValue(0)
                         },
