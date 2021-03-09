@@ -388,7 +388,9 @@ public class WheelData {
     }
 
     public void wheelBeep() {
-        getAdapter().wheelBeep();
+        if (mWheelType != WHEEL_TYPE.Unknown) {
+            getAdapter().wheelBeep();
+        }
     }
 	
 	public void updatePedalsMode(int pedalsMode) {
