@@ -103,6 +103,8 @@ public class WheelData {
 	private int mWheelMaxSpeed = 0;
 	private int mWheelSpeakerVolume = 50;
 	private int mWheelTiltHorizon = 0;
+    private int mWheelPedalHardness = 100;
+    private boolean mWheelRideMode = false;
 
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
@@ -340,6 +342,7 @@ public class WheelData {
 
     public void setWheelMaxSpeed(int value) {
         mWheelMaxSpeed = value;
+        WheelLog.AppConfig.setWheelMaxSpeed(value);
     }
 
 	public int getSpeakerVolume() {
@@ -348,6 +351,14 @@ public class WheelData {
 	
 	public int getPedalsPosition() {
         return mWheelTiltHorizon;
+    }
+
+    public int getPedalHardness() {
+        return mWheelPedalHardness;
+    }
+
+    public boolean getRideMode() {
+        return mWheelRideMode;
     }
 
     public void setBtName(String btName) {
@@ -374,6 +385,12 @@ public class WheelData {
 			mWheelLedEnabled = enabledLed;
 			InMotionAdapter.getInstance().setLedState(enabledLed);
 		}
+    }
+
+    public void wheelBeep() {
+        if (mWheelType != WHEEL_TYPE.Unknown) {
+            getAdapter().wheelBeep();
+        }
     }
 	
 	public void updatePedalsMode(int pedalsMode) {
@@ -611,7 +628,21 @@ public class WheelData {
 			InMotionAdapter.getInstance().setTiltHorizon(pedalAdjustment);
 		}
     }
-	
+
+    public void updatePedalHardness(int pedalHardness) {
+        if (mWheelPedalHardness != pedalHardness) {
+            mWheelPedalHardness = pedalHardness;
+            InMotionAdapter.getInstance().setPedalHardness(pedalHardness);
+        }
+    }
+
+    public void updateRideMode(boolean rideMode) {
+        if (mWheelRideMode != rideMode) {
+            mWheelRideMode = rideMode;
+            InMotionAdapter.getInstance().setRideMode(rideMode);
+        }
+    }
+
     public int getTemperature() {
         return mTemperature / 100;
     }
@@ -1207,7 +1238,7 @@ public class WheelData {
         Timber.i("Received: " + stringBuilder.toString());
 //        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
         Timber.i("Decode, proto: %s", protoVer);
-        boolean new_data = getAdapter().decode(data);
+        boolean new_data = getAdapter().setContext(mContext).decode(data);
 
         if (!new_data)
 			return;
@@ -1292,13 +1323,36 @@ public class WheelData {
     }
 
     // TODO only for inmotion... fix me
-    public void setWheelLightEnabled(boolean value) {mWheelLightEnabled = value;}
-    public void setWheelLedEnabled(boolean value) {mWheelLedEnabled = value;}
-    public void setWheelButtonDisabled(boolean value) {mWheelButtonDisabled = value;}
-    public void setNewWheelSettings(boolean value) {mNewWheelSettings = value;}
-    public void setDataForLog(boolean value) {mDataForLog = value;}
-    public void setWheelSpeakerVolume(int value) {mWheelSpeakerVolume = value;}
-    public void setWheelTiltHorizon(int value) {mWheelTiltHorizon = value;}
+    public void setWheelLightEnabled(boolean value) {
+        mWheelLightEnabled = value;
+        WheelLog.AppConfig.setLightEnabled(value);
+    }
+    public void setWheelLedEnabled(boolean value) {
+        mWheelLedEnabled = value;
+        WheelLog.AppConfig.setLedEnabled(value);
+    }
+    public void setWheelButtonDisabled(boolean value) {
+        mWheelButtonDisabled = value;
+        WheelLog.AppConfig.setHandleButtonDisabled(value);
+    }
+    public void setWheelSpeakerVolume(int value) {
+        mWheelSpeakerVolume = value;
+        WheelLog.AppConfig.setSpeakerVolume(value);
+    }
+    public void setWheelTiltHorizon(int value) {
+        mWheelTiltHorizon = value;
+        WheelLog.AppConfig.setPedalsAdjustment(value);
+    }
+    public void setWheelPedalHardness(int value) {
+        mWheelPedalHardness = value;
+        WheelLog.AppConfig.setPedalHardness(value);
+    }
+    public void setWheelRideMode(boolean value) {
+        mWheelRideMode = value;
+        WheelLog.AppConfig.setRideMode(value);
+    }
+    public void setNewWheelSettings(boolean value) {mNewWheelSettings = value;} // это был костыль, и походу он не работает больше
+    public void setDataForLog(boolean value) {mDataForLog = value;} // это тоже был костыль, возможно тоже не нужен, проверить.
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
@@ -1366,6 +1420,8 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
 		mWheelTiltHorizon = 0;
+		mWheelPedalHardness = 100;
+        mWheelRideMode = false;
 		mWheelLightEnabled = false;
 		mWheelLedEnabled = false;
 		mWheelButtonDisabled = false;

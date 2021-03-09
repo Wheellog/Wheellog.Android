@@ -75,11 +75,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
                 context.sendBroadcast(pebbleScreenIntent);
             } else if (data.contains(PEBBLE_KEY_PLAY_HORN)) {
                 int horn_mode = WheelLog.AppConfig.getHornMode();
-                if (horn_mode == 1 && WheelData.getInstance().getWheelType() == com.cooper.wheellog.utils.Constants.WHEEL_TYPE.KINGSONG) {
-                    KingsongAdapter.getInstance().horn();
-                } else if (horn_mode == 2) {
-                    SomeUtil.playSound(context, R.raw.bicycle_bell);
-                }
+                SomeUtil.playBeep(context, horn_mode == 1, false);
             }
         }
     }

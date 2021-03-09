@@ -6,12 +6,10 @@ public class Constants {
 
     public static final String ACTION_BLUETOOTH_CONNECTION_STATE = "com.cooper.wheellog.bluetoothConnectionState";
     public static final String ACTION_WHEEL_TYPE_CHANGED = "com.cooper.wheellog.wheelTypeChanged";
-    public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.cooper.wheelTimber.wheelDataAvailable";
-    public static final String ACTION_WHEEL_SETTING_CHANGED = "com.cooper.wheelTimber.wheelSettingChanged";
+    public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.cooper.wheellog.wheelDataAvailable";
+    public static final String ACTION_WHEEL_NEWS_AVAILABLE = "com.cooper.wheellog.wheelNews";
     public static final String ACTION_PEBBLE_SERVICE_TOGGLED = "com.cooper.wheellog.pebbleServiceToggled";
     public static final String ACTION_LOGGING_SERVICE_TOGGLED = "com.cooper.wheellog.loggingServiceToggled";
-    public static final String ACTION_REQUEST_CONNECTION_TOGGLE = "com.cooper.wheellog.requestConnectionToggle";
-    public static final String ACTION_PREFERENCE_CHANGED = "com.cooper.wheellog.preferenceChanged";
     public static final String ACTION_PREFERENCE_RESET = "com.cooper.wheellog.preferenceReset";
     public static final String ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED = "com.cooper.wheellog.pebblePreferenceChanged";
     public static final String ACTION_ALARM_TRIGGERED = "com.cooper.wheellog.alarmTriggered";
@@ -72,8 +70,7 @@ public class Constants {
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
     public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
     public static final String INTENT_EXTRA_DATA_TO_LOGS = "wheel_data_to_logs";
-    public static final String INTENT_EXTRA_SETTINGS_KEY = "settings_key";
-    public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
+    public static final String INTENT_EXTRA_NEWS = "wheel_news";
 
     public static final double MAX_CELL_VOLTAGE = 4.2;
 

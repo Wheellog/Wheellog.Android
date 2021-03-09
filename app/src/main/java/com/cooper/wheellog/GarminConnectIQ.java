@@ -425,14 +425,8 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     }
 
     public void playHorn() {
-        Context context = getApplicationContext();
-
         int horn_mode = WheelLog.AppConfig.getHornMode();
-        if (horn_mode == 1 && WheelData.getInstance().getWheelType() == Constants.WHEEL_TYPE.KINGSONG) {
-            KingsongAdapter.getInstance().horn();
-        } else if (horn_mode == 2) {
-            SomeUtil.playSound(context, R.raw.bicycle_bell);
-        }
+        SomeUtil.playBeep(getApplicationContext(), horn_mode == 1, false);
     }
 
     public void startWebServer() {

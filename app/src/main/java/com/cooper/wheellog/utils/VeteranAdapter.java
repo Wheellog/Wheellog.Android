@@ -15,7 +15,6 @@ public class VeteranAdapter extends BaseAdapter {
     private static final int WAITING_TIME = 100;
     private long time_old = 0;
 
-
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode Veteran");
@@ -135,6 +134,11 @@ public class VeteranAdapter extends BaseAdapter {
     @Override
     public int getCellSForWheel() {
         return 24;
+    }
+
+    @Override
+    public void wheelBeep() {
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
     }
 
     static class veteranUnpacker {

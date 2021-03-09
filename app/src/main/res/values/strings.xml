@@ -42,6 +42,8 @@
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
     <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
+    <string name="pedal_hardness" translatable="false">pedal_hardness</string>
+    <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
     <string name="light_mode" translatable="false">light_mode</string>
     <string name="strobe_mode" translatable="false">strobe_mode</string>
@@ -87,6 +89,7 @@
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
     <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
+    <string name="beep_by_wheel" translatable="false">beep_by_wheel</string>
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
@@ -353,6 +356,18 @@
     <string name="alarm_settings_description">Alarm settings</string>
     <string name="alarm_mode_title">Alarm Mode</string>
     <string name="calibration_title">Calibration</string>
+    <string name="calibration_success">Calibration success</string>
+    <string name="calibration_fail">Calibration fail</string>
+    <string name="ridemode_success">Ride mode change success</string>
+    <string name="ridemode_fail">Ride mode change fail</string>
+    <string name="remotecontrol_success">Remote control success</string>
+    <string name="remotecontrol_fail">Remote control fail</string>
+    <string name="light_success">Light state change success</string>
+    <string name="light_fail">Light state change fail</string>
+    <string name="handlebutton_success">Handle button success</string>
+    <string name="handlebutton_fail">Handle button fail</string>
+    <string name="speakervolume_success">Speaker control success</string>
+    <string name="speakervolume_fail">Speaker control fail</string>
     <string name="is_gotway_mcm_title">My Wheel is a Gotway MCM</string>
     <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
     <string name="ks18l_scaler_title">Wrong 18L distanse</string>
@@ -378,6 +393,10 @@
     <string name="speaker_volume_description">Change built-in speaker volume</string>
     <string name="pedal_horizont_title">Pedals</string>
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
+    <string name="ride_mode_title">Ride mode</string>
+    <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
+    <string name="pedal_hardness_title">Hardness of platform</string>
+    <string name="pedal_hardness_description">Bigger number - more hardness, 4% is equal to 0% in official app</string>
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
@@ -425,10 +444,15 @@
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
     <string name="beep_on_volume_up_title">Beep on volume keys</string>
     <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
+    <string name="beep_by_wheel_description">Beep by build-in wheel horn</string>
+    <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
     <string name="power_off">Power off</string>
+    <string name="wheel_calibration">Wheel calibration</string>
+    <string name="wheel_beep">Wheel beep</string>
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
+    <string name="wheel_calibration_message">Please set wheel in parking position before start, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>

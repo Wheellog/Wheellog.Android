@@ -152,6 +152,11 @@ public class GotwayAdapter extends BaseAdapter {
         return 24;
     }
 
+    @Override
+    public void wheelBeep() {
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+    }
+
     static class gotwayUnpacker {
 
         enum UnpackerState {

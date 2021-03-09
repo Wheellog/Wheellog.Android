@@ -141,11 +141,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if (context == null) {
+        if (context == null || key == null) {
             return
         }
 
-        val resName = key?.replace(WheelData.getInstance().mac + "_", "")
+        val resName = key.replace(WheelData.getInstance().mac + "_", "")
         when (WheelLog.AppConfig.getResId(resName)) {
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
@@ -190,12 +190,38 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .show()
-            R.string.light_enabled -> WheelData.getInstance().updateLight(WheelLog.AppConfig.lightEnabled)
-            R.string.led_enabled -> WheelData.getInstance().updateLed(WheelLog.AppConfig.ledEnabled)
-            R.string.handle_button_disabled -> WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.handleButtonDisabled)
-            R.string.wheel_max_speed -> WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
-            R.string.speaker_volume -> WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
-            R.string.pedals_adjustment -> WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
+            R.string.light_enabled -> {
+                WheelData.getInstance().updateLight(WheelLog.AppConfig.lightEnabled)
+                correctCheckState(key)
+            }
+            R.string.led_enabled -> {
+                WheelData.getInstance().updateLed(WheelLog.AppConfig.ledEnabled)
+                correctCheckState(key)
+            }
+            R.string.handle_button_disabled -> {
+                WheelData.getInstance().updateHandleButton(WheelLog.AppConfig.handleButtonDisabled)
+                correctCheckState(key)
+            }
+            R.string.wheel_max_speed -> {
+                WheelData.getInstance().updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
+                correctSeekBarState(key)
+            }
+            R.string.speaker_volume -> {
+                WheelData.getInstance().updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
+                correctSeekBarState(key)
+            }
+            R.string.pedals_adjustment -> {
+                WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
+                correctSeekBarState(key)
+            }
+            R.string.pedal_hardness -> {
+                WheelData.getInstance().updatePedalHardness(WheelLog.AppConfig.pedalHardness)
+                correctSeekBarState(key)
+            }
+            R.string.ride_mode -> {
+                WheelData.getInstance().updateRideMode(WheelLog.AppConfig.rideMode)
+                correctCheckState(key)
+            }
             R.string.pedals_mode -> WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
             R.string.light_mode -> WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
             R.string.alarm_mode -> WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
@@ -463,7 +489,30 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
                 }
         )
-        if (WheelData.getInstance().speed < 5) {
+        if (InMotionAdapter.getInstance().wheelModesWheel) {
+            prefs.add(
+                    SwitchPreference(context).apply {
+                        key = mac + getString(R.string.ride_mode)
+                        title = getString(R.string.ride_mode_title)
+                        summary = getString(R.string.ride_mode_description)
+                        isChecked = WheelLog.AppConfig.rideMode
+                    }
+            )
+            prefs.add(
+                    SeekBarPreference(context).apply {
+                        key = mac + getString(R.string.pedal_hardness)
+                        title = getString(R.string.pedal_hardness_title)
+                        summary = getString(R.string.pedal_hardness_description)
+                        min = 4
+                        max = 100
+                        unit = "%"
+                        increment = 1
+                        setDefaultValue(WheelLog.AppConfig.pedalHardness)
+                    }
+            )
+        }
+
+        if (WheelData.getInstance().speed < 1) {
             prefs.add(
                     Preference(context).apply {
                         setIcon(R.drawable.ic_baseline_power_off_24)
@@ -477,6 +526,24 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                     }
                                     .setNegativeButton(android.R.string.no, null)
                                     .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_calibration_24)
+                        title = getString(R.string.wheel_calibration)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.wheel_calibration))
+                                    .setMessage(getString(R.string.wheel_calibration_message))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        InMotionAdapter.getInstance().wheelCalibration()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_calibration_24)
                                     .show()
                             true
                         }
@@ -969,6 +1036,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 ?: return
         val checkState = twoStatePreference.isChecked
         if (settingState != checkState) twoStatePreference.isChecked = settingState
+    }
+
+    private fun correctSeekBarState(preference: String) {
+        val settingState = WheelLog.AppConfig.getValue(preference, 0)
+        val sbPreference = findPreference<SeekBarPreference>(preference)
+                ?: return
+        val sbState = sbPreference.value
+        if (settingState != sbState) sbPreference.value = settingState
     }
 
     private fun showMainMenu() {

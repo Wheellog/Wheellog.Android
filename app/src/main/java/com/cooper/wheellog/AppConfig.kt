@@ -81,6 +81,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.beep_on_volume_up, false)
         set(value) = setValue(R.string.beep_on_volume_up, value)
 
+    var beepByWheel: Boolean
+        get() = getValue(R.string.beep_by_wheel, false)
+        set(value) = setValue(R.string.beep_by_wheel, value)
+
     var useCustomBeep: Boolean
         get() = getValue(R.string.custom_beep, false)
         set(value) = setValue(R.string.custom_beep, value)
@@ -256,6 +260,14 @@ class AppConfig(var context: Context) {
     var pedalsAdjustment: Int
         get() = getSpecific(R.string.pedals_adjustment, 0)
         set(value) = setSpecific(R.string.pedals_adjustment, value)
+
+    var pedalHardness: Int
+        get() = getSpecific(R.string.pedal_hardness, 100)
+        set(value) = setSpecific(R.string.pedal_hardness, value)
+
+    var rideMode: Boolean
+        get() = getSpecific(R.string.ride_mode, false)
+        set(value) = setSpecific(R.string.ride_mode, value)
     //endregion
     
     //region kingsong

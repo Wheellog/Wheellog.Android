@@ -1,6 +1,8 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.BluetoothLeService;
+import com.cooper.wheellog.MainActivity;
+import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
@@ -8,6 +10,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import timber.log.Timber;
+
+import android.content.Intent;
+import android.content.Context;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
@@ -23,23 +28,77 @@ public class InMotionAdapter extends BaseAdapter {
     @Override
     public boolean decode(byte[] data) {
         for (byte c : data) {
-            if (unpacker.addChar(c)) {
-                CANMessage result = CANMessage.verify(unpacker.getBuffer());
-                if (result != null) { // data OK
-                    if (result.id == CANMessage.IDValue.GetFastInfo.getValue()) {
-                        return result.parseFastInfoMessage(model);
-                    } else if (result.id == CANMessage.IDValue.Alert.getValue()) {
-                        return result.parseAlertInfoMessage();
-                    } else if (result.id == CANMessage.IDValue.GetSlowInfo.getValue()) {
-                        boolean res = result.parseSlowInfoMessage();
-                        Model a = model;
-                        if (res) {
-                            needSlowData = false;
-                        }
-                        return res;
-                    } else if (result.id == CANMessage.IDValue.PinCode.getValue()) {
-                        passwordSent = Integer.MAX_VALUE;
+            if (!unpacker.addChar(c)) {
+                continue;
+            }
+            CANMessage result = CANMessage.verify(unpacker.getBuffer());
+            if (result == null) {
+                continue;
+            }
+            // data OK
+            CANMessage.IDValue idValue = CANMessage.IDValue.NoOp;
+            for (CANMessage.IDValue id: CANMessage.IDValue.values()) {
+                if (id.value == result.id) {
+                    idValue = id;
+                    break;
+                }
+            }
+            switch (idValue) {
+                case GetFastInfo:
+                    return result.parseFastInfoMessage(model);
+                case Alert:
+                    return result.parseAlertInfoMessage();
+                case GetSlowInfo:
+                    boolean res = result.parseSlowInfoMessage();
+                    if (res) {
+                        needSlowData = false;
                     }
+                    return res;
+                case PinCode:
+                    passwordSent = Integer.MAX_VALUE;
+                    break;
+            }
+
+            if (mContext != null) {
+                String news = null;
+                switch (idValue) {
+                    case Calibration:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.calibration_success)
+                                : mContext.getString(R.string.calibration_fail);
+                        break;
+                    case RideMode:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.ridemode_success)
+                                : mContext.getString(R.string.ridemode_fail);
+                        break;
+                    case RemoteControl:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.remotecontrol_success)
+                                : mContext.getString(R.string.remotecontrol_fail);
+                        break;
+                    case Light:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.light_success)
+                                : mContext.getString(R.string.light_fail);
+                        break;
+                    case HandleButton:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.handlebutton_success)
+                                : mContext.getString(R.string.handlebutton_fail);
+                        break;
+                    case SpeakerVolume:
+                        news = result.data[0] == 1
+                                ? mContext.getString(R.string.speakervolume_success)
+                                : mContext.getString(R.string.speakervolume_fail);
+                        break;
+                }
+
+                if (news != null) {
+                    Timber.i("News to send: %s, sending Intent", news);
+                    Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                    intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
+                    mContext.sendBroadcast(intent);
                 }
             }
         }
@@ -91,6 +150,20 @@ public class InMotionAdapter extends BaseAdapter {
         switch (model) {
             case Glide3:
             case V8:
+            case V8F:
+            case V10S:
+            case V10SF:
+            case V10T:
+            case V10:
+            case V10F:
+            case V10FT:
+                return true;
+        }
+        return false;
+    }
+
+    public boolean getWheelModesWheel() {
+        switch (model) {
             case V8F:
             case V10S:
             case V10SF:
@@ -292,12 +365,38 @@ public class InMotionAdapter extends BaseAdapter {
     public void setTiltHorizon(final int tiltHorizon) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(tiltHorizon).writeBuffer();
+    }
 
+    public void setPedalHardness(final int pedalHardness) {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.setPedalHardness(pedalHardness).writeBuffer();
+    }
+
+    public void setRideMode(final boolean rideMode) {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.setRideMode(rideMode).writeBuffer();
     }
 
     public void powerOff() {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
+    }
+
+    public void wheelCalibration() {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.wheelCalibration().writeBuffer();
+    }
+
+    @Override
+    public void wheelBeep() {
+        settingCommandReady = true;
+        if (getWheelModesWheel()) settingCommand = InMotionAdapter.CANMessage.wheelBeep().writeBuffer();
+        else settingCommand = InMotionAdapter.CANMessage.playSound((byte) 4).writeBuffer(); // old wheels like V8 and V5F don't have beep command, so let's play sound instead
+    }
+
+    public void wheelSound(byte soundNumber) {
+        settingCommandReady = true;
+        settingCommand = InMotionAdapter.CANMessage.playSound(soundNumber).writeBuffer();
     }
 
     static Mode intToMode(int mode) {
@@ -577,16 +676,15 @@ public class InMotionAdapter extends BaseAdapter {
             NoOp(0),
             GetFastInfo(0x0F550113),
             GetSlowInfo(0x0F550114),
-            //RemoteControl(0x0F550116),
             RideMode(0x0F550115),
+            RemoteControl(0x0F550116),
+            Calibration(0x0F550119),
             PinCode(0x0F550307),
             Light(0x0F55010D),
-            Led(0x0F550116),
             HandleButton(0x0F55012E),
-            MaxSpeed(0x0F550115),
             SpeakerVolume(0x0F55060A),
-            Alert(0x0F780101),
-            PowerOff(0x0F550116);
+            PlaySound(0x0F550609),
+            Alert(0x0F780101);
 
             private final int value;
 
@@ -797,17 +895,37 @@ public class InMotionAdapter extends BaseAdapter {
                 enable = 0x0F;
             }
             msg.len = 8;
-            msg.id = IDValue.Led.getValue();
+            msg.id = IDValue.RemoteControl.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
             msg.data = new byte[]{(byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00, enable, (byte) 0x00, (byte) 0x00, (byte) 0x00};
             return msg;
         }
 
+        public static CANMessage wheelBeep() {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.RemoteControl.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x11, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+            return msg;
+        }
+
+        public static CANMessage wheelCalibration() {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.Calibration.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0x32, (byte) 0x54, (byte) 0x76, (byte) 0x98, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+            return msg;
+        }
+
         public static CANMessage powerOff() {
             CANMessage msg = new CANMessage();
             msg.len = 8;
-            msg.id = IDValue.PowerOff.getValue();
+            msg.id = IDValue.RemoteControl.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
             msg.data = new byte[]{(byte) 0xB2, 0, 0, 0, 5, 0, 0, 0};
@@ -832,7 +950,7 @@ public class InMotionAdapter extends BaseAdapter {
             CANMessage msg = new CANMessage();
             byte[] value = MathsUtil.getBytes((short)(maxSpeed * 1000));
             msg.len = 8;
-            msg.id = IDValue.MaxSpeed.getValue();
+            msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{1, 0, 0, 0, value[1], value[0], 0, 0};
@@ -840,15 +958,41 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setRideMode(int rideMode) {
+        public static CANMessage playSound(byte soundNumber) {
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.PlaySound.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{soundNumber, 0, 0, 0, 0, 0, 0, 0};
+
+            return msg;
+        }
+
+        public static CANMessage setRideMode(boolean rideMode) {
             /// rideMode =0 -Comfort, =1 -Classic
+            byte classic = 0;
+            if (rideMode) {
+                classic = 1;
+            }
             CANMessage msg = new CANMessage();
             msg.len = 8;
             msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
-            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) rideMode, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
+            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) classic, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
 
+            return msg;
+        }
+
+        public static CANMessage setPedalHardness(int pedalHardness) {
+            byte[] value = MathsUtil.getBytes((short)((pedalHardness+28)<<5));
+            CANMessage msg = new CANMessage();
+            msg.len = 8;
+            msg.id = IDValue.RideMode.getValue();
+            msg.ch = 5;
+            msg.type = CanFrame.DataFrame.getValue();
+            msg.data = new byte[]{(byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x00, value[1], value[0] , (byte) 0x00, (byte) 0x00};
             return msg;
         }
 
@@ -870,7 +1014,7 @@ public class InMotionAdapter extends BaseAdapter {
 
             byte[] t = MathsUtil.getBytes(tilt);
             msg.len = 8;
-            msg.id = IDValue.MaxSpeed.getValue();
+            msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{0, 0, 0, 0, t[3], t[2], t[1], t[0]};
@@ -1029,6 +1173,8 @@ public class InMotionAdapter extends BaseAdapter {
             boolean light = ex_data[80] == 1;
             boolean led = false;
             boolean handlebutton = false;
+            boolean rideMode = false;
+            int pedalHardness = 100;
             int pedals = (int) (Math.round((MathsUtil.intFromBytesLE(ex_data, 56)) / 6553.6));
             maxspeed = (((ex_data[61] & 0xFF) * 256) | (ex_data[60] & 0xFF)) / 1000;
             if (ex_data.length > 126) {
@@ -1039,6 +1185,12 @@ public class InMotionAdapter extends BaseAdapter {
             }
             if (ex_data.length > 129) {
                 handlebutton = ex_data[129] != 1;
+            }
+            if (ex_data.length > 132) {
+                rideMode = ex_data[132] == 1;
+            }
+            if (ex_data.length > 124) {
+                pedalHardness = (ex_data[124]-28) & 0xFF; // 0x80 = 128 = 100% -maximum, 0x20 = 32 - minimum
             }
 
             for (int j = 0; j < 8; j++) {
@@ -1056,6 +1208,8 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setWheelMaxSpeed(maxspeed);
             wd.setWheelSpeakerVolume(speakervolume);
             wd.setWheelTiltHorizon(pedals);
+            wd.setWheelRideMode(rideMode);
+            wd.setWheelPedalHardness(pedalHardness);
             wd.setNewWheelSettings(true);
             wd.setDataForLog(false);
             getInstance().setModel(lmodel);

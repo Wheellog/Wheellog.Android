@@ -16,8 +16,6 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -60,7 +58,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -302,6 +299,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
                     notificationHandler.updateNotification();
+                    break;
+                case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
+                    Timber.i("Received news");
+                    showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
@@ -1041,7 +1042,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 @Override
                 public boolean onSingleTapConfirmed(MotionEvent e) {
                     if (WheelLog.AppConfig.getUseBeepOnSingleTap()) {
-                        playBeep(false);
+                        SomeUtil.playBeep(getApplicationContext());
                         return true;
                     }
                     return super.onSingleTapConfirmed(e);
@@ -1272,33 +1273,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    private void playBeep (boolean onlyDefault) {
-        // no mute
-        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-        // max volume
-//        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-//        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-
-        Uri beepFile = WheelLog.AppConfig.getBeepFile();
-        // selected file
-        if (!onlyDefault &&  WheelLog.AppConfig.getUseCustomBeep() && beepFile != Uri.EMPTY) {
-            MediaPlayer mp = new MediaPlayer();
-            try {
-                mp.setDataSource(getApplicationContext(), beepFile);
-                mp.setOnPreparedListener(MediaPlayer::start);
-                mp.prepareAsync();
-                mp.setOnCompletionListener(MediaPlayer::release);
-            } catch (IOException e) {
-                e.printStackTrace();
-                playBeep(true);
-            }
-        } else {
-            // default beep
-            SomeUtil.playSound(getApplicationContext(), R.raw.beep);
-        }
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
@@ -1306,7 +1280,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             case KeyEvent.KEYCODE_CAMERA:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    playBeep(false);
+                    SomeUtil.playBeep(getApplicationContext());
                     return true;
                 }
         }
@@ -1538,10 +1512,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
-        intentFilter.addAction(Constants.ACTION_WHEEL_SETTING_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
