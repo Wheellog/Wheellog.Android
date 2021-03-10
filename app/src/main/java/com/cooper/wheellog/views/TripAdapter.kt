@@ -45,9 +45,7 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
             shareView.setOnClickListener {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
-                    var uri = Uri.parse("content://path/to/email/attachment")
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    putExtra(Intent.EXTRA_STREAM, trip.uri)
                     type = "text/csv"
                 }
 
