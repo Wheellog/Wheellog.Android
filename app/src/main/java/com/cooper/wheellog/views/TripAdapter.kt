@@ -10,11 +10,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.cooper.wheellog.BuildConfig
+import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
-import java.io.File
+import com.cooper.wheellog.WheelLog
+import com.google.common.io.ByteStreams
+import timber.log.Timber
+
 
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -29,11 +31,20 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
         holder.apply {
             nameView.text = trip.title
             descriptionView.text = trip.description
-            uploadView.setOnClickListener { }
+            uploadView.visibility = if (WheelLog.AppConfig.autoUploadEc) View.VISIBLE else View.GONE
+            uploadView.setOnClickListener {
+                val inputStream = context.contentResolver.openInputStream(trip.uri)
+                if (inputStream == null) {
+                    Timber.i("Failed to create inputStream for %s", trip.title)
+                    return@setOnClickListener
+                }
+                val data = ByteStreams.toByteArray(inputStream)
+                ElectroClub.instance.uploadTrack(data, trip.title,false)
+                inputStream.close()
+            }
             shareView.setOnClickListener {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
-                    //context.contentResolver.
                     var uri = Uri.parse("content://path/to/email/attachment")
                     putExtra(Intent.EXTRA_STREAM, uri)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

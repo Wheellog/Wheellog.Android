@@ -21,10 +21,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -40,7 +38,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContentResolverCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.gridlayout.widget.GridLayout;
@@ -68,7 +65,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     TextView tvBms1Cell16;
     TextView tvTitleBms2Cell16;
     TextView tvBms2Cell16;
-    RecyclerView listOfLogs;
+    RecyclerView listOfTrips;
 
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
@@ -1007,7 +1003,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     ArrayList<Trip> trips = new ArrayList<>();
 
     @Override
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     protected void onCreate(Bundle savedInstanceState) {
         if (onDestroyProcess) {
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -1037,23 +1032,20 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         createPager();
 
-        listOfLogs = (RecyclerView) findViewById(R.id.list_trips);
-        listOfLogs.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        File downloadFolder = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        File logsFolder = getExternalFilesDir(downloadFolder.getAbsolutePath() + File.separator + Constants.LOG_FOLDER_NAME);
-        File[] logFiles = logsFolder.listFiles();
+        listOfTrips = findViewById(R.id.list_trips);
+        listOfTrips.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
         String[] proj = {
                 MediaStore.Downloads.MIME_TYPE,
                 MediaStore.Downloads.DISPLAY_NAME,
                 MediaStore.Downloads.TITLE,
                 MediaStore.Downloads.SIZE,
-                MediaStore.Downloads.RELATIVE_PATH
+                MediaStore.Downloads._ID
         };
         String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
         Cursor cursor = getContentResolver()
                 .query(uri,
-                        null,
+                        proj,
                         where,
                         null,
                 MediaStore.Downloads.DATE_MODIFIED + " DESC");
@@ -1064,13 +1056,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                     continue;
                 }
                 String description = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.SIZE))) / 1024 + " Kb";
-                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DATA));
-                trips.add(new Trip(title, description, path));
+                String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
+                trips.add(new Trip(title, description, mediaId));
             } while (cursor.moveToNext());
         }
 
         TripAdapter adapter = new TripAdapter(this, trips);
-        listOfLogs.setAdapter(adapter);
+        listOfTrips.setAdapter(adapter);
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = findViewById(R.id.toolbar);

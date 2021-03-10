@@ -2,23 +2,22 @@ package com.cooper.wheellog.views
 
 import android.net.Uri
 import android.provider.MediaStore
-import java.io.File
 
 class Trip {
+    var mediaId = ""
     var title = ""
     var description = ""
-    var relalitivePath = ""
 
-    constructor(title: String, description: String, relalitivePath: String) {
+    constructor(title: String, description: String, mediaId: String) {
         this.title = title
         this.description = description
-        this.relalitivePath = relalitivePath
+        this.mediaId = mediaId
     }
 
-    var content: Uri
+    var uri: Uri
         get() {
             val downloads = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL)
-            return Uri.parse(downloads.toString() + File.separator + relalitivePath + title)
+            return Uri.withAppendedPath(downloads, mediaId)
         }
         set(value) {}
 }
