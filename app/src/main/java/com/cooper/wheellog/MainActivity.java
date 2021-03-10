@@ -13,17 +13,14 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -51,7 +48,6 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.*;
-import com.cooper.wheellog.views.Trip;
 import com.cooper.wheellog.views.TripAdapter;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
@@ -1000,8 +996,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         });
     }
 
-    ArrayList<Trip> trips = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (onDestroyProcess) {
@@ -1034,35 +1028,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         listOfTrips = findViewById(R.id.list_trips);
         listOfTrips.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
-        String[] proj = {
-                MediaStore.Downloads.MIME_TYPE,
-                MediaStore.Downloads.DISPLAY_NAME,
-                MediaStore.Downloads.TITLE,
-                MediaStore.Downloads.SIZE,
-                MediaStore.Downloads._ID
-        };
-        String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
-        Cursor cursor = getContentResolver()
-                .query(uri,
-                        proj,
-                        where,
-                        null,
-                MediaStore.Downloads.DATE_MODIFIED + " DESC");
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME));
-                if (title.startsWith("RAW")) {
-                    continue;
-                }
-                String description = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.SIZE))) / 1024 + " Kb";
-                String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
-                trips.add(new Trip(title, description, mediaId));
-            } while (cursor.moveToNext());
-        }
-
-        TripAdapter adapter = new TripAdapter(this, trips);
-        listOfTrips.setAdapter(adapter);
+        listOfTrips.setAdapter(new TripAdapter(this, FileUtil.fillTrips(this)));
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = findViewById(R.id.toolbar);
