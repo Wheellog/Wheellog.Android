@@ -13,14 +13,19 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -35,10 +40,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContentResolverCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.cooper.wheellog.utils.BaseAdapter;
@@ -46,6 +54,8 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.*;
+import com.cooper.wheellog.views.Trip;
+import com.cooper.wheellog.views.TripAdapter;
 import com.cooper.wheellog.views.WheelView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -58,6 +68,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.google.android.material.snackbar.Snackbar;
 import com.viewpagerindicator.LinePageIndicator;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -162,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     TextView tvBms1Cell16;
     TextView tvTitleBms2Cell16;
     TextView tvBms2Cell16;
+    RecyclerView listOfLogs;
 
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
@@ -965,6 +977,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         i.inflate(R.layout.main_view_main, pager);
         i.inflate(R.layout.main_view_params_list, pager);
         i.inflate(R.layout.main_view_graph, pager);
+        i.inflate(R.layout.main_view_trips, pager);
         i.inflate(R.layout.main_view_smart_bms, pager); // TODO: inflate smart bms page only if needed (after detect wheel)
 
         // set page adapter and show 3 pages
@@ -972,6 +985,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         pagerAdapter.showPage(R.id.page_main);
         pagerAdapter.showPage(R.id.page_params_list);
         pagerAdapter.showPage(R.id.page_graph);
+        pagerAdapter.showPage(R.id.page_logs);
         pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(4);
 
@@ -990,7 +1004,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         });
     }
 
+    ArrayList<Trip> trips = new ArrayList<>();
+
     @Override
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     protected void onCreate(Bundle savedInstanceState) {
         if (onDestroyProcess) {
             android.os.Process.killProcess(android.os.Process.myPid());
@@ -1019,6 +1036,41 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         });
 
         createPager();
+
+        listOfLogs = (RecyclerView) findViewById(R.id.list_trips);
+        listOfLogs.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        File downloadFolder = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File logsFolder = getExternalFilesDir(downloadFolder.getAbsolutePath() + File.separator + Constants.LOG_FOLDER_NAME);
+        File[] logFiles = logsFolder.listFiles();
+        Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
+        String[] proj = {
+                MediaStore.Downloads.MIME_TYPE,
+                MediaStore.Downloads.DISPLAY_NAME,
+                MediaStore.Downloads.TITLE,
+                MediaStore.Downloads.SIZE,
+                MediaStore.Downloads.RELATIVE_PATH
+        };
+        String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
+        Cursor cursor = getContentResolver()
+                .query(uri,
+                        null,
+                        where,
+                        null,
+                MediaStore.Downloads.DATE_MODIFIED + " DESC");
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME));
+                if (title.startsWith("RAW")) {
+                    continue;
+                }
+                String description = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.SIZE))) / 1024 + " Kb";
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DATA));
+                trips.add(new Trip(title, description, path));
+            } while (cursor.moveToNext());
+        }
+
+        TripAdapter adapter = new TripAdapter(this, trips);
+        listOfLogs.setAdapter(adapter);
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = findViewById(R.id.toolbar);
