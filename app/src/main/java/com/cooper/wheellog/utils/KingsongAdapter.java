@@ -11,7 +11,7 @@ public class KingsongAdapter extends BaseAdapter {
     private int mKSAlarm1Speed = 0;
     private int mKSAlarm2Speed = 0;
     private int mKSAlarm3Speed = 0;
-    private boolean mKSAlertsAndSpeedupdated = false;
+    private int mWheelMaxSpeed = 0;
     private boolean m18Lkm = true;
     private int mMode;
     private static final double KS18L_SCALER = 0.83;
@@ -140,11 +140,14 @@ public class KingsongAdapter extends BaseAdapter {
                 wd.setSpeedLimit(mSpeedLimit);
                 return false;
             } else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
-                wd.setWheelMaxSpeed(data[10] & 255);
+                mWheelMaxSpeed = data[10] & 255;
+                wd.setWheelMaxSpeed(mWheelMaxSpeed);
                 mKSAlarm3Speed = (data[8] & 255);
                 mKSAlarm2Speed = (data[6] & 255);
                 mKSAlarm1Speed = (data[4] & 255);
-                mKSAlertsAndSpeedupdated = true;
+                WheelLog.AppConfig.setWheelKsAlarm3(mKSAlarm3Speed);
+                WheelLog.AppConfig.setWheelKsAlarm2(mKSAlarm2Speed);
+                WheelLog.AppConfig.setWheelKsAlarm1(mKSAlarm1Speed);
                 // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
                 if ((data[16] & 255) == 164) {
                     data[16] = (byte) 0x98;
@@ -158,7 +161,23 @@ public class KingsongAdapter extends BaseAdapter {
 
     @Override
     public void updatePedalsMode(int pedalsMode) {
-        WheelData.getInstance().updatePedalsMode(pedalsMode);
+        byte[] data = new byte[20];
+        data[0] = (byte) 0xAA;
+        data[1] = (byte) 0x55;
+        data[2] = (byte) pedalsMode;
+        data[3] = (byte) 0xE0;
+        data[16] = (byte) 0x87;
+        data[17] = (byte) 0x15;
+        data[18] = (byte) 0x5A;
+        data[19] = (byte) 0x5A;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    @Override
+    public void wheelCalibration() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0x89;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 
     @Override
@@ -206,6 +225,12 @@ public class KingsongAdapter extends BaseAdapter {
         return INSTANCE;
     }
 
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
+        mWheelMaxSpeed = maxSpeed;
+        updateKSAlarmAndSpeed();
+    }
+
     public void updateKSAlarmAndSpeed() {
         byte[] data = new byte[20];
         data[0] = (byte) 0xAA;
@@ -213,10 +238,10 @@ public class KingsongAdapter extends BaseAdapter {
         data[2] = (byte) mKSAlarm1Speed;
         data[4] = (byte) mKSAlarm2Speed;
         data[6] = (byte) mKSAlarm3Speed;
-        data[8] = (byte) WheelData.getInstance().getWheelMaxSpeed();
+        data[8] = (byte) mWheelMaxSpeed;
         data[16] = (byte) 0x85;
 
-        if ((WheelData.getInstance().getWheelMaxSpeed() | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0) {
+        if ((mWheelMaxSpeed | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0) {
             data[16] = (byte) 0x98; // request speed & alarm values from wheel
         }
 
@@ -264,10 +289,6 @@ public class KingsongAdapter extends BaseAdapter {
         return mSpeedLimit;
     }
 
-    public Boolean getKSAlertsAndSpeedupdated() {
-        return mKSAlertsAndSpeedupdated;
-    }
-
     private byte[] getEmptyRequest() {
         return new byte[]{(byte) 0xAA, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x5A, 0x5A};
     }
@@ -296,4 +317,11 @@ public class KingsongAdapter extends BaseAdapter {
         data[16] = (byte) 0x98;
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
+
+    public void powerOff() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0x40;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
 }

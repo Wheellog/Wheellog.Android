@@ -352,7 +352,8 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer();
     }
 
-    public void setMaxSpeedState(final int maxSpeed) {
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer();
     }
@@ -382,6 +383,7 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
     }
 
+    @Override
     public void wheelCalibration() {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.wheelCalibration().writeBuffer();

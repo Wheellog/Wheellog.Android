@@ -110,7 +110,36 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void updatePedalsMode(int pedalsMode) {
-        WheelData.getInstance().updatePedalsMode(pedalsMode);
+        switch (pedalsMode) {
+            case 0:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("h".getBytes());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 100);
+                break;
+            case 1:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("f".getBytes());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 100);
+                break;
+            case 2:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("s".getBytes());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                    }
+                }, 100);
+                break;
+        }
+
     }
 
     @Override
@@ -142,6 +171,17 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     @Override
+    public void wheelCalibration() {
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("c".getBytes());
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("y".getBytes());
+            }
+        }, 300);
+    }
+
+    @Override
     public int getCellSForWheel() {
         switch (WheelLog.AppConfig.getGotwayVoltage()) {
             case "0":
@@ -155,6 +195,77 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void wheelBeep() {
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+    }
+
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
+        final byte[] hhh = new byte[1];
+        final byte[] lll = new byte[1];
+        if (maxSpeed != 0) {
+            int wheelMaxSpeed2 = maxSpeed;
+            hhh[0] = (byte)((wheelMaxSpeed2/10)+0x30);
+            lll[0] = (byte)((wheelMaxSpeed2%10)+0x30);
+            WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("W".getBytes());
+                }
+            }, 100);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("Y".getBytes());
+                }
+            }, 200);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(hhh);
+                }
+            }, 300);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(lll);
+                }
+            }, 400);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                }
+            }, 500);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                }
+            }, 600);
+
+        } else {
+            WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("\"".getBytes()); // "
+                }
+            }, 100);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                }
+            }, 200);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+                }
+            }, 300);
+
+        }
+
     }
 
     static class gotwayUnpacker {
