@@ -807,7 +807,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 .show()
                         true
                     }
-                }
+                },
                 SwitchPreference(context).apply {
                     key = mac + getString(R.string.connect_beep)
                     title = getString(R.string.connect_beep_title)
