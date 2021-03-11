@@ -15,11 +15,12 @@
         android:ellipsize="end"
         android:fontFamily="@font/prime"
         android:singleLine="true"
-        android:text="Header"
+        android:text="File name"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/uploadButton"
+        app:layout_constraintEnd_toStartOf="@+id/uploadButtonContainer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/description"
@@ -27,29 +28,46 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/prime"
-        android:text="TextView"
+        android:text="123 Kb"
         app:layout_constraintStart_toStartOf="@+id/name"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        tools:ignore="HardcodedText" />
 
-
-    <ImageButton
-        android:id="@+id/uploadButton"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/uploadButtonContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:contentDescription="@string/auto_upload_ec"
-        app:layout_constraintEnd_toStartOf="@+id/shareButton"
-        app:layout_constraintTop_toTopOf="@+id/shareButton"
-        app:srcCompat="@drawable/ic_baseline_cloud_upload_24" />
+        app:cardCornerRadius="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/shareButtonContainer"
+        app:layout_constraintTop_toTopOf="@+id/shareButtonContainer">
 
-    <ImageButton
-        android:id="@+id/shareButton"
+        <ImageButton
+            android:id="@+id/uploadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white20"
+            android:contentDescription="@string/manual_upload_to_ec"
+            android:padding="10dp"
+            app:srcCompat="@drawable/ic_baseline_cloud_upload_24" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/shareButtonContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:contentDescription="@string/share"
+        app:cardCornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_share_24" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/shareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white20"
+            android:contentDescription="@string/share"
+            android:padding="10dp"
+            app:srcCompat="@drawable/ic_baseline_share_24" />
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
