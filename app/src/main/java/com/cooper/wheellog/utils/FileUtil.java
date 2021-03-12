@@ -96,7 +96,7 @@ public class FileUtil {
                     path += File.separator + folder;
                 }
                 contentValues.put(MediaStore.Downloads.RELATIVE_PATH, path);
-                Uri contentUri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
+                Uri contentUri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
 
                 uri = Objects.requireNonNull(getContentResolver()).insert(contentUri, contentValues);
                 file = new File(getPathFromUri(uri));
@@ -164,7 +164,7 @@ public class FileUtil {
 
     public static ArrayList<Trip> fillTrips(Context context) {
         ArrayList<Trip> trips = new ArrayList<>();
-        Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
+        Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         String[] projection = {
                 MediaStore.Downloads.MIME_TYPE,
                 MediaStore.Downloads.DISPLAY_NAME,

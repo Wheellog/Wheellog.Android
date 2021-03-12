@@ -519,7 +519,7 @@ class MainPageAdapter(var pages: MutableList<Int>) : RecyclerView.Adapter<MainPa
     private val timeFormatter = SimpleDateFormat("HH:mm:ss", Locale.US)
 
     fun logEvent(message: String) {
-        if (eventsTextView != null) {
+        if (eventsTextView == null) {
             return
         }
 
