@@ -279,6 +279,7 @@
     <string name="wheel_calibration_message">Установите колесо в парковочный режим (на крыло) перед калибровкой, продолжить?</string>
     <string name="beep_by_wheel_title">Гудок колесом</string>
     <string name="beep_by_wheel_description">Гудок встроенным в колесо сигналом</string>
-    <string name="share">Share</string>
-    <string name="manual_upload_to_ec">Upload to electro.club</string>
+    <string name="share">Поделиться</string>
+    <string name="manual_upload_to_ec">Загрузить в electro.club</string>
+    <string name="show_page_trips_title">Страница поездок</string>
 </resources>

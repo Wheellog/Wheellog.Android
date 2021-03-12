@@ -88,6 +88,14 @@
         android:visible="true" />
 
     <SwitchPreference
+        android:defaultValue="true"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_road_with_two_placeholders_24"
+        android:key="@string/show_page_trips"
+        android:title="@string/show_page_trips_title"
+        android:visible="true" />
+
+    <SwitchPreference
         android:enabled="true"
         android:icon="@drawable/ic_baseline_music_note_24"
         android:key="@string/connection_sound"
