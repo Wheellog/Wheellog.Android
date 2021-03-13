@@ -334,15 +334,15 @@ class InmotionAdapterTest {
         val expected35 = "aaaa1501a5550f01000000b888000008050000c85555".hexToByteArray()
 
         // Act.
-        adapter.setMaxSpeedState(0)
+        adapter.updateMaxSpeed(0)
         val actual00 = adapter.settingCommand
-        adapter.setMaxSpeedState(10)
+        adapter.updateMaxSpeed(10)
         val actual10 = adapter.settingCommand
-        adapter.setMaxSpeedState(20)
+        adapter.updateMaxSpeed(20)
         val actual20 = adapter.settingCommand
-        adapter.setMaxSpeedState(25)
+        adapter.updateMaxSpeed(25)
         val actual25 = adapter.settingCommand
-        adapter.setMaxSpeedState(35)
+        adapter.updateMaxSpeed(35)
         val actual35 = adapter.settingCommand
 
         // Assert.

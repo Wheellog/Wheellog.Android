@@ -25,7 +25,18 @@ public abstract class BaseAdapter {
     }
 
     public void updateMaxSpeed(int wheelMaxSpeed) {
-        // TODO from WheelData
+    }
+
+    public void wheelCalibration() {
+    }
+
+    public void updateLedMode(int ledMode) {
+    }
+
+    public void updateStrobeMode(int strobeMode) {
+    }
+
+    public void updateAlarmMode(int alarmMode) {
     }
 
     public int getCellSForWheel() {

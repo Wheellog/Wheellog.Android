@@ -93,37 +93,35 @@ public class VeteranAdapter extends BaseAdapter {
         return newDataFound;
     }
 
+    public void resetTrip() {
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("CLEARMETER".getBytes());
+    }
+
     @Override
     public void updatePedalsMode(int pedalsMode) {
-        WheelData.getInstance().updatePedalsMode(pedalsMode);
+        switch (pedalsMode) {
+            case 0:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("SETh".getBytes());
+                break;
+            case 1:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("SETm".getBytes());
+                break;
+            case 2:
+                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("SETs".getBytes());
+                break;
+        }
     }
 
     @Override
     public void switchFlashlight() {
-        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
-        if (lightMode > 2) {
-            lightMode = 0;
-        }
-        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
-        setLightMode(lightMode);
+        setLightMode();
     }
 
-    @Override
-    public void setLightMode(int lightMode) {
-        switch (lightMode) {
-            case 0:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("E".getBytes());
-                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
-                break;
-            case 1:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("Q".getBytes());
-                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
-                break;
-            case 2:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("T".getBytes());
-                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
-                break;
-        }
+    public void setLightMode() {
+        // it is not possible to turn on light on Veteran
+        // but some people use it as "beep by wheel" on double tap
+        // let's them use it
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
     }
 
     @Override

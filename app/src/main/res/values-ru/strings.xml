@@ -250,7 +250,7 @@
     <string name="dynamic_current_limit">Ограничение тока</string>
     <string name="dynamic_speed_limit">Ограничение скорости</string>
     <string name="cpu_temp">Температура CPU</string>
-    <string name="cpuload">Температура IMU</string>
+    <string name="cpuload">Загрузка процессора</string>
     <string name="motor_power">Мощность мотора</string>
     <string name="show_page_events_description">Показать страницу событий</string>
     <string name="show_page_events_title">Страница событий</string>
@@ -276,7 +276,11 @@
     <string name="pedal_hardness_description">Чем выше число, тем жестче. 4% равны 0% в официальном приложении.</string>
     <string name="wheel_beep">Гудок колесом</string>
     <string name="wheel_calibration">Калибровка колеса</string>
-    <string name="wheel_calibration_message">Установите колесо в парковочный режим (на крыло) перед калибровкой, продолжить?</string>
     <string name="beep_by_wheel_title">Гудок колесом</string>
     <string name="beep_by_wheel_description">Гудок встроенным в колесо сигналом</string>
+    <string name="reset_trip">Сбросить пробег поездки</string>
+    <string name="reset_trip_message">Вы уверены, что вы хотите сбросить дистанцию поездки на колесе?</string>
+    <string name="wheel_calibration_message_begode">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
+    <string name="wheel_calibration_message_inmo">Установите колесо в парковочное положение (на крыло), продолжить?</string>
+    <string name="wheel_calibration_message_kingsong">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
 </resources>
