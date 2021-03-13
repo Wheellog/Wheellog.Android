@@ -1,10 +1,8 @@
 package com.cooper.wheellog.utils;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -189,9 +187,7 @@ public class FileUtil {
             }
             return trips;
         }
-        File[] dirs = context.getExternalMediaDirs();
         // Android 10+
-        // 
         Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         String[] projection = {
                 MediaStore.Downloads.MIME_TYPE,

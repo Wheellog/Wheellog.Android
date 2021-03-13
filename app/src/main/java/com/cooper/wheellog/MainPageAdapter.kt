@@ -27,6 +27,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
 
@@ -35,6 +36,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     var wheelView: WheelView? = null
     var chart1: LineChart? = null
     var position: Int = -1
+    var pagesView = LinkedHashMap<Int, View?>()
 
     private var listOfTrips: RecyclerView? = null
 
@@ -120,6 +122,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     fun addPage(page: Int) {
         if (!pages.contains(page)) {
             pages.add(page)
+            pagesView[page] = null
             notifyItemInserted(page)
         }
     }
@@ -131,6 +134,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
             }
             val index = pages.indexOf(page)
             pages.removeAt(index)
+            pagesView.remove(page)
             notifyItemRemoved(index)
         }
     }
@@ -142,6 +146,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val view = holder.itemView
+        pagesView[pages[position]] = view
         when (pages[position]) {
             R.layout.main_view_main -> {
                 wheelView = view.findViewById(R.id.wheelView)
@@ -200,6 +205,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
             }
             R.layout.main_view_events -> {
                 eventsTextView = view.findViewById(R.id.events_textbox)
+                eventsTextView?.text = logsCashe
             }
             R.layout.main_view_trips -> {
                 listOfTrips = view.findViewById(R.id.list_trips)
@@ -286,7 +292,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     }
 
     fun updateScreen(updateGraph: Boolean) {
-        if (!pages.contains(position)) {
+        if (position == -1 || position >= pages.size) {
             return
         }
         val data = WheelData.getInstance()
@@ -395,8 +401,8 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
                         chart1LineData.addDataSet(dataSetCurrent)
                         chart1LineData.addDataSet(dataSetSpeed)
                         chart1!!.data = chart1LineData
-                        chart1!!.findViewById<View>(R.id.leftAxisLabel).visibility = View.VISIBLE
-                        chart1!!.findViewById<View>(R.id.rightAxisLabel).visibility = View.VISIBLE
+                        pagesView[R.layout.main_view_graph]?.findViewById<View>(R.id.leftAxisLabel)?.visibility = View.VISIBLE
+                        pagesView[R.layout.main_view_graph]?.findViewById<View>(R.id.leftAxisLabel)?.visibility = View.VISIBLE
                     } else {
                         dataSetSpeed = chart1!!.data.getDataSetByLabel(activity.getString(R.string.speed_axis), true) as LineDataSet
                         dataSetCurrent = chart1!!.data.getDataSetByLabel(activity.getString(R.string.current_axis), true) as LineDataSet
@@ -563,19 +569,18 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     private var eventsCurrentCount = 0
     private var eventsMaxCount = 500
     private val timeFormatter = SimpleDateFormat("HH:mm:ss", Locale.US)
+    private var logsCashe = StringBuffer()
 
     fun logEvent(message: String) {
-        if (eventsTextView == null) {
-            return
-        }
-
         val formattedMessage = String.format("[%s] %s%n", timeFormatter.format(Date()), message)
-        if (eventsCurrentCount < eventsMaxCount) {
-            eventsTextView?.append(formattedMessage)
-            eventsCurrentCount++
+        logsCashe.append(formattedMessage)
+        if (eventsCurrentCount > eventsMaxCount) {
+            val indexOfNewLine = logsCashe.indexOfFirst { r -> r == '\n' }
+            logsCashe.delete(0, indexOfNewLine)
         } else {
-            eventsTextView?.text = String.format("%s%s", deleteFirstSentence(eventsTextView!!.text), formattedMessage)
+            eventsCurrentCount++
         }
+        eventsTextView?.text = logsCashe
     }
 
     private var chartAxisValueFormatter: IAxisValueFormatter = object : IAxisValueFormatter {
@@ -603,7 +608,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     }
 
     private fun createSecondPage() {
-        val layout = activity.findViewById<GridLayout>(R.id.page_two_grid) ?: return
+        val layout = pagesView[R.layout.main_view_params_list]?.findViewById<GridLayout>(R.id.page_two_grid) ?: return
         layout.removeAllViews()
         for ((key, value) in secondPageValues) {
             val headerText = activity.layoutInflater.inflate(
@@ -618,7 +623,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     }
 
     private fun updateSecondPage() {
-        val layout = activity.findViewById<GridLayout>(R.id.page_two_grid) ?: return
+        val layout = pagesView[R.layout.main_view_params_list]?.findViewById<GridLayout>(R.id.page_two_grid) ?: return
         val count = layout.childCount
         if (secondPageValues.size * 2 != count) {
             return
