@@ -48,7 +48,6 @@
     <string name="light_mode" translatable="false">light_mode</string>
     <string name="strobe_mode" translatable="false">strobe_mode</string>
     <string name="led_mode" translatable="false">led_mode</string>
-    <string name="start_calibration" translatable="false">start_calibration</string>
     <string name="alarm_mode" translatable="false">alarm_mode</string>
     <string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>

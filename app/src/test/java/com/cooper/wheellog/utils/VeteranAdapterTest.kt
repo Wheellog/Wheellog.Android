@@ -156,4 +156,17 @@ class VeteranAdapterTest {
         verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("SETm".toByteArray()) }
         verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("SETs".toByteArray()) }
     }
+
+    @Test
+    fun `reset trip`() {
+        // Arrange.
+        every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true
+        mockkConstructor(android.os.Handler::class)
+
+        // Act.
+        adapter.resetTrip()
+
+        // Assert.
+        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("CLEARMETER".toByteArray()) }
+    }
 }

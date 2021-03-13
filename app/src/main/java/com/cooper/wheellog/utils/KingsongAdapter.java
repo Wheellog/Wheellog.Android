@@ -161,15 +161,11 @@ public class KingsongAdapter extends BaseAdapter {
 
     @Override
     public void updatePedalsMode(int pedalsMode) {
-        byte[] data = new byte[20];
-        data[0] = (byte) 0xAA;
-        data[1] = (byte) 0x55;
+        byte[] data = getEmptyRequest();
         data[2] = (byte) pedalsMode;
         data[3] = (byte) 0xE0;
         data[16] = (byte) 0x87;
         data[17] = (byte) 0x15;
-        data[18] = (byte) 0x5A;
-        data[19] = (byte) 0x5A;
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 
@@ -192,15 +188,10 @@ public class KingsongAdapter extends BaseAdapter {
 
     @Override
     public void setLightMode(int lightMode) {
-        byte[] data = new byte[20];
-        data[0] = (byte) 0xAA;
-        data[1] = (byte) 0x55;
+        byte[] data = getEmptyRequest();
         data[2] = (byte) (lightMode + 0x12);
         data[3] = (byte) 0x01;
         data[16] = (byte) 0x73;
-        data[17] = (byte) 0x14;
-        data[18] = (byte) 0x5A;
-        data[19] = (byte) 0x5A;
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 
@@ -232,9 +223,7 @@ public class KingsongAdapter extends BaseAdapter {
     }
 
     public void updateKSAlarmAndSpeed() {
-        byte[] data = new byte[20];
-        data[0] = (byte) 0xAA;
-        data[1] = (byte) 0x55;
+        byte[] data = getEmptyRequest();
         data[2] = (byte) mKSAlarm1Speed;
         data[4] = (byte) mKSAlarm2Speed;
         data[6] = (byte) mKSAlarm3Speed;
@@ -244,10 +233,6 @@ public class KingsongAdapter extends BaseAdapter {
         if ((mWheelMaxSpeed | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0) {
             data[16] = (byte) 0x98; // request speed & alarm values from wheel
         }
-
-        data[17] = (byte) 0x14;
-        data[18] = (byte) 0x5A;
-        data[19] = (byte) 0x5A;
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 
@@ -321,6 +306,22 @@ public class KingsongAdapter extends BaseAdapter {
     public void powerOff() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x40;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    @Override
+    public void updateLedMode(int ledMode) {
+        byte[] data = getEmptyRequest();
+        data[2] = (byte) ledMode;
+        data[16] = (byte) 0x6C;
+        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+    }
+
+    @Override
+    public void updateStrobeMode(int strobeMode) {
+        byte[] data = getEmptyRequest();
+        data[2] = (byte) strobeMode;
+        data[16] = (byte) 0x53;
         WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
     }
 

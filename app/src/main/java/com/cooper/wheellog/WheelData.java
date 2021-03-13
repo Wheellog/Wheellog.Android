@@ -388,83 +388,40 @@ public class WheelData {
     }
 
     public void wheelBeep() {
-        if (mWheelType != WHEEL_TYPE.Unknown) {
+        if (getAdapter() != null) {
             getAdapter().wheelBeep();
         }
     }
 	
 	public void updatePedalsMode(int pedalsMode) {
-        getAdapter().updatePedalsMode(pedalsMode);
+        if (getAdapter() != null) {
+            getAdapter().updatePedalsMode(pedalsMode);
+        }
     }
 
 	public void updateStrobe(int strobeMode) {
-		if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            byte[] data = new byte[20];
-            data[0] = (byte) 0xAA;
-            data[1] = (byte) 0x55;
-			data[2] = (byte) strobeMode;
-            data[16] = (byte) 0x53;
-            data[17] = (byte) 0x14;
-            data[18] = (byte) 0x5A;
-            data[19] = (byte) 0x5A;
-            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
-		}
-		
+        if (getAdapter() != null) {
+            getAdapter().updateStrobeMode(strobeMode);
+        }
     }
 	
 	public void updateLedMode(int ledMode) {
-		if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            byte[] data = new byte[20];
-            data[0] = (byte) 0xAA;
-            data[1] = (byte) 0x55;
-			data[2] = (byte) ledMode;
-            data[16] = (byte) 0x6C;
-            data[17] = (byte) 0x14;
-            data[18] = (byte) 0x5A;
-            data[19] = (byte) 0x5A;
-            getBluetoothLeService().writeBluetoothGattCharacteristic(data);
-		}
+        if (getAdapter() != null) {
+            getAdapter().updateLedMode(ledMode);
+        }
     }
 	
 	
 	public void updateAlarmMode(int alarmMode) {
-		if (mWheelType == WHEEL_TYPE.GOTWAY) {
-			switch (alarmMode) {
-				case 0:
-                    getBluetoothLeService().writeBluetoothGattCharacteristic("u".getBytes());
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-                        }
-                    }, 100);
-
-					break;
-				case 1:
-                    getBluetoothLeService().writeBluetoothGattCharacteristic("i".getBytes());
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-                        }
-                    }, 100);
-					break;
-				case 2:
-                    getBluetoothLeService().writeBluetoothGattCharacteristic("o".getBytes());
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-                        }
-                    }, 100);
-					break;	
-			}			
-		}
-		
+        if (getAdapter() != null) {
+            getAdapter().updateAlarmMode(alarmMode);
+        }
     }
 	
 	public void wheelCalibration() {
-        getAdapter().wheelCalibration();
+        if (getAdapter() != null) {
+            getAdapter().wheelCalibration();
+        }
     }
 
 
@@ -478,7 +435,9 @@ public class WheelData {
 	public void updateMaxSpeed(int wheelMaxSpeed) {
         if (mWheelMaxSpeed != wheelMaxSpeed) {
             mWheelMaxSpeed = wheelMaxSpeed;
-            getAdapter().updateMaxSpeed(wheelMaxSpeed);
+            if (getAdapter() != null) {
+                getAdapter().updateMaxSpeed(wheelMaxSpeed);
+            }
         }
 	}
 	
@@ -634,7 +593,6 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-
         return Constants.MAX_CELL_VOLTAGE * adapter.getCellSForWheel();
     }
 
@@ -643,7 +601,6 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-
         return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellSForWheel();
     }
 
