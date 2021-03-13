@@ -1076,8 +1076,8 @@ public class InMotionAdapter extends BaseAdapter {
             speed = Math.abs(speed);
             int voltage = (int)MathsUtil.intFromBytesLE(ex_data, 24);
             int current = (int)MathsUtil.signedIntFromBytesLE(ex_data, 20);
-            int temperature = ex_data[32] & 0xff;
-            int temperature2 = ex_data[34] & 0xff;
+            int temperature = ex_data[32];
+            int temperature2 = ex_data[34];
             int batt = batteryFromVoltage(voltage, model);
             long totalDistance;
             long distance;
