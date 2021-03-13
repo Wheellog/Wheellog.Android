@@ -282,5 +282,5 @@
     <string name="reset_trip_message">Вы уверены, что вы хотите сбросить дистанцию поездки на колесе?</string>
     <string name="wheel_calibration_message_begode">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
     <string name="wheel_calibration_message_inmo">Установите колесо в парковочное положение (на крыло), продолжить?</string>
-    <string name="wheel_calibration_message_kingsong">Я не знаю как делается калибровка на KS, надеюсь что вы знаете что делаете, продолжить?</string>
+    <string name="wheel_calibration_message_kingsong">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
 </resources>

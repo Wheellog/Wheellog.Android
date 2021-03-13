@@ -581,7 +581,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun preferenceKingsong(mac: String) {
-        arrayOf(
+        val prefs: MutableList<Preference> = arrayListOf()
+        prefs.add(
                 ListPreference(context).apply {
                     key = mac + getString(R.string.light_mode)
                     title = getString(R.string.light_mode_title)
@@ -589,7 +590,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setEntries(R.array.light_mode_ks)
                     setEntryValues(R.array.light_mode_values)
                     setDefaultValue(WheelLog.AppConfig.lightMode)
-                },
+                }
+        )
+        prefs.add(
                 ListPreference(context).apply {
                     key = mac + getString(R.string.strobe_mode)
                     title = getString(R.string.strobe_mode_title)
@@ -597,7 +600,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setEntries(R.array.strobe_mode_ks)
                     setEntryValues(R.array.strobe_mode_values)
                     setDefaultValue(WheelLog.AppConfig.strobeMode)
-                },
+                }
+        )
+        prefs.add(
                 ListPreference(context).apply {
                     key = mac + getString(R.string.led_mode)
                     title = getString(R.string.led_mode_title)
@@ -605,7 +610,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setEntries(R.array.led_mode)
                     setEntryValues(R.array.led_mode_values)
                     setDefaultValue(WheelLog.AppConfig.ledMode)
-                },
+                }
+        )
+        prefs.add(
                 ListPreference(context).apply {
                     key = mac + getString(R.string.pedals_mode)
                     title = getString(R.string.pedals_mode_title)
@@ -613,7 +620,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     setEntries(R.array.pedals_mode)
                     setEntryValues(R.array.pedals_mode_values)
                     setDefaultValue(WheelLog.AppConfig.pedalsMode)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_max_speed)
                     title = getString(R.string.max_speed_title)
@@ -623,7 +632,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     min = 0
                     unit = getString(R.string.kmh)
                     setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_ks_alarm3)
                     title = getString(R.string.alert3_title)
@@ -633,7 +644,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     min = 0
                     unit = getString(R.string.kmh)
                     setDefaultValue(WheelLog.AppConfig.wheelKsAlarm3)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_ks_alarm2)
                     title = getString(R.string.alert2_title)
@@ -643,7 +656,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     min = 0
                     unit = getString(R.string.kmh)
                     setDefaultValue(WheelLog.AppConfig.wheelKsAlarm2)
-                },
+                }
+        )
+        prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.wheel_ks_alarm1)
                     title = getString(R.string.alert1_title)
@@ -653,46 +668,55 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     min = 0
                     unit = getString(R.string.kmh)
                     setDefaultValue(WheelLog.AppConfig.wheelKsAlarm1)
-                },
+                }
+        )
+        prefs.add(
                 SwitchPreference(context).apply {
                     key = mac + getString(R.string.ks18l_scaler)
                     title = getString(R.string.ks18l_scaler_title)
                     summary = getString(R.string.ks18l_scaler_description)
-                },
-                Preference(context).apply {
-                    setIcon(R.drawable.ic_baseline_calibration_24)
-                    title = getString(R.string.wheel_calibration)
-                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                        AlertDialog.Builder(requireContext())
-                                .setTitle(getString(R.string.wheel_calibration))
-                                .setMessage(getString(R.string.wheel_calibration_message_kingsong))
-                                .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                    WheelData.getInstance().wheelCalibration()
-                                }
-                                .setNegativeButton(android.R.string.no, null)
-                                .setIcon(R.drawable.ic_baseline_calibration_24)
-                                .show()
-                        true
-                    }
-                },
-                Preference(context).apply {
-                    setIcon(R.drawable.ic_baseline_power_off_24)
-                    title = getString(R.string.power_off)
-                    onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                        AlertDialog.Builder(requireContext())
-                                .setTitle(getString(R.string.power_off))
-                                .setMessage(getString(R.string.power_off_message))
-                                .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                    KingsongAdapter.getInstance().powerOff()
-                                }
-                                .setNegativeButton(android.R.string.no, null)
-                                .setIcon(R.drawable.ic_baseline_power_off_24)
-                                .show()
-                        true
-                    }
                 }
+        )
+        if (WheelData.getInstance().speed < 1) {
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_calibration_24)
+                        title = getString(R.string.wheel_calibration)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.wheel_calibration))
+                                    .setMessage(getString(R.string.wheel_calibration_message_kingsong))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        WheelData.getInstance().wheelCalibration()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_calibration_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_power_off_24)
+                        title = getString(R.string.power_off)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.power_off))
+                                    .setMessage(getString(R.string.power_off_message))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        KingsongAdapter.getInstance().powerOff()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+        }
 
-        ).forEach {
+        prefs.toTypedArray().forEach {
             preferenceScreen.addPreference(it)
         }
 

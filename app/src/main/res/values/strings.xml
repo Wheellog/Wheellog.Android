@@ -455,7 +455,7 @@
     <string name="power_off_message">The wheel will be off. Are you sure?</string>
     <string name="wheel_calibration_message_inmo">Please set wheel in parking position before start, continue?</string>
     <string name="wheel_calibration_message_begode">Please set wheel in center position before start, then reboot wheel, continue?</string>
-    <string name="wheel_calibration_message_kingsong">Sorry I don\'t know how to make calibration on KS, hope you know what are you doing, continue?</string>
+    <string name="wheel_calibration_message_kingsong">Please set wheel in center position before start, then reboot wheel, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
