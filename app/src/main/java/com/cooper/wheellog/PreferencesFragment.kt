@@ -225,23 +225,23 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             R.string.pedals_mode -> {
                 WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
-                correctListState(key)
+                //correctListState(key)
             }
             R.string.light_mode -> {
                 WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode)) //А в чем фишка, что здесь adapter?
-                correctListState(key)
+                //correctListState(key)
             }
             R.string.alarm_mode -> {
                 WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
-                correctListState(key)
+                //correctListState(key)
             }
             R.string.strobe_mode -> {
                 WheelData.getInstance().updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
-                correctListState(key)
+                //correctListState(key)
             }
             R.string.led_mode -> {
                 WheelData.getInstance().updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
-                correctListState(key)
+                //correctListState(key)
             }
             R.string.wheel_ks_alarm3 -> {
                 KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
