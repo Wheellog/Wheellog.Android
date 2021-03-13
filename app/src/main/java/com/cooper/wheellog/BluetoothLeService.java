@@ -17,24 +17,10 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.widget.Toast;
 
-import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.FileUtil;
-import com.cooper.wheellog.utils.InMotionAdapter;
-import com.cooper.wheellog.utils.InmotionAdapterV2;
-import com.cooper.wheellog.utils.KingsongAdapter;
-import com.cooper.wheellog.utils.NinebotAdapter;
-import com.cooper.wheellog.utils.NinebotZAdapter;
-import com.cooper.wheellog.utils.SomeUtil;
-import com.cooper.wheellog.utils.StringUtil;
+import com.cooper.wheellog.utils.*;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 
 import timber.log.Timber;
 
