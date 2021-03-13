@@ -1,6 +1,5 @@
 package com.cooper.wheellog.utils;
 
-import com.cooper.wheellog.BluetoothLeService;
 import com.cooper.wheellog.WheelData;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +22,7 @@ public class NinebotAdapter extends BaseAdapter {
 
     NinebotUnpacker unpacker = new NinebotUnpacker();
 
-    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String protoVer) {
+    public void startKeepAliveTimer(final String protoVer) {
         Timber.i("Ninebot timer starting");
         if (protoVer.compareTo("S2") == 0) protoVersion = 1;
         if (protoVer.compareTo("Mini") == 0) protoVersion = 2;
@@ -34,22 +33,22 @@ public class NinebotAdapter extends BaseAdapter {
             public void run() {
                 if (updateStep == 0) {
                     if (stateCon == 0) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotAdapter.CANMessage.getSerialNumber().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(NinebotAdapter.CANMessage.getSerialNumber().writeBuffer())) {
                             Timber.i("Sent serial number message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 1) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotAdapter.CANMessage.getVersion().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(NinebotAdapter.CANMessage.getVersion().writeBuffer())) {
                             Timber.i("Sent serial version message");
                         } else updateStep = 39;
 
                     } else if (settingCommandReady) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
+                        if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             settingCommandReady = false;
                             Timber.i("Sent command message");
                         } else updateStep = 39;
                     } else {
-                        if (!mBluetoothLeService.writeBluetoothGattCharacteristic(NinebotAdapter.CANMessage.getLiveData().writeBuffer())) {
+                        if (!WheelData.getInstance().bluetoothCmd(NinebotAdapter.CANMessage.getLiveData().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
                             updateStep = 39;
                         } else {

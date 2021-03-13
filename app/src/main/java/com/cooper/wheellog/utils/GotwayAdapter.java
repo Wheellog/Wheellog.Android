@@ -108,25 +108,21 @@ public class GotwayAdapter extends BaseAdapter {
         return newDataFound;
     }
 
-    private void sendCommand(String s) {sendCommand(s, "b", 100);}
-    private void sendCommand(String s, String delayed) {sendCommand(s, delayed, 100);}
-    private void sendCommand(String s, String delayed, int timer) {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(s.getBytes());
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(delayed.getBytes());
-            }
-        }, timer);
+    private void sendCommand(String s) {
+        sendCommand(s, "b", 100);
     }
+
+    private void sendCommand(String s, String delayed) {
+        sendCommand(s, delayed, 100);
+    }
+
+    private void sendCommand(String s, String delayed, int timer) {
+        sendCommand(s.getBytes(), delayed.getBytes(), timer);
+    }
+
     private void sendCommand(byte[] s, byte[] delayed, int timer) {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(s);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(delayed);
-            }
-        }, timer);
+        WheelData.getInstance().bluetoothCmd(s);
+        new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
     }
 
     @Override
@@ -191,7 +187,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+        WheelData.getInstance().bluetoothCmd("b".getBytes());
     }
 
     @Override

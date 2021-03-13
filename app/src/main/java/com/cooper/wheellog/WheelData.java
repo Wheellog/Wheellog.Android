@@ -160,6 +160,13 @@ public class WheelData {
         return mBluetoothLeService;
     }
 
+    public boolean bluetoothCmd(byte[] cmd) {
+        if (mBluetoothLeService == null) {
+            return false;
+        }
+        return mBluetoothLeService.writeBluetoothGattCharacteristic(cmd);
+    }
+
     public void setBluetoothLeService(BluetoothLeService value) {
         mBluetoothLeService = value;
     }
@@ -1342,7 +1349,7 @@ public class WheelData {
                 mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                 String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel();
                 if (inmotionPassword.length() > 0) {
-                    InMotionAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, inmotionPassword);
+                    InMotionAdapter.getInstance().startKeepAliveTimer(inmotionPassword);
                     return true;
                 }
                 return false;
@@ -1368,7 +1375,7 @@ public class WheelData {
                 Timber.i("enable notify UUID");
                 mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                 Timber.i("write notify");
-                InmotionAdapterV2.getInstance().startKeepAliveTimer(mBluetoothLeService);
+                InmotionAdapterV2.getInstance().startKeepAliveTimer();
                 Timber.i("starting Inmotion V2 adapter");
                 return true;
 
@@ -1394,9 +1401,9 @@ public class WheelData {
                 mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                 Timber.i("write notify");
                 if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
-                    NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
+                    NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
                 } else {
-                    NinebotZAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService);
+                    NinebotZAdapter.getInstance().startKeepAliveTimer();
                 }
                 Timber.i("starting ninebot adapter");
                 return true;
@@ -1421,7 +1428,7 @@ public class WheelData {
                 Timber.i("enable notify UUID");
                 mBluetoothLeService.writeBluetoothGattDescriptor(descriptor);
                 Timber.i("write notify");
-                NinebotAdapter.getInstance().startKeepAliveTimer(mBluetoothLeService, protoVer);
+                NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
                 Timber.i("starting ninebot adapter");
                 return true;
             }

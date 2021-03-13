@@ -151,7 +151,7 @@ public class KingsongAdapter extends BaseAdapter {
                 // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
                 if ((data[16] & 255) == 164) {
                     data[16] = (byte) 0x98;
-                    wd.getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+                    wd.bluetoothCmd(data);
                 }
                 return true;
             }
@@ -166,14 +166,14 @@ public class KingsongAdapter extends BaseAdapter {
         data[3] = (byte) 0xE0;
         data[16] = (byte) 0x87;
         data[17] = (byte) 0x15;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     @Override
     public void wheelCalibration() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x89;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[2] = (byte) (lightMode + 0x12);
         data[3] = (byte) 0x01;
         data[16] = (byte) 0x73;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     private boolean is84vWheel() {
@@ -233,7 +233,7 @@ public class KingsongAdapter extends BaseAdapter {
         if ((mWheelMaxSpeed | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0) {
             data[16] = (byte) 0x98; // request speed & alarm values from wheel
         }
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     public void updateKSAlarm1(int wheelKSAlarm1) {
@@ -282,31 +282,31 @@ public class KingsongAdapter extends BaseAdapter {
     public void wheelBeep() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x88;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     public void requestNameData() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x9B;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     public void requestSerialData() {
         byte[] data = getEmptyRequest();
         data[16] = 0x63;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     public void requestAlarmSettingsAndMaxSpeed() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x98;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     public void powerOff() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x40;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     @Override
@@ -314,7 +314,7 @@ public class KingsongAdapter extends BaseAdapter {
         byte[] data = getEmptyRequest();
         data[2] = (byte) ledMode;
         data[16] = (byte) 0x6C;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
     @Override
@@ -322,7 +322,7 @@ public class KingsongAdapter extends BaseAdapter {
         byte[] data = getEmptyRequest();
         data[2] = (byte) strobeMode;
         data[16] = (byte) 0x53;
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(data);
+        WheelData.getInstance().bluetoothCmd(data);
     }
 
 }
