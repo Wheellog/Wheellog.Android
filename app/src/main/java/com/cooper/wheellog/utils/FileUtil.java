@@ -1,8 +1,10 @@
 package com.cooper.wheellog.utils;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -26,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -162,8 +165,33 @@ public class FileUtil {
         return ByteStreams.toByteArray(inputStream);
     }
 
+    static String sizeTokb(Long size) {
+        return String.format(Locale.US, "%.2f Kb", size / 1024f);
+    }
+
     public static ArrayList<Trip> fillTrips(Context context) {
         ArrayList<Trip> trips = new ArrayList<>();
+        // Android legacy
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+        {
+            String path = Constants.LOG_FOLDER_NAME;
+            File dir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), path);
+            File[] filesArray = dir.listFiles();
+            for (File wheelDir: filesArray) {
+                if (wheelDir.isDirectory()) {
+                    for (File f: filesArray) {
+                        if (!f.getName().startsWith("RAW")) {
+                            trips.add(new Trip(f.getName(), sizeTokb(f.length()), f.getPath()));
+                        }
+                    }
+                }
+            }
+            return trips;
+        }
+        File[] dirs = context.getExternalMediaDirs();
+        // Android 10+
+        // 
         Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         String[] projection = {
                 MediaStore.Downloads.MIME_TYPE,
@@ -184,7 +212,7 @@ public class FileUtil {
                 if (title.startsWith("RAW")) { // TODO: move to selection filter
                     continue;
                 }
-                String description = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.SIZE))) / 1024 + " Kb";
+                String description = sizeTokb(cursor.getLong(cursor.getColumnIndex(MediaStore.Downloads.SIZE)));
                 String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
                 trips.add(new Trip(title, description, mediaId));
             } while (cursor.moveToNext());

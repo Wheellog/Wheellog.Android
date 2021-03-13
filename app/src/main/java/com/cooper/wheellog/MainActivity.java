@@ -1,7 +1,6 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -10,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
@@ -32,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.gridlayout.widget.GridLayout;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cooper.wheellog.utils.Constants;
@@ -126,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     private void setConnectionState(int connectionState) {
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                configureDisplay(WheelData.getInstance().getWheelType());
+                pagerAdapter.configureSecondDisplay();
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
@@ -196,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
-                    configureDisplay(WheelData.getInstance().getWheelType());
+                    pagerAdapter.configureSecondDisplay();
                     pagerAdapter.updateScreen(true);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
@@ -224,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
-                    pagerAdapter.wheelView.resetBatteryLowest();
+                    pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
@@ -330,264 +327,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //region SecondPage
-    private LinkedHashMap<Integer, String> secondPageValues = new LinkedHashMap<>();
-
-    public void setupFieldForSecondPage(int resId)
-    {
-        secondPageValues.put(resId, "");
-    }
-
-    public void updateFieldForSecondPage(int resId, String value)
-    {
-        if (secondPageValues.containsKey(resId)) {
-            secondPageValues.put(resId, value);
-        }
-    }
-
-    public void createSecondPage() {
-        GridLayout layout = findViewById(R.id.page_two_grid);
-        layout.removeAllViews();
-        for (Map.Entry<Integer, String> entry : secondPageValues.entrySet()) {
-            TextView headerText = (TextView) getLayoutInflater().inflate(
-                    R.layout.textview_title_template, layout, false);
-            TextView valueText = (TextView) getLayoutInflater().inflate(
-                    R.layout.textview_value_template, layout, false);
-            headerText.setText(getApplicationContext().getString(entry.getKey()));
-            valueText.setText(entry.getValue());
-            layout.addView(headerText);
-            layout.addView(valueText);
-        }
-    }
-
-    public Boolean updateSecondPage() {
-        GridLayout layout = findViewById(R.id.page_two_grid);
-        int count = layout.getChildCount();
-        if (secondPageValues.size() * 2 != count)
-        {
-            return false;
-        }
-        int index = 1;
-        for (String value : secondPageValues.values()) {
-            TextView valueText = (TextView) layout.getChildAt(index);
-            valueText.setText(value);
-            index += 2;
-        }
-        return true;
-    }
-    //endregion
-
-    private void configureDisplay(WHEEL_TYPE wheelType) {
-        secondPageValues.clear();
-
-        switch (wheelType) {
-            case KINGSONG:
-                setupFieldForSecondPage(R.string.speed);
-                setupFieldForSecondPage(R.string.dynamic_speed_limit);
-                setupFieldForSecondPage(R.string.top_speed);
-                setupFieldForSecondPage(R.string.average_speed);
-                setupFieldForSecondPage(R.string.average_riding_speed);
-                setupFieldForSecondPage(R.string.battery);
-                setupFieldForSecondPage(R.string.output);
-                setupFieldForSecondPage(R.string.cpuload);
-                setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.temperature2);
-                setupFieldForSecondPage(R.string.ride_time);
-                setupFieldForSecondPage(R.string.riding_time);
-                setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.wheel_distance);
-                setupFieldForSecondPage(R.string.user_distance);
-                setupFieldForSecondPage(R.string.total_distance);
-                setupFieldForSecondPage(R.string.voltage);
-                setupFieldForSecondPage(R.string.voltage_sag);
-                setupFieldForSecondPage(R.string.current);
-                setupFieldForSecondPage(R.string.power);
-                setupFieldForSecondPage(R.string.fan_status);
-                setupFieldForSecondPage(R.string.charging);
-                setupFieldForSecondPage(R.string.mode);
-                setupFieldForSecondPage(R.string.name);
-                setupFieldForSecondPage(R.string.model);
-                setupFieldForSecondPage(R.string.version);
-                setupFieldForSecondPage(R.string.serial_number);
-                break;
-
-            case VETERAN:
-                setupFieldForSecondPage(R.string.speed);
-                setupFieldForSecondPage(R.string.top_speed);
-                setupFieldForSecondPage(R.string.average_speed);
-                setupFieldForSecondPage(R.string.average_riding_speed);
-                setupFieldForSecondPage(R.string.battery);
-                setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.ride_time);
-                setupFieldForSecondPage(R.string.riding_time);
-                setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.wheel_distance);
-                setupFieldForSecondPage(R.string.user_distance);
-                setupFieldForSecondPage(R.string.total_distance);
-                setupFieldForSecondPage(R.string.voltage);
-                setupFieldForSecondPage(R.string.voltage_sag);
-                setupFieldForSecondPage(R.string.current);
-                setupFieldForSecondPage(R.string.power);
-                setupFieldForSecondPage(R.string.charging);
-                setupFieldForSecondPage(R.string.model);
-                setupFieldForSecondPage(R.string.version);
-                setupFieldForSecondPage(R.string.charging);
-                break;
-
-            case GOTWAY:
-                setupFieldForSecondPage(R.string.speed);
-                setupFieldForSecondPage(R.string.top_speed);
-                setupFieldForSecondPage(R.string.average_speed);
-                setupFieldForSecondPage(R.string.average_riding_speed);
-                setupFieldForSecondPage(R.string.battery);
-                setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.ride_time);
-                setupFieldForSecondPage(R.string.riding_time);
-                setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.wheel_distance);
-                setupFieldForSecondPage(R.string.user_distance);
-                setupFieldForSecondPage(R.string.total_distance);
-                setupFieldForSecondPage(R.string.voltage);
-                setupFieldForSecondPage(R.string.voltage_sag);
-                setupFieldForSecondPage(R.string.current);
-                setupFieldForSecondPage(R.string.power);
-                break;
-
-            case INMOTION_V2:
-                setupFieldForSecondPage(R.string.speed);
-                setupFieldForSecondPage(R.string.dynamic_speed_limit);
-                setupFieldForSecondPage(R.string.torque);
-                setupFieldForSecondPage(R.string.top_speed);
-                setupFieldForSecondPage(R.string.average_speed);
-                setupFieldForSecondPage(R.string.average_riding_speed);
-                setupFieldForSecondPage(R.string.battery);
-                setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.temperature2);
-                setupFieldForSecondPage(R.string.cpu_temp);
-                setupFieldForSecondPage(R.string.imu_temp);
-                setupFieldForSecondPage(R.string.angle);
-                setupFieldForSecondPage(R.string.roll);
-                setupFieldForSecondPage(R.string.ride_time);
-                setupFieldForSecondPage(R.string.riding_time);
-                setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.wheel_distance);
-                setupFieldForSecondPage(R.string.user_distance);
-                setupFieldForSecondPage(R.string.total_distance);
-                setupFieldForSecondPage(R.string.voltage);
-                setupFieldForSecondPage(R.string.voltage_sag);
-                setupFieldForSecondPage(R.string.current);
-                setupFieldForSecondPage(R.string.dynamic_current_limit);
-                setupFieldForSecondPage(R.string.power);
-                setupFieldForSecondPage(R.string.motor_power);
-                setupFieldForSecondPage(R.string.mode);
-                setupFieldForSecondPage(R.string.model);
-                setupFieldForSecondPage(R.string.version);
-                setupFieldForSecondPage(R.string.serial_number);
-                break;
-
-            case INMOTION:
-                setupFieldForSecondPage(R.string.speed);
-                setupFieldForSecondPage(R.string.top_speed);
-                setupFieldForSecondPage(R.string.average_speed);
-                setupFieldForSecondPage(R.string.average_riding_speed);
-                setupFieldForSecondPage(R.string.battery);
-                setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.temperature2);
-                setupFieldForSecondPage(R.string.angle);
-                setupFieldForSecondPage(R.string.roll);
-                setupFieldForSecondPage(R.string.ride_time);
-                setupFieldForSecondPage(R.string.riding_time);
-                setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.wheel_distance);
-                setupFieldForSecondPage(R.string.user_distance);
-                setupFieldForSecondPage(R.string.total_distance);
-                setupFieldForSecondPage(R.string.voltage);
-                setupFieldForSecondPage(R.string.voltage_sag);
-                setupFieldForSecondPage(R.string.current);
-                setupFieldForSecondPage(R.string.power);
-                setupFieldForSecondPage(R.string.mode);
-                setupFieldForSecondPage(R.string.model);
-                setupFieldForSecondPage(R.string.version);
-                setupFieldForSecondPage(R.string.serial_number);
-                break;
-
-            case NINEBOT_Z:
-            case NINEBOT:
-                setupFieldForSecondPage(R.string.speed);
-                setupFieldForSecondPage(R.string.top_speed);
-                setupFieldForSecondPage(R.string.average_speed);
-                setupFieldForSecondPage(R.string.average_riding_speed);
-                setupFieldForSecondPage(R.string.battery);
-                setupFieldForSecondPage(R.string.temperature);
-                setupFieldForSecondPage(R.string.ride_time);
-                setupFieldForSecondPage(R.string.riding_time);
-                setupFieldForSecondPage(R.string.distance);
-                setupFieldForSecondPage(R.string.user_distance);
-                setupFieldForSecondPage(R.string.total_distance);
-                setupFieldForSecondPage(R.string.voltage);
-                setupFieldForSecondPage(R.string.voltage_sag);
-                setupFieldForSecondPage(R.string.current);
-                setupFieldForSecondPage(R.string.power);
-                setupFieldForSecondPage(R.string.model);
-                setupFieldForSecondPage(R.string.version);
-                setupFieldForSecondPage(R.string.serial_number);
-                break;
-        }
-        createSecondPage();
-    }
-
-    public void updateSecondScreen() {
-        if (use_mph) {
-            updateFieldForSecondPage(R.string.speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getSpeedDouble())));
-            updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getTopSpeedDouble())));
-            updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageSpeedDouble())));
-            updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getAverageRidingSpeedDouble())));
-            updateFieldForSecondPage(R.string.dynamic_speed_limit, String.format(Locale.US, "%.1f " + getString(R.string.mph), kmToMiles(WheelData.getInstance().getSpeedLimit())));
-            updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getDistanceDouble())));
-            updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getWheelDistanceDouble())));
-            updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getUserDistanceDouble())));
-            updateFieldForSecondPage(R.string.total_distance, String.format(Locale.US, "%.2f " + getString(R.string.milli), kmToMiles(WheelData.getInstance().getTotalDistanceDouble())));
-        } else {
-            updateFieldForSecondPage(R.string.speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getSpeedDouble()));
-            updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getTopSpeedDouble()));
-            updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageSpeedDouble()));
-            updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getAverageRidingSpeedDouble()));
-            updateFieldForSecondPage(R.string.dynamic_speed_limit, String.format(Locale.US, "%.1f " + getString(R.string.kmh), WheelData.getInstance().getSpeedLimit()));
-            updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getDistanceDouble()));
-            updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getWheelDistanceDouble()));
-            updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getUserDistanceDouble()));
-            updateFieldForSecondPage(R.string.total_distance, String.format(Locale.US, "%.3f " + getString(R.string.km), WheelData.getInstance().getTotalDistanceDouble()));
-        }
-
-        updateFieldForSecondPage(R.string.voltage, String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageDouble()));
-        updateFieldForSecondPage(R.string.voltage_sag, String.format(Locale.US, "%.2f " + getString(R.string.volt), WheelData.getInstance().getVoltageSagDouble()));
-        updateFieldForSecondPage(R.string.temperature, String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature()));
-        updateFieldForSecondPage(R.string.temperature2, String.format(Locale.US, "%d°C", WheelData.getInstance().getTemperature2()));
-        updateFieldForSecondPage(R.string.cpu_temp, String.format(Locale.US, "%d°C", WheelData.getInstance().getCpuTemp()));
-        updateFieldForSecondPage(R.string.imu_temp, String.format(Locale.US, "%d°C", WheelData.getInstance().getImuTemp()));
-        updateFieldForSecondPage(R.string.angle, String.format(Locale.US, "%.2f°", WheelData.getInstance().getAngle()));
-        updateFieldForSecondPage(R.string.roll, String.format(Locale.US, "%.2f°", WheelData.getInstance().getRoll()));
-        updateFieldForSecondPage(R.string.current, String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentDouble()));
-        updateFieldForSecondPage(R.string.dynamic_current_limit, String.format(Locale.US, "%.2f " + getString(R.string.amp), WheelData.getInstance().getCurrentLimit()));
-        updateFieldForSecondPage(R.string.torque, String.format(Locale.US, "%.2f " + getString(R.string.newton), WheelData.getInstance().getTorque()));
-        updateFieldForSecondPage(R.string.power, String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getPowerDouble()));
-        updateFieldForSecondPage(R.string.motor_power, String.format(Locale.US, "%.2f " + getString(R.string.watt), WheelData.getInstance().getMotorPower()));
-        updateFieldForSecondPage(R.string.battery, String.format(Locale.US, "%d%%", WheelData.getInstance().getBatteryLevel()));
-        updateFieldForSecondPage(R.string.fan_status, WheelData.getInstance().getFanStatus() == 0 ? getString(R.string.off) : getString(R.string.on));
-        updateFieldForSecondPage(R.string.charging_status, WheelData.getInstance().getChargingStatus() == 0 ? getString(R.string.discharging) : getString(R.string.charging));
-        updateFieldForSecondPage(R.string.version, String.format(Locale.US, "%s", WheelData.getInstance().getVersion()));
-        updateFieldForSecondPage(R.string.output, String.format(Locale.US, "%d%%", WheelData.getInstance().getOutput()));
-        updateFieldForSecondPage(R.string.cpuload, String.format(Locale.US, "%d%%", WheelData.getInstance().getCpuLoad()));
-        updateFieldForSecondPage(R.string.name, WheelData.getInstance().getName());
-        updateFieldForSecondPage(R.string.model, WheelData.getInstance().getModel());
-        updateFieldForSecondPage(R.string.serial_number, WheelData.getInstance().getSerial());
-        updateFieldForSecondPage(R.string.ride_time, WheelData.getInstance().getRideTimeString());
-        updateFieldForSecondPage(R.string.riding_time, WheelData.getInstance().getRidingTimeString());
-        updateFieldForSecondPage(R.string.mode, WheelData.getInstance().getModeStr());
-        updateFieldForSecondPage(R.string.charging, WheelData.getInstance().getChargeTime());
-        updateSecondPage();
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -608,7 +347,8 @@ public class MainActivity extends AppCompatActivity {
         if (WheelLog.AppConfig.getPageEvents()) {
             pages.add(R.layout.main_view_events);
         }
-        pagerAdapter = new MainPageAdapter(pages);
+
+        pagerAdapter = new MainPageAdapter(pages, this);
         pager.setAdapter(pagerAdapter);
         pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -692,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {
-            configureDisplay(WheelData.getInstance().getWheelType());
+            pagerAdapter.configureSecondDisplay();
         }
 
         registerReceiver(mMainBroadcastReceiver, makeIntentFilter());
@@ -855,6 +595,7 @@ public class MainActivity extends AppCompatActivity {
         toggleLoggingService();
     }
 
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
         if (LoggingService.isInstanceCreated())
