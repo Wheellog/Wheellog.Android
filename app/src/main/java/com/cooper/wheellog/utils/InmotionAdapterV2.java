@@ -364,7 +364,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
-                out.write(buffer);
+                out.write(escape(buffer));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -409,6 +409,17 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 Timber.i("Check FALSE, calc: %02X, packet: %02X",check, bufferCheck);
             }
             return (check == bufferCheck) ? new Message(dataBuffer) : null;
+        }
+
+        private byte[] escape(byte[] buffer) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            for (byte c : buffer) {
+                if (c == (byte) 0xAA || c == (byte) 0xA5) {
+                    out.write(0xA5);
+                }
+                out.write(c);
+            }
+            return out.toByteArray();
         }
     }
 	
