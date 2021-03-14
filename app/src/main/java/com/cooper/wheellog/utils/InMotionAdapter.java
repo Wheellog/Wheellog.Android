@@ -1,7 +1,5 @@
 package com.cooper.wheellog.utils;
 
-import com.cooper.wheellog.BluetoothLeService;
-import com.cooper.wheellog.MainActivity;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -12,7 +10,6 @@ import java.util.*;
 import timber.log.Timber;
 
 import android.content.Intent;
-import android.content.Context;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
@@ -289,30 +286,30 @@ public class InMotionAdapter extends BaseAdapter {
         int a = 0;
     }
 
-    public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService, final String inmotionPassword) {
+    public void startKeepAliveTimer(String password) {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (updateStep == 0) {
                     if (passwordSent < 6) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getPassword(inmotionPassword).writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(InMotionAdapter.CANMessage.getPassword(password).writeBuffer())) {
                             Timber.i("Sent password message");
                             passwordSent++;
                         } else updateStep = 35;
 
                     } else if (model == UNKNOWN | needSlowData) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
                         } else updateStep = 35;
 
                     } else if (settingCommandReady) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
+                        if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
                         } else updateStep = 35; // after +1 and %10 = 0
                     } else {
-                        if (!mBluetoothLeService.writeBluetoothGattCharacteristic(CANMessage.standardMessage().writeBuffer())) {
+                        if (!WheelData.getInstance().bluetoothCmd(CANMessage.standardMessage().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
                             updateStep = 35;
                         } else {
@@ -352,7 +349,8 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer();
     }
 
-    public void setMaxSpeedState(final int maxSpeed) {
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer();
     }
@@ -382,6 +380,7 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
     }
 
+    @Override
     public void wheelCalibration() {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.wheelCalibration().writeBuffer();
@@ -1074,8 +1073,8 @@ public class InMotionAdapter extends BaseAdapter {
             speed = Math.abs(speed);
             int voltage = (int)MathsUtil.intFromBytesLE(ex_data, 24);
             int current = (int)MathsUtil.signedIntFromBytesLE(ex_data, 20);
-            int temperature = ex_data[32] & 0xff;
-            int temperature2 = ex_data[34] & 0xff;
+            int temperature = ex_data[32];
+            int temperature2 = ex_data[34];
             int batt = batteryFromVoltage(voltage, model);
             long totalDistance;
             long distance;

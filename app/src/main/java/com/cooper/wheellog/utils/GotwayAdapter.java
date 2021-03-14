@@ -108,9 +108,33 @@ public class GotwayAdapter extends BaseAdapter {
         return newDataFound;
     }
 
+    private void sendCommand(String s) {
+        sendCommand(s, "b", 100);
+    }
+
+    private void sendCommand(String s, String delayed) {
+        sendCommand(s, delayed, 100);
+    }
+
+    private void sendCommand(String s, String delayed, int timer) {
+        sendCommand(s.getBytes(), delayed.getBytes(), timer);
+    }
+
+    private void sendCommand(byte[] s, byte[] delayed, int timer) {
+        WheelData.getInstance().bluetoothCmd(s);
+        new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
+    }
+
     @Override
     public void updatePedalsMode(int pedalsMode) {
-        WheelData.getInstance().updatePedalsMode(pedalsMode);
+        String command = "";
+        switch (pedalsMode) {
+            case 0: command = "h"; break;
+            case 1: command = "f"; break;
+            case 2: command = "s"; break;
+        }
+        sendCommand(command);
+
     }
 
     @Override
@@ -125,20 +149,29 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void setLightMode(int lightMode) {
+        String command = "";
         switch (lightMode) {
-            case 0:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("E".getBytes());
-                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
-                break;
-            case 1:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("Q".getBytes());
-                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
-                break;
-            case 2:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("T".getBytes());
-                new Handler().postDelayed(() -> WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes()), 100);
-                break;
+            case 0: command = "E"; break;
+            case 1: command = "Q"; break;
+            case 2: command = "T"; break;
         }
+        sendCommand(command);
+    }
+
+    @Override
+    public void updateAlarmMode(int alarmMode) {
+        String command = "";
+        switch (alarmMode) {
+            case 0: command = "u"; break;
+            case 1: command = "i"; break;
+            case 2: command = "o"; break;
+        }
+        sendCommand(command);
+    }
+
+    @Override
+    public void wheelCalibration() {
+        sendCommand("c", "y", 300);
     }
 
     @Override
@@ -154,7 +187,24 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+        WheelData.getInstance().bluetoothCmd("b".getBytes());
+    }
+
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
+        final byte[] hhh = new byte[1];
+        final byte[] lll = new byte[1];
+        if (maxSpeed != 0) {
+            hhh[0] = (byte) ((maxSpeed / 10) + 0x30);
+            lll[0] = (byte) ((maxSpeed % 10) + 0x30);
+            WheelData.getInstance().bluetoothCmd("b".getBytes());
+            new Handler().postDelayed(() -> sendCommand("W", "Y"), 100);
+            new Handler().postDelayed(() -> sendCommand(hhh, lll, 100), 300);
+            new Handler().postDelayed(() -> sendCommand("b", "b"), 500);
+        } else {
+            sendCommand("b", "\"");
+            new Handler().postDelayed(() -> sendCommand("b", "b"), 200);
+        }
     }
 
     static class gotwayUnpacker {

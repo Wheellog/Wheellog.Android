@@ -1,8 +1,6 @@
 package com.cooper.wheellog.utils
 
-import android.app.Activity
 import android.content.Context
-import androidx.core.math.MathUtils
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -11,11 +9,8 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
-import kotlin.math.round
-import kotlin.math.roundToInt
 
 class VeteranAdapterTest {
 
@@ -143,9 +138,7 @@ class VeteranAdapterTest {
     @Test
     fun `update pedals mode`() {
         // Arrange.
-        every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true
         mockkConstructor(android.os.Handler::class)
-        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
 
         // Act.
         adapter.updatePedalsMode(0)
@@ -153,9 +146,20 @@ class VeteranAdapterTest {
         adapter.updatePedalsMode(2)
 
         // Assert.
-        verify { anyConstructed<android.os.Handler>().postDelayed(any(), any()) }
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("h".toByteArray()) }
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("f".toByteArray()) }
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("s".toByteArray()) }
+        verify { data.bluetoothCmd("SETh".toByteArray()) }
+        verify { data.bluetoothCmd("SETm".toByteArray()) }
+        verify { data.bluetoothCmd("SETs".toByteArray()) }
+    }
+
+    @Test
+    fun `reset trip`() {
+        // Arrange.
+        mockkConstructor(android.os.Handler::class)
+
+        // Act.
+        adapter.resetTrip()
+
+        // Assert.
+        verify { data.bluetoothCmd("CLEARMETER".toByteArray()) }
     }
 }
