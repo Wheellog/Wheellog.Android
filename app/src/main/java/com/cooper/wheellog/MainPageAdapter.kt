@@ -807,4 +807,9 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     }
 
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view)
+    {
+        init {
+            setIsRecyclable(false)
+        }
+    }
 }

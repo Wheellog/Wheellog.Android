@@ -16,7 +16,7 @@
         android:fontFamily="@font/prime"
         android:singleLine="true"
         android:text="File name"
-        android:textSize="20sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/uploadButtonContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
