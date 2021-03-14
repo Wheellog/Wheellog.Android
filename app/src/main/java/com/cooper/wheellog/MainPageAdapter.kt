@@ -431,9 +431,6 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
                     }
                 }
             }
-            R.layout.main_view_trips -> {
-                listOfTrips?.adapter = TripAdapter(activity, FileUtil.fillTrips(activity))
-            }
             R.layout.main_view_smart_bms -> {
                 data.bmsView = true
                 tvBms1Sn?.text = data.bms1.serialNumber
