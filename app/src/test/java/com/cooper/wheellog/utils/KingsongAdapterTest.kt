@@ -1,7 +1,6 @@
 package com.cooper.wheellog.utils
 
 import android.content.Context
-import com.cooper.wheellog.BluetoothLeService
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -10,7 +9,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
 import kotlin.math.round
@@ -127,7 +125,6 @@ class KingsongAdapterTest {
     @Test
     fun `decode Serial number`() {
         // Arrange.
-        every { data.bluetoothLeService } returns mockkClass(BluetoothLeService::class, relaxed = true)
         val type = 179.toByte() // Name and Type data
         val serial = "King1234567890123"
         val serialBytes = serial.toByteArray(Charsets.UTF_8)
@@ -209,7 +206,6 @@ class KingsongAdapterTest {
     @Test
     fun `update pedals mode`() {
         // Arrange.
-        every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true
 
         // Act.
         adapter.updatePedalsMode(0)
@@ -217,6 +213,6 @@ class KingsongAdapterTest {
         adapter.updatePedalsMode(2)
 
         // Assert.
-        verify(atLeast = 3) { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) }
+        verify(atLeast = 3) { data.bluetoothCmd(any()) }
     }
 }

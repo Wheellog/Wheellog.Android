@@ -398,112 +398,118 @@ public class BluetoothLeService extends Service {
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
         }
         Timber.i("Transmitted: %s", stringBuilder.toString());
-
-        switch (WheelData.getInstance().getWheelType()) {
-            case KINGSONG:
-                BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
-                if (ks_service == null) {
-                    Timber.i("writeBluetoothGattCharacteristic service == null");
-                    return false;
-                }
-                BluetoothGattCharacteristic ks_characteristic = ks_service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
-                if (ks_characteristic == null) {
-                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                    return false;
-                }
-                ks_characteristic.setValue(cmd);
-                Timber.i("writeBluetoothGattCharacteristic writeType = %d", ks_characteristic.getWriteType());
-                ks_characteristic.setWriteType(1);
-                return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
-            case GOTWAY:
-            case GOTWAY_VIRTUAL:
-            case VETERAN:
-                BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
-                if (gw_service == null) {
-                    Timber.i("writeBluetoothGattCharacteristic service == null");
-                    return false;
-                }
-                BluetoothGattCharacteristic characteristic = gw_service.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
-                if (characteristic == null) {
-                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                    return false;
-                }
-                characteristic.setValue(cmd);
-                Timber.i("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
-                return this.mBluetoothGatt.writeCharacteristic(characteristic);
-            case NINEBOT_Z:
-                BluetoothGattService nz_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
-                if (nz_service == null) {
-                    Timber.i("writeBluetoothGattCharacteristic service == null");
-                    return false;
-                }
-                BluetoothGattCharacteristic nz_characteristic = nz_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID));
-                if (nz_characteristic == null) {
-                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                    return false;
-                }
-                nz_characteristic.setValue(cmd);
-                Timber.i("writeBluetoothGattCharacteristic writeType = %d", nz_characteristic.getWriteType());
-                return this.mBluetoothGatt.writeCharacteristic(nz_characteristic);
-            case NINEBOT:
-                BluetoothGattService nb_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
-                if (nb_service == null) {
-                    Timber.i("writeBluetoothGattCharacteristic service == null");
-                    return false;
-                }
-                BluetoothGattCharacteristic nb_characteristic = nb_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID));
-                if (nb_characteristic == null) {
-                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                    return false;
-                }
-                nb_characteristic.setValue(cmd);
-                Timber.i("writeBluetoothGattCharacteristic writeType = %d", nb_characteristic.getWriteType());
-                return this.mBluetoothGatt.writeCharacteristic(nb_characteristic);
-            case INMOTION:
-                BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID));
-                if (im_service == null) {
-                    Timber.i("writeBluetoothGattCharacteristic service == null");
-                    return false;
-                }
-                BluetoothGattCharacteristic im_characteristic = im_service.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID));
-                if (im_characteristic == null) {
-                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                    return false;
-                }
-                byte[] buf = new byte[20];
-                int i2 = cmd.length / 20;
-                int i3 = cmd.length - (i2 * 20);
-                for (int i4 = 0; i4 < i2; i4++) {
-                    System.arraycopy(cmd, i4 * 20, buf, 0, 20);
-                    im_characteristic.setValue(buf);
-                    if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic)) return false;
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        try {
+            switch (WheelData.getInstance().getWheelType()) {
+                case KINGSONG:
+                    BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                    if (ks_service == null) {
+                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                        return false;
                     }
-                }
-                if (i3 > 0) {
-                    System.arraycopy(cmd, i2 * 20, buf, 0, i3);
-                    im_characteristic.setValue(buf);
-                    if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic)) return false;
-                }
-                Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
-                return true;
-            case INMOTION_V2:
-                BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
-                if (inv2_service == null) {
-                    Timber.i("writeBluetoothGattCharacteristic service == null");
-                    return false;
-                }
-                BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID));
-                if (inv2_characteristic == null) {
-                    Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                    return false;
-                }
-                inv2_characteristic.setValue(cmd);
-                Timber.i("writeBluetoothGattCharacteristic writeType = %d", inv2_characteristic.getWriteType());
-                return this.mBluetoothGatt.writeCharacteristic(inv2_characteristic);
+                    BluetoothGattCharacteristic ks_characteristic = ks_service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
+                    if (ks_characteristic == null) {
+                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                        return false;
+                    }
+                    ks_characteristic.setValue(cmd);
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", ks_characteristic.getWriteType());
+                    ks_characteristic.setWriteType(1);
+                    return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
+                case GOTWAY:
+                case GOTWAY_VIRTUAL:
+                case VETERAN:
+                    BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                    if (gw_service == null) {
+                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                        return false;
+                    }
+                    BluetoothGattCharacteristic characteristic = gw_service.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
+                    if (characteristic == null) {
+                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                        return false;
+                    }
+                    characteristic.setValue(cmd);
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
+                    return this.mBluetoothGatt.writeCharacteristic(characteristic);
+                case NINEBOT_Z:
+                    BluetoothGattService nz_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
+                    if (nz_service == null) {
+                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                        return false;
+                    }
+                    BluetoothGattCharacteristic nz_characteristic = nz_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID));
+                    if (nz_characteristic == null) {
+                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                        return false;
+                    }
+                    nz_characteristic.setValue(cmd);
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", nz_characteristic.getWriteType());
+                    return this.mBluetoothGatt.writeCharacteristic(nz_characteristic);
+                case NINEBOT:
+                    BluetoothGattService nb_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
+                    if (nb_service == null) {
+                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                        return false;
+                    }
+                    BluetoothGattCharacteristic nb_characteristic = nb_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID));
+                    if (nb_characteristic == null) {
+                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                        return false;
+                    }
+                    nb_characteristic.setValue(cmd);
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", nb_characteristic.getWriteType());
+                    return this.mBluetoothGatt.writeCharacteristic(nb_characteristic);
+                case INMOTION:
+                    BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID));
+                    if (im_service == null) {
+                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                        return false;
+                    }
+                    BluetoothGattCharacteristic im_characteristic = im_service.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID));
+                    if (im_characteristic == null) {
+                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                        return false;
+                    }
+                    byte[] buf = new byte[20];
+                    int i2 = cmd.length / 20;
+                    int i3 = cmd.length - (i2 * 20);
+                    for (int i4 = 0; i4 < i2; i4++) {
+                        System.arraycopy(cmd, i4 * 20, buf, 0, 20);
+                        im_characteristic.setValue(buf);
+                        if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic))
+                            return false;
+                        try {
+                            Thread.sleep(20);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (i3 > 0) {
+                        System.arraycopy(cmd, i2 * 20, buf, 0, i3);
+                        im_characteristic.setValue(buf);
+                        if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic))
+                            return false;
+                    }
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
+                    return true;
+                case INMOTION_V2:
+                    BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                    if (inv2_service == null) {
+                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                        return false;
+                    }
+                    BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID));
+                    if (inv2_characteristic == null) {
+                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                        return false;
+                    }
+                    inv2_characteristic.setValue(cmd);
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", inv2_characteristic.getWriteType());
+                    return this.mBluetoothGatt.writeCharacteristic(inv2_characteristic);
+            }
+        } catch (NullPointerException e) {
+            // sometimes mBluetoothGatt is null... If the user starts to connect and disconnect quickly
+            Timber.i("writeBluetoothGattCharacteristic throws NullPointerException: %s", e.getMessage());
         }
         return false;
     }

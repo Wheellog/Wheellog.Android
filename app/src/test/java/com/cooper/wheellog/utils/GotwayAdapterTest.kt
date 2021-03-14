@@ -137,7 +137,6 @@ class GotwayAdapterTest {
     @Test
     fun `update pedals mode`() {
         // Arrange.
-        every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
 
@@ -148,8 +147,8 @@ class GotwayAdapterTest {
 
         // Assert.
         verify { anyConstructed<android.os.Handler>().postDelayed(any(), any()) }
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("h".toByteArray()) }
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("f".toByteArray()) }
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic("s".toByteArray()) }
+        verify { data.bluetoothCmd("h".toByteArray()) }
+        verify { data.bluetoothCmd("f".toByteArray()) }
+        verify { data.bluetoothCmd("s".toByteArray()) }
     }
 }
