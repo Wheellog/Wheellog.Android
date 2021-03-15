@@ -380,6 +380,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 tb.title = getText(R.string.speed_settings_title)
                 findPreference<SwitchPreference>(getString(R.string.custom_beep))?.summary =
                         WheelLog.AppConfig.beepFile.lastPathSegment
+                findPreference<SeekBarPreference>(getString(R.string.cell_voltage_tiltback))?.value =
+                        WheelLog.AppConfig.cellVoltageTiltback
                 switchConnectionSoundIsVisible()
             }
             SettingsScreen.Logs -> {
