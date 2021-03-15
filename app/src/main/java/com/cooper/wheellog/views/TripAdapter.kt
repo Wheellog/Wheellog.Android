@@ -2,6 +2,7 @@ package com.cooper.wheellog.views
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,9 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.google.common.io.ByteStreams
 import timber.log.Timber
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -32,10 +36,6 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val trip = trips[position]
         holder.bind(trip, uploadViewVisible)
-//            if(position % 2 == 0)
-//            {
-//                nameView.rootView.setBackgroundResource(R.color.background);
-//            }
     }
 
     override fun getItemCount(): Int {
@@ -53,7 +53,13 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
             descriptionView.text = trip.description
             uploadView.visibility = uploadViewVisible
             uploadView.setOnClickListener {
-                val inputStream = it.context.contentResolver.openInputStream(trip.uri)
+                val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                    // Android 9 or less
+                    FileInputStream(File(trip.mediaId))
+                } else {
+                    // Android 10+
+                    it.context.contentResolver.openInputStream(trip.uri)
+                }
                 if (inputStream == null) {
                     Timber.i("Failed to create inputStream for %s", trip.title)
                     return@setOnClickListener

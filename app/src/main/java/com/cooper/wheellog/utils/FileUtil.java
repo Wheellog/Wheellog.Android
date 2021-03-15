@@ -169,18 +169,24 @@ public class FileUtil {
 
     public static ArrayList<Trip> fillTrips(Context context) {
         ArrayList<Trip> trips = new ArrayList<>();
-        // Android legacy
+        // Android 9 or less
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
         {
-            String path = Constants.LOG_FOLDER_NAME;
             File dir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), path);
+                    Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
             File[] filesArray = dir.listFiles();
+            if (filesArray == null) {
+                return trips;
+            }
             for (File wheelDir: filesArray) {
                 if (wheelDir.isDirectory()) {
-                    for (File f: filesArray) {
+                    File[] wheelFiles = dir.listFiles();
+                    if (wheelFiles == null) {
+                        return trips;
+                    }
+                    for (File f: wheelFiles) {
                         if (!f.getName().startsWith("RAW")) {
-                            trips.add(new Trip(f.getName(), sizeTokb(f.length()), f.getPath()));
+                            trips.add(new Trip(f.getName(), sizeTokb(f.length()), f.getAbsolutePath()));
                         }
                     }
                 }
