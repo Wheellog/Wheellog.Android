@@ -1027,6 +1027,7 @@ public class WheelData {
         long[] pattern = {0};
         Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
+        Timber.wtf("Alarma! Alarma! %s", alarmType.toString());
 
         switch (alarmType) {
             case SPEED1:

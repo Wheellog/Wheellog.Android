@@ -55,6 +55,8 @@ import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 public class MainActivity extends AppCompatActivity {
     public static AudioManager audioManager = null;
 
+    private EventsLoggingTree eventsLoggingTree;
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(LocaleManager.setLocale(base));
@@ -359,6 +361,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        eventsLoggingTree = new EventsLoggingTree(getApplicationContext(), pagerAdapter);
+        Timber.plant(eventsLoggingTree);
+
         CircleIndicator3 indicator = findViewById(R.id.indicator);
         indicator.setViewPager(pager);
         pagerAdapter.registerAdapterDataObserver(indicator.getAdapterDataObserver());
@@ -460,6 +465,9 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mBluetoothServiceConnection);
             WheelData.getInstance().setBluetoothLeService(null);
         }
+        Timber.uproot(eventsLoggingTree);
+        eventsLoggingTree.close();
+        eventsLoggingTree = null;
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000 /* 1 min */, 1000) {
@@ -574,7 +582,8 @@ public class MainActivity extends AppCompatActivity {
         snackbar.setDuration(timeout);
         snackbar.setText(msg);
         snackbar.show();
-        pagerAdapter.logEvent(msg);
+        Timber.wtf(msg);
+        //pagerAdapter.logEvent(msg);
     }
 
     private void hideSnackBar() {

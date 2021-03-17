@@ -565,12 +565,10 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
     private var eventsTextView: TextView? = null
     private var eventsCurrentCount = 0
     private var eventsMaxCount = 500
-    private val timeFormatter = SimpleDateFormat("HH:mm:ss", Locale.US)
     private var logsCashe = StringBuffer()
 
     fun logEvent(message: String) {
-        val formattedMessage = String.format("[%s] %s%n", timeFormatter.format(Date()), message)
-        logsCashe.append(formattedMessage)
+        logsCashe.append(message)
         if (eventsCurrentCount > eventsMaxCount) {
             val indexOfNewLine = logsCashe.indexOfFirst { r -> r == '\n' }
             logsCashe.delete(0, indexOfNewLine)
