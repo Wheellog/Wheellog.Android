@@ -65,7 +65,7 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                     return@setOnClickListener
                 }
                 val data = ByteStreams.toByteArray(inputStream)
-                ElectroClub.instance.uploadTrack(data, trip.title, false)
+                ElectroClub.instance.uploadTrack(data, trip.title, false) { }
                 inputStream.close()
             }
             shareView.setOnClickListener {

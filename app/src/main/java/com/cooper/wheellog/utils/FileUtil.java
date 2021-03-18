@@ -50,6 +50,8 @@ public class FileUtil {
         AndroidQCache = new Hashtable();
     }
 
+    public String fileName = "";
+
     public void setIgnoreTimber(boolean value) {
         ignoreTimber = value;
     }
@@ -75,6 +77,7 @@ public class FileUtil {
     }
 
     public boolean prepareFile(String fileName, String folder) {
+        this.fileName = fileName;
         uri = null;
         file = null;
         // Android 10+

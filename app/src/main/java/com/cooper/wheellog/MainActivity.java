@@ -22,14 +22,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.gridlayout.widget.GridLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cooper.wheellog.utils.Constants;
@@ -40,16 +38,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import me.relex.circleindicator.CircleIndicator3;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
-
-import static com.cooper.wheellog.utils.MathsUtil.kmToMiles;
 
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
@@ -465,9 +459,6 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mBluetoothServiceConnection);
             WheelData.getInstance().setBluetoothLeService(null);
         }
-        Timber.uproot(eventsLoggingTree);
-        eventsLoggingTree.close();
-        eventsLoggingTree = null;
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000 /* 1 min */, 1000) {
@@ -479,6 +470,9 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onFinish() {
+                Timber.uproot(eventsLoggingTree);
+                eventsLoggingTree.close();
+                eventsLoggingTree = null;
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
 
@@ -583,7 +577,6 @@ public class MainActivity extends AppCompatActivity {
         snackbar.setText(msg);
         snackbar.show();
         Timber.wtf(msg);
-        //pagerAdapter.logEvent(msg);
     }
 
     private void hideSnackBar() {
