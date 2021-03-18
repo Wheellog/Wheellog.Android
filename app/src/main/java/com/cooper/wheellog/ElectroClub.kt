@@ -189,6 +189,7 @@ class ElectroClub {
                             WheelLog.AppConfig.ecGarage = "0"
                             successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
                         }
+                        .setCancelable(false)
                         .create()
                         .show()
             }
