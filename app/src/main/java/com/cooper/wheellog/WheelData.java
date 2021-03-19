@@ -381,10 +381,12 @@ public class WheelData {
     }
 
     public void updateLight(boolean enabledLight) {
-		if (mWheelLightEnabled != enabledLight) {
-			mWheelLightEnabled = enabledLight;
-			InMotionAdapter.getInstance().setLightState(enabledLight);
-		}
+        if (mWheelLightEnabled != enabledLight) {
+            mWheelLightEnabled = enabledLight;
+            if (getAdapter() != null) {
+                getAdapter().setLightState(enabledLight);
+            }
+        }
     }
 	
 	public void updateLed(boolean enabledLed) {

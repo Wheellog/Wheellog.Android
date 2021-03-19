@@ -124,6 +124,26 @@ public class InmotionAdapterV2 extends BaseAdapter {
         keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
     }
 
+    @Override
+    public void wheelBeep() {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.playSound(0x18).writeBuffer();
+    }
+
+    @Override
+    public void switchFlashlight() {
+        boolean light = !WheelData.getInstance().getWheelLight();
+        WheelData.getInstance().setWheelLightEnabled(light);
+        setLightState(light);
+    }
+
+    @Override
+    public void setLightState(final boolean lightEnable) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setLight(lightEnable).writeBuffer();
+    }
+
+
     public static class Message {
 
         enum Flag {
@@ -148,7 +168,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             RealTimeInfo(0x04),
             Something1(0x10),
             TotalStats(0x11),
-            Something2(0x20);
+            Something2(0x20),
+            Control(0x60);
+
 
             private int value;
 
@@ -353,6 +375,179 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.data = new byte[0];
             return msg;
         }
+
+        public static Message playSound(int number) {
+            byte value = (byte)(number & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x41, value, 0x01}; //0x18 -horn
+            return msg;
+        }
+
+        public static Message wheelCalibration() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x42, 0x01, 0x00, 0x01};
+            return msg;
+        }
+
+        public static Message setLight(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x40, enable};
+            return msg;
+        }
+
+        public static Message setLightBrightness(int brightness) {
+            byte value = (byte)(brightness & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2b, value};
+            return msg;
+        }
+
+        public static Message setVolume(int volume) {
+            byte value = (byte)(volume & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x26, value};
+            return msg;
+        }
+
+        public static Message setDrl(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2d, enable};
+            return msg;
+        }
+
+        public static Message setHandleButton(boolean on) {
+            byte enable = 0;
+            if (!on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2e, enable};
+            return msg;
+        }
+
+        public static Message setFan(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x43, enable};
+            return msg;
+        }
+
+        public static Message setQuietMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x38, enable};
+            return msg;
+        }
+
+        public static Message setFancierMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x24, enable};
+            return msg;
+        }
+
+        public static Message setMaxSpeed(int maxSpeed) {
+            byte[] value = MathsUtil.getBytes((short)(maxSpeed * 100));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x26, value[1], value[0]};
+            return msg;
+        }
+
+        public static Message setPedalHardness(int hardness) {
+            byte value = (byte)(hardness & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x25, value, 0x64};
+            return msg;
+        }
+
+        public static Message setClassicMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x23, enable};
+            return msg;
+        }
+
+        public static Message setGoHome(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x37, enable};
+            return msg;
+        }
+
+        public static Message setTransportMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x32, enable};
+            return msg;
+        }
+
+        public static Message setLock(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x31, enable};
+            return msg;
+        }
+
+        public static Message setMute(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2c, enable};
+            return msg;
+        }
+
+        public static Message setPedalAdjustment(int angle) {
+            byte[] value = MathsUtil.getBytes((short)(angle * 100));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x22, value[1], value[0]};
+            return msg;
+        }
+
 
 
 

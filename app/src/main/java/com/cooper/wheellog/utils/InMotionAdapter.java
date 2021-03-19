@@ -334,6 +334,7 @@ public class InMotionAdapter extends BaseAdapter {
         setLightState(light);
     }
 
+    @Override
     public void setLightState(final boolean lightEnable) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer();

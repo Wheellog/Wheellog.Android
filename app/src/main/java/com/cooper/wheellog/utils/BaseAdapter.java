@@ -18,6 +18,9 @@ public abstract class BaseAdapter {
     public void setLightMode(int lightMode) {
     }
 
+    public void setLightState(boolean on) {
+    }
+
     public void switchFlashlight() {
     }
 
