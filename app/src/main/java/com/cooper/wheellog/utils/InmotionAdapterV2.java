@@ -557,6 +557,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             byte check = calcCheck(buffer);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
+            out.write(0xAA);
+            out.write(0xAA);
             try {
                 out.write(escape(buffer));
             } catch (IOException e) {
@@ -569,8 +571,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
         private byte[] getBytes() {
 
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
-            buff.write(0xAA);
-            buff.write(0xAA);
             buff.write(flags);
             buff.write(data.length+1);
             buff.write(command);
