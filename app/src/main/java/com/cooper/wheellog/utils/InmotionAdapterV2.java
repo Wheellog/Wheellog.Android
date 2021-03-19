@@ -1,6 +1,5 @@
 package com.cooper.wheellog.utils;
 
-import com.cooper.wheellog.BluetoothLeService;
 import com.cooper.wheellog.WheelData;
 
 import java.io.ByteArrayOutputStream;
@@ -57,7 +56,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     }
 
-	public void startKeepAliveTimer(final BluetoothLeService mBluetoothLeService) {
+	public void startKeepAliveTimer() {
         updateStep = 0;
         stateCon = 0;
         TimerTask timerTask = new TimerTask() {
@@ -65,49 +64,49 @@ public class InmotionAdapterV2 extends BaseAdapter {
             public void run() {
                 if (updateStep == 0) {
                     if (stateCon == 0) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getCarType().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getCarType().writeBuffer())) {
                             Timber.i("Sent car type message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 1) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getSerialNumber().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getSerialNumber().writeBuffer())) {
                             Timber.i("Sent s/n message");
                         } else updateStep = 39;
 
                     } else if (stateCon == 2) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getVersions().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getVersions().writeBuffer())) {
                             stateCon += 1;
                             Timber.i("Sent versions message");
                         } else updateStep = 39;
 
                     } else if (settingCommandReady) {
-    					if (mBluetoothLeService.writeBluetoothGattCharacteristic(settingCommand)) {
+    					if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             settingCommandReady = false;
                             Timber.i("Sent command message");
                         } else updateStep = 39; // after +1 and %10 = 0
     				} else if (stateCon == 3) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getUnknownData().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getUnknownData().writeBuffer())) {
                             stateCon += 1;
                             Timber.i("Sent unknown data message");
                         } else updateStep = 39;
 
                     }
                     else if (stateCon == 4) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getUselessData().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getUselessData().writeBuffer())) {
                             Timber.i("Sent useless data message");
                             stateCon += 1;
                         } else updateStep = 39;
 
                     }
                     else if (stateCon == 5) {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(Message.getStatistics().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getStatistics().writeBuffer())) {
                             Timber.i("Sent statistics data message");
                             stateCon += 1;
                         } else updateStep = 39;
 
                     }
                     else  {
-                        if (mBluetoothLeService.writeBluetoothGattCharacteristic(InmotionAdapterV2.Message.getRealTimeData().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(InmotionAdapterV2.Message.getRealTimeData().writeBuffer())) {
                             Timber.i("Sent realtime data message");
                             stateCon = 5;
                         } else updateStep = 39;

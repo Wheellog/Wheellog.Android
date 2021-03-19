@@ -21,5 +21,6 @@
     <color name="wheelview_battery_low_dial">#cccc00</color>
     <color name="wheelview_temperature_dial">#33ccff</color>
     <color name="wheelview_arc_dim">#30000000</color>
+    <color name="white20">#20FFFFFF</color>
 
 </resources>

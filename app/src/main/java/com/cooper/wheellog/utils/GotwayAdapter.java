@@ -108,25 +108,21 @@ public class GotwayAdapter extends BaseAdapter {
         return newDataFound;
     }
 
-    private void sendCommand(String s) {sendCommand(s, "b", 100);}
-    private void sendCommand(String s, String delayed) {sendCommand(s, delayed, 100);}
-    private void sendCommand(String s, String delayed, int timer) {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(s.getBytes());
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(delayed.getBytes());
-            }
-        }, timer);
+    private void sendCommand(String s) {
+        sendCommand(s, "b", 100);
     }
+
+    private void sendCommand(String s, String delayed) {
+        sendCommand(s, delayed, 100);
+    }
+
+    private void sendCommand(String s, String delayed, int timer) {
+        sendCommand(s.getBytes(), delayed.getBytes(), timer);
+    }
+
     private void sendCommand(byte[] s, byte[] delayed, int timer) {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(s);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic(delayed);
-            }
-        }, timer);
+        WheelData.getInstance().bluetoothCmd(s);
+        new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
     }
 
     @Override
@@ -191,7 +187,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+        WheelData.getInstance().bluetoothCmd("b".getBytes());
     }
 
     @Override
@@ -199,40 +195,16 @@ public class GotwayAdapter extends BaseAdapter {
         final byte[] hhh = new byte[1];
         final byte[] lll = new byte[1];
         if (maxSpeed != 0) {
-            int wheelMaxSpeed2 = maxSpeed;
-            hhh[0] = (byte)((wheelMaxSpeed2/10)+0x30);
-            lll[0] = (byte)((wheelMaxSpeed2%10)+0x30);
-            WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    sendCommand("W", "Y");
-                }
-            }, 100);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    sendCommand(hhh, lll, 100);
-                }
-            }, 300);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    sendCommand("b","b");
-                }
-            }, 500);
-
+            hhh[0] = (byte) ((maxSpeed / 10) + 0x30);
+            lll[0] = (byte) ((maxSpeed % 10) + 0x30);
+            WheelData.getInstance().bluetoothCmd("b".getBytes());
+            new Handler().postDelayed(() -> sendCommand("W", "Y"), 100);
+            new Handler().postDelayed(() -> sendCommand(hhh, lll, 100), 300);
+            new Handler().postDelayed(() -> sendCommand("b", "b"), 500);
         } else {
             sendCommand("b", "\"");
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    sendCommand("b", "b");
-                }
-            }, 200);
-
+            new Handler().postDelayed(() -> sendCommand("b", "b"), 200);
         }
-
     }
 
     static class gotwayUnpacker {

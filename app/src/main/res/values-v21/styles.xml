@@ -10,6 +10,5 @@
         <item name="android:colorBackground">@color/background</item>
         <item name="android:navigationBarColor">@color/primary</item>
         <item name="android:statusBarColor">@color/primary</item>
-        <item name="vpiLinePageIndicatorStyle">@style/LinePageIndicatorStyle</item>
     </style>
 </resources>

@@ -278,6 +278,9 @@
     <string name="wheel_calibration">Калибровка колеса</string>
     <string name="beep_by_wheel_title">Гудок колесом</string>
     <string name="beep_by_wheel_description">Гудок встроенным в колесо сигналом</string>
+    <string name="share">Поделиться</string>
+    <string name="manual_upload_to_ec">Загрузить в electro.club</string>
+    <string name="show_page_trips_title">Страница поездок</string>
     <string name="reset_trip">Сбросить пробег поездки</string>
     <string name="reset_trip_message">Вы уверены, что вы хотите сбросить дистанцию поездки на колесе?</string>
     <string name="wheel_calibration_message_begode">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>

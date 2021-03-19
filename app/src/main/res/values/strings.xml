@@ -462,4 +462,8 @@
     <string name="private_policy_agree">I read and agree</string>
     <string name="current_mac">MAC address</string>
     <string name="log_location_pop_up">This app collects location data to enable GPS data in CSV logs when WheelLog is running in the background or when the screen is off. GPS data is not collected when EUC is disconnected.</string>
+    <string name="share">Share</string>
+    <string name="manual_upload_to_ec">Upload to electro.club</string>
+    <string name="show_page_trips" translatable="false">show_page_trips</string>
+    <string name="show_page_trips_title">Trips page</string>
 </resources>

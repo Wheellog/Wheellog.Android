@@ -94,20 +94,20 @@ public class VeteranAdapter extends BaseAdapter {
     }
 
     public void resetTrip() {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("CLEARMETER".getBytes());
+        WheelData.getInstance().bluetoothCmd("CLEARMETER".getBytes());
     }
 
     @Override
     public void updatePedalsMode(int pedalsMode) {
         switch (pedalsMode) {
             case 0:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("SETh".getBytes());
+                WheelData.getInstance().bluetoothCmd("SETh".getBytes());
                 break;
             case 1:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("SETm".getBytes());
+                WheelData.getInstance().bluetoothCmd("SETm".getBytes());
                 break;
             case 2:
-                WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("SETs".getBytes());
+                WheelData.getInstance().bluetoothCmd("SETs".getBytes());
                 break;
         }
     }
@@ -121,7 +121,7 @@ public class VeteranAdapter extends BaseAdapter {
         // it is not possible to turn on light on Veteran
         // but some people use it as "beep by wheel" on double tap
         // let's them use it
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+        WheelData.getInstance().bluetoothCmd("b".getBytes());
     }
 
     @Override
@@ -136,7 +136,7 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        WheelData.getInstance().getBluetoothLeService().writeBluetoothGattCharacteristic("b".getBytes());
+        WheelData.getInstance().bluetoothCmd("b".getBytes());
     }
 
     static class veteranUnpacker {

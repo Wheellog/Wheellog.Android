@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
+import com.cooper.wheellog.views.Trip;
 import com.google.common.io.ByteStreams;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,6 +49,8 @@ public class FileUtil {
         this.context = context;
         AndroidQCache = new Hashtable();
     }
+
+    public String fileName = "";
 
     public void setIgnoreTimber(boolean value) {
         ignoreTimber = value;
@@ -72,6 +77,7 @@ public class FileUtil {
     }
 
     public boolean prepareFile(String fileName, String folder) {
+        this.fileName = fileName;
         uri = null;
         file = null;
         // Android 10+
@@ -94,7 +100,7 @@ public class FileUtil {
                     path += File.separator + folder;
                 }
                 contentValues.put(MediaStore.Downloads.RELATIVE_PATH, path);
-                Uri contentUri = MediaStore.Downloads.getContentUri(getExternalStoreName());
+                Uri contentUri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
 
                 uri = Objects.requireNonNull(getContentResolver()).insert(contentUri, contentValues);
                 file = new File(getPathFromUri(uri));
@@ -158,6 +164,66 @@ public class FileUtil {
     public static byte[] readBytes(Context context, Uri uri) throws IOException {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         return ByteStreams.toByteArray(inputStream);
+    }
+
+    static String sizeTokb(Long size) {
+        return String.format(Locale.US, "%.2f Kb", size / 1024f);
+    }
+
+    public static ArrayList<Trip> fillTrips(Context context) {
+        ArrayList<Trip> trips = new ArrayList<>();
+        // Android 9 or less
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+        {
+            File dir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
+            File[] filesArray = dir.listFiles();
+            if (filesArray == null) {
+                return trips;
+            }
+            for (File wheelDir: filesArray) {
+                if (wheelDir.isDirectory()) {
+                    File[] wheelFiles = dir.listFiles();
+                    if (wheelFiles == null) {
+                        return trips;
+                    }
+                    for (File f: wheelFiles) {
+                        if (!f.getName().startsWith("RAW")) {
+                            trips.add(new Trip(f.getName(), sizeTokb(f.length()), f.getAbsolutePath()));
+                        }
+                    }
+                }
+            }
+            return trips;
+        }
+        // Android 10+
+        Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        String[] projection = {
+                MediaStore.Downloads.MIME_TYPE,
+                MediaStore.Downloads.DISPLAY_NAME,
+                MediaStore.Downloads.TITLE,
+                MediaStore.Downloads.SIZE,
+                MediaStore.Downloads._ID
+        };
+        String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
+        Cursor cursor = context.getContentResolver().query(uri,
+                projection,
+                where,
+                null,
+                MediaStore.Downloads.DATE_MODIFIED + " DESC");
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME));
+                if (title.startsWith("RAW")) { // TODO: move to selection filter
+                    continue;
+                }
+                String description = sizeTokb(cursor.getLong(cursor.getColumnIndex(MediaStore.Downloads.SIZE)));
+                String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
+                trips.add(new Trip(title, description, mediaId));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return trips;
     }
 
     public void close() {
