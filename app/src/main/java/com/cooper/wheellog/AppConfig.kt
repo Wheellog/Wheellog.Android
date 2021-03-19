@@ -57,6 +57,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.show_page_events, false)
         set(value) = setValue(R.string.show_page_events, value)
 
+    var pageTrips: Boolean
+        get() = getValue(R.string.show_page_trips, true)
+        set(value) = setValue(R.string.show_page_trips, value)
+
     var connectionSound: Boolean
         get() = getValue(R.string.connection_sound, false)
         set(value) = setValue(R.string.connection_sound, value)

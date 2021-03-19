@@ -21,29 +21,30 @@
             android:id="@+id/textClock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/prime"
             android:format12Hour="HH:mm:ss"
             android:format24Hour="HH:mm:ss"
             android:gravity="start"
             android:maxLines="1"
             android:textColor="@color/wheelview_text"
-            android:textSize="29sp"
-            android:textStyle="bold" />
+            android:textSize="29sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-    </androidx.viewpager.widget.ViewPager>
+    </androidx.viewpager2.widget.ViewPager2>
 
-    <com.viewpagerindicator.LinePageIndicator
+    <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/indicator"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:strokeWidth="4dp"
-        app:lineWidth="50dp"
-        app:unselectedColor="@color/wheelview_arc_dim"
-        app:selectedColor="@color/accent"
-        style="@style/LinePageIndicatorStyle"/>
+        android:layout_height="14dp"
+        app:ci_height="2dp"
+        app:ci_width="30dp"
+        app:ci_margin="10dp"
+        app:ci_drawable="@color/accent"
+        app:ci_drawable_unselected="@color/wheelview_arc_dim"
+        android:layout_gravity = "center_horizontal|bottom" />
 </LinearLayout>

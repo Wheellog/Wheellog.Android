@@ -101,11 +101,12 @@ class ElectroClub {
         }
     }
 
-    fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean) {
+    fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean, success: (Boolean) -> Unit) {
         if (WheelLog.AppConfig.ecToken == null)
         {
             lastError = "Missing parameters"
             errorListener?.invoke(UPLOAD_METHOD, lastError)
+            success(false)
             return
         }
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault())
@@ -137,6 +138,7 @@ class ElectroClub {
                 lastError = "[unexpected] " + e.message
                 errorListener?.invoke(UPLOAD_METHOD, lastError)
                 e.printStackTrace()
+                success(false)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -145,8 +147,10 @@ class ElectroClub {
                     if (!response.isSuccessful) {
                         parseError(json)
                         errorListener?.invoke(UPLOAD_METHOD, lastError)
+                        success(false)
                     } else {
                         successListener?.invoke(UPLOAD_METHOD, json)
+                        success(true)
                     }
                 }
             }

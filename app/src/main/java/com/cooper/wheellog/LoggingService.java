@@ -1,6 +1,5 @@
 package com.cooper.wheellog;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,12 +18,10 @@ import androidx.annotation.Nullable;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
-import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.PermissionsUtil;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -182,10 +179,31 @@ public class LoggingService extends Service
     @Override
     public void onDestroy() {
         String path = "";
+        boolean isBusy = false;
 
         if (fileUtil != null) {
             path = fileUtil.getAbsolutePath();
             fileUtil.close();
+        }
+
+        // electro.club upload
+        if (fileUtil != null && !fileUtil.fileName.equals("") && WheelLog.AppConfig.getAutoUploadEc()) {
+            isBusy = true;
+            try {
+                Timber.wtf("Uploading %s to electro.club", fileUtil.fileName);
+                byte[] data = fileUtil.readBytes();
+                ElectroClub.getInstance().uploadTrack(data, fileUtil.fileName, true, success -> {
+                    if (!success) {
+                        Timber.wtf("Upload failed...");
+                    }
+                    instance = null;
+                    return null;
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                Timber.wtf("Error upload log to electro.club: %s", e.toString());
+                instance = null;
+            }
         }
 
         if (!isNullOrEmpty(path)) {
@@ -193,21 +211,11 @@ public class LoggingService extends Service
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
             sendBroadcast(serviceIntent);
-
-            // electro.club upload
-            if (WheelLog.AppConfig.getAutoUploadEc()
-                    && WheelLog.AppConfig.getEcToken() != null) {
-                try {
-                    byte[] data = fileUtil.readBytes();
-                    String[] tokens = path.split("[\\\\|/]");
-                    String filename = tokens[tokens.length - 1];
-                    ElectroClub.getInstance().uploadTrack(data, filename, true);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
-        instance = null;
+
+        if (!isBusy) {
+            instance = null;
+        }
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);

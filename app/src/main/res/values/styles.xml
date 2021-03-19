@@ -8,7 +8,6 @@
         <item name="actionButtonStyle">@style/AppTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/background</item>
-        <item name="vpiLinePageIndicatorStyle">@style/LinePageIndicatorStyle</item>
     </style>
 
     <style name="AppTheme.Transparent" parent="AppTheme">
