@@ -32,11 +32,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
     private val authRequestCode = 50
     private val mediaRequestCode = 60
+    private lateinit var speedSettings: SpeedSettings
     private lateinit var wheelSettings: WheelSettings
     private lateinit var alarmSettings: AlarmSettings
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
+        speedSettings = SpeedSettings(requireContext())
         wheelSettings = WheelSettings(requireContext())
         alarmSettings = AlarmSettings(requireContext())
         changeWheelType()
@@ -205,7 +207,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.ride_mode -> wd.updateRideMode(WheelLog.AppConfig.rideMode)
             R.string.lock_mode -> wd.updateLockMode(WheelLog.AppConfig.lockMode)
             R.string.transport_mode -> wd.updateTransportMode(WheelLog.AppConfig.transportMode)
-            R.string.drl_enabled ->wd.updateDrl(WheelLog.AppConfig.drlEnabled)
+            R.string.drl_enabled -> wd.updateDrl(WheelLog.AppConfig.drlEnabled)
             R.string.go_home_mode -> wd.updateGoHome(WheelLog.AppConfig.goHomeMode)
             R.string.fancier_mode -> wd.updateFancierMode(WheelLog.AppConfig.fancierMode)
             R.string.speaker_mute -> wd.updateMute(WheelLog.AppConfig.speakerMute)
@@ -283,7 +285,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 speedButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Speed
                     preferenceScreen.removeAll()
-                    addPreferencesFromResource(R.xml.preferences_speed)
+                    speedSettings.getPrefs().forEach {
+                        preferenceScreen.addPreference(it)
+                    }
                     setupScreen()
                     true
                 }

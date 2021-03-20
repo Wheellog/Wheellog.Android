@@ -12,21 +12,25 @@ import java.util.*
 class MultiSelectPreference(context: Context, attrs: AttributeSet?)
     : DialogPreference(context, attrs) {
 
+    constructor(context: Context) : this(context, null)
+
     companion object {
         @JvmStatic
         val separator = ";"
     }
 
-    var entries: Array<CharSequence>?
+    var entries = arrayOf<CharSequence>()
     private var values: LinkedHashSet<String> = LinkedHashSet()
 
     init {
-        lateinit var a: TypedArray
-        try {
-            a = context.obtainStyledAttributes(attrs, R.styleable.MultiSelectPreference)
-            entries = a.getTextArray(R.styleable.MultiSelectPreference_entries)
-        } finally {
-            a.recycle()
+        if (attrs != null) {
+            lateinit var a: TypedArray
+            try {
+                a = context.obtainStyledAttributes(attrs, R.styleable.MultiSelectPreference)
+                entries = a.getTextArray(R.styleable.MultiSelectPreference_entries)
+            } finally {
+                a.recycle()
+            }
         }
     }
 
