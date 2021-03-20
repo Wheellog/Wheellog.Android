@@ -10,7 +10,7 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 
 class SpeedSettings(context: Context) : BaseSettingsClass(context) {
 
-    fun getPrefs(): List<Preference> {
+    fun getPrefs(mac: String): List<Preference> {
         return listOf(
                 SwitchPreference(context).apply {
                     key = getString(R.string.use_eng)
@@ -30,7 +30,7 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                     addDependency(this, getString(R.string.use_better_percents))
                 },
                 SeekBarPreference(context).apply {
-                    key = getString(R.string.cell_voltage_tiltback)
+                    key = mac + getString(R.string.cell_voltage_tiltback)
                     title = getString(R.string.cell_voltage_tiltback_title)
                     summary = getString(R.string.cell_voltage_tiltback_description)
                     min = 250

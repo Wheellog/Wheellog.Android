@@ -285,7 +285,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 speedButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Speed
                     preferenceScreen.removeAll()
-                    speedSettings.getPrefs().forEach {
+                    speedSettings.getPrefs(WheelData.getInstance().mac + "_").forEach {
                         preferenceScreen.addPreference(it)
                     }
                     setupScreen()
