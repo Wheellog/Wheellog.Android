@@ -329,73 +329,81 @@ public class InMotionAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelData.getInstance().getWheelLight();
-        WheelData.getInstance().setWheelLightEnabled(light);
+        boolean light = !WheelLog.AppConfig.getLightEnabled();;
+        WheelLog.AppConfig.setLightEnabled(light);
         setLightState(light);
     }
 
+    @Override
     public void setLightState(final boolean lightEnable) {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer();
+        settingCommandReady = true;
     }
 
+    @Override
     public void setLedState(final boolean ledEnable) {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setLed(ledEnable).writeBuffer();
+        settingCommandReady = true;
     }
 
+    @Override
     public void setHandleButtonState(final boolean handleButtonEnable) {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer();
+        settingCommandReady = true;
     }
 
-    public void setSpeakerVolumeState(final int speakerVolume) {
-        settingCommandReady = true;
+    @Override
+    public void setSpeakerVolume(final int speakerVolume) {
         settingCommand = InMotionAdapter.CANMessage.setSpeakerVolume(speakerVolume).writeBuffer();
-    }
-
-    public void setTiltHorizon(final int tiltHorizon) {
         settingCommandReady = true;
-        settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(tiltHorizon).writeBuffer();
     }
 
-    public void setPedalHardness(final int pedalHardness) {
+    @Override
+    public void setPedalTilt(final int angle) {
+        settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(angle).writeBuffer();
         settingCommandReady = true;
-        settingCommand = InMotionAdapter.CANMessage.setPedalHardness(pedalHardness).writeBuffer();
     }
 
+    @Override
+    public void setPedalSensivity(final int sensivity) {
+        settingCommand = InMotionAdapter.CANMessage.setPedalSensivity(sensivity).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
     public void setRideMode(final boolean rideMode) {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setRideMode(rideMode).writeBuffer();
+        settingCommandReady = true;
     }
 
+    @Override
     public void powerOff() {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void wheelCalibration() {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.wheelCalibration().writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void wheelBeep() {
-        settingCommandReady = true;
         if (getWheelModesWheel()) settingCommand = InMotionAdapter.CANMessage.wheelBeep().writeBuffer();
         else settingCommand = InMotionAdapter.CANMessage.playSound((byte) 4).writeBuffer(); // old wheels like V8 and V5F don't have beep command, so let's play sound instead
+        settingCommandReady = true;
     }
 
     public void wheelSound(byte soundNumber) {
-        settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.playSound(soundNumber).writeBuffer();
+        settingCommandReady = true;
     }
 
     static Mode intToMode(int mode) {
@@ -984,8 +992,8 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setPedalHardness(int pedalHardness) {
-            byte[] value = MathsUtil.getBytes((short)((pedalHardness+28)<<5));
+        public static CANMessage setPedalSensivity(int sensivity) {
+            byte[] value = MathsUtil.getBytes((short)((sensivity+28)<<5));
             CANMessage msg = new CANMessage();
             msg.len = 8;
             msg.id = IDValue.RideMode.getValue();
@@ -1201,15 +1209,14 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setModel(getModelString(lmodel));
             wd.setVersion(version);
 
-            wd.setWheelLightEnabled(light);
-            wd.setWheelLedEnabled(led);
-            wd.setWheelButtonDisabled(handlebutton);
-            wd.setWheelMaxSpeed(maxspeed);
-            wd.setWheelSpeakerVolume(speakervolume);
-            wd.setWheelTiltHorizon(pedals);
-            wd.setWheelRideMode(rideMode);
-            wd.setWheelPedalHardness(pedalHardness);
-            wd.setNewWheelSettings(true);
+            WheelLog.AppConfig.setLightEnabled(light);
+            WheelLog.AppConfig.setLedEnabled(led);
+            WheelLog.AppConfig.setHandleButtonDisabled(handlebutton);
+            WheelLog.AppConfig.setWheelMaxSpeed(maxspeed);
+            WheelLog.AppConfig.setSpeakerVolume(speakervolume);
+            WheelLog.AppConfig.setPedalsAdjustment(pedals);
+            WheelLog.AppConfig.setRideMode(rideMode);
+            WheelLog.AppConfig.setPedalSensivity(pedalHardness);
             wd.setDataForLog(false);
             getInstance().setModel(lmodel);
             return true;

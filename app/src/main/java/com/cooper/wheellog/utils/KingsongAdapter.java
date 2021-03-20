@@ -141,7 +141,7 @@ public class KingsongAdapter extends BaseAdapter {
                 return false;
             } else if ((data[16] & 255) == 164 || (data[16] & 255) == 181) { //0xa4 || 0xb5 max speed and alerts
                 mWheelMaxSpeed = data[10] & 255;
-                wd.setWheelMaxSpeed(mWheelMaxSpeed);
+                WheelLog.AppConfig.setWheelMaxSpeed(mWheelMaxSpeed);
                 mKSAlarm3Speed = (data[8] & 255);
                 mKSAlarm2Speed = (data[6] & 255);
                 mKSAlarm1Speed = (data[4] & 255);
@@ -303,6 +303,7 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().bluetoothCmd(data);
     }
 
+    @Override
     public void powerOff() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x40;

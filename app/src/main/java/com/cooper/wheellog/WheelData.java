@@ -34,12 +34,12 @@ import timber.log.Timber;
 public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
-	private Timer ridingTimerControl;
+    private Timer ridingTimerControl;
     private BluetoothLeService mBluetoothLeService;
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
-	private static final int RIDING_SPEED = 200; // 2km/h
+    private static final int RIDING_SPEED = 200; // 2km/h
     private ArrayList<String> xAxis = new ArrayList<>();
     private ArrayList<Float> currentAxis = new ArrayList<>();
     private ArrayList<Float> speedAxis = new ArrayList<>();
@@ -62,69 +62,59 @@ public class WheelData {
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
-	private int mTemperature2;
+    private int mTemperature2;
     private int mCpuLoad;
     private int mOutput;
-	private double mAngle;
-	private double mRoll;
+    private double mAngle;
+    private double mRoll;
 
     private int mBattery;
     private double mAverageBattery;
-//    private double mAverageBatteryCount;
+    //    private double mAverageBatteryCount;
     private int mVoltage;
     private long mDistance;
-	private long mUserDistance;
+    private long mUserDistance;
     private int mRideTime;
-	private int mRidingTime;
+    private int mRidingTime;
     private int mLastRideTime;
     private int mTopSpeed;
     private int mVoltageSag;
     private int mFanStatus;
     private int mChargingStatus;
     private boolean mConnectionState = false;
-	private boolean mNewWheelSettings = false;
     private String mName = "Unknown";
     private String mModel = "Unknown";
-	private String mModeStr = "Unknown";
-	private String mBtName = "";
+    private String mModeStr = "Unknown";
+    private String mBtName = "";
 
-	private StringBuilder mAlert = new StringBuilder();
+    private StringBuilder mAlert = new StringBuilder();
 
-//    private int mVersion; # sorry King, but INT not good for Inmo
-	private String mVersion = "";
+    //    private int mVersion; # sorry King, but INT not good for Inmo
+    private String mVersion = "";
     private String mSerialNumber = "Unknown";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
     private long mStartTotalDistance;
-	/// Wheel Settings
-	private boolean mWheelLightEnabled = false;
-	private boolean mWheelLedEnabled = false;
-	private boolean mWheelButtonDisabled = false;
-	private int mWheelMaxSpeed = 0;
-	private int mWheelSpeakerVolume = 50;
-	private int mWheelTiltHorizon = 0;
-    private int mWheelPedalHardness = 100;
-    private boolean mWheelRideMode = false;
 
     private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
 
-	private boolean mSpeedAlarmExecuting = false;
+    private boolean mSpeedAlarmExecuting = false;
     private boolean mCurrentAlarmExecuting = false;
-	private boolean mTemperatureAlarmExecuting = false;
-	private boolean mBmsView = false;
+    private boolean mTemperatureAlarmExecuting = false;
+    private boolean mBmsView = false;
     private boolean mDataForLog = true;
     private String protoVer = "";
 
     private int duration = 1; // duration of sound
     private int sampleRate = 44100;//22050; // Hz (maximum frequency is 7902.13Hz (B8))
     private int numSamples = duration * sampleRate;
-//    private double samples[] = new double[numSamples];
+    //    private double samples[] = new double[numSamples];
     private short buffer[] = new short[numSamples];
     private int sfreq = 440;
-    
+
     private long timestamp_raw;
     private long timestamp_last;
     private static AudioTrack audioTrack = null;
@@ -176,15 +166,14 @@ public class WheelData {
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
-        if (type.getValue()<4) {
-            audioTrack.write(buffer, sampleRate / 20, ((type.getValue())*sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
+        if (type.getValue() < 4) {
+            audioTrack.write(buffer, sampleRate / 20, ((type.getValue()) * sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
 
         } else if (type == ALARM_TYPE.CURRENT) {
-            audioTrack.write(buffer, sampleRate *3 / 10, (2*sampleRate) / 20); //100 ms for current
+            audioTrack.write(buffer, sampleRate * 3 / 10, (2 * sampleRate) / 20); //100 ms for current
 
         } else {
-            audioTrack.write(buffer, sampleRate *3 / 10, (6*sampleRate) / 10); //300 ms temperature
-
+            audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //300 ms temperature
 
 
         }
@@ -197,70 +186,41 @@ public class WheelData {
     static void initiate() {
         if (mInstance == null)
             mInstance = new WheelData();
-		else {
-			if (mInstance.ridingTimerControl != null) {
-				mInstance.ridingTimerControl.cancel();
-				mInstance.ridingTimerControl = null;
-			}
-		}
+        else {
+            if (mInstance.ridingTimerControl != null) {
+                mInstance.ridingTimerControl.cancel();
+                mInstance.ridingTimerControl = null;
+            }
+        }
 
         mInstance.full_reset();
         mInstance.prepareTone(mInstance.sfreq);
         mInstance.startRidingTimerControl();
     }
 
-    private void prepareTone(int freq){
+    private void prepareTone(int freq) {
 
-        for (int i = 0; i < numSamples; ++i)
-        {
+        for (int i = 0; i < numSamples; ++i) {
             double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
             double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
             double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
-            double secondWave = Math.sin(2 * Math.PI * freq*1.34F * i / sampleRate);
-            double thirdWave = Math.sin(2 * Math.PI * freq*2.0F * i / sampleRate);
-            double fourthWave = Math.sin(2 * Math.PI * freq*2.68F * i / sampleRate);
-            if (i<=(numSamples*3)/10) {
-                buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*(Short.MAX_VALUE)); //+ harmonic1 + harmonic2
-            } else if (i<(numSamples*3)/5) {
-                buffer[i] = (short)((originalWave + secondWave)*(Short.MAX_VALUE));
+            double secondWave = Math.sin(2 * Math.PI * freq * 1.34F * i / sampleRate);
+            double thirdWave = Math.sin(2 * Math.PI * freq * 2.0F * i / sampleRate);
+            double fourthWave = Math.sin(2 * Math.PI * freq * 2.68F * i / sampleRate);
+            if (i <= (numSamples * 3) / 10) {
+                buffer[i] = (short) ((originalWave + harmonic1 + harmonic2) * (Short.MAX_VALUE)); //+ harmonic1 + harmonic2
+            } else if (i < (numSamples * 3) / 5) {
+                buffer[i] = (short) ((originalWave + secondWave) * (Short.MAX_VALUE));
             } else {
-                buffer[i] = (short)((thirdWave + fourthWave)*(Short.MAX_VALUE));
+                buffer[i] = (short) ((thirdWave + fourthWave) * (Short.MAX_VALUE));
             }
 
         }
 
-/*        for (int i = 0; i < 20*numSamples/50; ++i)
-        {
-            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
-            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
-            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
-            if ((i < 7*numSamples/50) || ((i > 9*numSamples/50) && (i < 11*numSamples/50)) || ((i > 15*numSamples/50) && (i < 16*numSamples/50)) || ((i > 17*numSamples/50) && (i < 18*numSamples/50)) || ((i > 19*numSamples/50) && (i < 20*numSamples/50))) {
-                buffer[i] = (short)((originalWave )*Short.MAX_VALUE); //+ harmonic1 + harmonic2
-            } else {buffer[i] = 0;}
-
-        }
-        for (int i = 20*numSamples/50; i < 25*numSamples/50; ++i)
-        {
-            if (i == 22*numSamples/50) {freq = (int)((double)freq * 1.5);};
-            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
-            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
-            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
-            buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*Short.MAX_VALUE);
-
-        }
-        for (int i = 25*numSamples/50; i < numSamples; ++i)
-        {
-            freq = freq +1;
-            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
-            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
-            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
-            buffer[i] = (short)((originalWave + harmonic1 + harmonic2)*Short.MAX_VALUE);
-
-        }  */
     }
 
-	
-	public void startRidingTimerControl() {
+
+    public void startRidingTimerControl() {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -276,7 +236,7 @@ public class WheelData {
     }
 
     public int getSpeed() {
-        return (int)Math.round(mSpeed / 10.0);
+        return (int) Math.round(mSpeed / 10.0);
     }
 
     public void setSpeed(int speed) {
@@ -330,43 +290,6 @@ public class WheelData {
     public void setCurrentLimit(double value) {
         mCurrentLimit = value;
     }
-	
-	public boolean getWheelLight() {
-        return mWheelLightEnabled;
-    }
-	
-	public boolean getWheelLed() {
-        return mWheelLedEnabled;
-    }
-	
-	public boolean getWheelHandleButton() {
-        return mWheelButtonDisabled;
-    }
-	
-    public int getWheelMaxSpeed() {
-        return mWheelMaxSpeed;
-    }
-
-    public void setWheelMaxSpeed(int value) {
-        mWheelMaxSpeed = value;
-        WheelLog.AppConfig.setWheelMaxSpeed(value);
-    }
-
-	public int getSpeakerVolume() {
-        return mWheelSpeakerVolume;
-    }
-	
-	public int getPedalsPosition() {
-        return mWheelTiltHorizon;
-    }
-
-    public int getPedalHardness() {
-        return mWheelPedalHardness;
-    }
-
-    public boolean getRideMode() {
-        return mWheelRideMode;
-    }
 
     public void setBtName(String btName) {
         mBtName = btName;
@@ -381,17 +304,15 @@ public class WheelData {
     }
 
     public void updateLight(boolean enabledLight) {
-		if (mWheelLightEnabled != enabledLight) {
-			mWheelLightEnabled = enabledLight;
-			InMotionAdapter.getInstance().setLightState(enabledLight);
-		}
+        if (getAdapter() != null) {
+            getAdapter().setLightState(enabledLight);
+        }
     }
-	
-	public void updateLed(boolean enabledLed) {
-		if (mWheelLedEnabled != enabledLed) {
-			mWheelLedEnabled = enabledLed;
-			InMotionAdapter.getInstance().setLedState(enabledLed);
-		}
+
+    public void updateLed(boolean enabledLed) {
+        if (getAdapter() != null) {
+            getAdapter().setLedState(enabledLed);
+        }
     }
 
     public void wheelBeep() {
@@ -399,80 +320,132 @@ public class WheelData {
             getAdapter().wheelBeep();
         }
     }
-	
-	public void updatePedalsMode(int pedalsMode) {
+
+    public void updatePedalsMode(int pedalsMode) {
         if (getAdapter() != null) {
             getAdapter().updatePedalsMode(pedalsMode);
         }
     }
 
-	public void updateStrobe(int strobeMode) {
+    public void updateStrobe(int strobeMode) {
         if (getAdapter() != null) {
             getAdapter().updateStrobeMode(strobeMode);
         }
     }
-	
-	public void updateLedMode(int ledMode) {
+
+    public void updateLedMode(int ledMode) {
         if (getAdapter() != null) {
             getAdapter().updateLedMode(ledMode);
         }
     }
-	
-	
-	public void updateAlarmMode(int alarmMode) {
+
+
+    public void updateAlarmMode(int alarmMode) {
         if (getAdapter() != null) {
             getAdapter().updateAlarmMode(alarmMode);
         }
     }
-	
-	public void wheelCalibration() {
+
+    public void wheelCalibration() {
         if (getAdapter() != null) {
             getAdapter().wheelCalibration();
         }
     }
 
-
-	public void updateHandleButton(boolean enabledButton) {
-		if (mWheelButtonDisabled != enabledButton) {
-			mWheelButtonDisabled = enabledButton;
-			InMotionAdapter.getInstance().setHandleButtonState(enabledButton);
-		}
-    }
-
-	public void updateMaxSpeed(int wheelMaxSpeed) {
-        if (mWheelMaxSpeed != wheelMaxSpeed) {
-            mWheelMaxSpeed = wheelMaxSpeed;
-            if (getAdapter() != null) {
-                getAdapter().updateMaxSpeed(wheelMaxSpeed);
-            }
+    public void powerOff() {
+        if (getAdapter() != null) {
+            getAdapter().powerOff();
         }
-	}
-	
-	public void updateSpeakerVolume(int speakerVolume) {
-        if (mWheelSpeakerVolume != speakerVolume) {
-			mWheelSpeakerVolume = speakerVolume;
-			InMotionAdapter.getInstance().setSpeakerVolumeState(speakerVolume);
-		}
-    }
-	
-	public void updatePedals(int pedalAdjustment) {
-        if (mWheelTiltHorizon != pedalAdjustment) {
-			mWheelTiltHorizon = pedalAdjustment;
-			InMotionAdapter.getInstance().setTiltHorizon(pedalAdjustment);
-		}
     }
 
-    public void updatePedalHardness(int pedalHardness) {
-        if (mWheelPedalHardness != pedalHardness) {
-            mWheelPedalHardness = pedalHardness;
-            InMotionAdapter.getInstance().setPedalHardness(pedalHardness);
+
+    public void updateHandleButton(boolean enabledButton) {
+        if (getAdapter() != null) {
+            getAdapter().setHandleButtonState(enabledButton);
+        }
+    }
+
+    public void updateMaxSpeed(int wheelMaxSpeed) {
+        if (getAdapter() != null) {
+            getAdapter().updateMaxSpeed(wheelMaxSpeed);
+        }
+    }
+
+    public void updateSpeakerVolume(int speakerVolume) {
+        if (getAdapter() != null) {
+            getAdapter().setSpeakerVolume(speakerVolume);
+        }
+    }
+
+    public void updatePedals(int pedalAdjustment) {
+        if (getAdapter() != null) {
+            getAdapter().setPedalTilt(pedalAdjustment);
+        }
+    }
+
+    public void updatePedalSensivity(int pedalSensivity) {
+        if (getAdapter() != null) {
+            getAdapter().setPedalSensivity(pedalSensivity);
         }
     }
 
     public void updateRideMode(boolean rideMode) {
-        if (mWheelRideMode != rideMode) {
-            mWheelRideMode = rideMode;
-            InMotionAdapter.getInstance().setRideMode(rideMode);
+        if (getAdapter() != null) {
+            getAdapter().setRideMode(rideMode);
+        }
+    }
+
+    public void updateLockMode(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setLockMode(enable);
+        }
+    }
+
+    public void updateTransportMode(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setTransportMode(enable);
+        }
+    }
+
+    public void updateDrl(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setDrl(enable);
+        }
+    }
+
+    public void updateGoHome(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setGoHomeMode(enable);
+        }
+    }
+
+    public void updateFancierMode(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setFancierMode(enable);
+        }
+    }
+
+    public void updateMute(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setMute(enable);
+        }
+    }
+
+    public void updateFanQuiet(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setFanQuiet(enable);
+        }
+    }
+
+    public void updateFanState(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setFan(enable);
+        }
+    }
+
+    public void updateLightBrightness(int brightness) {
+        if (getAdapter() != null) {
+            getAdapter().setLightBrightness(brightness);
         }
     }
 
@@ -487,7 +460,7 @@ public class WheelData {
     public int getMaxTemp() {
         return mMaxTemp / 100;
     }
-	
+
     public int getTemperature2() {
         return mTemperature2 / 100;
     }
@@ -511,21 +484,23 @@ public class WheelData {
     public void setTemperature2(int value) {
         mTemperature2 = value;
     }
-	
-	public double getAngle() {
+
+    public double getAngle() {
         return mAngle;
     }
+
     public void setAngle(double angle) {
         mAngle = angle;
     }
-	
-	public double getRoll() {
+
+    public double getRoll() {
         return mRoll;
     }
+
     public void setRoll(double roll) {
         mRoll = roll;
     }
-	
+
     public int getBatteryLevel() {
         return mBattery;
     }
@@ -541,6 +516,7 @@ public class WheelData {
     public int getChargingStatus() {
         return mChargingStatus;
     }
+
     public int setChargingStatus(int charging) {
         return mChargingStatus = charging;
     }
@@ -586,8 +562,8 @@ public class WheelData {
     public void setModel(String model) {
         mModel = model;
     }
-	
-	public String getModeStr() {
+
+    public String getModeStr() {
         return mModeStr;
     }
 
@@ -628,9 +604,9 @@ public class WheelData {
                 : String.format(Locale.US, "~%d min *", chargeTime);
     }
 
-	String getAlert() {
-		String nAlert = mAlert.toString();
-		mAlert = new StringBuilder();
+    String getAlert() {
+        String nAlert = mAlert.toString();
+        mAlert = new StringBuilder();
         return nAlert;
     }
 
@@ -655,22 +631,22 @@ public class WheelData {
 
     }
 
-    int getRideTime() { return mRideTime; }
+    int getRideTime() {
+        return mRideTime;
+    }
 
     public double getAverageSpeedDouble() {
-		if (mTotalDistance!=0 && mRideTime !=0) {
-			return (((mTotalDistance - mStartTotalDistance)*3.6)/(mRideTime + mLastRideTime));
-		}
-		else return 0.0;
-	}
-	
-	public double getAverageRidingSpeedDouble() {
-		if (mTotalDistance!=0 && mRidingTime !=0) {
-			return (((mTotalDistance - mStartTotalDistance)*3.6)/mRidingTime);
-		}
-		else return 0.0;
-	}
-	
+        if (mTotalDistance != 0 && mRideTime != 0) {
+            return (((mTotalDistance - mStartTotalDistance) * 3.6) / (mRideTime + mLastRideTime));
+        } else return 0.0;
+    }
+
+    public double getAverageRidingSpeedDouble() {
+        if (mTotalDistance != 0 && mRidingTime != 0) {
+            return (((mTotalDistance - mStartTotalDistance) * 3.6) / mRidingTime);
+        } else return 0.0;
+    }
+
     public String getRideTimeString() {
         int currentTime = mRideTime + mLastRideTime;
         long hours = TimeUnit.SECONDS.toHours(currentTime);
@@ -681,7 +657,7 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-	String getRidingTimeString() {
+    String getRidingTimeString() {
         long hours = TimeUnit.SECONDS.toHours(mRidingTime);
         long minutes = TimeUnit.SECONDS.toMinutes(mRidingTime) -
                 TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(mRidingTime));
@@ -689,7 +665,7 @@ public class WheelData {
                 TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(mRidingTime));
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
-	
+
     public double getSpeedDouble() {
         return mSpeed / 100.0;
     }
@@ -707,7 +683,7 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower != null ? mPower : (mCurrent * mVoltage)/ 10000.0) ;
+        return (mPower != null ? mPower : (mCurrent * mVoltage) / 10000.0);
     }
 
     public void setPower(int power) {
@@ -742,13 +718,17 @@ public class WheelData {
         return mMaxPwm * 100.0;
     }
 
-    public int getTopSpeed() { return mTopSpeed; }
+    public int getTopSpeed() {
+        return mTopSpeed;
+    }
 
     public double getTopSpeedDouble() {
         return mTopSpeed / 100.0;
     }
 
-    int getDistance() { return (int) (mTotalDistance - mStartTotalDistance); }
+    int getDistance() {
+        return (int) (mTotalDistance - mStartTotalDistance);
+    }
 
     int getAlarm() {
         int alarm = 0;
@@ -766,23 +746,23 @@ public class WheelData {
 
 
     long getWheelDistance() {
-		return mDistance; 
-	}
-	
-	public double getWheelDistanceDouble() {
+        return mDistance;
+    }
+
+    public double getWheelDistanceDouble() {
         return mDistance / 1000.0;
     }
-	
-	
-	public double getUserDistanceDouble() {
-		if (mUserDistance == 0 && mTotalDistance != 0 )  {
-			mUserDistance = WheelLog.AppConfig.getUserDistance();
-			if (mUserDistance == 0) {
-				WheelLog.AppConfig.setUserDistance(mTotalDistance);
-				mUserDistance = mTotalDistance;
-			}
-		}
-		return (mTotalDistance - mUserDistance)/1000.0; 
+
+
+    public double getUserDistanceDouble() {
+        if (mUserDistance == 0 && mTotalDistance != 0) {
+            mUserDistance = WheelLog.AppConfig.getUserDistance();
+            if (mUserDistance == 0) {
+                WheelLog.AppConfig.setUserDistance(mTotalDistance);
+                mUserDistance = mTotalDistance;
+            }
+        }
+        return (mTotalDistance - mUserDistance) / 1000.0;
     }
 
     public String getMac() {
@@ -796,16 +776,17 @@ public class WheelData {
     }
 
     public void resetUserDistance() {
-		if (mTotalDistance != 0)  {
+        if (mTotalDistance != 0) {
             WheelLog.AppConfig.setUserDistance(mTotalDistance);
-			mUserDistance = mTotalDistance;
-		}
+            mUserDistance = mTotalDistance;
+        }
     }
-	
-	public void resetTopSpeed() {
-		mTopSpeed = 0;
-		mMaxPwm = 0;
+
+    public void resetTopSpeed() {
+        mTopSpeed = 0;
+        mMaxPwm = 0;
     }
+
     public void resetVoltageSag() {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
@@ -818,8 +799,8 @@ public class WheelData {
     public double getTotalDistanceDouble() {
         return mTotalDistance / 1000.0;
     }
-	
-	public long getTotalDistance() {
+
+    public long getTotalDistance() {
         return mTotalDistance;
     }
 
@@ -831,7 +812,7 @@ public class WheelData {
         return mNinebotBms2;
     }
 
-    public void setBmsView(boolean bmsView){
+    public void setBmsView(boolean bmsView) {
         if (mBmsView != bmsView) resetBmsData();
         mBmsView = bmsView;
     }
@@ -857,7 +838,7 @@ public class WheelData {
         return speedAxis;
     }
 
-    void setConnected(boolean connected) {		
+    void setConnected(boolean connected) {
         mConnectionState = connected;
         Timber.i("State %b", connected);
     }
@@ -918,6 +899,7 @@ public class WheelData {
 //        mAverageBattery += (battery - mAverageBattery) / mAverageBatteryCount;
         mAverageBattery = battery;
     }
+
     private void startSpeedAlarmCount() {
         mSpeedAlarmExecuting = true;
         TimerTask stopSpeedAlarmExecuring = new TimerTask() {
@@ -944,6 +926,7 @@ public class WheelData {
         Timer timerTemp = new Timer();
         timerTemp.schedule(stopTempAlarmExecuting, 570);
     }
+
     private void startCurrentAlarmCount() {
         mCurrentAlarmExecuting = true;
         TimerTask stopCurrentAlarmExecuring = new TimerTask() {
@@ -1046,7 +1029,7 @@ public class WheelData {
                 pattern = new long[]{0, 50, 50, 50, 50};
 //                mCurrentAlarmExecuted = true;
                 break;
-			case TEMPERATURE:
+            case TEMPERATURE:
                 pattern = new long[]{0, 500, 500};
 //                mCurrentAlarmExecuted = true;
                 break;
@@ -1072,14 +1055,14 @@ public class WheelData {
         boolean new_data = getAdapter().setContext(mContext).decode(data);
 
         if (!new_data)
-			return;
+            return;
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);
         setVoltageSag(mVoltage);
         setMaxTemp(mTemperature);
         if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            mCalculatedPwm = (double)mOutput/100.0;
+            mCalculatedPwm = (double) mOutput / 100.0;
         } else {
             double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
             double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;
@@ -1088,19 +1071,14 @@ public class WheelData {
         }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int)Math.round(mCalculatedPwm * mPhaseCurrent);
+            mCurrent = (int) Math.round(mCalculatedPwm * mPhaseCurrent);
         }
 
-		Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-		if (mDataForLog) {
-		    intent.putExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS, true);
+        Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        if (mDataForLog) {
+            intent.putExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS, true);
         }
-		
-		if (mNewWheelSettings) {
-			intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SETTINGS, true);
-			mNewWheelSettings = false;
-		}
-		
+
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
             intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
@@ -1115,10 +1093,10 @@ public class WheelData {
         }
 
         if (WheelLog.AppConfig.getAlarmsEnabled())
-        	checkAlarmStatus(mContext);
+            checkAlarmStatus(mContext);
 
-      	timestamp_last = timestamp_raw;
-		mContext.sendBroadcast(intent);
+        timestamp_last = timestamp_raw;
+        mContext.sendBroadcast(intent);
 
         CheckMuteMusic();
     }
@@ -1153,37 +1131,9 @@ public class WheelData {
         setCurrentTime(currentTime);
     }
 
-    // TODO only for inmotion... fix me
-    public void setWheelLightEnabled(boolean value) {
-        mWheelLightEnabled = value;
-        WheelLog.AppConfig.setLightEnabled(value);
-    }
-    public void setWheelLedEnabled(boolean value) {
-        mWheelLedEnabled = value;
-        WheelLog.AppConfig.setLedEnabled(value);
-    }
-    public void setWheelButtonDisabled(boolean value) {
-        mWheelButtonDisabled = value;
-        WheelLog.AppConfig.setHandleButtonDisabled(value);
-    }
-    public void setWheelSpeakerVolume(int value) {
-        mWheelSpeakerVolume = value;
-        WheelLog.AppConfig.setSpeakerVolume(value);
-    }
-    public void setWheelTiltHorizon(int value) {
-        mWheelTiltHorizon = value;
-        WheelLog.AppConfig.setPedalsAdjustment(value);
-    }
-    public void setWheelPedalHardness(int value) {
-        mWheelPedalHardness = value;
-        WheelLog.AppConfig.setPedalHardness(value);
-    }
-    public void setWheelRideMode(boolean value) {
-        mWheelRideMode = value;
-        WheelLog.AppConfig.setRideMode(value);
-    }
-    public void setNewWheelSettings(boolean value) {mNewWheelSettings = value;} // это был костыль, и походу он не работает больше
-    public void setDataForLog(boolean value) {mDataForLog = value;} // это тоже был костыль, возможно тоже не нужен, проверить.
+    public void setDataForLog(boolean value) {
+        mDataForLog = value;
+    } // пока работает, но нужно убрать
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
@@ -1222,11 +1172,11 @@ public class WheelData {
         mCurrent = 0;
         mPower = null;
         mTemperature = 0;
-		mTemperature2 = 0;
+        mTemperature2 = 0;
         mCpuLoad = 0;
         mOutput = 0;
-		mAngle = 0;
-		mRoll = 0;
+        mAngle = 0;
+        mRoll = 0;
         mBattery = 0;
         //mAverageBatteryCount = 0;
         mCalculatedPwm = 0.0;
@@ -1236,31 +1186,22 @@ public class WheelData {
         mVoltage = 0;
         mVoltageSag = 20000;
         mRideTime = 0;
-		mRidingTime = 0;
+        mRidingTime = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
         mChargingStatus = 0;
-		mDistance = 0;
-		mUserDistance = 0;
+        mDistance = 0;
+        mUserDistance = 0;
         mName = "";
         mModel = "";
-		mModeStr = "";
+        mModeStr = "";
         mVersion = "";
         mSerialNumber = "";
         mBtName = "";
         rideStartTime = 0;
         mStartTotalDistance = 0;
-		mWheelTiltHorizon = 0;
-		mWheelPedalHardness = 100;
-        mWheelRideMode = false;
-		mWheelLightEnabled = false;
-		mWheelLedEnabled = false;
-		mWheelButtonDisabled = false;
-		mWheelMaxSpeed = 0;
-		mWheelSpeakerVolume = 50;
+        protoVer = "";
 
-		protoVer = "";
-	
     }
 
     boolean detectWheel(String deviceAddress) {
@@ -1269,9 +1210,9 @@ public class WheelData {
         String advData = WheelLog.AppConfig.getAdvDataForWheel();
         String adapterName = "";
         protoVer = "";
-        if (StringUtil.inArray(advData, new String[] {"4e421300000000ec", "4e421302000000ea", })) {
+        if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
             protoVer = "S2";
-        } else if (StringUtil.inArray(advData, new String[] {"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf", "5600"})) {
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf", "5600"})) {
             protoVer = "Mini";
         }
 

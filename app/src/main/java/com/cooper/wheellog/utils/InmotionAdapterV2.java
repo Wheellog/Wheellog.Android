@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -116,13 +117,129 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
 				}
                 updateStep += 1;
-                updateStep %= 20;
+                updateStep %= 10;
                 Timber.i("Step: %d", updateStep);
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 100, 25);
     }
+
+    @Override
+    public void wheelBeep() {
+        settingCommand = InmotionAdapterV2.Message.playSound(0x18).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void switchFlashlight() {
+        boolean light = !WheelLog.AppConfig.getLightEnabled();;
+        WheelLog.AppConfig.setLightEnabled(light);
+        setLightState(light);
+    }
+
+    @Override
+    public void setLightState(final boolean lightEnable) {
+        settingCommand = InmotionAdapterV2.Message.setLight(lightEnable).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setHandleButtonState(final boolean handleButtonEnable) {
+        settingCommand = InmotionAdapterV2.Message.setHandleButton(handleButtonEnable).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setRideMode(final boolean rideMode) {
+        settingCommand = InmotionAdapterV2.Message.setClassicMode(rideMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setSpeakerVolume(final int speakerVolume) {
+        settingCommand = InmotionAdapterV2.Message.setVolume(speakerVolume).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setPedalTilt(final int angle) {
+        settingCommand = InmotionAdapterV2.Message.setPedalTilt(angle).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setPedalSensivity(final int sensivity) {
+        settingCommand = InmotionAdapterV2.Message.setPedalSensivity(sensivity).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void wheelCalibration() {
+        settingCommand = InmotionAdapterV2.Message.wheelCalibration().writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setLockMode(final boolean lockMode) {
+        settingCommand = InmotionAdapterV2.Message.setLock(lockMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setTransportMode(final boolean transportMode) {
+        settingCommand = InmotionAdapterV2.Message.setTransportMode(transportMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setDrl(final boolean drl) {
+        settingCommand = InmotionAdapterV2.Message.setDrl(drl).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setGoHomeMode(final boolean goHomeMode) {
+        settingCommand = InmotionAdapterV2.Message.setGoHome(goHomeMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setFancierMode(final boolean fancierMode) {
+        settingCommand = InmotionAdapterV2.Message.setFancierMode(fancierMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setMute(final boolean mute) {
+        settingCommand = InmotionAdapterV2.Message.setMute(mute).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setFanQuiet(final boolean fanQuiet) {
+        settingCommand = InmotionAdapterV2.Message.setQuietMode(fanQuiet).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setFan(final boolean fan) {
+        settingCommand = InmotionAdapterV2.Message.setFan(fan).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setLightBrightness(final int lightBrightness) {
+        settingCommand = InmotionAdapterV2.Message.setLightBrightness(lightBrightness).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
+        settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
+        settingCommandReady = true;
+    }
+
 
     public static class Message {
 
@@ -148,7 +265,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             RealTimeInfo(0x04),
             Something1(0x10),
             TotalStats(0x11),
-            Something2(0x20);
+            Something2(0x20),
+            Control(0x60);
+
 
             private int value;
 
@@ -287,7 +406,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int tailLiState = (data[37]>>3)&0x03;
             int fanState = (data[37]>>5)&0x01;
             String wmode = "";
-            if (mMotState == 1) {wmode = wmode + " Active";}
+            if (mMotState == 1) {wmode = wmode + "Active";}
             if (chrgState == 1) {wmode = wmode + " Charging";}
             if (liftedState == 1) {wmode = wmode + " Lifted";}
             wd.setModeStr(wmode);
@@ -354,6 +473,179 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
+        public static Message playSound(int number) {
+            byte value = (byte)(number & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x41, value, 0x01};
+            return msg;
+        }
+
+        public static Message wheelCalibration() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x42, 0x01, 0x00, 0x01};
+            return msg;
+        }
+
+        public static Message setLight(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x40, enable};
+            return msg;
+        }
+
+        public static Message setLightBrightness(int brightness) {
+            byte value = (byte)(brightness & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2b, value};
+            return msg;
+        }
+
+        public static Message setVolume(int volume) {
+            byte value = (byte)(volume & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x26, value};
+            return msg;
+        }
+
+        public static Message setDrl(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2d, enable};
+            return msg;
+        }
+
+        public static Message setHandleButton(boolean on) {
+            byte enable = 0;
+            if (!on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2e, enable};
+            return msg;
+        }
+
+        public static Message setFan(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x43, enable};
+            return msg;
+        }
+
+        public static Message setQuietMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x38, enable};
+            return msg;
+        }
+
+        public static Message setFancierMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x24, enable};
+            return msg;
+        }
+
+        public static Message setMaxSpeed(int maxSpeed) {
+            byte[] value = MathsUtil.getBytes((short)(maxSpeed * 100));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x21, value[1], value[0]};
+            return msg;
+        }
+
+        public static Message setPedalSensivity(int sensivity) {
+            byte value = (byte)(sensivity & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x25, value, 0x64};
+            return msg;
+        }
+
+        public static Message setClassicMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x23, enable};
+            return msg;
+        }
+
+        public static Message setGoHome(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x37, enable};
+            return msg;
+        }
+
+        public static Message setTransportMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x32, enable};
+            return msg;
+        }
+
+        public static Message setLock(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x31, enable};
+            return msg;
+        }
+
+        public static Message setMute(boolean on) {
+            byte enable = 1;
+            if (on) enable = 0;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2c, enable};
+            return msg;
+        }
+
+        public static Message setPedalTilt(int angle) {
+            byte[] value = MathsUtil.getBytes((short)(angle * 10));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x22, value[1], value[0]};
+            return msg;
+        }
+
+
 
 
         public byte[] writeBuffer() {
@@ -362,8 +654,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             byte check = calcCheck(buffer);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
+            out.write(0xAA);
+            out.write(0xAA);
             try {
-                out.write(buffer);
+                out.write(escape(buffer));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -374,8 +668,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
         private byte[] getBytes() {
 
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
-            buff.write(0xAA);
-            buff.write(0xAA);
             buff.write(flags);
             buff.write(data.length+1);
             buff.write(command);
@@ -408,6 +700,17 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 Timber.i("Check FALSE, calc: %02X, packet: %02X",check, bufferCheck);
             }
             return (check == bufferCheck) ? new Message(dataBuffer) : null;
+        }
+
+        private byte[] escape(byte[] buffer) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            for (byte c : buffer) {
+                if (c == (byte) 0xAA || c == (byte) 0xA5) {
+                    out.write(0xA5);
+                }
+                out.write(c);
+            }
+            return out.toByteArray();
         }
     }
 	

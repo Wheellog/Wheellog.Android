@@ -253,6 +253,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.led_enabled, false)
         set(value) = setSpecific(R.string.led_enabled, value)
 
+    var drlEnabled: Boolean
+        get() = getSpecific(R.string.drl_enabled, false)
+        set(value) = setSpecific(R.string.drl_enabled, value)
+
     var handleButtonDisabled: Boolean
         get() = getSpecific(R.string.handle_button_disabled, false)
         set(value) = setSpecific(R.string.handle_button_disabled, value)
@@ -265,13 +269,46 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.pedals_adjustment, 0)
         set(value) = setSpecific(R.string.pedals_adjustment, value)
 
-    var pedalHardness: Int
-        get() = getSpecific(R.string.pedal_hardness, 100)
-        set(value) = setSpecific(R.string.pedal_hardness, value)
+    var pedalSensivity: Int
+        get() = getSpecific(R.string.pedal_sensivity, 100)
+        set(value) = setSpecific(R.string.pedal_sensivity, value)
 
     var rideMode: Boolean
         get() = getSpecific(R.string.ride_mode, false)
         set(value) = setSpecific(R.string.ride_mode, value)
+
+    var lockMode: Boolean
+        get() = getSpecific(R.string.lock_mode, false)
+        set(value) = setSpecific(R.string.lock_mode, value)
+
+    var transportMode: Boolean
+        get() = getSpecific(R.string.transport_mode, false)
+        set(value) = setSpecific(R.string.transport_mode, value)
+
+    var goHomeMode: Boolean
+        get() = getSpecific(R.string.go_home_mode, false)
+        set(value) = setSpecific(R.string.go_home_mode, value)
+
+    var fancierMode: Boolean
+        get() = getSpecific(R.string.fancier_mode, false)
+        set(value) = setSpecific(R.string.fancier_mode, value)
+
+    var speakerMute: Boolean
+        get() = getSpecific(R.string.speaker_mute, false)
+        set(value) = setSpecific(R.string.speaker_mute, value)
+
+    var fanQuietEnabled: Boolean
+        get() = getSpecific(R.string.fan_quiet_enable, false)
+        set(value) = setSpecific(R.string.fan_quiet_enable, value)
+
+    var fanEnabled: Boolean
+        get() = getSpecific(R.string.fan_enabled, false)
+        set(value) = setSpecific(R.string.fan_enabled, value)
+
+    var lightBrightness: Int
+        get() = getSpecific(R.string.light_brightness, 0)
+        set(value) = setSpecific(R.string.light_brightness, value)
+
     //endregion
     
     //region kingsong

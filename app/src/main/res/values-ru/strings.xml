@@ -272,8 +272,8 @@
     <string name="log_location_pop_up">Это приложение собирает данные о местоположении, чтобы включить данные GPS в журналы CSV, когда WheelLog работает в фоновом режиме или когда экран выключен. Данные GPS не собираются, когда EUC отключен.</string>
     <string name="ride_mode_title">Режим педалей</string>
     <string name="ride_mode_description">Вкл - Классик/Оффроад, Выкл - Комфорт/Онроад</string>
-    <string name="pedal_hardness_title">Жесткость педалей</string>
-    <string name="pedal_hardness_description">Чем выше число, тем жестче. 4% равны 0% в официальном приложении.</string>
+    <string name="pedal_sensivity_title">Жесткость педалей</string>
+    <string name="pedal_sensivity_description">Чем выше число, тем жестче.</string>
     <string name="wheel_beep">Гудок колесом</string>
     <string name="wheel_calibration">Калибровка колеса</string>
     <string name="beep_by_wheel_title">Гудок колесом</string>
@@ -286,4 +286,22 @@
     <string name="wheel_calibration_message_begode">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
     <string name="wheel_calibration_message_inmo">Установите колесо в парковочное положение (на крыло), продолжить?</string>
     <string name="wheel_calibration_message_kingsong">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
+    <string name="drl_settings_title">DRL</string>
+    <string name="drl_settings_description">Ангельзкий глаз и задний габарит</string>
+    <string name="light_brightness_title">Яркость фары</string>
+    <string name="light_brightness_description">Яркость передней фары</string>
+    <string name="fan_title">Вентилятор</string>
+    <string name="fan_description">Включить вентилятор</string>
+    <string name="fan_quiet_title">Тихий режим вентилятора</string>
+    <string name="fan_quiet_description">Вентилятор будет работать только во время езды, но яркость фары будет снижена до 40%</string>
+    <string name="speaker_mute_title">Выключить звук</string>
+    <string name="speaker_mute_description">Отключить динамик колеса</string>
+    <string name="fancier_mode_title">Опытный райдер</string>
+    <string name="fancier_mode_description">Этот режим увеличивает максимальную скорость колеса до 55 кмч</string>
+    <string name="go_home_mode_title">Режим докатки</string>
+    <string name="go_home_mode_description">Позволяет доехать на низком заряде батареи</string>
+    <string name="transport_mode_title">Транспортный режим</string>
+    <string name="transport_mode_description">Колесо не активируется при случайном включении во время транспортировки</string>
+    <string name="lock_mode_title">Заблокировать колесо</string>
+    <string name="lock_mode_description">Колесо будет заблокировано</string>
 </resources>

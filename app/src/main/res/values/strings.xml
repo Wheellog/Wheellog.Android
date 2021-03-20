@@ -42,7 +42,7 @@
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
     <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
-    <string name="pedal_hardness" translatable="false">pedal_hardness</string>
+    <string name="pedal_sensivity" translatable="false">pedal_sensivity</string>
     <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
     <string name="light_mode" translatable="false">light_mode</string>
@@ -56,6 +56,16 @@
     <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
     <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
     <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
+    <string name="lock_mode" translatable="false">lock_mode</string>
+    <string name="transport_mode" translatable="false">transport_mode</string>
+    <string name="drl_enabled" translatable="false">drl_enabled</string>
+    <string name="go_home_mode" translatable="false">go_home_mode</string>
+    <string name="fancier_mode" translatable="false">fancier_mode</string>
+    <string name="speaker_mute" translatable="false">speaker_mute</string>
+    <string name="fan_quiet_enable" translatable="false">fan_quiet_enable</string>
+    <string name="fan_enabled" translatable="false">fan_enabled</string>
+    <string name="light_brightness" translatable="false">light_brightness</string>
+    <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
@@ -68,7 +78,7 @@
     <string name="use_gps" translatable="false">use_gps</string>
     <string name="use_raw_data" translatable="false">use_raw_data</string>
 
-    // SPEED PREFERENCES
+    // APP PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="use_better_percents" translatable="false">use_better_percents</string>
@@ -85,13 +95,13 @@
     <string name="connect_beep" translatable="false">connect_beep</string>
     <string name="max_speed" translatable="false">max_speed</string>
     <string name="use_ratio" translatable="false">use_ratio</string>
-    <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
     <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
     <string name="beep_by_wheel" translatable="false">beep_by_wheel</string>
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="show_page_trips" translatable="false">show_page_trips</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -394,8 +404,8 @@
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
     <string name="ride_mode_title">Ride mode</string>
     <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
-    <string name="pedal_hardness_title">Hardness of platform</string>
-    <string name="pedal_hardness_description">Bigger number - more hardness, 4% is equal to 0% in official app</string>
+    <string name="pedal_sensivity_title">Pedals sensivity</string>
+    <string name="pedal_sensivity_description">Bigger number - more sensitive</string>
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
@@ -464,6 +474,24 @@
     <string name="log_location_pop_up">This app collects location data to enable GPS data in CSV logs when WheelLog is running in the background or when the screen is off. GPS data is not collected when EUC is disconnected.</string>
     <string name="share">Share</string>
     <string name="manual_upload_to_ec">Upload to electro.club</string>
-    <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="show_page_trips_title">Trips page</string>
+    <string name="drl_settings_title">Enable DRL</string>
+    <string name="drl_settings_description">Enable front O-ring and backlight</string>
+    <string name="light_brightness_title">Light brightness</string>
+    <string name="light_brightness_description">Brightness of headlight</string>
+    <string name="fan_title">Enable fan</string>
+    <string name="fan_description">Turn fan on</string>
+    <string name="fan_quiet_title">Quiet fan mode</string>
+    <string name="fan_quiet_description">Fan will turn on only when riding, but headlight brightness will be decreased to 40% when idle</string>
+    <string name="speaker_mute_title">Mute</string>
+    <string name="speaker_mute_description">Mute wheel speaker</string>
+    <string name="fancier_mode_title">Fancier mode</string>
+    <string name="fancier_mode_description">This mode for experienced riders, maximum speed - 55km/h</string>
+    <string name="go_home_mode_title">Go Home mode</string>
+    <string name="go_home_mode_description">Enables to ride at low battery condition</string>
+    <string name="transport_mode_title">Transport mode</string>
+    <string name="transport_mode_description">This mode prevents wheel from starting motor during transportation</string>
+    <string name="lock_mode_title">Lock mode</string>
+    <string name="lock_mode_description">Lock the wheel</string>
+
 </resources>
