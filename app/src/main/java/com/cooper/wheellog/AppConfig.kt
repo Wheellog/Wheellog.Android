@@ -46,7 +46,7 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.view_blocks_string, value)
 
     var maxSpeed: Int
-        get() = getValue(R.string.max_speed, 30)
+        get() = getValue(R.string.max_speed, 50)
         set(value) = setValue(R.string.max_speed, value)
 
     var currentOnDial: Boolean

@@ -1,11 +1,10 @@
 package com.cooper.wheellog
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.PermissionChecker
-import androidx.core.content.res.ResourcesCompat
+import com.cooper.wheellog.preferences.PreferencesFragment
 
 class SettingsActivity : AppCompatActivity() {
     companion object {

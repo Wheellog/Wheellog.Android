@@ -53,7 +53,7 @@
             sample:icon="@drawable/ic_baseline_dashboard_customize_24" />
 
         <com.cooper.wheellog.presentation.preferences.SeekBarPreference
-            android:defaultValue="30"
+            android:defaultValue="50"
             android:enabled="true"
             android:key="@string/max_speed"
             android:summary="@string/max_speed_dial_description"
