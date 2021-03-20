@@ -1196,7 +1196,7 @@ public class WheelData {
     }
     public void setWheelPedalHardness(int value) {
         mWheelPedalHardness = value;
-        WheelLog.AppConfig.setPedalHardness(value);
+        WheelLog.AppConfig.setPedalSensivity(value);
     }
     public void setWheelRideMode(boolean value) {
         mWheelRideMode = value;

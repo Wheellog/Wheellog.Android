@@ -143,6 +143,35 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommand = InmotionAdapterV2.Message.setLight(lightEnable).writeBuffer();
     }
 
+    @Override
+    public void setHandleButtonState(final boolean handleButtonEnable) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setHandleButton(handleButtonEnable).writeBuffer();
+    }
+
+    @Override
+    public void setRideMode(final boolean rideMode) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setClassicMode(rideMode).writeBuffer();
+    }
+
+    @Override
+    public void setSpeakerVolume(final int speakerVolume) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setVolume(speakerVolume).writeBuffer();
+    }
+
+    @Override
+    public void setPedalTilt(final int angle) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setPedalTilt(angle).writeBuffer();
+    }
+
+    @Override
+    public void setPedalSensivity(final int sensivity) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setPedalSensivity(sensivity).writeBuffer();
+    }
 
     public static class Message {
 
@@ -539,7 +568,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
-        public static Message setPedalAdjustment(int angle) {
+        public static Message setPedalTilt(int angle) {
             byte[] value = MathsUtil.getBytes((short)(angle * 100));
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();

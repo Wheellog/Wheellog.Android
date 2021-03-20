@@ -362,11 +362,11 @@ class InmotionAdapterTest {
         val expectedMinus80 = "aaaa1501a5550f000000000000f8ff080500007e5555".hexToByteArray()
 
         // Act.
-        adapter.setTiltHorizon(0)
+        adapter.setPedalTilt(0)
         val actual0 = adapter.settingCommand
-        adapter.setTiltHorizon(80)
+        adapter.setPedalTilt(80)
         val actual80 = adapter.settingCommand
-        adapter.setTiltHorizon(-80)
+        adapter.setPedalTilt(-80)
         val actualMinus80 = adapter.settingCommand
 
         // Assert.
@@ -384,11 +384,11 @@ class InmotionAdapterTest {
         val expected100 = "aaaa0a06a5550f102700000000000008050000b85555".hexToByteArray()
 
         // Act.
-        adapter.setSpeakerVolumeState(0)
+        adapter.setSpeakerVolume(0)
         val actual0 = adapter.settingCommand
-        adapter.setSpeakerVolumeState(55)
+        adapter.setSpeakerVolume(55)
         val actual55 = adapter.settingCommand
-        adapter.setSpeakerVolumeState(100)
+        adapter.setSpeakerVolume(100)
         val actual100 = adapter.settingCommand
 
         // Assert.
@@ -406,11 +406,11 @@ class InmotionAdapterTest {
         val expected100 = "AAAA1501A5550F0600000000100000080500009D5555".hexToByteArray()
 
         // Act.
-        adapter.setPedalHardness(4)
+        adapter.setPedalSensivity(4)
         val actual4 = adapter.settingCommand
-        adapter.setPedalHardness(46)
+        adapter.setPedalSensivity(46)
         val actual46 = adapter.settingCommand
-        adapter.setPedalHardness(100)
+        adapter.setPedalSensivity(100)
         val actual100 = adapter.settingCommand
 
         // Assert.

@@ -332,6 +332,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         WHEEL_TYPE.INMOTION -> {
                             preferenceInmotion(mac)
                         }
+                        WHEEL_TYPE.INMOTION_V2 -> {
+                            preferenceInmotionV2(mac)
+                        }
                         WHEEL_TYPE.KINGSONG -> {
                             preferenceKingsong(mac)
                         }
@@ -532,10 +535,206 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         max = 100
                         unit = "%"
                         increment = 1
-                        setDefaultValue(WheelLog.AppConfig.pedalHardness)
+                        setDefaultValue(WheelLog.AppConfig.pedalSensivity)
                     }
             )
         }
+
+        if (WheelData.getInstance().speed < 1) {
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_power_off_24)
+                        title = getString(R.string.power_off)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.power_off))
+                                    .setMessage(getString(R.string.power_off_message))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        WheelData.getInstance().powerOff()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_power_off_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+            prefs.add(
+                    Preference(context).apply {
+                        setIcon(R.drawable.ic_baseline_calibration_24)
+                        title = getString(R.string.wheel_calibration)
+                        onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                            AlertDialog.Builder(requireContext())
+                                    .setTitle(getString(R.string.wheel_calibration))
+                                    .setMessage(getString(R.string.wheel_calibration_message_inmo))
+                                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                        WheelData.getInstance().wheelCalibration()
+                                    }
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setIcon(R.drawable.ic_baseline_calibration_24)
+                                    .show()
+                            true
+                        }
+                    }
+            )
+        }
+        prefs.toTypedArray().forEach {
+            preferenceScreen.addPreference(it)
+        }
+    }
+
+    private fun preferenceInmotionV2(mac: String) {
+        val prefs: MutableList<Preference> = arrayListOf()
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.light_enabled)
+                    title = getString(R.string.on_headlight_title)
+                    summary = getString(R.string.on_headlight_description)
+                    isChecked = WheelLog.AppConfig.lightEnabled
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.drl_enabled)
+                    title = getString(R.string.drl_settings_title)
+                    summary = getString(R.string.drl_settings_description)
+                    isChecked = WheelLog.AppConfig.drlEnabled
+                },
+        )
+        prefs.add(
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.light_brightness)
+                    title = getString(R.string.light_brightness_title)
+                    summary = getString(R.string.light_brightness_description)
+                    min = 0
+                    max = 100
+                    unit = "%"
+                    increment = 1
+                    setDefaultValue(WheelLog.AppConfig.lightBrightness)
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.fan_enabled)
+                    title = getString(R.string.fan_title)
+                    summary = getString(R.string.fan_description)
+                    isChecked = WheelLog.AppConfig.fanEnabled
+                },
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.fan_quiet_enable)
+                    title = getString(R.string.fan_quiet_title)
+                    summary = getString(R.string.fan_quiet_description)
+                    isChecked = WheelLog.AppConfig.fanQuietEnabled
+                },
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.handle_button_disabled)
+                    title = getString(R.string.disable_handle_button_title)
+                    summary = getString(R.string.disable_handle_button_description)
+                    isChecked = WheelLog.AppConfig.handleButtonDisabled
+                }
+        )
+        prefs.add(
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.speaker_volume)
+                    title = getString(R.string.speaker_volume_title)
+                    summary = getString(R.string.speaker_volume_description)
+                    min = 0
+                    max = 100
+                    unit = "%"
+                    increment = 1
+                    setDefaultValue(WheelLog.AppConfig.speakerVolume)
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.speaker_mute)
+                    title = getString(R.string.speaker_mute_title)
+                    summary = getString(R.string.speaker_mute_description)
+                    isChecked = WheelLog.AppConfig.speakerMute
+                }
+        )
+        prefs.add(
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.wheel_max_speed)
+                    title = getString(R.string.max_speed_title)
+                    summary = getString(R.string.tilt_back_description)
+                    min = 3
+                    max = InMotionAdapter.getInstance().maxSpeed
+                    unit = getString(R.string.kmh)
+                    increment = 1
+                    setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
+                }
+        )
+        prefs.add(
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.pedals_adjustment)
+                    title = getString(R.string.pedal_horizont_title)
+                    summary = getString(R.string.pedal_horizont_description)
+                    min = -80
+                    max = 80
+                    unit = "°"
+                    increment = 1
+                    decimalPlaces = 1
+                    setDefaultValue(WheelLog.AppConfig.pedalsAdjustment)
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.ride_mode)
+                    title = getString(R.string.ride_mode_title)
+                    summary = getString(R.string.ride_mode_description)
+                    isChecked = WheelLog.AppConfig.rideMode
+                }
+        )
+        prefs.add(
+                SeekBarPreference(context).apply {
+                    key = mac + getString(R.string.pedal_sensivity)
+                    title = getString(R.string.pedal_hardness_title)
+                    summary = getString(R.string.pedal_hardness_description)
+                    min = 0
+                    max = 100
+                    unit = "%"
+                    increment = 1
+                    setDefaultValue(WheelLog.AppConfig.pedalSensivity)
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.fancier_mode)
+                    title = getString(R.string.fancier_mode_title)
+                    summary = getString(R.string.fancier_mode_description)
+                    isChecked = WheelLog.AppConfig.fancierMode
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.go_home_mode)
+                    title = getString(R.string.go_home_mode_title)
+                    summary = getString(R.string.go_home_mode_description)
+                    isChecked = WheelLog.AppConfig.goHomeMode
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.transport_mode)
+                    title = getString(R.string.transport_mode_title)
+                    summary = getString(R.string.transport_mode_description)
+                    isChecked = WheelLog.AppConfig.transportMode
+                }
+        )
+        prefs.add(
+                SwitchPreference(context).apply {
+                    key = mac + getString(R.string.lock_mode)
+                    title = getString(R.string.lock_mode_title)
+                    summary = getString(R.string.lock_mode_description)
+                    isChecked = WheelLog.AppConfig.lockMode
+                }
+        )
+
 
         if (WheelData.getInstance().speed < 1) {
             prefs.add(
