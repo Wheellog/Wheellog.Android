@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Build;
@@ -22,12 +23,14 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextClock;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cooper.wheellog.utils.Constants;
@@ -393,6 +396,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         createPager();
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            Typeface typefacePrime = ResourcesCompat.getFont(this, R.font.prime);
+            TextClock textClock = findViewById(R.id.textClock);
+            textClock.setTypeface(typefacePrime);
+        }
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = findViewById(R.id.toolbar);
