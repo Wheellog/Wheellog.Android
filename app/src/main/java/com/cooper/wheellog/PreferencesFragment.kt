@@ -256,7 +256,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 correctCheckState(key)
             }
             R.string.light_brightness -> {
-                WheelData.getInstance().updateLightBrightness(WheelLog.AppConfig.rideMode)
+                WheelData.getInstance().updateLightBrightness(WheelLog.AppConfig.lightBrightness)
                 correctSeekBarState(key)
             }
             R.string.pedals_mode -> {

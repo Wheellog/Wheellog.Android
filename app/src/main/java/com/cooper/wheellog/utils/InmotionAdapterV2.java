@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -126,117 +127,117 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.playSound(0x18).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelData.getInstance().getWheelLight();
-        WheelData.getInstance().setWheelLightEnabled(light);
+        boolean light = !WheelLog.AppConfig.getLightEnabled();;
+        WheelLog.AppConfig.setLightEnabled(light);
         setLightState(light);
     }
 
     @Override
     public void setLightState(final boolean lightEnable) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setLight(lightEnable).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setHandleButtonState(final boolean handleButtonEnable) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setHandleButton(handleButtonEnable).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setRideMode(final boolean rideMode) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setClassicMode(rideMode).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setSpeakerVolume(final int speakerVolume) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setVolume(speakerVolume).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setPedalTilt(final int angle) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setPedalTilt(angle).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setPedalSensivity(final int sensivity) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setPedalSensivity(sensivity).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void wheelCalibration() {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.wheelCalibration().writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setLockMode(final boolean lockMode) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setLock(lockMode).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setTransportMode(final boolean transportMode) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setTransportMode(transportMode).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setDrl(final boolean drl) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setDrl(drl).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setGoHomeMode(final boolean goHomeMode) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setGoHome(goHomeMode).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setFancierMode(final boolean fancierMode) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setFancierMode(fancierMode).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setMute(final boolean mute) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setMute(mute).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setFanQuiet(final boolean fanQuiet) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setQuietMode(fanQuiet).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setFan(final boolean fan) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setFan(fan).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void setLightBrightness(final int lightBrightness) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setLightBrightness(lightBrightness).writeBuffer();
+        settingCommandReady = true;
     }
 
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
-        settingCommandReady = true;
         settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
+        settingCommandReady = true;
     }
 
 
@@ -572,7 +573,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x26, value[1], value[0]};
+            msg.data = new byte[]{0x21, value[1], value[0]};
             return msg;
         }
 
@@ -626,8 +627,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
 
         public static Message setMute(boolean on) {
-            byte enable = 0;
-            if (on) enable = 1;
+            byte enable = 1;
+            if (on) enable = 0;
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
