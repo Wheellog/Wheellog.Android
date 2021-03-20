@@ -116,12 +116,12 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
 				}
                 updateStep += 1;
-                updateStep %= 20;
+                updateStep %= 10;
                 Timber.i("Step: %d", updateStep);
             }
         };
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 0, 25);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 100, 25);
     }
 
     @Override
@@ -309,7 +309,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int tailLiState = (data[37]>>3)&0x03;
             int fanState = (data[37]>>5)&0x01;
             String wmode = "";
-            if (mMotState == 1) {wmode = wmode + " Active";}
+            if (mMotState == 1) {wmode = wmode + "Active";}
             if (chrgState == 1) {wmode = wmode + " Charging";}
             if (liftedState == 1) {wmode = wmode + " Lifted";}
             wd.setModeStr(wmode);
@@ -381,7 +381,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x41, value, 0x01}; //0x18 -horn
+            msg.data = new byte[]{0x41, value, 0x01};
             return msg;
         }
 
@@ -480,8 +480,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
-        public static Message setPedalHardness(int hardness) {
-            byte value = (byte)(hardness & 0xFF);
+        public static Message setPedalSensivity(int sensivity) {
+            byte value = (byte)(sensivity & 0xFF);
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();

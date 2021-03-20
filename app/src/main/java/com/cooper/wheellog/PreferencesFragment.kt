@@ -215,8 +215,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 WheelData.getInstance().updatePedals(WheelLog.AppConfig.pedalsAdjustment)
                 correctSeekBarState(key)
             }
-            R.string.pedal_hardness -> {
-                WheelData.getInstance().updatePedalHardness(WheelLog.AppConfig.pedalHardness)
+            R.string.pedal_sensivity -> {
+                WheelData.getInstance().updatePedalSensivity(WheelLog.AppConfig.pedalSensivity)
                 correctSeekBarState(key)
             }
             R.string.ride_mode -> {
@@ -525,7 +525,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             )
             prefs.add(
                     SeekBarPreference(context).apply {
-                        key = mac + getString(R.string.pedal_hardness)
+                        key = mac + getString(R.string.pedal_sensivity)
                         title = getString(R.string.pedal_hardness_title)
                         summary = getString(R.string.pedal_hardness_description)
                         min = 4
@@ -547,7 +547,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                     .setTitle(getString(R.string.power_off))
                                     .setMessage(getString(R.string.power_off_message))
                                     .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                        InMotionAdapter.getInstance().powerOff()
+                                        WheelData.getInstance().powerOff()
                                     }
                                     .setNegativeButton(android.R.string.no, null)
                                     .setIcon(R.drawable.ic_baseline_power_off_24)
@@ -705,7 +705,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                     .setTitle(getString(R.string.power_off))
                                     .setMessage(getString(R.string.power_off_message))
                                     .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                        KingsongAdapter.getInstance().powerOff()
+                                        WheelData.getInstance().powerOff()
                                     }
                                     .setNegativeButton(android.R.string.no, null)
                                     .setIcon(R.drawable.ic_baseline_power_off_24)

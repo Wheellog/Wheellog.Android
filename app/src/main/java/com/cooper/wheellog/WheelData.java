@@ -392,7 +392,9 @@ public class WheelData {
 	public void updateLed(boolean enabledLed) {
 		if (mWheelLedEnabled != enabledLed) {
 			mWheelLedEnabled = enabledLed;
-			InMotionAdapter.getInstance().setLedState(enabledLed);
+            if (getAdapter() != null) {
+                getAdapter().setLedState(enabledLed);
+            }
 		}
     }
 
@@ -433,11 +435,19 @@ public class WheelData {
         }
     }
 
+    public void powerOff() {
+        if (getAdapter() != null) {
+            getAdapter().powerOff();
+        }
+    }
+
 
 	public void updateHandleButton(boolean enabledButton) {
 		if (mWheelButtonDisabled != enabledButton) {
 			mWheelButtonDisabled = enabledButton;
-			InMotionAdapter.getInstance().setHandleButtonState(enabledButton);
+            if (getAdapter() != null) {
+                getAdapter().setHandleButtonState(enabledButton);
+            }
 		}
     }
 
@@ -453,28 +463,36 @@ public class WheelData {
 	public void updateSpeakerVolume(int speakerVolume) {
         if (mWheelSpeakerVolume != speakerVolume) {
 			mWheelSpeakerVolume = speakerVolume;
-			InMotionAdapter.getInstance().setSpeakerVolumeState(speakerVolume);
+            if (getAdapter() != null) {
+                getAdapter().setSpeakerVolume(speakerVolume);
+            }
 		}
     }
 	
 	public void updatePedals(int pedalAdjustment) {
         if (mWheelTiltHorizon != pedalAdjustment) {
 			mWheelTiltHorizon = pedalAdjustment;
-			InMotionAdapter.getInstance().setTiltHorizon(pedalAdjustment);
+            if (getAdapter() != null) {
+                getAdapter().setPedalTilt(pedalAdjustment);
+            }
 		}
     }
 
-    public void updatePedalHardness(int pedalHardness) {
-        if (mWheelPedalHardness != pedalHardness) {
-            mWheelPedalHardness = pedalHardness;
-            InMotionAdapter.getInstance().setPedalHardness(pedalHardness);
+    public void updatePedalSensivity(int pedalSensivity) {
+        if (mWheelPedalHardness != pedalSensivity) {
+            mWheelPedalHardness = pedalSensivity;
+            if (getAdapter() != null) {
+                getAdapter().setPedalSensivity(pedalSensivity);
+            }
         }
     }
 
     public void updateRideMode(boolean rideMode) {
         if (mWheelRideMode != rideMode) {
             mWheelRideMode = rideMode;
-            InMotionAdapter.getInstance().setRideMode(rideMode);
+            if (getAdapter() != null) {
+                getAdapter().setRideMode(rideMode);
+            }
         }
     }
 

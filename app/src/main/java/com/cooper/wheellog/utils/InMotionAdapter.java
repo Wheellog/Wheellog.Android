@@ -340,11 +340,13 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.setLight(lightEnable).writeBuffer();
     }
 
+    @Override
     public void setLedState(final boolean ledEnable) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setLed(ledEnable).writeBuffer();
     }
 
+    @Override
     public void setHandleButtonState(final boolean handleButtonEnable) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setHandleButton(handleButtonEnable).writeBuffer();
@@ -356,26 +358,31 @@ public class InMotionAdapter extends BaseAdapter {
         settingCommand = InMotionAdapter.CANMessage.setMaxSpeed(maxSpeed).writeBuffer();
     }
 
-    public void setSpeakerVolumeState(final int speakerVolume) {
+    @Override
+    public void setSpeakerVolume(final int speakerVolume) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setSpeakerVolume(speakerVolume).writeBuffer();
     }
 
-    public void setTiltHorizon(final int tiltHorizon) {
+    @Override
+    public void setPedalTilt(final int angle) {
         settingCommandReady = true;
-        settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(tiltHorizon).writeBuffer();
+        settingCommand = InMotionAdapter.CANMessage.setTiltHorizon(angle).writeBuffer();
     }
 
-    public void setPedalHardness(final int pedalHardness) {
+    @Override
+    public void setPedalSensivity(final int sensivity) {
         settingCommandReady = true;
-        settingCommand = InMotionAdapter.CANMessage.setPedalHardness(pedalHardness).writeBuffer();
+        settingCommand = InMotionAdapter.CANMessage.setPedalSensivity(sensivity).writeBuffer();
     }
 
+    @Override
     public void setRideMode(final boolean rideMode) {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.setRideMode(rideMode).writeBuffer();
     }
 
+    @Override
     public void powerOff() {
         settingCommandReady = true;
         settingCommand = InMotionAdapter.CANMessage.powerOff().writeBuffer();
@@ -985,8 +992,8 @@ public class InMotionAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setPedalHardness(int pedalHardness) {
-            byte[] value = MathsUtil.getBytes((short)((pedalHardness+28)<<5));
+        public static CANMessage setPedalSensivity(int sensivity) {
+            byte[] value = MathsUtil.getBytes((short)((sensivity+28)<<5));
             CANMessage msg = new CANMessage();
             msg.len = 8;
             msg.id = IDValue.RideMode.getValue();

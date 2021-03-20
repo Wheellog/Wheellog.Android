@@ -303,6 +303,7 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().bluetoothCmd(data);
     }
 
+    @Override
     public void powerOff() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x40;
