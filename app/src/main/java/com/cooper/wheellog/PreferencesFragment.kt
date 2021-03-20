@@ -699,7 +699,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     title = getString(R.string.max_speed_title)
                     summary = getString(R.string.tilt_back_description)
                     min = 3
-                    max = 70
+                    max = 60
                     unit = getString(R.string.kmh)
                     increment = 1
                     setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
@@ -710,8 +710,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     key = mac + getString(R.string.pedals_adjustment)
                     title = getString(R.string.pedal_horizont_title)
                     summary = getString(R.string.pedal_horizont_description)
-                    min = -200
-                    max = 200
+                    min = -100
+                    max = 100
                     unit = "°"
                     increment = 1
                     decimalPlaces = 1
