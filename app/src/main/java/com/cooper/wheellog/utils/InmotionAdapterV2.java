@@ -173,6 +173,73 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommand = InmotionAdapterV2.Message.setPedalSensivity(sensivity).writeBuffer();
     }
 
+    @Override
+    public void wheelCalibration() {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.wheelCalibration().writeBuffer();
+    }
+
+    @Override
+    public void setLockMode(final boolean lockMode) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setLock(lockMode).writeBuffer();
+    }
+
+    @Override
+    public void setTransportMode(final boolean transportMode) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setTransportMode(transportMode).writeBuffer();
+    }
+
+    @Override
+    public void setDrl(final boolean drl) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setDrl(drl).writeBuffer();
+    }
+
+    @Override
+    public void setGoHomeMode(final boolean goHomeMode) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setGoHome(goHomeMode).writeBuffer();
+    }
+
+    @Override
+    public void setFancierMode(final boolean fancierMode) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setFancierMode(fancierMode).writeBuffer();
+    }
+
+    @Override
+    public void setMute(final boolean mute) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setMute(mute).writeBuffer();
+    }
+
+    @Override
+    public void setFanQuiet(final boolean fanQuiet) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setQuietMode(fanQuiet).writeBuffer();
+    }
+
+    @Override
+    public void setFan(final boolean fan) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setFan(fan).writeBuffer();
+    }
+
+    @Override
+    public void setLightBrightness(final int lightBrightness) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setLightBrightness(lightBrightness).writeBuffer();
+    }
+
+    @Override
+    public void updateMaxSpeed(final int maxSpeed) {
+        settingCommandReady = true;
+        settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
+    }
+
+
     public static class Message {
 
         enum Flag {
@@ -569,7 +636,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
 
         public static Message setPedalTilt(int angle) {
-            byte[] value = MathsUtil.getBytes((short)(angle * 100));
+            byte[] value = MathsUtil.getBytes((short)(angle * 10));
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();

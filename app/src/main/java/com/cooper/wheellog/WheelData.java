@@ -496,6 +496,60 @@ public class WheelData {
         }
     }
 
+    public void updateLockMode(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setLockMode(enable);
+        }
+    }
+
+    public void updateTransportMode(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setTransportMode(enable);
+        }
+    }
+
+    public void updateDrl(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setDrl(enable);
+        }
+    }
+
+    public void updateGoHome(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setGoHomeMode(enable);
+        }
+    }
+
+    public void updateFancierMode(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setFancierMode(enable);
+        }
+    }
+
+    public void updateMute(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setMute(enable);
+        }
+    }
+
+    public void updateFanQuiet(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setFanQuiet(enable);
+        }
+    }
+
+    public void updateFanState(boolean enable) {
+        if (getAdapter() != null) {
+            getAdapter().setFan(enable);
+        }
+    }
+
+    public void updateLightBrightness(int brightness) {
+        if (getAdapter() != null) {
+            getAdapter().setLightBrightness(brightness);
+        }
+    }
+
     public int getTemperature() {
         return mTemperature / 100;
     }

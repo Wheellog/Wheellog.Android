@@ -30,6 +30,33 @@ public abstract class BaseAdapter {
     public void setRideMode(boolean on) {
     }
 
+    public void setLockMode(boolean on) {
+    }
+
+    public void setTransportMode(boolean on) {
+    }
+
+    public void setDrl(boolean on) {
+    }
+
+    public void setGoHomeMode(boolean on) {
+    }
+
+    public void setFancierMode(boolean on) {
+    }
+
+    public void setMute(boolean on) {
+    }
+
+    public void setFanQuiet(boolean on) {
+    }
+
+    public void setFan(boolean on) {
+    }
+
+    public void setLightBrightness(int value) {
+    }
+
     public void powerOff() {
     }
 

@@ -65,7 +65,6 @@
     <string name="fan_quiet_enable" translatable="false">fan_quiet_enable</string>
     <string name="fan_enabled" translatable="false">fan_enabled</string>
     <string name="light_brightness" translatable="false">light_brightness</string>
-    <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
 
     // LOG PREFERENCES
@@ -102,6 +101,7 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="show_page_trips" translatable="false">show_page_trips</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -404,8 +404,8 @@
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
     <string name="ride_mode_title">Ride mode</string>
     <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
-    <string name="pedal_hardness_title">Hardness of platform</string>
-    <string name="pedal_hardness_description">Bigger number - more hardness, 4% is equal to 0% in official app</string>
+    <string name="pedal_sensivity_title">Pedals sensivity</string>
+    <string name="pedal_sensivity_description">Bigger number - more sensitive</string>
     <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
     <string name="volt">V</string>
     <string name="watt">W</string>

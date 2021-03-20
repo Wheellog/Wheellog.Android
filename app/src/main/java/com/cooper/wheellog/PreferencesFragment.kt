@@ -223,6 +223,42 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 WheelData.getInstance().updateRideMode(WheelLog.AppConfig.rideMode)
                 correctCheckState(key)
             }
+            R.string.lock_mode -> {
+                WheelData.getInstance().updateLockMode(WheelLog.AppConfig.lockMode)
+                correctCheckState(key)
+            }
+            R.string.transport_mode -> {
+                WheelData.getInstance().updateTransportMode(WheelLog.AppConfig.transportMode)
+                correctCheckState(key)
+            }
+            R.string.drl_enabled -> {
+                WheelData.getInstance().updateDrl(WheelLog.AppConfig.drlEnabled)
+                correctCheckState(key)
+            }
+            R.string.go_home_mode -> {
+                WheelData.getInstance().updateGoHome(WheelLog.AppConfig.goHomeMode)
+                correctCheckState(key)
+            }
+            R.string.fancier_mode -> {
+                WheelData.getInstance().updateFancierMode(WheelLog.AppConfig.fancierMode)
+                correctCheckState(key)
+            }
+            R.string.speaker_mute -> {
+                WheelData.getInstance().updateMute(WheelLog.AppConfig.speakerMute)
+                correctCheckState(key)
+            }
+            R.string.fan_quiet_enable -> {
+                WheelData.getInstance().updateFanQuiet(WheelLog.AppConfig.fanQuietEnabled)
+                correctCheckState(key)
+            }
+            R.string.fan_enabled -> {
+                WheelData.getInstance().updateFanState(WheelLog.AppConfig.fanEnabled)
+                correctCheckState(key)
+            }
+            R.string.light_brightness -> {
+                WheelData.getInstance().updateLightBrightness(WheelLog.AppConfig.rideMode)
+                correctSeekBarState(key)
+            }
             R.string.pedals_mode -> {
                 WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
                 //correctListState(key)
@@ -529,8 +565,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             prefs.add(
                     SeekBarPreference(context).apply {
                         key = mac + getString(R.string.pedal_sensivity)
-                        title = getString(R.string.pedal_hardness_title)
-                        summary = getString(R.string.pedal_hardness_description)
+                        title = getString(R.string.pedal_sensivity_title)
+                        summary = getString(R.string.pedal_sensivity_description)
                         min = 4
                         max = 100
                         unit = "%"
@@ -663,7 +699,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     title = getString(R.string.max_speed_title)
                     summary = getString(R.string.tilt_back_description)
                     min = 3
-                    max = InMotionAdapter.getInstance().maxSpeed
+                    max = 70
                     unit = getString(R.string.kmh)
                     increment = 1
                     setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
@@ -674,8 +710,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     key = mac + getString(R.string.pedals_adjustment)
                     title = getString(R.string.pedal_horizont_title)
                     summary = getString(R.string.pedal_horizont_description)
-                    min = -80
-                    max = 80
+                    min = -200
+                    max = 200
                     unit = "°"
                     increment = 1
                     decimalPlaces = 1
@@ -693,8 +729,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         prefs.add(
                 SeekBarPreference(context).apply {
                     key = mac + getString(R.string.pedal_sensivity)
-                    title = getString(R.string.pedal_hardness_title)
-                    summary = getString(R.string.pedal_hardness_description)
+                    title = getString(R.string.pedal_sensivity_title)
+                    summary = getString(R.string.pedal_sensivity_description)
                     min = 0
                     max = 100
                     unit = "%"
