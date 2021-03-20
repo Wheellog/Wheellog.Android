@@ -14,7 +14,6 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
-import com.cooper.wheellog.utils.StringUtil.Companion.deleteFirstSentence
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
@@ -25,7 +24,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
@@ -801,10 +799,5 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
         }
     }
 
-    class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view)
-    {
-        init {
-            setIsRecyclable(false)
-        }
-    }
+    class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {}
 }

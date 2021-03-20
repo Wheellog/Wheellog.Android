@@ -332,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
     private void createPager() {
         // add pages into main view
         pager = findViewById(R.id.pager);
+        pager.setOffscreenPageLimit(10);
 
         ArrayList<Integer> pages = new ArrayList<>();
         pages.add(R.layout.main_view_main);
