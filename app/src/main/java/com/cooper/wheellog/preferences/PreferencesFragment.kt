@@ -245,14 +245,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
-            R.string.custom_beep -> if (WheelLog.AppConfig.useCustomBeep) {
-                // TODO: check for android 11
-                // if (checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-                // requestPermissionsEx(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), SettingsActivity.permissionReadStorage)
-                val intent = Intent("android.intent.action.OPEN_DOCUMENT")
-                intent.type = "audio/*"
-                startActivityForResult(intent, mediaRequestCode)
-            }
+            R.string.custom_beep ->  speedSettings.selectCustomBeep(this, mediaRequestCode)
         }
         correctState(key)
     }

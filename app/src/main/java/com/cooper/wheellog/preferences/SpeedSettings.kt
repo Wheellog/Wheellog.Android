@@ -1,12 +1,18 @@
 package com.cooper.wheellog.preferences
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
 import androidx.preference.SwitchPreference
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
+import timber.log.Timber
 
 class SpeedSettings(context: Context) : BaseSettingsClass(context) {
 
@@ -149,5 +155,58 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                         },
                 )
         )
+    }
+
+    fun selectCustomBeep(fragment: PreferencesFragment, mediaRequestCode: Int) {
+        if (!WheelLog.AppConfig.useCustomBeep) {
+            return
+        }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            // Android 11+
+            val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            if (uri == null) {
+                Timber.wtf("file access permissions is denied")
+                WheelLog.AppConfig.useCustomBeep = false
+                return
+            }
+            val projection = arrayOf(MediaStore.Downloads.DISPLAY_NAME, MediaStore.Downloads._ID)
+            val cursor = context.contentResolver.query(uri,
+                    projection,
+                    null,
+                    null,
+                    MediaStore.Downloads.DATE_MODIFIED + " DESC")
+            val sounds = mutableMapOf<String, String>()
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val title = cursor.getString(0)
+                    val mediaId = cursor.getString(1)
+                    sounds[title] = mediaId
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+            if (sounds.isNotEmpty()) {
+                val fileNames = sounds.keys.toTypedArray()
+                AlertDialog.Builder(context)
+                        .setTitle(getString(R.string.custom_beep_title))
+                        .setItems(fileNames) { _, which ->
+                            val fileName = fileNames[which]
+                            val id = sounds[fileName]
+                            fragment.findPreference<SwitchPreference>(getString(R.string.custom_beep))?.summary = fileName
+                            WheelLog.AppConfig.beepFile = Uri.withAppendedPath(uri, id)
+                        }
+                        .create()
+                        .show()
+            } else {
+                Timber.wtf("Audio files not found")
+                WheelLog.AppConfig.useCustomBeep = false
+            }
+        } else {
+            // Android 10 or less
+            val intent = Intent("android.intent.action.OPEN_DOCUMENT").apply {
+                type = "audio/*"
+                addCategory(Intent.CATEGORY_OPENABLE)
+            }
+            fragment.startActivityForResult(intent, mediaRequestCode)
+        }
     }
 }

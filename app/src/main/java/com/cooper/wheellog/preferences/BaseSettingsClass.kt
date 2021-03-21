@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,11 +44,12 @@ abstract class BaseSettingsClass(var context: Context) {
     }
 
     fun addDependency(preference: Preference, dependency: String) {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(100)
             // waiting attaching to preferenceScreen
             for (i in 1..100) {
                 if (preference.parent == null) {
-                    delay(5)
+                    delay(10)
                 } else {
                     preference.dependency = dependency
                     return@launch
