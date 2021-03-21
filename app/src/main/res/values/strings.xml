@@ -493,5 +493,6 @@
     <string name="transport_mode_description">This mode prevents wheel from starting motor during transportation</string>
     <string name="lock_mode_title">Lock mode</string>
     <string name="lock_mode_description">Lock the wheel</string>
-
+    <string name="no_file_read_permission">Permission to read the file is denied</string>
+    <string name="files_not_found">audio files not found</string>
 </resources>

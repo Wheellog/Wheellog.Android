@@ -165,11 +165,11 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
             // Android 11+
             val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             if (uri == null) {
-                Timber.wtf("file access permissions is denied")
+                Timber.wtf(getString(R.string.no_file_read_permission))
                 WheelLog.AppConfig.useCustomBeep = false
                 return
             }
-            val projection = arrayOf(MediaStore.Downloads.DISPLAY_NAME, MediaStore.Downloads._ID)
+            val projection = arrayOf(MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media._ID)
             val cursor = context.contentResolver.query(uri,
                     projection,
                     null,
@@ -197,7 +197,7 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                         .create()
                         .show()
             } else {
-                Timber.wtf("Audio files not found")
+                Timber.wtf(getString(R.string.files_not_found))
                 WheelLog.AppConfig.useCustomBeep = false
             }
         } else {
