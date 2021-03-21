@@ -9,7 +9,8 @@ import com.cooper.wheellog.preferences.PreferencesFragment
 class SettingsActivity : AppCompatActivity() {
     companion object {
         const val permissionWriteCode = 1
-        const val permissionLocationCode = 2
+        const val permissionReadCode = 2
+        const val permissionLocationCode = 3
     }
 
     private lateinit var fragment: PreferencesFragment
@@ -42,6 +43,7 @@ class SettingsActivity : AppCompatActivity() {
                 WheelLog.AppConfig.autoLog = false
                 WheelLog.AppConfig.enableRawData = false
             }
+            permissionReadCode -> WheelLog.AppConfig.useCustomBeep = false
             permissionLocationCode -> WheelLog.AppConfig.useGps = false
         }
         fragment.refreshVolatileSettings()

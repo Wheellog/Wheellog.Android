@@ -150,7 +150,6 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                         SwitchPreference(context).apply {
                             key = getString(R.string.custom_beep)
                             title = getString(R.string.custom_beep_title)
-                            summary = WheelLog.AppConfig.beepFile.lastPathSegment
                             setDefaultValue(WheelLog.AppConfig.useCustomBeep)
                         },
                 )
@@ -194,6 +193,7 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                             fragment.findPreference<SwitchPreference>(getString(R.string.custom_beep))?.summary = fileName
                             WheelLog.AppConfig.beepFile = Uri.withAppendedPath(uri, id)
                         }
+                        .setCancelable(false)
                         .create()
                         .show()
             } else {

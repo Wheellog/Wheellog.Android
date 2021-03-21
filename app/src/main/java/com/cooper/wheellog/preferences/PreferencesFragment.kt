@@ -111,6 +111,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         SettingsActivity.permissionWriteCode)
             }
         }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && WheelLog.AppConfig.useCustomBeep) {
+            requestPermissionsEx(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    SettingsActivity.permissionReadCode)
+        }
         if (WheelLog.AppConfig.useGps) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
@@ -245,7 +249,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
-            R.string.custom_beep ->  speedSettings.selectCustomBeep(this, mediaRequestCode)
+            R.string.custom_beep -> {
+                checkAndRequestPermissions()
+                speedSettings.selectCustomBeep(this, mediaRequestCode)
+            }
         }
         correctState(key)
     }
