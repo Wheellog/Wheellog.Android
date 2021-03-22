@@ -16,6 +16,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.*
+import com.cooper.wheellog.data.TripDatabase
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -153,7 +154,16 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             descriptionView.typeface = font
             uploadButtonLayout.visibility = uploadViewVisible
             uploadInProgress(false)
-
+            // check upload
+            if (uploadViewVisible == View.VISIBLE) {
+                GlobalScope.launch {
+                    // async find
+                    val trip = TripDatabase.getDataBase(context).tripDao().getTripByFileName(tripModel.fileName)
+                    withContext(Dispatchers.Main) {
+                        uploadViewEnabled(trip != null && trip.ecId > 0)
+                    }
+                }
+            }
             val gestureDetector = GestureDetector(
                 context, object : GestureDetector.SimpleOnGestureListener() {
                     override fun onLongPress(e: MotionEvent) {
