@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.preference.PreferenceManager
+import com.cooper.wheellog.views.WheelView
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -24,6 +25,10 @@ class AppConfig(var context: Context) {
     var useEng: Boolean
         get() = getValue(R.string.use_eng, false)
         set(value) = setValue(R.string.use_eng, value)
+
+    var useTheme: Int
+        get() = getValue(R.string.use_theme, WheelView.Themes.Original.value)
+        set(value) = setValue(R.string.use_theme, value)
 
     var useBetterPercents: Boolean
         get() = getValue(R.string.use_better_percents, false)

@@ -9,13 +9,6 @@
         android:id="@+id/wheelView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:padding="10dp"
-        app:outer_thickness="40dp"
-        app:inner_outer_padding="5dp"
-        app:inner_thickness="25dp"
-        app:inner_text_padding="0dp"
-        app:box_top_padding="10dp"
-        app:box_outer_padding="10dp"
-        app:box_inner_padding="10dp"/>
+        android:padding="10dp" />
 
 </LinearLayout>
