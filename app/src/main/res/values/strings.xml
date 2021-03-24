@@ -277,7 +277,7 @@
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>
     <string name="use_eng_alert_title">Restart required</string>
-    <string name="use_eng_alert_description">Please restart the application to apply the language change</string>
+    <string name="use_eng_alert_description">Please restart the application to apply this change</string>
     <string name="use_eng_title" translatable="false">English</string>
     <string name="use_eng_description" translatable="false">Use English language instead of Android system language</string>
     <string name="use_better_percents_title">Improved percents</string>

@@ -197,7 +197,7 @@
     <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
     <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
     <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
-    <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
+    <string name="use_eng_alert_description">Пожалуйста перезапустите устройство чтобы эта настройка применилась</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_pip_mode_description">Переходить в режим картинка-в-картинке вместо сворачивания</string>
     <string name="use_pip_mode_title">Картинка-в-Картинке</string>
