@@ -37,7 +37,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         val ok = convertView.findViewById<Button>(R.id.ok_button)
         val cancel = convertView.findViewById<Button>(R.id.btn_cancel)
 
-        dialog = AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
+        dialog = AlertDialog.Builder(this, R.style.OriginalTheme_Dialog_Alert)
                 .setView(convertView)
                 .setCancelable(false)
                 .show()

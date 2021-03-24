@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="ajdm_background">#000000</drawable>
+    <drawable name="ajdm_notification_icon_bg">#000000</drawable>
+
+    <color name="ajdm_primary">#000000</color>
+    <color name="ajdm_primary_dark">#FF222222</color>
+    <color name="ajdm_primary_light">#000000</color>
+    <color name="ajdm_accent">#FF5722</color>
+    <color name="ajdm_primary_text">#000000</color>
+    <color name="ajdm_secondary_text">#FFFFFF</color>
+    <color name="ajdm_icons">#FFFFFF</color>
+    <color name="ajdm_divider">#000000</color>
+    <color name="ajdm_background">#FF9900</color> // фон иконки в шторке
+    <color name="ajdm_navigation_bar">#000000</color>
+    <color name="ajdm_wheelview_text">#BDBDBD</color>
+    <color name="ajdm_wheelview_block">#000000</color>
+    <color name="ajdm_wheelview_textblocks">#FFFFFF</color> // цвет текста параметров
+    <color name="ajdm_wheelview_speed_text">#FFFFFF</color>
+    <color name="ajdm_wheelview_main_positive_dial">#00FF00</color>
+    <color name="ajdm_wheelview_main_negative_dial">#7700aa</color>
+    <color name="ajdm_wheelview_battery_dial">#FF9900</color>
+    <color name="ajdm_notification_shade">#FF9900</color>
+    <color name="ajdm_wheelview_max_speed_dial">#FF0000</color>
+    <color name="ajdm_wheelview_avg_speed_dial">#CC00AA</color>
+    <color name="ajdm_wheelview_battery_low_dial">#ffcc00</color>
+    <color name="ajdm_wheelview_temperature_dial">#00ffff</color>
+    <color name="ajdm_wheelview_arc_dim">#222222</color>
+
+</resources>

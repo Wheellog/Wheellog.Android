@@ -19,7 +19,7 @@ import kotlin.math.*
 
 
 class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    var currentTheme = Themes.Original
+    var currentTheme = R.style.OriginalTheme
     private var outerArcPaint = Paint()
     private var innerArcPaint = Paint()
     private var textPaint = Paint()
@@ -99,22 +99,20 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     private val viewBlockInfo: Array<ViewBlockInfo>
         get() = arrayOf(
-                ViewBlockInfo(resources.getString(R.string.pwm)
-                ) { String.format(Locale.US, "%.2f%%", mPwm) },
-                ViewBlockInfo(resources.getString(R.string.max_pwm)
-                ) { String.format(Locale.US, "%.2f%%", mMaxPwm) },
-                ViewBlockInfo(resources.getString(R.string.voltage)
-                ) { String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), mVoltage) },
-                ViewBlockInfo(resources.getString(R.string.average_riding_speed)) {
+                ViewBlockInfo(resources.getString(R.string.pwm)) { String.format(Locale.US, "%.2f%%", mPwm) },
+                ViewBlockInfo(resources.getString(R.string.max_pwm)) { String.format(Locale.US, "%.2f%%", mMaxPwm) },
+                ViewBlockInfo(resources.getString(R.string.voltage)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), mVoltage) },
+                ViewBlockInfo(resources.getString(R.string.average_riding_speed))
+                {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mAverageSpeed))
                     } else {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), mAverageSpeed)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.riding_time)
-                ) { mCurrentTime },
-                ViewBlockInfo(resources.getString(R.string.top_speed)) {
+                ViewBlockInfo(resources.getString(R.string.riding_time)) { mCurrentTime },
+                ViewBlockInfo(resources.getString(R.string.top_speed))
+                {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mTopSpeed))
                     } else {
@@ -141,8 +139,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.current)
-                ) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
+                ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
                 ViewBlockInfo(resources.getString(R.string.power),
                         { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), WheelData.getInstance().powerDouble) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature),
@@ -338,10 +335,10 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val imDiameter = oaDiameter - outerStrokeWidth - middleStrokeWidth - outerMediumPadding * 2
         var iaDiameter = 0f
         when (currentTheme) {
-            Themes.Original -> {
+            R.style.OriginalTheme -> {
                 iaDiameter = oaDiameter - outerStrokeWidth - innerStrokeWidth - innerOuterPadding * 2
             }
-            Themes.AJDM -> {
+            R.style.AJDMTheme -> {
                 val imRadius = imDiameter / 2
                 val midLeft: Float = centerX - imRadius
                 val midTop: Float = centerY - imRadius
@@ -764,13 +761,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
             canvas.restore()
             canvas.save()
-
-            // Max temperature
-            if (width > height) canvas.rotate(-50f, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(-50f, innerArcRect.centerY(), innerArcRect.centerX())
-            val maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature)
-            canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
-            canvas.restore()
-            canvas.save()
         }
 
         // Wheel name
@@ -790,8 +780,8 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         when (currentTheme) {
-            Themes.Original -> drawOriginal(canvas)
-            Themes.AJDM -> drawAJDM(canvas)
+            R.style.OriginalTheme -> drawOriginal(canvas)
+            R.style.AJDMTheme -> drawAJDM(canvas)
         }
     }
 
@@ -827,7 +817,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     private fun onChangeTheme() {
         when (currentTheme) {
-            Themes.Original -> {
+            R.style.OriginalTheme -> {
                 outerStrokeWidth = dpToPx(context, 40).toFloat()
                 innerStrokeWidth = dpToPx(context, 25).toFloat()
                 innerOuterPadding = dpToPx(context, 5).toFloat()
@@ -854,7 +844,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 versionPaint.color = context.resources.getColor(R.color.wheelview_versiontext)
                 versionPaint.typeface = tfTest
             }
-            Themes.AJDM -> {
+            R.style.AJDMTheme -> {
                 outerStrokeWidth = dpToPx(context, 30).toFloat()
                 innerStrokeWidth = dpToPx(context, 25).toFloat()
                 middleStrokeWidth = dpToPx(context, 10).toFloat()
@@ -899,7 +889,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     init {
         if (isInEditMode) {
-            currentTheme = Themes.Original
+            currentTheme = R.style.AJDMTheme
             WheelLog.AppConfig = AppConfig(context)
             mSpeed = 380
             targetSpeed = (mSpeed.toFloat() / 500 * 112).roundToInt()
@@ -929,21 +919,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             } catch (ignored: Exception) {
             }
         } else {
-            currentTheme = Themes.fromInt(WheelLog.AppConfig.useTheme)
+            currentTheme = WheelLog.AppConfig.appTheme
         }
 
         useMph = WheelLog.AppConfig.useMph
         mViewBlocks = viewBlockInfo
         updateViewBlocksVisibility()
         onChangeTheme()
-    }
-
-    enum class Themes(val value: Int) {
-        Original(0),
-        AJDM(1);
-
-        companion object {
-            fun fromInt(value: Int) = Themes.values().first { it.value == value }
-        }
     }
 }

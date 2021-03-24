@@ -373,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
             android.os.Process.killProcess(android.os.Process.myPid());
             return;
         }
+        setTheme(WheelLog.AppConfig.getAppTheme());
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
