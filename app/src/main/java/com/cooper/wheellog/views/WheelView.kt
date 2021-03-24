@@ -13,6 +13,7 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Compan
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
+import com.cooper.wheellog.utils.ThemeEnum
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*

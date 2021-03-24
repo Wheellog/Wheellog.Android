@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.preference.PreferenceManager
+import com.cooper.wheellog.utils.ThemeEnum
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -26,7 +27,12 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.use_eng, value)
 
     var appTheme: Int
-        get() = getValue(R.string.app_theme, R.style.OriginalTheme)
+        get() {
+            return when (ThemeEnum.fromInt(getValue(R.string.app_theme, ThemeEnum.Original.value))) {
+                ThemeEnum.AJDM -> R.style.AJDMTheme
+                else -> R.style.OriginalTheme
+            }
+        }
         set(value) = setValue(R.string.app_theme, value)
 
     var useBetterPercents: Boolean
