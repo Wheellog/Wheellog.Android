@@ -320,7 +320,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 int batch = data[4];     // 02
                 int feature = data[5];   // 01
                 int reverse = data[6];   // 00
-                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11",batch,feature));
+                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11"));
                 wd.setVersion(String.format(Locale.ENGLISH,"rev: %d.%d",batch,feature));
             } else if ((data[0] == (byte) 0x02) && len >= 17) {
                 stateCon += 1;
@@ -350,6 +350,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int bat2WorkStatus2 = (data[14] >> 1) & 1;
             int chargeVoltage = MathsUtil.shortFromBytesLE(data, 16);
             int chargeCurrent = MathsUtil.shortFromBytesLE(data, 18);
+            return false;
         }
 
         boolean parseSettings(){
@@ -502,6 +503,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
+        public static Message getMainVersion() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.MainVersion.getValue();
+            msg.data = new byte[0];
+            return msg;
+        }
+
         public static Message getSerialNumber() {
             Message msg = new Message();
             msg.flags = Flag.Initial.getValue();
@@ -531,6 +540,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Something1.getValue();
             msg.data = new byte[]{(byte)0x00, (byte)0x01};
+            return msg;
+        }
+
+        public static Message getBatteryData() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.BatteryRealTimeInfo.getValue();
+            msg.data = new byte[0];
             return msg;
         }
 
