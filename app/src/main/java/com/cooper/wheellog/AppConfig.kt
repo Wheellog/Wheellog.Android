@@ -34,8 +34,8 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.fixed_percents, value)
 
     var cellVoltageTiltback: Int
-        get() = getValue(R.string.cell_voltage_tiltback, 330)
-        set(value) = setValue(R.string.cell_voltage_tiltback, value)
+        get() = getSpecific(R.string.cell_voltage_tiltback, 330)
+        set(value) = setSpecific(R.string.cell_voltage_tiltback, value)
 
     var useMph: Boolean
         get() = getValue(R.string.use_mph, false)
@@ -46,7 +46,7 @@ class AppConfig(var context: Context) {
         set(value) = setValue(R.string.view_blocks_string, value)
 
     var maxSpeed: Int
-        get() = getValue(R.string.max_speed, 30)
+        get() = getValue(R.string.max_speed, 50)
         set(value) = setValue(R.string.max_speed, value)
 
     var currentOnDial: Boolean

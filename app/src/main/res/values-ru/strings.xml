@@ -304,4 +304,6 @@
     <string name="transport_mode_description">Колесо не активируется при случайном включении во время транспортировки</string>
     <string name="lock_mode_title">Заблокировать колесо</string>
     <string name="lock_mode_description">Колесо будет заблокировано</string>
+    <string name="no_file_read_permission">Нет прав на чтение файлов</string>
+    <string name="files_not_found">Аудио файлы не найдены</string>
 </resources>
