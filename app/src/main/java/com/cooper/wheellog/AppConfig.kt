@@ -3,6 +3,7 @@ package com.cooper.wheellog
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.utils.ThemeEnum
 
@@ -34,6 +35,10 @@ class AppConfig(var context: Context) {
             }
         }
         set(value) = setValue(R.string.app_theme, value)
+
+    var dayNightThemeMode: Int
+        get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED)
+        set(value) = setValue(R.string.day_night_theme, value)
 
     var useBetterPercents: Boolean
         get() = getValue(R.string.use_better_percents, false)
