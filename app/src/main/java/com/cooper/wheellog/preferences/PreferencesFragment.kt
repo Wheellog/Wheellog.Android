@@ -199,7 +199,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
-            R.string.use_eng, R.string.app_theme -> AlertDialog.Builder(requireContext())
+            R.string.use_eng, R.string.app_theme, R.string.day_night_theme -> AlertDialog.Builder(requireContext())
                     .setTitle(R.string.use_eng_alert_title)
                     .setMessage(R.string.use_eng_alert_description)
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
@@ -257,7 +257,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 checkAndRequestPermissions()
                 speedSettings.selectCustomBeep(this, mediaRequestCode)
             }
-            R.string.day_night_theme -> AppCompatDelegate.setDefaultNightMode(WheelLog.AppConfig.dayNightThemeMode)
         }
         correctState(key)
     }

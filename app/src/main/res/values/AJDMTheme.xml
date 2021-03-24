@@ -1,5 +1,6 @@
 <resources>
     <style name="AJDMTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:textColor">@color/ajdm_wheelview_textblocks</item>
         <item name="colorPrimary">@color/ajdm_primary</item>
         <item name="colorPrimaryDark">@color/ajdm_primary_dark</item>
         <item name="colorAccent">@color/ajdm_accent</item>
