@@ -16,6 +16,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     private Timer keepAliveTimer;
     private boolean settingCommandReady = false;
     private boolean requestSettings = false;
+    private boolean turningOff = false;
     private static int updateStep = 0;
     private static int stateCon = 0;
     private byte[] settingCommand;
@@ -30,22 +31,31 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
                 if (result != null) {
                     Timber.i("Get new data, command: %02X", result.command);
-
-                    if (result.command == Message.Command.MainInfo.getValue()) {
-                        return result.parseMainData();
-                    } else if (result.command == Message.Command.Settings.getValue()) {
-                        requestSettings = false;
-                        return result.parseSettings();
-                    } else if (result.command == Message.Command.BatteryRealTimeInfo.getValue()) {
-                        return result.parseBatteryRealTimeInfo();
-                    } else if (result.command == Message.Command.TotalStats.getValue()) {
-                        return result.parseTotalStats();
-                    } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                        return result.parseRealTimeInfo();
-                    } else {
-                        Timber.i("Get unknown command: %02X",result.command);
+                    if (result.flags == Message.Flag.Initial.getValue()) {
+                        if (result.command == Message.Command.MainInfo.getValue()) {
+                            return result.parseMainData();
+                        } else if ((result.command == Message.Command.Diagnistic.getValue()) && turningOff) {
+                            settingCommand = InmotionAdapterV2.Message.wheelOffSecondStage().writeBuffer();
+                            turningOff = false;
+                            settingCommandReady = true;
+                            return false;
+                        }
+                    } else if (result.flags == Message.Flag.Default.getValue()) {
+                        if (result.command == Message.Command.Settings.getValue()) {
+                            requestSettings = false;
+                            return result.parseSettings();
+                        } else if (result.command == Message.Command.Diagnistic.getValue()) {
+                            return result.parseDiagnostic();
+                        } else if (result.command == Message.Command.BatteryRealTimeInfo.getValue()) {
+                            return result.parseBatteryRealTimeInfo();
+                        } else if (result.command == Message.Command.TotalStats.getValue()) {
+                            return result.parseTotalStats();
+                        } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
+                            return result.parseRealTimeInfo();
+                        } else {
+                            Timber.i("Get unknown command: %02X", result.command);
+                        }
                     }
-
                 }
             }
         }
@@ -246,6 +256,13 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
+    @Override
+    public void powerOff() {
+        settingCommand = InmotionAdapterV2.Message.wheelOffFirstStage().writeBuffer();
+        turningOff = true;
+        settingCommandReady = true;
+    }
+
 
     public static class Message {
 
@@ -269,6 +286,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             NoOp(0),
             MainVersion(0x01),
             MainInfo(0x02),
+            Diagnistic(0x03),
             RealTimeInfo(0x04),
             BatteryRealTimeInfo(0x05),
             Something1(0x10),
@@ -350,6 +368,15 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int bat2WorkStatus2 = (data[14] >> 1) & 1;
             int chargeVoltage = MathsUtil.shortFromBytesLE(data, 16);
             int chargeCurrent = MathsUtil.shortFromBytesLE(data, 18);
+            return false;
+        }
+        
+        boolean parseDiagnostic(){
+            boolean ok = true;
+            if (data.length > 7)
+                for (byte c : data) {
+                    if (c != 0) ok = false;
+                }
             return false;
         }
 
@@ -511,6 +538,22 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
+        public static Message wheelOffFirstStage() {
+            Message msg = new Message();
+            msg.flags = Flag.Initial.getValue();
+            msg.command = Command.Diagnistic.getValue();
+            msg.data = new byte[]{(byte)0x81, (byte) 0x00};
+            return msg;
+        }
+
+        public static Message wheelOffSecondStage() {
+            Message msg = new Message();
+            msg.flags = Flag.Initial.getValue();
+            msg.command = Command.Diagnistic.getValue();
+            msg.data = new byte[]{(byte)0x82};
+            return msg;
+        }
+
         public static Message getSerialNumber() {
             Message msg = new Message();
             msg.flags = Flag.Initial.getValue();
@@ -547,6 +590,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.BatteryRealTimeInfo.getValue();
+            msg.data = new byte[0];
+            return msg;
+        }
+
+        public static Message getDiagnostic() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Diagnistic.getValue();
             msg.data = new byte[0];
             return msg;
         }
