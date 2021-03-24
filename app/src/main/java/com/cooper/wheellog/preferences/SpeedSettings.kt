@@ -102,7 +102,7 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                     title = getString(R.string.connection_sound_title)
                     summary = getString(R.string.connection_sound_description)
                     icon = getDrawable(R.drawable.ic_baseline_music_note_24)
-                    setDefaultValue(WheelLog.AppConfig.pageTrips)
+                    setDefaultValue(WheelLog.AppConfig.connectionSound)
                 },
                 SeekBarPreference(context).apply {
                     key = getString(R.string.no_connection_sound)
