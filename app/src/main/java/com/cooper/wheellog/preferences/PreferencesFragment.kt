@@ -12,12 +12,16 @@ import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker.*
-import androidx.preference.*
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
+import androidx.preference.TwoStatePreference
 import com.cooper.wheellog.*
-import com.cooper.wheellog.R
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
@@ -253,6 +257,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 checkAndRequestPermissions()
                 speedSettings.selectCustomBeep(this, mediaRequestCode)
             }
+            R.string.day_night_theme -> AppCompatDelegate.setDefaultNightMode(WheelLog.AppConfig.dayNightThemeMode)
         }
         correctState(key)
     }

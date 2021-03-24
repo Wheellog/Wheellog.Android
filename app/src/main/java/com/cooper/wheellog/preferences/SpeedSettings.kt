@@ -6,12 +6,15 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreference
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
+import com.cooper.wheellog.utils.ThemeEnum
 import timber.log.Timber
 
 class SpeedSettings(context: Context) : BaseSettingsClass(context) {
@@ -83,7 +86,23 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                             title = getString(R.string.use_short_pwm_title)
                             summary = getString(R.string.use_short_pwm_description)
                             setDefaultValue(WheelLog.AppConfig.useShortPwm)
-                        }
+                        },
+                        ListPreference(context).apply {
+                            key = getString(R.string.app_theme)
+                            title = getString(R.string.app_theme_title)
+                            summary = getString(R.string.app_theme_description)
+                            entries = ThemeEnum.values().map { x -> x.name }.toTypedArray()
+                            entryValues = ThemeEnum.values().map { x -> x.value.toString() }.toTypedArray()
+                            setDefaultValue(ThemeEnum.Original.value.toString())
+                        },
+                        ListPreference(context).apply {
+                            key = getString(R.string.day_night_theme)
+                            title = getString(R.string.day_night_theme_title)
+                            entries = arrayOf(getString(R.string.day_night_theme_as_system), getString(R.string.day_night_theme_day), getString(R.string.day_night_theme_night))
+                            entryValues = arrayOf(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
+                                    .map {x -> x.toString()}.toTypedArray()
+                            setDefaultValue(ThemeEnum.Original.value.toString())
+                        },
                 ),
                 SwitchPreference(context).apply {
                     key = getString(R.string.show_page_events)

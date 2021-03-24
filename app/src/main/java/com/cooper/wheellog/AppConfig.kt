@@ -29,16 +29,17 @@ class AppConfig(var context: Context) {
 
     var appTheme: Int
         get() {
-            return when (ThemeEnum.fromInt(getValue(R.string.app_theme, ThemeEnum.Original.value))) {
+            val stringVal = getValue(R.string.app_theme, ThemeEnum.Original.value.toString())
+            return when (ThemeEnum.fromInt(stringVal.toInt())) {
                 ThemeEnum.AJDM -> R.style.AJDMTheme
                 else -> R.style.OriginalTheme
             }
         }
-        set(value) = setValue(R.string.app_theme, value)
+        set(value) = setValue(R.string.app_theme, value.toString())
 
     var dayNightThemeMode: Int
-        get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED)
-        set(value) = setValue(R.string.day_night_theme, value)
+        get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED.toString()).toInt()
+        set(value) = setValue(R.string.day_night_theme, value.toString())
 
     var useBetterPercents: Boolean
         get() = getValue(R.string.use_better_percents, false)

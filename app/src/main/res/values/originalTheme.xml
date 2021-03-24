@@ -66,4 +66,14 @@
     <style name="LinePageIndicatorStyle">
         <item name="android:padding">5dp</item>
     </style>
+
+    <style name="SettingStyle" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:divider">@color/divider</item>
+        <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
+        <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:colorBackground">@color/settings_bg</item>
+    </style>
 </resources>
