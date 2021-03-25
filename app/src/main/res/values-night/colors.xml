@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="notification_icon_bg">#000000</drawable>
+
+    <color name="primary">#000000</color>
+    <color name="primary_dark">#FF222222</color>
+    <color name="primary_light">#8C8C8C</color>
+    <color name="accent">#FF5722</color>
+    <color name="primary_text">#000000</color>
+    <color name="secondary_text">#FFFFFF</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#000000</color>
+    <color name="background">#002E7C</color>
+    <color name="navigation_bar">#000000</color>
+    <color name="wheelview_text">#BDBDBD</color>
+    <color name="wheelview_block">#000000</color>
+    <color name="wheelview_textblocks">#FFFFFF</color>
+    <color name="wheelview_versiontext">#32000000</color>
+    <color name="wheelview_speed_text">#FFFFFF</color>
+    <color name="wheelview_main_positive_dial">#A80909</color>
+    <color name="wheelview_main_negative_dial">#209100</color>
+    <color name="wheelview_battery_dial">#01BF50</color>
+    <color name="wheelview_battery_low_dial">#ffcc00</color>
+    <color name="wheelview_temperature_dial">#00ffff</color>
+    <color name="wheelview_arc_dim">#222222</color>
+
+</resources>

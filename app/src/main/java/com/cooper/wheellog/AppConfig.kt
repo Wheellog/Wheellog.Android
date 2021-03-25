@@ -3,7 +3,9 @@ package com.cooper.wheellog
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
+import com.cooper.wheellog.utils.ThemeEnum
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -24,6 +26,20 @@ class AppConfig(var context: Context) {
     var useEng: Boolean
         get() = getValue(R.string.use_eng, false)
         set(value) = setValue(R.string.use_eng, value)
+
+    var appTheme: Int
+        get() {
+            val stringVal = getValue(R.string.app_theme, ThemeEnum.Original.value.toString())
+            return when (ThemeEnum.fromInt(stringVal.toInt())) {
+                ThemeEnum.AJDM -> R.style.AJDMTheme
+                else -> R.style.OriginalTheme
+            }
+        }
+        set(value) = setValue(R.string.app_theme, value.toString())
+
+    var dayNightThemeMode: Int
+        get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED.toString()).toInt()
+        set(value) = setValue(R.string.day_night_theme, value.toString())
 
     var useBetterPercents: Boolean
         get() = getValue(R.string.use_better_percents, false)

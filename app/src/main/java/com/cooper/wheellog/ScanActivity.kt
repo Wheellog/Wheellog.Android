@@ -69,7 +69,7 @@ class ScanActivity: AppCompatActivity() {
                 text = resources.getText(android.R.string.ok)
             }
         }
-        alertDialog = AlertDialog.Builder(this, R.style.AppTheme_Dialog_Alert)
+        alertDialog = AlertDialog.Builder(this, R.style.OriginalTheme_Dialog_Alert)
                 .setView(convertView)
                 .setCancelable(false)
                 .setOnKeyListener { dialogInterface: DialogInterface, keycode: Int, keyEvent: KeyEvent ->

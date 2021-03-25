@@ -12,9 +12,11 @@ import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker.*
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.preference.*
 import com.cooper.wheellog.*
 import com.cooper.wheellog.R
@@ -195,12 +197,26 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
-            R.string.use_eng -> AlertDialog.Builder(requireContext())
+            R.string.use_eng, R.string.app_theme -> AlertDialog.Builder(requireContext())
                     .setTitle(R.string.use_eng_alert_title)
                     .setMessage(R.string.use_eng_alert_description)
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .show()
+            R.string.day_night_theme -> {
+                findPreference<ListPreference>(getString(R.string.day_night_theme))?.summary =
+                        when (WheelLog.AppConfig.dayNightThemeMode) {
+                            AppCompatDelegate.MODE_NIGHT_NO -> getString(R.string.day_night_theme_day)
+                            AppCompatDelegate.MODE_NIGHT_YES -> getString(R.string.day_night_theme_night)
+                            else -> getString(R.string.day_night_theme_as_system)
+                        }
+                AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.use_eng_alert_title)
+                        .setMessage(R.string.use_eng_alert_description)
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show()
+            }
             R.string.light_enabled -> wd.updateLight(WheelLog.AppConfig.lightEnabled)
             R.string.led_enabled -> wd.updateLed(WheelLog.AppConfig.ledEnabled)
             R.string.handle_button_disabled -> wd.updateHandleButton(WheelLog.AppConfig.handleButtonDisabled)

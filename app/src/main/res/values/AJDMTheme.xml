@@ -1,0 +1,33 @@
+<resources>
+    <style name="AJDMTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:textColor">@color/ajdm_wheelview_textblocks</item>
+        <item name="colorPrimary">@color/ajdm_primary</item>
+        <item name="colorPrimaryDark">@color/ajdm_primary_dark</item>
+        <item name="colorAccent">@color/ajdm_accent</item>
+        <item name="android:divider">@color/ajdm_divider</item>
+        <item name="actionButtonStyle">@style/AJDMTheme.Toolbar.ActionButton</item>
+        <item name="android:windowBackground">@drawable/ajdm_background</item>
+        <item name="android:colorBackground">@color/ajdm_background</item>
+    </style>
+
+    <style name="AJDMTheme.Transparent" parent="AJDMTheme">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="AJDMTheme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+    </style>
+
+    <style name="AJDMTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@drawable/ajdm_background</item>
+    </style>
+</resources>

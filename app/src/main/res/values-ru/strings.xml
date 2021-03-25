@@ -197,7 +197,7 @@
     <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
     <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
     <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
-    <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
+    <string name="use_eng_alert_description">Пожалуйста перезапустите устройство чтобы эта настройка применилась</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_pip_mode_description">Переходить в режим картинка-в-картинке вместо сворачивания</string>
     <string name="use_pip_mode_title">Картинка-в-Картинке</string>
@@ -306,4 +306,10 @@
     <string name="lock_mode_description">Колесо будет заблокировано</string>
     <string name="no_file_read_permission">Нет прав на чтение файлов</string>
     <string name="files_not_found">Аудио файлы не найдены</string>
+    <string name="app_theme_title">Тема</string>
+    <string name="app_theme_description">Интерфейс и всё такое.</string>
+    <string name="day_night_theme_title">Темная тема</string>
+    <string name="day_night_theme_as_system">Как в телефоне</string>
+    <string name="day_night_theme_day">Дневная тема</string>
+    <string name="day_night_theme_night">Ночная тема</string>
 </resources>

@@ -1,16 +1,17 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="OriginalTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:textColor">@color/wheelview_textblocks</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="android:divider">@color/divider</item>
-        <item name="actionButtonStyle">@style/AppTheme.Toolbar.ActionButton</item>
+        <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/background</item>
     </style>
 
-    <style name="AppTheme.Transparent" parent="AppTheme">
+    <style name="OriginalTheme.Transparent" parent="OriginalTheme">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -20,11 +21,11 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="OriginalTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:background">@drawable/background</item>
     </style>
 
-    <style name="AppTheme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
+    <style name="OriginalTheme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:paddingStart">5dp</item>
@@ -65,5 +66,15 @@
 
     <style name="LinePageIndicatorStyle">
         <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="SettingStyle" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:divider">@color/divider</item>
+        <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
+        <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:colorBackground">@color/settings_bg</item>
     </style>
 </resources>

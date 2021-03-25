@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
-
+        setTheme(R.style.SettingStyle)
         if (savedInstanceState == null) {
             fragment = PreferencesFragment()
             supportFragmentManager
