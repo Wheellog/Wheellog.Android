@@ -15,6 +15,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
     private static InmotionAdapterV2 INSTANCE;
     private Timer keepAliveTimer;
     private boolean settingCommandReady = false;
+    private boolean requestSettings = false;
+    private boolean turningOff = false;
     private static int updateStep = 0;
     private static int stateCon = 0;
     private byte[] settingCommand;
@@ -29,18 +31,31 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
                 if (result != null) {
                     Timber.i("Get new data, command: %02X", result.command);
-
-                    if (result.command == Message.Command.MainInfo.getValue()) {
-                        return result.parseMainData();
-
-                    } else if (result.command == Message.Command.TotalStats.getValue()) {
-                        return result.parseTotalStats();
-                    } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                        return result.parseRealTimeInfo();
-                    } else {
-                        Timber.i("Get unknown command: %02X",result.command);
+                    if (result.flags == Message.Flag.Initial.getValue()) {
+                        if (result.command == Message.Command.MainInfo.getValue()) {
+                            return result.parseMainData();
+                        } else if ((result.command == Message.Command.Diagnistic.getValue()) && turningOff) {
+                            settingCommand = InmotionAdapterV2.Message.wheelOffSecondStage().writeBuffer();
+                            turningOff = false;
+                            settingCommandReady = true;
+                            return false;
+                        }
+                    } else if (result.flags == Message.Flag.Default.getValue()) {
+                        if (result.command == Message.Command.Settings.getValue()) {
+                            requestSettings = false;
+                            return result.parseSettings();
+                        } else if (result.command == Message.Command.Diagnistic.getValue()) {
+                            return result.parseDiagnostic();
+                        } else if (result.command == Message.Command.BatteryRealTimeInfo.getValue()) {
+                            return result.parseBatteryRealTimeInfo();
+                        } else if (result.command == Message.Command.TotalStats.getValue()) {
+                            return result.parseTotalStats();
+                        } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
+                            return result.parseRealTimeInfo();
+                        } else {
+                            Timber.i("Get unknown command: %02X", result.command);
+                        }
                     }
-
                 }
             }
         }
@@ -67,50 +82,51 @@ public class InmotionAdapterV2 extends BaseAdapter {
                     if (stateCon == 0) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getCarType().writeBuffer())) {
                             Timber.i("Sent car type message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     } else if (stateCon == 1) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getSerialNumber().writeBuffer())) {
                             Timber.i("Sent s/n message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     } else if (stateCon == 2) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getVersions().writeBuffer())) {
                             stateCon += 1;
                             Timber.i("Sent versions message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     } else if (settingCommandReady) {
     					if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             settingCommandReady = false;
+                            requestSettings = true;
                             Timber.i("Sent command message");
-                        } else updateStep = 39; // after +1 and %10 = 0
-    				} else if (stateCon == 3) {
-                        if (WheelData.getInstance().bluetoothCmd(Message.getUnknownData().writeBuffer())) {
+                        } else updateStep = 35; // after +1 and %10 = 0
+    				} else if (stateCon == 3 | requestSettings) {
+                        if (WheelData.getInstance().bluetoothCmd(Message.getCurrentSettings().writeBuffer())) {
                             stateCon += 1;
                             Timber.i("Sent unknown data message");
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     }
                     else if (stateCon == 4) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getUselessData().writeBuffer())) {
                             Timber.i("Sent useless data message");
                             stateCon += 1;
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     }
                     else if (stateCon == 5) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getStatistics().writeBuffer())) {
                             Timber.i("Sent statistics data message");
                             stateCon += 1;
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     }
                     else  {
                         if (WheelData.getInstance().bluetoothCmd(InmotionAdapterV2.Message.getRealTimeData().writeBuffer())) {
                             Timber.i("Sent realtime data message");
                             stateCon = 5;
-                        } else updateStep = 39;
+                        } else updateStep = 35;
 
                     }
 
@@ -240,6 +256,13 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
+    @Override
+    public void powerOff() {
+        settingCommand = InmotionAdapterV2.Message.wheelOffFirstStage().writeBuffer();
+        turningOff = true;
+        settingCommandReady = true;
+    }
+
 
     public static class Message {
 
@@ -261,11 +284,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
         enum Command {
             NoOp(0),
+            MainVersion(0x01),
             MainInfo(0x02),
+            Diagnistic(0x03),
             RealTimeInfo(0x04),
+            BatteryRealTimeInfo(0x05),
             Something1(0x10),
             TotalStats(0x11),
-            Something2(0x20),
+            Settings(0x20),
             Control(0x60);
 
 
@@ -312,7 +338,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 int batch = data[4];     // 02
                 int feature = data[5];   // 01
                 int reverse = data[6];   // 00
-                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11",batch,feature));
+                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11"));
                 wd.setVersion(String.format(Locale.ENGLISH,"rev: %d.%d",batch,feature));
             } else if ((data[0] == (byte) 0x02) && len >= 17) {
                 stateCon += 1;
@@ -324,6 +350,82 @@ public class InmotionAdapterV2 extends BaseAdapter {
             } else if ((data[0] == (byte) 0x06) && len >= 10) {
                 Timber.i("Parse versions");
             }
+            return false;
+        }
+
+        boolean parseBatteryRealTimeInfo(){
+            int bat1Voltage = MathsUtil.shortFromBytesLE(data, 0);
+            int bat1Temp = data[4];
+            int bat1ValidStatus = data[5] & 1;
+            int bat1Enabled = (data[5] >> 1) & 1;
+            int bat1WorkStatus1 = data[6] & 1;
+            int bat1WorkStatus2 = (data[6] >> 1) & 1;
+            int bat2Voltage = MathsUtil.shortFromBytesLE(data, 8);
+            int bat2Temp = data[12];
+            int bat2ValidStatus = data[13] & 1;
+            int bat2Enabled = (data[13] >> 1) & 1;
+            int bat2WorkStatus1 = data[14] & 1;
+            int bat2WorkStatus2 = (data[14] >> 1) & 1;
+            int chargeVoltage = MathsUtil.shortFromBytesLE(data, 16);
+            int chargeCurrent = MathsUtil.shortFromBytesLE(data, 18);
+            return false;
+        }
+        
+        boolean parseDiagnostic(){
+            boolean ok = true;
+            if (data.length > 7)
+                for (byte c : data) {
+                    if (c != 0) ok = false;
+                }
+            return false;
+        }
+
+        boolean parseSettings(){
+            Timber.i("Parse settings data");
+            int i = 1;
+            int mSpeedLim = MathsUtil.shortFromBytesLE(data, i);
+            int mPitchAngleZero = MathsUtil.signedShortFromBytesLE(data, i+2);
+            int mDriveMode = data[i+4] & 0xF;
+            int mRideMode = data[i+4] >> 4;
+            int mComfSens = data[i + 5];
+            int mClassSens = data[i + 6];
+            int mVolume = data[i + 7];
+            int mAudioId = MathsUtil.intFromBytesLE(data, i+8);
+            int mStandByTime = MathsUtil.shortFromBytesLE(data, i+12);
+            int mDecorLightMode = data[i + 14];
+            int mAutoLightLowThr = data[i + 15];
+            int mAutoLightHighThr = data[i + 16];
+            int mLightBr = data[i + 17];
+            int mAudioState = data[i + 20] & 3;
+            int mDecorState = (data[i + 20]>>2) & 3;
+            int mLiftedState = (data[i + 20] >> 4) & 3;
+            int mAutoLightState = (data[i + 20] >> 6) & 3;
+            int mAutoLightBrState = data[i + 21] & 3;
+            int mLockState = (data[i + 21]>>2) & 3;
+            int mTranspMode = (data[i + 21] >> 4) & 3;
+            int mLoadDetect = (data[i + 21] >> 6) & 3;
+            int mNoLoadDetect = data[i + 22] & 3;
+            int mLowBat = (data[i + 22]>>2) & 3;
+            int mFanQuiet = (data[i + 22] >> 4) & 3;
+            int mFan = (data[i + 22] >> 6) & 3; // to test
+            int mSome1 = data[i + 23] & 3; // to test
+            int mSome2 = (data[i + 23]>>2) & 3; // to test
+            int mSome3 = (data[i + 23] >> 4) & 3; // to test
+            int mSome4 = (data[i + 23] >> 6) & 3; // to test
+            WheelLog.AppConfig.setPedalsAdjustment(mPitchAngleZero/10);
+            WheelLog.AppConfig.setWheelMaxSpeed(mSpeedLim/100);
+            WheelLog.AppConfig.setFancierMode(mRideMode != 0);
+            WheelLog.AppConfig.setRideMode(mDriveMode != 0);
+            WheelLog.AppConfig.setPedalSensivity(mComfSens);
+            WheelLog.AppConfig.setSpeakerVolume(mVolume);
+            WheelLog.AppConfig.setLightBrightness(mLightBr);
+            WheelLog.AppConfig.setSpeakerMute(mAudioState == 0);
+            WheelLog.AppConfig.setDrlEnabled(mDecorState != 0);
+            WheelLog.AppConfig.setHandleButtonDisabled(mLiftedState == 0);
+            WheelLog.AppConfig.setLockMode(mLockState != 0);
+            WheelLog.AppConfig.setTransportMode(mTranspMode != 0);
+            WheelLog.AppConfig.setFanQuietEnabled(mFanQuiet != 0);
+            WheelLog.AppConfig.setGoHomeMode(mLowBat != 0);
             return false;
         }
 
@@ -396,7 +498,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setPower(mBatPower);
             wd.setWheelDistance(mMileage);
             //// state data
-            int mPcMode = data[36] & 0x07;
+            int mPcMode = data[36] & 0x07; // lock, drive, shutdown, idle
             int mMcMode = (data[36]>>3)&0x07;
             int mMotState = (data[36]>>6)&0x01;
             int chrgState = (data[36]>>7)&0x01;
@@ -410,8 +512,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (chrgState == 1) {wmode = wmode + " Charging";}
             if (liftedState == 1) {wmode = wmode + " Lifted";}
             wd.setModeStr(wmode);
-            //// rest data
+            //WheelLog.AppConfig.setFanEnabled(fanState != 0); // bad behaviour
+            WheelLog.AppConfig.setLightEnabled(lightState != 0);
+            //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
+            //// rest data
 
 
             return true;
@@ -422,6 +527,30 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.flags = Flag.Initial.getValue();
             msg.command = Command.MainInfo.getValue();
             msg.data = new byte[]{(byte)0x01};
+            return msg;
+        }
+
+        public static Message getMainVersion() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.MainVersion.getValue();
+            msg.data = new byte[0];
+            return msg;
+        }
+
+        public static Message wheelOffFirstStage() {
+            Message msg = new Message();
+            msg.flags = Flag.Initial.getValue();
+            msg.command = Command.Diagnistic.getValue();
+            msg.data = new byte[]{(byte)0x81, (byte) 0x00};
+            return msg;
+        }
+
+        public static Message wheelOffSecondStage() {
+            Message msg = new Message();
+            msg.flags = Flag.Initial.getValue();
+            msg.command = Command.Diagnistic.getValue();
+            msg.data = new byte[]{(byte)0x82};
             return msg;
         }
 
@@ -441,10 +570,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
-        public static Message getUnknownData() {
+        public static Message getCurrentSettings() {
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
-            msg.command = Command.Something2.getValue();
+            msg.command = Command.Settings.getValue();
             msg.data = new byte[]{(byte)0x20};
             return msg;
         }
@@ -454,6 +583,22 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Something1.getValue();
             msg.data = new byte[]{(byte)0x00, (byte)0x01};
+            return msg;
+        }
+
+        public static Message getBatteryData() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.BatteryRealTimeInfo.getValue();
+            msg.data = new byte[0];
+            return msg;
+        }
+
+        public static Message getDiagnostic() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Diagnistic.getValue();
+            msg.data = new byte[0];
             return msg;
         }
 
