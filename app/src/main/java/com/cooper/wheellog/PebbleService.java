@@ -122,9 +122,9 @@ public class PebbleService extends Service {
                         outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
                     }
 
-                    if (refreshAll || lastVoltage != (int)data.getVoltageDouble())
+                    if (refreshAll || lastVoltage != data.getVoltage())
                     {
-                        lastVoltage = (int)data.getVoltageDouble();
+                        lastVoltage = data.getVoltage();
                         outgoingDictionary.addInt32(KEY_VOLTAGE, lastVoltage);
                     }
 
