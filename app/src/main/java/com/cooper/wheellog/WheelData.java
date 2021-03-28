@@ -148,6 +148,7 @@ public class WheelData {
 
     public BluetoothLeService getBluetoothLeService() {
         return mBluetoothLeService;
+
     }
 
     public boolean bluetoothCmd(byte[] cmd) {

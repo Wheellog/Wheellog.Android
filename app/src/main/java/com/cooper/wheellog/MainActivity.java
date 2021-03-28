@@ -75,9 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    private boolean use_mph = false;
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
-    public static NotificationUtil notificationHandler;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
@@ -166,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                                 KingsongAdapter.getInstance().requestNameData();
                             }
-                            notificationHandler.setNotificationMessageId(R.string.connected);
+                            WheelLog.Notifications.setNotificationMessageId(R.string.connected);
                             break;
                         case BluetoothLeService.STATE_DISCONNECTED:
                             switch (WheelData.getInstance().getWheelType()) {
@@ -179,17 +177,17 @@ public class MainActivity extends AppCompatActivity {
                                 case NINEBOT:
                                     NinebotAdapter.newInstance();
                             }
-                            notificationHandler.setNotificationMessageId(R.string.disconnected);
+                            WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
                             break;
                         case BluetoothLeService.STATE_CONNECTING:
                             if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
-                                notificationHandler.setNotificationMessageId(R.string.searching);
+                                WheelLog.Notifications.setNotificationMessageId(R.string.searching);
                             } else {
-                                notificationHandler.setNotificationMessageId(R.string.connecting);
+                                WheelLog.Notifications.setNotificationMessageId(R.string.connecting);
                             }
                             break;
                     }
-                    notificationHandler.updateNotification();
+                    WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
@@ -198,11 +196,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     pagerAdapter.updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
-                    notificationHandler.updateNotification();
+                    WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
-                    notificationHandler.updateNotification();
+                    WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
                     Timber.i("Received news");
@@ -217,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     setMenuIconStates();
-                    notificationHandler.updateNotification();
+                    WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
@@ -432,8 +430,7 @@ public class MainActivity extends AppCompatActivity {
             startBluetoothService();
         }
 
-        notificationHandler = new NotificationUtil(this);
-        notificationHandler.updateNotification();
+        WheelLog.Notifications.update();
     }
 
     @Override

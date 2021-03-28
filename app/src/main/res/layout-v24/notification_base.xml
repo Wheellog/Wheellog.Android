@@ -1,25 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/status_bar_latest_event_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:tag="base"
-    >
-    <include layout="@layout/notification_template_header" />
-    <include layout="@layout/notification_buttons" />
+    android:padding="6dp"
+    android:tag="base">
+
     <LinearLayout
-        android:id="@+id/notification_main_column"
-        android:layout_width="match_parent"
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginStart="@dimen/notification_content_margin_start"
-        android:layout_marginEnd="@dimen/notification_content_margin_end"
-        android:layout_marginTop="@dimen/notification_content_margin_top"
-        android:layout_marginBottom="@dimen/notification_content_margin_bottom"
-        android:orientation="vertical"
-        >
-        <include layout="@layout/notification_template_part_line1" />
-        <include layout="@layout/notification_template_text" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/ib_connection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/icon_connection"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:src="@drawable/ic_action_wheel_grey" />
+
+        <ImageButton
+            android:id="@+id/ib_logging"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/icon_logging"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:src="@drawable/ic_action_logging_grey" />
     </LinearLayout>
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="3dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_wheel_orange" />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_toStartOf="@+id/linearLayout"
+        android:layout_toEndOf="@+id/icon"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:fontFamily="@font/prime"
+        android:singleLine="true"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification.Title" />
+
+    <TextView
+        android:id="@+id/text_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_title"
+        android:layout_gravity="top"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_toStartOf="@+id/linearLayout"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:gravity="top"
+        android:singleLine="true"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+
+</RelativeLayout>

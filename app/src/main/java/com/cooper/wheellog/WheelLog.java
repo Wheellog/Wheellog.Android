@@ -5,9 +5,12 @@ import timber.log.Timber;
 import android.content.Context;
 import android.content.res.Configuration;
 
+import com.cooper.wheellog.utils.NotificationUtil;
+
 public class WheelLog extends Application {
     public static LocaleManager localeManager;
     public static AppConfig AppConfig;
+    public static NotificationUtil Notifications;
 
     @Override
     public void onCreate() {
@@ -23,6 +26,7 @@ public class WheelLog extends Application {
     protected void attachBaseContext(Context base) {
         AppConfig = new AppConfig(base);
         localeManager = new LocaleManager(base);
+        Notifications = new NotificationUtil(base);
         super.attachBaseContext(localeManager.setLocale(base));
     }
 
