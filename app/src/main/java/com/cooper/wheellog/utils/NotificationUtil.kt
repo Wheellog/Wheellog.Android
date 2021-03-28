@@ -15,6 +15,8 @@ import java.util.*
 class NotificationUtil(private val context: Context) {
     private val mNotification: NotificationCompat.Builder
     var notificationMessageId = R.string.disconnected
+    var notification: Notification? = null
+        private set
 
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -87,12 +89,6 @@ class NotificationUtil(private val context: Context) {
         val notification = build()
         val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.notify(Constants.MAIN_NOTIFICATION_ID, notification)
-    }
-
-    companion object {
-        @JvmStatic
-        var notification: Notification? = null
-            private set
     }
 
     init {
