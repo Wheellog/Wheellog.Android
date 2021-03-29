@@ -503,4 +503,5 @@
     <string name="day_night_theme_as_system">Use phone settings</string>
     <string name="day_night_theme_day">Day theme</string>
     <string name="day_night_theme_night">Night theme</string>
+    <string name="notifications_actions_text">Actions:</string>
 </resources>

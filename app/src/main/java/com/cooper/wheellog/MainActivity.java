@@ -163,10 +163,6 @@ public class MainActivity extends AppCompatActivity {
                     Timber.i("Received news");
                     showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
                     break;
-                case Constants.ACTION_PREFERENCE_RESET:
-                    Timber.i("Reset battery lowest");
-                    pagerAdapter.getWheelView().resetBatteryLowest();
-                    break;
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
                             && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
@@ -232,6 +228,10 @@ public class MainActivity extends AppCompatActivity {
                             break;
                     }
                     WheelLog.Notifications.update();
+                    break;
+                case Constants.ACTION_PREFERENCE_RESET:
+                    Timber.i("Reset battery lowest");
+                    pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     WheelLog.Notifications.update();
@@ -727,7 +727,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
@@ -741,6 +740,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);

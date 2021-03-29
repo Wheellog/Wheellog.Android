@@ -40,10 +40,35 @@ class NotificationUtil(private val context: Context) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
+        val wd = WheelData.getInstance()
+        val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
+        val batteryLevel = wd.batteryLevel
+        val temperature = wd.temperature
+        val distance = wd.distanceDouble
+        val speed = wd.speedDouble
+        notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
+        val title = context.getString(notificationMessageId)
+        if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
+            notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text, speed, batteryLevel, temperature, distance))
+        }
+        notificationView.setTextViewText(R.id.text_title, title)
+
+        return builder
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setContentIntent(pendingIntent)
+                .setContent(notificationView)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build()
+    }
+
+    private fun buildButtons(): Notification {
+        val notificationView = RemoteViews(context.packageName, R.layout.notification_buttons)
         notificationView.setOnClickPendingIntent(R.id.ib_connection,
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_CONNECTION), 0))
         notificationView.setOnClickPendingIntent(R.id.ib_logging,
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_LOGGING), 0))
+        notificationView.setOnClickPendingIntent(R.id.ib_watch,
+                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_WATCH), 0))
         val wd = WheelData.getInstance()
         val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
         notificationView.setImageViewResource(R.id.ib_connection,
@@ -65,12 +90,15 @@ class NotificationUtil(private val context: Context) {
         notificationView.setImageViewResource(R.id.ib_logging,
                 if (LoggingService.isInstanceCreated()) R.drawable.ic_action_logging_orange
                 else R.drawable.ic_action_logging_grey)
+        notificationView.setImageViewResource(R.id.ib_watch,
+                if (PebbleService.isInstanceCreated()) R.drawable.ic_action_watch_orange
+                else R.drawable.ic_action_watch_grey)
 
         return builder
                 .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
                 .build()
     }
 
@@ -78,6 +106,7 @@ class NotificationUtil(private val context: Context) {
         notification = build()
         with(NotificationManagerCompat.from(context)) {
             notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
+            notify(Constants.BUTTONS_NOTIFICATION_ID, buildButtons())
         }
     }
 

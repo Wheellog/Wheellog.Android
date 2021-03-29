@@ -312,4 +312,5 @@
     <string name="day_night_theme_as_system">Как в телефоне</string>
     <string name="day_night_theme_day">Дневная тема</string>
     <string name="day_night_theme_night">Ночная тема</string>
+    <string name="notifications_actions_text">Действия:</string>
 </resources>
