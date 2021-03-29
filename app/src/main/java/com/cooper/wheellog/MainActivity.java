@@ -253,12 +253,15 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.NOTIFICATION_BUTTON_CONNECTION:
                     toggleConnectToWheel();
+                    WheelLog.Notifications.update();
                     break;
                 case Constants.NOTIFICATION_BUTTON_LOGGING:
                     toggleLogging();
+                    WheelLog.Notifications.update();
                     break;
                 case Constants.NOTIFICATION_BUTTON_WATCH:
                     toggleWatch();
+                    WheelLog.Notifications.update();
                     break;
             }
         }

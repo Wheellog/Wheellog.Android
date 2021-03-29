@@ -504,4 +504,6 @@
     <string name="day_night_theme_day">Day theme</string>
     <string name="day_night_theme_night">Night theme</string>
     <string name="notifications_actions_text">Actions:</string>
+    <string name="notification_buttons" translatable="false">notification_buttons</string>
+    <string name="notification_buttons_title">Notification buttons</string>
 </resources>

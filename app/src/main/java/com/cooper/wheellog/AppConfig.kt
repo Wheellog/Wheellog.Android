@@ -61,6 +61,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.view_blocks_string, null)
         set(value) = setValue(R.string.view_blocks_string, value)
 
+    var notifivationButtons: String?
+        get() = getValue(R.string.notification_buttons, null)
+        set(value) = setValue(R.string.notification_buttons, value)
+
     var maxSpeed: Int
         get() = getValue(R.string.max_speed, 50)
         set(value) = setValue(R.string.max_speed, value)

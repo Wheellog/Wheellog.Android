@@ -7,10 +7,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
@@ -40,29 +42,23 @@ class NotificationUtil(private val context: Context) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
-        val wd = WheelData.getInstance()
-        val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
-        val batteryLevel = wd.batteryLevel
-        val temperature = wd.temperature
-        val distance = wd.distanceDouble
-        val speed = wd.speedDouble
-        notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
-        val title = context.getString(notificationMessageId)
-        if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
-            notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text, speed, batteryLevel, temperature, distance))
-        }
-        notificationView.setTextViewText(R.id.text_title, title)
-
-        return builder
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setContentIntent(pendingIntent)
-                .setContent(notificationView)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-    }
-
-    private fun buildButtons(): Notification {
-        val notificationView = RemoteViews(context.packageName, R.layout.notification_buttons)
+        val buttonsSettingsString = WheelLog.AppConfig.notifivationButtons
+        val buttonSettings = buttonsSettingsString?.split(MultiSelectPreference.separator)?.toTypedArray()
+                ?: arrayOf(context.getString(R.string.icon_connection),
+                        context.getString(R.string.icon_logging),
+                        context.getString(R.string.icon_watch))
+        notificationView.setViewVisibility(R.id.ib_actions_layout,
+                if (buttonsSettingsString != "") View.VISIBLE
+                else View.GONE)
+        notificationView.setViewVisibility(R.id.ib_connection,
+                if (buttonSettings.contains(context.getString(R.string.icon_connection))) View.VISIBLE
+                else View.GONE)
+        notificationView.setViewVisibility(R.id.ib_logging,
+                if (buttonSettings.contains(context.getString(R.string.icon_logging))) View.VISIBLE
+                else View.GONE)
+        notificationView.setViewVisibility(R.id.ib_watch,
+                if (buttonSettings.contains(context.getString(R.string.icon_watch))) View.VISIBLE
+                else View.GONE)
         notificationView.setOnClickPendingIntent(R.id.ib_connection,
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_CONNECTION), 0))
         notificationView.setOnClickPendingIntent(R.id.ib_logging,
@@ -96,9 +92,12 @@ class NotificationUtil(private val context: Context) {
 
         return builder
                 .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setContentIntent(pendingIntent)
                 .setContent(notificationView)
+                .setCustomBigContentView(notificationView)
+                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setStyle(NotificationCompat.BigPictureStyle())
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setOngoing(true)
                 .build()
     }
 
@@ -106,7 +105,6 @@ class NotificationUtil(private val context: Context) {
         notification = build()
         with(NotificationManagerCompat.from(context)) {
             notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
-            notify(Constants.BUTTONS_NOTIFICATION_ID, buildButtons())
         }
     }
 
