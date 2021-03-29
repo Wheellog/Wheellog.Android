@@ -9,11 +9,11 @@ import android.content.Intent
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
-import java.util.*
 
 class NotificationUtil(private val context: Context) {
-    private val mNotification: NotificationCompat.Builder
+    private val builder: NotificationCompat.Builder
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
         private set
@@ -24,30 +24,19 @@ class NotificationUtil(private val context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
-        val name: CharSequence = context.getString(R.string.notification_channel_name)
-        val description = context.getString(R.string.notification_channel_description)
-        val importance = NotificationManager.IMPORTANCE_LOW
-        val channel = NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION, name, importance)
-        channel.description = description
+        val channel = NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION,
+                context.getString(R.string.notification_channel_name),
+                NotificationManager.IMPORTANCE_LOW).apply {
+            description = context.getString(R.string.notification_channel_description)
+        }
         // Register the channel with the system; you can't change the importance
         // or other notification behaviors after this
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
-
-// for test
-//        Timer().scheduleAtFixedRate(object : TimerTask() {
-//            override fun run() {
-//                val wd = WheelData.getInstance() ?: return
-//                wd.setBatteryPercent((Math.random() * 100).toInt())
-//                wd.temperature = (Math.random() * 10000).toInt()
-//                wd.totalDistance = (Math.random() * 10000).toLong()
-//                wd.speed = (Math.random() * 5000).toInt()
-//                update()
-//            }
-//        }, 1000, 1000)
+        with(NotificationManagerCompat.from(context)) {
+            createNotificationChannel(channel)
+        }
     }
 
-    fun build(): Notification {
+    private fun build(): Notification {
         val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
@@ -77,22 +66,34 @@ class NotificationUtil(private val context: Context) {
                 if (LoggingService.isInstanceCreated()) R.drawable.ic_action_logging_orange
                 else R.drawable.ic_action_logging_grey)
 
-        return mNotification
+        return builder
                 .setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build().also { notification = it }
+                .build()
     }
 
     fun update() {
-        val notification = build()
-        val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationManager.notify(Constants.MAIN_NOTIFICATION_ID, notification)
+        notification = build()
+        with(NotificationManagerCompat.from(context)) {
+            notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
+        }
     }
 
     init {
         createNotificationChannel()
-        mNotification = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+// for test
+//        Timer().scheduleAtFixedRate(object : TimerTask() {
+//            override fun run() {
+//                val wd = WheelData.getInstance() ?: return
+//                wd.setBatteryPercent((Math.random() * 100).toInt())
+//                wd.temperature = (Math.random() * 10000).toInt()
+//                wd.totalDistance = (Math.random() * 10000).toLong()
+//                wd.speed = (Math.random() * 5000).toInt()
+//                update()
+//            }
+//        }, 1000, 1000)
     }
 }
