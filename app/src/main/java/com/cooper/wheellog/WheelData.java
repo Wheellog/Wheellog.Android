@@ -674,6 +674,10 @@ public class WheelData {
         return mVoltage / 100.0;
     }
 
+    public int getVoltage() {
+        return mVoltage;
+    }
+
     public void setVoltage(int voltage) {
         mVoltage = voltage;
     }

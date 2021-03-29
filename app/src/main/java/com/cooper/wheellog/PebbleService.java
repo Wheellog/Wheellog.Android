@@ -40,6 +40,9 @@ public class PebbleService extends Service {
     static final int KEY_DISTANCE = 9;
     static final int KEY_TOP_SPEED = 10;
     static final int KEY_READY = 11;
+    static final int KEY_VOLTAGE  = 12;
+    static final int KEY_CURRENT = 13;
+    static final int KEY_PWM = 20;
     private Notification mNotification;
     private Handler mHandler = new Handler();
     private static PebbleService instance = null;
@@ -53,6 +56,9 @@ public class PebbleService extends Service {
     int lastRideTime = 0;
     int lastDistance = 0;
     int lastTopSpeed = 0;
+    int lastVoltage = 0;
+    int lastCurrent = 0;
+    int lastPWM = 0;
 
     boolean lastConnectionState = false;
     int vibe_alarm = -1;
@@ -116,6 +122,24 @@ public class PebbleService extends Service {
                     {
                         lastConnectionState = data.isConnected();
                         outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
+                    }
+
+                    if (refreshAll || lastVoltage != data.getVoltage())
+                    {
+                        lastVoltage = data.getVoltage();
+                        outgoingDictionary.addInt32(KEY_VOLTAGE, lastVoltage);
+                    }
+
+                    if (refreshAll || lastCurrent != data.getCurrent())
+                    {
+                        lastCurrent = data.getCurrent();
+                        outgoingDictionary.addInt32(KEY_CURRENT, lastCurrent);
+                    }
+
+                    if (refreshAll || lastPWM != (int) data.getCalculatedPwm())
+                    {
+                        lastPWM = (int) data.getCalculatedPwm();
+                        outgoingDictionary.addInt32(KEY_PWM, lastCurrent);
                     }
                     break;
                 case DETAILS:
