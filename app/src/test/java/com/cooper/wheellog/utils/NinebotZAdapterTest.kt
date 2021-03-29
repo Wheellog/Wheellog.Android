@@ -58,6 +58,21 @@ class NinebotZAdapterTest {
     }
 
     @Test
+    fun `decode z10 key data`() { // to think about
+        // Arrange.
+        val byteArray1 = "5aa510163e5b010000000000003cc76a7b1c7d91".hexToByteArray()
+        val byteArray2 = "23de0527fb".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+    }
+
+    @Test
     fun `decode z10 bms1 sn data`() {
         // Arrange.
         val byteArray1 = "5AA522113E041034395945513138483151303432".hexToByteArray()
