@@ -96,7 +96,6 @@ class NotificationUtil(private val context: Context) {
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .setStyle(NotificationCompat.BigPictureStyle())
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build()
     }

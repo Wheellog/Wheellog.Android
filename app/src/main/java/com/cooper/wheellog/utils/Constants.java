@@ -121,7 +121,6 @@ public class Constants {
     }
 
     public static final int MAIN_NOTIFICATION_ID = 423411;
-    public static final int BUTTONS_NOTIFICATION_ID = 423412;
 
     public static final String LOG_FOLDER_NAME = "WheelLog Logs";
 }

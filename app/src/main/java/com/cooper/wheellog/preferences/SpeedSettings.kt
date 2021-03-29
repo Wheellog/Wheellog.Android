@@ -93,6 +93,12 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                             entries = arrayOf(getString(R.string.icon_connection),
                                     getString(R.string.icon_logging),
                                     getString(R.string.icon_watch))
+                            useSort = false
+                            if (WheelLog.AppConfig.notifivationButtons == null) {
+                                setValues(listOf(getString(R.string.icon_connection),
+                                        getString(R.string.icon_logging),
+                                        getString(R.string.icon_watch)))
+                            }
                         },
                         SeekBarPreference(context).apply {
                             key = getString(R.string.max_speed)

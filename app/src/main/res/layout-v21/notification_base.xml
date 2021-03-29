@@ -53,7 +53,7 @@
 
         <TextView
             android:id="@+id/ib_actions_text"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"

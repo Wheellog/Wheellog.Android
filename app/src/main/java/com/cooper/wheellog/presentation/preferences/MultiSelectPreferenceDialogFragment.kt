@@ -24,6 +24,7 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
     private lateinit var layoutWithCheckboxes: LinearLayout
     private var preferenceChanged = false
     private var entries: Array<CharSequence>? = null
+    private var useSort = true
 
     companion object {
         @JvmStatic
@@ -77,6 +78,7 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
             dismiss()
             return scrollView
         }
+        useSort = p.useSort
         p.getValueArray().forEach { e ->
             addCheckbox(context, e, true)
         }
@@ -118,12 +120,12 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
         val currentIndex = layoutWithCheckboxes.indexOfChild(buttonView)
         if (isChecked) {
             newValues.add(buttonView.text.toString())
-            if (currentIndex >= newValues.size) {
+            if (useSort && currentIndex >= newValues.size) {
                 changeViewOrder(buttonView, newValues.size - 1)
             }
         } else {
             newValues.remove(buttonView.text)
-            if (currentIndex < newValues.size) {
+            if (useSort && currentIndex < newValues.size) {
                 changeViewOrder(buttonView, newValues.size)
             }
         }
