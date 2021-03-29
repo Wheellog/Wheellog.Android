@@ -254,6 +254,48 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private final BroadcastReceiver mPausedBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
+                    int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
+                    WheelData.getInstance().setConnected(connectionState == BluetoothLeService.STATE_CONNECTED);
+                    switch (connectionState) {
+                        case BluetoothLeService.STATE_CONNECTED:
+                            WheelLog.Notifications.setNotificationMessageId(R.string.connected);
+                            break;
+                        case BluetoothLeService.STATE_DISCONNECTED:
+                            WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
+                            break;
+                        case BluetoothLeService.STATE_CONNECTING:
+                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
+                                WheelLog.Notifications.setNotificationMessageId(R.string.searching);
+                            } else {
+                                WheelLog.Notifications.setNotificationMessageId(R.string.connecting);
+                            }
+                            break;
+                    }
+                    WheelLog.Notifications.update();
+                    break;
+                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
+                case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
+                    WheelLog.Notifications.update();
+                    break;
+                case Constants.NOTIFICATION_BUTTON_CONNECTION:
+                    toggleConnectToWheel();
+                    break;
+                case Constants.NOTIFICATION_BUTTON_LOGGING:
+                    toggleLogging();
+                    break;
+                case Constants.NOTIFICATION_BUTTON_WATCH:
+                    toggleWatch();
+                    break;
+            }
+        }
+    };
+
     private void toggleWatch() {
         togglePebbleService();
         if (WheelLog.AppConfig.getGarminConnectIqEnable())
@@ -436,6 +478,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        try {
+            unregisterReceiver(mPausedBroadcastReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
         if (getBluetoothLeService() != null && mConnectionState != getBluetoothLeService().getConnectionState()) {
             setConnectionState(getBluetoothLeService().getConnectionState());
         }
@@ -457,6 +505,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mMainBroadcastReceiver);
+        registerReceiver(mPausedBroadcastReceiver, makePausedIntentFilter());
     }
 
     @Override
@@ -721,6 +770,18 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
+        return intentFilter;
+    }
+
+    private IntentFilter makePausedIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
+        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
