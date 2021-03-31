@@ -36,7 +36,7 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          The ${{ github.event_name }} event triggered second step.
-          Branch: ${{ github.base_ref }}
+          ${{ github.event.label.name }}
+          From ${{ github.head_ref }} to ${{ github.base_ref }}
           PR: https://github.com/Wheellog/Wheellog.Android/pull/${{github.event.number}}
         document: app/build/outputs/apk/debug/app-debug.apk
