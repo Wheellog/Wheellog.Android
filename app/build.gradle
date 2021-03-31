@@ -14,6 +14,12 @@ android {
         abortOnError false
     }
 
+    signingConfigs {
+        debug {
+            storeFile file('../debug.keystore')
+        }
+    }
+
     defaultConfig {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18

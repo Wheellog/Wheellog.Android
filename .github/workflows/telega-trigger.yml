@@ -1,16 +1,14 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Gradle CI
+name: Telega Trigger
 
 on:
-  push:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  issue_comment:
+    types: [created]
 
 jobs:
-  gradle-build:
+  launchBackportBuild:
     runs-on: ubuntu-latest
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/telega')
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
@@ -21,17 +19,8 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Test
-      run: ./gradlew test
-
     - name: Assemble
       run: ./gradlew assembleDebug
-
-    - name: Get APK
-      uses: actions/upload-artifact@v2.2.2
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Send apk to telegram
       uses: appleboy/telegram-action@master
@@ -40,7 +29,7 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          ${{ github.event.pull_request.title }}
+          [trigger] ${{ github.event.pull_request.title }}
           ${{ github.base_ref }} <= ${{ github.head_ref }}
           PR: https://github.com/Wheellog/Wheellog.Android/pull/${{github.event.number}}
         document: app/build/outputs/apk/debug/app-debug.apk
