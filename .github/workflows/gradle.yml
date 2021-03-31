@@ -4,8 +4,8 @@
 name: Gradle CI
 
 on:
-  repository_dispatch:
-    types: [create-pr]
+  push:
+  pull_request:
 
 jobs:
   gradle-build:
@@ -40,6 +40,9 @@ jobs:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
         
+  sendApk:
+    if: github.event_name == 'pull_request'            
+    needs: [gradle-build]
     - name: Send apk to telegram
       uses: appleboy/telegram-action@master
       with:
