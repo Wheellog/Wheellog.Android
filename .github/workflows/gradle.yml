@@ -6,6 +6,7 @@ name: Gradle CI
 on:
   push:
   pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
   gradle-build:
@@ -20,8 +21,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build
-      run: ./gradlew build
+    - name: Test
+      run: ./gradlew test
+
+    - name: Assemble
+      run: ./gradlew assembleDebug
 
     - name: Get APK
       uses: actions/upload-artifact@v2.2.2
@@ -36,7 +40,7 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          ${{ github.event.label.name }}
+          $${{github.event.title}}
           From ${{ github.head_ref }} to ${{ github.base_ref }}
           PR: https://github.com/Wheellog/Wheellog.Android/pull/${{github.event.number}}
         document: app/build/outputs/apk/debug/app-debug.apk
