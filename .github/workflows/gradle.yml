@@ -28,10 +28,7 @@ jobs:
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
-        
-    - uses: kceb/pull-request-url-action@v2
-      id: pr-url
-        
+
     - name: Send apk to telegram
       uses: appleboy/telegram-action@master
       if: github.event_name == 'pull_request'
@@ -40,5 +37,6 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
           The ${{ github.event_name }} event triggered second step.
-          PR: "${{ steps.pr-url.outputs.url }}"
+          Branch: ${{ github.base_ref }}
+          PR: https://github.com/Wheellog/Wheellog.Android/pull/${{github.event.number}}
         document: app/build/outputs/apk/debug/app-debug.apk
