@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
@@ -30,6 +29,9 @@ jobs:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
         
+    - uses: kceb/pull-request-url-action@v2
+      id: pr-url
+        
     - name: Send apk to telegram
       uses: appleboy/telegram-action@master
       if: github.event_name == 'pull_request'
@@ -38,9 +40,5 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
           The ${{ github.event_name }} event triggered second step.
-          show the github variable ref: ${{ github.ref }}
-          show the github variable commit: ${{ github.sha }}
-          show the github variable ref: {{ commit.ref }}
-          show the github variable commit: {{ commit.sha }}
-          Commit Message: ${{ github.event.head_commit.message }}
+          PR: "${{ steps.pr-url.outputs.url }}"
         document: app/build/outputs/apk/debug/app-debug.apk
