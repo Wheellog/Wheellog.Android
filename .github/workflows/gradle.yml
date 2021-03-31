@@ -43,7 +43,7 @@ jobs:
         
     - name: Extract branch name
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#})"
       id: extract_branch
         
     - name: Send apk to telegram
@@ -53,6 +53,10 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          The ${{ github.event_name }} event triggered final step. 
-          Branch ${GITHUB_REF##*/}
+          The ${{ github.event_name }} event triggered second step.
+          show the github variable ref: ${{ github.ref }}
+          show the github variable commit: ${{ github.sha }}
+          show the github variable ref: {{ commit.ref }}
+          show the github variable commit: {{ commit.sha }}
+          Commit Message: ${{ github.event.head_commit.message }}
         document: app/build/outputs/apk/debug/app-debug.apk
