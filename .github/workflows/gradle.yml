@@ -27,11 +27,8 @@ jobs:
     - name: Assemble
       run: ./gradlew assembleDebug
       
-    - name: Zip
-      run: ./gradlew zipApksForDebug
-      
     - name: Get APK
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.2
       with:
         name: app-debug
-        path: app/build/outputs/apk-zips/debug/apks.zip
+        path: app/build/outputs/apk/debug/app-debug.apk
