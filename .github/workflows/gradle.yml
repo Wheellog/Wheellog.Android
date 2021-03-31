@@ -4,7 +4,8 @@
 name: Gradle CI
 
 on:
-  pull_request:
+  repository_dispatch:
+    types: [create-pr]
 
 jobs:
   gradle-build:
@@ -45,6 +46,6 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
-          The ${{ github.event_name }} event triggered final step.
+          The ${{ github.event_name }} event triggered final step. ${{ github.ref }}
           Commit ${{ commit.ref }} ${{ github.event.head_commit.message }}
         document: app/build/outputs/apk/debug/app-debug.apk
