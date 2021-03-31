@@ -92,7 +92,8 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                             dialogIcon = icon
                             entries = arrayOf(getString(R.string.icon_connection),
                                     getString(R.string.icon_logging),
-                                    getString(R.string.icon_watch))
+                                    getString(R.string.icon_watch),
+                                    getString(R.string.icon_beep))
                             useSort = false
                             if (WheelLog.AppConfig.notifivationButtons == null) {
                                 setValues(listOf(getString(R.string.icon_connection),

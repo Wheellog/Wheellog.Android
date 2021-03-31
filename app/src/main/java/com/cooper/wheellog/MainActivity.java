@@ -263,6 +263,9 @@ public class MainActivity extends AppCompatActivity {
                     toggleWatch();
                     WheelLog.Notifications.update();
                     break;
+                case Constants.NOTIFICATION_BUTTON_BEEP:
+                    SomeUtil.playBeep(getApplicationContext());
+                    break;
             }
         }
     };
@@ -747,6 +750,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_BEEP);
         return intentFilter;
     }
 }
