@@ -85,6 +85,23 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                             setDefaultValue(WheelLog.AppConfig.viewBlocksString)
                             entries = context.resources.getTextArray(R.array.view_blocks_values)
                         },
+                        MultiSelectPreference(context).apply {
+                            key = getString(R.string.notification_buttons)
+                            title = getString(R.string.notification_buttons_title)
+                            dialogTitle = title
+                            dialogIcon = icon
+                            entries = arrayOf(getString(R.string.icon_connection),
+                                    getString(R.string.icon_logging),
+                                    getString(R.string.icon_watch),
+                                    getString(R.string.icon_beep),
+                                    getString(R.string.icon_light))
+                            useSort = false
+                            if (WheelLog.AppConfig.notifivationButtons == null) {
+                                setValues(listOf(getString(R.string.icon_connection),
+                                        getString(R.string.icon_logging),
+                                        getString(R.string.icon_watch)))
+                            }
+                        },
                         SeekBarPreference(context).apply {
                             key = getString(R.string.max_speed)
                             title = getString(R.string.max_speed_dial_title)

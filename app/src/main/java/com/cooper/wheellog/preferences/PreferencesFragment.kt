@@ -269,6 +269,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 checkAndRequestPermissions()
                 speedSettings.selectCustomBeep(this, mediaRequestCode)
             }
+            R.string.notification_buttons -> WheelLog.Notifications.update()
         }
         correctState(key)
     }

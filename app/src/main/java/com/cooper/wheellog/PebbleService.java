@@ -250,7 +250,7 @@ public class PebbleService extends Service {
         sendBroadcast(serviceStartedIntent);
         mHandler.post(mSendPebbleData);
 
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
+        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         Timber.d("PebbleConnectivity Started");
         return START_STICKY;
     }

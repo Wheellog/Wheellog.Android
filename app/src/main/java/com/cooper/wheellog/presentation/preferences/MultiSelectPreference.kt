@@ -19,6 +19,7 @@ class MultiSelectPreference(context: Context, attrs: AttributeSet?)
         val separator = ";"
     }
 
+    var useSort = true
     var entries = arrayOf<CharSequence>()
     private var values: LinkedHashSet<String> = LinkedHashSet()
 
