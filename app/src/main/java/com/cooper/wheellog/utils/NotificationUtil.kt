@@ -62,6 +62,9 @@ class NotificationUtil(private val context: Context) {
         notificationView.setViewVisibility(R.id.ib_beep,
                 if (buttonSettings.contains(context.getString(R.string.icon_beep))) View.VISIBLE
                 else View.GONE)
+        notificationView.setViewVisibility(R.id.ib_light,
+                if (buttonSettings.contains(context.getString(R.string.icon_light))) View.VISIBLE
+                else View.GONE)
         notificationView.setOnClickPendingIntent(R.id.ib_connection,
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_CONNECTION), 0))
         notificationView.setOnClickPendingIntent(R.id.ib_logging,
@@ -70,6 +73,8 @@ class NotificationUtil(private val context: Context) {
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_WATCH), 0))
         notificationView.setOnClickPendingIntent(R.id.ib_beep,
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_BEEP), 0))
+        notificationView.setOnClickPendingIntent(R.id.ib_light,
+                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_LIGHT), 0))
         val wd = WheelData.getInstance()
         val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
         notificationView.setImageViewResource(R.id.ib_connection,
@@ -96,6 +101,7 @@ class NotificationUtil(private val context: Context) {
                 else R.drawable.ic_action_watch_grey)
 
         notificationView.setImageViewResource(R.id.ib_beep, R.drawable.ic_horn_32_gray)
+        notificationView.setImageViewResource(R.id.ib_light, R.drawable.ic_sun_32_gray)
 
         return builder
                 .setSmallIcon(R.drawable.ic_stat_wheel)

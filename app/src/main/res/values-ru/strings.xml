@@ -315,4 +315,5 @@
     <string name="day_night_theme_night">Ночная тема</string>
     <string name="notifications_actions_text">Действия:</string>
     <string name="notification_buttons_title">Кнопки в уведомлениях</string>
+    <string name="icon_light">Фонарь</string>
 </resources>

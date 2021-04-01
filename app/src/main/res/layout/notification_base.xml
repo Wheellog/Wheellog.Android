@@ -94,6 +94,15 @@
             android:contentDescription="@string/icon_beep"
             app:srcCompat="@drawable/ic_horn_32_gray" />
 
+        <ImageButton
+            android:id="@+id/ib_light"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/icon_light"
+            app:srcCompat="@drawable/ic_sun_32_gray" />
+
     </LinearLayout>
 
 </RelativeLayout>

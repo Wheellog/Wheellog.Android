@@ -266,6 +266,11 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.NOTIFICATION_BUTTON_BEEP:
                     SomeUtil.playBeep(getApplicationContext());
                     break;
+                case Constants.NOTIFICATION_BUTTON_LIGHT:
+                    Boolean lightEnabled = !WheelLog.AppConfig.getLightEnabled();
+                    WheelLog.AppConfig.setLightEnabled(lightEnabled);
+                    WheelData.getInstance().updateLight(lightEnabled);
+                    break;
             }
         }
     };
@@ -751,6 +756,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_BEEP);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LIGHT);
         return intentFilter;
     }
 }
