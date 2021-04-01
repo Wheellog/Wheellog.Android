@@ -75,6 +75,8 @@ class NotificationUtil(private val context: Context) {
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_BEEP), 0))
         notificationView.setOnClickPendingIntent(R.id.ib_light,
                 PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_LIGHT), 0))
+        notificationView.setOnClickPendingIntent(R.id.ib_mi_band,
+                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_MIBAND), 0))
         val wd = WheelData.getInstance()
         val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
         notificationView.setImageViewResource(R.id.ib_connection,
@@ -102,15 +104,34 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_beep, R.drawable.ic_horn_32_gray)
         notificationView.setImageViewResource(R.id.ib_light, R.drawable.ic_sun_32_gray)
+        notificationView.setImageViewResource(R.id.ib_mi_band,
+                when (WheelLog.AppConfig.mibandMode) {
+                    MiBandEnum.Alarm -> R.drawable.ic_mi_alarm
+                    MiBandEnum.Min -> R.drawable.ic_mi_min
+                    MiBandEnum.Medium -> R.drawable.ic_mi_med
+                    MiBandEnum.Max -> R.drawable.ic_mi_max
+                })
 
-        return builder
-                .setSmallIcon(R.drawable.ic_stat_wheel)
+        builder.setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
+
+        val titlenot = title
+        when (WheelLog.AppConfig.mibandMode) {
+            MiBandEnum.Alarm -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
+            MiBandEnum.Min -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_min, speed, wd.batteryLevel, wd.distanceDouble))
+            MiBandEnum.Medium -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.batteryLevel, wd.temperature, wd.distanceDouble))
+            MiBandEnum.Max -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeed.toDouble(), wd.maxPwm, wd.batteryLevel, wd.powerDouble, wd.temperature, wd.distanceDouble))
+        }
+
+        return builder.build()
     }
 
     fun update() {
