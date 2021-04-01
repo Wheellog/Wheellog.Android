@@ -194,12 +194,11 @@ public class LoggingService extends Service
             try {
                 Timber.wtf("Uploading %s to electro.club", fileUtil.fileName);
                 byte[] data = fileUtil.readBytes();
-                String finalPath = path;
                 ElectroClub.getInstance().uploadTrack(data, fileUtil.fileName, true, success -> {
                     if (!success) {
                         Timber.wtf("Upload failed...");
                     }
-                    RealyDestroy(finalPath);
+                    RealyDestroy(null);
                     return null;
                 });
             } catch (IOException e) {
@@ -215,18 +214,21 @@ public class LoggingService extends Service
     }
 
     private void RealyDestroy(String path) {
+        Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         if (!isNullOrEmpty(path)) {
-            Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
-            serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-            sendBroadcast(serviceIntent);
+        }
+        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+        sendBroadcast(serviceIntent);
+
+        try {
+            unregisterReceiver(mBluetoothUpdateReceiver);
+            if (mLocationManager != null && logLocationData)
+                mLocationManager.removeUpdates(locationListener);
+        } catch (Exception ignored) {
         }
 
         instance = null;
-
-        unregisterReceiver(mBluetoothUpdateReceiver);
-        if (mLocationManager != null && logLocationData)
-            mLocationManager.removeUpdates(locationListener);
         Timber.wtf("DataLogger Stopped");
     }
 
