@@ -186,26 +186,35 @@ public class LoggingService extends Service
             fileUtil.close();
         }
 
+        Timber.wtf("DataLogger Stopping...");
+
         // electro.club upload
         if (fileUtil != null && !fileUtil.fileName.equals("") && WheelLog.AppConfig.getAutoUploadEc()) {
             isBusy = true;
             try {
                 Timber.wtf("Uploading %s to electro.club", fileUtil.fileName);
                 byte[] data = fileUtil.readBytes();
+                String finalPath = path;
                 ElectroClub.getInstance().uploadTrack(data, fileUtil.fileName, true, success -> {
                     if (!success) {
                         Timber.wtf("Upload failed...");
                     }
-                    instance = null;
+                    RealyDestroy(finalPath);
                     return null;
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 Timber.wtf("Error upload log to electro.club: %s", e.toString());
-                instance = null;
+                RealyDestroy(path);
             }
         }
 
+        if (!isBusy) {
+            RealyDestroy(path);
+        }
+    }
+
+    private void RealyDestroy(String path) {
         if (!isNullOrEmpty(path)) {
             Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
@@ -213,13 +222,12 @@ public class LoggingService extends Service
             sendBroadcast(serviceIntent);
         }
 
-        if (!isBusy) {
-            instance = null;
-        }
+        instance = null;
+
         unregisterReceiver(mBluetoothUpdateReceiver);
         if (mLocationManager != null && logLocationData)
             mLocationManager.removeUpdates(locationListener);
-        Timber.i("DataLogger Stopped");
+        Timber.wtf("DataLogger Stopped");
     }
 
     /* Checks if external storage is available for read and write */
