@@ -511,10 +511,10 @@
     <string name="start_miband_alert">Start MiBand Alert</string>
     <string name="maxcurrent">Max Current</string>
     <string name="maxpower">Max Power</string>
-    <string name="notification_text_min">Spd: %1$.0f k/h\nBatt: %2$d\n %%\nDist: %3$.1f km</string>
-    <string name="notification_text_med">Spd: %1$.0f k/h\nAvg: %2$.0f\n k/h\nBat.: %3$d %%\nTemp: %4$d°C\nDist: %5$.1f km</string>
-    <string name="notification_text_max">Spd: %1$.0f k/h\nMax: %2$.0f\n k/h\nPWM: %3$.0f %%\nBatt.: %4$d %%\nOut: %5$.0f W\nTemp: %6$d°C\nDist: %7$.1f km</string>
-    <string name="notification_text_alarm">Spd: %1$.0f k/h\nCurr.: %2$.1f A\nVolt.: %3$.2f\n V\mBatt.: %4$d %%\nTemp: %5$d°C</string>
+    <string name="notification_text_min">Spd: %1$.0f\nBatt: %2$d\n %%\nDist: %3$.1f</string>
+    <string name="notification_text_med">Spd: %1$.0f\nAvg: %2$.0f\n\nBat.: %3$d %%\nTemp: %4$d°C\nDist: %5$.1f km</string>
+    <string name="notification_text_max">Spd: %1$.0f\nMax: %2$.0f\n\nPWM: %3$.0f %%\nBatt.: %4$d %%\nOut: %5$.0f W\nTemp: %6$d°C\nDist: %7$.1f km</string>
+    <string name="notification_text_alarm">Spd: %1$.0f\nCurr.: %2$.1f A\nVolt.: %3$.2f V\nBatt.: %4$d %%\nTemp: %5$d°C</string>
     <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
     <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
     <string name="titlealarm">Alarm Triggered!</string>

@@ -128,7 +128,7 @@ class NotificationUtil(private val context: Context) {
             MiBandEnum.Medium -> builder.setContentTitle(titlenot)
                     .setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.batteryLevel, wd.temperature, wd.distanceDouble))
             MiBandEnum.Max -> builder.setContentTitle(titlenot)
-                    .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeed.toDouble(), wd.maxPwm, wd.batteryLevel, wd.powerDouble, wd.temperature, wd.distanceDouble))
+                    .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.maxPwm, wd.batteryLevel, wd.powerDouble, wd.temperature, wd.distanceDouble))
         }
 
         return builder.build()
