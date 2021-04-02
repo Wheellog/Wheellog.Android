@@ -25,7 +25,7 @@ jobs:
       run: ./gradlew test
 
     - name: Assemble
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug -Dec_accessToken="${{ secrets.EC_TOKEN }}"
 
     - name: Get APK
       uses: actions/upload-artifact@v2.2.2
