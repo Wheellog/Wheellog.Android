@@ -508,6 +508,7 @@
     <string name="notification_buttons" translatable="false">notification_buttons</string>
     <string name="notification_buttons_title">Notification buttons</string>
     <string name="icon_light">Light icon</string>
+    <string name="icon_miband">Mi Band icon</string>
     <string name="start_miband_alert">Start MiBand Alert</string>
     <string name="maxcurrent">Max Current</string>
     <string name="maxpower">Max Power</string>
@@ -527,4 +528,5 @@
     <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
     <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
+    <string name="notification_buttons_description">Buttons in the notification bar</string>
 </resources>

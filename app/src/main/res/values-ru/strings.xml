@@ -316,6 +316,7 @@
     <string name="notifications_actions_text">Действия:</string>
     <string name="notification_buttons_title">Кнопки в уведомлениях</string>
     <string name="icon_light">Фонарь</string>
+    <string name="icon_miband">Mi Band</string>
     <string name="start_miband_alert">Запустить оповещения MiBand</string>
     <string name="show_settings">Показать меню настроек</string>
     <string name="maxcurrent">Макс. ток</string>
@@ -334,4 +335,5 @@
     <string name="alarm_text_speed_v">Превышение скорости: %1$.0f k/h</string>
     <string name="alarm_text_current_v">Превышение тока: %1$.0f A</string>
     <string name="alarm_text_temperature_v">Превышение температуры: %1$d°C</string>
+    <string name="notification_buttons_description">Кнопки в панели уведомлений</string>
 </resources>

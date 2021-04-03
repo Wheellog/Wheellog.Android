@@ -88,13 +88,16 @@ class SpeedSettings(context: Context) : BaseSettingsClass(context) {
                         MultiSelectPreference(context).apply {
                             key = getString(R.string.notification_buttons)
                             title = getString(R.string.notification_buttons_title)
+                            summary = getString(R.string.notification_buttons_description)
+                            icon = getDrawable(R.drawable.ic_notification)
                             dialogTitle = title
                             dialogIcon = icon
                             entries = arrayOf(getString(R.string.icon_connection),
                                     getString(R.string.icon_logging),
                                     getString(R.string.icon_watch),
                                     getString(R.string.icon_beep),
-                                    getString(R.string.icon_light))
+                                    getString(R.string.icon_light),
+                                    getString(R.string.icon_miband))
                             useSort = false
                             if (WheelLog.AppConfig.notifivationButtons == null) {
                                 setValues(listOf(getString(R.string.icon_connection),

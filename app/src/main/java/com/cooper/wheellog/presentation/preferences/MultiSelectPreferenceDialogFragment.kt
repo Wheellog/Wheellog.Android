@@ -79,12 +79,18 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
             return scrollView
         }
         useSort = p.useSort
-        p.getValueArray().forEach { e ->
-            addCheckbox(context, e, true)
-        }
-        p.entries?.forEach { e ->
-            if (!p.getValueArray().contains(e)) {
-                addCheckbox(context, e)
+        if (useSort) {
+            p.getValueArray().forEach { e ->
+                addCheckbox(context, e, true)
+            }
+            p.entries.forEach { e ->
+                if (!p.getValueArray().contains(e)) {
+                    addCheckbox(context, e)
+                }
+            }
+        } else {
+            p.entries.forEach { e ->
+                addCheckbox(context, e, isChecked = p.getValueArray().contains(e))
             }
         }
         return scrollView
