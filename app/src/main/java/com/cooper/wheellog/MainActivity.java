@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             toggleLoggingService();
         } else {
-            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithCheck(this);
+            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithPermissionCheck(this);
         }
     }
 
@@ -527,7 +527,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miSearch:
-                MainActivityPermissionsDispatcher.startScanActivityWithCheck(this);
+                MainActivityPermissionsDispatcher.startScanActivityWithPermissionCheck(this);
                 return true;
             case R.id.miWheel:
                 toggleConnectToWheel();
