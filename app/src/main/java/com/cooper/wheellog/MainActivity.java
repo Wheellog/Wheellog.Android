@@ -453,6 +453,9 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter());
         WheelLog.Notifications.update();
+        if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+            WheelLog.VolumeKeyController.setActive(true);
+        }
     }
 
     @Override
@@ -547,20 +550,6 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_UP:
-            case KeyEvent.KEYCODE_CAMERA:
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    SomeUtil.playBeep(getApplicationContext());
-                    return true;
-                }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
