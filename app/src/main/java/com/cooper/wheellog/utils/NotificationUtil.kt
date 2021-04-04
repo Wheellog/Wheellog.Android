@@ -47,34 +47,24 @@ class NotificationUtil(private val context: Context) {
                 ?: arrayOf(context.getString(R.string.icon_connection),
                         context.getString(R.string.icon_logging),
                         context.getString(R.string.icon_watch))
+
         notificationView.setViewVisibility(R.id.ib_actions_layout,
                 if (buttonsSettingsString != "") View.VISIBLE
                 else View.GONE)
-        notificationView.setViewVisibility(R.id.ib_connection,
-                if (buttonSettings.contains(context.getString(R.string.icon_connection))) View.VISIBLE
-                else View.GONE)
-        notificationView.setViewVisibility(R.id.ib_logging,
-                if (buttonSettings.contains(context.getString(R.string.icon_logging))) View.VISIBLE
-                else View.GONE)
-        notificationView.setViewVisibility(R.id.ib_watch,
-                if (buttonSettings.contains(context.getString(R.string.icon_watch))) View.VISIBLE
-                else View.GONE)
-        notificationView.setViewVisibility(R.id.ib_beep,
-                if (buttonSettings.contains(context.getString(R.string.icon_beep))) View.VISIBLE
-                else View.GONE)
-        notificationView.setViewVisibility(R.id.ib_light,
-                if (buttonSettings.contains(context.getString(R.string.icon_light))) View.VISIBLE
-                else View.GONE)
-        notificationView.setOnClickPendingIntent(R.id.ib_connection,
-                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_CONNECTION), 0))
-        notificationView.setOnClickPendingIntent(R.id.ib_logging,
-                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_LOGGING), 0))
-        notificationView.setOnClickPendingIntent(R.id.ib_watch,
-                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_WATCH), 0))
-        notificationView.setOnClickPendingIntent(R.id.ib_beep,
-                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_BEEP), 0))
-        notificationView.setOnClickPendingIntent(R.id.ib_light,
-                PendingIntent.getBroadcast(context, 0, Intent(Constants.NOTIFICATION_BUTTON_LIGHT), 0))
+
+        arrayOf(Triple(R.id.ib_connection, R.string.icon_connection, Constants.NOTIFICATION_BUTTON_CONNECTION),
+                Triple(R.id.ib_logging, R.string.icon_logging, Constants.NOTIFICATION_BUTTON_LOGGING),
+                Triple(R.id.ib_watch, R.string.icon_watch, Constants.NOTIFICATION_BUTTON_WATCH),
+                Triple(R.id.ib_beep, R.string.icon_beep, Constants.NOTIFICATION_BUTTON_BEEP),
+                Triple(R.id.ib_light, R.string.icon_light, Constants.NOTIFICATION_BUTTON_LIGHT),
+                Triple(R.id.ib_mi_band, R.string.icon_miband, Constants.NOTIFICATION_BUTTON_MIBAND)
+        ).forEach {
+            notificationView.setViewVisibility(it.first,
+                    if (buttonSettings.contains(context.getString(it.second))) View.VISIBLE
+                    else View.GONE)
+            notificationView.setOnClickPendingIntent(it.first,
+                    PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
+        }
         val wd = WheelData.getInstance()
         val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
         notificationView.setImageViewResource(R.id.ib_connection,
@@ -102,15 +92,34 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_beep, R.drawable.ic_horn_32_gray)
         notificationView.setImageViewResource(R.id.ib_light, R.drawable.ic_sun_32_gray)
+        notificationView.setImageViewResource(R.id.ib_mi_band,
+                when (WheelLog.AppConfig.mibandMode) {
+                    MiBandEnum.Alarm -> R.drawable.ic_mi_alarm
+                    MiBandEnum.Min -> R.drawable.ic_mi_min
+                    MiBandEnum.Medium -> R.drawable.ic_mi_med
+                    MiBandEnum.Max -> R.drawable.ic_mi_max
+                })
 
-        return builder
-                .setSmallIcon(R.drawable.ic_stat_wheel)
+        builder.setSmallIcon(R.drawable.ic_stat_wheel)
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
+
+        val titlenot = title
+        when (WheelLog.AppConfig.mibandMode) {
+            MiBandEnum.Alarm -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
+            MiBandEnum.Min -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_min, speed, wd.batteryLevel, wd.distanceDouble))
+            MiBandEnum.Medium -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.batteryLevel, wd.temperature, wd.distanceDouble))
+            MiBandEnum.Max -> builder.setContentTitle(titlenot)
+                    .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.maxPwm, wd.batteryLevel, wd.powerDouble, wd.temperature, wd.distanceDouble))
+        }
+
+        return builder.build()
     }
 
     fun update() {

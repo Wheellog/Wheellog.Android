@@ -316,4 +316,24 @@
     <string name="notifications_actions_text">Действия:</string>
     <string name="notification_buttons_title">Кнопки в уведомлениях</string>
     <string name="icon_light">Фонарь</string>
+    <string name="icon_miband">Mi Band</string>
+    <string name="start_miband_alert">Запустить оповещения MiBand</string>
+    <string name="show_settings">Показать меню настроек</string>
+    <string name="maxcurrent">Макс. ток</string>
+    <string name="maxpower">Макс. мощность</string>
+    <string name="notification_text_min">Едет: %1$.0f\nАкк.: %2$d %%\nДист.: %3$.1f км</string>
+    <string name="notification_text_med">Едет: %1$.0f\nСред.: %2$.0f\nАкк.: %3$d %%\nТемп: %4$d°C\nДист. %5$.1f км</string>
+    <string name="notification_text_max">Едет: %1$.0f\nМакс.: %2$.0f\nPWM: %3$.0f %%\nАкк.: %4$d %%\nМощн.: %5$.0f W\nТемп.: %6$d°C\nДист.: %7$.1f км</string>
+    <string name="notification_text_alarm">Едет: %1$.0f\nТок: %2$.1f A\nНапр.: %3$.2f В\nАкк.: %4$d %%\nТемп: %5$d°C</string>
+    <string name="notification_text_alarm_not">Данные аларма: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
+    <string name="titlealarm">Сработал аларм!</string>
+    <string name="titlealarm_text">Режим алармов</string>
+    <string name="alarmmiband">Алармы на MiBand</string>
+    <string name="minmiband">Минимум информации на MiBand</string>
+    <string name="medmiband">Среднее к-во информации на MiBand</string>
+    <string name="maxmiband">Максимум информации на MiBand</string>
+    <string name="alarm_text_speed_v">Превышение скорости: %1$.0f k/h</string>
+    <string name="alarm_text_current_v">Превышение тока: %1$.0f A</string>
+    <string name="alarm_text_temperature_v">Превышение температуры: %1$d°C</string>
+    <string name="notification_buttons_description">Кнопки в панели уведомлений</string>
 </resources>

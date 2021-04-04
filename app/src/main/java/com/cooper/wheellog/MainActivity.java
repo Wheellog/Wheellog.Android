@@ -271,6 +271,9 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.AppConfig.setLightEnabled(lightEnabled);
                     WheelData.getInstance().updateLight(lightEnabled);
                     break;
+                case Constants.NOTIFICATION_BUTTON_MIBAND:
+                    toggleSwitchMiBand();
+                    break;
             }
         }
     };
@@ -654,6 +657,28 @@ public class MainActivity extends AppCompatActivity {
             ContextCompat.startForegroundService(this, garminConnectIQIntent);
     }
 
+    private void toggleSwitchMiBand() {
+        MiBandEnum buttonMiBand = WheelLog.AppConfig.getMibandMode().next();
+        WheelLog.AppConfig.setMibandMode(buttonMiBand);
+        WheelLog.Notifications.update();
+
+        switch (buttonMiBand) {
+            case Alarm:
+                showSnackBar(R.string.alarmmiband);
+                break;
+            case Min:
+                showSnackBar(R.string.minmiband);
+                break;
+            case Medium:
+                showSnackBar(R.string.medmiband);
+                break;
+            case Max:
+                showSnackBar(R.string.maxmiband);
+                break;
+        }
+        setMenuIconStates();
+    }
+
     private void startBluetoothService() {
         Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothLeService.class);
         bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE);
@@ -746,6 +771,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_BEEP);
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LIGHT);
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_MIBAND);
         return intentFilter;
     }
 }
