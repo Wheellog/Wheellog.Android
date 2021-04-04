@@ -270,6 +270,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 speedSettings.selectCustomBeep(this, mediaRequestCode)
             }
             R.string.notification_buttons -> WheelLog.Notifications.update()
+            R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(WheelLog.AppConfig.useBeepOnVolumeUp)
         }
         correctState(key)
     }

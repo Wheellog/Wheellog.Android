@@ -455,7 +455,7 @@
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
     <string name="beep_on_volume_up_title">Beep on volume keys</string>
-    <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
+    <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in phone.</string>
     <string name="beep_by_wheel_description">Beep by build-in wheel horn</string>
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
