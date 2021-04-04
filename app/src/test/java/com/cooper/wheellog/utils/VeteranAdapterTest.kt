@@ -136,7 +136,7 @@ class VeteranAdapterTest {
     }
 
     @Test
-    fun `decode veteran fail data`() {
+    fun `decode veteran with fail data`() {
         // Arrange.
         val byteArray1 = "dc5a5c2024dc02130a0a00001179005200450f47".hexToByteArray()
         val byteArray2 = "0e1000000af00af0041d000300000000dc5a5c20".hexToByteArray()
@@ -159,9 +159,7 @@ class VeteranAdapterTest {
         val byteArray19 = "02010f350e1000000af00af0041d000300000000".hexToByteArray()
         val byteArray20 = "dc5a5c202405022e0aa100001210005201f70f2b".hexToByteArray()
 
-        val byteArray21 = "dc5a5c202502200a9800001207005201cf0f350e1000000af00af0041d000300000000".hexToByteArray()
 
-/*
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
@@ -172,8 +170,7 @@ class VeteranAdapterTest {
         val result3 = adapter.decode(byteArray3)
         val result4 = adapter.decode(byteArray4)
         assertThat(result3).isFalse()
-        assertThat(result4).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(527)
+        assertThat(result4).isFalse()
 
         val result5 = adapter.decode(byteArray5)
         val result6 = adapter.decode(byteArray6)
@@ -196,48 +193,30 @@ class VeteranAdapterTest {
         val result11 = adapter.decode(byteArray11)
         val result12 = adapter.decode(byteArray12)
         assertThat(result11).isFalse()
-        assertThat(result12).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(488)
+        assertThat(result12).isFalse()
 
         val result13 = adapter.decode(byteArray13)
         val result14 = adapter.decode(byteArray14)
         assertThat(result13).isFalse()
-        assertThat(result14).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(528)
+        assertThat(result14).isFalse()
 
         val result15 = adapter.decode(byteArray15)
         val result16 = adapter.decode(byteArray16)
         assertThat(result15).isFalse()
-        assertThat(result16).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(528)
+        assertThat(result16).isFalse()
 
         val result17 = adapter.decode(byteArray17)
         val result18 = adapter.decode(byteArray18)
         assertThat(result17).isFalse()
         assertThat(result18).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(528)
+        assertThat(abs(data.speed)).isEqualTo(549)
 
         val result19 = adapter.decode(byteArray19)
         val result20 = adapter.decode(byteArray20)
-        assertThat(result19).isFalse()
-        assertThat(result20).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(528)
-*/
-        val result21 = adapter.decode(byteArray21)
-        assertThat(result21).isTrue()
-        assertThat(abs(data.speed)).isEqualTo(528)
-        // Assert.
+        assertThat(result19).isTrue()
+        assertThat(result20).isFalse()
+        assertThat(abs(data.speed)).isEqualTo(550)
 
-        //assertThat(result1).isFalse()
-        //assertThat(result2).isTrue()
-        //assertThat(abs(data.speed)).isEqualTo(274)
-        //assertThat(data.temperature).isEqualTo(45)
-        //assertThat(data.voltageDouble).isEqualTo(90.98)
-        //assertThat(data.phaseCurrentDouble).isEqualTo(160.6)
-        //assertThat(data.wheelDistanceDouble).isEqualTo(4.634)
-        //assertThat(data.totalDistance).isEqualTo(347461)
-        //assertThat(data.batteryLevel).isEqualTo(60)
-        //assertThat(data.version).isEqualTo("4.27 (1051)")
     }
 
 
