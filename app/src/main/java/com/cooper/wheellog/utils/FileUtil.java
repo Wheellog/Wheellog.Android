@@ -183,12 +183,17 @@ public class FileUtil {
             }
             for (File wheelDir: filesArray) {
                 if (wheelDir.isDirectory()) {
-                    File[] wheelFiles = dir.listFiles();
+                    File[] wheelFiles = wheelDir.listFiles();
                     if (wheelFiles == null) {
-                        return trips;
+                        continue;
                     }
                     for (File f: wheelFiles) {
-                        if (!f.getName().startsWith("RAW")) {
+                        int indexExt = f.getAbsolutePath().lastIndexOf(".");
+                        if (f.isDirectory() || indexExt < 1) {
+                            continue;
+                        }
+                        String extension = f.getAbsolutePath().substring(indexExt);
+                        if (extension.equals(".csv") && !f.getName().startsWith("RAW")) {
                             trips.add(new Trip(f.getName(), sizeTokb(f.length()), f.getAbsolutePath()));
                         }
                     }
