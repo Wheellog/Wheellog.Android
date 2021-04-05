@@ -166,9 +166,15 @@ public class VeteranAdapter extends BaseAdapter {
 
                 case collecting:
 
-                    buffer.write(c);
                     int bsize = buffer.size();
-                    if (buffer.size() == len+4) {
+                    if (((bsize == 22 || bsize == 30 || bsize > 32) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) || ((bsize == 31) && ((c & 0xFC) != 0x00))) {
+                        state = UnpackerState.done;
+                        Timber.i("Data verification failed");
+                        reset();
+                        return false;
+                    }
+                    buffer.write(c);
+                    if (bsize == len+3) {
                         state = UnpackerState.done;
                         Timber.i("Len %d", len);
                         Timber.i("Step reset");
