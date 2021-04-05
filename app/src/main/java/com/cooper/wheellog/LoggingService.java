@@ -186,6 +186,8 @@ public class LoggingService extends Service
             fileUtil.close();
         }
 
+        Timber.wtf("DataLogger Stopping...");
+
         // electro.club upload
         if (fileUtil != null && !fileUtil.fileName.equals("") && WheelLog.AppConfig.getAutoUploadEc()) {
             isBusy = true;
@@ -196,30 +198,38 @@ public class LoggingService extends Service
                     if (!success) {
                         Timber.wtf("Upload failed...");
                     }
-                    instance = null;
+                    RealyDestroy(null);
                     return null;
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 Timber.wtf("Error upload log to electro.club: %s", e.toString());
-                instance = null;
+                RealyDestroy(path);
             }
         }
 
+        if (!isBusy) {
+            RealyDestroy(path);
+        }
+    }
+
+    private void RealyDestroy(String path) {
+        Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         if (!isNullOrEmpty(path)) {
-            Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
-            serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-            sendBroadcast(serviceIntent);
+        }
+        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+        sendBroadcast(serviceIntent);
+
+        try {
+            unregisterReceiver(mBluetoothUpdateReceiver);
+            if (mLocationManager != null && logLocationData)
+                mLocationManager.removeUpdates(locationListener);
+        } catch (Exception ignored) {
         }
 
-        if (!isBusy) {
-            instance = null;
-        }
-        unregisterReceiver(mBluetoothUpdateReceiver);
-        if (mLocationManager != null && logLocationData)
-            mLocationManager.removeUpdates(locationListener);
-        Timber.i("DataLogger Stopped");
+        instance = null;
+        Timber.wtf("DataLogger Stopped");
     }
 
     /* Checks if external storage is available for read and write */

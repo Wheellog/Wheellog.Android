@@ -209,6 +209,7 @@
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
+    <string name="icon_beep">Horn Icon</string>
     <string name="connection_lost_at">Connection lost at %1s</string>
     <string name="enable_auto_upload_title">Enable Auto Upload?</string>
     <string name="enable_auto_upload_descriprion">Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.</string>
@@ -454,7 +455,7 @@
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
     <string name="beep_on_volume_up_title">Beep on volume keys</string>
-    <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in WheelLog.</string>
+    <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in phone.</string>
     <string name="beep_by_wheel_description">Beep by build-in wheel horn</string>
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
@@ -503,4 +504,29 @@
     <string name="day_night_theme_as_system">Use phone settings</string>
     <string name="day_night_theme_day">Day theme</string>
     <string name="day_night_theme_night">Night theme</string>
+    <string name="notifications_actions_text">Actions:</string>
+    <string name="notification_buttons" translatable="false">notification_buttons</string>
+    <string name="notification_buttons_title">Notification buttons</string>
+    <string name="icon_light">Light icon</string>
+    <string name="icon_miband">Mi Band icon</string>
+    <string name="start_miband_alert">Start MiBand Alert</string>
+    <string name="maxcurrent">Max Current</string>
+    <string name="maxpower">Max Power</string>
+    <string name="notification_text_min">Spd: %1$.0f\nBatt: %2$d\n %%\nDist: %3$.1f</string>
+    <string name="notification_text_med">Spd: %1$.0f\nAvg: %2$.0f\n\nBat.: %3$d %%\nTemp: %4$d°C\nDist: %5$.1f km</string>
+    <string name="notification_text_max">Spd: %1$.0f\nMax: %2$.0f\n\nPWM: %3$.0f %%\nBatt.: %4$d %%\nOut: %5$.0f W\nTemp: %6$d°C\nDist: %7$.1f km</string>
+    <string name="notification_text_alarm">Spd: %1$.0f\nCurr.: %2$.1f A\nVolt.: %3$.2f V\nBatt.: %4$d %%\nTemp: %5$d°C</string>
+    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
+    <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
+    <string name="titlealarm">Alarm Triggered!</string>
+    <string name="titlealarm_text">Alarm Mode</string>
+    <string name="alarmmiband">Alarm Mode Mi Band</string>
+    <string name="minmiband">Minimal Mode Mi Band</string>
+    <string name="medmiband">Medium Mode Mi Band</string>
+    <string name="maxmiband">Maximum Mode Mi Band</string>
+    <string name="alarm_text_speed_v">Speed alarm at %1$.0f k/h</string>
+    <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
+    <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
+    <string name="miband_mode" translatable="false">miband_mode</string>
+    <string name="notification_buttons_description">Buttons in the notification bar</string>
 </resources>

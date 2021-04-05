@@ -124,7 +124,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         mMyApp = new IQApp(APP_ID);
         mConnectIQ = ConnectIQ.getInstance(this, IQConnectType.WIRELESS);
         mConnectIQ.initialize(this, true, this);
-        startForeground(Constants.MAIN_NOTIFICATION_ID, NotificationUtil.getNotification());
+        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         return START_STICKY;
     }
 

@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
+import com.cooper.wheellog.utils.MiBandEnum
 import com.cooper.wheellog.utils.ThemeEnum
 
 class AppConfig(var context: Context) {
@@ -61,6 +62,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.view_blocks_string, null)
         set(value) = setValue(R.string.view_blocks_string, value)
 
+    var notifivationButtons: String?
+        get() = getValue(R.string.notification_buttons, null)
+        set(value) = setValue(R.string.notification_buttons, value)
+
     var maxSpeed: Int
         get() = getValue(R.string.max_speed, 50)
         set(value) = setValue(R.string.max_speed, value)
@@ -112,6 +117,10 @@ class AppConfig(var context: Context) {
     var beepFile: Uri
         get() = Uri.parse(getValue(R.string.beep_file, ""))
         set(value) = setValue(R.string.beep_file, value.toString())
+
+    var mibandMode: MiBandEnum
+        get() = MiBandEnum.fromInt(getValue(R.string.miband_mode, MiBandEnum.Min.value))
+        set(value) = setValue(R.string.miband_mode, value.value)
 
     var privatePolicyAccepted: Boolean
         get() = getValue(R.string.private_policy_accepted, false)

@@ -40,9 +40,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
-        speedSettings = SpeedSettings(requireContext())
-        wheelSettings = WheelSettings(requireContext())
-        alarmSettings = AlarmSettings(requireContext())
+        speedSettings = SpeedSettings(requireContext(), preferenceScreen)
+        wheelSettings = WheelSettings(requireContext(), preferenceScreen)
+        alarmSettings = AlarmSettings(requireContext(), preferenceScreen)
         changeWheelType()
         checkAndRequestPermissions()
     }
@@ -269,6 +269,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 checkAndRequestPermissions()
                 speedSettings.selectCustomBeep(this, mediaRequestCode)
             }
+            R.string.notification_buttons -> WheelLog.Notifications.update()
+            R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(WheelLog.AppConfig.useBeepOnVolumeUp)
         }
         correctState(key)
     }
@@ -300,10 +302,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 val aboutButton: Preference? = findPreference(getString(R.string.about))
                 speedButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Speed
-                    preferenceScreen.removeAll()
-                    speedSettings.getPrefs(WheelData.getInstance().mac + "_").forEach {
-                        preferenceScreen.addPreference(it)
-                    }
+                    speedSettings.fill(WheelData.getInstance().mac + "_")
                     setupScreen()
                     true
                 }
@@ -316,10 +315,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 alarmButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Alarms
-                    preferenceScreen.removeAll()
-                    alarmSettings.getPrefs(WheelData.getInstance().mac + "_").forEach {
-                        preferenceScreen.addPreference(it)
-                    }
+                    alarmSettings.fill(WheelData.getInstance().mac + "_")
                     setupScreen()
                     true
                 }
@@ -332,10 +328,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 wheelButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Wheel
-                    preferenceScreen.removeAll()
-                    wheelSettings.getPrefs(WheelData.getInstance().mac + "_").forEach {
-                        preferenceScreen.addPreference(it)
-                    }
+                    wheelSettings.fill(WheelData.getInstance().mac + "_")
                     setupScreen()
                     true
                 }

@@ -1,40 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ib_actions_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="40dp"
+    android:layout_below="@+id/icon"
+    android:layout_marginTop="0dp"
+    android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/ib_watch"
+    <TextView
+        android:id="@+id/ib_actions_text"
+        android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:layout_alignParentEnd="true"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_watch_grey"
-        android:contentDescription="@string/icon_watch" />
-
-    <ImageButton
-        android:id="@+id/ib_logging"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:layout_toStartOf="@id/ib_watch"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_logging_grey"
-        android:contentDescription="@string/icon_logging" />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/notifications_actions_text" />
 
     <ImageButton
         android:id="@+id/ib_connection"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/ib_logging"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="0dp"
+        android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_action_wheel_grey"
-        android:contentDescription="@string/icon_connection" />
+        android:contentDescription="@string/icon_connection"
+        android:src="@drawable/ic_action_wheel_grey" />
 
-</RelativeLayout>
+    <ImageButton
+        android:id="@+id/ib_logging"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/icon_logging"
+        android:src="@drawable/ic_action_logging_grey" />
+
+    <ImageButton
+        android:id="@+id/ib_watch"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/icon_watch"
+        android:src="@drawable/ic_action_watch_grey" />
+
+    <ImageButton
+        android:id="@+id/ib_beep"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/icon_beep"
+        app:srcCompat="@drawable/ic_horn_32_gray" />
+
+    <ImageButton
+        android:id="@+id/ib_light"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/icon_light"
+        app:srcCompat="@drawable/ic_sun_32_gray" />
+
+    <ImageButton
+        android:id="@+id/ib_mi_band"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/icon_light"
+        app:srcCompat="@drawable/ic_mi_alarm" />
+
+</LinearLayout>

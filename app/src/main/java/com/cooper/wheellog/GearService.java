@@ -279,6 +279,7 @@ LocationListener locationListener = new LocationListener() {
         super.onStartCommand(intent, flags, startId);
         Toast.makeText(getBaseContext(), "Gear Service started", Toast.LENGTH_LONG).show();
         Log.i(TAG, "started");
+        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         return START_STICKY;
     }
 

@@ -20,6 +20,9 @@ public class Constants {
     public static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
     public static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
     public static final String NOTIFICATION_BUTTON_WATCH = "com.cooper.wheellog.notificationWatchButton";
+    public static final String NOTIFICATION_BUTTON_BEEP = "com.cooper.wheellog.notificationBeepButton";
+    public static final String NOTIFICATION_BUTTON_LIGHT = "com.cooper.wheellog.notificationLightButton";
+    public static final String NOTIFICATION_BUTTON_MIBAND = "com.cooper.wheellog.notificationMiBandButton";
 
     public static final String NOTIFICATION_CHANNEL_ID_NOTIFICATION = "com.cooper.wheellog.Channel_Notification";
 
