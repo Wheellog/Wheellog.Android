@@ -12,7 +12,7 @@ The following manufacturers are supported:
 ## Contributing
 
 ### 🛠️ Pull requests
-A pull request is a way to suggest changes in this repository. We accept pull requests in the `develop` branch
+A pull request is a way to suggest changes in this repository. We accept pull requests in the `master` branch
 
 ### 🌏 Translations
 This application is internationalized and available in multiple languages. The source content in this repository is written in English. We integrate with an external localization platform called [POEditor](https://poeditor.com/join/project?hash=KwdOGFTjt9).
