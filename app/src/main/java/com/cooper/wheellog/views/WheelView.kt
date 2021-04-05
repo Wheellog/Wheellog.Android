@@ -123,7 +123,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 ViewBlockInfo(resources.getString(R.string.distance))
                 {
                     if (useMph) {
-                        String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(mTopSpeed))
+                        String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(mDistance))
                     } else {
                         if (mDistance < 1) {
                             String.format(Locale.US, "%.0f " + resources.getString(R.string.metre), mDistance * 1000)
