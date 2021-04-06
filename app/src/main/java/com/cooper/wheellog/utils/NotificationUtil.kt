@@ -78,6 +78,7 @@ class NotificationUtil(private val context: Context) {
         val distance = wd.distanceDouble
         val speed = wd.speedDouble
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
+        notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
         val title = context.getString(notificationMessageId)
         if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
             notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text, speed, batteryLevel, temperature, distance))
