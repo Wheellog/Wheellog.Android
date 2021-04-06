@@ -80,7 +80,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         PreferenceCategory(context).apply {
-            title = getString(R.string.beep_category)
+            title = getString(R.string.main_view_category)
             ps.addPreference(this)
             MultiSelectPreference(context).apply {
                 key = getString(R.string.view_blocks_string)
