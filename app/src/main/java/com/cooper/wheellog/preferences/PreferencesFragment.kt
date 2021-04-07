@@ -234,35 +234,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.fan_quiet_enable -> wd.updateFanQuiet(WheelLog.AppConfig.fanQuietEnabled)
             R.string.fan_enabled -> wd.updateFanState(WheelLog.AppConfig.fanEnabled)
             R.string.light_brightness -> wd.updateLightBrightness(WheelLog.AppConfig.lightBrightness)
-            R.string.pedals_mode -> {
-                WheelData.getInstance().updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
-                //correctListState(key)
-            }
-            R.string.light_mode -> {
-                WheelData.getInstance().adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode)) //А в чем фишка, что здесь adapter?
-                //correctListState(key)
-            }
-            R.string.alarm_mode -> {
-                WheelData.getInstance().updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
-                //correctListState(key)
-            }
-            R.string.strobe_mode -> {
-                WheelData.getInstance().updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
-                //correctListState(key)
-            }
-            R.string.led_mode -> {
-                WheelData.getInstance().updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
-                //correctListState(key)
-            }
-            R.string.wheel_ks_alarm3 -> {
-                KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
-            }
-            R.string.wheel_ks_alarm2 -> {
-                KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
-            }
-            R.string.wheel_ks_alarm1 -> {
-                KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
-            }
+            R.string.pedals_mode -> wd.updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
+            R.string.light_mode -> wd.adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
+            R.string.alarm_mode -> wd.updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
+            R.string.strobe_mode -> wd.updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
+            R.string.led_mode -> wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
+            R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
+            R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
+            R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
             R.string.custom_beep -> {
