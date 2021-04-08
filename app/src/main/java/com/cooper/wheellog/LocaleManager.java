@@ -11,11 +11,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.N;
 
 public class LocaleManager {
-    public static final  String LANGUAGE_ENGLISH   = "en";
-
-    public LocaleManager(Context context) {
-
-    }
+    public static final  String LANGUAGE_ENGLISH = "en";
 
     public static Context setLocale(Context c) {
         Context a;
@@ -24,7 +20,6 @@ public class LocaleManager {
             a = updateResources(c, LANGUAGE_ENGLISH);
         }
         return a;
-//        return updateResources(c, LANGUAGE_ENGLISH);
     }
 
     private static Context updateResources(Context context, String language) {
