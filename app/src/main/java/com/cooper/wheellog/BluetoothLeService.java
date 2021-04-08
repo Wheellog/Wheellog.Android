@@ -48,8 +48,8 @@ public class BluetoothLeService extends Service {
     PowerManager mgr;
     PowerManager.WakeLock wl;
     FileUtil fileUtilRawData;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
-    SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
+    final SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
     private final String wakeLogTag = "WhellLog:WakeLockTag";
     private final IBinder mBinder = new LocalBinder();
 

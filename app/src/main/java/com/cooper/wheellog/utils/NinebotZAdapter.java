@@ -661,7 +661,7 @@ public class NinebotZAdapter extends BaseAdapter {
             KeyGenerator(0x16),
             App(0x3e);
 
-            private int value;
+            private final int value;
 
             Addr(int value) {
                 this.value = value;
@@ -678,7 +678,7 @@ public class NinebotZAdapter extends BaseAdapter {
             Get(0x04),
             GetKey(0x5b);
 
-            private int value;
+            private final int value;
 
             Comm(int value) {
                 this.value = value;
@@ -699,7 +699,7 @@ public class NinebotZAdapter extends BaseAdapter {
             ActivationDate(0x69),
             LiveData(0xb0);
 
-            private int value;
+            private final int value;
 
             Param(int value) {
                 this.value = value;
@@ -769,8 +769,7 @@ public class NinebotZAdapter extends BaseAdapter {
             crc = computeCheck(buff.toByteArray());
             buff.write(crc & 0xff);
             buff.write((crc >> 8) & 0xff);
-            byte[] cryptedBuffer = crypto(buff.toByteArray());
-            return cryptedBuffer;
+            return crypto(buff.toByteArray());
         }
 
         private static int computeCheck(byte[] buffer) {
@@ -960,11 +959,11 @@ public class NinebotZAdapter extends BaseAdapter {
 
         private byte[] parseKey() {
             byte[] gammaTemp = Arrays.copyOfRange(data, 0, data.length);
-            String gamma_text = "";
-            for (int j = 0; j < data.length; j++) {
-                gamma_text += String.format("%02X", data[j]);
+            StringBuilder gamma_text = new StringBuilder();
+            for (byte datum : data) {
+                gamma_text.append(String.format("%02X", datum));
             }
-            Timber.i("New key: %s", gamma_text);
+            Timber.i("New key: %s", gamma_text.toString());
             return gammaTemp;
         }
 
@@ -1001,7 +1000,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int voltage = MathsUtil.shortFromBytesLE(data, 24);
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
             int power = voltage * current;
-            String alert = "";
+            String alert;
             alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
             return new Status(speed, voltage, batt, current, power, distance, temperature, alert);
         }

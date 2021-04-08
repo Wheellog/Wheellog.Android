@@ -23,14 +23,14 @@ class CustomValueDialog {
 
     private final String TAG = getClass().getSimpleName();
 
-    private Dialog mDialog;
-    private EditText mCustomValueView;
+    private final Dialog mDialog;
+    private final EditText mCustomValueView;
     private OnValueChangeListener mOnValueChangeListener;
 
-    private int mMinValue;
-    private int mMaxValue;
-    private int mCurrentValue;
-    private int mDecimalPlaces;
+    private final int mMinValue;
+    private final int mMaxValue;
+    private final int mCurrentValue;
+    private final int mDecimalPlaces;
     /**
      * @param context      контекст текущей {@link Activity}
      * @param minValue     минимально допустимое значение

@@ -10,9 +10,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
-import kotlin.math.abs
 
 class GotwayVirtualAdapterTest {
 

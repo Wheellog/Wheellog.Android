@@ -11,6 +11,7 @@ abstract class BaseSettingsClass(var context: Context, var ps: PreferenceScreen)
         return context.resources.getString(id)
     }
 
+    @Suppress("DEPRECATION")
     fun getDrawable(id: Int): Drawable? {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             context.resources.getDrawable(id)

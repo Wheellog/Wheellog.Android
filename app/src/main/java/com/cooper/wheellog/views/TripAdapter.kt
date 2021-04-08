@@ -22,7 +22,7 @@ import java.io.InputStream
 
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
-    var uploadViewVisible: Int = View.VISIBLE
+    private  var uploadViewVisible: Int = View.VISIBLE
 
     init {
         uploadViewVisible = if (WheelLog.AppConfig.autoUploadEc) View.VISIBLE else View.GONE
@@ -43,10 +43,10 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
     }
 
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
-        var nameView: TextView = view.findViewById(R.id.name)
-        var descriptionView: TextView = view.findViewById(R.id.description)
-        var uploadView: ImageView = view.findViewById(R.id.uploadButton)
-        var shareView: ImageView = view.findViewById(R.id.shareButton)
+        private var nameView: TextView = view.findViewById(R.id.name)
+        private var descriptionView: TextView = view.findViewById(R.id.description)
+        private var uploadView: ImageView = view.findViewById(R.id.uploadButton)
+        private var shareView: ImageView = view.findViewById(R.id.shareButton)
 
         fun bind(trip: Trip, uploadViewVisible: Int) {
             nameView.text = trip.title

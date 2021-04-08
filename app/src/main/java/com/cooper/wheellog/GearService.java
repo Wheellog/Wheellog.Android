@@ -17,7 +17,6 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.NotificationUtil;
 import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.accessory.SA;
 import com.samsung.android.sdk.accessory.SAAgent;
@@ -26,7 +25,6 @@ import com.samsung.android.sdk.accessory.SASocket;
 
 import java.io.IOException;
 import java.util.AbstractCollection;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,7 +37,7 @@ public class GearService extends SAAgent {
     GearBinder mBinder = new GearBinder();
     public final static String TAG = "GearService";
     public final static int SAP_SERVICE_CHANNEL_ID = 142; //Same as in sapservices.xml on both sides
-    AbstractCollection<GearSAPServiceProviderConnection> mConnectionBag = new Vector<GearSAPServiceProviderConnection>();
+    AbstractCollection<GearSAPServiceProviderConnection> mConnectionBag = new Vector<>();
     LocationManager mLocationManager;
     boolean mIsListening = false;
     private Timer keepAliveTimer;
@@ -70,17 +68,15 @@ LocationListener locationListener = new LocationListener() {
         //In general this isn't how I would encode something in JSON, but the amount
         //of data is small enough such that I've decided to use String.Format to
         //produce what's needed.
-        final String returnValue =
-                format(Locale.ROOT,"\"gpsEnabled\" :%b,"+
-                                "\"hasSpeed\":%b, \"gpsSpeed\":%1.2f, \"hasBearing\":%b, \"bearing\":%1.4f,"+
-                                "\"latitude\":%f, \"longitude\":%f,\"hasAltitude\":%b, \"altitude\":%1.3f",
-                        bGpsEnabled,
-                        bHasSpeed, mSpeed,
-                        bHasBearing, mBearing,
-                        mLatitude, mLongitude,
-                        bHasAltitude, mAltitude
-                );
-        return returnValue;
+        return format(Locale.ROOT,"\"gpsEnabled\" :%b,"+
+                        "\"hasSpeed\":%b, \"gpsSpeed\":%1.2f, \"hasBearing\":%b, \"bearing\":%1.4f,"+
+                        "\"latitude\":%f, \"longitude\":%f,\"hasAltitude\":%b, \"altitude\":%1.3f",
+                bGpsEnabled,
+                bHasSpeed, mSpeed,
+                bHasBearing, mBearing,
+                mLatitude, mLongitude,
+                bHasAltitude, mAltitude
+        );
     }
     @Override
     public void onLocationChanged(Location location) {
@@ -117,12 +113,10 @@ LocationListener locationListener = new LocationListener() {
 
         Log.i(TAG, sendingString);
 
-        Iterator connectionIterator = mConnectionBag.iterator();
-        while(connectionIterator.hasNext()) {
-            GearSAPServiceProviderConnection connection = (GearSAPServiceProviderConnection)connectionIterator.next();
+        for (GearSAPServiceProviderConnection connection : mConnectionBag) {
             try {
                 connection.send(SAP_SERVICE_CHANNEL_ID, sendingMessage);
-            } catch(IOException exc) {
+            } catch (IOException exc) {
                 //
             }
         }

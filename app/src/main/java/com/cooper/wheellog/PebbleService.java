@@ -11,7 +11,6 @@ import android.os.IBinder;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
-import com.cooper.wheellog.utils.NotificationUtil;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -44,7 +43,7 @@ public class PebbleService extends Service {
     static final int KEY_CURRENT = 13;
     static final int KEY_PWM = 20;
     private Notification mNotification;
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     private static PebbleService instance = null;
     private long last_message_send_time;
     PebbleDictionary outgoingDictionary = new PebbleDictionary();
@@ -73,7 +72,7 @@ public class PebbleService extends Service {
         return instance != null;
     }
 
-    private Runnable mSendPebbleData = new Runnable() {
+    private final Runnable mSendPebbleData = new Runnable() {
         @Override
         public void run() {
 
@@ -272,7 +271,7 @@ public class PebbleService extends Service {
         Timber.i("PebbleConnectivity Stopped");
     }
 
-    private PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {
+    private final PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {
         @Override
         public void receiveAck(Context context, int transactionId) {
             outgoingDictionary = new PebbleDictionary();
@@ -283,7 +282,7 @@ public class PebbleService extends Service {
                 message_pending = false;}
     };
 
-    private PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {
+    private final PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {
         @Override
         public void receiveNack(Context context, int transactionId) {
             mHandler.post(mSendPebbleData);

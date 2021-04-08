@@ -329,7 +329,7 @@ public class InMotionAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelLog.AppConfig.getLightEnabled();;
+        boolean light = !WheelLog.AppConfig.getLightEnabled();
         WheelLog.AppConfig.setLightEnabled(light);
         setLightState(light);
     }
@@ -987,7 +987,7 @@ public class InMotionAdapter extends BaseAdapter {
             msg.id = IDValue.RideMode.getValue();
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
-            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) classic, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
+            msg.data = new byte[]{(byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00, classic, (byte) 0x00 , (byte) 0x00, (byte) 0x00};
 
             return msg;
         }
@@ -1079,7 +1079,7 @@ public class InMotionAdapter extends BaseAdapter {
             double roll = (double) (MathsUtil.intFromBytesLE(ex_data, 72)) / 90.0;
             double speed = ((double) (MathsUtil.intFromBytesLE(ex_data, 12)) + (double) (MathsUtil.intFromBytesLE(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
             speed = Math.abs(speed);
-            int voltage = (int)MathsUtil.intFromBytesLE(ex_data, 24);
+            int voltage = MathsUtil.intFromBytesLE(ex_data, 24);
             int current = (int)MathsUtil.signedIntFromBytesLE(ex_data, 20);
             int temperature = ex_data[32];
             int temperature2 = ex_data[34];
@@ -1102,33 +1102,33 @@ public class InMotionAdapter extends BaseAdapter {
             }
             distance = (MathsUtil.intFromBytesLE(ex_data, 48));
             int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60) & 0xF;
-            WorkMode workMode = intToWorkMode(workModeInt);
-            double lock = 0.0;
-            if (workMode == WorkMode.lock) {
-                lock = 1.0;
-            }
+//            WorkMode workMode = intToWorkMode(workModeInt);
+//            double lock = 0.0;
+//            if (workMode == WorkMode.lock) {
+//                lock = 1.0;
+//            }
             WheelData wd = WheelData.getInstance();
             wd.setAngle(angle);
             wd.setRoll(roll);
             wd.setSpeed((int)(speed * 360d));
-            wd.setVoltage((int)(voltage));
-            wd.setBatteryPercent((int)(batt));
-            wd.setCurrent((int)(current));
-            wd.setTotalDistance((long)(totalDistance));
-            wd.setWheelDistance((long)distance);
-            wd.setTemperature((int)(temperature*100));
-            wd.setTemperature2((int)(temperature2*100));
+            wd.setVoltage(voltage);
+            wd.setBatteryPercent(batt);
+            wd.setCurrent(current);
+            wd.setTotalDistance(totalDistance);
+            wd.setWheelDistance(distance);
+            wd.setTemperature(temperature*100);
+            wd.setTemperature2(temperature2*100);
             wd.setModeStr(getWorkModeString(workModeInt));
 
             return true;
         }
 
         boolean parseAlertInfoMessage() {
-            int alertId = (int) data[0];
-            double alertValue = (double) ((data[3] * 256) | (data[2] & 0xFF));
-            double alertValue2 = (double) ((data[7] * 256 * 256 * 256) | ((data[6] & 0xFF) * 256 * 256) | ((data[5] & 0xFF) * 256) | (data[4] & 0xFF));
+            int alertId = data[0];
+            double alertValue = (data[3] * 256) | (data[2] & 0xFF);
+            double alertValue2 = (data[7] * 256 * 256 * 256) | ((data[6] & 0xFF) * 256 * 256) | ((data[5] & 0xFF) * 256) | (data[4] & 0xFF);
             double a_speed = Math.abs((alertValue2 / 3812.0) * 3.6);
-            String fullText = "";
+            String fullText;
 
             StringBuilder hex = new StringBuilder("[");
             for (int c : data) {
@@ -1174,8 +1174,8 @@ public class InMotionAdapter extends BaseAdapter {
             int v1 = ex_data[26] & 0xFF;
             int v2 = ((ex_data[25] & 0xFF) * 256) | (ex_data[24] & 0xFF);
             String version = String.format(Locale.ENGLISH, "%d.%d.%d", v0, v1, v2);
-            String serialNumber = "";
-            int maxspeed = 0;
+            StringBuilder serialNumber = new StringBuilder();
+            int maxspeed;
             int speakervolume = 0;
             boolean light = ex_data[80] == 1;
             boolean led = false;
@@ -1201,11 +1201,11 @@ public class InMotionAdapter extends BaseAdapter {
             }
 
             for (int j = 0; j < 8; j++) {
-                serialNumber += String.format("%02X", ex_data[7 - j]);
+                serialNumber.append(String.format("%02X", ex_data[7 - j]));
             }
 
             WheelData wd = WheelData.getInstance();
-            wd.setSerial(serialNumber);
+            wd.setSerial(serialNumber.toString());
             wd.setModel(getModelString(lmodel));
             wd.setVersion(version);
 

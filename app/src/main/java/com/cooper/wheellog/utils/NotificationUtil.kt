@@ -105,18 +105,16 @@ class NotificationUtil(private val context: Context) {
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
-                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION).priority = NotificationCompat.PRIORITY_LOW
 
-        val titlenot = title
         when (WheelLog.AppConfig.mibandMode) {
-            MiBandEnum.Alarm -> builder.setContentTitle(titlenot)
+            MiBandEnum.Alarm -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
-            MiBandEnum.Min -> builder.setContentTitle(titlenot)
+            MiBandEnum.Min -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_min, speed, wd.batteryLevel, wd.distanceDouble))
-            MiBandEnum.Medium -> builder.setContentTitle(titlenot)
+            MiBandEnum.Medium -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.batteryLevel, wd.temperature, wd.distanceDouble))
-            MiBandEnum.Max -> builder.setContentTitle(titlenot)
+            MiBandEnum.Max -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.maxPwm, wd.batteryLevel, wd.powerDouble, wd.temperature, wd.distanceDouble))
         }
 

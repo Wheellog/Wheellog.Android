@@ -119,7 +119,7 @@ public class KingsongAdapter extends BaseAdapter {
                 }
                 wd.setModel(model.toString());
                 try {
-                    wd.setVersion(String.format(Locale.US, "%.2f", ((double) (Integer.parseInt(ss[ss.length - 1]) / 100.0))));
+                    wd.setVersion(String.format(Locale.US, "%.2f", Integer.parseInt(ss[ss.length - 1]) / 100.0));
                 } catch (Exception ignored) {
                 }
                 return false;

@@ -276,7 +276,7 @@ public class NinebotAdapter extends BaseAdapter {
             Get(0x04),
             GetKey(0x5b);
 
-            private int value;
+            private final int value;
 
             Comm(int value) {
                 this.value = value;
@@ -458,11 +458,11 @@ public class NinebotAdapter extends BaseAdapter {
         @Deprecated
         private byte[] parseKey() {
             byte [] gammaTemp = Arrays.copyOfRange(data, 0, data.length);
-            String gamma_text = "";
-            for (int j = 0; j < data.length; j++) {
-                gamma_text += String.format("%02X", data[j]);
+            StringBuilder gamma_text = new StringBuilder();
+            for (byte datum : data) {
+                gamma_text.append(String.format("%02X", datum));
             }
-            Timber.i("New key: %s", gamma_text);
+            Timber.i("New key: %s", gamma_text.toString());
             return gammaTemp;
         }
 

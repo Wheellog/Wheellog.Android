@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.view.*
@@ -14,6 +15,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
+import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
@@ -27,14 +29,14 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
-class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
+class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
 
-    private var xAxis_labels = ArrayList<String>()
+    private var xAxisLabels = ArrayList<String>()
 
     var wheelView: WheelView? = null
-    var chart1: LineChart? = null
+    private var chart1: LineChart? = null
     var position: Int = -1
-    var pagesView = LinkedHashMap<Int, View?>()
+    private var pagesView = LinkedHashMap<Int, View?>()
 
     private var listOfTrips: RecyclerView? = null
 
@@ -142,6 +144,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
         return ViewHolder(inflater.inflate(viewType, parent, false))
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val view = holder.itemView
         pagesView[pages[position]] = view
@@ -182,9 +185,9 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
                     setHardwareAccelerationEnabled(true)
                     isHighlightPerTapEnabled = false
                     isHighlightPerDragEnabled = false
-                    legend.textColor = view.resources.getColor(android.R.color.white)
-                    setNoDataText(view.resources.getString(R.string.no_chart_data))
-                    setNoDataTextColor(view.resources.getColor(android.R.color.white))
+                    legend.textColor = getColorEx(android.R.color.white)
+                    setNoDataText(resources.getString(R.string.no_chart_data))
+                    setNoDataTextColor(getColorEx(android.R.color.white))
                 }
 
                 val leftAxis: YAxis = chart1!!.axisLeft
@@ -193,12 +196,12 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
                 rightAxis.axisMinimum = 0f
                 leftAxis.setDrawGridLines(false)
                 rightAxis.setDrawGridLines(false)
-                leftAxis.textColor = view.resources.getColor(android.R.color.white)
-                rightAxis.textColor = view.resources.getColor(android.R.color.white)
+                leftAxis.textColor = view.getColorEx(android.R.color.white)
+                rightAxis.textColor = view.getColorEx(android.R.color.white)
 
                 val xAxis: XAxis = chart1!!.xAxis
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
-                xAxis.textColor = view.resources.getColor(android.R.color.white)
+                xAxis.textColor = view.getColorEx(android.R.color.white)
                 xAxis.valueFormatter = chartAxisValueFormatter
             }
             R.layout.main_view_events -> {
@@ -376,11 +379,11 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
                 if (!updateGraph || chart1 == null) {
                     return
                 }
-                xAxis_labels = WheelData.getInstance().xAxis
-                if (xAxis_labels.size > 0) {
+                xAxisLabels = WheelData.getInstance().xAxis
+                if (xAxisLabels.size > 0) {
                     val dataSetSpeed: LineDataSet
                     val dataSetCurrent: LineDataSet
-                    if (chart1?.data == null) {
+                    if (chart1!!.data == null) {
                         dataSetSpeed = LineDataSet(null, activity.getString(R.string.speed_axis))
                         dataSetCurrent = LineDataSet(null, activity.getString(R.string.current_axis))
                         dataSetSpeed.lineWidth = 2f
@@ -389,8 +392,8 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
                         dataSetCurrent.axisDependency = YAxis.AxisDependency.RIGHT
                         dataSetSpeed.mode = LineDataSet.Mode.CUBIC_BEZIER
                         dataSetCurrent.mode = LineDataSet.Mode.CUBIC_BEZIER
-                        dataSetSpeed.color = activity.resources.getColor(android.R.color.white)
-                        dataSetCurrent.color = activity.resources.getColor(R.color.accent)
+                        dataSetSpeed.color = chart1!!.getColorEx(android.R.color.white)
+                        dataSetCurrent.color = chart1!!.getColorEx(R.color.accent)
                         dataSetSpeed.setDrawCircles(false)
                         dataSetCurrent.setDrawCircles(false)
                         dataSetSpeed.setDrawValues(false)
@@ -578,7 +581,7 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
 
     private var chartAxisValueFormatter: IAxisValueFormatter = object : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            return if (value < xAxis_labels.size) xAxis_labels.get(value.toInt()) else ""
+            return if (value < xAxisLabels.size) xAxisLabels[value.toInt()] else ""
         }
 
         // we don't draw numbers, so no decimal digits needed
@@ -799,5 +802,5 @@ class MainPageAdapter(var pages: MutableList<Int>, val activity: MainActivity) :
         }
     }
 
-    class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {}
+    class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view)
 }

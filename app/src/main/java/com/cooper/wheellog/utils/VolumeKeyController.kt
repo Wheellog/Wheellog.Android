@@ -5,7 +5,6 @@ import android.media.AudioManager
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.VolumeProviderCompat
-import com.cooper.wheellog.WheelLog
 
 class VolumeKeyController(private val mContext: Context) {
     private var mMediaSession: MediaSessionCompat? = null

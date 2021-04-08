@@ -13,14 +13,14 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Compan
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
-import com.cooper.wheellog.utils.ThemeEnum
+import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
 
 
 class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
-    var currentTheme = R.style.OriginalTheme
+    private var currentTheme = R.style.OriginalTheme
     private var outerArcPaint = Paint()
     private var innerArcPaint = Paint()
     private var textPaint = Paint()
@@ -483,7 +483,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, resources.getString(R.string.top_speed) + "W", textPaint, 2) * 1.2f
         boxTextHeight = boundaryOfText.height().toFloat()
         val paint = Paint(textPaint)
-        paint.color = resources.getColor(R.color.wheelview_text)
+        paint.color = getColorEx(R.color.wheelview_text)
         try {
             var i = 0
             for (block in mViewBlocks) {
@@ -512,12 +512,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW OUTER ARC ###################
         //####################################################
-        outerArcPaint.color = context.resources.getColor(R.color.wheelview_arc_dim)
+        outerArcPaint.color = getColorEx(R.color.wheelview_arc_dim)
         canvas.drawArc(outerArcRect, 144f, 252f, false, outerArcPaint)
         if (currentDial >= 0) {
-            outerArcPaint.color = context.resources.getColor(R.color.wheelview_main_positive_dial)
+            outerArcPaint.color = getColorEx(R.color.wheelview_main_positive_dial)
         } else {
-            outerArcPaint.color = context.resources.getColor(R.color.wheelview_main_negative_dial)
+            outerArcPaint.color = getColorEx(R.color.wheelview_main_negative_dial)
         }
         currentDial = abs(currentDial)
         //###########TEST purp
@@ -531,13 +531,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW INNER ARC ###################
         //####################################################
-        innerArcPaint.color = context.resources.getColor(R.color.wheelview_arc_dim)
+        innerArcPaint.color = getColorEx(R.color.wheelview_arc_dim)
         canvas.drawArc(innerArcRect, 144f, 90f, false, innerArcPaint)
         canvas.drawArc(innerArcRect, 306f, 90f, false, innerArcPaint)
-        innerArcPaint.color = context.resources.getColor(R.color.wheelview_battery_dial)
+        innerArcPaint.color = getColorEx(R.color.wheelview_battery_dial)
         for (i in 0..111) {
-            if (i == targetBatteryLowest) innerArcPaint.color = context.resources.getColor(R.color.wheelview_battery_low_dial)
-            if (i == currentTemperature) innerArcPaint.color = context.resources.getColor(R.color.wheelview_temperature_dial)
+            if (i == targetBatteryLowest) innerArcPaint.color = getColorEx(R.color.wheelview_battery_low_dial)
+            if (i == currentTemperature) innerArcPaint.color = getColorEx(R.color.wheelview_temperature_dial)
             if (i < currentBattery || i >= currentTemperature) {
                 val value = 144 + i * 2.25f
                 canvas.drawArc(innerArcRect, value, 1.5f, false, innerArcPaint)
@@ -550,11 +550,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val speed = if (WheelLog.AppConfig.useMph) kmToMiles(mSpeed.toFloat()).roundToInt() else mSpeed
         val speedString: String = if (speed < 100) String.format(Locale.US, "%.1f", speed / 10.0) else String.format(Locale.US, "%02d", (speed / 10.0).roundToInt())
         val alarm1Speed = WheelLog.AppConfig.alarm1Speed.toDouble()
-        if (!WheelLog.AppConfig.alteredAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = context.resources.getColor(R.color.accent) else textPaint.color = context.resources.getColor(R.color.wheelview_speed_text)
+        if (!WheelLog.AppConfig.alteredAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = getColorEx(R.color.accent) else textPaint.color = getColorEx(R.color.wheelview_speed_text)
         textPaint.textSize = speedTextSize
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
         textPaint.textSize = speedTextKPHSize
-        textPaint.color = context.resources.getColor(R.color.wheelview_text)
+        textPaint.color = getColorEx(R.color.wheelview_text)
         if (WheelLog.AppConfig.useShortPwm || isInEditMode) {
             val pwm = String.format("%02.0f%% / %02.0f%%",
                     WheelData.getInstance().calculatedPwm,
@@ -636,12 +636,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW OUTER ARC ###################
         //####################################################
-        outerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_arc_dim)
+        outerArcPaint.color = getColorEx(R.color.ajdm_wheelview_arc_dim)
         canvas.drawArc(outerArcRect, 144f, 252f, false, outerArcPaint)
         if (currentDial >= 0) {
-            outerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_main_positive_dial)
+            outerArcPaint.color = getColorEx(R.color.ajdm_wheelview_main_positive_dial)
         } else {
-            outerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_main_negative_dial)
+            outerArcPaint.color = getColorEx(R.color.ajdm_wheelview_main_negative_dial)
         }
         currentDial = abs(currentDial)
 
@@ -655,13 +655,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW MIDDLE ARC ##################
         //####################################################
-        middleArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_arc_dim)
+        middleArcPaint.color = getColorEx(R.color.ajdm_wheelview_arc_dim)
         canvas.drawArc(middleArcRect, 144f, 252f, false, middleArcPaint)
 
         if (currentDial2 >= 0) {
-            middleArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_max_speed_dial)
+            middleArcPaint.color = getColorEx(R.color.ajdm_wheelview_max_speed_dial)
         } else {
-            middleArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_avg_speed_dial)
+            middleArcPaint.color = getColorEx(R.color.ajdm_wheelview_avg_speed_dial)
         }
         currentDial2 = abs(currentDial2)
         if (currentDial2 < 113) {
@@ -673,34 +673,34 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW INNER ARC ###################
         //####################################################
-        innerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_arc_dim)
+        innerArcPaint.color = getColorEx(R.color.ajdm_wheelview_arc_dim)
         canvas.drawArc(innerArcRect, 144f, 90f, false, innerArcPaint)
         canvas.drawArc(innerArcRect, 306f, 90f, false, innerArcPaint)
 
-        innerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_battery_dial)
+        innerArcPaint.color = getColorEx(R.color.ajdm_wheelview_battery_dial)
         canvas.drawArc(innerArcRect, 144f, currentBattery * 2.25f, false, innerArcPaint)
-        innerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_battery_low_dial)
+        innerArcPaint.color = getColorEx(R.color.ajdm_wheelview_battery_low_dial)
         canvas.drawArc(innerArcRect, 144f, targetBatteryLowest * 2.25f, false, innerArcPaint)
 
         val value = (currentTemperature - 112) * 2.25f * 100 / 80
 
         if (mTemperature > 0) {
-            innerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_temperature_dial)
+            innerArcPaint.color = getColorEx(R.color.ajdm_wheelview_temperature_dial)
             canvas.drawArc(innerArcRect, 306 - value, 90 + value, false, innerArcPaint)
         } else {
-            innerArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_arc_dim)
+            innerArcPaint.color = getColorEx(R.color.ajdm_wheelview_arc_dim)
             canvas.drawArc(innerArcRect, 306f, 90f, false, innerArcPaint)
         }
         //####################################################
         //################# DRAW VOLT ARC TEST ###############
         //####################################################
-        voltArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_arc_dim)
+        voltArcPaint.color = getColorEx(R.color.ajdm_wheelview_arc_dim)
         canvas.drawArc(voltArcRect, 144f, 252f, false, voltArcPaint)
 
         if (currentDial2 >= 0) {
-            voltArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_max_speed_dial)
+            voltArcPaint.color = getColorEx(R.color.ajdm_wheelview_max_speed_dial)
         } else {
-            voltArcPaint.color = context.resources.getColor(R.color.ajdm_wheelview_avg_speed_dial)
+            voltArcPaint.color = getColorEx(R.color.ajdm_wheelview_avg_speed_dial)
         }
         currentDial2 = abs(currentDial2)
         if (currentDial2 < 113) {
@@ -717,13 +717,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val speedString: String = if (speed < 100) String.format(Locale.US, "%.1f", speed / 10.0) else String.format(Locale.US, "%02d", (speed / 10.0).roundToInt())
         val alarm1Speed = WheelLog.AppConfig.alarm1Speed.toDouble()
         if (!WheelLog.AppConfig.alteredAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10)
-            textPaint.color = context.resources.getColor(R.color.ajdm_accent)
+            textPaint.color = getColorEx(R.color.ajdm_accent)
         else
-            textPaint.color = context.resources.getColor(R.color.ajdm_wheelview_speed_text)
+            textPaint.color = getColorEx(R.color.ajdm_wheelview_speed_text)
         textPaint.textSize = speedTextSize
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
         textPaint.textSize = speedTextKPHSize
-        textPaint.color = context.resources.getColor(R.color.ajdm_wheelview_text)
+        textPaint.color = getColorEx(R.color.ajdm_wheelview_text)
         if (WheelLog.AppConfig.useShortPwm || isInEditMode) {
             val pwm = String.format("%02.0f%% | %02.0f%%",
                     WheelData.getInstance().calculatedPwm,
@@ -839,10 +839,10 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 textPaint.textAlign = Paint.Align.CENTER
                 textPaint.typeface = tfTest
                 modelTextPaint = Paint(textPaint)
-                modelTextPaint.color = context.resources.getColor(R.color.wheelview_text)
+                modelTextPaint.color = getColorEx(R.color.wheelview_text)
                 versionPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 versionPaint.textAlign = Paint.Align.RIGHT
-                versionPaint.color = context.resources.getColor(R.color.wheelview_versiontext)
+                versionPaint.color = getColorEx(R.color.wheelview_versiontext)
                 versionPaint.typeface = tfTest
             }
             R.style.AJDMTheme -> {
@@ -870,19 +870,19 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 middleArcPaint.isAntiAlias = true
                 middleArcPaint.strokeWidth = middleStrokeWidth
                 middleArcPaint.style = Paint.Style.STROKE
-                voltArcPaint = Paint(Paint.ANTI_ALIAS_FLAG);
-                voltArcPaint.isAntiAlias = true;
-                voltArcPaint.strokeWidth = voltStrokeWidth;
-                voltArcPaint.style = Paint.Style.STROKE;
+                voltArcPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+                voltArcPaint.isAntiAlias = true
+                voltArcPaint.strokeWidth = voltStrokeWidth
+                voltArcPaint.style = Paint.Style.STROKE
                 val tfTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime_regular) else ResourcesCompat.getFont(context, R.font.prime_regular)!!
                 textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 textPaint.textAlign = Paint.Align.CENTER
                 textPaint.typeface = tfTest
                 modelTextPaint = Paint(textPaint)
-                modelTextPaint.color = context.resources.getColor(R.color.wheelview_text)
+                modelTextPaint.color = getColorEx(R.color.wheelview_text)
                 versionPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 versionPaint.textAlign = Paint.Align.RIGHT
-                versionPaint.color = context.resources.getColor(R.color.wheelview_versiontext)
+                versionPaint.color = getColorEx(R.color.wheelview_versiontext)
                 versionPaint.typeface = tfTest
             }
         }
