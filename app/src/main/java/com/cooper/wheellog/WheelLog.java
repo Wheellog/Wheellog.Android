@@ -8,8 +8,9 @@ import android.content.res.Configuration;
 import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.VolumeKeyController;
 
+import org.jetbrains.annotations.NotNull;
+
 public class WheelLog extends Application {
-    public static LocaleManager localeManager;
     public static AppConfig AppConfig;
     public static NotificationUtil Notifications;
     public static VolumeKeyController VolumeKeyController;
@@ -34,7 +35,7 @@ public class WheelLog extends Application {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         LocaleManager.setLocale(this);
     }

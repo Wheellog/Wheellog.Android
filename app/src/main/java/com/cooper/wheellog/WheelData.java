@@ -587,7 +587,7 @@ public class WheelData {
     }
 
     public boolean isVoltageTiltbackUnsupported() {
-        return mWheelType != WHEEL_TYPE.NINEBOT && mWheelType != WHEEL_TYPE.NINEBOT_Z;
+        return mWheelType == WHEEL_TYPE.NINEBOT || mWheelType == WHEEL_TYPE.NINEBOT_Z;
     }
 
     String getChargeTime() {

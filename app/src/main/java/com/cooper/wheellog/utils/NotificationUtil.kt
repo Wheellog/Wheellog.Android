@@ -105,7 +105,8 @@ class NotificationUtil(private val context: Context) {
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
-                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION).priority = NotificationCompat.PRIORITY_LOW
+                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .priority = NotificationCompat.PRIORITY_LOW
 
         when (WheelLog.AppConfig.mibandMode) {
             MiBandEnum.Alarm -> builder.setContentTitle(title)
