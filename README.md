@@ -1,5 +1,8 @@
 # WheelLog.Android
 
+[![Latest release](https://img.shields.io/github/release/wheellog/wheellog.android.svg)](https://github.com/wheellog/wheellog.android/releases/latest)
+[![Build Status](https://github.com/wheellog/wheellog.android/workflows/Gradle%20CI/badge.svg?branch=master)](https://github.com/wheellog/wheellog.android/actions)
+
 Unofficial App for EUC on Android. 
 The following manufacturers are supported:
 - InMotion
@@ -7,7 +10,8 @@ The following manufacturers are supported:
 - Gotway
 - Veteran
 
-![image](https://user-images.githubusercontent.com/27482193/95566187-ea8d5580-0a29-11eb-8182-329764d572b7.png)
+<img src='https://user-images.githubusercontent.com/27482193/95566187-ea8d5580-0a29-11eb-8182-329764d572b7.png' width=500 />
+<img src='https://user-images.githubusercontent.com/27482193/114169041-bdb6ee00-9939-11eb-8fb9-f07b9eac1b2f.png' width=500 />
 
 ## Contributing
 
