@@ -38,7 +38,7 @@ class GotwayVirtualAdapterTest {
         val byteArray1 = "55AA19C1000000000000008CF0000001FFF80018".hexToByteArray()
 
         // Act.
-        val result1 = adapter.decode(byteArray1)
+        adapter.decode(byteArray1)
 
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.GOTWAY)
@@ -51,7 +51,7 @@ class GotwayVirtualAdapterTest {
         val byteArray1 = "DC5A5C20238A0112121A00004D450005064611F2".hexToByteArray()
 
         // Act.
-        val result1 = adapter.decode(byteArray1)
+        adapter.decode(byteArray1)
 
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.VETERAN)
