@@ -267,9 +267,9 @@ public class MainActivity extends AppCompatActivity {
                     SomeUtil.playBeep(getApplicationContext());
                     break;
                 case Constants.NOTIFICATION_BUTTON_LIGHT:
-                    Boolean lightEnabled = !WheelLog.AppConfig.getLightEnabled();
-                    WheelLog.AppConfig.setLightEnabled(lightEnabled);
-                    WheelData.getInstance().updateLight(lightEnabled);
+                    if (WheelData.getInstance().getAdapter() != null) {
+                        WheelData.getInstance().getAdapter().switchFlashlight();
+                    }
                     break;
                 case Constants.NOTIFICATION_BUTTON_MIBAND:
                     toggleSwitchMiBand();

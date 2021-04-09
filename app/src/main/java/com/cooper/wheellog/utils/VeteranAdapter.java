@@ -114,10 +114,11 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        setLightMode();
+        setLightMode(0);
     }
 
-    public void setLightMode() {
+    @Override
+    public void setLightMode(int lightMode) {
         // it is not possible to turn on light on Veteran
         // but some people use it as "beep by wheel" on double tap
         // let's them use it
