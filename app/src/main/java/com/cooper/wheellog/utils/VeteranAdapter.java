@@ -1,7 +1,5 @@
 package com.cooper.wheellog.utils;
 
-import android.os.Handler;
-
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
@@ -123,11 +121,6 @@ public class VeteranAdapter extends BaseAdapter {
         // but some people use it as "beep by wheel" on double tap
         // let's them use it
         WheelData.getInstance().bluetoothCmd("b".getBytes());
-    }
-
-    @Override
-    public void updateMaxSpeed(int wheelMaxSpeed) {
-
     }
 
     @Override

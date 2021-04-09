@@ -12,14 +12,14 @@ public class FileLoggingTree extends Timber.DebugTree {
 
     //private static final String TAG = FileLoggingTree.class.getSimpleName();
 
-    private FileUtil fileUtil;
-    private String fileName;
-    private SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-    private SimpleDateFormat logFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+    private final FileUtil fileUtil;
+    private final String fileName;
+    private final SimpleDateFormat logFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
 
     public FileLoggingTree(Context context) {
         fileUtil = new FileUtil(context);
         fileUtil.setIgnoreTimber(true);
+        SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String fileNameTimeStamp = fileNameFormat.format(new Date());
         fileName = fileNameTimeStamp + ".html";
         if (fileUtil.prepareFile(fileName)) {

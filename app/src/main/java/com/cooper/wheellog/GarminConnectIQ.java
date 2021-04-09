@@ -8,7 +8,6 @@ import java.util.TimerTask;
 
 import android.app.Notification;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,9 +15,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.KingsongAdapter;
 
-import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.SomeUtil;
 import com.garmin.android.connectiq.ConnectIQ;
 import com.garmin.android.connectiq.ConnectIQ.ConnectIQListener;
@@ -28,7 +25,6 @@ import com.garmin.android.connectiq.ConnectIQ.IQConnectType;
 import com.garmin.android.connectiq.ConnectIQ.IQDeviceEventListener;
 import com.garmin.android.connectiq.ConnectIQ.IQMessageStatus;
 import com.garmin.android.connectiq.ConnectIQ.IQSdkErrorStatus;
-import com.garmin.android.connectiq.ConnectIQ.IQSendMessageListener;
 import com.garmin.android.connectiq.IQApp;
 import com.garmin.android.connectiq.IQDevice;
 import com.garmin.android.connectiq.IQDevice.IQDeviceStatus;
@@ -40,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import fi.iki.elonen.NanoHTTPD;
+import timber.log.Timber;
 
 public class GarminConnectIQ extends Service implements IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     public static final String TAG = GarminConnectIQ.class.getSimpleName();
@@ -93,7 +90,6 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
     private boolean mSdkReady;
     private ConnectIQ mConnectIQ;
-    private List<IQDevice> mDevices;
     private IQDevice mDevice;
     private IQApp mMyApp;
 
@@ -109,13 +105,13 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind");
+        Timber.i("onBind");
         return null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG,"onStartCommand");
+        Timber.d("onStartCommand");
         super.onStartCommand(intent, flags, startId);
 
         instance = this;
@@ -130,7 +126,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
     @Override
     public void onDestroy() {
-        Log.d(TAG,"onDestroy");
+        Timber.d("onDestroy");
         super.onDestroy();
 
         cancelRefreshTimer();
@@ -150,10 +146,10 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
 
     // General METHODS
     private void populateDeviceList() {
-        Log.d(TAG,"populateDeviceList");
+        Timber.d(TAG,"populateDeviceList");
 
         try {
-            mDevices = mConnectIQ.getKnownDevices();
+            List<IQDevice> mDevices = mConnectIQ.getKnownDevices();
 
             if (mDevices != null && !mDevices.isEmpty()) {
                 mDevice = mDevices.get(0);
@@ -173,7 +169,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     }
 
     private void registerWithDevice() {
-        Log.d(TAG,"registerWithDevice");
+        Timber.d(TAG,"registerWithDevice");
 
         if (mDevice != null && mSdkReady) {
             // Register for device status updates
@@ -187,9 +183,9 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
             try {
                 mConnectIQ.getApplicationInfo(APP_ID, mDevice, this);
             } catch (InvalidStateException e1) {
-                Log.d(TAG, "e1: " + e1.getMessage());
+                Timber.d(TAG, "e1: " + e1.getMessage());
             } catch (ServiceUnavailableException e1) {
-                Log.d(TAG, "e2: " + e1.getMessage());
+                Timber.d(TAG, "e2: " + e1.getMessage());
             }
 
             // Register to receive messages from the device
@@ -202,7 +198,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     }
 
     private void unregisterWithDevice() {
-        Log.d(TAG,"unregisterWithDevice");
+        Timber.d(TAG,"unregisterWithDevice");
 
         if (mDevice != null && mSdkReady) {
             // It is a good idea to unregister everything and shut things down to
@@ -213,7 +209,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
                 if (mMyApp != null) {
                     mConnectIQ.unregisterForApplicationEvents(mDevice, mMyApp);
                 }
-            } catch (InvalidStateException e) {
+            } catch (InvalidStateException ignored) {
             }
         }
     }
@@ -229,11 +225,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        refreshData();
-                    }
-                });
+                handler.post(() -> refreshData());
             }
         };
 
@@ -246,7 +238,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
             return;
 
         try {
-            HashMap<Object, Object> data = new HashMap<Object, Object>();
+            HashMap<Object, Object> data = new HashMap<>();
 
             lastSpeed = WheelData.getInstance().getSpeed() / 10;
             data.put(MESSAGE_KEY_SPEED, lastSpeed);
@@ -279,21 +271,16 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
             lastPower = (int)WheelData.getInstance().getPowerDouble();
             data.put(MESSAGE_KEY_POWER, lastPower);
 
-            HashMap<Object, Object> message = new HashMap<Object, Object>();
+            HashMap<Object, Object> message = new HashMap<>();
             message.put(MESSAGE_KEY_MSG_TYPE, MessageType.EUC_DATA.ordinal());
             message.put(MESSAGE_KEY_MSG_DATA, new MonkeyHash(data));
 
             try {
-                mConnectIQ.sendMessage(mDevice, mMyApp, message, new IQSendMessageListener() {
+                mConnectIQ.sendMessage(mDevice, mMyApp, message, (device, app, status) -> {
+                    Timber.d(TAG, "message status: " + status.name());
 
-                    @Override
-                    public void onMessageStatus(IQDevice device, IQApp app, IQMessageStatus status) {
-                        Log.d(TAG, "message status: " + status.name());
-
-                        if (status.name() != "SUCCESS")
-                            Toast.makeText(GarminConnectIQ.this, status.name(), Toast.LENGTH_LONG).show();
-                    }
-
+                    if (status.name() != "SUCCESS")
+                        Toast.makeText(GarminConnectIQ.this, status.name(), Toast.LENGTH_LONG).show();
                 });
             } catch (InvalidStateException e) {
                 Log.e(TAG, "ConnectIQ is not in a valid state");
@@ -311,13 +298,13 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     // IQApplicationInfoListener METHODS
     @Override
     public void onApplicationInfoReceived(IQApp app) {
-        Log.d(TAG,"onApplicationInfoReceived");
-        Log.d(TAG, app.toString());
+        Timber.d(TAG,"onApplicationInfoReceived");
+        Timber.d(TAG, app.toString());
     }
 
     @Override
     public void onApplicationNotInstalled(String arg0) {
-        Log.d(TAG,"onApplicationNotInstalled");
+        Timber.d(TAG,"onApplicationNotInstalled");
 
         // The WheelLog app is not installed on the device so we have
         // to let the user know to install it.
@@ -326,9 +313,9 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
         Toast.makeText(this, R.string.garmin_connectiq_missing_app_message, Toast.LENGTH_LONG).show();
         try {
             mConnectIQ.openStore(APP_ID);
-        } catch (InvalidStateException e) {
+        } catch (InvalidStateException ignored) {
 
-        } catch (ServiceUnavailableException e) {
+        } catch (ServiceUnavailableException ignored) {
 
         }
     }
@@ -336,8 +323,8 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     // IQDeviceEventListener METHODS
     @Override
     public void onDeviceStatusChanged(IQDevice device, IQDeviceStatus status) {
-        Log.d(TAG,"onDeviceStatusChanged");
-        Log.d(TAG, "status is:" + status.name());
+        Timber.d(TAG,"onDeviceStatusChanged");
+        Timber.d(TAG, "status is:" + status.name());
 
         switch(status.name()) {
             case "CONNECTED":
@@ -367,7 +354,7 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     // IQApplicationEventListener
     @Override
     public void onMessageReceived(IQDevice device, IQApp app, List<Object> message, IQMessageStatus status) {
-        Log.d(TAG,"onMessageReceived");
+        Timber.d(TAG,"onMessageReceived");
 
         // We know from our widget that it will only ever send us strings, but in case
         // we get something else, we are simply going to do a toString() on each object in the
@@ -407,20 +394,20 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     // ConnectIQListener METHODS
     @Override
     public void onInitializeError(IQSdkErrorStatus errStatus) {
-        Log.d(TAG,"sdk initialization error");
+        Timber.d(TAG,"sdk initialization error");
         mSdkReady = false;
     }
 
     @Override
     public void onSdkReady() {
-        Log.d(TAG,"sdk is ready");
+        Timber.d(TAG,"sdk is ready");
         mSdkReady = true;
         populateDeviceList();
     }
 
     @Override
     public void onSdkShutDown() {
-        Log.d(TAG,"sdk shut down");
+        Timber.d(TAG,"sdk shut down");
         mSdkReady = false;
     }
 
@@ -430,33 +417,28 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
     }
 
     public void startWebServer() {
-        Log.d(TAG,"startWebServer");
+        Timber.d(TAG,"startWebServer");
 
         if (mWebServer != null)
             return;
 
         try {
             mWebServer = new GarminConnectIQWebServer();
-            Log.d(TAG, "port is:" + mWebServer.getListeningPort());
+            Timber.d(TAG, "port is:" + mWebServer.getListeningPort());
 
-            HashMap<Object, Object> data = new HashMap<Object, Object>();
+            HashMap<Object, Object> data = new HashMap<>();
             data.put(MESSAGE_KEY_HTTP_PORT, mWebServer.getListeningPort());
 
-            HashMap<Object, Object> message = new HashMap<Object, Object>();
+            HashMap<Object, Object> message = new HashMap<>();
             message.put(MESSAGE_KEY_MSG_TYPE, MessageType.HTTP_READY.ordinal());
             message.put(MESSAGE_KEY_MSG_DATA, new MonkeyHash(data));
 
             try {
-                mConnectIQ.sendMessage(mDevice, mMyApp, message, new IQSendMessageListener() {
+                mConnectIQ.sendMessage(mDevice, mMyApp, message, (device, app, status) -> {
+                    Timber.d(TAG, "message status: " + status.name());
 
-                    @Override
-                    public void onMessageStatus(IQDevice device, IQApp app, IQMessageStatus status) {
-                        Log.d(TAG, "message status: " + status.name());
-
-                        if (status.name() != "SUCCESS")
-                            Toast.makeText(GarminConnectIQ.this, status.name(), Toast.LENGTH_LONG).show();
-                    }
-
+                    if (status.name() != "SUCCESS")
+                        Toast.makeText(GarminConnectIQ.this, status.name(), Toast.LENGTH_LONG).show();
                 });
             } catch (InvalidStateException e) {
                 Log.e(TAG, "ConnectIQ is not in a valid state");
@@ -466,12 +448,12 @@ public class GarminConnectIQ extends Service implements IQApplicationInfoListene
                 Toast.makeText(this, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?", Toast.LENGTH_LONG).show();
             }
 
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
     }
 
     public void stopWebServer() {
-        Log.d(TAG,"stopWebServer");
+        Timber.d(TAG,"stopWebServer");
         if (mWebServer != null) {
             mWebServer.stop();
             mWebServer = null;
@@ -496,7 +478,7 @@ class GarminConnectIQWebServer extends NanoHTTPD {
     }
 
     private Response handleData() {
-        Log.d("GarminConnectIQWebSe...","handleData");
+        Timber.d("GarminConnectIQWebSe...","handleData");
         JSONObject data = new JSONObject();
 
         try {

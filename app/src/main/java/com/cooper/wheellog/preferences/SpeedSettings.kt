@@ -120,7 +120,6 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 summary = getString(R.string.max_speed_dial_description)
                 min = 10
                 max = 100
-                unit = getString(R.string.dial_measurements)
                 increment = 1
                 setDefaultValue(WheelLog.AppConfig.maxSpeed)
                 addPreference(this)

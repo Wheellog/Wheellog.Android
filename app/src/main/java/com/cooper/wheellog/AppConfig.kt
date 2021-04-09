@@ -415,22 +415,22 @@ class AppConfig(var context: Context) {
 
     //region -=[ custom settings ]=-
     var passwordForWheel: String
-        get() = getValue("wheel_password_" + specificPrefix, "")
+        get() = getValue("wheel_password_$specificPrefix", "")
         set(value) {
             var password = value
             while (password.length < 6) {
                 password = "0$password"
             }
-            setValue("wheel_password_" + specificPrefix, password)
+            setValue("wheel_password_$specificPrefix", password)
         }
 
     var advDataForWheel: String
-        get() = getValue("wheel_adv_data_" + specificPrefix, "")
-        set(value) = setValue("wheel_adv_data_" + specificPrefix, value)
+        get() = getValue("wheel_adv_data_$specificPrefix", "")
+        set(value) = setValue("wheel_adv_data_$specificPrefix", value)
 
     var userDistance: Long
-        get() = getValue("user_distance_" + specificPrefix, 0L)
-        set(value) = setValue("user_distance_" + specificPrefix, value)
+        get() = getValue("user_distance_$specificPrefix", 0L)
+        set(value) = setValue("user_distance_$specificPrefix", value)
     //endregion
 
     fun getResId(resName: String?): Int {

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.cooper.wheellog.utils.KingsongAdapter;
 import com.cooper.wheellog.utils.SomeUtil;
 import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.PebbleKit;

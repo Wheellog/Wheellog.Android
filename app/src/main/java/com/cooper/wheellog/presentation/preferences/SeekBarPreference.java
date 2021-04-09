@@ -15,8 +15,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.cooper.wheellog.R;
 
-import timber.log.Timber;
-
 /**
  * Доработанный {@link androidx.preference.SeekBarPreference}, поддерживающий установку
  * значения через диалоговое окно по клику на текст с текущим значением.
@@ -44,7 +42,7 @@ public class SeekBarPreference extends Preference {
     private boolean mTrackingTouch;
     private TextView mSeekBarValueTextView;
     private String mMeasurementUnit;
-    private SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new OnChangeListener();
+    private final SeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new OnChangeListener();
 
     public SeekBarPreference(Context context) {
         this(context, null);

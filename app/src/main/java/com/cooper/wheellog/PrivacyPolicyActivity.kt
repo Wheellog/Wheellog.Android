@@ -15,12 +15,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class PrivacyPolicyActivity : AppCompatActivity() {
-    lateinit var dialog: AlertDialog
+    private lateinit var dialog: AlertDialog
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(LocaleManager.setLocale(base))
     }
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

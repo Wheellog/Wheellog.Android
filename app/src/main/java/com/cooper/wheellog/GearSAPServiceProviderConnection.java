@@ -6,7 +6,7 @@ import com.samsung.android.sdk.accessory.SASocket;
 
 
 public class GearSAPServiceProviderConnection extends SASocket {
-    private int connectionID;
+    private final int connectionID;
     static int nextID = 1;
     public final static String TAG = "SAPServiceProvider";
     private GearService mParent;
@@ -25,7 +25,7 @@ public class GearSAPServiceProviderConnection extends SASocket {
     @Override
     protected void onServiceConnectionLost(int reason) {
         if(mParent!=null) {
-            mParent.removeConnection(this);;
+            mParent.removeConnection(this);
         }
         Log.d(TAG,"Set OnServiceConnectionLost");
     }

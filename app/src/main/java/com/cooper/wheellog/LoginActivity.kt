@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputLayout
 
 
 class LoginActivity : AppCompatActivity() {
-    lateinit var dialog: AlertDialog
+    private lateinit var dialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun shakeError(): TranslateAnimation? {
+    private fun shakeError(): TranslateAnimation {
         val shake = TranslateAnimation(0F, 15F, 0F, 10F)
         shake.duration = 500
         shake.interpolator = CycleInterpolator(7F)

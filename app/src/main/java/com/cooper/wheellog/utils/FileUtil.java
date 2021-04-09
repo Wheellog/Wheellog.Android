@@ -28,26 +28,24 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 
 import timber.log.Timber;
 
 public class FileUtil {
-    private Context context;
+    private final Context context;
     private File file;
     private Uri uri;
-    private Hashtable<String, CachedFile> AndroidQCache;
+    private final Hashtable<String, CachedFile> AndroidQCache = new Hashtable<>();
     private boolean ignoreTimber = false;
     private OutputStream stream;
 
-    class CachedFile {
+    static class CachedFile {
         public File file;
         public Uri uri;
     }
 
     public FileUtil(Context context) {
         this.context = context;
-        AndroidQCache = new Hashtable();
     }
 
     public String fileName = "";
@@ -266,18 +264,6 @@ public class FileUtil {
             }
             e.printStackTrace();
         }
-    }
-
-    @NotNull
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    private String getExternalStoreName() {
-        Set<String> names = MediaStore.getExternalVolumeNames(context);
-        for (String n : names) {
-            if (n.contains("external")) {
-                return n;
-            }
-        }
-        return names.toArray()[0].toString();
     }
 
     @Nullable

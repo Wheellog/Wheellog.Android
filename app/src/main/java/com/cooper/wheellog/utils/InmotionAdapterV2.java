@@ -149,7 +149,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelLog.AppConfig.getLightEnabled();;
+        boolean light = !WheelLog.AppConfig.getLightEnabled();
         WheelLog.AppConfig.setLightEnabled(light);
         setLightState(light);
     }
@@ -271,7 +271,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Initial(0x11),
             Default(0x14);
 
-            private int value;
+            private final int value;
 
             Flag(int value) {
                 this.value = value;
@@ -295,7 +295,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Control(0x60);
 
 
-            private int value;
+            private final int value;
 
             Command(int value) {
                 this.value = value;
@@ -338,12 +338,12 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 int batch = data[4];     // 02
                 int feature = data[5];   // 01
                 int reverse = data[6];   // 00
-                wd.setModel(String.format(Locale.ENGLISH,"Inmotion V11"));
+                wd.setModel("Inmotion V11");
                 wd.setVersion(String.format(Locale.ENGLISH,"rev: %d.%d",batch,feature));
             } else if ((data[0] == (byte) 0x02) && len >= 17) {
                 stateCon += 1;
                 Timber.i("Parse serial num");
-                String serialNumber = "";
+                String serialNumber;
                 serialNumber = new String(data, 1, 16);
 
                 wd.setSerial(serialNumber);
@@ -375,7 +375,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             boolean ok = true;
             if (data.length > 7)
                 for (byte c : data) {
-                    if (c != 0) ok = false;
+                    if (c != 0) {
+                        ok = false;
+                        break;
+                    }
                 }
             return false;
         }
@@ -480,7 +483,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mImuTemp = (data[35] & 0xff) + 80 - 256;
             wd.setVoltage(mVoltage);
             wd.setTorque((double)mTorque/100.0);
-            wd.setMotorPower((double)mMotPower);
+            wd.setMotorPower(mMotPower);
             wd.setCpuTemp(mCpuTemp);
             wd.setImuTemp(mImuTemp);
             wd.setCurrent(mCurrent);

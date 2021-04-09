@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 // Adapter for holding devices found through scanning.
 public class DeviceListAdapter extends BaseAdapter {
-    private ArrayList<BluetoothDevice> mLeDevices;
-    private ArrayList<String> mLeAdvDatas;
-    private LayoutInflater mInflator;
+    private final ArrayList<BluetoothDevice> mLeDevices;
+    private final ArrayList<String> mLeAdvDatas;
+    private final LayoutInflater mInflator;
 
     static class ViewHolder {
         TextView deviceName;
@@ -75,8 +75,8 @@ public class DeviceListAdapter extends BaseAdapter {
         if (view == null) {
             view = mInflator.inflate(R.layout.scan_list_item, null);
             viewHolder = new ViewHolder();
-            viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
-            viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
+            viewHolder.deviceAddress = view.findViewById(R.id.device_address);
+            viewHolder.deviceName = view.findViewById(R.id.device_name);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();

@@ -1,7 +1,6 @@
 package com.cooper.wheellog.utils
 
 import android.content.Context
-import org.json.JSONObject
 
 class StringUtil {
     companion object {

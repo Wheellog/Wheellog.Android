@@ -80,7 +80,7 @@ class KingsongAdapterTest {
     }
 
     @Test
-    fun `decode Distance|Time|Fan Data`() {
+    fun `decode Distance - Time - Fan Data`() {
         // Arrange.
         val topSpeed = 30000.toShort()
         val distance = 1234567890

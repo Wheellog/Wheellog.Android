@@ -10,7 +10,7 @@ public class GotwayVirtualAdapter extends BaseAdapter {
     public boolean decode(byte[] data) {
         Timber.i("Begode_Gotway_detect");
         WheelData wd = WheelData.getInstance();
-        boolean result = false;
+        boolean result;
         if ((data[0] == (byte) 0xDC) && (data[1] == (byte) 0x5A) && (data[2] == (byte) 0x5C) && (data[3] == (byte)0x20)) {
             wd.setWheelType(Constants.WHEEL_TYPE.VETERAN);
             wd.setModel("Veteran");

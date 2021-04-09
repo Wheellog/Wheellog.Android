@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.Handler;
 import android.os.Vibrator;
 
 import com.cooper.wheellog.utils.*;
@@ -40,13 +39,13 @@ public class WheelData {
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
     private static final int RIDING_SPEED = 200; // 2km/h
-    private ArrayList<String> xAxis = new ArrayList<>();
-    private ArrayList<Float> currentAxis = new ArrayList<>();
-    private ArrayList<Float> speedAxis = new ArrayList<>();
+    private final ArrayList<String> xAxis = new ArrayList<>();
+    private final ArrayList<Float> currentAxis = new ArrayList<>();
+    private final ArrayList<Float> speedAxis = new ArrayList<>();
 
     // BMS
-    private NinebotBms mNinebotBms1 = new NinebotBms();
-    private NinebotBms mNinebotBms2 = new NinebotBms();
+    private final NinebotBms mNinebotBms1 = new NinebotBms();
+    private final NinebotBms mNinebotBms2 = new NinebotBms();
 
     //all
     private int mSpeed;
@@ -108,12 +107,12 @@ public class WheelData {
     private boolean mDataForLog = true;
     private String protoVer = "";
 
-    private int duration = 1; // duration of sound
-    private int sampleRate = 44100;//22050; // Hz (maximum frequency is 7902.13Hz (B8))
-    private int numSamples = duration * sampleRate;
+    private final int duration = 1; // duration of sound
+    private final int sampleRate = 44100;//22050; // Hz (maximum frequency is 7902.13Hz (B8))
+    private final int numSamples = duration * sampleRate;
     //    private double samples[] = new double[numSamples];
-    private short buffer[] = new short[numSamples];
-    private int sfreq = 440;
+    private final short[] buffer = new short[numSamples];
+    private final int sfreq = 440;
 
     private long timestamp_raw;
     private long timestamp_last;
@@ -1017,16 +1016,9 @@ public class WheelData {
 
         switch (alarmType) {
             case SPEED1:
-                pattern = new long[]{0, 100, 100};
-//                mSpeedAlarmExecuted = true;
-                break;
             case SPEED2:
-                pattern = new long[]{0, 100, 100};
-//                mSpeedAlarmExecuted = true;
-                break;
             case SPEED3:
                 pattern = new long[]{0, 100, 100};
-//                mSpeedAlarmExecuted = true;
                 break;
 
             case CURRENT:
