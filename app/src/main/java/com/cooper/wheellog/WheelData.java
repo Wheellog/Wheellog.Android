@@ -1045,9 +1045,10 @@ public class WheelData {
         StringBuilder stringBuilder = new StringBuilder(data.length);
         for (byte aData : data)
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
-        Timber.i("Received: " + stringBuilder.toString());
-//        FileUtil.writeLine("bluetoothOutput.txt", stringBuilder.toString());
-        Timber.i("Decode, proto: %s", protoVer);
+        Timber.i("Received: %s", stringBuilder);
+        if (protoVer != "") {
+            Timber.i("Decode, proto: %s", protoVer);
+        }
         boolean new_data = getAdapter().setContext(mContext).decode(data);
 
         if (!new_data)

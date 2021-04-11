@@ -944,7 +944,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         return 20;
     }
 
-    public static void newInstance() {
+    public static synchronized void newInstance() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
@@ -953,8 +953,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         INSTANCE = new InmotionAdapterV2();
     }
 
-
-    public static void stopTimer() {
+    public static synchronized void stopTimer() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
@@ -962,7 +961,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
         Timber.i("Kill instance, stop timer");
         INSTANCE = null;
     }
-
 }
 
 
