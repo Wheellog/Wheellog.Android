@@ -73,7 +73,7 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
         Timber.d("onDestroy")
         super.onDestroy()
         cancelRefreshTimer()
-        unregisterReceiver(mBroadcastReceiver); // Stop receiver for alarms
+        unregisterReceiver(mBroadcastReceiver) // Stop receiver for alarms
         try {
             mConnectIQ?.unregisterAllForEvents()
             mConnectIQ?.shutdown(this)
@@ -176,10 +176,7 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
             message[messageKey_messageType] = MessageType.EUC_DATA.ordinal
             message[messageKey_messageData] = MonkeyHash(data)
             try {
-                mConnectIQ!!.sendMessage(mDevice, mMyApp, message) { _, _, status ->
-//                    Timber.d(TAG, "message status: %s", status.name)
-//                    if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
-                }
+                mConnectIQ!!.sendMessage(mDevice, mMyApp, message) { _, _, _ -> }
             } catch (e: InvalidStateException) {
                 Timber.e("ConnectIQ is not in a valid state")
                 Toast.makeText(this, "ConnectIQ is not in a valid state", Toast.LENGTH_LONG).show()
