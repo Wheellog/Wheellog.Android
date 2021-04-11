@@ -1237,7 +1237,7 @@ public class InMotionAdapter extends BaseAdapter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int oldc = 0;
-        int old2c = 0;
+        int oldestc = 0;
         UnpackerState state = UnpackerState.unknown;
 
         byte[] getBuffer() {
@@ -1247,7 +1247,7 @@ public class InMotionAdapter extends BaseAdapter {
         boolean addChar(int c) {
             if (state == UnpackerState.collecting) {
                 buffer.write(c);
-                if (c == (byte) 0x55 && oldc == (byte) 0x55 && old2c != (byte) 0xA5 && old2c != (byte) 0xAA) {
+                if (c == (byte) 0x55 && oldc == (byte) 0x55 && oldestc != (byte) 0xA5) {
                     state = UnpackerState.done;
                     updateStep = 0;
                     oldc = 0;
@@ -1255,23 +1255,16 @@ public class InMotionAdapter extends BaseAdapter {
                     return true;
                 }
             } else {
-                if (c == (byte) 0xAA && oldc == (byte) 0xAA) {
+                if (c == (byte) 0xAA && oldc == (byte) 0xAA && oldestc != (byte) 0xA5) {
                     buffer = new ByteArrayOutputStream();
                     buffer.write(0xAA);
                     buffer.write(0xAA);
                     state = UnpackerState.collecting;
                 }
             }
-            old2c = oldc;
+            oldestc = oldc;
             oldc = c;
             return false;
-        }
-
-        void reset() {
-            buffer = new ByteArrayOutputStream();
-            oldc = 0;
-            state = UnpackerState.unknown;
-
         }
     }
 
