@@ -162,7 +162,7 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
             data[messageKey_temperature] = wheelLogInstance.temperature
             data[messageKey_bluetooth] = wheelLogInstance.isConnected
             data[messageKey_power] = wheelLogInstance.powerDouble
-            data[messageKey_bottomSubtitle] = "InMotion V11" /* WheelLog.AppConfig.useShortPwm */
+            data[messageKey_bottomSubtitle] = if (WheelLog.AppConfig.useShortPwm) "${wheelLogInstance.calculatedPwm}% /  ${wheelLogInstance.maxPwm}%" else { wheelLogInstance.model }
             data[messageKey_averageSpeed] = wheelLogInstance.averageRidingSpeedDouble
             data[messageKey_topSpeed] = wheelLogInstance.topSpeed
             data[messageKey_rideTime] = wheelLogInstance.rideTimeString
