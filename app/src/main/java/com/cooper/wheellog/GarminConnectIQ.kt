@@ -142,30 +142,30 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
         if (WheelData.getInstance() == null) return
         try {
             val data = HashMap<Any, Any>()
-            lastSpeed = WheelData.getInstance().speed / 10
-            data[MESSAGE_KEY_SPEED] = lastSpeed
+            lastSpeed = WheelData.getInstance().speed
+            data[messageKey_currentSpeed] = lastSpeed
             lastBattery = WheelData.getInstance().batteryLevel
             data[MESSAGE_KEY_BATTERY] = lastBattery
             lastTemperature = WheelData.getInstance().temperature
-            data[MESSAGE_KEY_TEMPERATURE] = lastTemperature
+            data[messageKey_temperature] = lastTemperature
             lastFanStatus = WheelData.getInstance().fanStatus
             data[MESSAGE_KEY_FAN_STATE] = lastFanStatus
             lastConnectionState = WheelData.getInstance().isConnected
-            data[MESSAGE_KEY_BT_STATE] = lastConnectionState
+            data[messageKey_bluetooth] = lastConnectionState
             data[MESSAGE_KEY_VIBE_ALERT] = false
             data[MESSAGE_KEY_USE_MPH] = WheelLog.AppConfig.useMph
             data[MESSAGE_KEY_MAX_SPEED] = WheelLog.AppConfig.maxSpeed
             lastRideTime = WheelData.getInstance().rideTime
-            data[MESSAGE_KEY_RIDE_TIME] = lastRideTime
+            data[messageKey_rideTime] = lastRideTime
             lastDistance = WheelData.getInstance().distance
             data[MESSAGE_KEY_DISTANCE] = lastDistance / 100
             lastTopSpeed = WheelData.getInstance().topSpeed
-            data[MESSAGE_KEY_TOP_SPEED] = lastTopSpeed / 10
+            data[messageKey_topSpeed] = lastTopSpeed / 10
             lastPower = WheelData.getInstance().powerDouble.toInt()
-            data[MESSAGE_KEY_POWER] = lastPower
+            data[messageKey_power] = lastPower
             val message = HashMap<Any, Any>()
-            message[MESSAGE_KEY_MSG_TYPE] = MessageType.EUC_DATA.ordinal
-            message[MESSAGE_KEY_MSG_DATA] = MonkeyHash(data)
+            message[messageKey_messageType] = MessageType.EUC_DATA.ordinal
+            message[messageKey_messageData] = MonkeyHash(data)
             try {
                 mConnectIQ!!.sendMessage(mDevice, mMyApp, message) { _, _, status ->
                     Timber.d(TAG, "message status: %s", status.name)
@@ -230,18 +230,18 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
             for (o in message) {
                 if (o is HashMap<*, *>) {
                     try {
-                        val msgType = o[MESSAGE_KEY_MSG_TYPE] as Int
+                        val msgType = o[messageKey_messageType] as Int
                         if (msgType == MessageType.PLAY_HORN.ordinal) {
                             playHorn()
                         }
                         builder = null
                     } catch (ex: Exception) {
-                        builder!!.append("MonkeyHash received:\n\n")
-                        builder.append(o.toString())
+                        builder?.append("MonkeyHash received:\n\n")
+                        builder?.append(o.toString())
                     }
                 } else {
-                    builder!!.append(o.toString())
-                    builder.append("\r\n")
+                    builder?.append(o.toString())
+                    builder?.append("\r\n")
                 }
             }
         } else {
@@ -276,23 +276,28 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
 
     companion object {
         val TAG = GarminConnectIQ::class.java.simpleName
-        const val APP_ID = "df8bf0ab-1828-4037-a328-ee86d29d0501"
-        const val NEW_APP_ID = "487e6172-972c-4f93-a4db-26fd689f935a"
+        const val APP_ID = "487e6172-972c-4f93-a4db-26fd689f935a"
 
-        const val MESSAGE_KEY_MSG_TYPE = -2
-        const val MESSAGE_KEY_MSG_DATA = -1
-        const val MESSAGE_KEY_SPEED = 0
-        const val MESSAGE_KEY_BATTERY = 1
-        const val MESSAGE_KEY_TEMPERATURE = 2
-        const val MESSAGE_KEY_FAN_STATE = 3
-        const val MESSAGE_KEY_BT_STATE = 4
-        const val MESSAGE_KEY_VIBE_ALERT = 5
-        const val MESSAGE_KEY_USE_MPH = 6
-        const val MESSAGE_KEY_MAX_SPEED = 7
-        const val MESSAGE_KEY_RIDE_TIME = 8
-        const val MESSAGE_KEY_DISTANCE = 9
-        const val MESSAGE_KEY_TOP_SPEED = 10
-        const val MESSAGE_KEY_POWER = 12
+        const val messageKey_messageType = -2
+        const val messageKey_messageData = -1
+        const val messageKey_currentSpeed = 0
+        const val messageKey_batteryPercentage = 1
+        const val messageKey_batteryVoltage = 2
+        const val messageKey_temperature = 3
+        const val messageKey_bluetooth = 4
+        const val messageKey_power = 5
+        const val messageKey_bottomSubtitle = 6
+        const val messageKey_averageSpeed = 7
+        const val messageKey_topSpeed = 8
+        const val messageKey_rideDistance = 9
+        const val messageKey_rideTime = 10
+        const val messageKey_pwm = 11
+        const val messageKey_maxPwm = 12
+        const val messageKey_alarmType = 13
+        const val messageKey_maxDial = 14
+        const val messageKey_useMph = 15
+        
+
         private var instance: GarminConnectIQ? = null
 
         fun instance(): GarminConnectIQ? {
