@@ -1,11 +1,15 @@
 package com.cooper.wheellog
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import android.os.IBinder
 import android.widget.Toast
 import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.Constants.ALARM_TYPE
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.ConnectIQ.*
@@ -18,20 +22,12 @@ import com.garmin.monkeybrains.serialization.MonkeyHash
 import timber.log.Timber
 import java.util.*
 
+
 open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     enum class MessageType {
         EUC_DATA, PLAY_HORN
     }
 
-    private var lastSpeed = 0
-    private var lastBattery = 0
-    private var lastTemperature = 0
-    private var lastFanStatus = 0
-    private var lastRideTime = 0
-    private var lastDistance = 0
-    private var lastTopSpeed = 0
-    private var lastConnectionState = false
-    private var lastPower = 0
     private var keepAliveTimer: Timer? = null
     val handler = Handler() // to call toast from the TimerTask
     private var mSdkReady = false
@@ -39,6 +35,17 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
     private var mDevices: List<IQDevice>? = null
     private var mDevice: IQDevice? = null
     private var mMyApp: IQApp? = null
+
+    private var vibeAlarm: Int = 0
+
+    private val mBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            when (intent.action) {
+                Constants.ACTION_ALARM_TRIGGERED -> if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE)) vibeAlarm = (intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE) as ALARM_TYPE).value
+            }
+        }
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         Timber.i("onBind")
         return null
@@ -48,6 +55,11 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
         Timber.d("onStartCommand")
         super.onStartCommand(intent, flags, startId)
         instance = this
+
+        // Start receiver for alarms
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED)
+        registerReceiver(mBroadcastReceiver, intentFilter)
 
         // Setup Connect IQ
         mMyApp = IQApp(APP_ID)
@@ -61,9 +73,10 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
         Timber.d("onDestroy")
         super.onDestroy()
         cancelRefreshTimer()
+        unregisterReceiver(mBroadcastReceiver); // Stop receiver for alarms
         try {
-            mConnectIQ!!.unregisterAllForEvents()
-            mConnectIQ!!.shutdown(this)
+            mConnectIQ?.unregisterAllForEvents()
+            mConnectIQ?.shutdown(this)
         } catch (e: InvalidStateException) {
             // This is usually because the SDK was already shut down
             // so no worries.
@@ -142,34 +155,30 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
         if (WheelData.getInstance() == null) return
         try {
             val data = HashMap<Any, Any>()
-            lastSpeed = WheelData.getInstance().speed
-            data[messageKey_currentSpeed] = lastSpeed
-            lastBattery = WheelData.getInstance().batteryLevel
-            data[MESSAGE_KEY_BATTERY] = lastBattery
-            lastTemperature = WheelData.getInstance().temperature
-            data[messageKey_temperature] = lastTemperature
-            lastFanStatus = WheelData.getInstance().fanStatus
-            data[MESSAGE_KEY_FAN_STATE] = lastFanStatus
-            lastConnectionState = WheelData.getInstance().isConnected
-            data[messageKey_bluetooth] = lastConnectionState
-            data[MESSAGE_KEY_VIBE_ALERT] = false
-            data[MESSAGE_KEY_USE_MPH] = WheelLog.AppConfig.useMph
-            data[MESSAGE_KEY_MAX_SPEED] = WheelLog.AppConfig.maxSpeed
-            lastRideTime = WheelData.getInstance().rideTime
-            data[messageKey_rideTime] = lastRideTime
-            lastDistance = WheelData.getInstance().distance
-            data[MESSAGE_KEY_DISTANCE] = lastDistance / 100
-            lastTopSpeed = WheelData.getInstance().topSpeed
-            data[messageKey_topSpeed] = lastTopSpeed / 10
-            lastPower = WheelData.getInstance().powerDouble.toInt()
-            data[messageKey_power] = lastPower
+            val wheelLogInstance = WheelData.getInstance()
+            data[messageKey_currentSpeed] = wheelLogInstance.speed
+            data[messageKey_batteryPercentage] = wheelLogInstance.batteryLevel
+            data[messageKey_batteryVoltage] = wheelLogInstance.voltage
+            data[messageKey_temperature] = wheelLogInstance.temperature
+            data[messageKey_bluetooth] = wheelLogInstance.isConnected
+            data[messageKey_power] = wheelLogInstance.powerDouble
+            data[messageKey_bottomSubtitle] = "InMotion V11" /* WheelLog.AppConfig.useShortPwm */
+            data[messageKey_averageSpeed] = wheelLogInstance.averageRidingSpeedDouble
+            data[messageKey_topSpeed] = wheelLogInstance.topSpeed
+            data[messageKey_rideTime] = wheelLogInstance.rideTimeString
+            data[messageKey_rideDistance] = wheelLogInstance.distance
+            data[messageKey_pwm] = wheelLogInstance.calculatedPwm
+            data[messageKey_maxPwm] = wheelLogInstance.maxPwm
+            data[messageKey_alarmType] = vibeAlarm
+            data[messageKey_maxDial] = WheelLog.AppConfig.maxSpeed
+            data[messageKey_useMph] = WheelLog.AppConfig.useMph
             val message = HashMap<Any, Any>()
             message[messageKey_messageType] = MessageType.EUC_DATA.ordinal
             message[messageKey_messageData] = MonkeyHash(data)
             try {
                 mConnectIQ!!.sendMessage(mDevice, mMyApp, message) { _, _, status ->
-                    Timber.d(TAG, "message status: %s", status.name)
-                    if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
+//                    Timber.d(TAG, "message status: %s", status.name)
+//                    if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
                 }
             } catch (e: InvalidStateException) {
                 Timber.e("ConnectIQ is not in a valid state")
@@ -296,7 +305,6 @@ open class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEvent
         const val messageKey_alarmType = 13
         const val messageKey_maxDial = 14
         const val messageKey_useMph = 15
-        
 
         private var instance: GarminConnectIQ? = null
 
