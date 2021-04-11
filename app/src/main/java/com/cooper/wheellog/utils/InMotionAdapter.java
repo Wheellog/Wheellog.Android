@@ -1247,7 +1247,7 @@ public class InMotionAdapter extends BaseAdapter {
         boolean addChar(int c) {
             if (state == UnpackerState.collecting) {
                 buffer.write(c);
-                if (c == (byte) 0x55 && oldc == (byte) 0x55 && old2c != (byte) 0xA5) {
+                if (c == (byte) 0x55 && oldc == (byte) 0x55 && old2c != (byte) 0xA5 && old2c != (byte) 0xAA) {
                     state = UnpackerState.done;
                     updateStep = 0;
                     oldc = 0;
