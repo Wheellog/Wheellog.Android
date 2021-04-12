@@ -810,13 +810,14 @@ public class InMotionAdapter extends BaseAdapter {
                 return null;  // Header and tail not correct
             }
             Timber.i("Before escape %s", StringUtil.toHexString(buffer));
-            byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, buffer.length - 3);
+            int len = buffer.length - 3;
+            byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, len);
 
             dataBuffer = CANMessage.unescape(dataBuffer);
             Timber.i("After escape %s", StringUtil.toHexString(dataBuffer));
             byte check = CANMessage.computeCheck(dataBuffer);
 
-            byte bufferCheck = buffer[buffer.length - 3];
+            byte bufferCheck = buffer[len];
             if (check == bufferCheck) {
                 Timber.i("Check OK");
             } else {
@@ -1236,6 +1237,7 @@ public class InMotionAdapter extends BaseAdapter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int oldc = 0;
+        int oldestc = 0;
         UnpackerState state = UnpackerState.unknown;
 
         byte[] getBuffer() {
@@ -1245,7 +1247,7 @@ public class InMotionAdapter extends BaseAdapter {
         boolean addChar(int c) {
             if (state == UnpackerState.collecting) {
                 buffer.write(c);
-                if (c == (byte) 0x55 && oldc == (byte) 0x55) {
+                if (c == (byte) 0x55 && oldc == (byte) 0x55 && oldestc != (byte) 0xA5) {
                     state = UnpackerState.done;
                     updateStep = 0;
                     oldc = 0;
@@ -1253,22 +1255,16 @@ public class InMotionAdapter extends BaseAdapter {
                     return true;
                 }
             } else {
-                if (c == (byte) 0xAA && oldc == (byte) 0xAA) {
+                if (c == (byte) 0xAA && oldc == (byte) 0xAA && oldestc != (byte) 0xA5) {
                     buffer = new ByteArrayOutputStream();
                     buffer.write(0xAA);
                     buffer.write(0xAA);
                     state = UnpackerState.collecting;
                 }
             }
+            oldestc = oldc;
             oldc = c;
             return false;
-        }
-
-        void reset() {
-            buffer = new ByteArrayOutputStream();
-            oldc = 0;
-            state = UnpackerState.unknown;
-
         }
     }
 
