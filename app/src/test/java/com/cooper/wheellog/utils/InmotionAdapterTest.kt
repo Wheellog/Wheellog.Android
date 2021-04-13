@@ -272,6 +272,30 @@ class InmotionAdapterTest {
     }
 
     @Test
+    fun `decode data with escaped checksum`() {
+        // Arrange.
+        val byteArrays = listOf("aaaa1401a5550f8500000000000000fe02010001".hexToByteArray(),
+                "00da7c5e1a611400000000000000000000000000".hexToByteArray(),
+                "0000001500020200000000070003020000000026".hexToByteArray(),
+                "0301010000000000000a000000000000000200d0".hexToByteArray(),
+                "840000ea0f000000100000000000000000000000".hexToByteArray(),
+                "0000000100000000000000000000000000000000".hexToByteArray(),
+                "00000006000008000000005b0a006f6e01003a00".hexToByteArray(),
+                "0000006c3421000001010a00a5555555".hexToByteArray())
+
+        // Act.
+        var result = false
+        for (bytes in byteArrays) {
+            result = adapter.decode(bytes)
+        }
+
+        // Assert.
+        assertThat(result).isTrue()
+        assertThat(data.model).isEqualTo("Inmotion V8F")
+        assertThat(data.version).isEqualTo("2.2.21")
+    }
+
+    @Test
     fun `light commands`() {
         // Arrange.
         val expectedOn = "aaaa0d01a5550f010000000000000008050000805555".hexToByteArray()
