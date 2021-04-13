@@ -75,7 +75,6 @@ public class FileUtil {
     }
 
     public boolean prepareFile(String fileName, String folder) {
-        Timber.e("Prepare File %s started...", fileName);
         this.fileName = fileName;
         uri = null;
         file = null;
