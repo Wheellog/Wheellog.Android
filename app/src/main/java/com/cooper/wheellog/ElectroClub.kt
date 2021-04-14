@@ -66,7 +66,7 @@ class ElectroClub {
                 var userId: String? = null
                 var nickname = ""
                 response.use {
-                    val json = getSafeJson(response) ?: return
+                    val json = getSafeJson(LOGIN_METHOD, response) ?: return
                     if (!response.isSuccessful) {
                         parseError(json)
                     } else {
@@ -143,7 +143,7 @@ class ElectroClub {
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    val json = getSafeJson(response) ?: return
+                    val json = getSafeJson(UPLOAD_METHOD, response) ?: return
                     if (!response.isSuccessful) {
                         parseError(json)
                         errorListener?.invoke(UPLOAD_METHOD, lastError)
@@ -230,7 +230,7 @@ class ElectroClub {
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    val json = getSafeJson(response) ?: return
+                    val json = getSafeJson(GET_GARAGE_METHOD, response) ?: return
                     if (!response.isSuccessful) {
                         parseError(json)
                         errorListener?.invoke(GET_GARAGE_METHOD, lastError)
@@ -272,17 +272,17 @@ class ElectroClub {
                 ?: "Unknown error"
     }
 
-    private fun getSafeJson(response: Response): JSONObject? {
+    private fun getSafeJson(method: String, response: Response): JSONObject? {
         if (response.code in 500..599) {
             lastError = "500 exception"
-            errorListener?.invoke(GET_GARAGE_METHOD, lastError)
+            errorListener?.invoke(method, lastError)
             return null
         }
         try {
             return JSONObject(response.body!!.string())
         } catch (e: Exception) {
             lastError = "json parsing error: " + e.message
-            errorListener?.invoke(GET_GARAGE_METHOD, lastError)
+            errorListener?.invoke(method, lastError)
         }
         return null
     }
