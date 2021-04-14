@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -45,14 +47,23 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
         private var nameView: TextView = view.findViewById(R.id.name)
         private var descriptionView: TextView = view.findViewById(R.id.description)
+        private var uploadButtonLayout: RelativeLayout = view.findViewById(R.id.uploadButtonLayout)
         private var uploadView: ImageView = view.findViewById(R.id.uploadButton)
+        private var uploadProgressView: ProgressBar = view.findViewById(R.id.progressBar)
         private var shareView: ImageView = view.findViewById(R.id.shareButton)
+
+        private fun uploadInProgress(inProgress: Boolean) {
+            uploadView.visibility = if (inProgress) View.VISIBLE else View.GONE
+            uploadProgressView.visibility = if (!inProgress) View.VISIBLE else View.GONE
+        }
 
         fun bind(trip: Trip, uploadViewVisible: Int) {
             nameView.text = trip.title
             descriptionView.text = trip.description
-            uploadView.visibility = uploadViewVisible
+            uploadButtonLayout.visibility = uploadViewVisible
+            uploadInProgress(false)
             uploadView.setOnClickListener {
+                uploadInProgress(true)
                 val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     // Android 9 or less
                     FileInputStream(File(trip.mediaId))
@@ -62,10 +73,13 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                 }
                 if (inputStream == null) {
                     Timber.i("Failed to create inputStream for %s", trip.title)
+                    uploadInProgress(false)
                     return@setOnClickListener
                 }
                 val data = ByteStreams.toByteArray(inputStream)
-                ElectroClub.instance.uploadTrack(data, trip.title, false) { }
+                ElectroClub.instance.uploadTrack(data, trip.title, false) {
+                    uploadInProgress(false)
+                }
                 inputStream.close()
             }
             shareView.setOnClickListener {
