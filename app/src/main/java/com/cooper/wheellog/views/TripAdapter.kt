@@ -14,9 +14,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.ElectroClub
+import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.google.common.io.ByteStreams
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -53,8 +55,8 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
         private var shareView: ImageView = view.findViewById(R.id.shareButton)
 
         private fun uploadInProgress(inProgress: Boolean) {
-            uploadView.visibility = if (inProgress) View.VISIBLE else View.GONE
-            uploadProgressView.visibility = if (!inProgress) View.VISIBLE else View.GONE
+            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
+            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
         }
 
         fun bind(trip: Trip, uploadViewVisible: Int) {
@@ -78,7 +80,9 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                 }
                 val data = ByteStreams.toByteArray(inputStream)
                 ElectroClub.instance.uploadTrack(data, trip.title, false) {
-                    uploadInProgress(false)
+                    MainScope().launch {
+                        uploadInProgress(false)
+                    }
                 }
                 inputStream.close()
             }
