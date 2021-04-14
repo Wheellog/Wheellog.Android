@@ -276,15 +276,15 @@ class ElectroClub {
         if (response.code in 500..599) {
             lastError = "500 exception"
             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
+            return null
         }
-        var json: JSONObject? = null
         try {
-            json = JSONObject(response.body!!.string())
+            return JSONObject(response.body!!.string())
         } catch (e: Exception) {
             lastError = "json parsing error: " + e.message
             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
         }
-        return json
+        return null
     }
 
     private fun JSONObject.getObjectSafe(name: String): JSONObject? {
