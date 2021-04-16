@@ -26,10 +26,14 @@ import java.io.InputStream
 
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
-    private  var uploadViewVisible: Int = View.VISIBLE
+    private var uploadViewVisible: Int = View.VISIBLE
+
+    var uploadVisible: Boolean
+        get() = uploadViewVisible == View.VISIBLE
+        set(value) { uploadViewVisible = if (value) View.VISIBLE else View.GONE }
 
     init {
-        uploadViewVisible = if (WheelLog.AppConfig.autoUploadEc) View.VISIBLE else View.GONE
+        uploadVisible = WheelLog.AppConfig.autoUploadEc
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
