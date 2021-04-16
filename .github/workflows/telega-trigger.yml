@@ -20,7 +20,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Assemble
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug -Dec_accessToken="${{ secrets.EC_TOKEN }}"
 
     - name: Send apk to telegram
       uses: appleboy/telegram-action@master
