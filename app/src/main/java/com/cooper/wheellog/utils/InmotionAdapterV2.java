@@ -22,6 +22,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     private boolean turningOff = false;
     private static int updateStep = 0;
     private static int stateCon = 0;
+    private static int lightSwitchCounter = 0;
     private byte[] settingCommand;
     InmotionUnpackerV2 unpacker = new InmotionUnpackerV2();
 
@@ -518,7 +519,16 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (liftedState == 1) {wmode = wmode + " Lifted";}
             wd.setModeStr(wmode);
             //WheelLog.AppConfig.setFanEnabled(fanState != 0); // bad behaviour
-            WheelLog.AppConfig.setLightEnabled(lightState != 0);
+            // 1 != 1
+            // 0 != 0
+
+            if (WheelLog.AppConfig.getLightEnabled() != (lightState == 1)) {
+                if (lightSwitchCounter > 3) {
+                    WheelLog.AppConfig.setLightEnabled(lightState == 1);
+                    lightSwitchCounter = 0;
+                } else lightSwitchCounter += 1;
+            }
+            
             //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
             //// errors data
