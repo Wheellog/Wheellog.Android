@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="30dp"
-    >
+    android:theme="@style/OriginalTheme.Dialog.Alert">
 
     <TextView
         android:id="@+id/policy_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:textSize="20sp"
-        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:gravity="center"
         android:text="@string/private_policy_title"
-        android:gravity="center" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/policy_links"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:layout_marginBottom="15dp"/>
+        android:layout_marginBottom="15dp"
+        android:textSize="14sp" />
 
     <CheckBox
         android:id="@+id/agree_with_policy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/private_policy_agree"
-        android:layout_margin="15dp"/>
+        android:layout_margin="15dp"
+        android:text="@string/private_policy_agree" />
 
     <Button
         android:id="@+id/ok_button"

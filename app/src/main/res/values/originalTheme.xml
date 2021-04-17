@@ -9,6 +9,10 @@
         <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/background</item>
+        <item name="colorControlNormal">@color/divider</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
+        <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
     </style>
 
     <style name="OriginalTheme.Transparent" parent="OriginalTheme">
@@ -21,9 +25,39 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="OriginalTheme.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:background">@drawable/background</item>
+    <style name="OriginalTheme.Dialog.Alert" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:textColor">@color/wheelview_textblocks</item>
+        <item name="editTextColor">@color/wheelview_textblocks</item>
+        <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
+        <item name="colorControlNormal">@color/divider</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/OriginalTheme.ButtonNegativeStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/OriginalTheme.ButtonStyle</item>
+        <item name="android:checkboxStyle">@style/OriginalTheme.CheckBoxStyle</item>
+        <item name="editTextStyle">@style/OriginalTheme.EditTextStyle</item>
     </style>
+
+    <style name="OriginalTheme.ButtonStyle" parent="@style/Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/wheelview_text</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:colorBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="OriginalTheme.ButtonNegativeStyle" parent="@style/OriginalTheme.ButtonStyle">
+        <item name="android:textColor">@color/accent</item>
+    </style>
+
+    <style name="OriginalTheme.CheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/wheelview_textblocks</item>
+    </style>
+
+    <style name="OriginalTheme.EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/wheelview_textblocks</item>
+    </style>
+
 
     <style name="OriginalTheme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:minWidth">0dp</item>

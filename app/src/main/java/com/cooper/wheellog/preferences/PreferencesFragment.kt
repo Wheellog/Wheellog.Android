@@ -71,6 +71,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         when (requestCode) {
             authRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
+                    WheelLog.AppConfig.autoUploadEc = true
+                    refreshVolatileSettings()
                     ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                 } else {
                     ElectroClub.instance.logout()
@@ -165,15 +167,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.alarms_enabled, R.string.altered_alarms -> alarmSettings.switchAlarmsIsVisible(this)
             R.string.auto_upload_ec -> {
                 // TODO check user token
-                if (WheelLog.AppConfig.autoUploadEc && !mDataWarningDisplayed) {
+                if (WheelLog.AppConfig.autoUploadEc) {
                     WheelLog.AppConfig.autoUploadEc = false
                     AlertDialog.Builder(requireContext())
                             .setTitle(getString(R.string.enable_auto_upload_title))
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
                             .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
-                                mDataWarningDisplayed = true
-                                WheelLog.AppConfig.autoUploadEc = true
-                                refreshVolatileSettings()
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {
@@ -181,7 +180,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 }
                             }
                             .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
-                                mDataWarningDisplayed = false
                                 ElectroClub.instance.logout()
                                 refreshVolatileSettings()
                             }
@@ -193,7 +191,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     if (!WheelLog.AppConfig.autoUploadEc) {
                         ElectroClub.instance.logout()
                     }
-                    mDataWarningDisplayed = false
                 }
             }
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
