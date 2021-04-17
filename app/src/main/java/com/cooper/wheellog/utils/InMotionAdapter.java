@@ -1222,8 +1222,11 @@ public class InMotionAdapter extends BaseAdapter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int oldc = 0;
-        int len_p = 0;
-        int len_ex = 0;
+        // there are two types of packets, basic and extended, if it is extended packet,
+        // then len field should be 0xFE, and len of extended data should be in first data byte
+        // of usual packet
+        int len_p = 0;  // basic packet len
+        int len_ex = 0; // extended packet len
 
         UnpackerState state = UnpackerState.unknown;
 
@@ -1233,13 +1236,11 @@ public class InMotionAdapter extends BaseAdapter {
 
         boolean addChar(int c) {
             if (c != (byte) 0xA5 || oldc == (byte) 0xA5) {
-
-
                 if (state == UnpackerState.collecting) {
                     buffer.write(c);
                     int sz = buffer.size();
                     if (sz == 7) len_ex = c & 0xFF;
-                    if (sz == 15) len_p = c & 0xFF;
+                    else if (sz == 15) len_p = c & 0xFF;
                     if ((sz > len_ex+21) && (len_p == 0xFE)) reset(); // longer than expected
                     if ((c == (byte) 0x55 && oldc == (byte) 0x55) && ((sz == len_ex+21) || (len_p != 0xFE))) { // 18 header + 1 crc + 2 footer
                         state = UnpackerState.done;
@@ -1265,6 +1266,8 @@ public class InMotionAdapter extends BaseAdapter {
         void reset(){
             buffer = new ByteArrayOutputStream();
             oldc = 0;
+            len_p = 0;
+            len_ex = 0;
             state = UnpackerState.unknown;
         }
     }
