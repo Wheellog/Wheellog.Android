@@ -524,10 +524,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
             if (WheelLog.AppConfig.getLightEnabled() != (lightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    WheelLog.AppConfig.setLightEnabled(lightState == 1);
+                    WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
-            }
+            } else lightSwitchCounter = 0;
             
             //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
