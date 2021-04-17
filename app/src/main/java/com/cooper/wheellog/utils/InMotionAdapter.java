@@ -1241,7 +1241,10 @@ public class InMotionAdapter extends BaseAdapter {
                     int sz = buffer.size();
                     if (sz == 7) len_ex = c & 0xFF;
                     else if (sz == 15) len_p = c & 0xFF;
-                    if ((sz > len_ex+21) && (len_p == 0xFE)) reset(); // longer than expected
+                    if ((sz > len_ex+21) && (len_p == 0xFE)) {
+                        reset(); // longer than expected
+                        return false;
+                    }
                     if ((c == (byte) 0x55 && oldc == (byte) 0x55) && ((sz == len_ex+21) || (len_p != 0xFE))) { // 18 header + 1 crc + 2 footer
                         state = UnpackerState.done;
                         updateStep = 0;
