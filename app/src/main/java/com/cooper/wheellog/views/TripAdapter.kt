@@ -8,13 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.ElectroClub
+import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.google.common.io.ByteStreams
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -22,10 +26,14 @@ import java.io.InputStream
 
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
-    private  var uploadViewVisible: Int = View.VISIBLE
+    private var uploadViewVisible: Int = View.VISIBLE
+
+    var uploadVisible: Boolean
+        get() = uploadViewVisible == View.VISIBLE
+        set(value) { uploadViewVisible = if (value) View.VISIBLE else View.GONE }
 
     init {
-        uploadViewVisible = if (WheelLog.AppConfig.autoUploadEc) View.VISIBLE else View.GONE
+        uploadVisible = WheelLog.AppConfig.autoUploadEc
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -45,14 +53,23 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
         private var nameView: TextView = view.findViewById(R.id.name)
         private var descriptionView: TextView = view.findViewById(R.id.description)
+        private var uploadButtonLayout: RelativeLayout = view.findViewById(R.id.uploadButtonLayout)
         private var uploadView: ImageView = view.findViewById(R.id.uploadButton)
+        private var uploadProgressView: ProgressBar = view.findViewById(R.id.progressBar)
         private var shareView: ImageView = view.findViewById(R.id.shareButton)
+
+        private fun uploadInProgress(inProgress: Boolean) {
+            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
+            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
+        }
 
         fun bind(trip: Trip, uploadViewVisible: Int) {
             nameView.text = trip.title
             descriptionView.text = trip.description
-            uploadView.visibility = uploadViewVisible
+            uploadButtonLayout.visibility = uploadViewVisible
+            uploadInProgress(false)
             uploadView.setOnClickListener {
+                uploadInProgress(true)
                 val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     // Android 9 or less
                     FileInputStream(File(trip.mediaId))
@@ -62,10 +79,15 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                 }
                 if (inputStream == null) {
                     Timber.i("Failed to create inputStream for %s", trip.title)
+                    uploadInProgress(false)
                     return@setOnClickListener
                 }
                 val data = ByteStreams.toByteArray(inputStream)
-                ElectroClub.instance.uploadTrack(data, trip.title, false) { }
+                ElectroClub.instance.uploadTrack(data, trip.title, false) {
+                    MainScope().launch {
+                        uploadInProgress(false)
+                    }
+                }
                 inputStream.close()
             }
             shareView.setOnClickListener {

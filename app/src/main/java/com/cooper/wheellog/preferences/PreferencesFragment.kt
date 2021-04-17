@@ -74,10 +74,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     WheelLog.AppConfig.autoUploadEc = true
                     refreshVolatileSettings()
                     ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
+                    WheelLog.AppConfig.autoUploadEc = true
                 } else {
                     ElectroClub.instance.logout()
-                    refreshVolatileSettings()
                 }
+                refreshVolatileSettings()
             }
             mediaRequestCode -> {
                 val pref = findPreference<SwitchPreference>(getString(R.string.custom_beep))
@@ -173,6 +174,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .setTitle(getString(R.string.enable_auto_upload_title))
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
                             .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                mDataWarningDisplayed = true
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
                                 } else {

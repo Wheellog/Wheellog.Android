@@ -26,6 +26,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
@@ -797,8 +798,28 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 addPage(R.layout.main_view_trips)
             } else {
                 removePage(R.layout.main_view_trips)
+                listOfTrips = null
             }
             R.string.view_blocks_string -> updateScreen(true)
+            R.string.auto_upload_ec ->
+                GlobalScope.launch {
+                    delay(500)
+                    MainScope().launch {
+                        listOfTrips?.apply {
+                            // redraw
+                            val a = adapter as TripAdapter
+                            if (a.uploadVisible != WheelLog.AppConfig.autoUploadEc) {
+                                a.uploadVisible = WheelLog.AppConfig.autoUploadEc
+                                val l = layoutManager
+                                adapter = null
+                                layoutManager = null
+                                adapter = a
+                                layoutManager = l
+                                a.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
         }
     }
 
