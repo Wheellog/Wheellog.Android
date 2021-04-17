@@ -66,7 +66,7 @@ class ElectroClub {
                 var userId: String? = null
                 var nickname = ""
                 response.use {
-                    val json = JSONObject(response.body!!.string())
+                    val json = getSafeJson(LOGIN_METHOD, response) ?: return
                     if (!response.isSuccessful) {
                         parseError(json)
                     } else {
@@ -143,7 +143,7 @@ class ElectroClub {
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    val json = JSONObject(response.body!!.string())
+                    val json = getSafeJson(UPLOAD_METHOD, response) ?: return
                     if (!response.isSuccessful) {
                         parseError(json)
                         errorListener?.invoke(UPLOAD_METHOD, lastError)
@@ -230,29 +230,34 @@ class ElectroClub {
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    val json = JSONObject(response.body!!.string())
+                    val json = getSafeJson(GET_GARAGE_METHOD, response) ?: return
                     if (!response.isSuccessful) {
                         parseError(json)
                         errorListener?.invoke(GET_GARAGE_METHOD, lastError)
                     } else {
-                        val data = json.getObjectSafe("data")
-                        if (data == null || !data.has("transport_list")) {
-                            lastError = "no transport"
-                            errorListener?.invoke(GET_GARAGE_METHOD, lastError)
-                            return
-                        }
-                        val transportListJson = data.getJSONArray("transport_list")
-                        val transportList = Array(transportListJson.length()) { Transport() }
-                        val len = transportListJson.length() - 1
-                        for (i in 0..len) {
-                            val t = transportListJson.getJSONObject(i)
-                            transportList[i].apply {
-                                id = t.getString("id")
-                                name = t.getString("name")
-                                mac = t.getStringSafe("MAC")
+                        try {
+                            val data = json.getObjectSafe("data")
+                            if (data == null || !data.has("transport_list")) {
+                                lastError = "no transport"
+                                errorListener?.invoke(GET_GARAGE_METHOD, lastError)
+                                return
                             }
+                            val transportListJson = data.getJSONArray("transport_list")
+                            val transportList = Array(transportListJson.length()) { Transport() }
+                            val len = transportListJson.length() - 1
+                            for (i in 0..len) {
+                                val t = transportListJson.getJSONObject(i)
+                                transportList[i].apply {
+                                    id = t.getString("id")
+                                    name = t.getString("name")
+                                    mac = t.getStringSafe("MAC")
+                                }
+                            }
+                            success(transportList)
+                        } catch (e: Exception) {
+                            lastError = "json parsing error: " + e.message
+                            errorListener?.invoke(GET_GARAGE_METHOD, lastError)
                         }
-                        success(transportList)
                     }
                     successListener?.invoke(GET_GARAGE_METHOD, WheelLog.AppConfig.ecToken)
                 }
@@ -265,6 +270,21 @@ class ElectroClub {
                 ?.getObjectSafe("data")
                 ?.getStringSafe("error")
                 ?: "Unknown error"
+    }
+
+    private fun getSafeJson(method: String, response: Response): JSONObject? {
+        if (response.code in 500..599) {
+            lastError = "500 exception"
+            errorListener?.invoke(method, lastError)
+            return null
+        }
+        try {
+            return JSONObject(response.body!!.string())
+        } catch (e: Exception) {
+            lastError = "json parsing error: " + e.message
+            errorListener?.invoke(method, lastError)
+        }
+        return null
     }
 
     private fun JSONObject.getObjectSafe(name: String): JSONObject? {
