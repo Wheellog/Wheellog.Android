@@ -391,7 +391,7 @@ public class BluetoothLeService extends Service {
         Timber.i("Set characteristic %b", success);
     }
 
-    public boolean writeBluetoothGattCharacteristic(byte[] cmd) {
+    public synchronized boolean writeBluetoothGattCharacteristic(byte[] cmd) {
         if (this.mBluetoothGatt == null || cmd == null) {
             return false;
         }
