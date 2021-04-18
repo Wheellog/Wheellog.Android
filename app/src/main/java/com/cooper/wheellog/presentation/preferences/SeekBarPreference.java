@@ -71,6 +71,9 @@ public class SeekBarPreference extends Preference {
             if (mDecimalPlaces < 0)
                 mDecimalPlaces = 0;
             mMeasurementUnit = a.getString(R.styleable.SeekBarPreference_sbp_measurementUnit);
+            if (mMeasurementUnit == null) {
+                mMeasurementUnit = "";
+            }
             mSeekBarValue = attrs != null
                     ? attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "defaultValue", DEFAULT_CURRENT_VALUE)
                     : DEFAULT_CURRENT_VALUE;
@@ -135,8 +138,13 @@ public class SeekBarPreference extends Preference {
             return;
         }
 
+        if (mSeekBarIncrement != 0) {
+            seekBar.setKeyProgressIncrement(mSeekBarIncrement);
+        } else {
+            mSeekBarIncrement = seekBar.getKeyProgressIncrement();
+        }
+
         seekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
-        seekBar.setMax(mMax); // - mMin);
         // If the increment is not zero, use that. Otherwise, use the default mKeyProgressIncrement
         // in AbsSeekBar when it's zero. This default increment value is set by AbsSeekBar
         // after calling setMax. That's why it's important to call setKeyProgressIncrement after
@@ -144,11 +152,7 @@ public class SeekBarPreference extends Preference {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             seekBar.setMin(mMin);
         }
-        if (mSeekBarIncrement != 0) {
-            seekBar.setKeyProgressIncrement(mSeekBarIncrement);
-        } else {
-            mSeekBarIncrement = seekBar.getKeyProgressIncrement();
-        }
+        seekBar.setMax(mMax);
 
         seekBar.setProgress(mSeekBarValue); // - mMin);
         updateLabelValue(mSeekBarValue);

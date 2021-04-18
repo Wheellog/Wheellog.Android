@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="OriginalTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:textColor">@color/wheelview_textblocks</item>
         <item name="colorPrimary">@color/primary</item>
@@ -11,5 +12,9 @@
         <item name="android:colorBackground">@color/background</item>
         <item name="android:navigationBarColor">@color/primary</item>
         <item name="android:statusBarColor">@color/primary</item>
+        <item name="colorControlNormal">@color/divider</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
+        <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
     </style>
 </resources>

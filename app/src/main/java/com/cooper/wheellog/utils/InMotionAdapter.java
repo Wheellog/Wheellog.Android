@@ -283,7 +283,6 @@ public class InMotionAdapter extends BaseAdapter {
 
     private void setModel(Model value){
         model = value;
-        int a = 0;
     }
 
     public void startKeepAliveTimer(String password) {
@@ -295,30 +294,36 @@ public class InMotionAdapter extends BaseAdapter {
                         if (WheelData.getInstance().bluetoothCmd(InMotionAdapter.CANMessage.getPassword(password).writeBuffer())) {
                             Timber.i("Sent password message");
                             passwordSent++;
-                        } else updateStep = 35;
+                        } else {
+                            updateStep = 5;
+                        }
 
                     } else if (model == UNKNOWN | needSlowData) {
                         if (WheelData.getInstance().bluetoothCmd(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
-                        } else updateStep = 35;
+                        } else {
+                            updateStep = 5;
+                        }
 
                     } else if (settingCommandReady) {
                         if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
-                        } else updateStep = 35; // after +1 and %10 = 0
+                        } else {
+                            updateStep = 5; // after +1 and %10 = 0
+                        }
                     } else {
                         if (!WheelData.getInstance().bluetoothCmd(CANMessage.standardMessage().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
-                            updateStep = 35;
+                            updateStep = 5;
                         } else {
                             Timber.i("Sent keep-alive message");
                         }
                     }
 
                 }
-                updateStep += 1;
+                updateStep++;
                 updateStep %= 10;
                 Timber.i("Step: %d", updateStep);
             }
@@ -1280,16 +1285,17 @@ public class InMotionAdapter extends BaseAdapter {
         return 20;
     }
 
-    public static InMotionAdapter getInstance() {
+    public static synchronized InMotionAdapter getInstance() {
         if (INSTANCE == null) {
             Timber.i("New instance");
             INSTANCE = new InMotionAdapter();
+        } else {
+            Timber.i("Get instance");
         }
-        Timber.i("Get instance");
         return INSTANCE;
     }
 
-    public static void newInstance() {
+    public static synchronized void newInstance() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
@@ -1298,7 +1304,7 @@ public class InMotionAdapter extends BaseAdapter {
         INSTANCE = new InMotionAdapter();
     }
 
-    public static void stopTimer() {
+    public static synchronized void stopTimer() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;

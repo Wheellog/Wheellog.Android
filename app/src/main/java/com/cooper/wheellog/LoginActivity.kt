@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         val title = convertView.findViewById<TextView>(R.id.alertTitle)
         title.text = "electro.club"
 
-        dialog = AlertDialog.Builder(this, R.style.OriginalTheme_Dialog_Alert)
+        dialog = AlertDialog.Builder(this)
                 .setView(convertView)
                 .setCancelable(false)
                 .show()

@@ -675,7 +675,7 @@ public class NinebotAdapter extends BaseAdapter {
         return INSTANCE;
     }
 
-    public static void newInstance() {
+    public static synchronized void newInstance() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
@@ -685,7 +685,7 @@ public class NinebotAdapter extends BaseAdapter {
         INSTANCE = new NinebotAdapter();
     }
 
-    public static void stopTimer() {
+    public static synchronized void stopTimer() {
         if (INSTANCE != null && INSTANCE.keepAliveTimer != null) {
             INSTANCE.keepAliveTimer.cancel();
             INSTANCE.keepAliveTimer = null;
