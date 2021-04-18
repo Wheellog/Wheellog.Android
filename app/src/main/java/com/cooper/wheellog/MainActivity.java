@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> xAxis_labels = new ArrayList<>();
     private boolean use_mph = false;
     private DrawerLayout mDrawer;
-    public static int ButtonMiBand = 3;
+    public static int ButtonMiBand = 2;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
