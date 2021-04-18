@@ -43,6 +43,7 @@
         android:ellipsize="none"
         android:text="@android:string/ok"
         android:visibility="gone"
+        android:theme="@style/OriginalTheme.ButtonStylePositive"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
