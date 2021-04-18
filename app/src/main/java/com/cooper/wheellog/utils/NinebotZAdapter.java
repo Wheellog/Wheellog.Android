@@ -32,7 +32,7 @@ public class NinebotZAdapter extends BaseAdapter {
                 if (updateStep == 0) {
                     Timber.i("State connection %d", stateCon);
                     if (stateCon == 0) {
-                        if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.startCommunication().writeBuffer())) {
+                        if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBleVersion().writeBuffer())) {
                             Timber.i("Sent start message");
                         } else Timber.i("Unable to send start message");
 
@@ -691,13 +691,31 @@ public class NinebotZAdapter extends BaseAdapter {
 
         enum Param {
             GetKey(0x00),
-            Start(0x68),
             SerialNumber(0x10),
             Firmware(0x1a),
-            Angles(0x61),
             BatteryLevel(0x22),
+            Angles(0x61),
+            Bat1Fw(0x66),
+            Bat2Fw(0x67),
+            BleVersion(0x68),
             ActivationDate(0x69),
-            LiveData(0xb0);
+            LockMode(0x70),
+            LimitedMode(0x72),
+            LimitModeSpeed1Km(0x73), // not sure (?)
+            LimitModeSpeed(0x74),
+            Calibration(0x75),
+            Alarms(0x7c),
+            Alarm1Speed(0x7d),
+            Alarm2Speed(0x7e),
+            Alarm3Speed(0x7f),
+            LiveData(0xb0),
+            LedMode(0xc6),
+            LedColor1(0xc8),
+            LedColor2(0xca),
+            LedColor3(0xcc),
+            LedColor4(0xce),
+            PedalSensivity(0xd2),
+            DriveFlags(0xd3); // 1bit - Light(DRL?), 2bit - Taillight, 3bit- Light(???), 4bit - StrainGuage, 5bit - BrakeAssist, ,
 
             private final int value;
 
@@ -812,12 +830,12 @@ public class NinebotZAdapter extends BaseAdapter {
             return dataBuffer;
         }
 
-        public static CANMessage startCommunication() {
+        public static CANMessage getBleVersion() {
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Read.getValue();
-            msg.parameter = Param.Start.getValue();
+            msg.parameter = Param.BleVersion.getValue();
             msg.data = new byte[]{0x02};
             msg.len = msg.data.length;
             msg.crc = 0;
@@ -879,6 +897,38 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.command = Comm.Read.getValue();
             msg.parameter = Param.LiveData.getValue();
             msg.data = new byte[]{0x20};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setLimitedMode(Boolean on) {
+            byte value = 0;
+            if (on) {
+                value = 1;
+            }
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LimitedMode.getValue();
+            msg.data = new byte[]{value};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setStrainGauge(Boolean on) {
+            byte value = 0;
+            if (on) {
+                value = 1;
+            }
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LimitedMode.getValue();
+            msg.data = new byte[]{value};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -1073,7 +1123,7 @@ public class NinebotZAdapter extends BaseAdapter {
 
                 if (result != null) { // data OK
                     Timber.i("Verification successful, command %02X", result.parameter);
-                    if ((result.parameter == CANMessage.Param.Start.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                    if ((result.parameter == CANMessage.Param.BleVersion.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get start answer");
                         stateCon = 2;
 
