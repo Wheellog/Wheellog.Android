@@ -10,4 +10,13 @@
         android:defaultValue="true"
         android:visible="true" />
 
+    <ListPreference
+        android:defaultValue="0"
+        android:enabled="true"
+        android:entries="@array/gotway_negative"
+        android:entryValues="@array/gotway_negative_values"
+        android:key="@string/gotway_negative"
+        android:summary="@string/gotway_negative_description"
+        android:title="@string/gotway_negative_title" />
+
 </PreferenceScreen>

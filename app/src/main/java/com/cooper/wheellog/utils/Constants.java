@@ -4,24 +4,25 @@ import java.util.UUID;
 
 public class Constants {
 
-    public static final String ACTION_BLUETOOTH_CONNECTION_STATE = "com.cooper.wheellog.bluetoothConnectionState";
+    public static final String ACTION_BLUETOOTH_CONNECTION_STATE = "com.jastrebov.wldmod.bluetoothConnectionState";
     public static final String ACTION_WHEEL_DATA_AVAILABLE = "com.jastrebov.wheelTimber.wheelDataAvailable";
 	public static final String ACTION_WHEEL_SETTING_CHANGED = "com.jastrebov.wheelTimber.wheelSettingChanged";
-    public static final String ACTION_REQUEST_KINGSONG_SERIAL_DATA = "com.cooper.wheellog.requestSerialData";
-    public static final String ACTION_REQUEST_KINGSONG_NAME_DATA = "com.cooper.wheellog.requestNameData";
-    public static final String ACTION_REQUEST_KINGSONG_HORN = "com.cooper.wheellog.requestHorn";
-    public static final String ACTION_PEBBLE_SERVICE_TOGGLED = "com.cooper.wheellog.pebbleServiceToggled";
-    public static final String ACTION_LOGGING_SERVICE_TOGGLED = "com.cooper.wheellog.loggingServiceToggled";
-    public static final String ACTION_REQUEST_CONNECTION_TOGGLE = "com.cooper.wheellog.requestConnectionToggle";
-    public static final String ACTION_REQUEST_RECONNECT = "com.cooper.wheellog.requestReconnectToggle";
-    public static final String ACTION_PREFERENCE_CHANGED = "com.cooper.wheellog.preferenceChanged";
-    public static final String ACTION_PREFERENCE_RESET = "com.cooper.wheellog.preferenceReset";
-    public static final String ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED = "com.cooper.wheellog.pebblePreferenceChanged";
-    public static final String ACTION_ALARM_TRIGGERED = "com.cooper.wheellog.alarmTriggered";
-    public static final String ACTION_PEBBLE_APP_READY = "com.cooper.wheellog.pebbleAppReady";
-    public static final String ACTION_PEBBLE_APP_SCREEN = "com.cooper.wheellog.pebbleAppScreen";
-	public static final String ACTION_WHEEL_TYPE_RECOGNIZED = "com.cooper.wheellog.wheelTypeRecognized";
-    public static final String ACTION_REQUEST_SWMIBAND = "com.cooper.wheellog.request_swmiband";
+    public static final String ACTION_REQUEST_KINGSONG_SERIAL_DATA = "com.jastrebov.wldmod.requestSerialData";
+    public static final String ACTION_REQUEST_KINGSONG_NAME_DATA = "com.jastrebov.wldmod.requestNameData";
+    public static final String ACTION_REQUEST_KINGSONG_HORN = "com.jastrebov.wldmod.requestHorn";
+    public static final String ACTION_PEBBLE_SERVICE_TOGGLED = "com.jastrebov.wldmod.pebbleServiceToggled";
+    public static final String ACTION_LOGGING_SERVICE_TOGGLED = "com.jastrebov.wldmod.loggingServiceToggled";
+    public static final String ACTION_REQUEST_CONNECTION_TOGGLE = "com.jastrebov.wldmod.requestConnectionToggle";
+    public static final String ACTION_REQUEST_RECONNECT = "com.jastrebov.wldmod.requestReconnectToggle";
+    public static final String ACTION_PREFERENCE_CHANGED = "com.jastrebov.wldmod.preferenceChanged";
+    public static final String ACTION_PREFERENCE_RESET = "com.jastrebov.wldmod.preferenceReset";
+    public static final String ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED = "com.jastrebov.wldmod.pebblePreferenceChanged";
+    public static final String ACTION_ALARM_TRIGGERED = "com.jastrebov.wldmod.alarmTriggered";
+    public static final String ACTION_PEBBLE_APP_READY = "com.jastrebov.wldmod.pebbleAppReady";
+    public static final String ACTION_PEBBLE_APP_SCREEN = "com.jastrebov.wldmod.pebbleAppScreen";
+	public static final String ACTION_WHEEL_TYPE_RECOGNIZED = "com.jastrebov.wldmod.wheelTypeRecognized";
+    public static final String ACTION_REQUEST_SWMIBAND = "com.jastrebov.wldmod.request_swmiband";
+    public static final String ACTION_WHEEL_TYPE_CHANGED = "com.jastrebov.wldmod.wheelTypeChanged";
 
     static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
     static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";
@@ -76,15 +77,6 @@ public class Constants {
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
     public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
     public static final String INTENT_EXTRA_DATA_TO_LOGS = "wheel_data_to_logs";
-	public static final String INTENT_EXTRA_WHEEL_LIGHT = "wheel_light";
-	public static final String INTENT_EXTRA_WHEEL_LED = "wheel_led";
-	public static final String INTENT_EXTRA_WHEEL_BUTTON = "wheel_button";
-	public static final String INTENT_EXTRA_WHEEL_MAX_SPEED= "wheel_max_speed";
-	public static final String INTENT_EXTRA_WHEEL_SPEAKER_VOLUME = "wheel_speaker_volume";
-	public static final String INTENT_EXTRA_WHEEL_REFRESH = "wheel_refresh";
-	public static final String INTENT_EXTRA_WHEEL_PEDALS_ADJUSTMENT = "pedals_adjustment";
-	public static final String INTENT_EXTRA_WHEEL_TYPE = "wheel_type";
-    public static final String INTENT_EXTRA_RESET = "reset";
     public static final String INTENT_EXTRA_SETTINGS_KEY = "settings_key";
     public static final String PREFERENCES_FRAGMENT_TAG = "tagPrefs";
 
@@ -98,7 +90,8 @@ public class Constants {
         NINEBOT_Z,
         INMOTION,
         INMOTION_V2,
-        VETERAN;
+        VETERAN,
+        GOTWAY_VIRTUAL
     }
 
     public enum PEBBLE_APP_SCREEN {
@@ -115,12 +108,12 @@ public class Constants {
             return value;
         }
 
-        }
+    }
 
     public enum ALARM_TYPE {
         //SPEED(0),
         CURRENT(4),
-		TEMPERATURE(5),
+        TEMPERATURE(5),
         SPEED1(1),
         SPEED2(2),
         SPEED3(3);
@@ -139,18 +132,6 @@ public class Constants {
     }
 
     public static final int MAIN_NOTIFICATION_ID = 423411;
-    public static final int NOTIFICATION_ID_LOGGING = 423412;
-    public static final int NOTIFICATION_ID_PEBBLE = 423413;
-    public static final int NOTIFICATION_ID_GARMIN_CONNECT = 423414;
-    public static final int NOTIFICATION_ID4 = 423415;
-    public static final int NOTIFICATION_ID_DRIVE = 423416;
-    public static final int NOTIFICATION_ID_GEAR = 423417;
-/*    public static final int NOTIFICATION_ID_LOGGING = 10;
-    public static final int NOTIFICATION_ID_PEBBLE = 10;
-    public static final int NOTIFICATION_ID_GARMIN_CONNECT = 10;
-    public static final int NOTIFICATION_ID4 = 10;
-    public static final int NOTIFICATION_ID_DRIVE = 10;
-    public static final int NOTIFICATION_ID_GEAR = 10;
-*/
+
     public static final String LOG_FOLDER_NAME = "WheelLog AJDM Logs";
 }

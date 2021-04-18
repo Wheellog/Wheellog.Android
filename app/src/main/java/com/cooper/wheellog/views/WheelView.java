@@ -342,11 +342,11 @@ public class WheelView extends View {
             return;
 
         mSpeed = speed;
-        int maxSpeed = WheelLog.AppConfig.getMaxSpeed();
+        int maxSpeed = WheelLog.AppConfig.getMaxSpeed() * 10;
         speed = speed > maxSpeed ? maxSpeed : speed;
 
-        targetSpeed = Math.round(((float) speed / maxSpeed) * 112);
-        refreshDrawableState();
+        targetSpeed = Math.round(((float) Math.abs(speed) / maxSpeed) * 112);
+        refresh();
     }
     
     public void setBattery(int battery) {
@@ -442,11 +442,9 @@ public class WheelView extends View {
         if (mCurrent.equals(current))
             return;
         mCurrent = current;
-
-        current = current / 10;
         int maxSpeed = WheelLog.AppConfig.getMaxSpeed();
-        current = Math.abs(current) > maxSpeed ? maxSpeed : current;
-        targetCurrent = (int) Math.round(( current / maxSpeed) * 112);
+        current = Math.abs(current) > maxSpeed ? (double)maxSpeed : current;
+        targetCurrent = (int) Math.round((current / (double)maxSpeed) * 112);
         refresh();
     }
 
@@ -827,8 +825,8 @@ public class WheelView extends View {
 
 
         if (WheelLog.AppConfig.getUseShortPwm() || isInEditMode()) {
-            String pwm = String.format("%02.0f%% | %02.0f%%",
-                    WheelData.getInstance().getCurrentPwm(),
+            String pwm = String.format("%02.0f%% / %02.0f%%",
+                    WheelData.getInstance().getCalculatedPwm(),
                     WheelData.getInstance().getMaxPwm());
             textPaint.setTextSize(speedTextKPHSize * 1.2F);
             canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + (speedTextKPHHeight * 3.3F), textPaint);

@@ -11,6 +11,10 @@
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="speed_alarm1" translatable="false">speed_alarm1</string>
+    <string name="speed_alarm2" translatable="false">speed_alarm2</string>
+    <string name="speed_alarm3" translatable="false">speed_alarm3</string>
+    <string name="altered_alarms_section" translatable="false">altered_alarms_section</string>
     <string name="alarm_1_speed" translatable="false">alarm_1_speed</string>
     <string name="alarm_1_battery" translatable="false">alarm_1_battery</string>
     <string name="alarm_2_speed" translatable="false">alarm_2_speed</string>
@@ -31,9 +35,9 @@
     <string name="warning_speed_period" translatable="false">warning_speed_period</string>
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
-    <string name="notification_text_min">Spd: %1$.0f k/h Batt: %2$d %% Dist: %3$.1f km</string>
-    <string name="notification_text_med">Spd: %1$.0f k/h Avg: %2$.0f k/h Bat.: %3$d %% Temp: %4$d°C Dist: %5$.1f km</string>
-    <string name="notification_text_max">Spd: %1$.0f k/h Max: %2$.0f k/h Peak: %3$.0f W Batt.: %4$d %% Out: %5$.0f W Temp: %6$d°C Dist: %7$.1f km</string>
+    <string name="notification_text_min">Spd: %1$.0f k/h Max: %2$.0f k/h Batt: %3$d %% Dist: %4$.1f km</string>
+    <string name="notification_text_med">Spd: %1$.0f k/h Avg: %2$.0f k/h Pwm: %3$.0f %% Bat.: %4$d %% Temp: %5$d°C Dist: %6$.1f km</string>
+    <string name="notification_text_max">Spd: %1$.0f k/h Max: %2$.0f k/h Peak: %3$.0f W Batt.: %4$d %% Volt.: %5$.2f V Out: %6$.0f W Temp: %7$d°C Dist: %8$.1f km</string>
     <string name="notification_text_alarm">Spd: %1$.0f k/h Curr.: %2$.1f A Volt.: %3$.2f V Batt.: %4$d %% Temp: %5$d°C</string>
     <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
     <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
@@ -183,13 +187,19 @@
     <string name="fan_status">Fan Status</string>
     <string name="mode">Mode</string>
     <string name="total_distance">Total Distance</string>
+    <string name="torque">Torque</string>
+    <string name="dynamic_speed_limit">Speed Limit</string>
+    <string name="dynamic_current_limit">Current Limit</string>
+    <string name="cpu_temp">CPU temp</string>
+    <string name="imu_temp">IMU temp</string>
+    <string name="motor_power">Motor Power</string>
     <string name="total">Total</string>
     <string name="name">Name</string>
     <string name="model">Model</string>
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
-    <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
+    <string name="notification_text">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
     <string name="icon_watch">Watch Icon</string>
@@ -252,6 +262,7 @@
     <string name="about_app_title">About WheelLog</string>
     <string name="settings_title">Settings</string>
     <string name="amp">A</string>
+    <string name="newton">N*m</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
     <string name="dial_measurements"></string>
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>
@@ -292,9 +303,9 @@
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
     <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>
-    <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Watch/Band</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
-    <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Watch/Band</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
     <string name="altered_alarms_pref_title">Altered alarms options</string>
@@ -419,5 +430,8 @@
     <string name="alarm_text_speed_v">Speed alarm at %1$.0f k/h</string>
     <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
     <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
-
+    <string name="show_page_events" translatable="false">show_page_events</string>
+    <string name="show_page_events_description">Show the events page</string>
+    <string name="show_page_events_title">Events page</string>
+    <string name="main_view_category">Main view</string>
 </resources>

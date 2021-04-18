@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import android.content.Context
 import com.cooper.wheellog.BluetoothLeService
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
@@ -9,7 +10,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.abs
 import kotlin.math.round
@@ -23,11 +23,11 @@ class KingsongAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
+        data.wheelType = Constants.WHEEL_TYPE.KINGSONG
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        every { data.bluetoothLeService } returns
-                mockkClass(BluetoothLeService::class, relaxed = true)
     }
 
     @After
@@ -97,7 +97,7 @@ class KingsongAdapterTest {
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
         assertThat(data.topSpeedDouble).isEqualTo(topSpeed / 100.0)
         assertThat(data.fanStatus).isEqualTo(fanStatus)
@@ -118,7 +118,7 @@ class KingsongAdapterTest {
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.name).isEqualTo(name)
         assertThat(data.model).isEqualTo(model)
     }
@@ -126,6 +126,7 @@ class KingsongAdapterTest {
     @Test
     fun `decode Serial number`() {
         // Arrange.
+        every { data.bluetoothLeService } returns mockkClass(BluetoothLeService::class, relaxed = true)
         val type = 179.toByte() // Name and Type data
         val serial = "King1234567890123"
         val serialBytes = serial.toByteArray(Charsets.UTF_8)
@@ -138,7 +139,7 @@ class KingsongAdapterTest {
         val result = adapter.decode(byteArray)
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.serial.trimEnd('\u0000')).isEqualTo(serial)
     }
 
@@ -173,9 +174,9 @@ class KingsongAdapterTest {
         val result5 = adapter.decode(byteArray5)
 
         // Assert.
-        assertThat(result1).isTrue()
+        assertThat(result1).isFalse()
         assertThat(result2).isTrue()
-        assertThat(result3).isTrue()
+        assertThat(result3).isFalse()
         assertThat(result4).isFalse()
         assertThat(result5).isFalse()
         // 1st data
@@ -195,17 +196,16 @@ class KingsongAdapterTest {
         assertThat(data.temperature2).isEqualTo(16)
         assertThat(data.fanStatus).isEqualTo(0)
         assertThat(data.chargingStatus).isEqualTo(0)
-        assertThat(data.distanceDouble).isEqualTo(0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.009)
         //4th data
         assertThat(data.cpuLoad).isEqualTo(64)
         assertThat(data.output).isEqualTo(12)
 
         //5th data
-        assertThat(adapter.speedLimit).isEqualTo(32.05) //limit speed
+        assertThat(data.speedLimit).isEqualTo(32.05) //limit speed
     }
 
     @Test
-    @Ignore // TODO
     fun `update pedals mode`() {
         // Arrange.
         every { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) } returns true
@@ -216,6 +216,6 @@ class KingsongAdapterTest {
         adapter.updatePedalsMode(2)
 
         // Assert.
-        verify { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) }
+        verify(atLeast = 3) { data.bluetoothLeService.writeBluetoothGattCharacteristic(any()) }
     }
 }

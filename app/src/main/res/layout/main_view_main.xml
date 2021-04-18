@@ -1,4 +1,4 @@
-<LinearLayout android:id="@+id/page_one"
+<LinearLayout android:id="@+id/page_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"

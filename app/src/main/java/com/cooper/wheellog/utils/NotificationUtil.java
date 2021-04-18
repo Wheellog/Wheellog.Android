@@ -36,6 +36,7 @@ public class NotificationUtil {
     private double mCurrent = 0.0;
     private int mTemperature = 0;
     private double mMaxSpeed = 0.0;
+    private double mPWM = 0.0;
     private double mAvgSpeed = 0.0;
     public static double MaxCurrent = 0.0;
     public static double MaxPower = 0.0;
@@ -116,9 +117,10 @@ public class NotificationUtil {
                     double power = WheelData.getInstance().getPowerDouble();
                     double current = WheelData.getInstance().getCurrentDouble();
                     double voltage = WheelData.getInstance().getVoltageDouble();
-                    double distance = (double) WheelData.getInstance().getDistanceDouble();
+                    double distance = WheelData.getInstance().getDistanceDouble();
                     double speed = (double) Math.round(WheelData.getInstance().getSpeedDouble() * 10) / 10;
                     double maxspeed = (double) Math.round(WheelData.getInstance().getTopSpeedDouble() * 10) / 10;
+                    double pwm = WheelData.getInstance().getCalculatedPwm();
                     double avgspeed = (double) Math.round(WheelData.getInstance().getAverageRidingSpeedDouble() * 10) / 10;
 
 
@@ -135,6 +137,7 @@ public class NotificationUtil {
                         mVoltage = voltage;
                         mMaxSpeed = maxspeed;
                         mAvgSpeed = avgspeed;
+                        mPWM = pwm;
                              if (MainActivity.ButtonMiBand > 0)
                                 updateNotification();
                              if (mCurrent > MaxCurrent)
@@ -278,7 +281,7 @@ public class NotificationUtil {
                         .setContentIntent(pendingIntent)
                         .setContent(notificationView)
                         .setContentTitle(titlenot)
-                        .setContentText(mContext.getString(R.string.notification_text_min, mSpeed, mBatteryLevel, mDistance))
+                        .setContentText(mContext.getString(R.string.notification_text_min, mSpeed, mMaxSpeed, mBatteryLevel, mDistance))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .build();
             }
@@ -289,7 +292,7 @@ public class NotificationUtil {
                         .setContentIntent(pendingIntent)
                         .setContent(notificationView)
                         .setContentTitle(titlenot)
-                        .setContentText(mContext.getString(R.string.notification_text_med, mSpeed, mAvgSpeed, mBatteryLevel, mTemperature, mDistance))
+                        .setContentText(mContext.getString(R.string.notification_text_med, mSpeed, mAvgSpeed, mPWM, mBatteryLevel, mTemperature, mDistance))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .build();
             }
@@ -300,7 +303,7 @@ public class NotificationUtil {
                         .setContentIntent(pendingIntent)
                         .setContent(notificationView)
                         .setContentTitle(titlenot)
-                        .setContentText(mContext.getString(R.string.notification_text_max, mSpeed, mMaxSpeed, MaxPower, mBatteryLevel, mPower, mTemperature, mDistance))
+                        .setContentText(mContext.getString(R.string.notification_text_max, mSpeed, mMaxSpeed, MaxPower, mBatteryLevel, mVoltage, mPower, mTemperature, mDistance))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .build();
             }

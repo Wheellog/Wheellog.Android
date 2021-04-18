@@ -115,6 +115,7 @@ public class AppConfig extends AppConfigBase {
         put("horn_mode", SettingsType.General);
         put("view_blocks_string", SettingsType.General);
         put("last_mac", SettingsType.General);
+        put("show_page_events", SettingsType.General);
     }};
 
     public Map<String, SettingsType> getControlSettings() {
@@ -170,6 +171,7 @@ public class AppConfig extends AppConfigBase {
             case "fixed_percents": setFixedPercents(getFixedPercents(fromControlOptional), fromControlReverseOptional); break;
             case "cell_voltage_tiltback": setCellVoltageTiltback(getCellVoltageTiltback(fromControlOptional), fromControlReverseOptional); break;
             case "current_on_dial": setCurrentOnDial(getCurrentOnDial(fromControlOptional), fromControlReverseOptional); break;
+            case "show_page_events": setPageEvents(getPageEvents(fromControlOptional), fromControlReverseOptional); break;
             case "battery_capacity": setBatteryCapacity(getBatteryCapacity(fromControlOptional), fromControlReverseOptional); break;
             case "charging_power": setChargingPower(getChargingPower(fromControlOptional), fromControlReverseOptional); break;
             case "connect_beep": setConnectBeep(getConnectBeep(fromControlOptional), fromControlReverseOptional); break;
@@ -738,6 +740,14 @@ public class AppConfig extends AppConfigBase {
         setBoolean(R.string.current_on_dial, newValue, settingsType(R.string.current_on_dial), fromControl);
     }
 
+    public Boolean getPageEvents(Boolean... fromControl) {
+        return getBoolean(R.string.show_page_events, false, settingsType(R.string.show_page_events), fromControl);
+    }
+
+    public void setPageEvents(Boolean newValue, Boolean... fromControl) {
+        setBoolean(R.string.show_page_events, newValue, settingsType(R.string.show_page_events), fromControl);
+    }
+
     public Boolean getConnectionSound(Boolean... fromControl) {
         return getBoolean(R.string.connection_sound, false, settingsType(R.string.connection_sound), fromControl);
     }
@@ -787,11 +797,11 @@ public class AppConfig extends AppConfigBase {
     }
 
     public int getMaxSpeed(Boolean... fromControl) {
-        return getInt(R.string.max_speed, 30, settingsType(R.string.max_speed), fromControl) * 10;
+        return getInt(R.string.max_speed, 30, settingsType(R.string.max_speed), fromControl);
     }
 
     public void setMaxSpeed(int newValue, Boolean... fromControl) {
-        setInt(R.string.max_speed, newValue / 10, settingsType(R.string.max_speed), fromControl);
+        setInt(R.string.max_speed, newValue, settingsType(R.string.max_speed), fromControl);
     }
 
     public Boolean getUseRatio(Boolean... fromControl) {

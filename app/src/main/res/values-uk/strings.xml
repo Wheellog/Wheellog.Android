@@ -70,7 +70,7 @@
     <string name="alarm_settings_title">Налаштування сигналів</string>
     <string name="watch_settings_title">Налаштування годинника</string>
     <string name="wheel_settings_title">Налаштування колеса</string>
-    <string name="notification_text">Їде: %1$.0f к/г Макс.: %2$.0f Сер.: %3$.0f Заряд: %4$d %% Сила: %5$.0f W Темп.: %6$d°C Шлях: %7$.1f км</string>
+    <string name="notification_text">• %1$.1f км/г • %2$d%% • %3$d°C • %4$.1f км •</string>
     <string name="notification_text_not">%1$.0f км/г | %2$d %% | %3$.0f W | %4$d°C | %5$.3f км</string>
     <string name="reset_user_distance_title">Скинути мій пробіг</string>
     <string name="no_smart_bms">Smart BMS не знайдена</string>
@@ -231,9 +231,9 @@
     <string name="alarm_text_speed_v">Перевищення швидкості: %1$.0f к/г</string>
     <string name="alarm_text_current_v">Перевищення сили струму: %1$.0f A</string>
     <string name="alarm_text_temperature_v">Перевищення температури: %1$d°C</string>
-    <string name="notification_text_min">Їде: %1$.0f к/г Заряд: %2$d %% Шлях: %3$.1f км</string>
-    <string name="notification_text_med">Їде: %1$.0f k/h Сер.: %2$.0f к/г Заряд: %3$d %% Нагрів: %4$d°C Шлях: %5$.1f км</string>
-    <string name="notification_text_max">Їде: %1$.0f к/г Топ: %2$.0f к/г Макс.: %3$.0f W Заряд: %4$d %% Сила: %5$.0f W Нагрів: %6$d°C Шлях: %7$.1f км</string>
+    <string name="notification_text_min">Їде: %1$.0f к/г Макс.: %2$.0f к/г Заряд: %3$d %% Шлях: %4$.1f км</string>
+    <string name="notification_text_med">Їде: %1$.0f k/h Сер.: %2$.0f к/г Pwm: %3$.0f %% Заряд: %4$d %% Нагрів: %5$d°C Шлях: %6$.1f км</string>
+    <string name="notification_text_max">Їде: %1$.0f к/г Топ: %2$.0f к/г Макс.: %3$.0f W Заряд: %4$d %% Напр.: %5$.1f V Поту.: %6$.0f W Нагрів: %7$d°C Шлях: %8$.1f км</string>
     <string name="notification_text_alarm">Їде: %1$.0f к/г Сила: %2$.1f A Напр.: %3$.2f В Заряд: %4$d %% Нагрів: %5$d°C</string>
     <string name="notification_text_alarm_not">Дані аларму: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
     <string name="mode_learn">Початківець</string>
@@ -281,6 +281,14 @@
     <string name="straight">Нормальний режим</string>
     <string name="reconnect_option_title">Автоматичне підключення</string>
     <string name="reconnect_option_description">Можна використовувати, якщо параметри не змінюються або додаток зависає</string>
+    <string name="dynamic_speed_limit">Ліміт швидкості</string>
+    <string name="dynamic_current_limit">Ліміт сили струму</string>
+    <string name="motor_power">Потужність двигуна</string>
+    <string name="imu_temp">Темп. IMU</string>
+    <string name="cpu_temp">Темп. CPU</string>
+    <string name="show_page_events_description">Показати сторінку подій</string>
+    <string name="show_page_events_title">Події</string>
+    <string name="main_view_category">Основний</string>
 
 
 </resources>

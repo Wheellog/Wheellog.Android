@@ -71,10 +71,11 @@
     <string name="alarm_settings_title">Настройки сигналов</string>
     <string name="watch_settings_title">Настройки часов</string>
     <string name="wheel_settings_title">Настройки колеса</string>
-    <string name="notification_text">Едет: %1$.0f к/ч Макс.: %2$.0f Средн.: %3$.0f Заряд: %4$d %% Мощн.: %5$.0f W Темп.: %6$d°C Путь: %7$.1f км</string>
+    <string name="notification_text">• %1$.1f км/ч • %2$d%% • %3$d°C • %4$.1f км •</string>
     <string name="notification_text_not">%1$.0f км/ч | %2$d %% | %3$.0f W | %4$d°C | %5$.3f км</string>
     <string name="reset_user_distance_title">Обнулить мой пробег</string>
     <string name="edit_mac_addr_title">Изменить MAC адрес</string>
+    <string name="profile_name_title">Изменить имя профиля</string>
     <string name="about_app_title">О программе Wheellog</string>
     <string name="settings_title">Настройки</string>
     <string name="amp">А</string>
@@ -123,9 +124,9 @@
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="battery_voltage_title">Напряжение батареи</string>
     <string name="battary_voltage_description">67В/84В/100В</string>
-    <string name="off_level_1_alarm">Отключить первое предупреждение.</string>
-    <string name="off_level_2_alarm">Отключить второе предупреждение.</string>
-    <string name="on_level_alarm">Включить предупреждения</string>
+    <string name="off_level_1_alarm">35 км/ч + 80% PWM</string>
+    <string name="off_level_2_alarm">Только 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 км/ч + 80% PWM</string>
     <string name="metre">м</string>
     <string name="on_headlight_title">Включение фонаря</string>
     <string name="on_headlight_description">Включает передний фонарь для освещения дороги.</string>
@@ -188,6 +189,8 @@
     <string name="use_better_percents_title">Улучшенные проценты</string>
     <string name="fixed_percents_title">Фиксированные проценты</string>
     <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
+    <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
+    <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство для смены языка</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_eng_title">English</string>
@@ -206,6 +209,7 @@
     <string name="battery_capacity_description">Ёмкость батареи в Wh</string>
     <string name="charging_power_title">Мощность зарядки</string>
     <string name="charging_power_description">Мощность зарядки</string>
+    <string name="show_unknown_devices_title">Показать Bluetooth без имени</string>
     <string name="connect_beep_title">Звук подключения</string>
     <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="sec">сек</string>
@@ -238,9 +242,9 @@
     <string name="show_settings">Показать меню настроек</string>
     <string name="maxcurrent">Макс. ток</string>
     <string name="maxpower">Макс. мощность</string>
-    <string name="notification_text_min">Едет: %1$.0f к/ч Акк.: %2$d %% Дист.: %3$.1f км</string>
-    <string name="notification_text_med">Едет: %1$.0f к/ч Сред.: %2$.0f к/ч Акк.: %3$d %% Нагрев: %4$d°C Дист. %5$.1f км</string>
-    <string name="notification_text_max">Едет: %1$.0f к/ч Макс.: %2$.0f к/ч Пик: %3$.0f W Акк.: %4$d %% Мощн.: %5$.0f W Темп.: %6$d°C Дист.: %7$.1f км</string>
+    <string name="notification_text_min">Едет: %1$.0f к/ч Макс.: %2$.0f к/ч Акк.: %3$d %% Дист.: %4$.1f км</string>
+    <string name="notification_text_med">Едет: %1$.0f к/ч Сред.: %2$.0f к/ч Pwm: %3$.0f %% Акк.: %4$d %% Нагрев: %5$d°C Дист. %6$.1f км</string>
+    <string name="notification_text_max">Едет: %1$.0f к/ч Макс.: %2$.0f к/ч Пик: %3$.0f W Акк.: %4$d %% Напр.: %5$.1f V Мощн.: %6$.0f W Темп.: %7$d°C Дист.: %8$.1f км</string>
     <string name="notification_text_alarm">Едет: %1$.0f к/ч Ток: %2$.1f A Напр.: %3$.2f В Акк.: %4$d %% Нагрев: %5$d°C</string>
     <string name="notification_text_alarm_not">Данные аларма: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
     <string name="titlealarm">Сработал аларм!</string>
@@ -253,23 +257,27 @@
     <string name="alarm_text_current_v">Превышение тока: %1$.0f A</string>
     <string name="alarm_text_temperature_v">Превышение температуры: %1$d°C</string>
     <string name="use_stop_music_title">Выключение звука</string>
+    <string name="newton">Н*м</string>
+    <string name="dynamic_current_limit">Ограничение тока</string>
+    <string name="dynamic_speed_limit">Ограничение скорости</string>
+    <string name="cpu_temp">Температура CPU</string>
+    <string name="cpuload">Температура IMU</string>
+    <string name="motor_power">Мощность мотора</string>
+    <string name="show_page_events_description">Показать страницу событий</string>
+    <string name="show_page_events_title">Страница событий</string>
+    <string name="main_view_category">Главный экран</string>
     <string name="use_stop_music_description">Автовыключение звука при скорости ниже 7 км/ч</string>
     <string name="mode_learn">Новичек</string>
     <string name="mode_play">Эксперт</string>
     <string name="mode_ride">Нормальный</string>
     <string name="maxtemperature">Макс. температура</string>
     <string name="output">Мощность мотора</string>
-    <string name="cpuload">Загрузка CPU</string>
     <string name="charging_status">Зарядка</string>
     <string name="max_pwm">Макс PWM</string>
     <string name="raw_distance">Дистанция</string>
     <string name="charging">Заряжается</string>
     <string name="discharging">Разряжается</string>
-    <string name="profile_name_title">Изменить имя профиля</string>
     <string name="use_eng_description">Использовать только английский язык</string>
-    <string name="cell_voltage_tiltback_title">Напраяжение поднятия педалей</string>
-    <string name="cell_voltage_tiltback_description">Напряжение 1 ячейки для поднятия</string>
-    <string name="show_unknown_devices_title">Показывать без имен</string>
     <string name="show_unknown_devices_description">Показывать устройства без имен</string>
     <string name="ks18l_scaler_title">Ошибочная дистанция 18L</string>
     <string name="ks18l_scaler_description">18L показывает неправильную дистанцию</string>
@@ -282,6 +290,8 @@
     <string name="reconnect_option_description">Будет исправлять зависания и другие ошибки</string>
     <string name="password">Пароль</string>
     <string name="email">Мейл</string>
+    <string name="imu_temp">Температура IMU</string>
+    <string name="torque">Момент</string>
 
 
 </resources>
