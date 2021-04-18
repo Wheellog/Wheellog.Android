@@ -32,6 +32,7 @@ We currently accept contributions for translated content directly in this or in 
 - Smart watch from Pebble company. Discontinued in 2016. [app code](https://github.com/JumpMaster/WheelLogPebble)
 - Garmin Connect IQ [app code](https://github.com/marccardinal/WheelLog-Garmin-ConnectIQ).
 The watch application is also available for download directly on the [ConnectIQ store](https://apps.garmin.com/en-US/apps/07a231a9-3f2f-4762-b0bb-b8a0b5594f40)
+- Xiaomi [Mi band 3/4/5/6](https://github.com/Wheellog/Wheellog.Android/wiki/Work-with-Mi-Band)
 
 ## 🚀 Quick start
 
