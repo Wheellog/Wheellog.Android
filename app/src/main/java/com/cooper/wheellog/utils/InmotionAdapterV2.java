@@ -456,6 +456,50 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return false;
         }
 
+        String getError(){
+            String inmoError = "";
+            if (((data[40])&0x01) == 1) inmoError += "err_iPhaseSensorState ";
+            if (((data[40]>>1) & 0x01) == 1) inmoError += "err_iBusSensorState ";
+            if (((data[40] >> 2) & 0x01)==1) inmoError += "err_motorHallState ";
+            if (((data[40] >> 3) & 0x01)==1) inmoError += "err_batteryState ";
+            if (((data[40] >> 4) & 0x01)==1) inmoError += "err_imuSensorState ";
+            if (((data[40] >> 5) & 0x01)==1) inmoError += "err_controllerCom1State ";
+            if (((data[40] >> 6) & 0x01)==1) inmoError += "err_controllerCom2State ";
+            if (((data[40] >> 7) & 0x01)==1) inmoError += "err_bleCom1State ";
+            if (((data[41]) & 0x01)==1) inmoError += "err_bleCom2State ";
+            if (((data[41] >> 1) & 0x01)==1) inmoError += "err_mosTempSensorState ";
+            if (((data[41] >> 2) & 0x01)==1) inmoError += "err_motorTempSensorState ";
+            if (((data[41] >> 3) & 0x01)==1) inmoError += "err_batteryTempSensorState ";
+            if (((data[41] >> 4) & 0x01)==1) inmoError += "err_boardTempSensorState ";
+            if (((data[41] >> 5) & 0x01)==1) inmoError += "err_fanState ";
+            if (((data[41] >> 6) & 0x01)==1) inmoError += "err_rtcState ";
+            if (((data[41] >> 7) & 0x01)==1) inmoError += "err_externalRomState ";
+            if (((data[42]) & 0x01)==1) inmoError += "err_vBusSensorState ";
+            if (((data[42] >> 1) & 0x01)==1) inmoError += "err_vBatterySensorState ";
+            if (((data[42] >> 2) & 0x01)==1) inmoError += "err_canNotPowerOffState";
+            if (((data[43]) & 0x01)==1) inmoError += "err_underVoltageState ";
+            if (((data[43] >> 1) & 0x01)==1) inmoError += "err_overVoltageState ";
+            if (((data[43] >> 2) & 0x03)==1) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
+            if (((data[43] >> 4) & 0x03)==1) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
+            if (((data[43] >> 6) & 0x01)==1) inmoError += "err_mosTempState ";
+            if (((data[43] >> 7) & 0x01)==1) inmoError += "err_motorTempState ";
+            if (((data[44]) & 0x01)==1) inmoError += "err_batteryTempState ";
+            if (((data[44] >> 1) & 0x01)==1) inmoError += "err_overBoardTempState ";
+            if (((data[44] >> 2) & 0x01)==1) inmoError += "err_overSpeedState ";
+            if (((data[44] >> 3) & 0x01)==1) inmoError += "err_outputSaturationState ";
+            if (((data[44] >> 4) & 0x01)==1) inmoError += "err_motorSpinState ";
+            if (((data[44] >> 5) & 0x01)==1) inmoError += "err_motorBlockState ";
+            if (((data[44] >> 6) & 0x01)==1) inmoError += "err_postureState ";
+            if (((data[44] >> 7) & 0x01)==1) inmoError += "err_riskBehaviourState ";
+            if (((data[45]) & 0x01)==1) inmoError += "err_motorNoLoadState ";
+            if (((data[45] >> 1) & 0x01)==1) inmoError += "err_noSelfTestState ";
+            if (((data[45] >> 2) & 0x01)==1) inmoError += "err_compatibilityState ";
+            if (((data[45] >> 3) & 0x01)==1) inmoError += "err_powerKeyLongPressState ";
+            if (((data[45] >> 6) & 0x01)==1) inmoError += "err_cpuOverTempState ";
+            if (((data[45] >> 7) & 0x01)==1) inmoError += "err_imuOverTempState ";
+            return inmoError;
+        }
+
         boolean parseRealTimeInfo(Context sContext) {
             Timber.i("Parse realtime stats data");
             WheelData wd = WheelData.getInstance();
@@ -519,12 +563,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (liftedState == 1) {wmode = wmode + " Lifted";}
             wd.setModeStr(wmode);
             //WheelLog.AppConfig.setFanEnabled(fanState != 0); // bad behaviour
-            // 1 != 1
-            // 0 != 0
 
             if (WheelLog.AppConfig.getLightEnabled() != (lightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
@@ -532,46 +574,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
             //// errors data
-            String inmoError = "";
-            if (((data[40])&0x01) == 1) inmoError += "err_iPhaseSensorState ";
-            if (((data[40]>>1) & 0x01) == 1) inmoError += "err_iBusSensorState ";
-            if (((data[40] >> 2) & 0x01)==1) inmoError += "err_motorHallState ";
-            if (((data[40] >> 3) & 0x01)==1) inmoError += "err_batteryState ";
-            if (((data[40] >> 4) & 0x01)==1) inmoError += "err_imuSensorState ";
-            if (((data[40] >> 5) & 0x01)==1) inmoError += "err_controllerCom1State ";
-            if (((data[40] >> 6) & 0x01)==1) inmoError += "err_controllerCom2State ";
-            if (((data[40] >> 7) & 0x01)==1) inmoError += "err_bleCom1State ";
-            if (((data[41]) & 0x01)==1) inmoError += "err_bleCom2State ";
-            if (((data[41] >> 1) & 0x01)==1) inmoError += "err_mosTempSensorState ";
-            if (((data[41] >> 2) & 0x01)==1) inmoError += "err_motorTempSensorState ";
-            if (((data[41] >> 3) & 0x01)==1) inmoError += "err_batteryTempSensorState ";
-            if (((data[41] >> 4) & 0x01)==1) inmoError += "err_boardTempSensorState ";
-            if (((data[41] >> 5) & 0x01)==1) inmoError += "err_fanState ";
-            if (((data[41] >> 6) & 0x01)==1) inmoError += "err_rtcState ";
-            if (((data[41] >> 7) & 0x01)==1) inmoError += "err_externalRomState ";
-            if (((data[42]) & 0x01)==1) inmoError += "err_vBusSensorState ";
-            if (((data[42] >> 1) & 0x01)==1) inmoError += "err_vBatterySensorState ";
-            if (((data[42] >> 2) & 0x01)==1) inmoError += "err_canNotPowerOffState";
-            if (((data[43]) & 0x01)==1) inmoError += "err_underVoltageState ";
-            if (((data[43] >> 1) & 0x01)==1) inmoError += "err_overVoltageState ";
-            if (((data[43] >> 2) & 0x03)==1) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
-            if (((data[43] >> 4) & 0x03)==1) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
-            if (((data[43] >> 6) & 0x01)==1) inmoError += "err_mosTempState ";
-            if (((data[43] >> 7) & 0x01)==1) inmoError += "err_motorTempState ";
-            if (((data[44]) & 0x01)==1) inmoError += "err_batteryTempState ";
-            if (((data[44] >> 1) & 0x01)==1) inmoError += "err_overBoardTempState ";
-            if (((data[44] >> 2) & 0x01)==1) inmoError += "err_overSpeedState ";
-            if (((data[44] >> 3) & 0x01)==1) inmoError += "err_outputSaturationState ";
-            if (((data[44] >> 4) & 0x01)==1) inmoError += "err_motorSpinState ";
-            if (((data[44] >> 5) & 0x01)==1) inmoError += "err_motorBlockState ";
-            if (((data[44] >> 6) & 0x01)==1) inmoError += "err_postureState ";
-            if (((data[44] >> 7) & 0x01)==1) inmoError += "err_riskBehaviourState ";
-            if (((data[45]) & 0x01)==1) inmoError += "err_motorNoLoadState ";
-            if (((data[45] >> 1) & 0x01)==1) inmoError += "err_noSelfTestState ";
-            if (((data[45] >> 2) & 0x01)==1) inmoError += "err_compatibilityState ";
-            if (((data[45] >> 3) & 0x01)==1) inmoError += "err_powerKeyLongPressState ";
-            if (((data[45] >> 6) & 0x01)==1) inmoError += "err_cpuOverTempState ";
-            if (((data[45] >> 7) & 0x01)==1) inmoError += "err_imuOverTempState ";
+            String inmoError = getError();
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
