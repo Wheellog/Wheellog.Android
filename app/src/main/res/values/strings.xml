@@ -244,6 +244,13 @@
     <string name="alarm3_description">4 beeps alarm</string>
     <string name="alarm2_description">3 beeps alarm</string>
     <string name="alarm1_description">2 beeps alarm</string>
+    <string name="led_mode_nb_description">Choose led mode</string>
+    <string name="led_type1">Flash</string>
+    <string name="led_type2">Two colors alternating</string>
+    <string name="led_type3">Full-color flash</string>
+    <string name="led_type4">Dynamic breathing</string>
+    <string name="led_type5">Flowing</string>
+    <string name="led_type6">Alter-color flash</string>
     <string name="pedals_mode_title">Pedals Mode</string>
     <string name="led_mode_title">Leds mode</string>
     <string name="strobe_mode_title">Strobe Mode</string>
@@ -496,6 +503,7 @@
     <string name="wheel_calibration_message_inmo">Please set wheel in parking position before start, continue?</string>
     <string name="wheel_calibration_message_begode">Please set wheel in center position before start, then reboot wheel, continue?</string>
     <string name="wheel_calibration_message_kingsong">Please set wheel in center position before start, then reboot wheel, continue?</string>
+    <string name="wheel_calibration_message_nb">Please set wheel in center position before start, EUC will be locked, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>

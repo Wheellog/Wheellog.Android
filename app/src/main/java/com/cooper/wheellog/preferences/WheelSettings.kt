@@ -149,7 +149,20 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             summary = getString(R.string.led_mode_nb_description)
             setEntries(R.array.led_mode_nb)
             setEntryValues(R.array.led_mode_nb_values)
-            setDefaultValue(WheelLog.AppConfig.ledModeNb)
+            setDefaultValue(NinebotZAdapter.getInstance().ledMode)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.speaker_volume)
+            title = getString(R.string.speaker_volume_title)
+            summary = getString(R.string.speaker_volume_description)
+            min = 0
+            max = 100
+            unit = "%"
+            increment = 1
+            isVisible = false // not implemented in adapter yet
+            setDefaultValue(NinebotZAdapter.getInstance().speakerVolume)
             ps.addPreference(this)
         }
 
