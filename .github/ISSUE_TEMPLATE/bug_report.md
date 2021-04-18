@@ -7,28 +7,26 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Description
+<!-- A clear and concise description of what the bug is. -->
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+### Steps to reproduce
+<!-- e.g. 1. Go to '...'    2. Click on '....'     3. Scroll down to '....'     4. See error -->
+1. 
+2. 
+3. 
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### Expected behavior
+<!-- A clear and concise description of what you expected to happen. -->
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+### Screenshots
+<!-- If the issue is a visual issue, please include screenshots showing the problem if possible -->
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. Realme XS10]
- - Android version: [e.g. 10]
+### Smartphone model and android version
+<!-- e.g. Realme XS10. Android version: 10 -->
 
-**EUC (please complete the following information):**
- - Device [e.g. Ninebot Z10]
+### EUC model
+<!-- e.g. Inmotion V12 -->
 
-**Additional context**
-Add any other context about the problem here.
+### Workaround
+<!-- Did you find any workaround for this issue? This can unblock other people while waiting for this issue to be resolved -->
