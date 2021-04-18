@@ -18,11 +18,6 @@
         android:title="@string/alarm_settings_title" />
 
     <Preference
-        android:icon="@drawable/ic_watch_new"
-        android:key="@string/watch_preferences"
-        android:title="@string/watch_settings_title" />
-
-    <Preference
         android:enabled="false"
         android:icon="@drawable/ic_sett5_new"
         android:key="@string/wheel_settings"

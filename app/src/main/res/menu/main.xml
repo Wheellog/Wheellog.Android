@@ -19,6 +19,7 @@
         android:id="@+id/miWatch"
         android:icon="@drawable/ic_watch_new"
         android:title="@string/start_pebble_service"
+        android:visible="false"
         app:showAsAction="always"></item>
     <item
         android:id="@+id/miBand"

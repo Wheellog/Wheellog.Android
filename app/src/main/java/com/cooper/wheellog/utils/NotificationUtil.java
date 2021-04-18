@@ -303,7 +303,7 @@ public class NotificationUtil {
                         .setContentIntent(pendingIntent)
                         .setContent(notificationView)
                         .setContentTitle(titlenot)
-                        .setContentText(mContext.getString(R.string.notification_text_max, mSpeed, mMaxSpeed, MaxPower, mBatteryLevel, mVoltage, mPower, mTemperature, mDistance))
+                        .setContentText(mContext.getString(R.string.notification_text_max, mSpeed, mMaxSpeed, mAvgSpeed, mBatteryLevel, mVoltage, mPower, mTemperature, mDistance))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .build();
             }

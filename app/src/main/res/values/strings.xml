@@ -35,18 +35,18 @@
     <string name="warning_speed_period" translatable="false">warning_speed_period</string>
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
-    <string name="notification_text_min">Spd: %1$.0f k/h Max: %2$.0f k/h Batt: %3$d %% Dist: %4$.1f km</string>
-    <string name="notification_text_med">Spd: %1$.0f k/h Avg: %2$.0f k/h Pwm: %3$.0f %% Bat.: %4$d %% Temp: %5$d°C Dist: %6$.1f km</string>
-    <string name="notification_text_max">Spd: %1$.0f k/h Max: %2$.0f k/h Peak: %3$.0f W Batt.: %4$d %% Volt.: %5$.2f V Out: %6$.0f W Temp: %7$d°C Dist: %8$.1f km</string>
-    <string name="notification_text_alarm">Spd: %1$.0f k/h Curr.: %2$.1f A Volt.: %3$.2f V Batt.: %4$d %% Temp: %5$d°C</string>
-    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
+    <string name="notification_text_min">[SPEED] \n - %1$.0f now \n - %2$.0f max \n\n\[POWER] \n - %3$d %% \n\n[TRIP] \n - %4$.1f km</string>
+    <string name="notification_text_med">[SPEED] \n - %1$.0f max \n - %2$.0f avg \n - %3$.0f pwm \n\n[OTHER] \n - %4$d %% \n - %5$d °C \n - %6$.1f km</string>
+    <string name="notification_text_max">[SPEED] \n ⭐ %1$.0f now \n 🔥 %2$.0f top \n 🙈 %3$.0f avg \n\n[POWER] \n 💧 %4$d %% \n ⚡ %5$.2f V \n 💪 %6$.0f W \n ❄ %7$d °C \n\n[TRIP] \n 👣 %8$.1f km</string>
+    <string name="notification_text_alarm">[DATA] \n - %1$.0f km/h \n - %2$.1f A \n - %3$.2f V \n - %4$d %% \n - %5$d °C</string>
+    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d °C</string>
     <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
     <string name="titlealarm">Alarm Triggered!</string>
     <string name="titlealarm_text">Alarm Mode</string>
-    <string name="alarmmiband">Alarm Mode Mi Band</string>
-    <string name="minmiband">Minimal Mode Mi Band</string>
-    <string name="medmiband">Medium Mode Mi Band</string>
-    <string name="maxmiband">Maximum Mode Mi Band</string>
+    <string name="alarmmiband">Alarm Mode Mi Band/Amazfit</string>
+    <string name="minmiband">Basic Mode Mi Band 4/5/6/Amazfit</string>
+    <string name="medmiband">Advanced Mode Mi Band 4/5/6</string>
+    <string name="maxmiband">Advanced Mode Mi Band 6 Only</string>
 
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
