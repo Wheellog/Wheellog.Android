@@ -46,13 +46,22 @@
     <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
     <string name="light_mode" translatable="false">light_mode</string>
+    <string name="wheel_alarm1_enabled" translatable="false">wheel_alarm1_enabled</string>
+    <string name="wheel_alarm2_enabled" translatable="false">wheel_alarm2_enabled</string>
+    <string name="wheel_alarm3_enabled" translatable="false">wheel_alarm3_enabled</string>
+    <string name="wheel_alarm1" translatable="false">wheel_alarm1</string>
+    <string name="wheel_alarm2" translatable="false">wheel_alarm2</string>
+    <string name="wheel_alarm3" translatable="false">wheel_alarm3</string>
+    <string name="taillight_enabled" translatable="false">taillight_enabled</string>
+    <string name="wheel_limited_mode_enabled" translatable="false">wheel_limited_mode_enabled</string>
+    <string name="wheel_limited_speed" translatable="false">wheel_limited_speed</string>
+    <string name="brake_assistant_enabled" translatable="false">brake_assistant_enabled</string>
     <string name="strobe_mode" translatable="false">strobe_mode</string>
     <string name="led_mode" translatable="false">led_mode</string>
     <string name="alarm_mode" translatable="false">alarm_mode</string>
     <string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
     <string name="gotway_negative" translatable="false">gotway_negative</string>
-    <string name="no_settings" translatable="false">no_settings</string>
     <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
     <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
     <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
@@ -400,6 +409,25 @@
     <string name="leds_settings_description">Activate leds on the sides</string>
     <string name="disable_handle_button_title">Disable handle button</string>
     <string name="disable_handle_button_description">Wheel will not disable when you press the button on the handle</string>
+    <string name="disable_handle_button_nb_description">Wheel will not disable when you hold the handle</string>wheel_alarm1_enabled_title
+    <string name="wheel_alarm1_enabled_title">First alarm</string>
+    <string name="wheel_alarm2_enabled_title">Second alarm</string>
+    <string name="wheel_alarm3_enabled_title">Third alarm</string>
+    <string name="wheel_alarm1_enabled_description">Enable first alarm</string>
+    <string name="wheel_alarm2_enabled_description">Enable second alarm</string>
+    <string name="wheel_alarm3_enabled_description">Enable third alarm</string>
+    <string name="wheel_alarm1_title">First alarm</string>
+    <string name="wheel_alarm2_title">Second alarm</string>
+    <string name="wheel_alarm3_title">Third alarm</string>
+    <string name="wheel_alarm1_description">First alarm speed</string>
+    <string name="wheel_alarm2_description">Second alarm speed</string>
+    <string name="wheel_alarm3_description">Third alarm speed</string>
+    <string name="wheel_limited_mode_title">Limited mode</string>
+    <string name="wheel_limited_mode_description">Limit maximum speed</string>wheel_limited_speed_title
+    <string name="wheel_limited_speed_title">Speed</string>
+    <string name="wheel_limited_speed_description">Speed to limit</string>
+    <string name="brake_assistant_title">Brake assistant</string>
+    <string name="brake_assistant_description">Wheel will tilt back by 3 degrees while braking</string>
     <string name="speaker_volume_title">Speaker volume</string>
     <string name="speaker_volume_description">Change built-in speaker volume</string>
     <string name="pedal_horizont_title">Pedals</string>
@@ -408,7 +436,7 @@
     <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
     <string name="pedal_sensivity_title">Pedals sensivity</string>
     <string name="pedal_sensivity_description">Bigger number - more sensitive</string>
-    <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
+    <string name="pedal_sensivity_nb_description">Lower number - more sensitive</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
     <string name="bmsBattery1Title">Battery 1</string>
@@ -477,8 +505,11 @@
     <string name="share">Share</string>
     <string name="manual_upload_to_ec">Upload to electro.club</string>
     <string name="show_page_trips_title">Trips page</string>
-    <string name="drl_settings_title">Enable DRL</string>
-    <string name="drl_settings_description">Enable front O-ring and backlight</string>
+    <string name="drl_settings_title">Enable DRL</string>taillight_settings_title
+    <string name="taillight_settings_title">Tail light</string>
+    <string name="drl_settings_description_inmo">Enable front O-ring and backlight</string>
+    <string name="drl_settings_description_nb">Enable front O-ring</string>
+    <string name="taillight_settings_description">Enable or disable tail light</string>
     <string name="light_brightness_title">Light brightness</string>
     <string name="light_brightness_description">Brightness of headlight</string>
     <string name="fan_title">Enable fan</string>

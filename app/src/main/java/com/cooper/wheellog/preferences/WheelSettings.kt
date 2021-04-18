@@ -13,18 +13,173 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.InMotionAdapter
+import com.cooper.wheellog.utils.NinebotZAdapter
 import com.cooper.wheellog.utils.VeteranAdapter
 
 class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
     private var mac: String = ""
 
     private fun ninebotZ() {
-        Preference(context).apply {
-            key = mac + getString(R.string.no_settings)
-            isEnabled = false
-            summary = getString(R.string.ninebotz_settings_title)
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.light_enabled)
+            title = getString(R.string.on_headlight_title)
+            summary = getString(R.string.on_headlight_description)
+            isChecked = WheelLog.AppConfig.lightEnabled
             ps.addPreference(this)
         }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.drl_enabled)
+            title = getString(R.string.drl_settings_title)
+            summary = getString(R.string.drl_settings_description_nb)
+            isChecked = WheelLog.AppConfig.drlEnabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.taillight_enabled)
+            title = getString(R.string.taillight_settings_title)
+            summary = getString(R.string.taillight_settings_description)
+            isChecked = WheelLog.AppConfig.taillightEnabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.handle_button_disabled)
+            title = getString(R.string.disable_handle_button_title)
+            summary = getString(R.string.disable_handle_button_nb_description)
+            isChecked = WheelLog.AppConfig.handleButtonDisabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm1_enabled)
+            title = getString(R.string.wheel_alarm1_enabled_title)
+            summary = getString(R.string.wheel_alarm1_enabled_description)
+            isChecked = WheelLog.AppConfig.wheelAlarm1Enabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm1)
+            title = getString(R.string.wheel_alarm1_title)
+            summary = getString(R.string.wheel_alarm1_description)
+            min = 0
+            max = NinebotZAdapter.getInstance().wheelAlarmMax
+            setDefaultValue(WheelLog.AppConfig.wheelAlarm1Speed)
+            unit = getString(R.string.kmh)
+            increment = 1
+            setDefaultValue(30)
+            isVisible = WheelLog.AppConfig.wheelAlarm1Enabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm2_enabled)
+            title = getString(R.string.wheel_alarm2_enabled_title)
+            summary = getString(R.string.wheel_alarm2_enabled_description)
+            isChecked = WheelLog.AppConfig.wheelAlarm2Enabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm2)
+            title = getString(R.string.wheel_alarm2_title)
+            summary = getString(R.string.wheel_alarm2_description)
+            min = 0
+            max = NinebotZAdapter.getInstance().wheelAlarmMax
+            unit = getString(R.string.kmh)
+            setDefaultValue(WheelLog.AppConfig.wheelAlarm2Speed)
+            increment = 1
+            setDefaultValue(35)
+            isVisible = WheelLog.AppConfig.wheelAlarm2Enabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm3_enabled)
+            title = getString(R.string.wheel_alarm3_enabled_title)
+            summary = getString(R.string.wheel_alarm3_enabled_description)
+            isChecked = WheelLog.AppConfig.wheelAlarm3Enabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm3)
+            title = getString(R.string.wheel_alarm3_title)
+            summary = getString(R.string.wheel_alarm3_description)
+            min = 0
+            max = NinebotZAdapter.getInstance().wheelAlarmMax
+            unit = getString(R.string.kmh)
+            increment = 1
+            setDefaultValue(40)
+            isVisible = WheelLog.AppConfig.wheelAlarm3Speed
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_limited_mode_enabled)
+            title = getString(R.string.wheel_limited_mode_title)
+            summary = getString(R.string.wheel_limited_mode_description)
+            isChecked = WheelLog.AppConfig.wheelLimitedModeEnabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_limited_speed)
+            title = getString(R.string.wheel_limited_speed_title)
+            summary = getString(R.string.wheel_limited_speed_description)
+            min = 0
+            max = 655
+            unit = getString(R.string.kmh)
+            decimalPlaces = 1
+            increment = 1
+            setDefaultValue(NinebotZAdapter.getInstance().wheelLimitedSpeed)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.brake_assistant_enabled)
+            title = getString(R.string.brake_assistant_title)
+            summary = getString(R.string.brake_assistant_description)
+            isChecked = WheelLog.AppConfig.brakeAssistantEnabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.pedal_sensivity)
+            title = getString(R.string.pedal_sensivity_title)
+            summary = getString(R.string.pedal_sensivity_nb_description)
+            min = 0
+            max = 4
+            increment = 1
+            setDefaultValue(NinebotZAdapter.getInstance().pedalSensivity)
+            ps.addPreference(this)
+        }
+        ListPreference(context).apply {
+            key = mac + getString(R.string.led_mode)
+            title = getString(R.string.led_mode_title)
+            summary = getString(R.string.led_mode_nb_description)
+            setEntries(R.array.led_mode_nb)
+            setEntryValues(R.array.led_mode_nb_values)
+            setDefaultValue(WheelLog.AppConfig.ledModeNb)
+            ps.addPreference(this)
+        }
+
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.lock_mode)
+            title = getString(R.string.lock_mode_title)
+            summary = getString(R.string.lock_mode_description)
+            isChecked = WheelLog.AppConfig.lockMode
+            ps.addPreference(this)
+        }
+        if (WheelData.getInstance().speed < 1) {
+            Preference(context).apply {
+                setIcon(R.drawable.ic_baseline_calibration_24)
+                title = getString(R.string.wheel_calibration)
+                onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    AlertDialog.Builder(context)
+                            .setTitle(getString(R.string.wheel_calibration))
+                            .setMessage(getString(R.string.wheel_calibration_message_nb))
+                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                WheelData.getInstance().wheelCalibration()
+                            }
+                            .setNegativeButton(android.R.string.no, null)
+                            .setIcon(R.drawable.ic_baseline_calibration_24)
+                            .show()
+                    true
+                }
+                ps.addPreference(this)
+            }
+        }
+
     }
 
     private fun inmotion() {
@@ -155,7 +310,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         SwitchPreference(context).apply {
             key = mac + getString(R.string.drl_enabled)
             title = getString(R.string.drl_settings_title)
-            summary = getString(R.string.drl_settings_description)
+            summary = getString(R.string.drl_settings_description_inmo)
             isChecked = WheelLog.AppConfig.drlEnabled
             ps.addPreference(this)
         }
