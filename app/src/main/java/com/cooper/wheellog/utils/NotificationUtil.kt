@@ -113,11 +113,7 @@ class NotificationUtil(private val context: Context) {
                         MiBandEnum.Max -> R.drawable.adv_ajdm_w
                     })
             builder.setSmallIcon(R.drawable.wheel_ajdm_w)
-                    .setContentIntent(pendingIntent)
-                    .setContent(notificationView)
-                    .setCustomBigContentView(notificationView)
-                    .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                    .priority = NotificationCompat.PRIORITY_LOW
+
         } else {
             notificationView.setTextViewText(R.id.text_title, title)
             notificationView.setImageViewResource(R.id.ib_logging,
@@ -136,12 +132,12 @@ class NotificationUtil(private val context: Context) {
                         MiBandEnum.Max -> R.drawable.ic_mi_max
                     })
             builder.setSmallIcon(R.drawable.ic_stat_wheel)
-                    .setContentIntent(pendingIntent)
-                    .setContent(notificationView)
-                    .setCustomBigContentView(notificationView)
-                    .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                    .priority = NotificationCompat.PRIORITY_LOW
         }
+        builder.setContentIntent(pendingIntent)
+                .setContent(notificationView)
+                .setCustomBigContentView(notificationView)
+                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .priority = NotificationCompat.PRIORITY_LOW
         when (WheelLog.AppConfig.mibandMode) {
             MiBandEnum.Alarm -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
