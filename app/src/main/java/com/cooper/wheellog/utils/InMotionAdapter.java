@@ -1,7 +1,5 @@
 package com.cooper.wheellog.utils;
 
-import android.content.Intent;
-
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -297,37 +295,36 @@ public class InMotionAdapter extends BaseAdapter {
                             Timber.i("Sent password message");
                             passwordSent++;
                         } else {
-                            updateStep = 1;
+                            updateStep = 5;
                         }
+
                     } else if (model == UNKNOWN | needSlowData) {
                         if (WheelData.getInstance().bluetoothCmd(InMotionAdapter.CANMessage.getSlowData().writeBuffer())) {
                             Timber.i("Sent infos message");
                         } else {
-                            updateStep = 1;
+                            updateStep = 5;
                         }
+
                     } else if (settingCommandReady) {
                         if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             needSlowData = true;
                             settingCommandReady = false;
                             Timber.i("Sent command message");
                         } else {
-                            updateStep = 1; // after -1 = 0
+                            updateStep = 5; // after +1 and %10 = 0
                         }
                     } else {
-                        // 40 steps * 25 period = 1 sec
                         if (!WheelData.getInstance().bluetoothCmd(CANMessage.standardMessage().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
-                            updateStep = 1;
+                            updateStep = 5;
                         } else {
                             Timber.i("Sent keep-alive message");
                         }
                     }
+
                 }
-                // from 40 to 0
-                updateStep--;
-                if (updateStep < 0) {
-                    updateStep = 40;
-                }
+                updateStep++;
+                updateStep %= 10;
                 Timber.i("Step: %d", updateStep);
             }
         };
@@ -821,7 +818,6 @@ public class InMotionAdapter extends BaseAdapter {
             int len = buffer.length - 3;
             byte[] dataBuffer = Arrays.copyOfRange(buffer, 2, len);
 
-            dataBuffer = CANMessage.unescape(dataBuffer);
             Timber.i("After escape %s", StringUtil.toHexString(dataBuffer));
             byte check = CANMessage.computeCheck(dataBuffer);
 
@@ -842,20 +838,6 @@ public class InMotionAdapter extends BaseAdapter {
                     out.write(0xA5);
                 }
                 out.write(c);
-            }
-            return out.toByteArray();
-        }
-
-        private static byte[] unescape(byte[] buffer) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            boolean oldca5 = false;
-            for (byte c : buffer) {
-                if (c != (byte) 0xA5 || oldca5) {
-                    out.write(c);
-                    oldca5 = false;
-                } else {
-                    oldca5 = true;
-                }
             }
             return out.toByteArray();
         }
@@ -1245,7 +1227,12 @@ public class InMotionAdapter extends BaseAdapter {
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int oldc = 0;
-        int oldestc = 0;
+        // there are two types of packets, basic and extended, if it is extended packet,
+        // then len field should be 0xFE, and len of extended data should be in first data byte
+        // of usual packet
+        int len_p = 0;  // basic packet len
+        int len_ex = 0; // extended packet len
+
         UnpackerState state = UnpackerState.unknown;
 
         byte[] getBuffer() {
@@ -1253,26 +1240,43 @@ public class InMotionAdapter extends BaseAdapter {
         }
 
         boolean addChar(int c) {
-            if (state == UnpackerState.collecting) {
-                buffer.write(c);
-                if (c == (byte) 0x55 && oldc == (byte) 0x55 && oldestc != (byte) 0xA5) {
-                    state = UnpackerState.done;
-                    updateStep = 1;
-                    oldc = 0;
-                    Timber.i("Step reset");
-                    return true;
+            if (c != (byte) 0xA5 || oldc == (byte) 0xA5) {
+                if (state == UnpackerState.collecting) {
+                    buffer.write(c);
+                    int sz = buffer.size();
+                    if (sz == 7) len_ex = c & 0xFF;
+                    else if (sz == 15) len_p = c & 0xFF;
+                    if ((sz > len_ex+21) && (len_p == 0xFE)) {
+                        reset(); // longer than expected
+                        return false;
+                    }
+                    if ((c == (byte) 0x55 && oldc == (byte) 0x55) && ((sz == len_ex+21) || (len_p != 0xFE))) { // 18 header + 1 crc + 2 footer
+                        state = UnpackerState.done;
+                        updateStep = 0;
+                        oldc = 0;
+                        Timber.i("Step reset");
+                        return true;
+                    }
+                } else {
+                    if (c == (byte) 0xAA && oldc == (byte) 0xAA) {
+                        buffer = new ByteArrayOutputStream();
+                        buffer.write(0xAA);
+                        buffer.write(0xAA);
+                        state = UnpackerState.collecting;
+                    }
                 }
-            } else {
-                if (c == (byte) 0xAA && oldc == (byte) 0xAA && oldestc != (byte) 0xA5) {
-                    buffer = new ByteArrayOutputStream();
-                    buffer.write(0xAA);
-                    buffer.write(0xAA);
-                    state = UnpackerState.collecting;
-                }
+
             }
-            oldestc = oldc;
             oldc = c;
             return false;
+        }
+
+        void reset(){
+            buffer = new ByteArrayOutputStream();
+            oldc = 0;
+            len_p = 0;
+            len_ex = 0;
+            state = UnpackerState.unknown;
         }
     }
 
