@@ -5,6 +5,8 @@ name: Gradle CI
 
 on:
   push:
+    branches:
+      - master
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -34,8 +36,8 @@ jobs:
         path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Send apk to telegram
+      if: ${{ github.event_name == 'pull_request' && secrets.TELEGRAM_TO != '' }}
       uses: appleboy/telegram-action@master
-      if: github.event_name == 'pull_request'
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
