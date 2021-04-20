@@ -36,11 +36,13 @@ jobs:
         path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Send apk to telegram
-      if: github.event_name == 'pull_request'
+      env: 
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      if: github.event_name == 'pull_request' && env.TELEGRAM_TOKEN != ''
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
+        token: env.TELEGRAM_TOKEN
         message: |
           ${{ github.event.pull_request.title }}
           ${{ github.base_ref }} <= ${{ github.head_ref }}
