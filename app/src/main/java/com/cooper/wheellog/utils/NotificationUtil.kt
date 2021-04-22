@@ -89,19 +89,19 @@ class NotificationUtil(private val context: Context) {
                     when (connectionState) {
                         BluetoothLeService.STATE_CONNECTING -> R.drawable.connect_ajdm_y
                         BluetoothLeService.STATE_CONNECTED -> R.drawable.connect_ajdm_g
-                        else -> R.drawable.connect_ajdm_w
+                        else -> R.drawable.connect_ajdm_b
                     })
             if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
                 notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text_ajdm_theme, speed, batteryLevel, temperature, distance))
             }
             notificationView.setImageViewResource(R.id.ib_logging,
                     if (LoggingService.isInstanceCreated()) R.drawable.gps_ajdm_g
-                    else R.drawable.gps_ajdm_w)
+                    else R.drawable.gps_ajdm_b)
             notificationView.setImageViewResource(R.id.ib_watch,
                     if (PebbleService.isInstanceCreated()) R.drawable.watch_ajdm_g
-                    else R.drawable.watch_ajdm_w)
-            notificationView.setImageViewResource(R.id.ib_beep, R.drawable.horn_ajdm_w)
-            notificationView.setImageViewResource(R.id.ib_light, R.drawable.light_ajdm_w)
+                    else R.drawable.watch_ajdm_b)
+            notificationView.setImageViewResource(R.id.ib_beep, R.drawable.horn_ajdm_b)
+            notificationView.setImageViewResource(R.id.ib_light, R.drawable.light_ajdm_b)
             notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
             builder.setSmallIcon(R.drawable.wheel_ajdm_w)
         } else { // original Theme
