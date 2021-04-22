@@ -11,7 +11,7 @@
     <color name="ajdm_secondary_text">#BDBDBD</color>
     <color name="ajdm_icons">#BDBDBD</color>
     <color name="ajdm_divider">#3c3f41</color>
-    <color name="ajdm_background">#BDBDBD</color> // фон иконки в шторке
+    <color name="ajdm_background">#ff9900</color> // фон иконки в шторке
     <color name="ajdm_navigation_bar">#3c3f41</color>
     <color name="ajdm_wheelview_text">#BDBDBD</color>
     <color name="ajdm_wheelview_block">#3c3f41</color>

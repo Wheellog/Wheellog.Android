@@ -107,13 +107,13 @@ class NotificationUtil(private val context: Context) {
             notificationView.setImageViewResource(R.id.ib_light, R.drawable.light_ajdm_gr)
             notificationView.setImageViewResource(R.id.ib_mi_band,
                     when (WheelLog.AppConfig.mibandMode) {
-                        MiBandEnum.Alarm -> R.drawable.alarm_ajdm_w
-                        MiBandEnum.Min -> R.drawable.min_ajdm_w
-                        MiBandEnum.Medium -> R.drawable.med_ajdm_w
-                        MiBandEnum.Max -> R.drawable.adv_ajdm_w
+                        MiBandEnum.Alarm -> R.drawable.ic_mi_alarm
+                        MiBandEnum.Min -> R.drawable.ic_mi_min
+                        MiBandEnum.Medium -> R.drawable.ic_mi_med
+                        MiBandEnum.Max -> R.drawable.ic_mi_max
                     })
+            notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
             builder.setSmallIcon(R.drawable.wheel_ajdm_w)
-
         } else {
             notificationView.setTextViewText(R.id.text_title, title)
             notificationView.setImageViewResource(R.id.ib_logging,
