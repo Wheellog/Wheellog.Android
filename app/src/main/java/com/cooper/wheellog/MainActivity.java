@@ -305,6 +305,52 @@ public class MainActivity extends AppCompatActivity {
             miWheel.getIcon().setAlpha(255);
         }
 
+        // Themes
+        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
+            if (PebbleService.isInstanceCreated()) {
+                miWatch.setIcon(R.drawable.ajdm_watch_g);
+            } else {
+                miWatch.setIcon(R.drawable.ajdm_watch_new);
+            }
+
+            if (LoggingService.isInstanceCreated()) {
+                miLogging.setTitle(R.string.stop_data_service);
+                miLogging.setIcon(R.drawable.ajdm_log_new_g);
+            } else {
+                miLogging.setTitle(R.string.start_data_service);
+                miLogging.setIcon(R.drawable.ajdm_log_new);
+            }
+
+            switch (mConnectionState) {
+                case BluetoothLeService.STATE_CONNECTED:
+                    miWheel.setIcon(R.drawable.ajdm_wheel_new);
+                    miWheel.setTitle(R.string.disconnect_from_wheel);
+                    miSearch.setEnabled(false);
+                    miSearch.getIcon().setAlpha(64);
+                    miLogging.setEnabled(true);
+                    miLogging.getIcon().setAlpha(255);
+                    break;
+                case BluetoothLeService.STATE_CONNECTING:
+                    miWheel.setIcon(R.drawable.ajdm_anim_wheel_icon);
+                    miWheel.setTitle(R.string.disconnect_from_wheel);
+                    ((AnimationDrawable) miWheel.getIcon()).start();
+                    miSearch.setEnabled(false);
+                    miSearch.getIcon().setAlpha(64);
+                    miLogging.setEnabled(false);
+                    miLogging.getIcon().setAlpha(64);
+                    break;
+                case BluetoothLeService.STATE_DISCONNECTED:
+                    miWheel.setIcon(R.drawable.connect_ajdm);
+                    miWheel.setTitle(R.string.connect_to_wheel);
+                    miSearch.setEnabled(true);
+                    miSearch.getIcon().setAlpha(255);
+                    miLogging.setEnabled(false);
+                    miLogging.getIcon().setAlpha(64);
+                    break;
+            }
+            return;
+        }
+        // Original theme
         if (PebbleService.isInstanceCreated()) {
             miWatch.setIcon(R.drawable.ic_action_watch_orange);
         } else {
@@ -525,6 +571,13 @@ public class MainActivity extends AppCompatActivity {
         miWheel = mMenu.findItem(R.id.miWheel);
         miWatch = mMenu.findItem(R.id.miWatch);
         miLogging = mMenu.findItem(R.id.miLogging);
+
+        // Themes
+        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
+            MenuItem miSettings = mMenu.findItem(R.id.miSettings);
+            miSettings.setIcon(R.drawable.ajdm_sett3_new);
+            miSearch.setIcon(R.drawable.ajdm_bt_new);
+        }
         return true;
     }
 

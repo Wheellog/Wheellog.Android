@@ -1,6 +1,8 @@
 package com.cooper.wheellog.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
@@ -8,6 +10,8 @@ import android.os.Build
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.fragment.app.Fragment
 import com.cooper.wheellog.*
 import java.io.IOException
 
@@ -20,6 +24,15 @@ class SomeUtil {
                 resources.getColor(id)
             else
                 context.getColor(id)
+        }
+
+        @SuppressLint("UseCompatLoadingForDrawables")
+        @Suppress("DEPRECATION")
+        fun Fragment.getDrawableEx(@DrawableRes id: Int): Drawable? {
+            return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+                resources.getDrawable(id)
+            else
+                requireContext().getDrawable(id)
         }
 
         @JvmStatic

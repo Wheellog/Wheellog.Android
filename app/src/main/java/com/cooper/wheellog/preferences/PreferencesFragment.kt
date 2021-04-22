@@ -26,6 +26,8 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
+import com.cooper.wheellog.utils.SomeUtil
+import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import timber.log.Timber
 
 class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -327,6 +329,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                     true
+                }
+                // Themes
+                if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+                    speedButton?.icon = getDrawableEx(R.drawable.ajdm_sett5_new)
+                    logsButton?.icon = getDrawableEx(R.drawable.ajdm_log_new)
+                    watchButton?.icon = getDrawableEx(R.drawable.ajdm_watch_new)
+                    findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(R.drawable.ajdm_flow)
+                    aboutButton?.icon = getDrawableEx(R.drawable.ajdm_instamessage)
                 }
             }
             SettingsScreen.Speed -> {
