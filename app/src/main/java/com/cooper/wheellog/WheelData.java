@@ -113,6 +113,9 @@ public class WheelData {
     //    private double samples[] = new double[numSamples];
     private final short[] buffer = new short[numSamples];
     private final int sfreq = 440;
+    private int toneDuration = 0;
+    private Timer speedAlarmTimer;
+    private Timer speedAlarmWatchdogTimer;
 
     private long timestamp_raw;
     private long timestamp_last;
@@ -166,15 +169,13 @@ public class WheelData {
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
         if (type.getValue() < 4) {
-            audioTrack.write(buffer, sampleRate / 20, ((type.getValue()) * sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
+            audioTrack.write(buffer, sampleRate / 20, (toneDuration * sampleRate) / 1000); //50, 100, 150 ms depends on number of speed alarm
 
         } else if (type == ALARM_TYPE.CURRENT) {
             audioTrack.write(buffer, sampleRate * 3 / 10, (2 * sampleRate) / 20); //100 ms for current
 
         } else {
             audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //300 ms temperature
-
-
         }
 
         //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
@@ -195,6 +196,7 @@ public class WheelData {
         mInstance.full_reset();
         mInstance.prepareTone(mInstance.sfreq);
         mInstance.startRidingTimerControl();
+        //mInstance.startAlarmTest(); // test
     }
 
     private void prepareTone(int freq) {
@@ -229,6 +231,24 @@ public class WheelData {
         ridingTimerControl = new Timer();
         ridingTimerControl.scheduleAtFixedRate(timerTask, 0, 1000);
     }
+
+    ///// test purpose
+    public void startAlarmTest() {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mCalculatedPwm = WheelLog.AppConfig.getMaxSpeed()/100d;
+                //Timber.i("pwm = %0.2f", mCalculatedPwm);
+                Context mContext = getBluetoothLeService().getApplicationContext();
+                checkAlarmStatus(mContext);
+            }
+        };
+        ridingTimerControl = new Timer();
+        ridingTimerControl.scheduleAtFixedRate(timerTask, 5000, 200);
+    }
+    /////
+
+
 
     public static WheelData getInstance() {
         return mInstance;
@@ -904,16 +924,35 @@ public class WheelData {
     }
 
     private void startSpeedAlarmCount() {
-        mSpeedAlarmExecuting = true;
-        TimerTask stopSpeedAlarmExecuring = new TimerTask() {
+        if (!mSpeedAlarmExecuting) {
+            mSpeedAlarmExecuting = true;
+            TimerTask playBeepAgain = new TimerTask() {
+                @Override
+                public void run() {
+                    playBeep(ALARM_TYPE.SPEED1);
+                    Timber.i("Scheduled alarm");
+                }
+            };
+            speedAlarmTimer = new Timer();
+            speedAlarmTimer.scheduleAtFixedRate(playBeepAgain, 0, 200);
+        }
+        if (speedAlarmWatchdogTimer != null) {
+            speedAlarmWatchdogTimer.cancel();
+            speedAlarmWatchdogTimer = null;
+        }
+
+        TimerTask alarmWatchdog = new TimerTask() {
             @Override
             public void run() {
-                mSpeedAlarmExecuting = false;
-                Timber.i("Stop Speed <<<<<<<<<");
+                if (speedAlarmTimer != null) {
+                    speedAlarmTimer.cancel();
+                    speedAlarmTimer = null;
+                }
+                Timber.i("Alarm canceled by watchdog");
             }
         };
-        Timer timerCurrent = new Timer();
-        timerCurrent.schedule(stopSpeedAlarmExecuring, 170);
+        speedAlarmWatchdogTimer = new Timer();
+        speedAlarmWatchdogTimer.schedule(alarmWatchdog, 5000);
 
     }
 
@@ -946,54 +985,64 @@ public class WheelData {
 
     private void checkAlarmStatus(Context mContext) {
         // SPEED ALARM
-        if (!mSpeedAlarmExecuting) {
-            if (WheelLog.AppConfig.getAlteredAlarms()) {
-                if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor3() / 100d) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor2() / 100d) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+        //Timber.i("check Alarm");
+        //if (!mSpeedAlarmExecuting) {
+
+        if (WheelLog.AppConfig.getAlteredAlarms()) {
+            //if (true) { //test
+            if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
+                toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
+                if (toneDuration > 200) toneDuration = 200;
+                else if (toneDuration < 20) toneDuration = 20;
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+            } else {
+                // check if speed alarm executing and stop it
+                mSpeedAlarmExecuting = false;
+                if (speedAlarmTimer != null) {
+                    speedAlarmTimer.cancel();
+                    speedAlarmTimer = null;
+                }
+                // prealarm
+                double warningPwm = WheelLog.AppConfig.getWarningPwm() / 100d;
+                int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
+                if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
+                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
+                    SomeUtil.playSound(mContext, R.raw.warning_pwm);
                 } else {
-                    double warningPwm = WheelLog.AppConfig.getWarningPwm() / 100d;
-                    int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
-                    if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
+                    int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
+                    if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
                         mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                        SomeUtil.playSound(mContext, R.raw.warning_pwm);
-                    } else {
-                        int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
-                        if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
-                            mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                            SomeUtil.playSound(mContext, R.raw.sound_warning_speed);
-                        }
+                        SomeUtil.playSound(mContext, R.raw.sound_warning_speed);
                     }
                 }
+            }
+        } else {
+            int alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
+            int alarm1Battery = WheelLog.AppConfig.getAlarm1Battery();
+            if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && getSpeedDouble() >= alarm1Speed) {
+                toneDuration = 50;
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
             } else {
-                int alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
-                int alarm1Battery = WheelLog.AppConfig.getAlarm1Battery();
-                if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && getSpeedDouble() >= alarm1Speed) {
+                int alarm2Speed = WheelLog.AppConfig.getAlarm2Speed();
+                int alarm2Battery = WheelLog.AppConfig.getAlarm2Battery();
+                if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && getSpeedDouble() >= alarm2Speed) {
+                    toneDuration = 100;
                     startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
                 } else {
-                    int alarm2Speed = WheelLog.AppConfig.getAlarm2Speed();
-                    int alarm2Battery = WheelLog.AppConfig.getAlarm2Battery();
-                    if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && getSpeedDouble() >= alarm2Speed) {
+                    int alarm3Speed = WheelLog.AppConfig.getAlarm3Speed();
+                    int alarm3Battery = WheelLog.AppConfig.getAlarm3Battery();
+                    if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && getSpeedDouble() >= alarm3Speed) {
+                        toneDuration = 180;
                         startSpeedAlarmCount();
-                        raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                    } else {
-                        int alarm3Speed = WheelLog.AppConfig.getAlarm3Speed();
-                        int alarm3Battery = WheelLog.AppConfig.getAlarm3Battery();
-                        if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && getSpeedDouble() >= alarm3Speed) {
-                            startSpeedAlarmCount();
-                            raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                        }
+                        raiseAlarm(ALARM_TYPE.SPEED3, mContext);
                     }
                 }
             }
         }
+
 
         int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
         if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
@@ -1033,7 +1082,7 @@ public class WheelData {
         mContext.sendBroadcast(intent);
         if (v.hasVibrator() && !WheelLog.AppConfig.getDisablePhoneVibrate())
             v.vibrate(pattern, -1);
-        if (!WheelLog.AppConfig.getDisablePhoneBeep()) {
+        if (!WheelLog.AppConfig.getDisablePhoneBeep() && (alarmType.getValue() > 3)) {
             playBeep(alarmType);
         }
     }
