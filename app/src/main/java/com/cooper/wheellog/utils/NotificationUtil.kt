@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
@@ -102,7 +103,12 @@ class NotificationUtil(private val context: Context) {
                     else R.drawable.watch_ajdm_b)
             notificationView.setImageViewResource(R.id.ib_beep, R.drawable.horn_ajdm_b)
             notificationView.setImageViewResource(R.id.ib_light, R.drawable.light_ajdm_b)
+            notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
             notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
+            val textColor = Color.BLACK
+            notificationView.setTextColor(R.id.text_title, textColor)
+            notificationView.setTextColor(R.id.text_message, textColor)
+            notificationView.setTextColor(R.id.ib_actions_text, textColor)
             builder.setSmallIcon(R.drawable.wheel_ajdm_w)
         } else { // original Theme
             notificationView.setImageViewResource(R.id.ib_connection,
