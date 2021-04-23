@@ -3,6 +3,7 @@ package com.cooper.wheellog.utils
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
@@ -45,7 +46,7 @@ class ThemeManager {
     @DrawableRes
     fun getDrawableId(@DrawableRes originalId: Int): Int {
         return when(theme) {
-            R.style.AJDMTheme -> ajdmDrawables[originalId] ?: originalId
+            R.style.AJDMTheme -> ajdmDrawables[originalId] ?: R.drawable.transparent
             else -> originalId
         }
     }

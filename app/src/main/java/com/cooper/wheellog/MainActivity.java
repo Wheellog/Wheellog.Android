@@ -530,8 +530,8 @@ public class MainActivity extends AppCompatActivity {
         // Themes
         if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
             MenuItem miSettings = mMenu.findItem(R.id.miSettings);
-            miSettings.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ajdm_sett3_new));
-            miSearch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ajdm_bt_new));
+            miSettings.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_settings_24));
+            miSearch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_bluetooth_searching_white));
         }
         return true;
     }

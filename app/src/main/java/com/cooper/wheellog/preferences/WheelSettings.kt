@@ -108,7 +108,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
 
         if (WheelData.getInstance().speed < 1) {
             Preference(context).apply {
-                setIcon(R.drawable.ic_baseline_power_off_24)
+                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                 title = getString(R.string.power_off)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -118,14 +118,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().powerOff()
                             }
                             .setNegativeButton(android.R.string.no, null)
-                            .setIcon(R.drawable.ic_baseline_power_off_24)
+                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
                 }
                 ps.addPreference(this)
             }
             Preference(context).apply {
-                setIcon(R.drawable.ic_baseline_calibration_24)
+                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                 title = getString(R.string.wheel_calibration)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -135,7 +135,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().wheelCalibration()
                             }
                             .setNegativeButton(android.R.string.no, null)
-                            .setIcon(R.drawable.ic_baseline_calibration_24)
+                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
                 }
@@ -282,7 +282,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
 
         if (WheelData.getInstance().speed < 1) {
             Preference(context).apply {
-                setIcon(R.drawable.ic_baseline_power_off_24)
+                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                 title = getString(R.string.power_off)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -292,14 +292,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().powerOff()
                             }
                             .setNegativeButton(android.R.string.no, null)
-                            .setIcon(R.drawable.ic_baseline_power_off_24)
+                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
                 }
                 ps.addPreference(this)
             }
             Preference(context).apply {
-                setIcon(R.drawable.ic_baseline_calibration_24)
+                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                 title = getString(R.string.wheel_calibration)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -309,7 +309,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().wheelCalibration()
                             }
                             .setNegativeButton(android.R.string.no, null)
-                            .setIcon(R.drawable.ic_baseline_calibration_24)
+                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
                 }
@@ -407,7 +407,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         }
         if (WheelData.getInstance().speed < 1) {
             Preference(context).apply {
-                setIcon(R.drawable.ic_baseline_calibration_24)
+                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                 title = getString(R.string.wheel_calibration)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -417,14 +417,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().wheelCalibration()
                             }
                             .setNegativeButton(android.R.string.no, null)
-                            .setIcon(R.drawable.ic_baseline_calibration_24)
+                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
                 }
                 ps.addPreference(this)
             }
             Preference(context).apply {
-                setIcon(R.drawable.ic_baseline_power_off_24)
+                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                 title = getString(R.string.power_off)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -434,7 +434,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().powerOff()
                             }
                             .setNegativeButton(android.R.string.no, null)
-                            .setIcon(R.drawable.ic_baseline_power_off_24)
+                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
                 }
@@ -483,7 +483,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         Preference(context).apply {
-            setIcon(R.drawable.ic_baseline_calibration_24)
+            setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
             title = getString(R.string.wheel_calibration)
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 AlertDialog.Builder(context)
@@ -493,7 +493,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                             WheelData.getInstance().wheelCalibration()
                         }
                         .setNegativeButton(android.R.string.no, null)
-                        .setIcon(R.drawable.ic_baseline_calibration_24)
+                        .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                         .show()
                 true
             }

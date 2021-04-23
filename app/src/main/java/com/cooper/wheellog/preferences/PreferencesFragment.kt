@@ -294,6 +294,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     preferenceScreen.removeAll()
                     addPreferencesFromResource(R.xml.preferences_logs)
                     setupScreen()
+                    // clear icons in not original theme
+                    if (WheelLog.AppConfig.appTheme != R.style.OriginalTheme) {
+                        findPreference<SwitchPreference>(getString(R.string.auto_log))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.auto_upload_ec))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.log_location_data))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.use_gps))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.use_raw_data))?.setIcon(R.drawable.transparent)
+                    }
                     true
                 }
                 alarmButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
