@@ -86,12 +86,12 @@ class NotificationUtil(private val context: Context) {
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+            notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
             notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
             val textColor = Color.BLACK
             notificationView.setTextColor(R.id.text_title, textColor)
             notificationView.setTextColor(R.id.text_message, textColor)
             notificationView.setTextColor(R.id.ib_actions_text, textColor)
-            builder.setSmallIcon(R.drawable.wheel_ajdm_w)
         }
         notificationView.setImageViewResource(R.id.ib_connection,
                 when (connectionState) {

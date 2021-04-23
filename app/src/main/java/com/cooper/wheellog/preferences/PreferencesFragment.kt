@@ -345,7 +345,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
                     speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_speedometer_white_24dp))
                     logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_show_chart_white_24dp))
+                    alarmButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_vibration_24))
                     watchButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_watch_24))
+                    wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_wheel_white_24))
+                    tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_explore_24))
                     findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_bug_report_24))
                     aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_info_24))
                 }

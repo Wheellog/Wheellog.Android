@@ -3,7 +3,6 @@ package com.cooper.wheellog.utils
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
@@ -41,6 +40,9 @@ class ThemeManager {
         ajdmDrawables[R.drawable.ic_baseline_watch_24] = R.drawable.ajdm_watch_new
         ajdmDrawables[R.drawable.ic_baseline_bug_report_24] = R.drawable.ajdm_flow
         ajdmDrawables[R.drawable.ic_baseline_info_24] = R.drawable.ajdm_instamessage
+        ajdmDrawables[R.drawable.ic_baseline_vibration_24] = R.drawable.ajdm_alarm
+        ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.wheel_ajdm_w
+        ajdmDrawables[R.drawable.ic_baseline_explore_24] = R.drawable.ajdm_trip
     }
 
     @DrawableRes
