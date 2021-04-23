@@ -162,8 +162,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
                 ViewBlockInfo(resources.getString(R.string.maxtemperature),
                         { String.format(Locale.US, "%d ℃", mMaxTemperature) }, false),
-
-
                 ViewBlockInfo(resources.getString(R.string.average_speed),
                         {
                             if (useMph) {
