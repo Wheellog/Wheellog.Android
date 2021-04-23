@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 
 import com.cooper.wheellog.utils.NotificationUtil;
+import com.cooper.wheellog.utils.ThemeManager;
 import com.cooper.wheellog.utils.VolumeKeyController;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ public class WheelLog extends Application {
     public static AppConfig AppConfig;
     public static NotificationUtil Notifications;
     public static VolumeKeyController VolumeKeyController;
+    public static ThemeManager ThemeManager;
 
     @Override
     public void onCreate() {
@@ -31,6 +33,7 @@ public class WheelLog extends Application {
         base = LocaleManager.setLocale(base);
         Notifications = new NotificationUtil(base);
         VolumeKeyController = new VolumeKeyController(base);
+        ThemeManager = new ThemeManager();
         super.attachBaseContext(base);
     }
 

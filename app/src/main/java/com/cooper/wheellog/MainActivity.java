@@ -305,69 +305,23 @@ public class MainActivity extends AppCompatActivity {
             miWheel.getIcon().setAlpha(255);
         }
 
-        // Themes
-        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
-            if (PebbleService.isInstanceCreated()) {
-                miWatch.setIcon(R.drawable.ajdm_watch_g);
-            } else {
-                miWatch.setIcon(R.drawable.ajdm_watch_new);
-            }
-
-            if (LoggingService.isInstanceCreated()) {
-                miLogging.setTitle(R.string.stop_data_service);
-                miLogging.setIcon(R.drawable.ajdm_log_new_g);
-            } else {
-                miLogging.setTitle(R.string.start_data_service);
-                miLogging.setIcon(R.drawable.ajdm_log_new);
-            }
-
-            switch (mConnectionState) {
-                case BluetoothLeService.STATE_CONNECTED:
-                    miWheel.setIcon(R.drawable.ajdm_wheel_new);
-                    miWheel.setTitle(R.string.disconnect_from_wheel);
-                    miSearch.setEnabled(false);
-                    miSearch.getIcon().setAlpha(64);
-                    miLogging.setEnabled(true);
-                    miLogging.getIcon().setAlpha(255);
-                    break;
-                case BluetoothLeService.STATE_CONNECTING:
-                    miWheel.setIcon(R.drawable.ajdm_anim_wheel_icon);
-                    miWheel.setTitle(R.string.disconnect_from_wheel);
-                    ((AnimationDrawable) miWheel.getIcon()).start();
-                    miSearch.setEnabled(false);
-                    miSearch.getIcon().setAlpha(64);
-                    miLogging.setEnabled(false);
-                    miLogging.getIcon().setAlpha(64);
-                    break;
-                case BluetoothLeService.STATE_DISCONNECTED:
-                    miWheel.setIcon(R.drawable.connect_ajdm);
-                    miWheel.setTitle(R.string.connect_to_wheel);
-                    miSearch.setEnabled(true);
-                    miSearch.getIcon().setAlpha(255);
-                    miLogging.setEnabled(false);
-                    miLogging.getIcon().setAlpha(64);
-                    break;
-            }
-            return;
-        }
-        // Original theme
         if (PebbleService.isInstanceCreated()) {
-            miWatch.setIcon(R.drawable.ic_action_watch_orange);
+            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
         } else {
-            miWatch.setIcon(R.drawable.ic_action_watch_white);
+            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_white));
         }
 
         if (LoggingService.isInstanceCreated()) {
             miLogging.setTitle(R.string.stop_data_service);
-            miLogging.setIcon(R.drawable.ic_action_logging_orange);
+            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange));
         } else {
             miLogging.setTitle(R.string.start_data_service);
-            miLogging.setIcon(R.drawable.ic_action_logging_white);
+            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_white));
         }
 
         switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_orange);
+                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 miSearch.setEnabled(false);
                 miSearch.getIcon().setAlpha(64);
@@ -375,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(255);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
-                miWheel.setIcon(R.drawable.anim_wheel_icon);
+                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.anim_wheel_icon));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 ((AnimationDrawable) miWheel.getIcon()).start();
                 miSearch.setEnabled(false);
@@ -384,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(64);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_white);
+                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_white));
                 miWheel.setTitle(R.string.connect_to_wheel);
                 miSearch.setEnabled(true);
                 miSearch.getIcon().setAlpha(255);
@@ -542,29 +496,7 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mBluetoothServiceConnection);
             WheelData.getInstance().setBluetoothLeService(null);
         }
-        // change main launcher icon
-        PackageManager pm = getPackageManager();
-        ComponentName originalComponent = new ComponentName(MainActivity.this, "com.cooper.wheellog.OriginalIconAlias");
-        ComponentName ajdmComponent = new ComponentName(MainActivity.this, "com.cooper.wheellog.AjdmIconAlias");
-        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
-            pm.setComponentEnabledSetting(
-                    ajdmComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP);
-            pm.setComponentEnabledSetting(
-                    originalComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP);
-        } else {
-            pm.setComponentEnabledSetting(
-                    ajdmComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP);
-            pm.setComponentEnabledSetting(
-                    originalComponent,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP);
-        }
+        WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000 /* 1 min */, 1000) {
@@ -598,8 +530,8 @@ public class MainActivity extends AppCompatActivity {
         // Themes
         if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
             MenuItem miSettings = mMenu.findItem(R.id.miSettings);
-            miSettings.setIcon(R.drawable.ajdm_sett3_new);
-            miSearch.setIcon(R.drawable.ajdm_bt_new);
+            miSettings.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ajdm_sett3_new));
+            miSearch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ajdm_bt_new));
         }
         return true;
     }

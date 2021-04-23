@@ -86,51 +86,33 @@ class NotificationUtil(private val context: Context) {
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
-            notificationView.setImageViewResource(R.id.ib_connection,
-                    when (connectionState) {
-                        BluetoothLeService.STATE_CONNECTING -> R.drawable.connect_ajdm_y
-                        BluetoothLeService.STATE_CONNECTED -> R.drawable.connect_ajdm_g
-                        else -> R.drawable.connect_ajdm_b
-                    })
-            if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
-                notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text_ajdm_theme, speed, batteryLevel, temperature, distance))
-            }
-            notificationView.setImageViewResource(R.id.ib_logging,
-                    if (LoggingService.isInstanceCreated()) R.drawable.gps_ajdm_g
-                    else R.drawable.gps_ajdm_b)
-            notificationView.setImageViewResource(R.id.ib_watch,
-                    if (PebbleService.isInstanceCreated()) R.drawable.watch_ajdm_g
-                    else R.drawable.watch_ajdm_b)
-            notificationView.setImageViewResource(R.id.ib_beep, R.drawable.horn_ajdm_b)
-            notificationView.setImageViewResource(R.id.ib_light, R.drawable.light_ajdm_b)
-            notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
             notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
             val textColor = Color.BLACK
             notificationView.setTextColor(R.id.text_title, textColor)
             notificationView.setTextColor(R.id.text_message, textColor)
             notificationView.setTextColor(R.id.ib_actions_text, textColor)
             builder.setSmallIcon(R.drawable.wheel_ajdm_w)
-        } else { // original Theme
-            notificationView.setImageViewResource(R.id.ib_connection,
-                    when (connectionState) {
-                        BluetoothLeService.STATE_CONNECTING -> R.drawable.ic_action_wheel_light_orange
-                        BluetoothLeService.STATE_CONNECTED -> R.drawable.ic_action_wheel_orange
-                        else -> R.drawable.ic_action_wheel_grey
-                    })
-            if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
-                notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text, speed, batteryLevel, temperature, distance))
-            }
-            notificationView.setImageViewResource(R.id.ib_logging,
-                    if (LoggingService.isInstanceCreated()) R.drawable.ic_action_logging_orange
-                    else R.drawable.ic_action_logging_grey)
-            notificationView.setImageViewResource(R.id.ib_watch,
-                    if (PebbleService.isInstanceCreated()) R.drawable.ic_action_watch_orange
-                    else R.drawable.ic_action_watch_grey)
-            notificationView.setImageViewResource(R.id.ib_beep, R.drawable.ic_horn_32_gray)
-            notificationView.setImageViewResource(R.id.ib_light, R.drawable.ic_sun_32_gray)
-            builder.setSmallIcon(R.drawable.ic_stat_wheel)
         }
-        builder.setContentIntent(pendingIntent)
+        notificationView.setImageViewResource(R.id.ib_connection,
+                when (connectionState) {
+                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_light_orange)
+                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange)
+                    else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
+                })
+        if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
+            notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text, speed, batteryLevel, temperature, distance))
+        }
+        notificationView.setImageViewResource(R.id.ib_logging,
+                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
+                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_grey))
+        notificationView.setImageViewResource(R.id.ib_watch,
+                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange)
+                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_grey))
+        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_horn_32_gray))
+        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_sun_32_gray))
+
+        builder.setSmallIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_stat_wheel))
+                .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)

@@ -198,12 +198,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
-            R.string.use_eng, R.string.app_theme -> AlertDialog.Builder(requireContext())
-                    .setTitle(R.string.use_eng_alert_title)
-                    .setMessage(R.string.use_eng_alert_description)
-                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .show()
+            R.string.use_eng, R.string.app_theme -> {
+                WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
+                AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.use_eng_alert_title)
+                        .setMessage(R.string.use_eng_alert_description)
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show()
+            }
             R.string.day_night_theme -> {
                 findPreference<ListPreference>(getString(R.string.day_night_theme))?.summary =
                         when (WheelLog.AppConfig.dayNightThemeMode) {
@@ -332,11 +335,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 // Themes
                 if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
-                    speedButton?.icon = getDrawableEx(R.drawable.ajdm_sett5_new)
-                    logsButton?.icon = getDrawableEx(R.drawable.ajdm_log_new)
-                    watchButton?.icon = getDrawableEx(R.drawable.ajdm_watch_new)
-                    findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(R.drawable.ajdm_flow)
-                    aboutButton?.icon = getDrawableEx(R.drawable.ajdm_instamessage)
+                    speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_speedometer_white_24dp))
+                    logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_show_chart_white_24dp))
+                    watchButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_watch_24))
+                    findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_bug_report_24))
+                    aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_info_24))
                 }
             }
             SettingsScreen.Speed -> {
