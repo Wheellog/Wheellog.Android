@@ -689,7 +689,7 @@ public class WheelData {
 
     public void setVoltage(int voltage) {
         mVoltage = voltage;
-        mMaxPower = Math.max(mMaxPower, mCurrent * mVoltage / 10000.0);
+        mMaxPower = Math.max(mMaxPower, mCurrent * mVoltage / 100.0);
     }
 
     double getVoltageSagDouble() {
