@@ -471,7 +471,7 @@ public class WheelData {
     }
 
     public double getMaxPower() {
-        return mMaxPower;
+        return mMaxPower / 100;
     }
 
     public int getCpuLoad() {
