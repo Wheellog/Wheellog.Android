@@ -542,6 +542,29 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mBluetoothServiceConnection);
             WheelData.getInstance().setBluetoothLeService(null);
         }
+        // change main launcher icon
+        PackageManager pm = getPackageManager();
+        ComponentName originalComponent = new ComponentName(MainActivity.this, "com.cooper.wheellog.OriginalIconAlias");
+        ComponentName ajdmComponent = new ComponentName(MainActivity.this, "com.cooper.wheellog.AjdmIconAlias");
+        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
+            pm.setComponentEnabledSetting(
+                    ajdmComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(
+                    originalComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+        } else {
+            pm.setComponentEnabledSetting(
+                    ajdmComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(
+                    originalComponent,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000 /* 1 min */, 1000) {
