@@ -184,6 +184,7 @@
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
     <string name="temperature2">Second temp</string>
+    <string name="maxtemperature">Max temp</string>
     <string name="pwm">PWM</string>
     <string name="max_pwm">Max PWM</string>
     <string name="angle">Tilt</string>

@@ -61,6 +61,8 @@ public class WheelData {
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
+    public double mMaxCurrent;
+    public double mMaxPower;
     private int mTemperature2;
     private int mCpuLoad;
     private int mOutput;
@@ -458,6 +460,14 @@ public class WheelData {
 
     public int getMaxTemp() {
         return mMaxTemp / 100;
+    }
+
+    public double getMaxCurrent() {
+        return mMaxCurrent;
+    }
+
+    public double getMaxPower() {
+        return mMaxPower;
     }
 
     public int getTemperature2() {

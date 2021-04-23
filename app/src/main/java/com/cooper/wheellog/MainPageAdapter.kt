@@ -311,6 +311,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setTotalDistance(data.totalDistanceDouble)
                     setVoltage(data.voltageDouble)
                     setCurrent(data.currentDouble)
+                    setMaxPower(data.powerDouble)
+                    setMaxCurrent(data.currentDouble)
                     setAverageSpeed(data.averageRidingSpeedDouble)
                     setMaxPwm(data.maxPwm)
                     setMaxTemperature(data.maxTemp)
