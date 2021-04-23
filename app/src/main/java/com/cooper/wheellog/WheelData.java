@@ -466,18 +466,8 @@ public class WheelData {
         return mTemperature2 / 100;
     }
 
-    public void setMaxCurrent(int value) {
-        mCurrent = value;
-        mMaxCurrent = Math.max(mMaxCurrent, value);
-    }
-
     public int getMaxCurrent() {
-        return mMaxCurrent;
-    }
-
-    public void setMaxPower(int value) {
-        mPower = value;
-        mMaxPower = Math.max(mMaxPower, value);
+        return mMaxCurrent / 100;
     }
 
     public int getMaxPower() {
@@ -711,6 +701,7 @@ public class WheelData {
 
     public void setPower(int power) {
         mPower = power;
+        mMaxPower = Math.max(mMaxPower, power);
     }
 
     public double getCurrentDouble() {
@@ -719,6 +710,7 @@ public class WheelData {
 
     public void setCurrent(int value) {
         mCurrent = value;
+        mMaxCurrent = Math.max(mMaxCurrent, value);
     }
 
     public int getCurrent() {
