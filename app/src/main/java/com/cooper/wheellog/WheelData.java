@@ -175,7 +175,7 @@ public class WheelData {
             audioTrack.write(buffer, sampleRate * 3 / 10, (2 * sampleRate) / 20); //100 ms for current
 
         } else {
-            audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //300 ms temperature
+            audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //600 ms temperature
         }
 
         //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
