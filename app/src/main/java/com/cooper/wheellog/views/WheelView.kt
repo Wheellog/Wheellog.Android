@@ -56,7 +56,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var mTopSpeed = 0.0
     private var mVoltage = 0.0
     private var mCurrent = 0.0
-    private var mMaxCurrent = 0.0
     private var mMaxPower = 0.0
     private var mPwm = 0.0
     private var mMaxPwm = 0.0
@@ -148,13 +147,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
                 ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
 
-                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mMaxCurrent) },
+                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%d " + resources.getString(R.string.amp), WheelData.getInstance().getMaxCurrent()) },
 
                 ViewBlockInfo(resources.getString(R.string.power),
                         { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), WheelData.getInstance().powerDouble) }, false),
 
                 ViewBlockInfo(resources.getString(R.string.maxpower),
-                        { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), mMaxPower) }, false),
+                        { String.format(Locale.US, "%d " + resources.getString(R.string.watt), WheelData.getInstance().getMaxPower()) }, false),
 
                 ViewBlockInfo(resources.getString(R.string.temperature),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature) }, false),
@@ -317,18 +316,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val maxSpeed = WheelLog.AppConfig.maxSpeed
         current = if (abs(current) > maxSpeed) maxSpeed.toDouble() else current
         targetCurrent = (current / maxSpeed.toDouble() * 112).roundToInt()
-        refresh()
-    }
-
-    fun setMaxCurrent(current: Double) {
-        if (mMaxCurrent < current) return
-        mMaxCurrent = current
-        refresh()
-    }
-
-    fun setMaxPower(power: Double) {
-        if (mMaxPower < power) return
-        mMaxPower = power
         refresh()
     }
 
