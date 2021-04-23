@@ -23,7 +23,7 @@ class ThemeManager {
         ajdmDrawables[R.drawable.ic_action_watch_grey] = R.drawable.watch_ajdm_b
         ajdmDrawables[R.drawable.ic_horn_32_gray] = R.drawable.horn_ajdm_b
         ajdmDrawables[R.drawable.ic_sun_32_gray] = R.drawable.light_ajdm_b
-        ajdmDrawables[R.drawable.ic_stat_wheel] = R.drawable.ajdm_notification_icon
+        ajdmDrawables[R.drawable.ic_stat_wheel] = R.drawable.wheel_ajdm_w
         // menu
         ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.ajdm_watch_g
         ajdmDrawables[R.drawable.ic_action_watch_white] = R.drawable.ajdm_watch_new
@@ -41,7 +41,7 @@ class ThemeManager {
         ajdmDrawables[R.drawable.ic_baseline_bug_report_24] = R.drawable.ajdm_flow
         ajdmDrawables[R.drawable.ic_baseline_info_24] = R.drawable.ajdm_instamessage
         ajdmDrawables[R.drawable.ic_baseline_vibration_24] = R.drawable.ajdm_alarm
-        ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.wheel_ajdm_w
+        ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.connect_ajdm
         ajdmDrawables[R.drawable.ic_baseline_explore_24] = R.drawable.ajdm_trip
     }
 
