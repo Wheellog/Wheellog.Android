@@ -12,7 +12,6 @@ import com.cooper.wheellog.*
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Companion.separator
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
-import com.cooper.wheellog.utils.NotificationUtil
 import com.cooper.wheellog.utils.ReflectUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import timber.log.Timber
@@ -142,24 +141,17 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
                 },
-
                 ViewBlockInfo(resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
-
                 ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
-
-                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), WheelData.getInstance().getMaxCurrent()) },
-
+                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrent) },
                 ViewBlockInfo(resources.getString(R.string.power),
                         { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), WheelData.getInstance().powerDouble) }, false),
-
                 ViewBlockInfo(resources.getString(R.string.maxpower),
-                        { String.format(Locale.US, "%.0f " + resources.getString(R.string.watt), WheelData.getInstance().getMaxPower()) }, false),
-
+                        { String.format(Locale.US, "%.0f " + resources.getString(R.string.watt), WheelData.getInstance().maxPower) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature2),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature2) }, false),
-
                 ViewBlockInfo(resources.getString(R.string.maxtemperature),
                         { String.format(Locale.US, "%d ℃", mMaxTemperature) }, false),
                 ViewBlockInfo(resources.getString(R.string.average_speed),
