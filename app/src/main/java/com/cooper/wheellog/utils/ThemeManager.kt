@@ -1,0 +1,81 @@
+package com.cooper.wheellog.utils
+
+import android.content.ComponentName
+import android.content.Context
+import android.content.pm.PackageManager
+import androidx.annotation.DrawableRes
+import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelLog
+
+class ThemeManager {
+    var theme = WheelLog.AppConfig.appTheme
+
+    private val ajdmDrawables = HashMap<Int, Int>()
+    
+    init {
+        // notification
+        ajdmDrawables[R.drawable.ic_action_wheel_light_orange] = R.drawable.connect_ajdm_y
+        ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.connect_ajdm_g
+        ajdmDrawables[R.drawable.ic_action_wheel_grey] = R.drawable.connect_ajdm_b
+        ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.gps_ajdm_g
+        ajdmDrawables[R.drawable.ic_action_logging_grey] = R.drawable.gps_ajdm_b
+        ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.watch_ajdm_g
+        ajdmDrawables[R.drawable.ic_action_watch_grey] = R.drawable.watch_ajdm_b
+        ajdmDrawables[R.drawable.ic_horn_32_gray] = R.drawable.horn_ajdm_b
+        ajdmDrawables[R.drawable.ic_sun_32_gray] = R.drawable.light_ajdm_b
+        ajdmDrawables[R.drawable.ic_stat_wheel] = R.drawable.wheel_ajdm_w
+        // menu
+        ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.ajdm_watch_g
+        ajdmDrawables[R.drawable.ic_action_watch_white] = R.drawable.ajdm_watch_new
+        ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.ajdm_log_new_g
+        ajdmDrawables[R.drawable.ic_action_logging_white] = R.drawable.ajdm_log_new
+        ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.ajdm_wheel_new
+        ajdmDrawables[R.drawable.anim_wheel_icon] = R.drawable.ajdm_anim_wheel_icon
+        ajdmDrawables[R.drawable.ic_action_wheel_white] = R.drawable.connect_ajdm
+        ajdmDrawables[R.drawable.ic_baseline_settings_24] = R.drawable.ajdm_sett3_new
+        ajdmDrawables[R.drawable.ic_action_bluetooth_searching_white] = R.drawable.ajdm_bt_new
+        // prefs
+        ajdmDrawables[R.drawable.ic_speedometer_white_24dp] = R.drawable.ajdm_sett5_new
+        ajdmDrawables[R.drawable.ic_show_chart_white_24dp] = R.drawable.ajdm_log_new
+        ajdmDrawables[R.drawable.ic_baseline_watch_24] = R.drawable.ajdm_watch_new
+        ajdmDrawables[R.drawable.ic_baseline_bug_report_24] = R.drawable.ajdm_flow
+        ajdmDrawables[R.drawable.ic_baseline_info_24] = R.drawable.ajdm_instamessage
+        ajdmDrawables[R.drawable.ic_baseline_vibration_24] = R.drawable.ajdm_alarm
+        ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.connect_ajdm
+        ajdmDrawables[R.drawable.ic_baseline_explore_24] = R.drawable.ajdm_trip
+    }
+
+    @DrawableRes
+    fun getDrawableId(@DrawableRes originalId: Int): Int {
+        return when(theme) {
+            R.style.AJDMTheme -> ajdmDrawables[originalId] ?: R.drawable.transparent
+            else -> originalId
+        }
+    }
+
+    fun changeAppIcon(pkg: Context) {
+        // change main launcher icon
+        val pm = pkg.packageManager
+        val original = ComponentName(pkg, "com.cooper.wheellog.OriginalIconAlias")
+        val ajdm = ComponentName(pkg, "com.cooper.wheellog.AjdmIconAlias")
+        if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+            pm.setComponentEnabledSetting(
+                    ajdm,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(
+                    original,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP)
+        } else {
+            pm.setComponentEnabledSetting(
+                    ajdm,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(
+                    original,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP)
+        }
+    }
+}
