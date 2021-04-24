@@ -60,18 +60,18 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
 
     override fun onCreateDialogView(context: Context): View {
         val paddingDP = (20 * context.resources.displayMetrics.density).roundToInt()
-        layoutWithCheckboxes = LinearLayout(context).also {
-            it.orientation = LinearLayout.VERTICAL
-            it.layoutParams = ViewGroup.LayoutParams(
+        layoutWithCheckboxes = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
-            it.setPadding(paddingDP, paddingDP, paddingDP, paddingDP)
+            setPadding(paddingDP, paddingDP, paddingDP, paddingDP)
         }
-        val scrollView = ScrollView(context).also {
-            it.layoutParams = ViewGroup.LayoutParams(
+        val scrollView = ScrollView(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT)
-            it.addView(layoutWithCheckboxes)
+            addView(layoutWithCheckboxes)
         }
         val p = getListPreference()
         if (p == null) {
@@ -97,16 +97,18 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
     }
 
     private fun addCheckbox(context: Context, text: CharSequence, isChecked: Boolean = false) {
-        val checkBox = CheckBox(context)
-        checkBox.text = text
-        checkBox.isChecked = isChecked
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkBox.setTextAppearance(R.style.Stats)
+        CheckBox(context).apply {
+            this.text = text
+            this.isChecked = isChecked
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                setTextAppearance(R.style.Stats)
+            }
+            val paddingDP = (5 * context.resources.displayMetrics.density).roundToInt()
+            setPadding(0, paddingDP, 0, paddingDP)
+            setOnCheckedChangeListener(this@MultiSelectPreferenceDialogFragment)
+            typeface = null
+            layoutWithCheckboxes.addView(this)
         }
-        val paddingDP = (5 * context.resources.displayMetrics.density).roundToInt()
-        checkBox.setPadding(0, paddingDP, 0, paddingDP)
-        checkBox.setOnCheckedChangeListener(this)
-        layoutWithCheckboxes.addView(checkBox)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
