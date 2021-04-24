@@ -992,8 +992,7 @@ public class WheelData {
             //if (true) { //test
             if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
                 toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
-                if (toneDuration > 200) toneDuration = 200;
-                else if (toneDuration < 20) toneDuration = 20;
+                toneDuration = MathsUtil.clamp(toneDuration, 20, 200);
                 startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.SPEED1, mContext);
             } else {
@@ -1018,31 +1017,20 @@ public class WheelData {
                 }
             }
         } else {
-            int alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
-            int alarm1Battery = WheelLog.AppConfig.getAlarm1Battery();
-            if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && getSpeedDouble() >= alarm1Speed) {
+            if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm1Speed(), WheelLog.AppConfig.getAlarm1Battery())) {
                 toneDuration = 50;
                 startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-            } else {
-                int alarm2Speed = WheelLog.AppConfig.getAlarm2Speed();
-                int alarm2Battery = WheelLog.AppConfig.getAlarm2Battery();
-                if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && getSpeedDouble() >= alarm2Speed) {
-                    toneDuration = 100;
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else {
-                    int alarm3Speed = WheelLog.AppConfig.getAlarm3Speed();
-                    int alarm3Battery = WheelLog.AppConfig.getAlarm3Battery();
-                    if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && getSpeedDouble() >= alarm3Speed) {
-                        toneDuration = 180;
-                        startSpeedAlarmCount();
-                        raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                    }
-                }
+            } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm2Speed(), WheelLog.AppConfig.getAlarm2Battery())) {
+                toneDuration = 100;
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+            } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm3Speed(), WheelLog.AppConfig.getAlarm3Battery())) {
+                toneDuration = 180;
+                startSpeedAlarmCount();
+                raiseAlarm(ALARM_TYPE.SPEED3, mContext);
             }
         }
-
 
         int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
         if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
@@ -1055,6 +1043,10 @@ public class WheelData {
             startTempAlarmCount();
             raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
         }
+    }
+
+    private boolean alarmSpeedCheck(int alarmSpeed, int alarmBattery) {
+        return alarmSpeed > 0 && alarmBattery > 0 && mAverageBattery <= alarmBattery && getSpeedDouble() >= alarmSpeed;
     }
 
     private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
