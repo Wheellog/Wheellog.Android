@@ -117,17 +117,21 @@
         <item>@string/pwm</item>
         <item>@string/max_pwm</item>
         <item>@string/voltage</item>
-        <item>@string/average_riding_speed</item>
-        <item>@string/riding_time</item>
+        <item>@string/battery</item>
         <item>@string/top_speed</item>
-        <item>@string/distance</item>
-        <item>@string/total</item>
+        <item>@string/average_riding_speed</item>
+        <item>@string/average_speed</item>
+        <item>@string/riding_time</item>
+        <item>@string/ride_time</item>
         <item>@string/current</item>
+        <item>@string/maxcurrent</item>
         <item>@string/power</item>
+        <item>@string/maxpower</item>
         <item>@string/temperature</item>
         <item>@string/temperature2</item>
-        <item>@string/average_speed</item>
-        <item>@string/ride_time</item>
+        <item>@string/maxtemperature</item>
+        <item>@string/distance</item>
+        <item>@string/total</item>
         <item>@string/wheel_distance</item>
     </string-array>
 

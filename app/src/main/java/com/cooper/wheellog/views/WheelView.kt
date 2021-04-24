@@ -55,6 +55,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var mTopSpeed = 0.0
     private var mVoltage = 0.0
     private var mCurrent = 0.0
+    private var mMaxPower = 0.0
     private var mPwm = 0.0
     private var mMaxPwm = 0.0
     private var mAverageSpeed = 0.0
@@ -140,13 +141,19 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
                 },
+                ViewBlockInfo(resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
                 ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
+                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrent) },
                 ViewBlockInfo(resources.getString(R.string.power),
                         { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), WheelData.getInstance().powerDouble) }, false),
+                ViewBlockInfo(resources.getString(R.string.maxpower),
+                        { String.format(Locale.US, "%.0f " + resources.getString(R.string.watt), WheelData.getInstance().maxPower) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature2),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature2) }, false),
+                ViewBlockInfo(resources.getString(R.string.maxtemperature),
+                        { String.format(Locale.US, "%d ℃", mMaxTemperature) }, false),
                 ViewBlockInfo(resources.getString(R.string.average_speed),
                         {
                             if (useMph) {
