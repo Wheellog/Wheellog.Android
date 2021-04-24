@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.*;
@@ -421,11 +422,9 @@ public class MainActivity extends AppCompatActivity {
 
         createPager();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Typeface typefacePrime = ResourcesCompat.getFont(this, R.font.prime);
-            TextClock textClock = findViewById(R.id.textClock);
-            textClock.setTypeface(typefacePrime);
-        }
+        // clock font
+        TextClock textClock = findViewById(R.id.textClock);
+        textClock.setTypeface(WheelLog.ThemeManager.getTypeface(getApplicationContext()));
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = findViewById(R.id.toolbar);
