@@ -25,7 +25,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 29
         versionCode 79
-        versionName "2.3.1"
+        versionName "2.3.2beta"
         buildConfigField 'String', 'BUILD_TIME', "\"" + new Date().format('HH:mm dd.MM.yyyy') + "\""
         buildConfigField 'String', 'BUILD_DATE', "\"" + new Date().format('dd.MM.yyyy') + "\""
         vectorDrawables.useSupportLibrary = true
