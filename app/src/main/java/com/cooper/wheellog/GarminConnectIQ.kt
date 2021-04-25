@@ -346,7 +346,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
     companion object {
         val TAG = GarminConnectIQ::class.java.simpleName
-        const val APP_ID = "df8bf0ab-1828-4037-a328-ee86d29d0501"
+        const val APP_ID = "487e6172-972c-4f93-a4db-26fd689f935a"
 
         // This will require Garmin Connect V4.22
         // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
