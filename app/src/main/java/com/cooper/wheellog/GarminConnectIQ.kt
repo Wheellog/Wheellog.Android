@@ -29,15 +29,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         EUC_DATA, PLAY_HORN, HTTP_READY
     }
 
-    var lastSpeed = 0
-    var lastBattery = 0
-    var lastTemperature = 0
-    var lastFanStatus = 0
-    var lastRideTime = 0
-    var lastDistance = 0
-    var lastTopSpeed = 0
-    var lastConnectionState = false
-    var lastPower = 0
     private var keepAliveTimer: Timer? = null
     val handler = Handler() // to call toast from the TimerTask
     private var mSdkReady = false
@@ -65,7 +56,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     override fun onDestroy() {
         Timber.d("onDestroy")
         super.onDestroy()
-        cancelRefreshTimer()
         try {
             mConnectIQ.unregisterAllForEvents()
             mConnectIQ.shutdown(this)
@@ -74,6 +64,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             // so no worries.
         }
         stopWebServer()
+        unregisterWithDevice()
         stopForeground(false)
         instance = null
     }
@@ -142,69 +133,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         }
     }
 
-    private fun cancelRefreshTimer() {
-        if (keepAliveTimer != null) {
-            keepAliveTimer!!.cancel()
-            keepAliveTimer = null
-        }
-    }
-
-    private fun startRefreshTimer() {
-        val timerTask: TimerTask = object : TimerTask() {
-            override fun run() {
-                handler.post { refreshData() }
-            }
-        }
-        keepAliveTimer = Timer()
-        keepAliveTimer!!.scheduleAtFixedRate(timerTask, 0, 1500) // 1.5cs
-    }
-
-    private fun refreshData() {
-        if (WheelData.getInstance() == null) return
-        try {
-            val data = HashMap<Any, Any>()
-            lastSpeed = WheelData.getInstance().speed / 10
-            data[MESSAGE_KEY_SPEED] = lastSpeed
-            lastBattery = WheelData.getInstance().batteryLevel
-            data[MESSAGE_KEY_BATTERY] = lastBattery
-            lastTemperature = WheelData.getInstance().temperature
-            data[MESSAGE_KEY_TEMPERATURE] = lastTemperature
-            lastFanStatus = WheelData.getInstance().fanStatus
-            data[MESSAGE_KEY_FAN_STATE] = lastFanStatus
-            lastConnectionState = WheelData.getInstance().isConnected
-            data[MESSAGE_KEY_BT_STATE] = lastConnectionState
-            data[MESSAGE_KEY_VIBE_ALERT] = false
-            data[MESSAGE_KEY_USE_MPH] = WheelLog.AppConfig.useMph
-            data[MESSAGE_KEY_MAX_SPEED] = WheelLog.AppConfig.maxSpeed
-            lastRideTime = WheelData.getInstance().rideTime
-            data[MESSAGE_KEY_RIDE_TIME] = lastRideTime
-            lastDistance = WheelData.getInstance().distance
-            data[MESSAGE_KEY_DISTANCE] = lastDistance / 100
-            lastTopSpeed = WheelData.getInstance().topSpeed
-            data[MESSAGE_KEY_TOP_SPEED] = lastTopSpeed / 10
-            lastPower = WheelData.getInstance().powerDouble.toInt()
-            data[MESSAGE_KEY_POWER] = lastPower
-            val message = HashMap<Any, Any>()
-            message[MESSAGE_KEY_MSG_TYPE] = MessageType.EUC_DATA.ordinal
-            message[MESSAGE_KEY_MSG_DATA] = MonkeyHash(data)
-            try {
-                mConnectIQ.sendMessage(mDevice, mMyApp, message) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
-                    Timber.d(TAG, "message status: ${status.name}")
-                    if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
-                }
-            } catch (e: InvalidStateException) {
-                Timber.e(TAG, "ConnectIQ is not in a valid state")
-                Toast.makeText(this, "ConnectIQ is not in a valid state", Toast.LENGTH_LONG).show()
-            } catch (e: ServiceUnavailableException) {
-                Timber.e(TAG, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?")
-                Toast.makeText(this, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?", Toast.LENGTH_LONG).show()
-            }
-        } catch (ex: Exception) {
-            Timber.e(ex, "refreshData")
-            Toast.makeText(this, "Error refreshing data", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     // IQApplicationInfoListener METHODS
     override fun onApplicationInfoReceived(app: IQApp) {
         Timber.d(TAG, "onApplicationInfoReceived")
@@ -216,7 +144,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
         // The WheelLog app is not installed on the device so we have
         // to let the user know to install it.
-        cancelRefreshTimer() // no point in sending data...
         Toast.makeText(this, R.string.garmin_connectiq_missing_app_message, Toast.LENGTH_LONG).show()
         try {
             mConnectIQ.openStore(APP_ID)
@@ -230,24 +157,8 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         Timber.d(TAG, "onDeviceStatusChanged")
         Timber.d(TAG, "status is: ${status.name}")
         when (status.name) {
-            "CONNECTED" -> {
-                // Disabled the push method for now until a dev from garmin can shed some light on the
-                // intermittent FAILURE_DURING_TRANSFER that we have seen. This is documented here:
-                // https://forums.garmin.com/developer/connect-iq/f/legacy-bug-reports/5144/failure_during_transfer-issue-again-now-using-comm-sample
-                if (!FEATURE_FLAG_NANOHTTPD) {
-                    startRefreshTimer()
-                }
-
-                // As a workaround, start a nanohttpd server that will listen for data requests from the watch. This is
-                // also documented on the link above and is apparently a good workaround for the meantime. In our implementation
-                // we instanciate the httpd server on an ephemeral port and send a message to the watch to tell it on which port
-                // it can request its data.
-                if (FEATURE_FLAG_NANOHTTPD) {
-                    startWebServer()
-                }
-            }
+            "CONNECTED" -> startWebServer()
             "NOT_PAIRED", "NOT_CONNECTED", "UNKNOWN" -> {
-                cancelRefreshTimer()
                 stopWebServer()
             }
         }
@@ -304,12 +215,12 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         mSdkReady = false
     }
 
-    fun playHorn() {
+    private fun playHorn() {
         val horn_mode = WheelLog.AppConfig.hornMode
         playBeep(applicationContext, horn_mode == 1, false)
     }
 
-    fun startWebServer() {
+    private fun startWebServer() {
         Timber.d(TAG, "startWebServer")
         if (mWebServer != null) return
         try {
@@ -350,7 +261,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
         // This will require Garmin Connect V4.22
         // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
-        const val FEATURE_FLAG_NANOHTTPD = true
         const val MESSAGE_KEY_MSG_TYPE = -2
         const val MESSAGE_KEY_MSG_DATA = -1
         const val MESSAGE_KEY_SPEED = 0
