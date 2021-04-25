@@ -36,6 +36,7 @@
 
     <Preference
         android:title="@string/bug_report"
+        android:key="@string/bug_report"
         app:icon="@drawable/ic_baseline_bug_report_24">
         <intent
             android:action="android.intent.action.VIEW"

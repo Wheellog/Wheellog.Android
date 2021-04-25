@@ -184,6 +184,7 @@
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
     <string name="temperature2">Second temp</string>
+    <string name="maxtemperature">Max temp</string>
     <string name="pwm">PWM</string>
     <string name="max_pwm">Max PWM</string>
     <string name="angle">Tilt</string>
@@ -204,6 +205,7 @@
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
     <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
+    <string name="notification_text_ajdm_theme" translatable="false">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
     <string name="icon_watch">Watch Icon</string>

@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
@@ -66,13 +67,8 @@ class NotificationUtil(private val context: Context) {
                     PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
         }
         val wd = WheelData.getInstance()
-        val connectionState = wd.bluetoothLeService?.connectionState ?: BluetoothLeService.STATE_DISCONNECTED
-        notificationView.setImageViewResource(R.id.ib_connection,
-                when (connectionState) {
-                    BluetoothLeService.STATE_CONNECTING -> R.drawable.ic_action_wheel_light_orange
-                    BluetoothLeService.STATE_CONNECTED -> R.drawable.ic_action_wheel_orange
-                    else -> R.drawable.ic_action_wheel_grey
-                })
+        val connectionState = wd.bluetoothLeService?.connectionState
+                ?: BluetoothLeService.STATE_DISCONNECTED
         val batteryLevel = wd.batteryLevel
         val temperature = wd.temperature
         val distance = wd.distanceDouble
@@ -81,18 +77,13 @@ class NotificationUtil(private val context: Context) {
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
         val title = context.getString(notificationMessageId)
         if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
-            notificationView.setTextViewText(R.id.text_message, context.getString(R.string.notification_text, speed, batteryLevel, temperature, distance))
+            val template = when (WheelLog.AppConfig.appTheme) {
+                R.style.AJDMTheme -> R.string.notification_text_ajdm_theme
+                else -> R.string.notification_text
+            }
+            notificationView.setTextViewText(R.id.text_message, context.getString(template, speed, batteryLevel, temperature, distance))
         }
         notificationView.setTextViewText(R.id.text_title, title)
-        notificationView.setImageViewResource(R.id.ib_logging,
-                if (LoggingService.isInstanceCreated()) R.drawable.ic_action_logging_orange
-                else R.drawable.ic_action_logging_grey)
-        notificationView.setImageViewResource(R.id.ib_watch,
-                if (PebbleService.isInstanceCreated()) R.drawable.ic_action_watch_orange
-                else R.drawable.ic_action_watch_grey)
-
-        notificationView.setImageViewResource(R.id.ib_beep, R.drawable.ic_horn_32_gray)
-        notificationView.setImageViewResource(R.id.ib_light, R.drawable.ic_sun_32_gray)
         notificationView.setImageViewResource(R.id.ib_mi_band,
                 when (WheelLog.AppConfig.mibandMode) {
                     MiBandEnum.Alarm -> R.drawable.ic_mi_alarm
@@ -100,14 +91,36 @@ class NotificationUtil(private val context: Context) {
                     MiBandEnum.Medium -> R.drawable.ic_mi_med
                     MiBandEnum.Max -> R.drawable.ic_mi_max
                 })
+        // Themes
+        if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+            notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
+            notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
+            val textColor = Color.BLACK
+            notificationView.setTextColor(R.id.text_title, textColor)
+            notificationView.setTextColor(R.id.text_message, textColor)
+            notificationView.setTextColor(R.id.ib_actions_text, textColor)
+        }
+        notificationView.setImageViewResource(R.id.ib_connection,
+                when (connectionState) {
+                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_light_orange)
+                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange)
+                    else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
+                })
+        notificationView.setImageViewResource(R.id.ib_logging,
+                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
+                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_grey))
+        notificationView.setImageViewResource(R.id.ib_watch,
+                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange)
+                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_grey))
+        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_horn_32_gray))
+        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_sun_32_gray))
 
-        builder.setSmallIcon(R.drawable.ic_stat_wheel)
+        builder.setSmallIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_stat_wheel))
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .priority = NotificationCompat.PRIORITY_LOW
-
         when (WheelLog.AppConfig.mibandMode) {
             MiBandEnum.Alarm -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
