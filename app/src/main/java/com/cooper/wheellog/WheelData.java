@@ -61,6 +61,8 @@ public class WheelData {
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
+    private double mMaxCurrent = 0;
+    private double mMaxPower = 0;
     private int mTemperature2;
     private int mCpuLoad;
     private int mOutput;
@@ -464,6 +466,14 @@ public class WheelData {
         return mTemperature2 / 100;
     }
 
+    public double getMaxCurrent() {
+        return mMaxCurrent / 100;
+    }
+
+    public double getMaxPower() {
+        return mMaxPower / 100;
+    }
+
     public int getCpuLoad() {
         return mCpuLoad;
     }
@@ -679,6 +689,7 @@ public class WheelData {
 
     public void setVoltage(int voltage) {
         mVoltage = voltage;
+        mMaxPower = Math.max(mMaxPower, mCurrent * mVoltage / 100.0);
     }
 
     double getVoltageSagDouble() {
@@ -691,6 +702,7 @@ public class WheelData {
 
     public void setPower(int power) {
         mPower = power;
+        mMaxPower = Math.max(mMaxPower, power);
     }
 
     public double getCurrentDouble() {
@@ -699,6 +711,7 @@ public class WheelData {
 
     public void setCurrent(int value) {
         mCurrent = value;
+        mMaxCurrent = Math.max(mMaxCurrent, value);
     }
 
     public int getCurrent() {

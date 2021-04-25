@@ -26,6 +26,8 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
+import com.cooper.wheellog.utils.SomeUtil
+import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import timber.log.Timber
 
 class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -196,12 +198,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
-            R.string.use_eng, R.string.app_theme -> AlertDialog.Builder(requireContext())
-                    .setTitle(R.string.use_eng_alert_title)
-                    .setMessage(R.string.use_eng_alert_description)
-                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .show()
+            R.string.use_eng, R.string.app_theme -> {
+                WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
+                AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.use_eng_alert_title)
+                        .setMessage(R.string.use_eng_alert_description)
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show()
+            }
             R.string.day_night_theme -> {
                 findPreference<ListPreference>(getString(R.string.day_night_theme))?.summary =
                         when (WheelLog.AppConfig.dayNightThemeMode) {
@@ -289,6 +294,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     preferenceScreen.removeAll()
                     addPreferencesFromResource(R.xml.preferences_logs)
                     setupScreen()
+                    // clear icons in not original theme
+                    if (WheelLog.AppConfig.appTheme != R.style.OriginalTheme) {
+                        findPreference<SwitchPreference>(getString(R.string.auto_log))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.auto_upload_ec))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.log_location_data))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.use_gps))?.setIcon(R.drawable.transparent)
+                        findPreference<SwitchPreference>(getString(R.string.use_raw_data))?.setIcon(R.drawable.transparent)
+                    }
                     true
                 }
                 alarmButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -327,6 +340,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .setIcon(android.R.drawable.ic_dialog_info)
                             .show()
                     true
+                }
+                // Themes
+                if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+                    speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_speedometer_white_24dp))
+                    logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_show_chart_white_24dp))
+                    alarmButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_vibration_24))
+                    watchButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_watch_24))
+                    wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_wheel_white_24))
+                    tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_explore_24))
+                    findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_bug_report_24))
+                    aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_info_24))
                 }
             }
             SettingsScreen.Speed -> {

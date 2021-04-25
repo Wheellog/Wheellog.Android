@@ -15,7 +15,7 @@
     <color name="wheelview_text">#BDBDBD</color>
     <color name="wheelview_block">#000000</color>
     <color name="wheelview_textblocks">#FFFFFF</color>
-    <color name="wheelview_versiontext">#32000000</color>
+    <color name="wheelview_versiontext">#32CCCCCC</color>
     <color name="wheelview_speed_text">#FFFFFF</color>
     <color name="wheelview_main_positive_dial">#A80909</color>
     <color name="wheelview_main_negative_dial">#209100</color>

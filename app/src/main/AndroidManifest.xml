@@ -56,13 +56,30 @@
                 android:gravity="top"
                 android:minWidth="200dp"
                 android:minHeight="200dp" />
-
+        </activity>
+        <!-- <activity-alias used to change app icon dynamically>   : default icon, set enabled true    -->
+        <activity-alias
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher"
+            android:name=".OriginalIconAlias"
+            android:enabled="true"
+            android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity-alias
+            android:label="@string/app_name"
+            android:icon="@drawable/ajdm_notification_icon"
+            android:name=".AjdmIconAlias"
+            android:enabled="false"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
         <activity
             android:name=".ScanActivity"
             android:theme="@style/OriginalTheme.Transparent" />

@@ -2,6 +2,8 @@ package com.cooper.wheellog.views
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
+import android.graphics.fonts.Font
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,9 +14,9 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.ElectroClub
-import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.google.common.io.ByteStreams
@@ -27,6 +29,7 @@ import java.io.InputStream
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
     private var uploadViewVisible: Int = View.VISIBLE
+    private var font = WheelLog.ThemeManager.getTypeface(context)
 
     var uploadVisible: Boolean
         get() = uploadViewVisible == View.VISIBLE
@@ -38,7 +41,7 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = inflater.inflate(R.layout.list_trip_item, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, font)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -50,7 +53,7 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
         return trips.size
     }
 
-    class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder internal constructor(view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
         private var nameView: TextView = view.findViewById(R.id.name)
         private var descriptionView: TextView = view.findViewById(R.id.description)
         private var uploadButtonLayout: RelativeLayout = view.findViewById(R.id.uploadButtonLayout)
@@ -65,7 +68,9 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
 
         fun bind(trip: Trip, uploadViewVisible: Int) {
             nameView.text = trip.title
+            nameView.typeface = font
             descriptionView.text = trip.description
+            descriptionView.typeface = font
             uploadButtonLayout.visibility = uploadViewVisible
             uploadInProgress(false)
             uploadView.setOnClickListener {

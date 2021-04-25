@@ -55,6 +55,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var mTopSpeed = 0.0
     private var mVoltage = 0.0
     private var mCurrent = 0.0
+    private var mMaxPower = 0.0
     private var mPwm = 0.0
     private var mMaxPwm = 0.0
     private var mAverageSpeed = 0.0
@@ -140,13 +141,19 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
                 },
+                ViewBlockInfo(resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
                 ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
+                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrent) },
                 ViewBlockInfo(resources.getString(R.string.power),
                         { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), WheelData.getInstance().powerDouble) }, false),
+                ViewBlockInfo(resources.getString(R.string.maxpower),
+                        { String.format(Locale.US, "%.0f " + resources.getString(R.string.watt), WheelData.getInstance().maxPower) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature) }, false),
                 ViewBlockInfo(resources.getString(R.string.temperature2),
                         { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature2) }, false),
+                ViewBlockInfo(resources.getString(R.string.maxtemperature),
+                        { String.format(Locale.US, "%d ℃", mMaxTemperature) }, false),
                 ViewBlockInfo(resources.getString(R.string.average_speed),
                         {
                             if (useMph) {
@@ -817,6 +824,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun onChangeTheme() {
+        val tfTest = WheelLog.ThemeManager.getTypeface(context)
         when (currentTheme) {
             R.style.OriginalTheme -> {
                 outerStrokeWidth = dpToPx(context, 40).toFloat()
@@ -834,7 +842,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 innerArcPaint.isAntiAlias = true
                 innerArcPaint.strokeWidth = innerStrokeWidth
                 innerArcPaint.style = Paint.Style.STROKE
-                val tfTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime_regular) else ResourcesCompat.getFont(context, R.font.prime_regular)!!
                 textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 textPaint.textAlign = Paint.Align.CENTER
                 textPaint.typeface = tfTest
@@ -874,7 +881,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 voltArcPaint.isAntiAlias = true
                 voltArcPaint.strokeWidth = voltStrokeWidth
                 voltArcPaint.style = Paint.Style.STROKE
-                val tfTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime_regular) else ResourcesCompat.getFont(context, R.font.prime_regular)!!
                 textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 textPaint.textAlign = Paint.Align.CENTER
                 textPaint.typeface = tfTest

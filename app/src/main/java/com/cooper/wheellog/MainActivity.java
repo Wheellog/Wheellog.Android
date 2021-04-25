@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.*;
@@ -306,22 +307,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (PebbleService.isInstanceCreated()) {
-            miWatch.setIcon(R.drawable.ic_action_watch_orange);
+            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
         } else {
-            miWatch.setIcon(R.drawable.ic_action_watch_white);
+            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_white));
         }
 
         if (LoggingService.isInstanceCreated()) {
             miLogging.setTitle(R.string.stop_data_service);
-            miLogging.setIcon(R.drawable.ic_action_logging_orange);
+            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange));
         } else {
             miLogging.setTitle(R.string.start_data_service);
-            miLogging.setIcon(R.drawable.ic_action_logging_white);
+            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_white));
         }
 
         switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_orange);
+                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 miSearch.setEnabled(false);
                 miSearch.getIcon().setAlpha(64);
@@ -329,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(255);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
-                miWheel.setIcon(R.drawable.anim_wheel_icon);
+                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.anim_wheel_icon));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 ((AnimationDrawable) miWheel.getIcon()).start();
                 miSearch.setEnabled(false);
@@ -338,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(64);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                miWheel.setIcon(R.drawable.ic_action_wheel_white);
+                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_white));
                 miWheel.setTitle(R.string.connect_to_wheel);
                 miSearch.setEnabled(true);
                 miSearch.getIcon().setAlpha(255);
@@ -421,11 +422,9 @@ public class MainActivity extends AppCompatActivity {
 
         createPager();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Typeface typefacePrime = ResourcesCompat.getFont(this, R.font.prime);
-            TextClock textClock = findViewById(R.id.textClock);
-            textClock.setTypeface(typefacePrime);
-        }
+        // clock font
+        TextClock textClock = findViewById(R.id.textClock);
+        textClock.setTypeface(WheelLog.ThemeManager.getTypeface(getApplicationContext()));
 
         mDeviceAddress = WheelLog.AppConfig.getLastMac();
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -496,6 +495,7 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mBluetoothServiceConnection);
             WheelData.getInstance().setBluetoothLeService(null);
         }
+        WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
         super.onDestroy();
         onDestroyProcess = true;
         new CountDownTimer(60000 /* 1 min */, 1000) {
@@ -525,6 +525,13 @@ public class MainActivity extends AppCompatActivity {
         miWheel = mMenu.findItem(R.id.miWheel);
         miWatch = mMenu.findItem(R.id.miWatch);
         miLogging = mMenu.findItem(R.id.miLogging);
+
+        // Themes
+        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
+            MenuItem miSettings = mMenu.findItem(R.id.miSettings);
+            miSettings.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_settings_24));
+            miSearch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_bluetooth_searching_white));
+        }
         return true;
     }
 
