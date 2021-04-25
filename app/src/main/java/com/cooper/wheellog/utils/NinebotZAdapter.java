@@ -120,7 +120,27 @@ public class NinebotZAdapter extends BaseAdapter {
         gamma = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         stopTimer();
     }
+//// mocks
+    public int getWheelAlarmMax(){
+        return 500;
+    }
 
+    public int getWheelLimitedSpeed(){
+        return 500;
+    }
+
+    public int getPedalSensivity(){
+        return 1;
+    }
+
+    public int getLedMode(){
+        return 1;
+    }
+
+    public int getSpeakerVolume(){
+        return 100;
+    }
+/// end of mocks
     public void setBmsReadingMode(boolean mode) {
         bmsMode = mode;
     }
@@ -130,528 +150,77 @@ public class NinebotZAdapter extends BaseAdapter {
         Timber.i("Ninebot_z decoding");
         WheelData wd = WheelData.getInstance();
         setBmsReadingMode(wd.getBmsView());
-        ArrayList<NinebotZAdapter.Status> statuses = charUpdated(data);
-        if (statuses.size() < 1) {
-            return false;
-        }
-        wd.resetRideTime();
-        for (NinebotZAdapter.Status status : statuses) {
-            Timber.i(status.toString());
-            if (status instanceof NinebotZAdapter.serialNumberStatus) {
-                wd.setSerial(((NinebotZAdapter.serialNumberStatus) status).getSerialNumber());
-                wd.setModel("Ninebot Z");
-                wd.setDataForLog(false);
-            } else if (status instanceof NinebotZAdapter.versionStatus) {
-                wd.setVersion(((NinebotZAdapter.versionStatus) status).getVersion());
-                wd.setDataForLog(false);
-            } else if (status instanceof NinebotZAdapter.bmsStatusSn) {
-                wd.setDataForLog(false);
-                bmsStatusSn sn = (NinebotZAdapter.bmsStatusSn) status;
-                NinebotBms bms = sn.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
-                bms.setSerialNumber(sn.getSerialNumber());
-                bms.setVersionNumber(sn.getVersionNumber());
-                bms.setFactoryCap(sn.getFactoryCap());
-                bms.setActualCap(sn.getActualCap());
-                bms.setFullCycles(sn.getFullCycles());
-                bms.setChargeCount(sn.getChargeCount());
-                bms.setMfgDateStr(sn.getMfgDateStr());
-            } else if (status instanceof NinebotZAdapter.bmsStatusLife) {
-                wd.setDataForLog(false);
-                bmsStatusLife life = (NinebotZAdapter.bmsStatusLife) status;
-                NinebotBms bms = life.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
-                bms.setStatus(life.getBmsStatus());
-                bms.setRemCap(life.getRemCap());
-                bms.setRemPerc(life.getRemPerc());
-                bms.setCurrent(life.getBmsCurrent() / 100.0);
-                bms.setVoltage(life.getBmsVoltage() / 100.0);
-                bms.setTemp1(life.getBmsTemp1());
-                bms.setTemp2(life.getBmsTemp2());
-                bms.setBalanceMap(life.getBalanceMap());
-                bms.setHealth(life.getHealth());
-            } else if (status instanceof NinebotZAdapter.bmsStatusCells) {
-                wd.setDataForLog(false);
-                bmsStatusCells cells = (NinebotZAdapter.bmsStatusCells) status;
-                NinebotBms bms = cells.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
-                bms.getCells()[0] = cells.getCell1() / 1000.0;
-                bms.getCells()[1] = cells.getCell2() / 1000.0;
-                bms.getCells()[2] = cells.getCell3() / 1000.0;
-                bms.getCells()[3] = cells.getCell4() / 1000.0;
-                bms.getCells()[4] = cells.getCell5() / 1000.0;
-                bms.getCells()[5] = cells.getCell6() / 1000.0;
-                bms.getCells()[6] = cells.getCell7() / 1000.0;
-                bms.getCells()[7] = cells.getCell8() / 1000.0;
-                bms.getCells()[8] = cells.getCell9() / 1000.0;
-                bms.getCells()[9] = cells.getCell10() / 1000.0;
-                bms.getCells()[10] = cells.getCell11() / 1000.0;
-                bms.getCells()[11] = cells.getCell12() / 1000.0;
-                bms.getCells()[12] = cells.getCell13() / 1000.0;
-                bms.getCells()[13] = cells.getCell14() / 1000.0;
-                bms.getCells()[14] = cells.getCell15() / 1000.0;
-                bms.getCells()[15] = cells.getCell16() / 1000.0;
-            } else {
-                wd.setDataForLog(true);
-                int voltage = status.getVoltage();
-                wd.setSpeed(status.getSpeed());
-                wd.setVoltage(voltage);
-                wd.setCurrent(status.getCurrent());
-                wd.setTotalDistance(status.getDistance());
-                wd.setTemperature(status.getTemperature() * 10);
-                wd.setAlert(status.getAlert());
-                wd.updateRideTime();
-                wd.setBatteryPercent(status.getBatt());
-                wd.setVoltageSag(voltage);
+        boolean retResult = false;
+
+        for (byte c : data) {
+            if (unpacker.addChar(c)) {
+                retResult = true;
+                Timber.i("Starting verification");
+                CANMessage result = CANMessage.verify(unpacker.getBuffer());
+
+                if (result != null) { // data OK
+                    Timber.i("Verification successful, command %02X", result.parameter);
+                    if ((result.parameter == CANMessage.Param.BleVersion.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get start answer");
+                        stateCon = 2;
+
+                    } else if ((result.parameter == CANMessage.Param.GetKey.getValue()) && (result.source == CANMessage.Addr.KeyGenerator.getValue())) {
+                        Timber.i("Get encryption key");
+                        gamma = result.parseKey();
+                        stateCon = 2;
+                        retResult = false;
+
+                    } else if ((result.parameter == CANMessage.Param.SerialNumber.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get serial number");
+                        result.parseSerialNumber();
+                        stateCon = 3;
+
+                    } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get version number");
+                        result.parseVersionNumber();
+                        stateCon = 10;
+
+                    } else if ((result.parameter == CANMessage.Param.LiveData.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get life data");
+                        result.parseLiveData();
+
+                    } else if (result.source == CANMessage.Addr.BMS1.getValue()) {
+                        Timber.i("Get info from BMS1");
+                        if (result.parameter == 0x10) {
+                            result.parseBmsSn(1);
+                            stateCon = 5;
+                        }
+                        if (result.parameter == 0x30) {
+                            result.parseBmsLife(1);
+                            stateCon = 6;
+                        }
+                        if (result.parameter == 0x40) {
+                            result.parseBmsCells(1);
+                            stateCon = 7;
+                        }
+
+                    } else if (result.source == CANMessage.Addr.BMS2.getValue()) {
+                        Timber.i("Get info from BMS2");
+                        if (result.parameter == 0x10) {
+                            result.parseBmsSn(2);
+                            stateCon = 8;
+                        }
+                        if (result.parameter == 0x30) {
+                            result.parseBmsLife(2);
+                            stateCon = 9;
+                        }
+                        if (result.parameter == 0x40) {
+                            result.parseBmsCells(2);
+                            stateCon = 4;
+                        }
+                    }
+                }
             }
         }
-        return true;
+        wd.resetRideTime();
+        return retResult;
     }
 
-    public static class Status {
-
-        private final int speed;
-        private final int voltage;
-        private final int batt;
-        private final int current;
-        private final int power;
-        private final int distance;
-        private final int temperature;
-        private final String alert;
-
-        Status() {
-
-            speed = 0;
-            voltage = 0;
-            batt = 0;
-            current = 0;
-            power = 0;
-            distance = 0;
-            temperature = 0;
-            alert = "";
-
-        }
-
-        Status(int speed, int voltage, int batt, int current, int power, int distance, int temperature, String alert) {
-
-            this.speed = speed;
-            this.voltage = voltage;
-            this.batt = batt;
-            this.current = current;
-            this.power = power;
-            this.distance = distance;
-            this.temperature = temperature;
-            this.alert = alert;
-
-        }
-
-        public int getSpeed() {
-            return speed;
-        }
-
-        public int getVoltage() {
-            return voltage;
-        }
-
-        public int getBatt() {
-            return batt;
-        }
-
-        public int getCurrent() {
-            return current;
-        }
-
-        public int getPower() {
-            return power;
-        }
-
-        public int getDistance() {
-            return distance;
-        }
-
-        public int getTemperature() {
-            return temperature;
-        }
-
-        public String getAlert() {
-            return alert;
-        }
-
-
-        @Override
-        public String toString() {
-            return "Status{" +
-                    "speed=" + speed +
-                    ", voltage=" + voltage +
-                    ", batt=" + batt +
-                    ", current=" + current +
-                    ", power=" + power +
-                    ", distance=" + distance +
-                    ", temperature=" + temperature +
-                    ", alert=" + alert +
-
-                    '}';
-        }
-    }
-
-    public static class serialNumberStatus extends Status {
-        private final String serialNumber;
-
-        serialNumberStatus(String serialNumber) {
-            super();
-            this.serialNumber = serialNumber;
-        }
-
-        public String getSerialNumber() {
-            return serialNumber;
-        }
-
-
-        @Override
-        public String toString() {
-            return "Infos{" +
-                    "serialNumber='" + serialNumber + '\'' +
-
-                    '}';
-        }
-    }
-
-    public static class bmsStatusSn extends Status {
-        private final int bmsNum;
-        private final String serialNumber;
-        private final String versionNumber;
-        private final int factoryCap;
-        private final int actualCap;
-        private final int fullCycles;
-        private final int chargeCount;
-        private final String mfgDateStr;
-
-        bmsStatusSn(int bmsNum, String serialNumber, String versionNumber, int factoryCap, int actualCap, int fullCycles, int chargeCount, String mfgDateStr) {
-            super();
-            this.bmsNum = bmsNum;
-            this.serialNumber = serialNumber;
-            this.versionNumber = versionNumber;
-            this.factoryCap = factoryCap;
-            this.actualCap = actualCap;
-            this.fullCycles = fullCycles;
-            this.chargeCount = chargeCount;
-            this.mfgDateStr = mfgDateStr;
-        }
-
-        public int getBmsNumber() {
-            return bmsNum;
-        }
-
-        public String getSerialNumber() {
-            return serialNumber;
-        }
-
-        public String getVersionNumber() {
-            return versionNumber;
-        }
-
-        public int getFactoryCap() {
-            return factoryCap;
-        }
-
-        public int getActualCap() {
-            return actualCap;
-        }
-
-        public int getFullCycles() {
-            return fullCycles;
-        }
-
-        public int getChargeCount() {
-            return chargeCount;
-        }
-
-        public String getMfgDateStr() {
-            return mfgDateStr;
-        }
-
-        @Override
-        public String toString() {
-            return "BMS{" +
-                    "bmsNum=" + bmsNum +
-                    ", serialNumber='" + serialNumber + '\'' +
-                    ", versionNumber='" + versionNumber + '\'' +
-                    ", factoryCap=" + factoryCap +
-                    ", actualCap=" + actualCap +
-                    ", fullCycles=" + fullCycles +
-                    ", chargeCount=" + chargeCount +
-                    ", mfgDateStr='" + mfgDateStr + '\'' +
-                    '}';
-        }
-
-    }
-
-    public static class bmsStatusLife extends Status {
-        private final int bmsNum;
-        private final int bmsStatus;
-        private final int remCap;
-        private final int remPerc;
-        private final int bmsCurrent;
-        private final int bmsVoltage;
-        private final int bmsTemp1;
-        private final int bmsTemp2;
-        private final int balanceMap;
-        private final int health;
-
-        bmsStatusLife(int bmsNum, int bmsStatus, int remCap, int remPerc, int bmsCurrent, int bmsVoltage, int bmsTemp1, int bmsTemp2, int balanceMap, int health) {
-            super();
-            this.bmsNum = bmsNum;
-            this.bmsStatus = bmsStatus;
-            this.remCap = remCap;
-            this.remPerc = remPerc;
-            this.bmsCurrent = bmsCurrent;
-            this.bmsVoltage = bmsVoltage;
-            this.bmsTemp1 = bmsTemp1;
-            this.bmsTemp2 = bmsTemp2;
-            this.balanceMap = balanceMap;
-            this.health = health;
-
-        }
-
-        public int getBmsNumber() {
-            return bmsNum;
-        }
-
-        public int getBmsStatus() {
-            return bmsStatus;
-        }
-
-        public int getRemCap() {
-            return remCap;
-        }
-
-        public int getRemPerc() {
-            return remPerc;
-        }
-
-        public int getBmsCurrent() {
-            return bmsCurrent;
-        }
-
-        public int getBmsVoltage() {
-            return bmsVoltage;
-        }
-
-        public int getBmsTemp1() {
-            return bmsTemp1;
-        }
-
-        public int getBmsTemp2() {
-            return bmsTemp2;
-        }
-
-        public int getBalanceMap() {
-            return balanceMap;
-        }
-
-        public int getHealth() {
-            return health;
-        }
-
-
-        @Override
-        public String toString() {
-            return "BMS{" +
-                    "bmsNum=" + bmsNum +
-                    ", bmsStatus=" + bmsStatus +
-                    ", remCap=" + remCap +
-                    ", remPerc=" + remPerc +
-                    ", bmsCurrent=" + bmsCurrent +
-                    ", bmsVoltage=" + bmsVoltage +
-                    ", bmsTem1=" + bmsTemp1 +
-                    ", bmsTemp2=" + bmsTemp2 +
-                    ", balanceMap=" + balanceMap +
-                    ", health=" + health +
-
-
-                    '}';
-        }
-
-    }
-
-    public static class bmsStatusCells extends Status {
-        private final int bmsNum;
-        private final int cell1;
-        private final int cell2;
-        private final int cell3;
-        private final int cell4;
-        private final int cell5;
-        private final int cell6;
-        private final int cell7;
-        private final int cell8;
-        private final int cell9;
-        private final int cell10;
-        private final int cell11;
-        private final int cell12;
-        private final int cell13;
-        private final int cell14;
-        private final int cell15;
-        private final int cell16;
-
-        bmsStatusCells(int bmsNum, int cell1, int cell2, int cell3, int cell4, int cell5, int cell6,
-                       int cell7, int cell8, int cell9, int cell10, int cell11, int cell12, int cell13,
-                       int cell14, int cell15, int cell16) {
-            super();
-            this.bmsNum = bmsNum;
-            this.cell1 = cell1;
-            this.cell2 = cell2;
-            this.cell3 = cell3;
-            this.cell4 = cell4;
-            this.cell5 = cell5;
-            this.cell6 = cell6;
-            this.cell7 = cell7;
-            this.cell8 = cell8;
-            this.cell9 = cell9;
-            this.cell10 = cell10;
-            this.cell11 = cell11;
-            this.cell12 = cell12;
-            this.cell13 = cell13;
-            this.cell14 = cell14;
-            this.cell15 = cell15;
-            this.cell16 = cell16;
-
-        }
-
-        public int getBmsNumber() {
-            return bmsNum;
-        }
-
-        public int getCell1() {
-            return cell1;
-        }
-
-        public int getCell2() {
-            return cell2;
-        }
-
-        public int getCell3() {
-            return cell3;
-        }
-
-        public int getCell4() {
-            return cell4;
-        }
-
-        public int getCell5() {
-            return cell5;
-        }
-
-        public int getCell6() {
-            return cell6;
-        }
-
-        public int getCell7() {
-            return cell7;
-        }
-
-        public int getCell8() {
-            return cell8;
-        }
-
-        public int getCell9() {
-            return cell9;
-        }
-
-        public int getCell10() {
-            return cell10;
-        }
-
-        public int getCell11() {
-            return cell11;
-        }
-
-        public int getCell12() {
-            return cell12;
-        }
-
-        public int getCell13() {
-            return cell13;
-        }
-
-        public int getCell14() {
-            return cell14;
-        }
-
-        public int getCell15() {
-            return cell15;
-        }
-
-        public int getCell16() {
-            return cell16;
-        }
-
-
-        @Override
-        public String toString() {
-            return "BMS{" +
-                    "bmsNum=" + bmsNum +
-                    ", cell1=" + cell1 +
-                    ", cell2=" + cell2 +
-                    ", cell3=" + cell3 +
-                    ", cell4=" + cell4 +
-                    ", cell5=" + cell5 +
-                    ", cell6=" + cell6 +
-                    ", cell7=" + cell7 +
-                    ", cell8=" + cell8 +
-                    ", cell9=" + cell9 +
-                    ", cell10=" + cell10 +
-                    ", cell11=" + cell11 +
-                    ", cell12=" + cell12 +
-                    ", cell13=" + cell13 +
-                    ", cell14=" + cell14 +
-                    ", cell15=" + cell15 +
-                    ", cell16=" + cell16 +
-
-                    '}';
-        }
-
-    }
-
-    public static class versionStatus extends Status {
-        private final String version;
-
-        versionStatus(String version) {
-            super();
-            this.version = version;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        @Override
-        public String toString() {
-            return "Infos{" +
-                    "version='" + version + '\'' +
-                    '}';
-        }
-    }
-    
-    public static class activationStatus extends Status {
-        private final String activationDate;
-
-        activationStatus(String activationDate) {
-            super();
-            this.activationDate = activationDate;
-        }
-
-        public String getVersion() {
-            return activationDate;
-        }
-
-        @Override
-        public String toString() {
-            return "Infos{" +
-                    "activation='" + activationDate + '\'' +
-                    '}';
-        }
-    }
-
-    /**
-     * Created by cedric on 29/12/2016.
-     */
     public static class CANMessage {
 
         enum Addr {
@@ -1017,29 +586,36 @@ public class NinebotZAdapter extends BaseAdapter {
             return gammaTemp;
         }
 
-        serialNumberStatus parseSerialNumber() {
-            String serialNumber = new String(data);//"";
-            return new serialNumberStatus(serialNumber);
+        void parseSerialNumber() {
+            String serialNumber = new String(data);
+            WheelData wd = WheelData.getInstance();
+            wd.setSerial(serialNumber);
+            wd.setModel("Ninebot Z");
+            wd.setDataForLog(false);
         }
 
-        versionStatus parseVersionNumber() {
+        void parseVersionNumber() {
             String versionNumber = "";
+            WheelData wd = WheelData.getInstance();
             versionNumber += String.format("%X.", (data[1] & 0x0f));
             versionNumber += String.format("%1X.", (data[0] >> 4) & 0x0f);
             versionNumber += String.format("%1X", (data[0]) & 0x0f);
-            return new versionStatus(versionNumber);
+            wd.setVersion(versionNumber);
+            wd.setDataForLog(false);
         }
 
-        activationStatus parseActivationDate() {
+        void parseActivationDate() { ////// ToDo: add to wheeldata
+            WheelData wd = WheelData.getInstance();
             int activationDate = MathsUtil.shortFromBytesLE(data, 0);
             int year = activationDate>>9;
             int mounth = (activationDate>>5) & 0x0f;
             int day = activationDate & 0x1f;
             String activationDateStr = String.format("%02d.%02d.20%02d", day, mounth,year);
-            return new activationStatus(activationDateStr);
+            //wd.setActivationDate(activationDateStr); fixme
         }
 
-        Status parseLiveData() {
+        void parseLiveData() {
+            WheelData wd = WheelData.getInstance();
             int errorcode = MathsUtil.shortFromBytesLE(data, 0);
             int alarmcode = MathsUtil.shortFromBytesLE(data, 2);
             int escstatus = MathsUtil.shortFromBytesLE(data, 4);
@@ -1052,10 +628,21 @@ public class NinebotZAdapter extends BaseAdapter {
             int power = voltage * current;
             String alert;
             alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
-            return new Status(speed, voltage, batt, current, power, distance, temperature, alert);
+
+            wd.setDataForLog(true);
+            wd.setSpeed(speed);
+            wd.setVoltage(voltage);
+            wd.setCurrent(current);
+            wd.setTotalDistance(distance);
+            wd.setTemperature(temperature * 10);
+            wd.setAlert(alert);
+            wd.updateRideTime();
+            wd.setBatteryPercent(batt);
+            wd.setVoltageSag(voltage);
         }
 
-        bmsStatusSn parseBmsSn(int bmsnum) {
+        void parseBmsSn(int bmsnum) {
+            WheelData wd = WheelData.getInstance();
             String serialNumber = new String(data, 0, 14);
             String versionNumber = "";
             versionNumber += String.format("%X.", (data[15]));
@@ -1070,11 +657,19 @@ public class NinebotZAdapter extends BaseAdapter {
             int mounth = (mfgDate >> 5) & 0x0f;
             int day = mfgDate & 0x1f;
             String mfgDateStr = String.format("%02d.%02d.20%02d", day, mounth, year);
-
-            return new bmsStatusSn(bmsnum, serialNumber, versionNumber, factoryCap, actualCap, fullCycles, chargeCount, mfgDateStr);
+            wd.setDataForLog(false);
+            NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+            bms.setSerialNumber(serialNumber);
+            bms.setVersionNumber(versionNumber);
+            bms.setFactoryCap(factoryCap);
+            bms.setActualCap(actualCap);
+            bms.setFullCycles(fullCycles);
+            bms.setChargeCount(chargeCount);
+            bms.setMfgDateStr(mfgDateStr);
         }
 
-        bmsStatusLife parseBmsLife(int bmsnum) {
+        void parseBmsLife(int bmsnum) {
+            WheelData wd = WheelData.getInstance();
             int bmsStatus = MathsUtil.shortFromBytesLE(data, 0);
             int remCap = MathsUtil.shortFromBytesLE(data, 2);
             int remPerc = MathsUtil.shortFromBytesLE(data, 4);
@@ -1084,11 +679,21 @@ public class NinebotZAdapter extends BaseAdapter {
             int temp2 = data[11] - 20;
             int balanceMap = MathsUtil.shortFromBytesLE(data, 12);
             int health = MathsUtil.shortFromBytesLE(data, 22);
-
-            return new bmsStatusLife(bmsnum, bmsStatus, remCap, remPerc, current, voltage, temp1, temp2, balanceMap, health);
+            NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+            wd.setDataForLog(false);
+            bms.setStatus(bmsStatus);
+            bms.setRemCap(remCap);
+            bms.setRemPerc(remPerc);
+            bms.setCurrent(current / 100.0);
+            bms.setVoltage(voltage / 100.0);
+            bms.setTemp1(temp1);
+            bms.setTemp2(temp2);
+            bms.setBalanceMap(balanceMap);
+            bms.setHealth(health);
         }
 
-        bmsStatusCells parseBmsCells(int bmsnum) {
+        void parseBmsCells(int bmsnum) {
+            WheelData wd = WheelData.getInstance();
             int cell1 = MathsUtil.shortFromBytesLE(data, 0);
             int cell2 = MathsUtil.shortFromBytesLE(data, 2);
             int cell3 = MathsUtil.shortFromBytesLE(data, 4);
@@ -1105,105 +710,30 @@ public class NinebotZAdapter extends BaseAdapter {
             int cell14 = MathsUtil.shortFromBytesLE(data, 26);
             int cell15 = MathsUtil.shortFromBytesLE(data, 28);
             int cell16 = MathsUtil.shortFromBytesLE(data, 30);
-            return new bmsStatusCells(bmsnum, cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10, cell11, cell12, cell13, cell14, cell15, cell16);
+
+            NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+            wd.setDataForLog(false);
+            bms.getCells()[0] = cell1 / 1000.0;
+            bms.getCells()[1] = cell2 / 1000.0;
+            bms.getCells()[2] = cell3 / 1000.0;
+            bms.getCells()[3] = cell4 / 1000.0;
+            bms.getCells()[4] = cell5 / 1000.0;
+            bms.getCells()[5] = cell6 / 1000.0;
+            bms.getCells()[6] = cell7 / 1000.0;
+            bms.getCells()[7] = cell8 / 1000.0;
+            bms.getCells()[8] = cell9 / 1000.0;
+            bms.getCells()[9] = cell10 / 1000.0;
+            bms.getCells()[10] = cell11 / 1000.0;
+            bms.getCells()[11] = cell12 / 1000.0;
+            bms.getCells()[12] = cell13 / 1000.0;
+            bms.getCells()[13] = cell14 / 1000.0;
+            bms.getCells()[14] = cell15 / 1000.0;
+            bms.getCells()[15] = cell16 / 1000.0;
         }
 
         public byte[] getData() {
             return data;
         }
-    }
-
-    public ArrayList<Status> charUpdated(byte[] data) {
-        ArrayList<Status> outValues = new ArrayList<>();
-
-        for (byte c : data) {
-            if (unpacker.addChar(c)) {
-                Timber.i("Starting verification");
-                CANMessage result = CANMessage.verify(unpacker.getBuffer());
-
-                if (result != null) { // data OK
-                    Timber.i("Verification successful, command %02X", result.parameter);
-                    if ((result.parameter == CANMessage.Param.BleVersion.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
-                        Timber.i("Get start answer");
-                        stateCon = 2;
-
-                    } else if ((result.parameter == CANMessage.Param.GetKey.getValue()) && (result.source == CANMessage.Addr.KeyGenerator.getValue())) {
-                        Timber.i("Get encryption key");
-                        gamma = result.parseKey();
-                        stateCon = 2;
-
-                    } else if ((result.parameter == CANMessage.Param.SerialNumber.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
-                        Timber.i("Get serial number");
-                        serialNumberStatus infos = result.parseSerialNumber();
-                        stateCon = 3;
-                        if (infos != null)
-                            outValues.add(infos);
-
-                    } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
-                        Timber.i("Get version number");
-                        versionStatus infos = result.parseVersionNumber();
-                        stateCon = 10;
-                        if (infos != null)
-                            outValues.add(infos);
-
-                    } else if ((result.parameter == CANMessage.Param.LiveData.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
-                        Timber.i("Get life data");
-                        Status status = result.parseLiveData();
-                        if (status != null) {
-                            outValues.add(status);
-                        }
-                    } else if (result.source == CANMessage.Addr.BMS1.getValue()) {
-                        Timber.i("Get info from BMS1");
-                        if (result.parameter == 0x10) {
-                            bmsStatusSn status = result.parseBmsSn(1);
-                            if (status != null) {
-                                outValues.add(status);
-                            }
-                            stateCon = 5;
-                        }
-                        if (result.parameter == 0x30) {
-                            bmsStatusLife status = result.parseBmsLife(1);
-                            if (status != null) {
-                                outValues.add(status);
-                            }
-                            stateCon = 6;
-                        }
-                        if (result.parameter == 0x40) {
-                            bmsStatusCells status = result.parseBmsCells(1);
-                            if (status != null) {
-                                outValues.add(status);
-                            }
-                            stateCon = 7;
-                        }
-
-                    } else if (result.source == CANMessage.Addr.BMS2.getValue()) {
-                        Timber.i("Get info from BMS2");
-                        if (result.parameter == 0x10) {
-                            bmsStatusSn status = result.parseBmsSn(2);
-                            if (status != null) {
-                                outValues.add(status);
-                            }
-                            stateCon = 8;
-                        }
-                        if (result.parameter == 0x30) {
-                            bmsStatusLife status = result.parseBmsLife(2);
-                            if (status != null) {
-                                outValues.add(status);
-                            }
-                            stateCon = 9;
-                        }
-                        if (result.parameter == 0x40) {
-                            bmsStatusCells status = result.parseBmsCells(2);
-                            if (status != null) {
-                                outValues.add(status);
-                            }
-                            stateCon = 4;
-                        }
-                    }
-                }
-            }
-        }
-        return outValues;
     }
 
     static class NinebotZUnpacker {

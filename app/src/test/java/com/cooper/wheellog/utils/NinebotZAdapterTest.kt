@@ -69,7 +69,32 @@ class NinebotZAdapterTest {
 
         // Assert.
         assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
+    }
+
+    @Test
+    fun `decode z10 life data`() { // to think about
+        // Arrange.
+        val byteArray1 = "5aa520143e04b000000000489800004e009c0a7a".hexToByteArray()
+        val byteArray2 = "059b97280023016d0472011a1892119c0a7a052a".hexToByteArray()
+        val byteArray3 = "f8".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+        // Assert.
+        assertThat(result1).isFalse()
         assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+        assertThat(data.speedDouble).isEqualTo(27.16)
+        assertThat(data.voltageDouble).isEqualTo(61.7)
+        assertThat(data.currentDouble).isEqualTo(44.98)
+        assertThat(data.temperature).isEqualTo(37)
+        assertThat(data.totalDistance).isEqualTo(2660251)
+        assertThat(data.powerDouble).isEqualTo(2775.266)
+        assertThat(data.batteryLevel).isEqualTo(78)
     }
 
     @Test

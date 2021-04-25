@@ -36,6 +36,7 @@
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
     // WHEEL SETTINGS
+    <string name="no_settings" translatable="false">no_settings</string>
     <string name="light_enabled" translatable="false">light_enabled</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>

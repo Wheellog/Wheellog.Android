@@ -104,7 +104,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             unit = getString(R.string.kmh)
             increment = 1
             setDefaultValue(40)
-            isVisible = WheelLog.AppConfig.wheelAlarm3Speed
+            isVisible = WheelLog.AppConfig.wheelAlarm3Enabled
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
