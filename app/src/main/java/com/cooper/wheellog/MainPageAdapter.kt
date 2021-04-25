@@ -3,10 +3,12 @@ package com.cooper.wheellog
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
 import android.view.*
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.View.OnTouchListener
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.gridlayout.widget.GridLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -208,6 +210,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             R.layout.main_view_events -> {
                 eventsTextView = view.findViewById(R.id.events_textbox)
                 eventsTextView?.text = logsCashe
+                eventsTextView?.typeface = WheelLog.ThemeManager.getTypeface(view.context)
             }
             R.layout.main_view_trips -> {
                 listOfTrips = view.findViewById(R.id.list_trips)

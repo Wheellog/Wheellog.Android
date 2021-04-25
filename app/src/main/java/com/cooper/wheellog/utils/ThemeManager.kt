@@ -3,12 +3,26 @@ package com.cooper.wheellog.utils
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Typeface
+import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.core.content.res.ResourcesCompat
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 
 class ThemeManager {
     var theme = WheelLog.AppConfig.appTheme
+
+    fun getTypeface(context: Context): Typeface {
+        val fontResId = when(theme) {
+            R.style.AJDMTheme -> R.font.ajdm
+            else -> R.font.prime
+        }
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            context.resources.getFont(fontResId)
+        else
+            ResourcesCompat.getFont(context, fontResId)!!
+    }
 
     private val ajdmDrawables = HashMap<Int, Int>()
     

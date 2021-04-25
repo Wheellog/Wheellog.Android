@@ -824,6 +824,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun onChangeTheme() {
+        val tfTest = WheelLog.ThemeManager.getTypeface(context)
         when (currentTheme) {
             R.style.OriginalTheme -> {
                 outerStrokeWidth = dpToPx(context, 40).toFloat()
@@ -841,7 +842,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 innerArcPaint.isAntiAlias = true
                 innerArcPaint.strokeWidth = innerStrokeWidth
                 innerArcPaint.style = Paint.Style.STROKE
-                val tfTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime_regular) else ResourcesCompat.getFont(context, R.font.prime_regular)!!
                 textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 textPaint.textAlign = Paint.Align.CENTER
                 textPaint.typeface = tfTest
@@ -881,7 +881,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 voltArcPaint.isAntiAlias = true
                 voltArcPaint.strokeWidth = voltStrokeWidth
                 voltArcPaint.style = Paint.Style.STROKE
-                val tfTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.prime_regular) else ResourcesCompat.getFont(context, R.font.prime_regular)!!
                 textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
                 textPaint.textAlign = Paint.Align.CENTER
                 textPaint.typeface = tfTest
