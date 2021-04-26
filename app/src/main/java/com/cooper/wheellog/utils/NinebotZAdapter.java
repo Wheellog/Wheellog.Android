@@ -621,10 +621,15 @@ public class NinebotZAdapter extends BaseAdapter {
             int escstatus = MathsUtil.shortFromBytesLE(data, 4);
             int batt = MathsUtil.shortFromBytesLE(data, 8);
             int speed = MathsUtil.shortFromBytesLE(data, 10);
+            int avgspeed = MathsUtil.shortFromBytesLE(data, 12);
             int distance = MathsUtil.intFromBytesLE(data, 14);
+            int tripdistance = MathsUtil.shortFromBytesLE(data, 18) * 10;
+            int operatingtime = MathsUtil.shortFromBytesLE(data, 20);
             int temperature = MathsUtil.signedShortFromBytesLE(data, 22);
             int voltage = MathsUtil.shortFromBytesLE(data, 24);
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
+            //int speed = MathsUtil.shortFromBytesLE(data, 28); //the same as speed
+            //int avgspeed = MathsUtil.shortFromBytesLE(data, 30); //the same as avgspeed
             int power = voltage * current;
             String alert;
             alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
@@ -639,6 +644,7 @@ public class NinebotZAdapter extends BaseAdapter {
             wd.updateRideTime();
             wd.setBatteryPercent(batt);
             wd.setVoltageSag(voltage);
+            wd.setPower(power);
         }
 
         void parseBmsSn(int bmsnum) {
