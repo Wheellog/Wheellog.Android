@@ -190,7 +190,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             Timber.d(TAG, "port is: ${mWebServer!!.listeningPort}")
 
             try {
-                mConnectIQ.sendMessage(mDevice, mMyApp, mWebServer!!.listeningPort) { device: IQDevice?, app: IQApp?, status: IQMessageStatus ->
+                mConnectIQ.sendMessage(mDevice, mMyApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
                     Timber.d(TAG, "message status: ${status.name}")
                     if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
                 }
@@ -253,7 +253,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                             })
                             newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                         } catch (e: JSONException) {
-                            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, MIME_PLAINTEXT, "Failed to get data")
+                            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, MIME_PLAINTEXT, "Failed to compose data")
                         }
                     }
                     "/data?type=details" -> {
