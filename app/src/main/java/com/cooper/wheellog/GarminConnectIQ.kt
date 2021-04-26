@@ -1,6 +1,7 @@
 package com.cooper.wheellog
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
@@ -25,12 +26,6 @@ import java.io.IOException
 import java.util.*
 
 class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
-    enum class MessageType {
-        EUC_DATA, PLAY_HORN, HTTP_READY
-    }
-
-    private var keepAliveTimer: Timer? = null
-    val handler = Handler() // to call toast from the TimerTask
     private var mSdkReady = false
     private var mConnectIQ: ConnectIQ = getInstance(this, IQConnectType.WIRELESS)
     private var mDevice: IQDevice? = null
@@ -167,35 +162,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     // IQApplicationEventListener
     override fun onMessageReceived(device: IQDevice, app: IQApp, message: List<Any>, status: IQMessageStatus) {
         Timber.d(TAG, "onMessageReceived")
-
-        // We know from our widget that it will only ever send us strings, but in case
-        // we get something else, we are simply going to do a toString() on each object in the
-        // message list.
-        var builder: StringBuilder? = StringBuilder()
-        if (message.isNotEmpty()) {
-            for (o in message) {
-                if (o is HashMap<*, *>) {
-                    try {
-                        val msgType = o[MESSAGE_KEY_MSG_TYPE] as Int
-                        if (msgType == MessageType.PLAY_HORN.ordinal) {
-                            playHorn()
-                        }
-                        builder = null
-                    } catch (ex: Exception) {
-                        builder!!.append("MonkeyHash received:\n\n")
-                        builder.append(o.toString())
-                    }
-                } else {
-                    builder!!.append(o.toString())
-                    builder.append("\r\n")
-                }
-            }
-        } else {
-            builder!!.append("Received an empty message from the ConnectIQ application")
-        }
-        if (builder != null) {
-            Toast.makeText(applicationContext, builder.toString(), Toast.LENGTH_SHORT).show()
-        }
+        // Do nothing, everything is done through a web server
     }
 
     // ConnectIQListener METHODS
@@ -215,24 +182,15 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         mSdkReady = false
     }
 
-    private fun playHorn() {
-        val horn_mode = WheelLog.AppConfig.hornMode
-        playBeep(applicationContext, horn_mode == 1, false)
-    }
-
     private fun startWebServer() {
         Timber.d(TAG, "startWebServer")
         if (mWebServer != null) return
         try {
-            mWebServer = GarminConnectIQWebServer()
+            mWebServer = GarminConnectIQWebServer(applicationContext)
             Timber.d(TAG, "port is: ${mWebServer!!.listeningPort}")
-            val data = HashMap<Any, Any>()
-            data[MESSAGE_KEY_HTTP_PORT] = mWebServer!!.listeningPort
-            val message = HashMap<Any, Any>()
-            message[MESSAGE_KEY_MSG_TYPE] = MessageType.HTTP_READY.ordinal
-            message[MESSAGE_KEY_MSG_DATA] = MonkeyHash(data)
+
             try {
-                mConnectIQ.sendMessage(mDevice, mMyApp, message) { device: IQDevice?, app: IQApp?, status: IQMessageStatus ->
+                mConnectIQ.sendMessage(mDevice, mMyApp, mWebServer!!.listeningPort) { device: IQDevice?, app: IQApp?, status: IQMessageStatus ->
                     Timber.d(TAG, "message status: ${status.name}")
                     if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
                 }
@@ -258,27 +216,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     companion object {
         val TAG = GarminConnectIQ::class.java.simpleName
         const val APP_ID = "487e6172-972c-4f93-a4db-26fd689f935a"
-
-        // This will require Garmin Connect V4.22
-        // https://forums.garmin.com/developer/connect-iq/i/bug-reports/connect-version-4-20-broke-local-http-access
-        const val MESSAGE_KEY_MSG_TYPE = -2
-        const val MESSAGE_KEY_MSG_DATA = -1
-        const val MESSAGE_KEY_SPEED = 0
-        const val MESSAGE_KEY_BATTERY = 1
-        const val MESSAGE_KEY_TEMPERATURE = 2
-        const val MESSAGE_KEY_FAN_STATE = 3
-        const val MESSAGE_KEY_BT_STATE = 4
-        const val MESSAGE_KEY_VIBE_ALERT = 5
-        const val MESSAGE_KEY_USE_MPH = 6
-        const val MESSAGE_KEY_MAX_SPEED = 7
-        const val MESSAGE_KEY_RIDE_TIME = 8
-        const val MESSAGE_KEY_DISTANCE = 9
-        const val MESSAGE_KEY_TOP_SPEED = 10
-        const val MESSAGE_KEY_POWER = 12
-        const val MESSAGE_KEY_ALARM1_SPEED = 13
-        const val MESSAGE_KEY_ALARM2_SPEED = 14
-        const val MESSAGE_KEY_ALARM3_SPEED = 15
-        const val MESSAGE_KEY_HTTP_PORT = 99
         private var instance: GarminConnectIQ? = null
         val isInstanceCreated: Boolean
             get() = instance != null
@@ -289,44 +226,103 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     }
 }
 
-internal class GarminConnectIQWebServer : NanoHTTPD("127.0.0.1", 0) {
-    override fun serve(session: IHTTPSession): Response {
-        return if (session.method == Method.GET && session.uri == "/data") {
-            handleData()
-        } else newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found.")
-    }
-
-    private fun handleData(): Response {
-        Timber.d("GarminConnectIQWebSe...")
-        val data = JSONObject()
-        return try {
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_SPEED, WheelData.getInstance().speed / 10) // Convert to km/h
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_BATTERY, WheelData.getInstance().batteryLevel)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_TEMPERATURE, WheelData.getInstance().temperature)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_FAN_STATE, WheelData.getInstance().fanStatus)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_BT_STATE, WheelData.getInstance().isConnected)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_VIBE_ALERT, false)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_USE_MPH, WheelLog.AppConfig.useMph)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_MAX_SPEED, WheelLog.AppConfig.maxSpeed)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_RIDE_TIME, WheelData.getInstance().rideTime)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_DISTANCE, WheelData.getInstance().distance / 100)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_TOP_SPEED, WheelData.getInstance().topSpeed / 10)
-            data.put("" + GarminConnectIQ.MESSAGE_KEY_POWER, WheelData.getInstance().powerDouble.toInt())
-            if (WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG) {
-                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, WheelLog.AppConfig.wheelKsAlarm1)
-                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, WheelLog.AppConfig.wheelKsAlarm2)
-                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, WheelLog.AppConfig.wheelKsAlarm3)
-            }
-            val message = JSONObject()
-            message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_TYPE, GarminConnectIQ.MessageType.EUC_DATA.ordinal)
-            message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_DATA, data)
-            newFixedLengthResponse(Response.Status.OK, "application/json", message.toString())
-        } catch (e: JSONException) {
-            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, "text/plain", "")
-        }
-    }
+internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1", 0) {
+    var applicationContext: Context
 
     init {
         start(SOCKET_READ_TIMEOUT, false)
+        applicationContext = context
     }
+
+    override fun serve(session: IHTTPSession): Response {
+        return when (session.method) {
+            Method.GET -> {
+                val wheelData = WheelData.getInstance()
+                when (session.uri) {
+                    "/data?type=main" -> {
+                        val message = JSONObject()
+                        return try {
+                            message.put("0", wheelData.speed)
+                            message.put("1", WheelLog.AppConfig.useMph)
+                            message.put("2", wheelData.batteryLevel)
+                            message.put("3", wheelData.temperature)
+                            message.put("4", if (WheelLog.AppConfig.useShortPwm) {
+                                "${wheelData.calculatedPwm} / ${wheelData.maxPwm}"
+                            } else {
+                                wheelData.model
+                            })
+                            newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
+                        } catch (e: JSONException) {
+                            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, MIME_PLAINTEXT, "Failed to get data")
+                        }
+                    }
+                    "/data?type=details" -> {
+                        return try {
+                            val message = JSONObject()
+                            message.put("0", WheelLog.AppConfig.useMph)
+                            message.put("1", wheelData.averageRidingSpeedDouble)
+                            message.put("2", wheelData.topSpeed)
+                            message.put("3", wheelData.voltageDouble)
+                            message.put("4", wheelData.batteryLevel)
+                            message.put("5", wheelData.rideTimeString)
+                            message.put("6", wheelData.distance)
+                            newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
+                        } catch (e: JSONException) {
+                            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, MIME_PLAINTEXT, "Failed to get data")
+                        }
+                    }
+                    "/data?type=alarms" -> {
+                        val message = "${wheelData.alarm}"
+                        newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
+                    }
+                    else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                }
+            }
+            Method.POST -> {
+                when (session.uri) {
+                    "/actions/triggerHorn" -> {
+                        playHorn()
+                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                    }
+                    else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, action not found.")
+                }
+            }
+            else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found.")
+        }
+    }
+
+    private fun playHorn() {
+        val horn_mode = WheelLog.AppConfig.hornMode
+        playBeep(applicationContext, horn_mode == 1, false)
+    }
+
+//    private fun handleData(): Response {
+//        Timber.d("GarminConnectIQWebSe...")
+//        val data = JSONObject()
+//        return try {
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_SPEED, WheelData.getInstance().speed / 10) // Convert to km/h
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_BATTERY, WheelData.getInstance().batteryLevel)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_TEMPERATURE, WheelData.getInstance().temperature)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_FAN_STATE, WheelData.getInstance().fanStatus)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_BT_STATE, WheelData.getInstance().isConnected)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_VIBE_ALERT, false)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_USE_MPH, WheelLog.AppConfig.useMph)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_MAX_SPEED, WheelLog.AppConfig.maxSpeed)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_RIDE_TIME, WheelData.getInstance().rideTime)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_DISTANCE, WheelData.getInstance().distance / 100)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_TOP_SPEED, WheelData.getInstance().topSpeed / 10)
+//            data.put("" + GarminConnectIQ.MESSAGE_KEY_POWER, WheelData.getInstance().powerDouble.toInt())
+//            if (WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG) {
+//                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM1_SPEED, WheelLog.AppConfig.wheelKsAlarm1)
+//                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM2_SPEED, WheelLog.AppConfig.wheelKsAlarm2)
+//                data.put("" + GarminConnectIQ.MESSAGE_KEY_ALARM3_SPEED, WheelLog.AppConfig.wheelKsAlarm3)
+//            }
+//            val message = JSONObject()
+//            message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_TYPE, GarminConnectIQ.MessageType.EUC_DATA.ordinal)
+//            message.put("" + GarminConnectIQ.MESSAGE_KEY_MSG_DATA, data)
+//            newFixedLengthResponse(Response.Status.OK, "application/json", message.toString())
+//        } catch (e: JSONException) {
+//            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, "text/plain", "")
+//        }
+//    }
 }
