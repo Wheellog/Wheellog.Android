@@ -13,6 +13,7 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.widget.Toast;
@@ -35,6 +36,11 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
     private Date mDisconnectTime;
+    private Timer reconnectTimer;
+    private Long mLastReadData;
+    int controlSpeed = 0;
+    int controlCurrent = 0;
+    long controlDistance = 0;
 
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
@@ -52,6 +58,37 @@ public class BluetoothLeService extends Service {
     final SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
     private final String wakeLogTag = "WhellLog:WakeLockTag";
     private final IBinder mBinder = new LocalBinder();
+
+    public void startReconnectTimer() {
+        if (reconnectTimer != null) {
+            stopReconnectTimer();
+        }
+        reconnectTimer = new Timer();
+        WheelData wd = WheelData.getInstance();
+        int magicPeriod = 15_000;
+        reconnectTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                long deltaReadDataMs = (System.currentTimeMillis() - mLastReadData) / 1000;
+                if ((deltaReadDataMs > magicPeriod && mLastReadData > 0) ||
+                        (controlSpeed > 1 &&
+                                wd.getSpeed() == controlSpeed &&
+                                wd.getCurrent() == controlCurrent &&
+                                wd.getTotalDistance() == controlDistance)) {
+                    toggleReconnectToWheel();
+                    return;
+                }
+                controlSpeed = wd.getSpeed();
+                controlCurrent = wd.getCurrent();
+                controlDistance = wd.getTotalDistance();
+            }
+        }, magicPeriod, magicPeriod);
+    }
+
+    public void stopReconnectTimer() {
+        reconnectTimer.cancel();
+        reconnectTimer = null;
+    }
 
     public int getConnectionState() {
         return mConnectionState;
@@ -227,6 +264,7 @@ public class BluetoothLeService extends Service {
                 }
                 break;
         }
+        mLastReadData = System.currentTimeMillis();
     }
 
     private void broadcastConnectionUpdate(int connectionState) {
@@ -264,6 +302,9 @@ public class BluetoothLeService extends Service {
     public IBinder onBind(Intent intent) {
         mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
+        if (WheelLog.AppConfig.getUseReconnect()) {
+            startReconnectTimer();
+        }
         return mBinder;
     }
 
@@ -278,6 +319,7 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt != null && mConnectionState != STATE_DISCONNECTED) {
             mBluetoothGatt.disconnect();
         }
+        stopReconnectTimer();
         close();
     }
 
@@ -378,6 +420,17 @@ public class BluetoothLeService extends Service {
         else {
             disconnect();
             close();
+        }
+    }
+
+    private void toggleReconnectToWheel() {
+        if (mConnectionState == STATE_CONNECTED) {
+            disconnect();
+            close();
+            new Handler().postDelayed(() -> {
+                if (mConnectionState == STATE_DISCONNECTED)
+                    connect();
+            }, 5000);
         }
     }
 

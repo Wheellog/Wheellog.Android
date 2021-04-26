@@ -26,7 +26,6 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
-import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import timber.log.Timber
 
@@ -254,6 +253,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             R.string.notification_buttons -> WheelLog.Notifications.update()
             R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(WheelLog.AppConfig.useBeepOnVolumeUp)
+            R.string.use_reconnect -> {
+                if (WheelLog.AppConfig.useReconnect)
+                    wd.bluetoothLeService?.startReconnectTimer()
+                else
+                    wd.bluetoothLeService?.stopReconnectTimer()
+            }
         }
         correctState(key)
     }
