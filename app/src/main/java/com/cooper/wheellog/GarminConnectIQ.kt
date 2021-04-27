@@ -168,31 +168,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     // IQApplicationEventListener
     override fun onMessageReceived(device: IQDevice, app: IQApp, message: List<Any>, status: IQMessageStatus) {
         Timber.d("onMessageReceived")
-
-        // We know from our widget that it will only ever send us strings, but in case
-        // we get something else, we are simply going to do a toString() on each object in the
-        // message list.
-        var builder: StringBuilder? = StringBuilder()
-        if (message.isNotEmpty()) {
-            for (o in message) {
-                if (o is HashMap<*, *>) {
-                    try {
-                        builder = null
-                    } catch (ex: Exception) {
-                        builder!!.append("MonkeyHash received:\n\n")
-                        builder.append(o.toString())
-                    }
-                } else {
-                    builder!!.append(o.toString())
-                    builder.append("\r\n")
-                }
-            }
-        } else {
-            builder!!.append("Received an empty message from the ConnectIQ application")
-        }
-        if (builder != null) {
-            Toast.makeText(applicationContext, builder.toString(), Toast.LENGTH_SHORT).show()
-        }
+        // This thing won't do anything, because every data transmit is done through a web server
     }
 
     // ConnectIQListener METHODS
@@ -230,16 +206,15 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
                 Timber.e("ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?")
                 Toast.makeText(this, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?", Toast.LENGTH_LONG).show()
             }
-        } catch (ignored: IOException) {
+        } catch (e: IOException) {
+            Timber.e(e, "IOException happened when starting ConnectIQ web server")
         }
     }
 
     private fun stopWebServer() {
         Timber.d("stopWebServer")
-        if (mWebServer != null) {
-            mWebServer!!.stop()
-            mWebServer = null
-        }
+        mWebServer?.stop()
+        mWebServer = null
     }
 
     companion object {
@@ -248,10 +223,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         private var instance: GarminConnectIQ? = null
         val isInstanceCreated: Boolean
             get() = instance != null
-
-        fun instance(): GarminConnectIQ? {
-            return instance
-        }
     }
 }
 
@@ -264,8 +235,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     }
 
     private fun playHorn() {
-        val hornMode = WheelLog.AppConfig.hornMode
-        playBeep(applicationContext, hornMode == 1, false)
+        playBeep(applicationContext, WheelLog.AppConfig.hornMode == 1, false)
     }
 
     override fun serve(session: IHTTPSession): Response {
@@ -275,35 +245,28 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                 when (session.uri) {
                     "/data?type=main" -> {
                         val message = JSONObject()
-                        return try {
-                            message.put("0", wheelData.speed)
-                            message.put("1", WheelLog.AppConfig.useMph)
-                            message.put("2", wheelData.batteryLevel)
-                            message.put("3", wheelData.temperature)
-                            message.put("4", if (WheelLog.AppConfig.useShortPwm) {
-                                "${wheelData.calculatedPwm} / ${wheelData.maxPwm}"
-                            } else {
-                                wheelData.modeStr
-                            })
-                            newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                        } catch (e: JSONException) {
-                            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, MIME_PLAINTEXT, "Failed to get data")
-                        }
+                        message.put("0", wheelData.speed)
+                        message.put("1", WheelLog.AppConfig.useMph)
+                        message.put("2", wheelData.batteryLevel)
+                        message.put("3", wheelData.temperature)
+                        message.put("4", if (WheelLog.AppConfig.useShortPwm) {
+                            "${wheelData.calculatedPwm} / ${wheelData.maxPwm}"
+                        } else {
+                            wheelData.modeStr
+                        })
+                        return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
                     "/data?type=details" -> {
-                        return try {
-                            val message = JSONObject()
-                            message.put("0", WheelLog.AppConfig.useMph)
-                            message.put("1", wheelData.averageRidingSpeedDouble)
-                            message.put("2", wheelData.topSpeed)
-                            message.put("3", wheelData.voltageDouble)
-                            message.put("4", wheelData.batteryLevel)
-                            message.put("5", wheelData.rideTimeString)
-                            message.put("6", wheelData.distance)
-                            newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                        } catch (e: JSONException) {
-                            newFixedLengthResponse(Response.Status.SERVICE_UNAVAILABLE, MIME_PLAINTEXT, "Failed to get data")
-                        }
+                        val message = JSONObject()
+                        message.put("0", WheelLog.AppConfig.useMph)
+                        message.put("1", wheelData.averageRidingSpeedDouble)
+                        message.put("2", wheelData.topSpeed)
+                        message.put("3", wheelData.voltageDouble)
+                        message.put("4", wheelData.batteryLevel)
+                        message.put("5", wheelData.rideTimeString)
+                        message.put("6", wheelData.distance)
+
+                        return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
                     "/data?type=alarms" -> {
                         val message = "${wheelData.alarm}"
