@@ -157,14 +157,11 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     override fun onDeviceStatusChanged(device: IQDevice, status: IQDeviceStatus) {
         Timber.d("onDeviceStatusChanged")
         Timber.d("status is: ${status.name}")
-        when (status.name) {
-            "CONNECTED" -> {
-                startWebServer()
-            }
-            "NOT_PAIRED", "NOT_CONNECTED", "UNKNOWN" -> {
-                cancelRefreshTimer()
-                stopWebServer()
-            }
+        if (status.name == "CONNECTED") {
+            startWebServer()
+        } else {
+            cancelRefreshTimer()
+            stopWebServer()
         }
     }
 
