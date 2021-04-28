@@ -24,10 +24,11 @@ import java.util.*
 class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     private var keepAliveTimer: Timer? = null
     private var mSdkReady = false
-    private var mConnectIQ: ConnectIQ = getInstance(this, IQConnectType.WIRELESS)
+    private var mConnectIQ: ConnectIQ = getInstance(this, IQConnectType.TETHERED)
     private var mDevice: IQDevice? = null
     private var mMyApp: IQApp? = null
     private var mWebServer: GarminConnectIQWebServer? = null
+
     override fun onBind(intent: Intent): IBinder? {
         Timber.i("onBind")
         return null
@@ -127,10 +128,8 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     }
 
     private fun cancelRefreshTimer() {
-        if (keepAliveTimer != null) {
-            keepAliveTimer!!.cancel()
-            keepAliveTimer = null
-        }
+        keepAliveTimer?.cancel()
+        keepAliveTimer = null
     }
 
     // IQApplicationInfoListener METHODS
@@ -207,7 +206,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
                 Toast.makeText(this, "ConnectIQ service is unavailable.   Is Garmin Connect Mobile installed and running?", Toast.LENGTH_LONG).show()
             }
         } catch (e: IOException) {
-            Timber.e(e, "IOException happened when starting ConnectIQ web server")
+            Timber.e(e, "IOException happened while starting ConnectIQ web server")
         }
     }
 
