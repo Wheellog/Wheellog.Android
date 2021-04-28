@@ -24,7 +24,7 @@ import java.util.*
 class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     private var keepAliveTimer: Timer? = null
     private var mSdkReady = false
-    private var mConnectIQ: ConnectIQ = getInstance(this, IQConnectType.TETHERED)
+    private var mConnectIQ = getInstance(this, IQConnectType.WIRELESS)
     private var mDevice: IQDevice? = null
     private var mMyApp: IQApp? = null
     private var mWebServer: GarminConnectIQWebServer? = null
@@ -242,20 +242,20 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
             Method.GET -> {
                 val wheelData = WheelData.getInstance()
                 when (session.uri) {
-                    "/data?type=main" -> {
+                    "/data/main" -> {
                         val message = JSONObject()
                         message.put("0", wheelData.speed)
                         message.put("1", WheelLog.AppConfig.useMph)
                         message.put("2", wheelData.batteryLevel)
                         message.put("3", wheelData.temperature)
                         message.put("4", if (WheelLog.AppConfig.useShortPwm) {
-                            "${wheelData.calculatedPwm} / ${wheelData.maxPwm}"
+                            "${wheelData.calculatedPwm}% / ${wheelData.maxPwm}%"
                         } else {
                             wheelData.modeStr
                         })
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
-                    "/data?type=details" -> {
+                    "/data/details" -> {
                         val message = JSONObject()
                         message.put("0", WheelLog.AppConfig.useMph)
                         message.put("1", wheelData.averageRidingSpeedDouble)
@@ -267,11 +267,14 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
-                    "/data?type=alarms" -> {
+                    "/data/alarms" -> {
                         val message = "${wheelData.alarm}"
                         newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
                     }
-                    else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                    else -> {
+                        Timber.i("404 Wrong endpoint")
+                        newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                    }
                 }
             }
             Method.POST -> {
@@ -283,7 +286,10 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                     else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, action not found.")
                 }
             }
-            else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found.")
+            else -> {
+                Timber.i("404 Wrong method")
+                newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+            }
         }
     }
 }
