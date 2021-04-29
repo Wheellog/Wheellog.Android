@@ -118,6 +118,7 @@ public class WheelData {
     private long timestamp_raw;
     private long timestamp_last;
     private static AudioTrack audioTrack = null;
+    private long mLastLifeData = -1;
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
@@ -1064,6 +1065,7 @@ public class WheelData {
 
         if (!new_data)
             return;
+        mLastLifeData = System.currentTimeMillis();
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);
@@ -1083,7 +1085,6 @@ public class WheelData {
         }
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        intent.putExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS, true);
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
@@ -1105,6 +1106,10 @@ public class WheelData {
         mContext.sendBroadcast(intent);
 
         CheckMuteMusic();
+    }
+
+    public long getLastLifeData() {
+        return mLastLifeData;
     }
 
     private void CheckMuteMusic() {

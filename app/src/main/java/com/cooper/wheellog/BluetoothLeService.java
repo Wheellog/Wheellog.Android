@@ -36,10 +36,6 @@ public class BluetoothLeService extends Service {
     private int mConnectionState = STATE_DISCONNECTED;
     private Date mDisconnectTime;
     private Timer reconnectTimer;
-    private Long mLastReadData;
-    double controlPower = 0;
-    double controlPowerLast = 0;
-    long controlDistance = 0;
 
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
@@ -68,15 +64,8 @@ public class BluetoothLeService extends Service {
         reconnectTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (mConnectionState == STATE_CONNECTED) {
-                    if (mLastReadData > 0 && ((System.currentTimeMillis() - mLastReadData) / 1000 > magicPeriod)
-                            || (controlPower == controlPowerLast && controlPower == wd.getPowerDouble() && controlDistance == wd.getTotalDistance())) {
-                        toggleReconnectToWheel();
-                    } else {
-                        controlPowerLast = controlPower;
-                        controlPower = wd.getPowerDouble();
-                        controlDistance = wd.getTotalDistance();
-                    }
+                if (mConnectionState == STATE_CONNECTED && wd.getLastLifeData() > 0 && ((System.currentTimeMillis() -  wd.getLastLifeData()) / 1000 > magicPeriod)) {
+                    toggleReconnectToWheel();
                 }
             }
         }, magicPeriod, magicPeriod);
@@ -261,7 +250,6 @@ public class BluetoothLeService extends Service {
                 }
                 break;
         }
-        mLastReadData = System.currentTimeMillis();
     }
 
     private void broadcastConnectionUpdate(int connectionState) {
