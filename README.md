@@ -9,6 +9,7 @@ The following manufacturers are supported:
 - KingSong
 - Gotway
 - Veteran
+- Ninebot Z10, S2, C/P/E+, Mini
 
 | <img src='https://user-images.githubusercontent.com/27482193/95566187-ea8d5580-0a29-11eb-8182-329764d572b7.png' width=400 /> | <img src='https://user-images.githubusercontent.com/27482193/114169041-bdb6ee00-9939-11eb-8fb9-f07b9eac1b2f.png' width=400 /> |
 |--|--|
