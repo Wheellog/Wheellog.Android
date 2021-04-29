@@ -15,6 +15,8 @@ import androidx.preference.PreferenceViewHolder;
 
 import com.cooper.wheellog.R;
 
+import java.util.Locale;
+
 /**
  * Доработанный {@link androidx.preference.SeekBarPreference}, поддерживающий установку
  * значения через диалоговое окно по клику на текст с текущим значением.
@@ -39,6 +41,7 @@ public class SeekBarPreference extends Preference {
     private int mDecimalPlaces;
     private int mMax;
     private int mSeekBarIncrement; //FIX ME - it doesn't work!
+    private double mMultiplier = 1;
     private boolean mTrackingTouch;
     private TextView mSeekBarValueTextView;
     private String mMeasurementUnit;
@@ -122,14 +125,26 @@ public class SeekBarPreference extends Preference {
         return mDecimalPlaces;
     }
 
+    /**
+     * The multiplier value.
+     * Applies only visually. The real value is used when saving and reading.
+    */
+    public void setMultiplier(double value) {
+        mMultiplier = value;
+    }
+
+    public double getMultiplier() {
+        return mMultiplier;
+    }
+
     @Override
     public void onBindViewHolder(PreferenceViewHolder view) {
         super.onBindViewHolder(view);
 
         mSeekBarValueTextView = (TextView) view.findViewById(R.id.seekbar_value);
         mSeekBarValueTextView.setOnClickListener(v ->
-                new CustomValueDialog(getContext(), mMin, mMax, mSeekBarValue, mDecimalPlaces)
-                        .setOnValueChangeListener(value -> setValueInternal(value, true))
+                new CustomValueDialog(getContext(), (int)(mMin * mMultiplier), (int)(mMax * mMultiplier), (int)(mSeekBarValue * mMultiplier), mDecimalPlaces)
+                        .setOnValueChangeListener(value -> setValueInternal((int)Math.ceil(value / mMultiplier), true))
                         .show());
 
         SeekBar seekBar = (SeekBar) view.findViewById(R.id.seekbar);
@@ -267,16 +282,16 @@ public class SeekBarPreference extends Preference {
      */
     private void updateLabelValue(int value) {
         if (mSeekBarValueTextView != null) {
-            //Timber.i("UPDATE<<<<<<<<<<<<<");
+            int val = (int)(value * mMultiplier);
             if (mDecimalPlaces == 0)
-                mSeekBarValueTextView.setText(String.format("%s %s", value, mMeasurementUnit));
+                mSeekBarValueTextView.setText(String.format(Locale.US, "%s %s", val, mMeasurementUnit));
 
             else if (mDecimalPlaces == 1)
-                mSeekBarValueTextView.setText(String.format("%.1f %s", value/(10.0), mMeasurementUnit));
+                mSeekBarValueTextView.setText(String.format(Locale.US, "%.1f %s", val/10.0, mMeasurementUnit));
             else if (mDecimalPlaces == 2)
-                mSeekBarValueTextView.setText(String.format("%.2f %s", value/(100.0), mMeasurementUnit));
+                mSeekBarValueTextView.setText(String.format(Locale.US, "%.2f %s", val/100.0, mMeasurementUnit));
             else if (mDecimalPlaces == 3)
-                mSeekBarValueTextView.setText(String.format("%.3f %s", value/(1000.0), mMeasurementUnit));
+                mSeekBarValueTextView.setText(String.format(Locale.US, "%.3f %s", val/1000.0, mMeasurementUnit));
         }
     }
 

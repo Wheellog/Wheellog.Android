@@ -95,17 +95,15 @@ class CustomValueDialog {
     }
 
     private void tryApply() {
-        int value;
-        float fval;
+        double value;
         try {
-            fval = Float.parseFloat(mCustomValueView.getText().toString());
-            value = Math.round(fval);
+            value = Double.parseDouble(mCustomValueView.getText().toString());
             if (mDecimalPlaces == 1)
-                value = Math.round(fval*10);
+                value *= 10;
             if (mDecimalPlaces == 2)
-                value = Math.round(fval*100);
+                value *= 100;
             if (mDecimalPlaces == 3)
-                value = Math.round(fval*1000);
+                value *= 1000;
 
             if (value > mMaxValue) {
                 Log.e(TAG, "wrong input( > than required): " + mCustomValueView.getText().toString());
