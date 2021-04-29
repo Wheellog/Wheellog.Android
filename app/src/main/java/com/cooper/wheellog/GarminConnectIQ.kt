@@ -249,7 +249,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         message.put("2", wheelData.batteryLevel)
                         message.put("3", wheelData.temperature)
                         message.put("4", if (WheelLog.AppConfig.useShortPwm) {
-                            "${wheelData.calculatedPwm * 10}% / ${wheelData.maxPwm * 10}%"
+                            String.format("%02.0f%% / %02.0f%%", WheelData.getInstance().calculatedPwm, WheelData.getInstance().maxPwm)
                         } else {
                             wheelData.modeStr
                         })
