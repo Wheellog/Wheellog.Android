@@ -13,10 +13,14 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.InMotionAdapter
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.VeteranAdapter
+
 
 class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
     private var mac: String = ""
+    private var speedMultipier: Double = 1.0
+    private var speedUnit: String = ""
 
     private fun ninebotZ() {
         Preference(context).apply {
@@ -57,7 +61,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             summary = getString(R.string.tilt_back_description)
             min = 3
             max = InMotionAdapter.getInstance().maxSpeed
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             increment = 1
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
@@ -215,7 +220,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             summary = getString(R.string.tilt_back_description)
             min = 3
             max = 60
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             increment = 1
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
@@ -362,7 +368,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
         }
@@ -373,7 +380,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelKsAlarm3)
             ps.addPreference(this)
         }
@@ -384,7 +392,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelKsAlarm2)
             ps.addPreference(this)
         }
@@ -395,7 +404,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelKsAlarm1)
             ps.addPreference(this)
         }
@@ -478,7 +488,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 99
             min = 0
             increment = 1
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
         }
@@ -613,6 +624,13 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
 
     override fun fill(mac: String) {
         ps.removeAll()
+        if (WheelLog.AppConfig.useMph) {
+            speedMultipier = MathsUtil.kmToMilesMultiplier
+            speedUnit = getString(R.string.mph)
+        } else {
+            speedMultipier = 1.0
+            speedUnit = getString(R.string.kmh)
+        }
         this.mac = mac
         when (WheelData.getInstance().wheelType) {
             Constants.WHEEL_TYPE.NINEBOT_Z -> ninebotZ()
