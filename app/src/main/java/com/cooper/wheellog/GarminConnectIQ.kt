@@ -244,7 +244,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                 when (session.uri) {
                     "/data/main" -> {
                         val message = JSONObject()
-                        message.put("0", wheelData.speedDouble.toString())
+                        message.put("0", wheelData.speedDouble.toString().removeRange(4, 5))
                         message.put("1", WheelLog.AppConfig.useMph)
                         message.put("2", wheelData.batteryLevel)
                         message.put("3", wheelData.temperature)
