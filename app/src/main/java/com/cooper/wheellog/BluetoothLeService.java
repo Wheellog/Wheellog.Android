@@ -72,7 +72,9 @@ public class BluetoothLeService extends Service {
     }
 
     public void stopReconnectTimer() {
-        reconnectTimer.cancel();
+        if (reconnectTimer != null) {
+            reconnectTimer.cancel();
+        }
         reconnectTimer = null;
     }
 
