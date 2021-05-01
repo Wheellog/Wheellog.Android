@@ -152,6 +152,7 @@
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
     <string name="show_settings">Show settings menu</string>
+    <string name="miband_desc">Change Mi Band mode</string>
     <string name="stop_pebble_service">Stop Pebble Dash</string>
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>

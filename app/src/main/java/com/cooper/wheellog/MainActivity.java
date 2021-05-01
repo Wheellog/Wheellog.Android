@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     MenuItem miSearch;
     MenuItem miWheel;
     MenuItem miWatch;
+    MenuItem miBand;
     MenuItem miLogging;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -524,6 +525,7 @@ public class MainActivity extends AppCompatActivity {
         miSearch = mMenu.findItem(R.id.miSearch);
         miWheel = mMenu.findItem(R.id.miWheel);
         miWatch = mMenu.findItem(R.id.miWatch);
+        miBand = mMenu.findItem(R.id.miBand);
         miLogging = mMenu.findItem(R.id.miLogging);
 
         // Themes
@@ -549,6 +551,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.miWatch:
                 toggleWatch();
+                return true;
+            case R.id.miBand:
+                toggleSwitchMiBand();
                 return true;
             case R.id.miSettings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class),
@@ -666,15 +671,19 @@ public class MainActivity extends AppCompatActivity {
         switch (buttonMiBand) {
             case Alarm:
                 showSnackBar(R.string.alarmmiband);
+                miBand.setIcon(R.drawable.ic_mi_alarm);
                 break;
             case Min:
                 showSnackBar(R.string.minmiband);
+                miBand.setIcon(R.drawable.ic_mi_min);
                 break;
             case Medium:
                 showSnackBar(R.string.medmiband);
+                miBand.setIcon(R.drawable.ic_mi_med);
                 break;
             case Max:
                 showSnackBar(R.string.maxmiband);
+                miBand.setIcon(R.drawable.ic_mi_max);
                 break;
         }
         setMenuIconStates();
