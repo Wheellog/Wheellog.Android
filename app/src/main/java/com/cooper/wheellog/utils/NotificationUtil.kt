@@ -125,11 +125,11 @@ class NotificationUtil(private val context: Context) {
             MiBandEnum.Alarm -> builder.setContentTitle(title)
                     .setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
             MiBandEnum.Min -> builder.setContentTitle(title)
-                    .setContentText(context.getString(R.string.notification_text_min, speed, wd.batteryLevel, wd.distanceDouble))
+                    .setContentText(context.getString(R.string.notification_text_min, speed, wd.topSpeedDouble, wd.batteryLevel, wd.distanceDouble))
             MiBandEnum.Medium -> builder.setContentTitle(title)
-                    .setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.batteryLevel, wd.temperature, wd.distanceDouble))
+                    .setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.calculatedPwm, wd.batteryLevel, wd.temperature, wd.distanceDouble))
             MiBandEnum.Max -> builder.setContentTitle(title)
-                    .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.maxPwm, wd.batteryLevel, wd.powerDouble, wd.temperature, wd.distanceDouble))
+                    .setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.averageSpeedDouble, wd.batteryLevel, wd.voltageDouble, wd.powerDouble, wd.temperature, wd.distanceDouble))
         }
 
         return builder.build()
