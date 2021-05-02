@@ -205,7 +205,7 @@
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
     <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
-    <string name="notification_text_ajdm_theme" translatable="false">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
+    <string name="notification_text_ajdm_theme">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
     <string name="icon_watch">Watch Icon</string>
@@ -221,7 +221,6 @@
     <string name="logging_error_gps_disabled">Location logging using GPS was requested but GPS is disabled. Location will be logged using Network data.</string>
     <string name="logging_error_network_disabled">Location logging using GSM Network was requested but this location provider is disabled. No location data will be logged.</string>
     <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
-    <string name="raw_distance">Raw Distance</string>
     <string name="alarm_text_speed">Speed alarm triggered</string>
     <string name="alarm_text_current">Current alarm triggered</string>
     <string name="alarm_text_temperature">Temperature alarm triggered</string>
@@ -363,7 +362,6 @@
     <string name="use_gps_title">Use GPS for location</string>
     <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
     <string name="use_raw_title">Write Raw data</string>
-    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="on_off_strobe">Off/On/Strobe</string>
     <string name="soft_medium_hard">Soft/Medium/Hard</string>
     <string name="alarm_settings_description">Alarm settings</string>
@@ -447,7 +445,7 @@
     <string name="bmsCell15">Cell 15</string>
     <string name="bmsCell16">Cell 16</string>
     <string name="password">Password</string>
-    <string name="email">Email</string>
+    <string name="email">E-mail</string>
     <string name="show_page_events" translatable="false">show_page_events</string>
     <string name="show_page_events_description">Show the events page</string>
     <string name="show_page_events_title">Events page</string>
@@ -472,7 +470,6 @@
     <string name="wheel_calibration_message_kingsong">Please set wheel in center position before start, then reboot wheel, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
-    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="private_policy_agree">I read and agree</string>
     <string name="current_mac">MAC address</string>
     <string name="log_location_pop_up">This app collects location data to enable GPS data in CSV logs when WheelLog is running in the background or when the screen is off. GPS data is not collected when EUC is disconnected.</string>
@@ -513,21 +510,23 @@
     <string name="start_miband_alert">Start MiBand Alert</string>
     <string name="maxcurrent">Max Current</string>
     <string name="maxpower">Max Power</string>
-    <string name="notification_text_min">Spd: %1$.0f\nBatt: %2$d\n %%\nDist: %3$.1f</string>
-    <string name="notification_text_med">Spd: %1$.0f\nAvg: %2$.0f\n\nBat.: %3$d %%\nTemp: %4$d°C\nDist: %5$.1f km</string>
-    <string name="notification_text_max">Spd: %1$.0f\nMax: %2$.0f\n\nPWM: %3$.0f %%\nBatt.: %4$d %%\nOut: %5$.0f W\nTemp: %6$d°C\nDist: %7$.1f km</string>
-    <string name="notification_text_alarm">Spd: %1$.0f\nCurr.: %2$.1f A\nVolt.: %3$.2f V\nBatt.: %4$d %%\nTemp: %5$d°C</string>
-    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
+    <string name="notification_text_min">[SPEED]  \n - %1$.0f k/h \n  - %2$.0f max  \n\n[POWER]  \n - %3$d %%  \n\n[TRIP]  \n - %4$.1f km</string>
+    <string name="notification_text_med">[SPEED]  \n - %1$.0f k/h  \n - %2$.0f avg \n  - %3$.0f pwm  \n\n[OTHER]  \n - %4$d %%  \n - %5$d °C  \n - %6$.1f km</string>
+    <string name="notification_text_max">[SPEED]  \n ⭐ %1$.0f k/h  \n 🔥 %2$.0f top  \n 🙈 %3$.0f avg \n\n[POWER]  \n 💧 %4$d %% \n  ⚡ %5$.2f V \n  💪 %6$.0f W \n  ❄ %7$d °C  \n\n[TRIP] \n  👣 %8$.1f km</string>
+    <string name="notification_text_alarm">[DATA]  \n - %1$.0f k/h \n  - %2$.1f A \n  - %3$.2f V  \n - %4$d %%  \n - %5$d °C</string>
+    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d °C</string>
     <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
     <string name="titlealarm">Alarm Triggered!</string>
     <string name="titlealarm_text">Alarm Mode</string>
     <string name="alarmmiband">Alarm Mode Mi Band</string>
-    <string name="minmiband">Minimal Mode Mi Band</string>
-    <string name="medmiband">Medium Mode Mi Band</string>
-    <string name="maxmiband">Maximum Mode Mi Band</string>
+    <string name="minmiband">Basic Mode for Mi Band 4/5/6/Amazfit</string>
+    <string name="medmiband">Advanced Mode for Mi Band 4/5/6</string>
+    <string name="maxmiband">Mode with icons for Mi Band 6/New Amazfit only</string>
     <string name="alarm_text_speed_v">Speed alarm at %1$.0f k/h</string>
     <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
     <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
+    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
+    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
 </resources>

@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Η καταχώρηση τοποθεσίας με χρήση του GPS ζητήθηκε, αλλά το GPS είναι απενεργοποιημένο. Η τοποθεσία θα καταγράφεται χρησιμοποιώντας στοιχεία κυψελοειδούς δικτύου (GSM).</string>
 	<string name="logging_error_network_disabled">Η καταγραφή τοποθεσίας με χρήση κυψελοειδούς δικτύου (GSM) ζητήθηκε, αλλά ο συγκεκριμένος πάροχος τοποθεσίας είναι απενεργοποιημένος. Δεν θα καταγραφούν δεδομένα τοποθεσίας.</string>
 	<string name="logging_error_all_location_providers_disabled">Η τοποθεσία έχει απενεργοποιηθεί στο Android. Δεν θα καταγραφούν δεδομένα τοποθεσίας.</string>
-	<string name="raw_distance">Ωμή Απόσταση</string>
 	<string name="alarm_text_speed">Ο συναγερμός ταχύτητας ενεργοποιήθηκε</string>
 	<string name="alarm_text_current">Ο συναγερμός ισχύος ενεργοποιήθηκε</string>
 	<string name="alarm_text_temperature">Ο συναγερμός θερμοκρασίας ενεργοποιήθηκε</string>
