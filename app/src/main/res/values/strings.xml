@@ -221,7 +221,6 @@
     <string name="logging_error_gps_disabled">Location logging using GPS was requested but GPS is disabled. Location will be logged using Network data.</string>
     <string name="logging_error_network_disabled">Location logging using GSM Network was requested but this location provider is disabled. No location data will be logged.</string>
     <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
-    <string name="raw_distance">Raw Distance</string>
     <string name="alarm_text_speed">Speed alarm triggered</string>
     <string name="alarm_text_current">Current alarm triggered</string>
     <string name="alarm_text_temperature">Temperature alarm triggered</string>

@@ -76,7 +76,6 @@
     <string name="logging_error_gps_disabled">请求使用GPS进行位置记录，但GPS被禁用。将使用网络数据记录位置。</string>
     <string name="logging_error_network_disabled">已请求使用GSM网络进行位置日志记录，但此位置提供程序被禁用。不会记录位置数据。</string>
     <string name="logging_error_all_location_providers_disabled">位置已在Android中禁用。不会记录位置数据。</string>
-    <string name="raw_distance">原始距离</string>
 
 	<string name="alarm_text_speed">速度警报已触发</string>
 	<string name="alarm_text_current">电流警报触发</string>

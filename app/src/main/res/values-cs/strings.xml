@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Záznam polohy pomocí GPS byl nastaven, ale GPS je vypnutá. Poloha pro záznam bude určena pomocí mobilní sítě.</string>
 	<string name="logging_error_network_disabled">Záznam polohy pomocí GSM byl nastaven, ale v nastavení systému zařízení není povolen. Poloha nebude zaznamenávána.</string>
 	<string name="logging_error_all_location_providers_disabled">Určení polohy je vypnuté v systému Android. Poloha nebude zaznamenávána.</string>
-	<string name="raw_distance">Najeto (bez filtrů)</string>
 	<string name="alarm_text_speed">Rychlost byla překročena!</string>
 	<string name="alarm_text_current">Proud byl překročen!</string>
 	<string name="alarm_text_temperature">Teplota byla překročena!</string>

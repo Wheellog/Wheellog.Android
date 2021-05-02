@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">GPS-Standortaufzeichnung wurde angefordert aber das GPS ist nicht aktiv. Standortbestimmung wird durch das Mobilnetz durchgeführt.</string>
 	<string name="logging_error_network_disabled">Standortaufzeichnung durch Mobilnetz wurde angefordert, diese Methode der Standortbestimmung ist aber deaktiviert. Standorddaten können nicht aufgezeichnet werden.</string>
 	<string name="logging_error_all_location_providers_disabled">Android Standortbestimmung ist  deaktiviert. Standorddaten können nicht aufgezeichnet werden.</string>
-	<string name="raw_distance">Reine Entfernung</string>
 	<string name="alarm_text_speed">Geschwindigkeitsalarm ausgelöst</string>
 	<string name="alarm_text_current">Stromalarm ausgelöst</string>
 	<string name="alarm_text_temperature">Temperaturalarm ausgelöst</string>

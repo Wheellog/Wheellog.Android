@@ -243,7 +243,6 @@
     <string name="charging_status">Зарядка</string>
     <string name="max_pwm">Макс PWM</string>
     <string name="time_charge_title">Час заряджання</string>
-    <string name="raw_distance">Raw Пробіг</string>
     <string name="charging">Зарядка</string>
     <string name="discharging">Розрядка</string>
     <string name="profile_name_title">Змінити назву профілю</string>
