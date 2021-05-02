@@ -24,7 +24,7 @@
     <string name="average_riding_speed">Серед. руху</string>
     <string name="angle">Нахил уперед</string>
     <string name="roll">Нахил в бік</string>
-    <string name="temperature2">Темп. процесору</string>
+    <string name="temperature2">Темп. процесора</string>
     <string name="total_distance">Пробіг</string>
     <string name="name">Назва</string>
     <string name="model">Модель</string>
@@ -35,7 +35,7 @@
     <string name="speed">Швидкість</string>
     <string name="mode">Режим роботы</string>
     <string name="wheel_type_recognized">Модель колеса знайдена %1$s</string>
-    <string name="started_logging">Початок запісу в %1$s</string>
+    <string name="started_logging">Початок запису в %1$s</string>
     <string name="scanning">Пошук...</string>
     <string name="back_to_exit">Натисніть назад для виходу</string>
     <string name="kmh">км/г</string>
@@ -238,7 +238,7 @@
     <string name="mode_play">Експерт</string>
     <string name="mode_ride">Звичайний</string>
     <string name="maxtemperature">Макс. температура</string>
-    <string name="output">Потужність двигуна</string>
+    <string name="output">Прогальність</string>
     <string name="cpuload">Використання CPU</string>
     <string name="charging_status">Зарядка</string>
     <string name="max_pwm">Макс PWM</string>
@@ -269,7 +269,7 @@
     <string name="warning_speed_period_description">Як часто попереджувати, 0 - вимкнено</string>
     <string name="auto_upload_log_ec_title">Завантажити на electro.club</string>
     <string name="auto_upload_log_ec_description">Автоматичне завантаження логу. Потрібно увімкнути GPS.</string>
-    <string name="ks18l_scaler_title">Помилкова дистанція 18L</string>
+    <string name="ks18l_scaler_title">Корегування одометру 18L</string>
     <string name="ks18l_scaler_description">Якщо Ваш 18L неправильно відображає дистанцію - виберіть даний пункт</string>
     <string name="gotway_negative_title">Дзеркальний режим сили струму та напруги</string>
     <string name="gotway_negative_description">Якщо заначення напруги та сили струму відображається навапаки - спробуйте даний параметр</string>
@@ -301,15 +301,15 @@
     <string name="light_fail">Не вийшло змінити режим підсвітки</string>
     <string name="speakervolume_success">Керування динаміком вдалося</string>
     <string name="speakervolume_fail">Помилка при керуванні динаміком</string>
-    <string name="handlebutton_success">Використана кнопка Handle</string>
-    <string name="handlebutton_fail">Помилка при використанні кнопки</string>
+    <string name="handlebutton_success">Кнопка Handle налаштована успішно</string>
+    <string name="handlebutton_fail">Помилка при налаштуванні кнопки</string>
     <string name="ride_mode_title">Режим поїздки</string>
     <string name="ride_mode_description">Увімкнена - класика/офроад, Вимкнена - комфорт</string>
     <string name="pedal_sensivity_title">Чутливість педалей</string>
     <string name="pedal_sensivity_description">Більше - чутливість вища</string>
     <string name="bmsBattery1Title">Батарея 1</string>
     <string name="bmsBattery2Title">Батарея 2</string>
-    <string name="bmsFactoryCap">Ємність типова</string>
+    <string name="bmsFactoryCap">Ємність початкова</string>
     <string name="bmsActualCap">Залишок ємності</string>
     <string name="bmsCycles">Циклів</string>
     <string name="bmsChrgCount">Кількість зарядок</string>
