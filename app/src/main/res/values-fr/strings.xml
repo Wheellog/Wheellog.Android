@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Le GPS est désactivé. Utilisation et enregistrement des données de localisation via le réseau mobile téléphonique.</string>
 	<string name="logging_error_network_disabled">La réception des données de localisation via le réseau mobile téléphonique est désactivée. Aucune donnée de localisation ne sera enregistrée.</string>
 	<string name="logging_error_all_location_providers_disabled">La localisation est désactivée dans android. Aucune donnée de localisation ne sera enregistrée.</string>
-	<string name="raw_distance">Distance Brute</string>
 	<string name="alarm_text_speed">Alarme de vitesse signalée</string>
 	<string name="alarm_text_current">Alarme de courant signalée</string>
 	<string name="alarm_text_temperature">Alarme de température signalée</string>
