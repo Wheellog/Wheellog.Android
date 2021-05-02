@@ -307,17 +307,19 @@ public class MainActivity extends AppCompatActivity {
             miWheel.getIcon().setAlpha(255);
         }
 
-        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Alarm) {
-            miBand.setIcon(R.drawable.ic_mi_alarm);
-        }
-        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Min) {
-            miBand.setIcon(R.drawable.ic_mi_min);
-        }
-        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Medium) {
-            miBand.setIcon(R.drawable.ic_mi_med);
-        }
-        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Max) {
-            miBand.setIcon(R.drawable.ic_mi_max);
+        switch (WheelLog.AppConfig.getMibandMode()) {
+            case Alarm:
+                miBand.setIcon(R.drawable.ic_mi_alarm);
+                break;
+            case Min:
+                miBand.setIcon(R.drawable.ic_mi_min);
+                break;
+            case Medium:
+                miBand.setIcon(R.drawable.ic_mi_med);
+                break;
+            case Max:
+                miBand.setIcon(R.drawable.ic_mi_max);
+                break;
         }
 
         if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
@@ -689,19 +691,15 @@ public class MainActivity extends AppCompatActivity {
         switch (buttonMiBand) {
             case Alarm:
                 showSnackBar(R.string.alarmmiband);
-         //       miBand.setIcon(R.drawable.ic_mi_alarm);
                 break;
             case Min:
                 showSnackBar(R.string.minmiband);
-         //       miBand.setIcon(R.drawable.ic_mi_min);
                 break;
             case Medium:
                 showSnackBar(R.string.medmiband);
-         //       miBand.setIcon(R.drawable.ic_mi_med);
                 break;
             case Max:
                 showSnackBar(R.string.maxmiband);
-         //       miBand.setIcon(R.drawable.ic_mi_max);
                 break;
         }
         setMenuIconStates();
