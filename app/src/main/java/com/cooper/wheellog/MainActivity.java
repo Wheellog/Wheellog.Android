@@ -322,10 +322,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
+        if (WheelLog.AppConfig.getMibandOnMainscreen()) {
             miBand.setVisible(true);
             miWatch.setVisible(false);
         }
+        else
+            {
+                miBand.setVisible(false);
+                miWatch.setVisible(true);
+            }
 
         if (PebbleService.isInstanceCreated()) {
             miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
