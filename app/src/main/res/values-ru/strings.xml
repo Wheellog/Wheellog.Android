@@ -336,4 +336,6 @@
     <string name="alarm_text_current_v">Превышение тока: %1$.0f A</string>
     <string name="alarm_text_temperature_v">Превышение температуры: %1$d°C</string>
     <string name="notification_buttons_description">Кнопки в панели уведомлений</string>
+    <string name="miband_on_mainscreen_title">Miband в главном меню</string>
+    <string name="miband_on_mainscreen_description">Показывать кнопку miband на главном экране вместо кнопки часов</string>
 </resources>

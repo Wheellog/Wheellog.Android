@@ -15,4 +15,10 @@
         android:key="@string/garmin_connectiq_enable"
         android:summary="@string/garmin_connectiq_enable_description"
         android:title="@string/garmin_connectiq_enable_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/miband_on_mainscreen_enable"
+        android:summary="@string/miband_on_mainscreen_description"
+        android:title="@string/miband_on_mainscreen_title" />
 </PreferenceScreen>

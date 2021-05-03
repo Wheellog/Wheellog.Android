@@ -531,4 +531,7 @@
     <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
+    <string name="miband_on_mainscreen_title">Mi band on main menu</string>
+    <string name="miband_on_mainscreen_enable" translatable="false">miband_on_mainscreen_enable</string>
+    <string name="miband_on_mainscreen_description">Show miband button on main screen instead watch button</string>
 </resources>
