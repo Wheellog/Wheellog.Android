@@ -186,6 +186,12 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setDefaultValue(WheelLog.AppConfig.showUnknownDevices)
             ps.addPreference(this)
         }
+        SwitchPreference(context).apply {
+            key = getString(R.string.use_reconnect)
+            title = getString(R.string.use_reconnect_title)
+            summary = getString(R.string.use_reconnect_description)
+            ps.addPreference(this)
+        }
         PreferenceCategory(context).apply {
             title = getString(R.string.beep_category)
             ps.addPreference(this)

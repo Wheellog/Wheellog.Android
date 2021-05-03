@@ -122,6 +122,10 @@ class AppConfig(var context: Context) {
         get() = MiBandEnum.fromInt(getValue(R.string.miband_mode, MiBandEnum.Min.value))
         set(value) = setValue(R.string.miband_mode, value.value)
 
+    var useReconnect: Boolean
+        get() = getValue(R.string.use_reconnect, false)
+        set(value) = setValue(R.string.use_reconnect, value)
+
     var privatePolicyAccepted: Boolean
         get() = getValue(R.string.private_policy_accepted, false)
         set(value) = setValue(R.string.private_policy_accepted, value)

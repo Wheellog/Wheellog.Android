@@ -73,7 +73,7 @@ class InmotionAdapterTest {
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
         assertThat(result7).isFalse()
-        assertThat(result8).isTrue()
+        assertThat(result8).isFalse()
         assertThat(data.serial).isEqualTo("1271285CBA76001B")
         assertThat(data.model).isEqualTo("Inmotion V5F")
         assertThat(data.version).isEqualTo("1.3.506")
@@ -153,7 +153,7 @@ class InmotionAdapterTest {
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
         assertThat(result7).isFalse()
-        assertThat(result8).isTrue()
+        assertThat(result8).isFalse()
         assertThat(data.serial).isEqualTo("14604A5EBD9B000E")
         assertThat(data.model).isEqualTo("Inmotion V8F")
         assertThat(data.version).isEqualTo("2.2.21")
@@ -237,7 +237,7 @@ class InmotionAdapterTest {
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
         assertThat(result7).isFalse()
-        assertThat(result8).isTrue()
+        assertThat(result8).isFalse()
         assertThat(data.serial).isEqualTo("14604A5EBD9B000E")
         assertThat(data.model).isEqualTo("Inmotion V8F")
         assertThat(data.version).isEqualTo("2.2.21")
@@ -290,7 +290,7 @@ class InmotionAdapterTest {
         }
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.model).isEqualTo("Inmotion V8F")
         assertThat(data.version).isEqualTo("2.2.21")
     }

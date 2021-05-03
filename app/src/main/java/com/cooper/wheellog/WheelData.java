@@ -106,7 +106,6 @@ public class WheelData {
     private boolean mCurrentAlarmExecuting = false;
     private boolean mTemperatureAlarmExecuting = false;
     private boolean mBmsView = false;
-    private boolean mDataForLog = true;
     private String protoVer = "";
 
     private final int duration = 1; // duration of sound
@@ -119,6 +118,7 @@ public class WheelData {
     private long timestamp_raw;
     private long timestamp_last;
     private static AudioTrack audioTrack = null;
+    private long mLastLifeData = -1;
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
@@ -1052,7 +1052,6 @@ public class WheelData {
     }
 
     void decodeResponse(byte[] data, Context mContext) {
-        mDataForLog = true;
         timestamp_raw = System.currentTimeMillis();//new Date(); //sdf.format(new Date());
 
         StringBuilder stringBuilder = new StringBuilder(data.length);
@@ -1066,6 +1065,7 @@ public class WheelData {
 
         if (!new_data)
             return;
+        mLastLifeData = System.currentTimeMillis();
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);
@@ -1085,9 +1085,6 @@ public class WheelData {
         }
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        if (mDataForLog) {
-            intent.putExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS, true);
-        }
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
@@ -1109,6 +1106,10 @@ public class WheelData {
         mContext.sendBroadcast(intent);
 
         CheckMuteMusic();
+    }
+
+    public long getLastLifeData() {
+        return mLastLifeData;
     }
 
     private void CheckMuteMusic() {
@@ -1140,10 +1141,6 @@ public class WheelData {
         int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
         setCurrentTime(currentTime);
     }
-
-    public void setDataForLog(boolean value) {
-        mDataForLog = value;
-    } // пока работает, но нужно убрать
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();

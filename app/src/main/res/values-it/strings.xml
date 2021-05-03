@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">È stato richiesto logging delle posizioni tramite GPS, ma il GPS non è abilitato. Le posizioni saranno loggate tramite dati operatore.</string>
 	<string name="logging_error_network_disabled">È stato richiesto logging delle posizioni tramite dati operatore ma questo provider non è abilitato. Nessuna posizione sarà loggata.</string>
 	<string name="logging_error_all_location_providers_disabled">I dati di localizzazione sono stati disabilitati in Android. Nessuna posizione sarà loggata.</string>
-	<string name="raw_distance">Distanza lorda</string>
 	<string name="alarm_text_speed">Allarme velocità attivato</string>
 	<string name="alarm_text_current">Allarme di corrente attivato</string>
 	<string name="alarm_text_temperature">Allarme temperatura attivato</string>

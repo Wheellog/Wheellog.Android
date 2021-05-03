@@ -46,11 +46,10 @@ public class InMotionAdapter extends BaseAdapter {
                 case Alert:
                     return result.parseAlertInfoMessage();
                 case GetSlowInfo:
-                    boolean res = result.parseSlowInfoMessage();
-                    if (res) {
+                    if (result.isValid()) {
                         needSlowData = false;
                     }
-                    return res;
+                    return result.parseSlowInfoMessage();
                 case PinCode:
                     passwordSent = Integer.MAX_VALUE;
                     break;
@@ -736,6 +735,10 @@ public class InMotionAdapter extends BaseAdapter {
 
         }
 
+        public boolean isValid() {
+            return ex_data != null;
+        }
+
         private CANMessage() {
         }
 
@@ -1065,7 +1068,7 @@ public class InMotionAdapter extends BaseAdapter {
         }
 
         boolean parseFastInfoMessage(Model model) {
-            if (ex_data == null) return false;
+            if (!isValid()) return false;
             double angle = (double) (MathsUtil.intFromBytesLE(ex_data, 0)) / 65536.0;
             double roll = (double) (MathsUtil.intFromBytesLE(ex_data, 72)) / 90.0;
             double speed = ((double) (MathsUtil.intFromBytesLE(ex_data, 12)) + (double) (MathsUtil.intFromBytesLE(ex_data, 16))) / (model.getSpeedCalculationFactor() * 2.0);
@@ -1158,7 +1161,7 @@ public class InMotionAdapter extends BaseAdapter {
 
 
         boolean parseSlowInfoMessage() {
-            if (ex_data == null) return false;
+            if (!isValid()) return false;
             Model lmodel = Model.findByBytes(ex_data);  // CarType is just model.rawValue
             if (lmodel == UNKNOWN) lmodel = V8;
             int v0 = ex_data[27] & 0xFF;
@@ -1208,9 +1211,8 @@ public class InMotionAdapter extends BaseAdapter {
             WheelLog.AppConfig.setPedalsAdjustment(pedals);
             WheelLog.AppConfig.setRideMode(rideMode);
             WheelLog.AppConfig.setPedalSensivity(pedalHardness);
-            wd.setDataForLog(false);
             getInstance().setModel(lmodel);
-            return true;
+            return false;
         }
 
         public byte[] getData() {

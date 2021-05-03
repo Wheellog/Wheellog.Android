@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Włączono rejestrację danych o lokalizacji z użyciem GPS, ale nie nadano uprawnień do dokładnej lokalizacji. Rejestrowane będą dane o lokalizacji z użyciem sieci komórkowej.</string>
 	<string name="logging_error_network_disabled">Włączono rejestrację lokalizacji z użyciem sieci komórkowej, ale ten rodzaj lokalizacji jest wyłączony. Dane o lokalizacji nie będą rejestrowane.</string>
 	<string name="logging_error_all_location_providers_disabled">Funkcja lokalizacji jest zablokowana. Dane o lokalizacji nie będą rejestrowane.</string>
-	<string name="raw_distance">Surowy dystans</string>
 	<string name="alarm_text_speed">Wyzwolony alarm przekroczenia prędkości</string>
 	<string name="alarm_text_current">Wyzwolony alarm przekroczenia prądu</string>
 	<string name="alarm_text_temperature">Wyzwolony alarm przekroczenia temperatury</string>

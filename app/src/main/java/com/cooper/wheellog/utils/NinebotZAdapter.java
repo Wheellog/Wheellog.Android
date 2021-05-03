@@ -134,18 +134,16 @@ public class NinebotZAdapter extends BaseAdapter {
         if (statuses.size() < 1) {
             return false;
         }
+        boolean result = false;
         wd.resetRideTime();
         for (NinebotZAdapter.Status status : statuses) {
             Timber.i(status.toString());
             if (status instanceof NinebotZAdapter.serialNumberStatus) {
                 wd.setSerial(((NinebotZAdapter.serialNumberStatus) status).getSerialNumber());
                 wd.setModel("Ninebot Z");
-                wd.setDataForLog(false);
             } else if (status instanceof NinebotZAdapter.versionStatus) {
                 wd.setVersion(((NinebotZAdapter.versionStatus) status).getVersion());
-                wd.setDataForLog(false);
             } else if (status instanceof NinebotZAdapter.bmsStatusSn) {
-                wd.setDataForLog(false);
                 bmsStatusSn sn = (NinebotZAdapter.bmsStatusSn) status;
                 NinebotBms bms = sn.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
                 bms.setSerialNumber(sn.getSerialNumber());
@@ -156,7 +154,6 @@ public class NinebotZAdapter extends BaseAdapter {
                 bms.setChargeCount(sn.getChargeCount());
                 bms.setMfgDateStr(sn.getMfgDateStr());
             } else if (status instanceof NinebotZAdapter.bmsStatusLife) {
-                wd.setDataForLog(false);
                 bmsStatusLife life = (NinebotZAdapter.bmsStatusLife) status;
                 NinebotBms bms = life.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
                 bms.setStatus(life.getBmsStatus());
@@ -169,7 +166,6 @@ public class NinebotZAdapter extends BaseAdapter {
                 bms.setBalanceMap(life.getBalanceMap());
                 bms.setHealth(life.getHealth());
             } else if (status instanceof NinebotZAdapter.bmsStatusCells) {
-                wd.setDataForLog(false);
                 bmsStatusCells cells = (NinebotZAdapter.bmsStatusCells) status;
                 NinebotBms bms = cells.getBmsNumber() == 1 ? wd.getBms1() : wd.getBms2();
                 bms.getCells()[0] = cells.getCell1() / 1000.0;
@@ -189,7 +185,6 @@ public class NinebotZAdapter extends BaseAdapter {
                 bms.getCells()[14] = cells.getCell15() / 1000.0;
                 bms.getCells()[15] = cells.getCell16() / 1000.0;
             } else {
-                wd.setDataForLog(true);
                 int voltage = status.getVoltage();
                 wd.setSpeed(status.getSpeed());
                 wd.setVoltage(voltage);
@@ -200,9 +195,10 @@ public class NinebotZAdapter extends BaseAdapter {
                 wd.updateRideTime();
                 wd.setBatteryPercent(status.getBatt());
                 wd.setVoltageSag(voltage);
+                result = true;
             }
         }
-        return true;
+        return result;
     }
 
     public static class Status {
