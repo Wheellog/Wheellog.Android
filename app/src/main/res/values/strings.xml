@@ -104,6 +104,7 @@
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
+    <string name="use_reconnect" translatable="false">use_reconnect</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -527,6 +528,8 @@
     <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
+    <string name="use_reconnect_title">Use reconnect</string>
+    <string name="use_reconnect_description">Automatically reconnect to the wheel if the connection is, and the data from it will not change. (Not recommended)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
 </resources>

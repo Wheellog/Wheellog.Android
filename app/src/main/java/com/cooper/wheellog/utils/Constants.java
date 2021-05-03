@@ -72,7 +72,6 @@ public class Constants {
     public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
     public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
-    public static final String INTENT_EXTRA_DATA_TO_LOGS = "wheel_data_to_logs";
     public static final String INTENT_EXTRA_NEWS = "wheel_news";
 
     public static final double MAX_CELL_VOLTAGE = 4.2;

@@ -336,6 +336,8 @@
     <string name="alarm_text_current_v">Превышение тока: %1$.0f A</string>
     <string name="alarm_text_temperature_v">Превышение температуры: %1$d°C</string>
     <string name="notification_buttons_description">Кнопки в панели уведомлений</string>
+    <string name="use_reconnect_title">Реконнект</string>
+    <string name="use_reconnect_description">Автоматически переподключаться к колесу, если подключение есть, а данные от него не изменяются. (Не рекомендуется)</string>
     <string name="mode_learn">Начинающий</string>
     <string name="mode_play">Эксперт</string>
     <string name="mode_ride">Обычный</string>

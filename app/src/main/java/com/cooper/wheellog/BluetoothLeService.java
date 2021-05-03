@@ -35,6 +35,7 @@ public class BluetoothLeService extends Service {
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
     private Date mDisconnectTime;
+    private Timer reconnectTimer;
 
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
@@ -52,6 +53,30 @@ public class BluetoothLeService extends Service {
     final SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
     private final String wakeLogTag = "WhellLog:WakeLockTag";
     private final IBinder mBinder = new LocalBinder();
+
+    public void startReconnectTimer() {
+        if (reconnectTimer != null) {
+            stopReconnectTimer();
+        }
+        reconnectTimer = new Timer();
+        WheelData wd = WheelData.getInstance();
+        int magicPeriod = 15_000;
+        reconnectTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (mConnectionState == STATE_CONNECTED && wd.getLastLifeData() > 0 && ((System.currentTimeMillis() -  wd.getLastLifeData()) / 1000 > magicPeriod)) {
+                    toggleReconnectToWheel();
+                }
+            }
+        }, magicPeriod, magicPeriod);
+    }
+
+    public void stopReconnectTimer() {
+        if (reconnectTimer != null) {
+            reconnectTimer.cancel();
+        }
+        reconnectTimer = null;
+    }
 
     public int getConnectionState() {
         return mConnectionState;
@@ -264,6 +289,9 @@ public class BluetoothLeService extends Service {
     public IBinder onBind(Intent intent) {
         mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
+        if (WheelLog.AppConfig.getUseReconnect()) {
+            startReconnectTimer();
+        }
         return mBinder;
     }
 
@@ -278,6 +306,7 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt != null && mConnectionState != STATE_DISCONNECTED) {
             mBluetoothGatt.disconnect();
         }
+        stopReconnectTimer();
         close();
     }
 
@@ -378,6 +407,18 @@ public class BluetoothLeService extends Service {
         else {
             disconnect();
             close();
+        }
+    }
+
+    private void toggleReconnectToWheel() {
+        if (mConnectionState == STATE_CONNECTED) {
+            Timber.wtf("Trying to reconnect");
+            // After disconnect, the method onConnectionStateChange will automatically reconnect
+            // because disconnectRequested is false
+            disconnectRequested = false;
+            mConnectionState = STATE_DISCONNECTED;
+            mBluetoothGatt.disconnect();
+            broadcastConnectionUpdate(mConnectionState);
         }
     }
 
