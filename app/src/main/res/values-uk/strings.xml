@@ -68,7 +68,7 @@
     <string name="speed_settings_title">Налаштування додатку</string>
     <string name="logs_settings_title">Налаштування логу</string>
     <string name="alarm_settings_title">Налаштування сигналів</string>
-    <string name="watch_settings_title">Налаштування годинника</string>
+    <string name="watch_settings_title">Налаштування годинника/браслета</string>
     <string name="wheel_settings_title">Налаштування колеса</string>
     <string name="notification_text_not">%1$.0f км/г | %2$d %% | %3$.0f W | %4$d°C | %5$.3f км</string>
     <string name="reset_user_distance_title">Скинути мій пробіг</string>

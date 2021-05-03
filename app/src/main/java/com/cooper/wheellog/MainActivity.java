@@ -325,12 +325,10 @@ public class MainActivity extends AppCompatActivity {
         if (WheelLog.AppConfig.getMibandOnMainscreen()) {
             miBand.setVisible(true);
             miWatch.setVisible(false);
+        } else {
+            miBand.setVisible(false);
+            miWatch.setVisible(true);
         }
-        else
-            {
-                miBand.setVisible(false);
-                miWatch.setVisible(true);
-            }
 
         if (PebbleService.isInstanceCreated()) {
             miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
@@ -531,6 +529,7 @@ public class MainActivity extends AppCompatActivity {
                     onFinish();
                 }
             }
+
             @Override
             public void onFinish() {
                 Timber.uproot(eventsLoggingTree);
@@ -582,9 +581,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.miSettings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class),
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                                    ? ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-                                    : null);
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                                ? ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                                : null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

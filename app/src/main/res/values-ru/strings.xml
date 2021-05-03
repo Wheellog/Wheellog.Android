@@ -69,7 +69,7 @@
     <string name="speed_settings_title">Настройки приложения</string>
     <string name="logs_settings_title">Настройки логирования</string>
     <string name="alarm_settings_title">Настройки сигналов</string>
-    <string name="watch_settings_title">Настройки часов</string>
+    <string name="watch_settings_title">Настройки часов/браслета</string>
     <string name="wheel_settings_title">Настройки колеса</string>
     <string name="trip_settings_title">Настройки поездки</string>
     <string name="reset_user_distance_title">Обнулить мой пробег</string>
