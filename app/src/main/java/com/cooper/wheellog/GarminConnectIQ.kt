@@ -7,7 +7,6 @@ import android.os.IBinder
 import android.widget.Toast
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
-import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.ConnectIQ.*
 import com.garmin.android.connectiq.IQApp
 import com.garmin.android.connectiq.IQDevice
@@ -15,7 +14,6 @@ import com.garmin.android.connectiq.IQDevice.IQDeviceStatus
 import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
 import fi.iki.elonen.NanoHTTPD
-import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.IOException
@@ -65,7 +63,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
     // General METHODS
     private fun populateDeviceList() {
-        Timber.d( "populateDeviceList")
+        Timber.d("populateDeviceList")
         try {
             val mDevices = mConnectIQ.knownDevices
             if (mDevices != null && mDevices.isNotEmpty()) {
@@ -85,7 +83,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     }
 
     private fun registerWithDevice() {
-        Timber.d( "registerWithDevice")
+        Timber.d("registerWithDevice")
         if (mDevice != null && mSdkReady) {
             // Register for device status updates
             try {
@@ -98,9 +96,9 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             try {
                 mConnectIQ.getApplicationInfo(APP_ID, mDevice, this)
             } catch (e1: InvalidStateException) {
-                Timber.d( "e1: ${e1.message}")
+                Timber.d("e1: ${e1.message}")
             } catch (e1: ServiceUnavailableException) {
-                Timber.d( "e2: ${e1.message}")
+                Timber.d("e2: ${e1.message}")
             }
 
             // Register to receive messages from the device
@@ -113,7 +111,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     }
 
     private fun unregisterWithDevice() {
-        Timber.d( "unregisterWithDevice")
+        Timber.d("unregisterWithDevice")
         if (mDevice != null && mSdkReady) {
             // It is a good idea to unregister everything and shut things down to
             // release resources and prevent unwanted callbacks.
@@ -257,17 +255,22 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         } else {
                             wheelData.modeStr
                         })
+                        message.put("5", wheelData.calculatedPwm)
+                        message.put("6", wheelData.maxPwm)
+
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
                     "/data/details" -> {
                         val message = JSONObject()
                         message.put("0", WheelLog.AppConfig.useMph)
-                        message.put("1", wheelData.averageRidingSpeedDouble)
+                        message.put("1", (wheelData.averageRidingSpeedDouble.toInt()))
                         message.put("2", wheelData.topSpeed)
                         message.put("3", wheelData.voltageDouble)
                         message.put("4", wheelData.batteryLevel)
                         message.put("5", wheelData.rideTimeString)
                         message.put("6", wheelData.distance)
+                        message.put("7", wheelData.calculatedPwm)
+                        message.put("8", wheelData.maxPwm)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
