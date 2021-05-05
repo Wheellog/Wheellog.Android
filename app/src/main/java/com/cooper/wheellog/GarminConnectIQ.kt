@@ -144,7 +144,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         cancelRefreshTimer() // no point in sending data...
         Toast.makeText(this, R.string.garmin_connectiq_missing_app_message, Toast.LENGTH_LONG).show()
         try {
-            mConnectIQ.openStore(APP_ID)
+            mConnectIQ.openStore("35719a02-8a5d-46bc-b474-f26c54c4e045")
         } catch (ignored: InvalidStateException) {
         } catch (ignored: ServiceUnavailableException) {
         }
