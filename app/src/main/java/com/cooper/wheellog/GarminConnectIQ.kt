@@ -238,45 +238,47 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     override fun serve(session: IHTTPSession): Response {
         return when (session.method) {
             Method.GET -> {
-                val wheelData = WheelData.getInstance()
+                val wd = WheelData.getInstance()
                 when (session.uri) {
                     "/data/main" -> {
                         val message = JSONObject()
-                        message.put("0", if (wheelData.speedDouble.toString().length > 3) {
-                            ((wheelData.speedDouble * 10).toInt().toFloat() / 10).toString()
+                        message.put("speed", if (wd.speedDouble.toString().length > 3) {
+                            ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
                         } else {
-                            wheelData.speedDouble.toString()
+                            wd.speedDouble.toString()
                         })
-                        message.put("1", WheelLog.AppConfig.useMph)
-                        message.put("2", wheelData.batteryLevel)
-                        message.put("3", wheelData.temperature)
-                        message.put("4", if (WheelLog.AppConfig.useShortPwm) {
-                            String.format("%02.0f%% / %02.0f%%", wheelData.calculatedPwm, wheelData.maxPwm)
+                        message.put("speedLimit", wd.speedLimit)
+                        message.put("useMph", WheelLog.AppConfig.useMph)
+                        message.put("battery", wd.batteryLevel)
+                        message.put("temp", wd.temperature)
+                        message.put("bottomSubtitle", if (WheelLog.AppConfig.useShortPwm) {
+                            String.format("%02.0f%% / %02.0f%%", wd.calculatedPwm, wd.maxPwm)
                         } else {
-                            wheelData.model
+                            wd.model
                         })
-                        message.put("5", wheelData.calculatedPwm)
-                        message.put("6", wheelData.maxPwm)
+                        message.put("pwm", wd.calculatedPwm)
+                        message.put("maxPwm", wd.maxPwm)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
                     "/data/details" -> {
                         val message = JSONObject()
-                        message.put("0", WheelLog.AppConfig.useMph)
-
-                        message.put("1", wheelData.averageRidingSpeedDouble.toString())
-                        message.put("2", ((wheelData.topSpeed / 10).toFloat() / 10).toString())
-                        message.put("3", wheelData.voltageDouble.toString())
-                        message.put("4", wheelData.batteryLevel)
-                        message.put("5", wheelData.ridingTimeString)
-                        message.put("6", wheelData.distance)
-                        message.put("7", wheelData.calculatedPwm)
-                        message.put("8", wheelData.maxPwm)
+                        message.put("useMph", WheelLog.AppConfig.useMph)
+                        message.put("avgSpeed", wd.averageRidingSpeedDouble.toString())
+                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
+                        message.put("voltage", wd.voltageDouble.toString())
+                        message.put("battery", wd.batteryLevel)
+                        message.put("ridingTime", wd.ridingTimeString)
+                        message.put("distance", wd.distance)
+                        message.put("pwm", wd.calculatedPwm)
+                        message.put("maxPwm", wd.maxPwm)
+                        message.put("torque", wd.torque)
+                        message.put("power", wd.powerDouble)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
                     "/data/alarms" -> {
-                        val message = "${wheelData.alarm}"
+                        val message = "${wd.alarm}"
                         newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
                     }
                     else -> {
