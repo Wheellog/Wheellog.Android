@@ -251,9 +251,9 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         message.put("2", wheelData.batteryLevel)
                         message.put("3", wheelData.temperature)
                         message.put("4", if (WheelLog.AppConfig.useShortPwm) {
-                            String.format("%02.0f%% / %02.0f%%", WheelData.getInstance().calculatedPwm, WheelData.getInstance().maxPwm)
+                            String.format("%02.0f%% / %02.0f%%", wheelData.calculatedPwm, wheelData.maxPwm)
                         } else {
-                            wheelData.modeStr
+                            wheelData.model
                         })
                         message.put("5", wheelData.calculatedPwm)
                         message.put("6", wheelData.maxPwm)
@@ -263,11 +263,12 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                     "/data/details" -> {
                         val message = JSONObject()
                         message.put("0", WheelLog.AppConfig.useMph)
-                        message.put("1", (wheelData.averageRidingSpeedDouble.toInt()))
-                        message.put("2", wheelData.topSpeed)
-                        message.put("3", wheelData.voltageDouble)
+
+                        message.put("1", wheelData.averageRidingSpeedDouble.toString())
+                        message.put("2", ((wheelData.topSpeed / 10).toFloat() / 10).toString())
+                        message.put("3", wheelData.voltageDouble.toString())
                         message.put("4", wheelData.batteryLevel)
-                        message.put("5", wheelData.rideTimeString)
+                        message.put("5", wheelData.ridingTimeString)
                         message.put("6", wheelData.distance)
                         message.put("7", wheelData.calculatedPwm)
                         message.put("8", wheelData.maxPwm)
