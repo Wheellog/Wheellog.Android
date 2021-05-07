@@ -126,14 +126,13 @@ class NotificationUtil(private val context: Context) {
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
                 .priority = NotificationCompat.PRIORITY_LOW
 
-        if (connectionState == BluetoothLeService.STATE_CONNECTED && distance + temperature + batteryLevel + speed > 0) {
-            builder.setContentTitle(title_ride)
-        } else {
-            builder.setContentTitle(title)
-        }
+        builder.setContentTitle(
+                if (connectionState == BluetoothLeService.STATE_CONNECTED && distance + temperature + batteryLevel + speed > 0)
+                    title_ride
+                else
+                    title)
 
         when (WheelLog.AppConfig.mibandMode) {
-            MiBandEnum.Alarm -> builder.setContentText(context.getString(R.string.notification_text_alarm, speed, wd.currentDouble, wd.voltageDouble, wd.batteryLevel, wd.temperature))
             MiBandEnum.Min -> builder.setContentText(context.getString(R.string.notification_text_min, speed, wd.topSpeedDouble, wd.batteryLevel, wd.distanceDouble))
             MiBandEnum.Medium -> builder.setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.calculatedPwm, wd.batteryLevel, wd.temperature, wd.distanceDouble))
             MiBandEnum.Max -> builder.setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.averageSpeedDouble, wd.batteryLevel, wd.voltageDouble, wd.powerDouble, wd.temperature, wd.distanceDouble))
