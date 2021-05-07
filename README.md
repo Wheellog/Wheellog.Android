@@ -29,16 +29,16 @@ We currently accept contributions for translated content directly in this or in 
 
 ## ⌚ Smart watch applications
 
-- Samsung Gear [app code](https://github.com/juliomap/WheelLog-Tizen)
+- [Samsung Gear](https://github.com/juliomap/WheelLog-Tizen)
 - Smart watch from Pebble company. Discontinued in 2016. [app code](https://github.com/JumpMaster/WheelLogPebble)
-- Garmin Connect IQ [app code](https://github.com/marccardinal/WheelLog-Garmin-ConnectIQ).
-The watch application is also available for download directly on the [ConnectIQ store](https://apps.garmin.com/en-US/apps/07a231a9-3f2f-4762-b0bb-b8a0b5594f40)
+- Garmin Connect IQ [watch application](https://github.com/Wheellog/Companion.Garmin).
+You can also download the app from [ConnectIQ Store](https://apps.garmin.com/en-US/apps/35719a02-8a5d-46bc-b474-f26c54c4e045).
 - Xiaomi [Mi band 3/4/5/6](https://github.com/Wheellog/Wheellog.Android/wiki/Work-with-Mi-Band)
 
 ## 🚀 Quick start
 
 Minimum requirements:
-- Device with Windows, Mac, Linux or ChromeOs
+- Device running Windows, macOS, Linux or chromeOS
 - Android device [in dev mode and enable USB debugging](https://developer.android.com/studio/debug/dev-options)
 
 Let's start
