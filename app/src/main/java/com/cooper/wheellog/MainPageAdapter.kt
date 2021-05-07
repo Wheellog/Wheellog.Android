@@ -689,7 +689,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.charging)
                 setupFieldForSecondPage(R.string.model)
                 setupFieldForSecondPage(R.string.version)
-                setupFieldForSecondPage(R.string.charging)
             }
             WHEEL_TYPE.GOTWAY -> {
                 setupFieldForSecondPage(R.string.speed)
@@ -708,6 +707,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.voltage_sag)
                 setupFieldForSecondPage(R.string.current)
                 setupFieldForSecondPage(R.string.power)
+                setupFieldForSecondPage(R.string.charging)
             }
             WHEEL_TYPE.INMOTION_V2 -> {
                 setupFieldForSecondPage(R.string.speed)
