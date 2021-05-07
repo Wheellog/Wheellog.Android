@@ -244,20 +244,13 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         val message = JSONObject()
                         message.put("speed", if (wd.speedDouble.toString().length > 3) {
                             ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
-                        } else {
-                            wd.speedDouble.toString()
-                        })
+                        } else wd.speedDouble.toString())
                         message.put("speedLimit", wd.speedLimit)
                         message.put("useMph", WheelLog.AppConfig.useMph)
                         message.put("battery", wd.batteryLevel)
                         message.put("temp", wd.temperature)
-                        message.put("bottomSubtitle", if (WheelLog.AppConfig.useShortPwm) {
-                            String.format("%02.0f%% / %02.0f%%", wd.calculatedPwm, wd.maxPwm)
-                        } else {
-                            wd.model
-                        })
-                        message.put("pwm", wd.calculatedPwm)
-                        message.put("maxPwm", wd.maxPwm)
+                        message.put("pwm", String.format("%02.0f%", wd.calculatedPwm))
+                        message.put("maxPwm", String.format("%02.0f%g", wd.maxPwm))
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
