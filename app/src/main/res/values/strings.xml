@@ -517,15 +517,15 @@
     <string name="notification_text_alarm">[DATA]  \n - %1$.0f k/h \n  - %2$.1f A \n  - %3$.2f V  \n - %4$d %%  \n - %5$d °C</string>
     <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d °C</string>
     <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
-    <string name="titlealarm">Alarm Triggered!</string>
+    <string name="titlealarm">Alarm!</string>
     <string name="titlealarm_text">Alarm Mode</string>
     <string name="alarmmiband">Alarm Mode Mi Band</string>
     <string name="minmiband">Basic Mode for Mi Band 4/5/6/Amazfit</string>
     <string name="medmiband">Advanced Mode for Mi Band 4/5/6</string>
     <string name="maxmiband">Mode with icons for Mi Band 6/New Amazfit only</string>
-    <string name="alarm_text_speed_v">Speed alarm at %1$.0f k/h</string>
-    <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
-    <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
+    <string name="alarm_text_speed_v">[SPEED] \n  - %1$.0f k/h</string>
+    <string name="alarm_text_current_v">[CURRENT] \n  - %1$.0f A</string>
+    <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
     <string name="use_reconnect_title">Use reconnect</string>
