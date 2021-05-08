@@ -409,19 +409,21 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         modelTextPaint.textSize = calculateFontSize(boundaryOfText, modelTextRect, mWheelModel, modelTextPaint) / 2
     }
 
-    private fun drawTextBox(header: String, value: String, canvas: Canvas?, rect: RectF?, paint: Paint) {
-        if (header.length > 10) {
-            paint.textSize = min(boxTextSize * 0.8f, calculateFontSize(boundaryOfText, rect!!, header, paint))
-        } else {
-            paint.textSize = boxTextSize * 0.8f
-        }
-        canvas!!.drawText(header, rect!!.centerX(), rect.centerY() - boxInnerPadding, paint)
+    private fun drawTextBox(header: String, value: String, canvas: Canvas, rect: RectF, paint: Paint) {
+        paint.textSize = boxTextSize * 0.8f
+        val x = rect.centerX()
+        val y = rect.centerY() - boxInnerPadding
+        val a = paint.alpha
+        canvas.drawText(value, x, y, paint)
+        paint.textSize = boxTextSize / 2f
+        paint.alpha = 150
+        canvas.drawText(header, x, y + boxTextSize * 0.7f, paint)
         paint.textSize = boxTextSize
-        canvas.drawText(value, rect.centerX(), rect.centerY() + boxTextHeight, paint)
+        paint.alpha = a
     }
 
     fun redrawTextBoxes() {
-        if (mTextBoxesBitmap == null) {
+        if (mTextBoxesBitmap == null || mCanvas == null) {
             return
         }
         mTextBoxesBitmap!!.eraseColor(Color.TRANSPARENT)
@@ -487,7 +489,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 boxTop += boxH + boxInnerPadding
             }
         }
-        boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, resources.getString(R.string.top_speed) + "W", textPaint, 2) * 1.2f
+        boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, "10000 km/h", textPaint, 2) * 1.2f
         boxTextHeight = boundaryOfText.height().toFloat()
         val paint = Paint(textPaint)
         paint.color = getColorEx(R.color.wheelview_text)
@@ -495,7 +497,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             var i = 0
             for (block in mViewBlocks) {
                 if (block.enabled) {
-                    drawTextBox(block.title, block.getValue(), mCanvas, boxRects[i++], paint)
+                    drawTextBox(block.title, block.getValue(), mCanvas!!, boxRects[i++]!!, paint)
                 }
             }
         } catch (e: Exception) {
@@ -824,7 +826,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun onChangeTheme() {
-        val tfTest = WheelLog.ThemeManager.getTypeface(context)
+        val tfTest = if (isInEditMode) null else WheelLog.ThemeManager.getTypeface(context)
         when (currentTheme) {
             R.style.OriginalTheme -> {
                 outerStrokeWidth = dpToPx(context, 40).toFloat()
@@ -896,7 +898,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     init {
         if (isInEditMode) {
-            currentTheme = R.style.AJDMTheme
+            currentTheme = R.style.OriginalTheme
             WheelLog.AppConfig = AppConfig(context)
             mSpeed = 380
             targetSpeed = (mSpeed.toFloat() / 500 * 112).roundToInt()
