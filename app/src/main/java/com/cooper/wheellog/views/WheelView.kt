@@ -2,11 +2,9 @@ package com.cooper.wheellog.views
 
 import android.content.Context
 import android.graphics.*
-import android.os.Build
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Companion.separator
@@ -409,17 +407,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         modelTextPaint.textSize = calculateFontSize(boundaryOfText, modelTextRect, mWheelModel, modelTextPaint) / 2
     }
 
-    private fun drawTextBox(header: String, value: String, canvas: Canvas, rect: RectF, paint: Paint) {
-        paint.textSize = boxTextSize * 0.8f
+    private fun drawTextBox(header: String, value: String, canvas: Canvas, rect: RectF, paint: Paint, paintDescription: Paint) {
         val x = rect.centerX()
         val y = rect.centerY() - boxInnerPadding
-        val a = paint.alpha
         canvas.drawText(value, x, y, paint)
-        paint.textSize = boxTextSize / 2f
-        paint.alpha = 150
-        canvas.drawText(header, x, y + boxTextSize * 0.7f, paint)
-        paint.textSize = boxTextSize
-        paint.alpha = a
+        canvas.drawText(header, x, y + boxTextSize * 0.7f, paintDescription)
     }
 
     fun redrawTextBoxes() {
@@ -492,12 +484,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, "10000 km/h", textPaint, 2) * 1.2f
         boxTextHeight = boundaryOfText.height().toFloat()
         val paint = Paint(textPaint)
+        paint.textSize = boxTextSize * 0.8f
         paint.color = getColorEx(R.color.wheelview_text)
+        val paintDescription = Paint(paint)
+        paintDescription.textSize = boxTextSize / 2f
+        paintDescription.alpha = 150
         try {
             var i = 0
             for (block in mViewBlocks) {
                 if (block.enabled) {
-                    drawTextBox(block.title, block.getValue(), mCanvas!!, boxRects[i++]!!, paint)
+                    drawTextBox(block.title, block.getValue(), mCanvas!!, boxRects[i++]!!, paint, paintDescription)
                 }
             }
         } catch (e: Exception) {
