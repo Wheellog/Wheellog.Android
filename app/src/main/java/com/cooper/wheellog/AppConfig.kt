@@ -169,6 +169,10 @@ class AppConfig(var context: Context) {
     var garminConnectIqEnable: Boolean
         get() = getValue(R.string.garmin_connectiq_enable, false)
         set(value) = setValue(R.string.garmin_connectiq_enable, value)
+
+    var mibandOnMainscreen: Boolean
+        get() = getValue(R.string.miband_on_mainscreen_enable, false)
+        set(value) = setValue(R.string.miband_on_mainscreen_enable, value)
     //endregion
 
     var lastMac: String

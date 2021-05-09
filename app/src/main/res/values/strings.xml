@@ -153,6 +153,7 @@
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
     <string name="show_settings">Show settings menu</string>
+    <string name="miband_desc">Change Mi Band mode</string>
     <string name="stop_pebble_service">Stop Pebble Dash</string>
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>
@@ -259,7 +260,7 @@
     <string name="speed_settings_title">Application Settings</string>
     <string name="logs_settings_title">Log Settings</string>
     <string name="alarm_settings_title">Alarm Settings</string>
-    <string name="watch_settings_title">Watch Preferences</string>
+    <string name="watch_settings_title">Watch/Band Preferences</string>
     <string name="wheel_settings_title">Wheel Settings</string>
     <string name="trip_settings_title">Trip Settings</string>
     <string name="reset_top_speed_title">Reset top speed and PWM</string>
@@ -528,6 +529,9 @@
     <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
+    <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>
+    <string name="miband_on_mainscreen_enable" translatable="false">miband_on_mainscreen_enable</string>
+    <string name="miband_on_mainscreen_description">Show Mi Band button on main screen instead watch button</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Automatically reconnect to the wheel if the connection is, and the data from it will not change. (Not recommended)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>

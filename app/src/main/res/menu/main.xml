@@ -21,6 +21,12 @@
         android:icon="@drawable/ic_action_watch_white"
         android:title="@string/start_pebble_service" />
     <item
+        android:id="@+id/miBand"
+        android:icon="@drawable/ic_mi_med"
+        android:title="@string/miband_desc"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/miSettings"
         app:showAsAction="always"
         android:icon="@drawable/ic_baseline_settings_24"

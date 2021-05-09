@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     MenuItem miSearch;
     MenuItem miWheel;
     MenuItem miWatch;
+    MenuItem miBand;
     MenuItem miLogging;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -306,6 +307,29 @@ public class MainActivity extends AppCompatActivity {
             miWheel.getIcon().setAlpha(255);
         }
 
+        switch (WheelLog.AppConfig.getMibandMode()) {
+            case Alarm:
+                miBand.setIcon(R.drawable.ic_mi_alarm);
+                break;
+            case Min:
+                miBand.setIcon(R.drawable.ic_mi_min);
+                break;
+            case Medium:
+                miBand.setIcon(R.drawable.ic_mi_med);
+                break;
+            case Max:
+                miBand.setIcon(R.drawable.ic_mi_max);
+                break;
+        }
+
+        if (WheelLog.AppConfig.getMibandOnMainscreen()) {
+            miBand.setVisible(true);
+            miWatch.setVisible(false);
+        } else {
+            miBand.setVisible(false);
+            miWatch.setVisible(true);
+        }
+
         if (PebbleService.isInstanceCreated()) {
             miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
         } else {
@@ -505,6 +529,7 @@ public class MainActivity extends AppCompatActivity {
                     onFinish();
                 }
             }
+
             @Override
             public void onFinish() {
                 Timber.uproot(eventsLoggingTree);
@@ -524,6 +549,7 @@ public class MainActivity extends AppCompatActivity {
         miSearch = mMenu.findItem(R.id.miSearch);
         miWheel = mMenu.findItem(R.id.miWheel);
         miWatch = mMenu.findItem(R.id.miWatch);
+        miBand = mMenu.findItem(R.id.miBand);
         miLogging = mMenu.findItem(R.id.miLogging);
 
         // Themes
@@ -550,11 +576,14 @@ public class MainActivity extends AppCompatActivity {
             case R.id.miWatch:
                 toggleWatch();
                 return true;
+            case R.id.miBand:
+                toggleSwitchMiBand();
+                return true;
             case R.id.miSettings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class),
-                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                                    ? ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-                                    : null);
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                                ? ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                                : null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

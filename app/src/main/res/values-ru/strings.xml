@@ -69,7 +69,7 @@
     <string name="speed_settings_title">Настройки приложения</string>
     <string name="logs_settings_title">Настройки логирования</string>
     <string name="alarm_settings_title">Настройки сигналов</string>
-    <string name="watch_settings_title">Настройки часов</string>
+    <string name="watch_settings_title">Настройки часов/браслета</string>
     <string name="wheel_settings_title">Настройки колеса</string>
     <string name="trip_settings_title">Настройки поездки</string>
     <string name="reset_user_distance_title">Обнулить мой пробег</string>
@@ -336,6 +336,8 @@
     <string name="alarm_text_current_v">[ТОК] \n  - %1$.0f A</string>
     <string name="alarm_text_temperature_v">[НАГРЕВ] \n  - %1$d°C</string>
     <string name="notification_buttons_description">Кнопки в панели уведомлений</string>
+    <string name="miband_on_mainscreen_title">Mi Band в главном меню</string>
+    <string name="miband_on_mainscreen_description">Показывать кнопку Mi Band на главном экране вместо кнопки часов</string>
     <string name="use_reconnect_title">Реконнект</string>
     <string name="use_reconnect_description">Автоматически переподключаться к колесу, если подключение есть, а данные от него не изменяются. (Не рекомендуется)</string>
     <string name="mode_learn">Начинающий</string>
