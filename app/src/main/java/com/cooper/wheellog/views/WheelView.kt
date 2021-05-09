@@ -2,11 +2,9 @@ package com.cooper.wheellog.views
 
 import android.content.Context
 import android.graphics.*
-import android.os.Build
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Companion.separator
@@ -409,19 +407,15 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         modelTextPaint.textSize = calculateFontSize(boundaryOfText, modelTextRect, mWheelModel, modelTextPaint) / 2
     }
 
-    private fun drawTextBox(header: String, value: String, canvas: Canvas?, rect: RectF?, paint: Paint) {
-        if (header.length > 10) {
-            paint.textSize = min(boxTextSize * 0.8f, calculateFontSize(boundaryOfText, rect!!, header, paint))
-        } else {
-            paint.textSize = boxTextSize * 0.8f
-        }
-        canvas!!.drawText(header, rect!!.centerX(), rect.centerY() - boxInnerPadding, paint)
-        paint.textSize = boxTextSize
-        canvas.drawText(value, rect.centerX(), rect.centerY() + boxTextHeight, paint)
+    private fun drawTextBox(header: String, value: String, canvas: Canvas, rect: RectF, paint: Paint, paintDescription: Paint) {
+        val x = rect.centerX()
+        val y = rect.centerY() - boxInnerPadding
+        canvas.drawText(value, x, y, paint)
+        canvas.drawText(header, x, y + boxTextSize * 0.7f, paintDescription)
     }
 
     fun redrawTextBoxes() {
-        if (mTextBoxesBitmap == null) {
+        if (mTextBoxesBitmap == null || mCanvas == null) {
             return
         }
         mTextBoxesBitmap!!.eraseColor(Color.TRANSPARENT)
@@ -487,15 +481,19 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 boxTop += boxH + boxInnerPadding
             }
         }
-        boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, resources.getString(R.string.top_speed) + "W", textPaint, 2) * 1.2f
+        boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, "10000 km/h", textPaint, 2) * 1.2f
         boxTextHeight = boundaryOfText.height().toFloat()
         val paint = Paint(textPaint)
+        paint.textSize = boxTextSize * 0.8f
         paint.color = getColorEx(R.color.wheelview_text)
+        val paintDescription = Paint(paint)
+        paintDescription.textSize = boxTextSize / 2f
+        paintDescription.alpha = 150
         try {
             var i = 0
             for (block in mViewBlocks) {
                 if (block.enabled) {
-                    drawTextBox(block.title, block.getValue(), mCanvas, boxRects[i++], paint)
+                    drawTextBox(block.title, block.getValue(), mCanvas!!, boxRects[i++]!!, paint, paintDescription)
                 }
             }
         } catch (e: Exception) {
@@ -824,7 +822,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun onChangeTheme() {
-        val tfTest = WheelLog.ThemeManager.getTypeface(context)
+        val tfTest = if (isInEditMode) null else WheelLog.ThemeManager.getTypeface(context)
         when (currentTheme) {
             R.style.OriginalTheme -> {
                 outerStrokeWidth = dpToPx(context, 40).toFloat()
@@ -896,7 +894,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     init {
         if (isInEditMode) {
-            currentTheme = R.style.AJDMTheme
+            currentTheme = R.style.OriginalTheme
             WheelLog.AppConfig = AppConfig(context)
             mSpeed = 380
             targetSpeed = (mSpeed.toFloat() / 500 * 112).roundToInt()
