@@ -149,6 +149,10 @@ public class MainActivity extends AppCompatActivity {
         setMenuIconStates();
     }
 
+    /**
+     * Broadcast receiver for MainView UI. It should only work with UI elements.
+     * Intents are accepted only if MainView is active.
+     **/
     private final BroadcastReceiver mMainViewBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -160,9 +164,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     pagerAdapter.updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
-                    if (wearOs != null) {
-                        wearOs.updateData();
-                    }
                     break;
                 case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
                     Timber.i("Received news");
@@ -192,6 +193,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * A broadcast receiver that always works. It shouldn't have any UI work.
+     **/
     private final BroadcastReceiver mCoreBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -239,6 +243,9 @@ public class MainActivity extends AppCompatActivity {
                     pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                    if (wearOs != null) {
+                        wearOs.updateData();
+                    }
                     WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
