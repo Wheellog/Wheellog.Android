@@ -119,10 +119,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.power_off))
                             .setMessage(getString(R.string.power_off_message))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().powerOff()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
@@ -136,10 +136,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.wheel_calibration))
                             .setMessage(getString(R.string.wheel_calibration_message_inmo))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().wheelCalibration()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
@@ -294,10 +294,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.power_off))
                             .setMessage(getString(R.string.power_off_message))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().powerOff()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
@@ -311,10 +311,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.wheel_calibration))
                             .setMessage(getString(R.string.wheel_calibration_message_inmo))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().wheelCalibration()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
@@ -423,10 +423,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.wheel_calibration))
                             .setMessage(getString(R.string.wheel_calibration_message_kingsong))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().wheelCalibration()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
@@ -440,10 +440,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.power_off))
                             .setMessage(getString(R.string.power_off_message))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().powerOff()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
@@ -500,10 +500,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 AlertDialog.Builder(context)
                         .setTitle(getString(R.string.wheel_calibration))
                         .setMessage(getString(R.string.wheel_calibration_message_begode))
-                        .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                             WheelData.getInstance().wheelCalibration()
                         }
-                        .setNegativeButton(android.R.string.no, null)
+                        .setNegativeButton(android.R.string.cancel, null)
                         .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                         .show()
                 true
@@ -559,10 +559,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 AlertDialog.Builder(context)
                         .setTitle(getString(R.string.reset_trip))
                         .setMessage(getString(R.string.reset_trip_message))
-                        .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                             VeteranAdapter.getInstance().resetTrip()
                         }
-                        .setNegativeButton(android.R.string.no, null)
+                        .setNegativeButton(android.R.string.cancel, null)
                         .show()
                 true
             }

@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
 import android.text.TextUtils
@@ -27,7 +28,7 @@ class ScanActivity: AppCompatActivity() {
     private var mDeviceListAdapter: DeviceListAdapter? = null
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var mScanning = false
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
     private var pb: ProgressBar? = null
     private var scanTitle: TextView? = null
     // Stops scanning after 10 seconds.

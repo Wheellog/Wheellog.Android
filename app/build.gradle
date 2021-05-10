@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 repositories {
-    jcenter()
+    mavenCentral()
     google()
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
 
     lintOptions {
         abortOnError false
@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId "com.cooper.wheellog"
         minSdkVersion 18
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 79
         versionName "2.3.2beta"
         buildConfigField 'String', 'BUILD_TIME', "\"" + new Date().format('HH:mm dd.MM.yyyy') + "\""
