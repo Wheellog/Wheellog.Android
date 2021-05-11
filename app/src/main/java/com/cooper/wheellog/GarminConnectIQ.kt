@@ -251,6 +251,8 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         message.put("temp", wd.temperature)
                         message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
                         message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
+                        message.put("connectedToWheel", wd.isConnected)
+                        message.put("wheelModel", wd.model)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
@@ -267,6 +269,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         message.put("maxPwm", wd.maxPwm)
                         message.put("torque", wd.torque)
                         message.put("power", wd.powerDouble)
+                        message.put("connectedToWheel", wd.isConnected)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
