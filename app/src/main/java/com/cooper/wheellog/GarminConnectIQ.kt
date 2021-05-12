@@ -236,15 +236,16 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     }
 
     override fun serve(session: IHTTPSession): Response {
+        val wd = WheelData.getInstance()
         return when (session.method) {
             Method.GET -> {
-                val wd = WheelData.getInstance()
                 when (session.uri) {
                     "/data/main" -> {
                         val message = JSONObject()
                         message.put("speed", if (wd.speedDouble.toString().length > 3) {
                             ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
                         } else wd.speedDouble.toString())
+                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
                         message.put("speedLimit", wd.speedLimit)
                         message.put("useMph", WheelLog.AppConfig.useMph)
                         message.put("battery", wd.batteryLevel)
@@ -259,9 +260,11 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                     "/data/details" -> {
                         val message = JSONObject()
                         message.put("useMph", WheelLog.AppConfig.useMph)
+                        message.put("avgRidingSpeed", wd.averageSpeedDouble.toInt())
                         message.put("avgSpeed", wd.averageRidingSpeedDouble.toInt())
                         message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
                         message.put("voltage", wd.voltageDouble.toString())
+                        message.put("maxVoltage", wd.maxVoltageForWheel.toString())
                         message.put("battery", wd.batteryLevel)
                         message.put("ridingTime", wd.ridingTimeString)
                         message.put("distance", wd.distance)
@@ -269,6 +272,8 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
                         message.put("torque", wd.torque)
                         message.put("power", wd.powerDouble)
+                        message.put("maxPower", wd.maxPower)
+
                         message.put("connectedToWheel", wd.isConnected)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
@@ -287,6 +292,13 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                 when (session.uri) {
                     "/actions/triggerHorn" -> {
                         playHorn()
+                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                    }
+                    "/actions/frontLight/enable" -> {
+                        wd.updateLight(true)
+                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                    }
+                    "/actions/frontLight/disable" -> {
                         newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
                     }
                     else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, action not found.")
