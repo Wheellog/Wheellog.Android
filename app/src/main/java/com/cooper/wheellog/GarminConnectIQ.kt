@@ -238,6 +238,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     override fun serve(session: IHTTPSession): Response {
         val wd = WheelData.getInstance()
         val ac = WheelLog.AppConfig
+      
         return when (session.method) {
             Method.GET -> {
                 when (session.uri) {
