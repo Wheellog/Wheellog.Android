@@ -1,11 +1,13 @@
 package com.cooper.wheellog
 
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.wear.widget.WearableRecyclerView
 import com.google.android.gms.wearable.*
+import java.util.*
 
 class WearActivity : FragmentActivity(),
         MessageClient.OnMessageReceivedListener,
@@ -20,23 +22,25 @@ class WearActivity : FragmentActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wear)
         setupViews()
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     private fun setupViews() {
-        val pages = arrayListOf(R.layout.recycler_row_main)
+        val pages = arrayListOf(0) // TODO add pages
         mMainRecyclerAdapter = MainRecyclerAdapter(pages, wd)
 
-        val mWearableRecyclerView = findViewById<WearableRecyclerView>(R.id.recycler_view)
-        // Aligns the first and last items on the list vertically centered on the screen.
-        mWearableRecyclerView.isEdgeItemsCenteringEnabled = true
+        findViewById<WearableRecyclerView>(R.id.recycler_view).apply {
+            // Aligns the first and last items on the list vertically centered on the screen.
+            isEdgeItemsCenteringEnabled = true
 
-        // Improves performance because we know changes in content do not change the layout size of
-        // the RecyclerView.
-        mWearableRecyclerView.setHasFixedSize(true)
+            // Improves performance because we know changes in content do not change the layout size of
+            // the RecyclerView.
+            setHasFixedSize(true)
 
-        val mLayoutManager = LinearLayoutManager(this)
-        mWearableRecyclerView.layoutManager = mLayoutManager
-        mWearableRecyclerView.adapter = mMainRecyclerAdapter
+            layoutManager = LinearLayoutManager(this@WearActivity)
+            adapter = mMainRecyclerAdapter
+            keepScreenOn = true
+        }
     }
 
     override fun onResume() {
@@ -103,10 +107,16 @@ class WearActivity : FragmentActivity(),
                                 maxCurrent = map.getDouble("max_current")
                                 pwm = map.getDouble("pwm")
                                 maxPwm = map.getDouble("max_pwm")
+                                temperature = map.getInt("temperature")
+                                maxTemperature = map.getInt("max_temperature")
                                 maxPower = map.getDouble("max_power")
                                 battery = map.getInt("battery")
+                                batteryLowest = map.getInt("battery_lowest")
                                 mainUnit = map.getString("main_unit", "kmh")
+                                currentOnDial = map.getBoolean("currentOnDial")
+                                alarm = map.getBoolean("alarm")
                                 timeStamp = map.getLong("timestamp")
+                                timeString = map.getString("time_string", "waiting...")
                             }
                             mMainRecyclerAdapter.updateScreen()
                         } catch (ex: Exception) {

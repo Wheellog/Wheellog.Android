@@ -8,4 +8,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="yellow">#FFFFFF00</color>
+    <color name="accent">#FF5722</color>
+    <color name="speed_text">#FFFFFF00</color>
+    <color name="positive_dial">#FF5722</color>
+    <color name="negative_dial">#00cc00</color>
+    <color name="arc_dim">#222222</color>
+    <color name="battery_dial">#01BF50</color>
+    <color name="battery_low_dial">#ffcc00</color>
+    <color name="temperature_dial">#00ffff</color>
 </resources>

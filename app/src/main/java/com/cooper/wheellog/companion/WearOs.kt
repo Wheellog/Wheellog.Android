@@ -11,6 +11,8 @@ import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
@@ -28,14 +30,22 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
             putDouble("max_current", wd.maxCurrent)
             putDouble("pwm", wd.calculatedPwm)
             putDouble("max_pwm", wd.maxPwm)
+            putInt("temperature", wd.temperature)
+            putInt("max_temperature", wd.maxTemp)
             putDouble("max_power", wd.maxPower)
+            putInt("battery",wd.batteryLevel)
+            putInt("battery_lowest", wd.batteryLevel) // TODO
             putInt("battery", wd.batteryLevel)
             putString("main_unit",
                     if (WheelLog.AppConfig.useMph)
                         context.getString(R.string.mph)
                     else
                         context.getString(R.string.kmh))
+            putBoolean("currentOnDial", WheelLog.AppConfig.currentOnDial)
+            putBoolean("alarm", false) // TODO
             putLong("timestamp", wd.lastLifeData)
+            val sdf = SimpleDateFormat("HH:mm", Locale.US)
+            putString("time_string", sdf.format(Date(wd.lastLifeData)))
         }
         val request = dataRequest.asPutDataRequest()
         request.setUrgent()

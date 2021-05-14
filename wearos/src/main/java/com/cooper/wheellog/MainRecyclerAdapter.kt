@@ -5,26 +5,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.cooper.wheellog.views.MainView
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
 class MainRecyclerAdapter(private var pages: MutableList<Int>, var wd: WearData): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var pagesView = LinkedHashMap<Int, View?>()
-    private var mMainTextView: TextView? = null
-    private var mMainTextUnitView: TextView? = null
+    private lateinit var mainView: MainView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(inflater.inflate(pages[viewType], parent, false))
+        return if (viewType == 0) {
+            // create mainPage
+            mainView = MainView(parent.context, null, wd)
+            ViewHolder(mainView)
+        } else {
+            // other pages
+            val inflater = LayoutInflater.from(parent.context)
+            ViewHolder(inflater.inflate(pages[viewType], parent, false))
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val view = holder.itemView
         pagesView[pages[position]] = view
+        // TODO inmplement pages
         when (pages[position]) {
             R.layout.recycler_row_main -> {
-                mMainTextView = view.findViewById(R.id.text)
-                mMainTextUnitView = view.findViewById(R.id.mainunit)
             }
         }
     }
@@ -35,9 +41,7 @@ class MainRecyclerAdapter(private var pages: MutableList<Int>, var wd: WearData)
 
     fun updateScreen() {
         // Main screen
-        val format = if (wd.speed < 10) "%.1f" else "%.0f"
-        mMainTextView?.text = String.format(Locale.US, format, wd.speed)
-        mMainTextUnitView?.text = wd.mainUnit
+        mainView.invalidate()
     }
 
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view)
