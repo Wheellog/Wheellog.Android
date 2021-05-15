@@ -237,6 +237,8 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
 
     override fun serve(session: IHTTPSession): Response {
         val wd = WheelData.getInstance()
+        val ac = WheelLog.AppConfig
+      
         return when (session.method) {
             Method.GET -> {
                 when (session.uri) {
@@ -246,8 +248,8 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                             ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
                         } else wd.speedDouble.toString())
                         message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
-                        message.put("speedLimit", wd.speedLimit)
-                        message.put("useMph", WheelLog.AppConfig.useMph)
+                        message.put("speedLimit", ac.maxSpeed)
+                        message.put("useMph", ac.useMph)
                         message.put("battery", wd.batteryLevel)
                         message.put("temp", wd.temperature)
                         message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
@@ -259,7 +261,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                     }
                     "/data/details" -> {
                         val message = JSONObject()
-                        message.put("useMph", WheelLog.AppConfig.useMph)
+                        message.put("useMph", ac.useMph)
                         message.put("avgRidingSpeed", wd.averageSpeedDouble.toInt())
                         message.put("avgSpeed", wd.averageRidingSpeedDouble.toInt())
                         message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
