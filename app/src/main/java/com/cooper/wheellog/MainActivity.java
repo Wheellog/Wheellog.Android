@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Build;
@@ -31,8 +30,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.cooper.wheellog.companion.WearOs;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
     private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+    private WearOs wearOs;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
@@ -148,6 +149,10 @@ public class MainActivity extends AppCompatActivity {
         setMenuIconStates();
     }
 
+    /**
+     * Broadcast receiver for MainView UI. It should only work with UI elements.
+     * Intents are accepted only if MainView is active.
+     **/
     private final BroadcastReceiver mMainViewBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -192,6 +197,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * A broadcast receiver that always works. It shouldn't have any UI work.
+     **/
     private final BroadcastReceiver mCoreBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -239,6 +247,9 @@ public class MainActivity extends AppCompatActivity {
                     pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                    if (wearOs != null) {
+                        wearOs.updateData();
+                    }
                     WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
@@ -289,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
             toggleGarminConnectIQ();
         else
             stopGarminConnectIQ();
+        toggleWearOs();
     }
 
     private void toggleLogging() {
@@ -501,6 +513,9 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter());
         pagerAdapter.updateScreen(true);
+        if (wearOs != null) {
+            wearOs.addMessageListener();
+        }
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -512,6 +527,9 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mMainViewBroadcastReceiver);
+        if (wearOs != null) {
+            wearOs.removeMessageListener();
+        }
     }
 
     @Override
@@ -677,6 +695,14 @@ public class MainActivity extends AppCompatActivity {
             stopService(pebbleServiceIntent);
         else
             ContextCompat.startForegroundService(this, pebbleServiceIntent);
+    }
+
+    private void toggleWearOs() {
+        if (wearOs == null) {
+            wearOs = new WearOs(this);
+        } else {
+            wearOs = null;
+        }
     }
 
     private void stopGarminConnectIQ() {

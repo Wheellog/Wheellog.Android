@@ -710,6 +710,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             innerArcPaint.color = getColorEx(R.color.ajdm_wheelview_arc_dim)
             canvas.drawArc(innerArcRect, 306f, 90f, false, innerArcPaint)
         }
+
         //####################################################
         //################# DRAW VOLT ARC TEST ###############
         //####################################################
