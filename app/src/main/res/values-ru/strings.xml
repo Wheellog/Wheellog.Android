@@ -386,4 +386,5 @@
     <string name="notification_text_not">%1$.0f км/ч | %2$d %% | %3$.0f Вт | %4$d°C | %5$.3f км</string>
     <string name="reconnect_option_title">Автореконнект</string>
     <string name="reconnect_option_description">Использовать только, если данные от колеса иногда зависают</string>
+    <string name="replace_info_block">Заменить \"%s\" на:</string>
 </resources>

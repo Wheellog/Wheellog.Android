@@ -1,9 +1,13 @@
 package com.cooper.wheellog.views
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.*
 import android.os.Handler
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
@@ -11,12 +15,14 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Compan
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
+import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
 
 
+@SuppressLint("ClickableViewAccessibility")
 class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var currentTheme = R.style.OriginalTheme
     private var outerArcPaint = Paint()
@@ -26,7 +32,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private val innerArcRect = RectF()
     private val middleArcRect = RectF()
     private val voltArcRect = RectF()
-    private val mViewBlocks: Array<ViewBlockInfo>
+    private lateinit var mViewBlocks: Array<ViewBlockInfo>
     private var oaDiameter = 0f
     private val speedTextRect = RectF()
     private val batteryTextRect = RectF()
@@ -53,7 +59,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var mTopSpeed = 0.0
     private var mVoltage = 0.0
     private var mCurrent = 0.0
-    private var mMaxPower = 0.0
     private var mPwm = 0.0
     private var mMaxPwm = 0.0
     private var mAverageSpeed = 0.0
@@ -88,6 +93,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var mTextBoxesBitmap: Bitmap? = null
     private var mCanvas: Canvas? = null
     private val refreshHandler = Handler()
+    private var boxRects = arrayOf<RectF?>()
     private val refreshRunner: Runnable = object : Runnable {
         override fun run() {
             if (refreshDisplay) {
@@ -433,7 +439,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         }
         var cols = 2
         var rows = (countBlocks / cols.toFloat() + 0.499f).roundToInt()
-        val boxRects = arrayOfNulls<RectF>((cols + 1) * rows)
+        boxRects = arrayOfNulls((cols + 1) * rows)
         if (landscape) {
             var boxTop = paddingTop.toFloat()
             val boxH = (h - boxTop - paddingBottom) / rows.toFloat() - boxInnerPadding
@@ -500,6 +506,14 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             Timber.i("Draw exception: %s", e.message)
             e.printStackTrace()
         }
+    }
+
+    private fun getBlockIndexBy(x: Float, y: Float): Int {
+        for ((i, box) in boxRects.withIndex()) {
+            if (box != null && box.contains(x, y))
+                return i
+        }
+        return -1
     }
 
     private fun drawOriginal(canvas: Canvas) {
@@ -892,6 +906,50 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
+    private val gestureDetector = GestureDetector(
+        context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                WheelData.getInstance().adapter?.switchFlashlight()
+                return super.onDoubleTap(e)
+            }
+
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                if (WheelLog.AppConfig.useBeepOnSingleTap) {
+                    SomeUtil.playBeep(context)
+                    return true
+                }
+                return super.onSingleTapConfirmed(e)
+            }
+
+            override fun onLongPress(e: MotionEvent) {
+                super.onLongPress(e)
+                val i = getBlockIndexBy(e.x, e.y)
+                if (i == -1) {
+                    return
+                }
+                val currentTitle = mViewBlocks.filter { it.enabled }[i].title
+                val items = mViewBlocks.filter { !it.enabled }.map { block -> block.title }
+                AlertDialog.Builder(context)
+                    .setTitle(
+                        String.format(
+                            context.getString(R.string.replace_info_block),
+                            currentTitle
+                        )
+                    )
+                    .setItems(items.toTypedArray()) { _, which ->
+                        val title = items[which]
+                        WheelLog.AppConfig.viewBlocksString =
+                            WheelLog.AppConfig.viewBlocksString?.replace(currentTitle, title)
+                        updateViewBlocksVisibility()
+                        redrawTextBoxes()
+                    }
+                    .setCancelable(true)
+                    .create()
+                    .show()
+                // Toast.makeText(context, "long press: " + e.x + " " + e.y + " | " + i, Toast.LENGTH_SHORT).show()
+            }
+        })
+
     init {
         if (isInEditMode) {
             currentTheme = R.style.OriginalTheme
@@ -931,5 +989,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         mViewBlocks = viewBlockInfo
         updateViewBlocksVisibility()
         onChangeTheme()
+        setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true
+        }
     }
 }

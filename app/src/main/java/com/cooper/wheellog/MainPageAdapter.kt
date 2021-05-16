@@ -154,28 +154,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         when (pages[position]) {
             R.layout.main_view_main -> {
                 wheelView = view.findViewById(R.id.wheelView)
-                wheelView?.setOnTouchListener(object : OnTouchListener {
-                    private val gestureDetector = GestureDetector(
-                            activity, object : SimpleOnGestureListener() {
-                        override fun onDoubleTap(e: MotionEvent): Boolean {
-                            WheelData.getInstance().adapter?.switchFlashlight()
-                            return super.onDoubleTap(e)
-                        }
-
-                        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                            if (WheelLog.AppConfig.useBeepOnSingleTap) {
-                                playBeep(activity)
-                                return true
-                            }
-                            return super.onSingleTapConfirmed(e)
-                        }
-                    })
-
-                    override fun onTouch(v: View, event: MotionEvent): Boolean {
-                        gestureDetector.onTouchEvent(event)
-                        return true
-                    }
-                })
             }
             R.layout.main_view_params_list -> {
                 createSecondPage()
