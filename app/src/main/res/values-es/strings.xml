@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Error de registro, GPS desactivado.</string>
 	<string name="logging_error_network_disabled">Error de registro, red deshabilitada.</string>
 	<string name="logging_error_all_location_providers_disabled">Error de registro, todos los proveedores de ubicación deshabilitados.</string>
-	<string name="raw_distance">Distancia en bruto.</string>
 	<string name="alarm_text_speed">Alarma de velocidad</string>
 	<string name="alarm_text_current">Alarma de corriente</string>
 	<string name="alarm_text_temperature">Alarma de temperatura</string>

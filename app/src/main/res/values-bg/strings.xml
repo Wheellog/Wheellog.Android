@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Беше изискан GPS лог, но GPS-а е изключен. Локацията ще се записва използвайки данни от мобилната мрежа.</string>
 	<string name="logging_error_network_disabled">Беше изискан запис на локация чрез данни от мобилната мрежа, но те са недостъпни. Никакви координати няма да бъдат записани.</string>
 	<string name="logging_error_all_location_providers_disabled">Локацията е изключена от настройките на Андроид. Никакви координати няма да бъдат записани.</string>
-	<string name="raw_distance">Сурова Дистанция</string>
 	<string name="alarm_text_speed">Задействана аларма за скорост</string>
 	<string name="alarm_text_current">Задействана аларма за ток</string>
 	<string name="alarm_text_temperature">Задействана аларма за температура</string>

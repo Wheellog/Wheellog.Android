@@ -12,5 +12,5 @@ public interface OnValueChangeListener {
      *
      * @param value новое значение
      */
-    void onChanged(int value);
+    void onChanged(double value);
 }

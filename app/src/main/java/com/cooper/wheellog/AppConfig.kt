@@ -122,6 +122,10 @@ class AppConfig(var context: Context) {
         get() = MiBandEnum.fromInt(getValue(R.string.miband_mode, MiBandEnum.Min.value))
         set(value) = setValue(R.string.miband_mode, value.value)
 
+    var useReconnect: Boolean
+        get() = getValue(R.string.use_reconnect, false)
+        set(value) = setValue(R.string.use_reconnect, value)
+
     var privatePolicyAccepted: Boolean
         get() = getValue(R.string.private_policy_accepted, false)
         set(value) = setValue(R.string.private_policy_accepted, value)
@@ -165,6 +169,10 @@ class AppConfig(var context: Context) {
     var garminConnectIqEnable: Boolean
         get() = getValue(R.string.garmin_connectiq_enable, false)
         set(value) = setValue(R.string.garmin_connectiq_enable, value)
+
+    var mibandOnMainscreen: Boolean
+        get() = getValue(R.string.miband_on_mainscreen_enable, false)
+        set(value) = setValue(R.string.miband_on_mainscreen_enable, value)
     //endregion
 
     var lastMac: String

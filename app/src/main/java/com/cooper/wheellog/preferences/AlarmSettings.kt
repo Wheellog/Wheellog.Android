@@ -10,6 +10,7 @@ import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.MathsUtil
 
 class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
 
@@ -39,6 +40,15 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             summary = getString(R.string.altered_alarms_description)
             ps.addPreference(this)
         }
+        var speedUnit: String
+        val speedMultipier: Double
+        if (WheelLog.AppConfig.useMph) {
+            speedMultipier = MathsUtil.kmToMilesMultiplier
+            speedUnit = getString(R.string.mph)
+        } else {
+            speedMultipier = 1.0
+            speedUnit = getString(R.string.kmh)
+        }
         PreferenceCategory(context).apply {
             title = getString(R.string.speed_alarm1_phone_title)
             key = mac + getString(R.string.speed_alarm1)
@@ -49,7 +59,8 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 summary = getString(R.string.speed_trigger_description)
                 min = 0
                 max = 100
-                unit = getString(R.string.kmh)
+                unit = speedUnit
+                multiplier = speedMultipier
                 increment = 1
                 setDefaultValue(29)
                 addPreference(this)
@@ -76,7 +87,8 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 summary = getString(R.string.speed_trigger_description)
                 min = 0
                 max = 100
-                unit = getString(R.string.kmh)
+                unit = speedUnit
+                multiplier = speedMultipier
                 increment = 1
                 setDefaultValue(0)
                 addPreference(this)
@@ -103,7 +115,8 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 summary = getString(R.string.speed_trigger_description)
                 min = 0
                 max = 100
-                unit = getString(R.string.kmh)
+                unit = speedUnit
+                multiplier = speedMultipier
                 increment = 1
                 setDefaultValue(0)
                 addPreference(this)
@@ -131,7 +144,8 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 min = 0
                 max = 2000
                 decimalPlaces = 1
-                unit = getString(R.string.kmh)
+                unit = speedUnit
+                multiplier = speedMultipier
                 increment = 1
                 setDefaultValue(500)
                 addPreference(this)
@@ -198,7 +212,8 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 summary = getString(R.string.warning_speed_description)
                 min = 0
                 max = 100
-                unit = getString(R.string.kmh)
+                unit = speedUnit
+                multiplier = speedMultipier
                 increment = 1
                 setDefaultValue(0)
                 addPreference(this)
