@@ -120,7 +120,6 @@ public class WheelData {
 
     private long timestamp_raw;
     private long timestamp_last;
-    private static AudioTrack audioTrack = null;
     private long mLastLifeData = -1;
 
     public BaseAdapter getAdapter() {
@@ -166,11 +165,11 @@ public class WheelData {
     }
 
     void playBeep(ALARM_TYPE type) {
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
-        if (type.getValue() < 4) {
+        if ((type.getValue() < 4) || (type.getValue() == 6)) {
             audioTrack.write(buffer, sampleRate / 20, (toneDuration * sampleRate) / 1000); //50, 100, 150 ms depends on number of speed alarm
 
         } else if (type == ALARM_TYPE.CURRENT) {
@@ -234,7 +233,7 @@ public class WheelData {
         ridingTimerControl.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 
-    ///// test purpose
+    ///// test purpose, please let it be
     public void startAlarmTest() {
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -249,8 +248,6 @@ public class WheelData {
         ridingTimerControl.scheduleAtFixedRate(timerTask, 5000, 200);
     }
     /////
-
-
 
     public static WheelData getInstance() {
         return mInstance;
@@ -966,7 +963,6 @@ public class WheelData {
         };
         speedAlarmWatchdogTimer = new Timer();
         speedAlarmWatchdogTimer.schedule(alarmWatchdog, 5000);
-
     }
 
     private void startTempAlarmCount() {
@@ -997,15 +993,11 @@ public class WheelData {
     }
 
     private void checkAlarmStatus(Context mContext) {
-        // SPEED ALARM
-        //Timber.i("check Alarm");
-        //if (!mSpeedAlarmExecuting) {
 
         if (WheelLog.AppConfig.getAlteredAlarms()) {
-            //if (true) { //test
             if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
                 toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
-                toneDuration = MathsUtil.clamp(toneDuration, 20, 220);
+                toneDuration = MathsUtil.clamp(toneDuration, 20, 200);
                 startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.PWM, mCalculatedPwm*100d, mContext);
             } else {
