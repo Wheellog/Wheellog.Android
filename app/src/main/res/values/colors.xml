@@ -23,6 +23,7 @@
     <color name="wheelview_battery_low_dial">#cccc00</color>
     <color name="wheelview_temperature_dial">#33ccff</color>
     <color name="wheelview_arc_dim">#30000000</color>
+    <color name="alert_bg">#E6284a73</color>
     <color name="settings_bg">#CC000000</color>
 
 </resources>
