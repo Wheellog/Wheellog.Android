@@ -929,7 +929,8 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 }
                 val currentTitle = mViewBlocks.filter { it.enabled }[i].title
                 val items = mViewBlocks.filter { !it.enabled }.map { block -> block.title }
-                AlertDialog.Builder(context)
+                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                    .setIcon(R.drawable.ic_baseline_dashboard_customize_24)
                     .setTitle(
                         String.format(
                             context.getString(R.string.replace_info_block),
