@@ -675,13 +675,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopGarminConnectIQ() {
-        if (GarminConnectIQ.isInstanceCreated())
+        if (GarminConnectIQ.Companion.isInstanceCreated())
             toggleGarminConnectIQ();
     }
 
     private void toggleGarminConnectIQ() {
         Intent garminConnectIQIntent = new Intent(getApplicationContext(), GarminConnectIQ.class);
-        if (GarminConnectIQ.isInstanceCreated())
+        if (GarminConnectIQ.Companion.isInstanceCreated())
             stopService(garminConnectIQIntent);
         else
             ContextCompat.startForegroundService(this, garminConnectIQIntent);
