@@ -174,14 +174,18 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_ALARM_TRIGGERED:
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
+                    double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
                     if (alarmType < 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_speed), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1",alarmValue), 3000);
                     }
                     if (alarmType == 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_current), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_current)+String.format(": %.1f",alarmValue), 3000);
                     }
                     if (alarmType == 5) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_temperature), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_temperature)+String.format(": %.1f",alarmValue), 3000);
+                    }
+                    if (alarmType == 6) {
+                        showSnackBar(getResources().getString(R.string.alarm_text_pwm)+String.format(": %.1f",alarmValue), 3000);
                     }
                     break;
             }
@@ -481,6 +485,7 @@ public class MainActivity extends AppCompatActivity {
         if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
             WheelLog.VolumeKeyController.setActive(true);
         }
+
     }
 
     @Override

@@ -226,6 +226,7 @@
     <string name="alarm_text_speed">Speed alarm triggered</string>
     <string name="alarm_text_current">Current alarm triggered</string>
     <string name="alarm_text_temperature">Temperature alarm triggered</string>
+    <string name="alarm_text_pwm">PWM alarm triggered</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
     <string name="horn_mode_title">Horn Mode</string>
@@ -322,10 +323,10 @@
     <string name="rotation_voltage_description">Voltage at which rotation speed was measured</string>
     <string name="power_factor_title">Power factor</string>
     <string name="power_factor_description">Don\'t change if you don\'t understand what is that, default=90</string>
-    <string name="alarm_factor1_title">First alarm PWM</string>
-    <string name="alarm_factor1_description">Calculated PWM on which first alarm should occur</string>
-    <string name="alarm_factor2_title">Second alarm PWM</string>
-    <string name="alarm_factor2_description">Should be higher than first alarm</string>
+    <string name="alarm_factor1_title">PWM alarm start</string>
+    <string name="alarm_factor1_description">Calculated PWM on which first alarm starts</string>
+    <string name="alarm_factor2_title">PWM alarm max</string>
+    <string name="alarm_factor2_description">Calculated PWM on which alarm becomes permanent</string>
     <string name="alarm_factor3_title">Third alarm PWM</string>
     <string name="alarm_factor3_description">Should be higher than second alarm</string>
     <string name="warning_speed_title">Advance warning</string>
