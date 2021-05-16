@@ -180,7 +180,7 @@ class ElectroClub {
                                 selectedTransport = transportList[which]
                             }
                         }
-                        .setPositiveButton(android.R.string.yes) { _, _ ->
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
                             if (selectedTransport != null) {
                                 WheelLog.AppConfig.ecGarage = selectedTransport!!.id
                                 success(selectedTransport!!.id)
@@ -189,7 +189,7 @@ class ElectroClub {
                                 errorListener?.invoke(GET_GARAGE_METHOD_FILTRED, "selected item not valid")
                             }
                         }
-                        .setNegativeButton(android.R.string.no) { _, _ ->
+                        .setNegativeButton(android.R.string.cancel) { _, _ ->
                             WheelLog.AppConfig.ecGarage = "0"
                             successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
                         }

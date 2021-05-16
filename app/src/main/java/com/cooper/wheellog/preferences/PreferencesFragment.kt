@@ -135,7 +135,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             AlertDialog.Builder(requireContext())
                     .setTitle(getString(R.string.log_location_title))
                     .setMessage(getString(R.string.log_location_pop_up))
-                    .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                             requestPermissionsEx(
                                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -146,7 +146,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                     SettingsActivity.permissionLocationCode)
                         }
                     }
-                    .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
+                    .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
                         WheelLog.AppConfig.useGps = false
                         refreshVolatileSettings()
                     }
@@ -174,7 +174,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     AlertDialog.Builder(requireContext())
                             .setTitle(getString(R.string.enable_auto_upload_title))
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = true
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
@@ -182,7 +182,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                     ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                                 }
                             }
-                            .setNegativeButton(android.R.string.no) { _: DialogInterface?, _: Int ->
+                            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
                                 ElectroClub.instance.logout()
                                 refreshVolatileSettings()
                             }

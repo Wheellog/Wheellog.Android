@@ -83,7 +83,7 @@ class NotificationUtil(private val context: Context) {
                 else -> R.string.notification_text
             }
             notificationView.setTextViewText(R.id.text_message, context.getString(template, speed, batteryLevel, temperature, distance))
-            notificationView.setTextViewText(R.id.text_title, title + " - " + title_ride)
+            notificationView.setTextViewText(R.id.text_title, "$title - $title_ride")
         } else {
             notificationView.setTextViewText(R.id.text_title, title)
         }
@@ -136,6 +136,7 @@ class NotificationUtil(private val context: Context) {
             MiBandEnum.Min -> builder.setContentText(context.getString(R.string.notification_text_min, speed, wd.topSpeedDouble, wd.batteryLevel, wd.distanceDouble))
             MiBandEnum.Medium -> builder.setContentText(context.getString(R.string.notification_text_med, speed, wd.averageSpeedDouble, wd.calculatedPwm, wd.batteryLevel, wd.temperature, wd.distanceDouble))
             MiBandEnum.Max -> builder.setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.averageSpeedDouble, wd.batteryLevel, wd.voltageDouble, wd.powerDouble, wd.temperature, wd.distanceDouble))
+            else -> { }
         }
 
         return builder.build()
