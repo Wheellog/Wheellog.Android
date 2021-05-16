@@ -26,6 +26,7 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import timber.log.Timber
 
@@ -258,6 +259,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     wd.bluetoothLeService?.startReconnectTimer()
                 else
                     wd.bluetoothLeService?.stopReconnectTimer()
+            }
+            R.string.alarm_factor2 -> {
+                if (WheelLog.AppConfig.alarmFactor2 <= WheelLog.AppConfig.alarmFactor1) {
+                    WheelLog.AppConfig.alarmFactor2 = MathsUtil.clamp(WheelLog.AppConfig.alarmFactor1 + 10, 1,100)
+                }
             }
         }
         correctState(key)

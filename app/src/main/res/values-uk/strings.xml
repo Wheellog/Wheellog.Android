@@ -200,10 +200,6 @@
     <string name="altered_alarms_title">Ручні попередження</string>
     <string name="altered_alarms_description">Попередження при поточній напрузі та можливостях колеса</string>
     <string name="altered_alarms_pref_title">Налаштування опцій змінених попереджень</string>
-    <string name="alarm_factor1_title">PWM першого попередження</string>
-    <string name="alarm_factor1_description">Розрахунковий PWM спрацьовування першого попередження</string>
-    <string name="alarm_factor2_title">PWM другого попередження</string>
-    <string name="alarm_factor2_description">Повинен бути більше за перший</string>
     <string name="alarm_factor3_title">PWM третього попередження</string>
     <string name="alarm_factor3_description">Повинен бути більше за другий</string>
     <string name="warning_speed_title">Попереднє попередження</string>

@@ -178,7 +178,7 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.alarm_factor1_title)
                 summary = getString(R.string.alarm_factor1_description)
                 min = 0
-                max = 100
+                max = 99
                 unit = "%"
                 increment = 1
                 setDefaultValue(80)
@@ -195,6 +195,7 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 setDefaultValue(90)
                 addPreference(this)
             }
+            /*
             SeekBarPreference(context).apply {
                 key = mac + getString(R.string.alarm_factor3)
                 title = getString(R.string.alarm_factor3_title)
@@ -206,6 +207,8 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 setDefaultValue(95)
                 addPreference(this)
             }
+
+             */
             SeekBarPreference(context).apply {
                 key = mac + getString(R.string.warning_speed)
                 title = getString(R.string.warning_speed_title)

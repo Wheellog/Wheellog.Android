@@ -1005,9 +1005,9 @@ public class WheelData {
             //if (true) { //test
             if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
                 toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
-                toneDuration = MathsUtil.clamp(toneDuration, 20, 200);
+                toneDuration = MathsUtil.clamp(toneDuration, 20, 220);
                 startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+                raiseAlarm(ALARM_TYPE.PWM, mCalculatedPwm*100d, mContext);
             } else {
                 // check if speed alarm executing and stop it
                 mSpeedAlarmExecuting = false;
@@ -1033,28 +1033,28 @@ public class WheelData {
             if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm1Speed(), WheelLog.AppConfig.getAlarm1Battery())) {
                 toneDuration = 50;
                 startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+                raiseAlarm(ALARM_TYPE.SPEED1, getSpeedDouble(), mContext);
             } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm2Speed(), WheelLog.AppConfig.getAlarm2Battery())) {
                 toneDuration = 100;
                 startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED2, mContext);
+                raiseAlarm(ALARM_TYPE.SPEED2, getSpeedDouble(),mContext);
             } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm3Speed(), WheelLog.AppConfig.getAlarm3Battery())) {
                 toneDuration = 180;
                 startSpeedAlarmCount();
-                raiseAlarm(ALARM_TYPE.SPEED3, mContext);
+                raiseAlarm(ALARM_TYPE.SPEED3, getSpeedDouble(), mContext);
             }
         }
 
         int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
         if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
-            raiseAlarm(ALARM_TYPE.CURRENT, mContext);
+            raiseAlarm(ALARM_TYPE.CURRENT, mCurrent, mContext);
         }
 
         int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature() * 100;
         if (alarmTemperature > 0 && mTemperature >= alarmTemperature && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
-            raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
+            raiseAlarm(ALARM_TYPE.TEMPERATURE, mTemperature, mContext);
         }
     }
 
@@ -1062,34 +1062,33 @@ public class WheelData {
         return alarmSpeed > 0 && alarmBattery > 0 && mAverageBattery <= alarmBattery && getSpeedDouble() >= alarmSpeed;
     }
 
-    private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
+    private void raiseAlarm(ALARM_TYPE alarmType, double value, Context mContext) {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0};
         Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
-
+        intent.putExtra(Constants.INTENT_EXTRA_ALARM_VALUE, value);
         switch (alarmType) {
             case SPEED1:
             case SPEED2:
             case SPEED3:
+            case PWM:
                 pattern = new long[]{0, 100, 100};
                 break;
 
             case CURRENT:
                 pattern = new long[]{0, 50, 50, 50, 50};
-//                mCurrentAlarmExecuted = true;
                 break;
             case TEMPERATURE:
                 pattern = new long[]{0, 500, 500};
-//                mCurrentAlarmExecuted = true;
                 break;
         }
-        mContext.sendBroadcast(intent);
         if (v.hasVibrator() && !WheelLog.AppConfig.getDisablePhoneVibrate())
             v.vibrate(pattern, -1);
         if (!WheelLog.AppConfig.getDisablePhoneBeep() && (alarmType.getValue() > 3)) {
             playBeep(alarmType);
         }
+        mContext.sendBroadcast(intent);
     }
 
     void decodeResponse(byte[] data, Context mContext) {

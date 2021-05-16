@@ -223,10 +223,10 @@
     <string name="altered_alarms_title">Измененные предупреждения</string>
     <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
     <string name="altered_alarms_pref_title">Настройки для опции измененных предупреждений</string>
-    <string name="alarm_factor1_title">PWM первого предупреждения</string>
-    <string name="alarm_factor1_description">Рассчетный PWM срабатывания первого предупреждения</string>
-    <string name="alarm_factor2_title">PWM второго предупреждения</string>
-    <string name="alarm_factor2_description">Должен быть больше первого</string>
+    <string name="alarm_factor1_title">Начало PWM предупреждений</string>
+    <string name="alarm_factor1_description">Рассчетный PWM при котором начинаются предупреждения</string>
+    <string name="alarm_factor2_title">Предельное PWM предупреждений</string>
+    <string name="alarm_factor2_description">Значение PWM при котором предупреждения становятся непрерывными</string>
     <string name="alarm_factor3_title">PWM третьего предупреждения</string>
     <string name="alarm_factor3_description">Должен быть больше второго</string>
     <string name="warning_speed_title">Предварительное предупреждение</string>
