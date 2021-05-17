@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cooper.wheellog">
 
+    <queries>
+        <package android:name="com.garmin.android.apps.connectmobile" />
+    </queries>
+
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
