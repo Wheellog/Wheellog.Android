@@ -39,7 +39,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
         // Setup Connect IQ
         mMyApp = IQApp(APP_ID)
-        mConnectIQ.initialize(this, true, this)
+        mConnectIQ.initialize(this, false, this)
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         return START_STICKY
     }
