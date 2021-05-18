@@ -7,6 +7,5 @@
         android:id="@+id/events_textbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/prime"
         android:gravity="start|top" />
 </ScrollView>

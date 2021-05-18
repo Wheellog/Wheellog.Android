@@ -8,10 +8,10 @@
         <item name="colorAccent">@color/accent</item>
         <item name="android:divider">@color/divider</item>
         <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
-        <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:windowBackground">@drawable/background</item> // фон на начальном экране, и при загрузке тоже
         <item name="android:colorBackground">@color/background</item>
         <item name="android:navigationBarColor">@color/primary</item>
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:statusBarColor">@color/settings_bg</item> // цвет шторки в главном меню и в настройках
         <item name="colorControlNormal">@color/divider</item>
         <item name="colorControlActivated">@color/accent</item>
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
