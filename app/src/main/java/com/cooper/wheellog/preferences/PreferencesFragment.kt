@@ -339,11 +339,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     preferenceScreen.removeAll()
                     addPreferencesFromResource(R.xml.preferences_trip)
                     setupScreen()
-                    // clear icons in not original theme // todo fix (app crashes)
-                    //if (WheelLog.AppConfig.appTheme != R.style.OriginalTheme) {
-                    //    findPreference<SwitchPreference>(getString(R.string.reset_user_distance))?.setIcon(R.drawable.transparent)
-                    //    findPreference<SwitchPreference>(getString(R.string.reset_lowest_battery))?.setIcon(R.drawable.transparent)
-                    //}
+                    // clear icons in not original theme
+                    if (WheelLog.AppConfig.appTheme != R.style.OriginalTheme) {
+                        findPreference<Preference>(getString(R.string.reset_user_distance))?.setIcon(R.drawable.transparent)
+                        findPreference<Preference>(getString(R.string.reset_lowest_battery))?.setIcon(R.drawable.transparent)
+                    }
                     true
                 }
                 aboutButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
