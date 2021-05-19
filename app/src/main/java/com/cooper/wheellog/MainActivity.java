@@ -251,7 +251,9 @@ public class MainActivity extends AppCompatActivity {
                     if (wearOs != null) {
                         wearOs.updateData();
                     }
-                    WheelLog.Notifications.update();
+                    if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
+                        WheelLog.Notifications.update();
+                    }
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
