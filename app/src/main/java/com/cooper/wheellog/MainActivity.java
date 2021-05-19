@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.ACTION_ALARM_TRIGGERED:
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
                     double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
+                    alarmValue = alarmValue / 100; //todo fix crash on main screen when speed alarm
                     if (alarmType < 4) {
                         showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1",alarmValue), 3000);
                     }
