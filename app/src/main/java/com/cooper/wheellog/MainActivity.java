@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
                     double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
                     if (alarmType < 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1",alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1f",alarmValue), 3000);
                     }
                     if (alarmType == 4) {
                         showSnackBar(getResources().getString(R.string.alarm_text_current)+String.format(": %.1f",alarmValue), 3000);

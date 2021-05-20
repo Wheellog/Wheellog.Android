@@ -239,6 +239,10 @@ public class WheelData {
             @Override
             public void run() {
                 mCalculatedPwm = WheelLog.AppConfig.getMaxSpeed()/100d;
+                mAverageBattery = 70;
+                mSpeed = WheelLog.AppConfig.getMaxSpeed() * 100;
+                mCurrent = 10000;
+                mTemperature = 6000;
                 //Timber.i("pwm = %0.2f", mCalculatedPwm);
                 Context mContext = getBluetoothLeService().getApplicationContext();
                 checkAlarmStatus(mContext);
@@ -939,7 +943,7 @@ public class WheelData {
             TimerTask playBeepAgain = new TimerTask() {
                 @Override
                 public void run() {
-                    playBeep(ALARM_TYPE.SPEED1);
+                    playBeep(ALARM_TYPE.PWM);
                     Timber.i("Scheduled alarm");
                 }
             };
@@ -998,7 +1002,6 @@ public class WheelData {
             if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
                 toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
                 toneDuration = MathsUtil.clamp(toneDuration, 20, 200);
-                startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.PWM, mCalculatedPwm*100d, mContext);
             } else {
                 // check if speed alarm executing and stop it
@@ -1024,27 +1027,31 @@ public class WheelData {
         } else {
             if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm1Speed(), WheelLog.AppConfig.getAlarm1Battery())) {
                 toneDuration = 50;
-                startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.SPEED1, getSpeedDouble(), mContext);
             } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm2Speed(), WheelLog.AppConfig.getAlarm2Battery())) {
                 toneDuration = 100;
-                startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.SPEED2, getSpeedDouble(),mContext);
             } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm3Speed(), WheelLog.AppConfig.getAlarm3Battery())) {
                 toneDuration = 180;
-                startSpeedAlarmCount();
                 raiseAlarm(ALARM_TYPE.SPEED3, getSpeedDouble(), mContext);
+            } else {
+                // check if speed alarm executing and stop it
+                mSpeedAlarmExecuting = false;
+                if (speedAlarmTimer != null) {
+                    speedAlarmTimer.cancel();
+                    speedAlarmTimer = null;
+                }
             }
         }
 
         int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
-        if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
+        if ((alarmCurrent > 0) && (mCurrent >= alarmCurrent) && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
             raiseAlarm(ALARM_TYPE.CURRENT, mCurrent, mContext);
         }
 
         int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature() * 100;
-        if (alarmTemperature > 0 && mTemperature >= alarmTemperature && !mTemperatureAlarmExecuting) {
+        if ((alarmTemperature > 0) && (mTemperature >= alarmTemperature) && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
             raiseAlarm(ALARM_TYPE.TEMPERATURE, mTemperature, mContext);
         }
@@ -1077,8 +1084,12 @@ public class WheelData {
         }
         if (v.hasVibrator() && !WheelLog.AppConfig.getDisablePhoneVibrate())
             v.vibrate(pattern, -1);
-        if (!WheelLog.AppConfig.getDisablePhoneBeep() && (alarmType.getValue() > 3)) {
-            playBeep(alarmType);
+        if (!WheelLog.AppConfig.getDisablePhoneBeep()) {
+            if ((alarmType.getValue() > 3) && (alarmType.getValue() != 6)) {
+                playBeep(alarmType);
+            } else {
+                startSpeedAlarmCount();
+            }
         }
         mContext.sendBroadcast(intent);
     }
@@ -1191,6 +1202,7 @@ public class WheelData {
         }
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.stopTimer();
         mWheelType = WHEEL_TYPE.Unknown;
+        //mWheelType = WHEEL_TYPE.GOTWAY; test
         xAxis.clear();
         speedAxis.clear();
         currentAxis.clear();
