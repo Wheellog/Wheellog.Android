@@ -1092,6 +1092,26 @@ public class WheelData {
             }
         }
         mContext.sendBroadcast(intent);
+
+        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Alarm) {
+            String mi_text = "";
+            switch (alarmType) {
+                case SPEED1:
+                case SPEED2:
+                case SPEED3:
+                case PWM:
+                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_speed_v), WheelData.getInstance().getSpeedDouble());
+                    break;
+                case CURRENT:
+                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_current_v), WheelData.getInstance().getCurrentDouble());
+                    break;
+                case TEMPERATURE:
+                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_temperature_v), WheelData.getInstance().getTemperature());
+                    break;
+            }
+            WheelLog.Notifications.setAlarmText(mi_text);
+            WheelLog.Notifications.update();
+        }
     }
 
     void decodeResponse(byte[] data, Context mContext) {
