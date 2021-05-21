@@ -104,15 +104,6 @@
         <item>-1</item>
     </string-array>
 
-    <string-array name="view_blocks_def">
-        <item>@string/voltage</item>
-        <item>@string/average_riding_speed</item>
-        <item>@string/riding_time</item>
-        <item>@string/top_speed</item>
-        <item>@string/distance</item>
-        <item>@string/total</item>
-    </string-array>
-
     <string-array name="view_blocks_values">
         <item>@string/pwm</item>
         <item>@string/max_pwm</item>
