@@ -534,7 +534,7 @@
     <string name="miband_on_mainscreen_enable" translatable="false">miband_on_mainscreen_enable</string>
     <string name="miband_on_mainscreen_description">Show Mi Band button on main screen instead watch button</string>
     <string name="use_reconnect_title">Use reconnect</string>
-    <string name="use_reconnect_description">Automatically reconnect to the wheel if the connection is, and the data from it will not change. (Not recommended)</string>
+    <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="replace_info_block">Replace \"%s\" to:</string>

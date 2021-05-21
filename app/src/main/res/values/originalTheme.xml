@@ -30,8 +30,8 @@
         <item name="android:textColor">@color/wheelview_textblocks</item>
         <item name="android:textColorAlertDialogListItem">@color/wheelview_textblocks</item>
         <item name="editTextColor">@color/wheelview_textblocks</item>
-        <item name="android:windowBackground">@color/alert_bg</item>
-        <item name="android:colorBackground">@color/alert_bg</item>
+        <item name="android:windowBackground">@color/primary_text</item>
+        <item name="android:colorBackground">@color/primary_text</item>
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
         <item name="colorControlNormal">@color/icons</item>
         <item name="colorControlActivated">@color/accent</item>
@@ -46,7 +46,7 @@
     <style name="OriginalTheme.ButtonStyle" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/primary_light</item>
+        <item name="android:textColor">@color/wheelview_textblocks</item>
     </style>
 
     <style name="OriginalTheme.ButtonStylePositive" parent="@style/OriginalTheme.ButtonStyle">
@@ -73,7 +73,6 @@
         <item name="android:gravity">left</item>
         <item name="layout_columnWeight">1</item>
         <item name="android:textColor">#AAFFFFFF</item>
-        <item name="android:fontFamily">@font/prime</item>
     </style>
 
     <style name="Stats.Title" parent="@style/Stats">
@@ -82,7 +81,6 @@
         <item name="android:paddingRight">20dp</item>
         <item name="android:gravity">right</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">@font/prime</item>
     </style>
 
     <style name="StatsBMS" parent="@android:style/TextAppearance.Medium">
