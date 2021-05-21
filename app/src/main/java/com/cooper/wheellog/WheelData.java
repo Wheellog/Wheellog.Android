@@ -1047,13 +1047,13 @@ public class WheelData {
         int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
         if ((alarmCurrent > 0) && (mCurrent >= alarmCurrent) && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
-            raiseAlarm(ALARM_TYPE.CURRENT, mCurrent, mContext);
+            raiseAlarm(ALARM_TYPE.CURRENT, getCurrentDouble(), mContext);
         }
 
         int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature() * 100;
         if ((alarmTemperature > 0) && (mTemperature >= alarmTemperature) && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
-            raiseAlarm(ALARM_TYPE.TEMPERATURE, mTemperature, mContext);
+            raiseAlarm(ALARM_TYPE.TEMPERATURE, getTemperature(), mContext);
         }
     }
 
@@ -1202,7 +1202,7 @@ public class WheelData {
         }
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.stopTimer();
         mWheelType = WHEEL_TYPE.Unknown;
-        //mWheelType = WHEEL_TYPE.GOTWAY; test
+        //mWheelType = WHEEL_TYPE.GOTWAY; //test
         xAxis.clear();
         speedAxis.clear();
         currentAxis.clear();
