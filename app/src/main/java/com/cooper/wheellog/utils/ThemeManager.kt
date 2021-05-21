@@ -28,34 +28,34 @@ class ThemeManager {
     
     init {
         // notification
-        ajdmDrawables[R.drawable.ic_action_wheel_light_orange] = R.drawable.connect_ajdm_y
-        ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.connect_ajdm_g
-        ajdmDrawables[R.drawable.ic_action_wheel_grey] = R.drawable.connect_ajdm_b
-        ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.gps_ajdm_g
-        ajdmDrawables[R.drawable.ic_action_logging_grey] = R.drawable.gps_ajdm_b
-        ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.watch_ajdm_g
-        ajdmDrawables[R.drawable.ic_action_watch_grey] = R.drawable.watch_ajdm_b
-        ajdmDrawables[R.drawable.ic_horn_32_gray] = R.drawable.horn_ajdm_b
-        ajdmDrawables[R.drawable.ic_sun_32_gray] = R.drawable.light_ajdm_b
+        ajdmDrawables[R.drawable.ic_action_wheel_light_orange] = R.drawable.ajdm_wheel_new_g
+        ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.connect_ajdm_o
+        ajdmDrawables[R.drawable.ic_action_wheel_grey] = R.drawable.ajdm_wheel_new_b
+        ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.ajdm_log_new_o
+        ajdmDrawables[R.drawable.ic_action_logging_grey] = R.drawable.ajdm_log_new_b
+        ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.ajdm_watch_new_o
+        ajdmDrawables[R.drawable.ic_action_watch_grey] = R.drawable.ajdm_watch_new_b
+        ajdmDrawables[R.drawable.ic_horn_32_gray] = R.drawable.horn_ajdm_o
+        ajdmDrawables[R.drawable.ic_sun_32_gray] = R.drawable.light_ajdm_o
         ajdmDrawables[R.drawable.ic_stat_wheel] = R.drawable.wheel_ajdm_w
         // menu
         ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.ajdm_watch_g
         ajdmDrawables[R.drawable.ic_action_watch_white] = R.drawable.ajdm_watch_new
         ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.ajdm_log_new_g
         ajdmDrawables[R.drawable.ic_action_logging_white] = R.drawable.ajdm_log_new
-        ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.ajdm_wheel_new
+        ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.ajdm_wheel_new_g
         ajdmDrawables[R.drawable.anim_wheel_icon] = R.drawable.ajdm_anim_wheel_icon
-        ajdmDrawables[R.drawable.ic_action_wheel_white] = R.drawable.connect_ajdm
+        ajdmDrawables[R.drawable.ic_action_wheel_white] = R.drawable.ajdm_wheel_new
         ajdmDrawables[R.drawable.ic_baseline_settings_24] = R.drawable.ajdm_sett3_new
         ajdmDrawables[R.drawable.ic_action_bluetooth_searching_white] = R.drawable.ajdm_bt_new
         // prefs
         ajdmDrawables[R.drawable.ic_speedometer_white_24dp] = R.drawable.ajdm_sett5_new
-        ajdmDrawables[R.drawable.ic_show_chart_white_24dp] = R.drawable.ajdm_log_new
+        ajdmDrawables[R.drawable.ic_show_chart_white_24dp] = R.drawable.ajdm_log_new_set
         ajdmDrawables[R.drawable.ic_baseline_watch_24] = R.drawable.ajdm_watch_new
         ajdmDrawables[R.drawable.ic_baseline_bug_report_24] = R.drawable.ajdm_flow
-        ajdmDrawables[R.drawable.ic_baseline_info_24] = R.drawable.ajdm_instamessage
+        ajdmDrawables[R.drawable.ic_baseline_info_24] = R.drawable.ajdm_info
         ajdmDrawables[R.drawable.ic_baseline_vibration_24] = R.drawable.ajdm_alarm
-        ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.connect_ajdm
+        ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.ajdm_wheel_set
         ajdmDrawables[R.drawable.ic_baseline_explore_24] = R.drawable.ajdm_trip
     }
 
