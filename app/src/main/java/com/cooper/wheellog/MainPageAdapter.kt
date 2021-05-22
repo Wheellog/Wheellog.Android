@@ -3,12 +3,8 @@ package com.cooper.wheellog
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.os.Build
 import android.view.*
-import android.view.GestureDetector.SimpleOnGestureListener
-import android.view.View.OnTouchListener
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.gridlayout.widget.GridLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
@@ -588,13 +583,20 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private fun createSecondPage() {
         val layout = pagesView[R.layout.main_view_params_list]?.findViewById<GridLayout>(R.id.page_two_grid) ?: return
         layout.removeAllViews()
+        val font = WheelLog.ThemeManager.getTypeface(activity)
         for ((key, value) in secondPageValues) {
-            val headerText = activity.layoutInflater.inflate(
-                    R.layout.textview_title_template, layout, false) as TextView
-            val valueText = activity.layoutInflater.inflate(
-                    R.layout.textview_value_template, layout, false) as TextView
-            headerText.text = activity.getString(key)
-            valueText.text = value
+            val headerText = (activity.layoutInflater.inflate(
+                R.layout.textview_title_template, layout, false
+            ) as TextView).apply {
+                text = activity.getString(key)
+                typeface = font
+            }
+            val valueText = (activity.layoutInflater.inflate(
+                R.layout.textview_value_template, layout, false
+            ) as TextView).apply {
+                text = value
+                typeface = font
+            }
             layout.addView(headerText)
             layout.addView(valueText)
         }
