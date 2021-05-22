@@ -89,7 +89,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 icon = getDrawable(R.drawable.ic_baseline_dashboard_customize_24)
                 dialogTitle = title
                 dialogIcon = icon
-                setDefaultValue(WheelLog.AppConfig.viewBlocksString)
+                setValues(WheelLog.AppConfig.viewBlocks)
                 entries = context.resources.getTextArray(R.array.view_blocks_values)
                 addPreference(this)
             }
@@ -100,6 +100,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 icon = getDrawable(R.drawable.ic_notification)
                 dialogTitle = title
                 dialogIcon = icon
+                setValues(WheelLog.AppConfig.notificationButtons)
                 entries = arrayOf(getString(R.string.icon_connection),
                         getString(R.string.icon_logging),
                         getString(R.string.icon_watch),
@@ -107,11 +108,6 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                         getString(R.string.icon_light),
                         getString(R.string.icon_miband))
                 useSort = false
-                if (WheelLog.AppConfig.notifivationButtons == null) {
-                    setValues(listOf(getString(R.string.icon_connection),
-                            getString(R.string.icon_logging),
-                            getString(R.string.icon_watch)))
-                }
                 addPreference(this)
             }
             SeekBarPreference(context).apply {

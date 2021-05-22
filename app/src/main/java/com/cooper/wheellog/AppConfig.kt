@@ -11,6 +11,7 @@ import com.cooper.wheellog.utils.ThemeEnum
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private var specificPrefix: String = "default"
+    private val separator = ";"
 
     init {
         // Clear all preferences if they are incompatible
@@ -58,13 +59,32 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_mph, false)
         set(value) = setValue(R.string.use_mph, value)
 
-    var viewBlocksString: String?
+   private var viewBlocksString: String?
         get() = getValue(R.string.view_blocks_string, null)
         set(value) = setValue(R.string.view_blocks_string, value)
 
-    var notifivationButtons: String?
+   var viewBlocks: Array<String>
+        get() = this.viewBlocksString?.split(separator)?.toTypedArray()
+            ?: arrayOf(
+                context.getString(R.string.voltage),
+                context.getString(R.string.average_riding_speed),
+                context.getString(R.string.riding_time),
+                context.getString(R.string.top_speed),
+                context.getString(R.string.distance),
+                context.getString(R.string.total))
+        set(value) { this.viewBlocksString = value.joinToString(separator) }
+
+    private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)
         set(value) = setValue(R.string.notification_buttons, value)
+
+    var notificationButtons: Array<String>
+        get() = this.notificationButtonsString?.split(separator)?.toTypedArray()
+            ?: arrayOf(
+                context.getString(R.string.icon_connection),
+                context.getString(R.string.icon_logging),
+                context.getString(R.string.icon_watch))
+        set(value) { this.notificationButtonsString = value.joinToString(separator) }
 
     var maxSpeed: Int
         get() = getValue(R.string.max_speed, 50)

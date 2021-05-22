@@ -186,22 +186,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     fun updateViewBlocksVisibility() {
-        val viewBlocksString = WheelLog.AppConfig.viewBlocksString
-        val viewBlocks = viewBlocksString?.split(separator)?.toTypedArray()
-                ?: arrayOf(
-                        resources.getString(R.string.voltage),
-                        resources.getString(R.string.average_riding_speed),
-                        resources.getString(R.string.riding_time),
-                        resources.getString(R.string.top_speed),
-                        resources.getString(R.string.distance),
-                        resources.getString(R.string.total)
-                )
         for (block in mViewBlocks) {
             block.enabled = false
             block.index = -1
         }
         var index = 0
-        for (title in viewBlocks) {
+        for (title in WheelLog.AppConfig.viewBlocks) {
             for (block in mViewBlocks) {
                 if (block.title == title) {
                     block.index = index++
@@ -940,8 +930,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     )
                     .setItems(items.toTypedArray()) { _, which ->
                         val title = items[which]
-                        WheelLog.AppConfig.viewBlocksString =
-                            WheelLog.AppConfig.viewBlocksString?.replace(currentTitle, title)
+                        val newBlocks = WheelLog.AppConfig.viewBlocks
+                        newBlocks[newBlocks.indexOf(currentTitle)] = title
+                        WheelLog.AppConfig.viewBlocks = newBlocks
                         updateViewBlocksVisibility()
                         redrawTextBoxes()
                     }

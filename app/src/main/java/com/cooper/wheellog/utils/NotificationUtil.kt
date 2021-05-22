@@ -13,7 +13,6 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
-import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
@@ -44,14 +43,10 @@ class NotificationUtil(private val context: Context) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
-        val buttonsSettingsString = WheelLog.AppConfig.notifivationButtons
-        val buttonSettings = buttonsSettingsString?.split(MultiSelectPreference.separator)?.toTypedArray()
-                ?: arrayOf(context.getString(R.string.icon_connection),
-                        context.getString(R.string.icon_logging),
-                        context.getString(R.string.icon_watch))
+        val buttonSettings = WheelLog.AppConfig.notificationButtons
 
         notificationView.setViewVisibility(R.id.ib_actions_layout,
-                if (buttonsSettingsString != "") View.VISIBLE
+                if (buttonSettings.any()) View.VISIBLE
                 else View.GONE)
 
         arrayOf(Triple(R.id.ib_connection, R.string.icon_connection, Constants.NOTIFICATION_BUTTON_CONNECTION),
