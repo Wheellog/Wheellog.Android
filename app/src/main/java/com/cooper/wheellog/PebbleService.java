@@ -186,6 +186,10 @@ public class PebbleService extends Service {
                 case Constants.ACTION_ALARM_TRIGGERED:
                     if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE))
                         vibe_alarm = ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
+                        // crutch to legacy pebble app, which does't know alarms other than 0 (speed) and 1 (current)
+                        if (vibe_alarm == Constants.ALARM_TYPE.CURRENT.getValue() || vibe_alarm == Constants.ALARM_TYPE.TEMPERATURE.getValue())
+                            vibe_alarm = 1;
+                        else vibe_alarm = 0;
                     break;
                 case Constants.ACTION_PEBBLE_APP_READY:
                     displayedScreen = GUI;
