@@ -14,13 +14,6 @@
         android:dependency="@string/auto_log" />
 
     <SwitchPreference
-        android:icon="@drawable/ic_baseline_cloud_upload_24"
-        android:key="@string/auto_upload_ec"
-        android:summary="@string/auto_upload_log_ec_description"
-        android:title="@string/auto_upload_log_ec_title"
-        android:dependency="@string/log_location_data" />
-
-    <SwitchPreference
         android:icon="@drawable/ic_baseline_location_on_24"
         android:key="@string/log_location_data"
         android:summary="@string/log_location_decription"
@@ -32,6 +25,13 @@
         android:key="@string/use_gps"
         android:summary="@string/use_gps_description"
         android:title="@string/use_gps_title" />
+
+    <SwitchPreference
+        android:icon="@drawable/ic_baseline_cloud_upload_24"
+        android:key="@string/auto_upload_ec"
+        android:summary="@string/auto_upload_log_ec_description"
+        android:title="@string/auto_upload_log_ec_title"
+        android:dependency="@string/use_gps" />
 
     <SwitchPreference
         android:icon="@drawable/ic_baseline_raw_on_24"
