@@ -14,11 +14,35 @@ public class NinebotZAdapter extends BaseAdapter {
     private static NinebotZAdapter INSTANCE;
     private Timer keepAliveTimer;
     private boolean settingCommandReady = false;
+    private boolean settingRequestReady = false;
     private static int updateStep = 0;
     private byte[] settingCommand;
+    private byte[] settingRequest;
     private static byte[] gamma = new byte[16];
     private static int stateCon = 0;
     private static boolean bmsMode = false;
+
+    ///// wheel settings
+
+    private int lockMode = 0;
+    private int limitedMode = 0;
+    private int limitModeSpeed = 0;
+    private int limitModeSpeed1Km = 0; // not sure (?)
+    private int LimitModeSpeed = 0;
+    private int alarms = 0;
+    private int alarm1Speed = 0;
+    private int alarm2Speed = 0;
+    private int alarm3Speed = 0;
+    private int ledMode = 0;
+    private int ledColor1 = 0;
+    private int ledColor2 = 0;
+    private int ledColor3 = 0;
+    private int ledColor4 = 0;
+    private int pedalSensivity = 0;
+    private int driveFlags = 0;
+
+    ///// end of wheel settings
+
 
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
 
@@ -52,29 +76,45 @@ public class NinebotZAdapter extends BaseAdapter {
                         } else Timber.i("Unable to send version message");
 
                     } else if (stateCon == 4) {
+                        if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getParams1().writeBuffer())) {
+                            Timber.i("Sent getParams1 message");
+                        } else Timber.i("Unable to send getParams1 message");
+
+                    } else if (stateCon == 5) {
+                        if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getParams2().writeBuffer())) {
+                            Timber.i("Sent getParams2 message");
+                        } else Timber.i("Unable to send getParams2 message");
+
+                    } else if (stateCon == 6) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Sn().writeBuffer())) {
                             Timber.i("Sent BMS1 SN message");
                         } else Timber.i("Unable to send BMS1 SN message");
-                    } else if (stateCon == 5) {
+                    } else if (stateCon == 7) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Life().writeBuffer())) {
                             Timber.i("Sent BMS1 life message");
                         } else Timber.i("Unable to send BMS1 life message");
-                    } else if (stateCon == 6) {
+                    } else if (stateCon == 8) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Cells().writeBuffer())) {
                             Timber.i("Sent BMS1 cells message");
                         } else Timber.i("Unable to send BMS1 cells message");
-                    } else if (stateCon == 7) {
+                    } else if (stateCon == 9) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Sn().writeBuffer())) {
                             Timber.i("Sent BMS2 SN message");
                         } else Timber.i("Unable to send BMS2 SN message");
-                    } else if (stateCon == 8) {
+                    } else if (stateCon == 10) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Life().writeBuffer())) {
                             Timber.i("Sent BMS2 life message");
                         } else Timber.i("Unable to send BMS2 life message");
-                    } else if (stateCon == 9) {
+                    } else if (stateCon == 11) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Cells().writeBuffer())) {
                             Timber.i("Sent BMS2 cells message");
                         } else Timber.i("Unable to send BMS2 cells message");
+
+                    } else if (settingRequestReady) {
+                        if (WheelData.getInstance().bluetoothCmd(settingRequest)) {
+                            settingRequestReady = false;
+                            Timber.i("Sent settings request message");
+                        } else Timber.i("Unable to send settings request message");
 
                     } else if (settingCommandReady) {
                         if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
@@ -175,10 +215,20 @@ public class NinebotZAdapter extends BaseAdapter {
                         result.parseSerialNumber();
                         stateCon = 3;
 
+                    } else if ((result.parameter == CANMessage.Param.LockMode.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get param1 number");
+                        result.parseParams1();
+                        stateCon = 4;
+
+                    } else if ((result.parameter == CANMessage.Param.LedMode.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get param2 number");
+                        result.parseParams2();
+                        stateCon = 5;
+
                     } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get version number");
                         result.parseVersionNumber();
-                        stateCon = 10;
+                        stateCon = 12;
 
                     } else if ((result.parameter == CANMessage.Param.LiveData.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get life data");
@@ -188,30 +238,30 @@ public class NinebotZAdapter extends BaseAdapter {
                         Timber.i("Get info from BMS1");
                         if (result.parameter == 0x10) {
                             result.parseBmsSn(1);
-                            stateCon = 5;
+                            stateCon = 7;
                         }
                         if (result.parameter == 0x30) {
                             result.parseBmsLife(1);
-                            stateCon = 6;
+                            stateCon = 8;
                         }
                         if (result.parameter == 0x40) {
                             result.parseBmsCells(1);
-                            stateCon = 7;
+                            stateCon = 9;
                         }
 
                     } else if (result.source == CANMessage.Addr.BMS2.getValue()) {
                         Timber.i("Get info from BMS2");
                         if (result.parameter == 0x10) {
                             result.parseBmsSn(2);
-                            stateCon = 8;
+                            stateCon = 10;
                         }
                         if (result.parameter == 0x30) {
                             result.parseBmsLife(2);
-                            stateCon = 9;
+                            stateCon = 11;
                         }
                         if (result.parameter == 0x40) {
                             result.parseBmsCells(2);
-                            stateCon = 4;
+                            stateCon = 12;
                         }
                     }
                 }
@@ -219,6 +269,86 @@ public class NinebotZAdapter extends BaseAdapter {
         }
         wd.resetRideTime();
         return retResult;
+    }
+
+    @Override
+    public void setLightState(final boolean lightEnable) {
+        driveFlags = (driveFlags & 0xFFFE) | lightEnable ? 1 : 0; // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setDrl(final boolean drl) {
+        driveFlags = (driveFlags & 0xFFFB) | ((drl ? 1 : 0) << 2) ; // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setTailLightState(final boolean drl) {
+        driveFlags = (driveFlags & 0xFFFD) | ((drl ? 1 : 0) << 1) ; // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setHandleButtonState(final boolean handleButtonEnable) {
+        driveFlags = (driveFlags & 0xFFF7) | ((handleButtonEnable ? 0 : 1) << 3) ; // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setBrakeAssist(final boolean brakeAssist) {
+        driveFlags = (driveFlags & 0xFFEF) | ((brakeAssist ? 0 : 1) << 4) ; // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setAlarm1Enabled(final boolean value) {
+        alarms = (alarms & 0xFFFE) | (value ? 1 : 0); // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setAlarm2Enabled(final boolean value) {
+        alarms = (alarms & 0xFFFD) | ((value ? 1 : 0) << 1); // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setAlarm3Enabled(final boolean value) {
+        alarms = (alarms & 0xFFFB) | ((value ? 1 : 0) << 2); // need to have driveflags before
+        settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setAlarm1Speed(final int value) {
+        settingCommand = NinebotZAdapter.CANMessage.setAlarm1Speed(value).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setAlarm2Speed(final int value) {
+        settingCommand = NinebotZAdapter.CANMessage.setAlarm2Speed(value).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setAlarm3Speed(final int value) {
+        settingCommand = NinebotZAdapter.CANMessage.setAlarm3Speed(value).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setLimitedModeEnabled(final boolean value) {
+        settingCommand = NinebotZAdapter.CANMessage.setLimitedMode(value).writeBuffer();
+        settingCommandReady = true;
     }
 
     public static class CANMessage {
@@ -471,6 +601,30 @@ public class NinebotZAdapter extends BaseAdapter {
             return msg;
         }
 
+        public static CANMessage getParams1() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.LockMode.getValue();
+            msg.data = new byte[]{0x20};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getParams2() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.LedMode.getValue();
+            msg.data = new byte[]{0x1c};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
         public static CANMessage setLimitedMode(Boolean on) {
             byte value = 0;
             if (on) {
@@ -487,21 +641,6 @@ public class NinebotZAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setStrainGauge(Boolean on) {
-            byte value = 0;
-            if (on) {
-                value = 1;
-            }
-            CANMessage msg = new CANMessage();
-            msg.source = Addr.App.getValue();
-            msg.destination = Addr.Controller.getValue();
-            msg.command = Comm.Write.getValue();
-            msg.parameter = Param.LimitedMode.getValue();
-            msg.data = new byte[]{value};
-            msg.len = msg.data.length;
-            msg.crc = 0;
-            return msg;
-        }
 
         public static CANMessage getBms1Sn() {
             CANMessage msg = new CANMessage();
@@ -575,6 +714,81 @@ public class NinebotZAdapter extends BaseAdapter {
             return msg;
         }
 
+        public static CANMessage setDriveFlags(int drFl) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.DriveFlags.getValue();
+            msg.data = new byte[]{(byte)(drFl & 0xFF), (byte)((drFl >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setAlarms(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.Alarms.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setAlarm1Speed(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.Alarm1Speed.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+
+        public static CANMessage setAlarm2Speed(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.Alarm2Speed.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+
+        public static CANMessage setAlarm3Speed(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.Alarm3Speed.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setDriveFlags(int drFl) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.DriveFlags.getValue();
+            msg.data = new byte[]{(byte)(drFl & 0xFF), (byte)((drFl >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+
 
         private byte[] parseKey() {
             byte[] gammaTemp = Arrays.copyOfRange(data, 0, data.length);
@@ -591,6 +805,31 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelData wd = WheelData.getInstance();
             wd.setSerial(serialNumber);
             wd.setModel("Ninebot Z");
+            wd.setDataForLog(false);
+        }
+
+        void parseParams1() {
+            WheelData wd = WheelData.getInstance();
+            getInstance().lockMode = MathsUtil.shortFromBytesLE(data, 0);
+            getInstance().limitedMode = MathsUtil.shortFromBytesLE(data, 4);
+            getInstance().limitModeSpeed1Km = MathsUtil.shortFromBytesLE(data, 6);
+            getInstance().limitModeSpeed = MathsUtil.shortFromBytesLE(data, 8);
+            getInstance().alarms = MathsUtil.shortFromBytesLE(data, 18);
+            getInstance().alarm1Speed = MathsUtil.shortFromBytesLE(data, 20);
+            getInstance().alarm2Speed = MathsUtil.shortFromBytesLE(data, 22);
+            getInstance().alarm3Speed = MathsUtil.shortFromBytesLE(data, 24);
+            wd.setDataForLog(false);
+        }
+
+        void parseParams2() {
+            WheelData wd = WheelData.getInstance();
+            getInstance().ledMode = MathsUtil.shortFromBytesLE(data, 0);
+            getInstance().ledColor1 = MathsUtil.intFromBytesLE(data, 4);
+            getInstance().ledColor2 = MathsUtil.intFromBytesLE(data, 4);
+            getInstance().ledColor3 = MathsUtil.intFromBytesLE(data, 8);
+            getInstance().ledColor4 = MathsUtil.intFromBytesLE(data, 12);
+            getInstance().pedalSensivity = MathsUtil.shortFromBytesLE(data, 24);
+            getInstance().driveFlags = MathsUtil.shortFromBytesLE(data, 26);
             wd.setDataForLog(false);
         }
 

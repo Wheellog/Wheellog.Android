@@ -24,7 +24,38 @@ public abstract class BaseAdapter {
     public void setLedState(boolean on) {
     }
 
+    public void setTailLightState(boolean on) {
+    }
+
     public void setHandleButtonState(boolean on) {
+    }
+
+    public void setBrakeAssist(boolean on) {
+    }
+
+    public void setAlarm1Enabled(boolean on) {
+    }
+
+    public void setAlarm2Enabled(boolean on) {
+    }
+
+    public void setAlarm3Enabled(boolean on) {
+    }
+
+    public void setLimitedModeEnabled(boolean on) {
+    }
+
+    public void setLimitedSpeed(int value) {
+    }
+
+
+    public void setAlarm1Speed(int value) {
+    }
+
+    public void setAlarm2Speed(int value) {
+    }
+
+    public void setAlarm3Speed(int value) {
     }
 
     public void setRideMode(boolean on) {

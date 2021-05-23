@@ -314,6 +314,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.wheel_limited_mode_enabled, false)
         set(value) = setSpecific(R.string.wheel_limited_mode_enabled, value)
 
+    var wheelLimitedModeSpeed: Int
+        get() = getSpecific(R.string.wheel_limited_speed, false)
+        set(value) = setSpecific(R.string.wheel_limited_speed, value)
+
     var brakeAssistantEnabled: Boolean
         get() = getSpecific(R.string.brake_assistant_enabled, false)
         set(value) = setSpecific(R.string.brake_assistant_enabled, value)

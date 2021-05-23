@@ -43,9 +43,9 @@ public class WheelData {
     private final ArrayList<Float> currentAxis = new ArrayList<>();
     private final ArrayList<Float> speedAxis = new ArrayList<>();
 
+    private final NinebotBms mNinebotBms2 = new NinebotBms();    private final NinebotBms mNinebotBms1 = new NinebotBms();
+
     // BMS
-    private final NinebotBms mNinebotBms1 = new NinebotBms();
-    private final NinebotBms mNinebotBms2 = new NinebotBms();
 
     //all
     private int mSpeed;
@@ -316,6 +316,12 @@ public class WheelData {
         }
     }
 
+    public void updateTailLight(boolean tailLight) {
+        if (getAdapter() != null) {
+            getAdapter().setTailLightState(tailLight);
+        }
+    }
+
     public void wheelBeep() {
         if (getAdapter() != null) {
             getAdapter().wheelBeep();
@@ -363,6 +369,60 @@ public class WheelData {
     public void updateHandleButton(boolean enabledButton) {
         if (getAdapter() != null) {
             getAdapter().setHandleButtonState(enabledButton);
+        }
+    }
+
+    public void updateBrakeAssistant(boolean brakeAssist) {
+        if (getAdapter() != null) {
+            getAdapter().setBrakeAssist(brakeAssist);
+        }
+    }
+
+    public void updateAlarm1Enabled(boolean value) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarm1Enabled(value);
+        }
+    }
+
+    public void updateAlarm2Enabled(boolean value) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarm2Enabled(value);
+        }
+    }
+
+    public void updateAlarm3Enabled(boolean value) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarm3Enabled(value);
+        }
+    }
+
+    public void updateAlarm1Speed(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarm1Speed(value);
+        }
+    }
+
+    public void updateAlarm2Speed(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarm2Speed(value);
+        }
+    }
+
+    public void updateAlarm3Speed(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarm3Speed(value);
+        }
+    }
+
+    public void updateLimitedModeEnabled(boolean value) {
+        if (getAdapter() != null) {
+            getAdapter().setLimitedModeEnabled(value);
+        }
+    }
+
+    public void updateLimitedSpeed(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLimitedSpeed(value);
         }
     }
 
