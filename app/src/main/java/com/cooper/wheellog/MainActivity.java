@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!LoggingService.isInstanceCreated() &&
                             WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving() &&
                             WheelLog.AppConfig.getAutoLog() &&
-                            WheelData.getInstance().getSpeed() > 3) {
+                            WheelData.getInstance().getSpeedDouble() > 3.5) {
                         toggleLoggingService();
                     }
                     break;
