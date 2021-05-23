@@ -179,6 +179,10 @@ class AppConfig(var context: Context) {
     var enableRawData: Boolean
         get() = getValue(R.string.use_raw_data, false)
         set(value) = setValue(R.string.use_raw_data, value)
+
+    var startAutoLoggingWhenIsMoving: Boolean
+        get() = getValue(R.string.auto_log_when_moving, false)
+        set(value) = setValue(R.string.auto_log_when_moving, value)
     //endregion    
     
     //region watch

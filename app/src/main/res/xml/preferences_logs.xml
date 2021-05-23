@@ -8,10 +8,17 @@
         android:title="@string/auto_log_title" />
 
     <SwitchPreference
+        android:key="@string/auto_log_when_moving"
+        android:summary="@string/auto_log_when_moving_description"
+        android:title="@string/auto_log_when_moving_title"
+        android:dependency="@string/auto_log" />
+
+    <SwitchPreference
         android:icon="@drawable/ic_baseline_cloud_upload_24"
         android:key="@string/auto_upload_ec"
         android:summary="@string/auto_upload_log_ec_description"
-        android:title="@string/auto_upload_log_ec_title" />
+        android:title="@string/auto_upload_log_ec_title"
+        android:dependency="@string/log_location_data" />
 
     <SwitchPreference
         android:icon="@drawable/ic_baseline_location_on_24"
