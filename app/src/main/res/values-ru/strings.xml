@@ -338,8 +338,6 @@
     <string name="notification_buttons_description">Кнопки в панели уведомлений</string>
     <string name="miband_on_mainscreen_title">Mi Band в главном меню</string>
     <string name="miband_on_mainscreen_description">Показывать кнопку Mi Band на главном экране вместо кнопки часов</string>
-    <string name="use_reconnect_title">Реконнект</string>
-    <string name="use_reconnect_description">Автоматически переподключаться к колесу, если подключение есть, а данные от него не изменяются. (Не рекомендуется)</string>
     <string name="mode_learn">Начинающий</string>
     <string name="mode_play">Эксперт</string>
     <string name="mode_ride">Обычный</string>
@@ -384,7 +382,9 @@
     <string name="bmsHealth">Здоровье</string>
     <string name="password">Пароль</string>
     <string name="notification_text_not">%1$.0f км/ч | %2$d %% | %3$.0f Вт | %4$d°C | %5$.3f км</string>
-    <string name="reconnect_option_title">Автореконнект</string>
-    <string name="reconnect_option_description">Использовать только, если данные от колеса иногда зависают</string>
+    <string name="use_reconnect_title">Автореконнект</string>
+    <string name="use_reconnect_description">Использовать только, если данные от колеса иногда зависают</string>
     <string name="replace_info_block">Заменить \"%s\" на:</string>
+    <string name="auto_log_when_moving_description">Автоматическая запись лога только на скорости более 3,5 км/ч</string>
+    <string name="auto_log_when_moving_title">Автолог только после начала движения</string>
 </resources>

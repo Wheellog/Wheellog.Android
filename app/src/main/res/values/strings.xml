@@ -69,6 +69,7 @@
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
+    <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
@@ -538,4 +539,6 @@
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="replace_info_block">Replace \"%s\" to:</string>
+    <string name="auto_log_when_moving_description">Start auto logging only when wheel speed more than 3,5 km/h (2.17 mph).</string>
+    <string name="auto_log_when_moving_title">Start logging when is moving</string>
 </resources>
