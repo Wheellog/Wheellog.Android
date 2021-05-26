@@ -277,6 +277,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         when (pages[position]) {
             R.layout.main_view_main -> {
                 data.bmsView = false
+                wheelView?.refresh()
             }
             R.layout.main_view_params_list -> {
                 if (WheelLog.AppConfig.useMph) {
