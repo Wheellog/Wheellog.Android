@@ -679,7 +679,7 @@ public class WheelData {
     public double getBatteryPerKm() {
         double distance = getDistanceFromStart();
         if (distance != 0) {
-            return getAverageBatteryConsumption() / distance;
+            return getAverageBatteryConsumption() / distance / 1000;
         } else {
             return 0;
         }
