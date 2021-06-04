@@ -541,4 +541,6 @@
     <string name="replace_info_block">Replace \"%s\" to:</string>
     <string name="auto_log_when_moving_description">Start auto logging only when wheel speed more than 3,5 km/h (2.17 mph).</string>
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
+    <string name="remaining_distance">Remaining distance</string>
+    <string name="battery_per_km">Battery per km</string>
 </resources>

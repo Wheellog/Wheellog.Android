@@ -387,4 +387,6 @@
     <string name="replace_info_block">Заменить \"%s\" на:</string>
     <string name="auto_log_when_moving_description">Автоматическая запись лога только на скорости более 3,5 км/ч</string>
     <string name="auto_log_when_moving_title">Автолог только после начала движения</string>
+    <string name="remaining_distance">Остаточный пробег</string>
+    <string name="battery_per_km">Батарея за км</string>
 </resources>

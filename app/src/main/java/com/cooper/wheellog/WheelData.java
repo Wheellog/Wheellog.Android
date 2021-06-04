@@ -70,6 +70,7 @@ public class WheelData {
     private double mRoll;
 
     private int mBattery;
+    private int mBatteryStart = -1;
     private double mAverageBattery;
     //    private double mAverageBatteryCount;
     private int mVoltage;
@@ -665,15 +666,43 @@ public class WheelData {
         return mRideTime;
     }
 
+    public double getAverageBatteryConsumption() {
+        return MathsUtil.clamp(mBatteryStart - mBattery, 0, 100);
+    }
+
+    public double getDistanceFromStart() {
+        if (mTotalDistance != 0) {
+            return  (mTotalDistance - mStartTotalDistance) * 3.6;
+        } else return 0;
+    }
+
+    public double getBatteryPerKm() {
+        double distance = getDistanceFromStart();
+        if (distance != 0) {
+            return getAverageBatteryConsumption() / distance;
+        } else {
+            return 0;
+        }
+    }
+
+    public double getRemainingDistance() {
+        double batteryByKm = getBatteryPerKm();
+        if (batteryByKm != 0) {
+            return mBattery / batteryByKm;
+        } else {
+            return 0;
+        }
+    }
+
     public double getAverageSpeedDouble() {
         if (mTotalDistance != 0 && mRideTime != 0) {
-            return (((mTotalDistance - mStartTotalDistance) * 3.6) / (mRideTime + mLastRideTime));
+            return getDistanceFromStart() / (mRideTime + mLastRideTime);
         } else return 0.0;
     }
 
     public double getAverageRidingSpeedDouble() {
         if (mTotalDistance != 0 && mRidingTime != 0) {
-            return (((mTotalDistance - mStartTotalDistance) * 3.6) / mRidingTime);
+            return getDistanceFromStart() / mRidingTime;
         } else return 0.0;
     }
 
@@ -928,6 +957,9 @@ public class WheelData {
             }
         }
 
+        if (mBatteryStart == -1) {
+            mBatteryStart = battery;
+        }
         mBattery = battery;
 
 //        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
@@ -1249,6 +1281,7 @@ public class WheelData {
         mAngle = 0;
         mRoll = 0;
         mBattery = 0;
+        mBatteryStart = -1;
         //mAverageBatteryCount = 0;
         mCalculatedPwm = 0.0;
         mMaxPwm = 0.0;
