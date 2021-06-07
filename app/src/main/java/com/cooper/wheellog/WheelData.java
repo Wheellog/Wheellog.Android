@@ -672,14 +672,14 @@ public class WheelData {
 
     public double getDistanceFromStart() {
         if (mTotalDistance != 0) {
-            return  (mTotalDistance - mStartTotalDistance) * 3.6;
+            return  (mTotalDistance - mStartTotalDistance);
         } else return 0;
     }
 
     public double getBatteryPerKm() {
         double distance = getDistanceFromStart();
         if (distance != 0) {
-            return getAverageBatteryConsumption() / distance / 1000;
+            return getAverageBatteryConsumption() * 1000 / distance;
         } else {
             return 0;
         }
@@ -696,13 +696,15 @@ public class WheelData {
 
     public double getAverageSpeedDouble() {
         if (mTotalDistance != 0 && mRideTime != 0) {
-            return getDistanceFromStart() / (mRideTime + mLastRideTime);
+            // 3.6 = (60 sec * 60 mim) / 1000 meters.
+            return getDistanceFromStart() * 3.6 / (mRideTime + mLastRideTime);
         } else return 0.0;
     }
 
     public double getAverageRidingSpeedDouble() {
         if (mTotalDistance != 0 && mRidingTime != 0) {
-            return getDistanceFromStart() / mRidingTime;
+            // 3.6 = (60 sec * 60 mim) / 1000 meters.
+            return getDistanceFromStart() * 3.6 / mRidingTime;
         } else return 0.0;
     }
 
