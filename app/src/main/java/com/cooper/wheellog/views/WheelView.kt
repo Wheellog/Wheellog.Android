@@ -185,11 +185,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         }, false),
                 ViewBlockInfo(resources.getString(R.string.battery_per_km),
                     {
-                        if (useMph) {
-                            String.format(Locale.US, "%.2f", kmToMiles(WheelData.getInstance().batteryPerKm))
-                        } else {
-                            String.format(Locale.US, "%.3f", WheelData.getInstance().batteryPerKm)
-                        }
+                        String.format(Locale.US, "%.2f %%", WheelData.getInstance().batteryPerKm)
                     }, false)
         )
 
