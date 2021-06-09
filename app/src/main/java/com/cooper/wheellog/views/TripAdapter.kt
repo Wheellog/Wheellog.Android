@@ -1,30 +1,21 @@
 package com.cooper.wheellog.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
-import android.graphics.fonts.Font
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.view.*
+import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.cooper.wheellog.ElectroClub
-import com.cooper.wheellog.R
-import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.*
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
 import timber.log.Timber
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
+import java.io.*
+
 
 class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -53,7 +44,7 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
         return trips.size
     }
 
-    class ViewHolder internal constructor(view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
+    class ViewHolder internal constructor(var view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
         private var nameView: TextView = view.findViewById(R.id.name)
         private var descriptionView: TextView = view.findViewById(R.id.description)
         private var uploadButtonLayout: RelativeLayout = view.findViewById(R.id.uploadButtonLayout)
@@ -66,13 +57,53 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
             uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         fun bind(trip: Trip, uploadViewVisible: Int) {
             nameView.text = trip.title
             nameView.typeface = font
             descriptionView.text = trip.description
             descriptionView.typeface = font
             uploadButtonLayout.visibility = uploadViewVisible
+            val context = view.context
             uploadInProgress(false)
+            val gestureDetector = GestureDetector(
+                context, object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onLongPress(e: MotionEvent) {
+                        super.onLongPress(e)
+                        val popupMenu = PopupMenu(context, view).apply {
+                            menu.add(0,0,0,"View map (beta)")
+                            menu.add(0,1,0,"Delete file")
+                        }
+                        popupMenu.setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                0 -> {
+                                    startActivity(context, Intent(context, MapActivity::class.java).apply {
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            putExtra("path", trip.mediaId)
+                                        } else {
+                                            putExtra("uri", trip.uri)
+                                        }
+                                        putExtra("title", trip.title)
+                                    }, Bundle.EMPTY)
+                                }
+                                1 -> {
+                                    // Danger
+//                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+//                                        context.deleteFile(trip.mediaId)
+//                                    } else {
+//                                        WheelLog.cResolver().delete(trip.uri, null, null)
+//                                    }
+                                }
+                            }
+                            return@setOnMenuItemClickListener false
+                        }
+                        popupMenu.show()
+                    }
+                })
+            view.setOnTouchListener { _, event ->
+                gestureDetector.onTouchEvent(event)
+                true
+            }
             uploadView.setOnClickListener {
                 uploadInProgress(true)
                 val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
