@@ -95,7 +95,7 @@ public class FileUtil {
                 contentValues.put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName));
                 String path = Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME;
                 if (folder != null && !folder.equals("")) {
-                    path += File.separator + folder;
+                    path += File.separator + folder.replace(':', '_');
                 }
                 contentValues.put(MediaStore.Downloads.RELATIVE_PATH, path);
                 Uri contentUri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
@@ -113,7 +113,7 @@ public class FileUtil {
             // Get the directory for the user's public pictures directory.
             String path = Constants.LOG_FOLDER_NAME;
             if (folder != null && !folder.equals("")) {
-                path += File.separator + folder;
+                path += File.separator + folder.replace(':', '_');;
             }
             File dir = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS), path);
