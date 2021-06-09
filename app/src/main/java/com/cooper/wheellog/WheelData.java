@@ -123,6 +123,8 @@ public class WheelData {
     private long timestamp_last;
     private long mLastLifeData = -1;
 
+    AudioTrack audioTrack;
+
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
             case GOTWAY_VIRTUAL:
@@ -166,7 +168,13 @@ public class WheelData {
     }
 
     void playBeep(ALARM_TYPE type) {
-        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+        if (audioTrack != null) {
+            audioTrack.flush();
+            audioTrack.stop();
+            audioTrack.release();
+
+        }
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
