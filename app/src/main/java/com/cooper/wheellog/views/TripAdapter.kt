@@ -70,7 +70,8 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                 context, object : GestureDetector.SimpleOnGestureListener() {
                     override fun onLongPress(e: MotionEvent) {
                         super.onLongPress(e)
-                        val popupMenu = PopupMenu(context, view).apply {
+                        val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
+                        val popupMenu = PopupMenu(wrapper, view).apply {
                             menu.add(0,0,0,"View map (beta)")
                             menu.add(0,1,0,"Delete file")
                         }
