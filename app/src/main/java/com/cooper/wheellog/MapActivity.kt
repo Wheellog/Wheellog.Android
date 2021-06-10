@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -19,25 +20,34 @@ import java.io.*
 
 class MapActivity : AppCompatActivity() {
     lateinit var map: MapView
-    var isRendering = false
+    var isDestroed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
         map = findViewById(R.id.mapView)
         map.apply {
             title = "map test"
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
-            minZoomLevel = 13.0
+            minZoomLevel = 11.0
             maxZoomLevel = 20.0
             setMultiTouchControls(true)
         }
+
+        if (intent.extras == null) {
+            this.finish()
+            return
+        }
+        val extras = intent.extras!!
         val context = applicationContext
-        val extras = intent.extras ?: return
+
+        // load/initialize the osmdroid configuration, this can be done
+        Configuration.getInstance()
+            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
 
         // async
         GlobalScope.launch {
-            isRendering = true
             val inputStream: InputStream?
             try {
                 inputStream = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -85,21 +95,19 @@ class MapActivity : AppCompatActivity() {
             }
             inputStream.close()
 
-            // load/initialize the osmdroid configuration, this can be done
-            Configuration.getInstance()
-                .load(context, PreferenceManager.getDefaultSharedPreferences(context))
-
             val line = Polyline().apply {
                 setPoints(geoPoints)
+                outlinePaint.color = Color.BLACK // TODO: change color
             }
 
             // in UI thread
-            MainScope().launch {
-                map.apply {
-                    overlays.add(line)
-                    map.zoomToBoundingBox(line.bounds, true, MathsUtil.dpToPx(context, 24))
+            if (!isDestroed) {
+                MainScope().launch {
+                    map.apply {
+                        overlays.add(line)
+                        map.zoomToBoundingBox(line.bounds, true, MathsUtil.dpToPx(context, 24))
+                    }
                 }
-                isRendering = false
             }
         }
     }
@@ -116,8 +124,7 @@ class MapActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!isRendering) {
-            map.onDetach()
-        }
+        map.onDetach()
+        isDestroed = true
     }
 }
