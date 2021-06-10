@@ -3,36 +3,46 @@ package com.cooper.wheellog
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.utils.MathsUtil
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import timber.log.Timber
 import java.io.*
 
+
 class MapActivity : AppCompatActivity() {
-    lateinit var map: MapView
-    var isDestroed = false
+    private lateinit var map: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val context = applicationContext
+
+        // load/initialize the osmdroid configuration, this can be done
+        Configuration.getInstance()
+            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
+
         setContentView(R.layout.activity_map)
 
         map = findViewById(R.id.mapView)
+        val rotationGestureOverlay = RotationGestureOverlay(map).apply {
+            isEnabled = true
+        }
         map.apply {
             title = "map test"
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
-            minZoomLevel = 11.0
+            minZoomLevel = 10.0
             maxZoomLevel = 20.0
             setMultiTouchControls(true)
+            overlays.add(rotationGestureOverlay)
         }
 
         if (intent.extras == null) {
@@ -40,11 +50,6 @@ class MapActivity : AppCompatActivity() {
             return
         }
         val extras = intent.extras!!
-        val context = applicationContext
-
-        // load/initialize the osmdroid configuration, this can be done
-        Configuration.getInstance()
-            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
 
         // async
         GlobalScope.launch {
@@ -100,10 +105,11 @@ class MapActivity : AppCompatActivity() {
                 outlinePaint.color = Color.BLACK // TODO: change color
             }
 
-            // in UI thread
-            if (!isDestroed) {
+            if (!isDestroyed) {
+                // in UI thread
                 MainScope().launch {
                     map.apply {
+                        isVisible = true
                         overlays.add(line)
                         map.zoomToBoundingBox(line.bounds, true, MathsUtil.dpToPx(context, 24))
                     }
@@ -125,6 +131,5 @@ class MapActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         map.onDetach()
-        isDestroed = true
     }
 }
