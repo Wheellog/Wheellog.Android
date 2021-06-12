@@ -4,32 +4,32 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.map.LogGeoPoint
+import com.cooper.wheellog.utils.LogHeaderEnum
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.ScaleBarOverlay
+import org.osmdroid.views.overlay.TilesOverlay
+import org.osmdroid.views.overlay.compass.CompassOverlay
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import timber.log.Timber
 import java.io.*
-
+import java.lang.IllegalArgumentException
+import java.util.*
+import kotlin.collections.HashMap
 
 class MapActivity : AppCompatActivity() {
-    private val latitudeHeader = "latitude"
-    private val longitudeHeader = "longitude"
-    private val altHeader = "gps_alt"
-    private val gpsSpeedHeader = "gps_speed"
-    private val distanceHeader = "distance"
-    private val batteryHeader = "battery_level"
-    private val voltageHeader = "voltage"
-    private val tempHeader = "system_temp"
     private lateinit var map: MapView
+    private val header = HashMap<LogHeaderEnum, Int>()
 
     private fun parseFileToPolyLine(extras: Bundle): Polyline? {
         val inputStream: InputStream?
@@ -46,17 +46,22 @@ class MapActivity : AppCompatActivity() {
             return null
         }
         if (inputStream == null) {
+            // TODO: localize me
             Timber.wtf("Failed to create inputStream for %s", extras.get("title"))
             return null
         }
 
         val reader = BufferedReader(InputStreamReader(inputStream))
-        val header = reader.readLine().split(",").toTypedArray()
-        val latIndex = header.indexOf(latitudeHeader)
-        val longIndex = header.indexOf(longitudeHeader)
-        val altIndex = header.indexOf(altHeader)
-        if (latIndex == -1 || longIndex == -1) {
+        val headerLine = reader.readLine().split(",").toTypedArray()
+        for (i in headerLine.indices) {
+            try {
+                header[LogHeaderEnum.valueOf(headerLine[i].toUpperCase(Locale.US))] = i
+            } catch (ignored: IllegalArgumentException) {
+            }
+        }
+        if (!header.containsKey(LogHeaderEnum.LATITUDE) || !header.containsKey(LogHeaderEnum.LONGITUDE)) {
             inputStream.close()
+            // TODO: localize me
             Timber.wtf("%s file does not contain geolocation data.", extras.get("title"))
             return null
         }
@@ -64,15 +69,10 @@ class MapActivity : AppCompatActivity() {
         // for statistics
         var latitude = 0.0
         var longitude = 0.0
-        val gpsSpeedIndex = header.indexOf(gpsSpeedHeader)
-        val distanceIndex = header.indexOf(distanceHeader)
-        val batteryIndex = header.indexOf(batteryHeader)
-        val voltageIndex = header.indexOf(voltageHeader)
-        val tempIndex = header.indexOf(tempHeader)
         var maxSpeed = 0.0
-        var distance = 0
-        var startBattery = 0
-        var endBattery = 0
+        var distance: Int
+        var startBattery: Int
+        var endBattery: Int
 
         val polyLine = Polyline(map, true).apply {
             outlinePaint.apply {
@@ -97,25 +97,25 @@ class MapActivity : AppCompatActivity() {
         try {
             var i = 0
             reader.forEachLine { line ->
-                val row = line.split(",").toTypedArray()
-                val latitudeNew = row[latIndex].toDoubleOrNull() ?: 0.0
-                val longitudeNew = row[longIndex].toDoubleOrNull() ?: 0.0
+                val row = line.split(",")
+                val latitudeNew = row[header[LogHeaderEnum.LATITUDE]!!].toDoubleOrNull() ?: 0.0
+                val longitudeNew = row[header[LogHeaderEnum.LONGITUDE]!!].toDoubleOrNull() ?: 0.0
                 if (latitudeNew != latitude && longitudeNew != longitude) {
                     latitude = latitudeNew
                     longitude = longitudeNew
-                    val altitude = row[altIndex].toDoubleOrNull() ?: 0.0
+                    val altitude = row[header[LogHeaderEnum.GPS_ALT]!!].toDoubleOrNull() ?: 0.0
 
                     // stats
-                    val speed = row[gpsSpeedIndex].toDoubleOrNull() ?: 0.0
+                    val speed = row[header[LogHeaderEnum.GPS_SPEED]!!].toDoubleOrNull() ?: 0.0
                     maxSpeed = maxSpeed.coerceAtLeast(speed)
-                    distance = row[distanceIndex].toIntOrNull() ?: 0
-                    val batteryLevel = row[batteryIndex].toIntOrNull() ?: 0
+                    distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0
+                    val batteryLevel = row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0
                     if (i == 1) {
                         startBattery = batteryLevel
                     }
                     endBattery = batteryLevel
-                    val voltage = row[voltageIndex].toDoubleOrNull() ?: 0.0
-                    val temperature = row[tempIndex].toIntOrNull() ?: 0
+                    val voltage = row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0
+                    val temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
 
                     val geoPoint = LogGeoPoint(latitude, longitude, altitude).also {
                         it.speed = speed
@@ -135,20 +135,6 @@ class MapActivity : AppCompatActivity() {
             inputStream.close()
         }
 
-//        val legend =
-//            try {
-//                String.format(
-//                    "%s\nDistance: %.2f km\nMax GPS speed: %.2f km\\h\nBattery: %d%% > %d%%",
-//                    extras.get("title"),
-//                    distance / 1000.0,
-//                    maxSpeed,
-//                    startBattery,
-//                    endBattery
-//                )
-//            } catch (ex: Exception) {
-//                ""
-//            }
-
         return polyLine
     }
 
@@ -166,12 +152,21 @@ class MapActivity : AppCompatActivity() {
         map.apply {
             title = "map test"
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
-            controller.setZoom(10.0)
             minZoomLevel = 10.0
             maxZoomLevel = 20.0
             setMultiTouchControls(true)
             overlays.add(RotationGestureOverlay(map)) // enable rotation
             overlays.add(ScaleBarOverlay(map)) // scale bar in top-left corner
+            overlays.add(CompassOverlay(context, map).apply { enableCompass() })
+            controller.apply {
+                setZoom(10.0)
+                setCenter(GeoPoint(WheelLog.AppConfig.lastLocationLaltitude, WheelLog.AppConfig.lastLocationLongitude))
+            }
+        }
+
+        // set dark map tiles, if necessary
+        if (WheelLog.AppConfig.dayNightThemeMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            map.overlayManager.tilesOverlay.setColorFilter(TilesOverlay.INVERT_COLORS)
         }
 
         if (intent.extras == null) {

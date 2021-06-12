@@ -2,6 +2,7 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
@@ -464,6 +465,14 @@ class AppConfig(var context: Context) {
         get() = getValue("user_distance_$specificPrefix", 0L)
         set(value) = setValue("user_distance_$specificPrefix", value)
     //endregion
+
+    var lastLocationLaltitude: Double
+        get() = getValue("lastLocationLaltitude", 0.0)
+        set(value) = setValue("lastLocationLaltitude", value)
+
+    var lastLocationLongitude: Double
+        get() = getValue("lastLocationLongitude", 0.0)
+        set(value) = setValue("lastLocationLongitude", value)
 
     fun getResId(resName: String?): Int {
         return if (resName == null || resName === "") {

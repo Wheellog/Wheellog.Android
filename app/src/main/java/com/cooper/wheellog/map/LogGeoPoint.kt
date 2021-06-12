@@ -10,6 +10,7 @@ class LogGeoPoint(latitude: Double, longitude: Double, altitude: Double): GeoPoi
     var temperature: Int = 0
 
     override fun toString(): String {
+        // TODO: localize me
         return String.format("Speed: %.2f km/h\nBattery: %s %%\nDistance by wheel: %.2f km\nVoltage: %.2f V\nTemperature: %s °C",
             speed,
             battery,
