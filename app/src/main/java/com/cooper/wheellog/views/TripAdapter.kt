@@ -72,12 +72,14 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                         super.onLongPress(e)
                         val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
                         val popupMenu = PopupMenu(wrapper, view).apply {
-                            menu.add(0,0,0,"View map (beta)")
-                            menu.add(0,1,0,"Delete file")
+                            menu.add(0, 0, 0, R.string.trip_menu_view_map)
+                            menu.add(0, 1, 0, R.string.trip_menu_upload_to_ec)
+                            menu.add(0, 2, 0, R.string.trip_menu_share)
+                            //menu.add(0, 3, 0, R.string.trip_menu_delete_file)
                         }
                         popupMenu.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
-                                0 -> {
+                                0 -> { // show map
                                     startActivity(context, Intent(context, MapActivity::class.java).apply {
                                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                                             putExtra("path", trip.mediaId)
@@ -87,13 +89,45 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                                         putExtra("title", trip.title)
                                     }, Bundle.EMPTY)
                                 }
-                                1 -> {
-                                    // Danger
-//                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-//                                        context.deleteFile(trip.mediaId)
-//                                    } else {
-//                                        WheelLog.cResolver().delete(trip.uri, null, null)
-//                                    }
+                                1 -> { // send to ec
+                                    uploadInProgress(true)
+                                    val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                        // Android 9 or less
+                                        FileInputStream(File(trip.mediaId))
+                                    } else {
+                                        // Android 10+
+                                        WheelLog.cResolver().openInputStream(trip.uri)
+                                    }
+                                    if (inputStream == null) {
+                                        Timber.i("Failed to create inputStream for %s", trip.title)
+                                        uploadInProgress(false)
+                                    } else {
+                                        val data = ByteStreams.toByteArray(inputStream)
+                                        inputStream.close()
+                                        ElectroClub.instance.uploadTrack(data, trip.title, false) {
+                                            MainScope().launch {
+                                                uploadInProgress(false)
+                                            }
+                                        }
+                                    }
+                                }
+                                2 -> { // share
+                                    val sendIntent: Intent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_STREAM, trip.uri)
+                                        type = "text/csv"
+                                    }
+
+                                    val shareIntent = Intent.createChooser(sendIntent, null)
+                                    startActivity(item.actionView.context, shareIntent, Bundle.EMPTY)
+                                }
+                                3 -> { // delete
+                                    // TODO: confirmation dialog
+                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                        context.deleteFile(trip.mediaId)
+                                    } else {
+                                        WheelLog.cResolver().delete(trip.uri, null, null)
+                                    }
                                 }
                             }
                             return@setOnMenuItemClickListener false

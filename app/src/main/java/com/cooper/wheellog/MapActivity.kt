@@ -150,7 +150,6 @@ class MapActivity : AppCompatActivity() {
 
         map = findViewById(R.id.mapView)
         map.apply {
-            title = "map test"
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
             minZoomLevel = 10.0
             maxZoomLevel = 20.0

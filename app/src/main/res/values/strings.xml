@@ -543,4 +543,8 @@
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
     <string name="remaining_distance">Remaining distance</string>
     <string name="battery_per_km">Battery per km</string>
+    <string name="trip_menu_view_map">View map (beta)</string>
+    <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
+    <string name="trip_menu_share">Share</string>
+    <string name="trip_menu_delete_file">Delete file</string>
 </resources>
