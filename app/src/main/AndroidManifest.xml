@@ -46,6 +46,7 @@
         android:resizeableActivity="true"
         android:supportsRtl="true"
         android:theme="@style/OriginalTheme">
+        <activity android:name=".MapActivity"></activity>
         <activity
             android:name=".SettingsActivity"
             android:configChanges="orientation|screenSize">
