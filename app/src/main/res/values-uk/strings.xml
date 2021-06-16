@@ -271,8 +271,8 @@
     <string name="absolute">Абсолютне значення</string>
     <string name="reverse">Реверс</string>
     <string name="straight">Нормальний режим</string>
-    <string name="reconnect_option_title">Автореконект</string>
-    <string name="reconnect_option_description">Можна використовувати, якщо параметри не змінюються або додаток зависає</string>
+    <string name="use_reconnect_title">Автореконект</string>
+    <string name="use_reconnect_description">Можна використовувати, якщо параметри не змінюються або додаток зависає</string>
     <string name="dynamic_speed_limit">Ліміт швидкості</string>
     <string name="dynamic_current_limit">Ліміт сили струму</string>
     <string name="motor_power">Потужність двигуна</string>

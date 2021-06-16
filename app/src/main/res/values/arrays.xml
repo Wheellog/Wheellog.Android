@@ -124,6 +124,8 @@
         <item>@string/distance</item>
         <item>@string/total</item>
         <item>@string/wheel_distance</item>
+        <item>@string/remaining_distance</item>
+        <item>@string/battery_per_km</item>
     </string-array>
 
 </resources>

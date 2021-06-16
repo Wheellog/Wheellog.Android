@@ -261,6 +261,8 @@ public class LoggingService extends Service
                     mLocationDistance += mLastLocation.distanceTo(mLocation);
 
                 mLastLocation = mLocation;
+                WheelLog.AppConfig.setLastLocationLaltitude(mLocation.getAltitude());
+                WheelLog.AppConfig.setLastLocationLongitude(mLocation.getLongitude());
             }
             LocationDataString = String.format(Locale.US, "%s,%s,%s,%s,%s,%.0f,",
                     latitude,

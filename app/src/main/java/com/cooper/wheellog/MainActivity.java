@@ -211,7 +211,9 @@ public class MainActivity extends AppCompatActivity {
                     WheelData.getInstance().setConnected(connectionState == BluetoothLeService.STATE_CONNECTED);
                     switch (connectionState) {
                         case BluetoothLeService.STATE_CONNECTED:
-                            if (!LoggingService.isInstanceCreated() && WheelLog.AppConfig.getAutoLog()) {
+                            if (!LoggingService.isInstanceCreated() &&
+                                    WheelLog.AppConfig.getAutoLog() &&
+                                    !WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving()) {
                                 toggleLoggingService();
                             }
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
@@ -252,6 +254,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
                         WheelLog.Notifications.update();
+                    }
+                    if (!LoggingService.isInstanceCreated() &&
+                            WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving() &&
+                            WheelLog.AppConfig.getAutoLog() &&
+                            WheelData.getInstance().getSpeedDouble() > 3.5) {
+                        toggleLoggingService();
                     }
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:

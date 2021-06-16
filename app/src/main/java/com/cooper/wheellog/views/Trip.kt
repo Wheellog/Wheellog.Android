@@ -2,6 +2,7 @@ package com.cooper.wheellog.views
 
 import android.net.Uri
 import android.os.Build
+import android.os.Parcelable
 import android.provider.MediaStore
 import java.io.File
 

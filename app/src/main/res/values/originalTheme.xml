@@ -14,6 +14,8 @@
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
         <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
         <item name="alertDialogStyle">@style/OriginalTheme.Dialog.Alert</item>
+        <item name="popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
+        <item name="android:popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
     </style>
 
     <style name="OriginalTheme.Transparent" parent="OriginalTheme">
@@ -111,5 +113,10 @@
         <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/settings_bg</item>
+    </style>
+
+    <style name="OriginalTheme.PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:itemBackground">@android:color/white</item>
     </style>
 </resources>
