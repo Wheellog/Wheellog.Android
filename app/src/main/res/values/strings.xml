@@ -547,4 +547,8 @@
     <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
     <string name="trip_menu_share">Share</string>
     <string name="trip_menu_delete_file">Delete file</string>
+    <string name="after_connect_category">After connect to wheel</string>
+    <string name="auto_watch" translatable="false">auto_watch</string>
+    <string name="auto_watch_title">Auto watch</string>
+    <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
 </resources>

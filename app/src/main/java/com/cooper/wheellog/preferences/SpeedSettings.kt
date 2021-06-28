@@ -80,6 +80,24 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         PreferenceCategory(context).apply {
+            title = getString(R.string.after_connect_category)
+            ps.addPreference(this)
+            SwitchPreference(context).apply {
+                key = getString(R.string.auto_log)
+                title = getString(R.string.auto_log_title)
+                summary = getString(R.string.auto_log_description)
+                icon = getDrawable(R.drawable.ic_baseline_magic_log_24)
+                addPreference(this)
+            }
+            SwitchPreference(context).apply {
+                key = getString(R.string.auto_watch)
+                title = getString(R.string.auto_watch_title)
+                summary = getString(R.string.auto_watch_description)
+                icon = getDrawable(R.drawable.ic_baseline_watch_24)
+                addPreference(this)
+            }
+        }
+        PreferenceCategory(context).apply {
             title = getString(R.string.main_view_category)
             ps.addPreference(this)
             MultiSelectPreference(context).apply {

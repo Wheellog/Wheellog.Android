@@ -157,6 +157,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.auto_log, false)
         set(value) = setValue(R.string.auto_log, value)
 
+    var autoWatch: Boolean
+        get() = getValue(R.string.auto_watch, false)
+        set(value) = setValue(R.string.auto_watch, value)
+
     var autoUploadEc: Boolean
         get() = getValue(R.string.auto_upload_ec, false)
         set(value) = setValue(R.string.auto_upload_ec, value)

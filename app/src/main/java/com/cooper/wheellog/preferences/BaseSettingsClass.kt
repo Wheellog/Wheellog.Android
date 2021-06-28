@@ -14,9 +14,10 @@ abstract class BaseSettingsClass(var context: Context, var ps: PreferenceScreen)
 
     @Suppress("DEPRECATION")
     fun getDrawable(id: Int): Drawable? {
+        val themedId = WheelLog.ThemeManager.getDrawableId(id)
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            context.resources.getDrawable(WheelLog.ThemeManager.getDrawableId(id))
-        else context.getDrawable(WheelLog.ThemeManager.getDrawableId(id))
+            context.resources.getDrawable(WheelLog.ThemeManager.getDrawableId(themedId))
+        else context.getDrawable(WheelLog.ThemeManager.getDrawableId(themedId))
     }
 
     abstract fun fill (mac: String)
