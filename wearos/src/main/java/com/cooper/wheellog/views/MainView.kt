@@ -183,7 +183,13 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         val speedString: String =
             if (speed < 10) String.format(Locale.US, "%.1f", speed)
             else String.format(Locale.US, "%02d", speed.toInt())
-        textPaint.color = if (wd.alarm) context.getColor(R.color.accent) else context.getColor(R.color.speed_text)
+        textPaint.color = context.getColor(
+            if (wd.alarmCurrent || wd.alarmSpeed || wd.alarmTemp) {
+                R.color.accent
+            } else {
+                R.color.speed_text
+            }
+        )
         textPaint.textSize = speedTextSize
         canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
 

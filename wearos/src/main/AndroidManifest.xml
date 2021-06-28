@@ -3,6 +3,7 @@
     package="com.cooper.wheellog">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-feature android:name="android.hardware.type.watch" />
 
     <application

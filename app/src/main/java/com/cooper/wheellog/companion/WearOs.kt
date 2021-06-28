@@ -42,7 +42,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
                     else
                         context.getString(R.string.kmh))
             putBoolean("currentOnDial", WheelLog.AppConfig.currentOnDial)
-            putBoolean("alarm", false) // TODO
+            putInt("alarm", wd.alarm)
             putLong("timestamp", wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             putString("time_string", sdf.format(Date(wd.lastLifeData)))
