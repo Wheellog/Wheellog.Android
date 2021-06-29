@@ -1,6 +1,9 @@
 package com.cooper.wheellog
 
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
@@ -8,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.wear.widget.WearableRecyclerView
 import com.google.android.gms.wearable.*
 import java.util.*
+
 
 class WearActivity : FragmentActivity(),
         MessageClient.OnMessageReceivedListener,
@@ -114,11 +118,24 @@ class WearActivity : FragmentActivity(),
                                 batteryLowest = map.getInt("battery_lowest")
                                 mainUnit = map.getString("main_unit", "kmh")
                                 currentOnDial = map.getBoolean("currentOnDial")
-                                alarm = map.getBoolean("alarm")
+                                val alarmInt = map.getInt("alarm")
+                                alarmSpeed = alarmInt and 1 == 1
+                                alarmCurrent = alarmInt and 2 == 1
+                                alarmTemp = alarmInt and 4 == 1
                                 timeStamp = map.getLong("timestamp")
                                 timeString = map.getString("time_string", "waiting...")
                             }
                             mMainRecyclerAdapter.updateScreen()
+                            if (wd.alarmTemp || wd.alarmSpeed || wd.alarmCurrent) {
+                                val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+                                val vibrationPattern = longArrayOf(0, 500, 50, 300)
+                                val indexInPatternToRepeat = -1  //-1 - don't repeat
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                    vibrator.vibrate(vibrationPattern, indexInPatternToRepeat)
+                                } else {
+                                    vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+                                }
+                            }
                         } catch (ex: Exception) {
                         }
                     }

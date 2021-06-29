@@ -806,7 +806,7 @@ public class WheelData {
         return (int) (mTotalDistance - mStartTotalDistance);
     }
 
-    int getAlarm() {
+    public int getAlarm() {
         int alarm = 0;
         if (mSpeedAlarmExecuting) {
             alarm = alarm | 0x01;
