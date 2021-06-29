@@ -82,14 +82,18 @@ class MapActivity : AppCompatActivity() {
             }
             title = extras.get("title") as String
             setOnClickListener { polyline, mapView, eventPos ->
-                val pointOnLine = polyline.getCloseTo(eventPos, MathsUtil.dpToPx(applicationContext, 24).toDouble(), mapView)
-                val logGeoPoint = polyline.actualPoints.firstOrNull { p -> p.distanceToAsDouble(pointOnLine) < 1.0 } as LogGeoPoint?
-                if (logGeoPoint != null) {
-                    polyline.apply {
-                        title = logGeoPoint.toString()
-                        infoWindowLocation = logGeoPoint
-                        showInfoWindow()
+                try {
+                    val pointOnLine = polyline.getCloseTo(eventPos, MathsUtil.dpToPx(applicationContext, 24).toDouble(), mapView)
+                    val logGeoPoint = polyline.actualPoints.firstOrNull { p -> p.distanceToAsDouble(pointOnLine) < 1.0 } as LogGeoPoint?
+                    if (logGeoPoint != null) {
+                        polyline.apply {
+                            title = logGeoPoint.toString()
+                            infoWindowLocation = logGeoPoint
+                            showInfoWindow()
+                        }
                     }
+                } catch (ex: java.lang.Exception) {
+                    Timber.wtf(ex)
                 }
                 true
             }
