@@ -389,4 +389,7 @@
     <string name="auto_log_when_moving_title">Автолог только после начала движения</string>
     <string name="remaining_distance">Остаточный пробег</string>
     <string name="battery_per_km">Батарея за км</string>
+    <string name="after_connect_category">После подключения</string>
+    <string name="auto_watch_title">Подключаться к часам</string>
+    <string name="auto_watch_description">Автоматически запускать сервис смарт часов при подключении к колесу</string>
 </resources>

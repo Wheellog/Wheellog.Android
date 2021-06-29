@@ -219,6 +219,9 @@ public class MainActivity extends AppCompatActivity {
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                                 KingsongAdapter.getInstance().requestNameData();
                             }
+                            if (WheelLog.AppConfig.getAutoWatch() && wearOs == null) {
+                                toggleWatch();
+                            }
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
                             break;
                         case BluetoothLeService.STATE_DISCONNECTED:
