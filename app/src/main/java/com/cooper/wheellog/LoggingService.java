@@ -179,6 +179,11 @@ public class LoggingService extends Service
         String path = "";
         boolean isBusy = false;
 
+        if (logLocationData && mLastLocation != null) {
+            WheelLog.AppConfig.setLastLocationLaltitude(mLastLocation.getLatitude());
+            WheelLog.AppConfig.setLastLocationLongitude(mLastLocation.getLongitude());
+        }
+
         if (fileUtil != null) {
             path = fileUtil.getAbsolutePath();
             fileUtil.close();
@@ -261,8 +266,6 @@ public class LoggingService extends Service
                     mLocationDistance += mLastLocation.distanceTo(mLocation);
 
                 mLastLocation = mLocation;
-                WheelLog.AppConfig.setLastLocationLaltitude(mLocation.getAltitude());
-                WheelLog.AppConfig.setLastLocationLongitude(mLocation.getLongitude());
             }
             LocationDataString = String.format(Locale.US, "%s,%s,%s,%s,%s,%.0f,",
                     latitude,
