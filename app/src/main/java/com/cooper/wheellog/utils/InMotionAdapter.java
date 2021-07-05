@@ -1121,7 +1121,8 @@ public class InMotionAdapter extends BaseAdapter {
 
             String workMode;
             int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60);
-            if (model == V8F) {
+            if (model == V8F || model == V10 || model == V10F || model == V10FT ||
+                    model == V10S || model == V10SF || model == V10T) {
                 roll = 0;
                 workMode = getWorkModeString(workModeInt);
             } else {

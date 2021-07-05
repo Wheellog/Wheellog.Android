@@ -185,6 +185,7 @@ class InmotionAdapterTest {
         assertThat(data.batteryLevel).isEqualTo(100)
         assertThat(data.angle).isEqualTo(0.0099945068359375)
         assertThat(data.roll).isEqualTo(0.0)
+        assertThat(data.modeStr).isEqualTo("Drive")
     }
 
     @Test
@@ -269,6 +270,7 @@ class InmotionAdapterTest {
         assertThat(data.batteryLevel).isEqualTo(100)
         assertThat(data.angle).isEqualTo(0.079986572265625)
         assertThat(data.roll).isEqualTo(0.0)
+        assertThat(data.modeStr).isEqualTo("Drive")
     }
 
     @Test
