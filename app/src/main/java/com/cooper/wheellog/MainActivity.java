@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                if (!WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
                     WheelLog.VolumeKeyController.setActive(false);
                 }
                 break;
