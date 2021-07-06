@@ -119,7 +119,7 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                                     }
 
                                     val shareIntent = Intent.createChooser(sendIntent, null)
-                                    startActivity(item.actionView.context, shareIntent, Bundle.EMPTY)
+                                    startActivity(context, shareIntent, Bundle.EMPTY)
                                 }
                                 3 -> { // delete
                                     // TODO: confirmation dialog
