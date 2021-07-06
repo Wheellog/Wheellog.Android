@@ -547,6 +547,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (wearOs != null) {
+            wearOs.removeMessageListener();
+            wearOs.stop();
+        }
         stopPebbleService();
         stopGarminConnectIQ();
         stopLoggingService();
@@ -714,6 +718,7 @@ public class MainActivity extends AppCompatActivity {
         if (wearOs == null) {
             wearOs = new WearOs(this);
         } else {
+            wearOs.stop();
             wearOs = null;
         }
     }
