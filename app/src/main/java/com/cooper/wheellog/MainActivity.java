@@ -548,7 +548,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (wearOs != null) {
-            wearOs.removeMessageListener();
             wearOs.stop();
         }
         stopPebbleService();
