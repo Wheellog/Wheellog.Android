@@ -21,12 +21,15 @@ class WearActivity : FragmentActivity(),
     private val messagePath = "/messages"
     private lateinit var mMainRecyclerAdapter: MainRecyclerAdapter
     private var wd = WearData()
+    private var toast: Toast? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wear)
         setupViews()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        vibrate(longArrayOf(0, 100))
+
     }
 
     private fun setupViews() {
@@ -75,21 +78,33 @@ class WearActivity : FragmentActivity(),
             }
     }
 
+    private fun showAToast(message: String?) {
+        toast?.cancel()
+        toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        toast?.show()
+    }
+
+    private fun vibrate(vibrationPattern: LongArray) {
+        val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        val indexInPatternToRepeat = -1  //-1 - don't repeat
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            vibrator.vibrate(vibrationPattern, indexInPatternToRepeat)
+        } else {
+            vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+        }
+    }
+
     override fun onMessageReceived(messageEvent: MessageEvent) {
         if (messageEvent.path == messagePath) {
             when (messageEvent.data.toString(Charsets.UTF_8)) {
                 // TODO: Localization
                 "ping" -> {
                     sendMessage("pong")
-                    Toast.makeText(
-                        applicationContext,
-                        "connected!", Toast.LENGTH_LONG
-                    ).show()
+                    showAToast("connected!")
+                    vibrate(longArrayOf(0, 100))
                 }
-                else -> Toast.makeText(
-                    applicationContext,
-                    "Unknown message: " + messageEvent.data.toString(Charsets.UTF_8), Toast.LENGTH_LONG
-                ).show()
+                "finish" -> finish()
+                else -> showAToast("Unknown message: " + messageEvent.data.toString(Charsets.UTF_8))
             }
         }
     }
@@ -127,14 +142,15 @@ class WearActivity : FragmentActivity(),
                             }
                             mMainRecyclerAdapter.updateScreen()
                             if (wd.alarmTemp || wd.alarmSpeed || wd.alarmCurrent) {
-                                val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-                                val vibrationPattern = longArrayOf(0, 500, 50, 300)
-                                val indexInPatternToRepeat = -1  //-1 - don't repeat
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                                    vibrator.vibrate(vibrationPattern, indexInPatternToRepeat)
-                                } else {
-                                    vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
-                                }
+                                vibrate(longArrayOf(0, 500, 50, 300))
+                                // TODO: localization
+                                showAToast(
+                                    when {
+                                        wd.alarmTemp -> "temperature"
+                                        wd.alarmCurrent -> "current"
+                                        else -> "speed"
+                                    }
+                                )
                             }
                         } catch (ex: Exception) {
                         }

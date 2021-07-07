@@ -10,6 +10,9 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,6 +21,7 @@ import java.util.*
 class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
     private val dataItemPath = "/wheel_data"
     private val messagePath = "/messages"
+    private var pingPong = false
 
     fun updateData() {
         val wd = WheelData.getInstance()
@@ -59,20 +63,23 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
         if (messageEvent.path == messagePath) {
             when (messageEvent.data.toString(Charsets.UTF_8)) {
                 // TODO: localization
-                "pong" -> Toast.makeText(context,"WearOs watch connected successfully!", Toast.LENGTH_LONG).show()
+                "pong" -> {
+                    Toast.makeText(context,"WearOs watch connected successfully!", Toast.LENGTH_LONG).show()
+                    pingPong = true
+                }
                 "horn" -> SomeUtil.playBeep(context)
                 else -> Timber.wtf("Unknown message from wear")
             }
         }
     }
 
-    private fun sendMessage(message: String) {
+    private fun sendMessage(message: String, path: String = messagePath) {
         Wearable.getNodeClient(context).connectedNodes
             .addOnSuccessListener {
                 it.forEach { node ->
                     if (node.isNearby) {
                         Wearable.getMessageClient(context)
-                            .sendMessage(node.id, messagePath, message.toByteArray(Charsets.UTF_8))
+                            .sendMessage(node.id, path, message.toByteArray(Charsets.UTF_8))
                     }
                 }
             }
@@ -84,10 +91,19 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
     init {
         addMessageListener()
         updateData()
-        sendMessage("ping")
+        GlobalScope.launch {
+            sendMessage("ping")
+            delay(500)
+            // if the wear application did not receive a response from the ping,
+            // then an attempt to launch it
+            if (!pingPong) {
+                sendMessage("", "/start/wearos")
+            }
+        }
     }
 
-    fun finalize() {
+    fun stop() {
+        sendMessage("finish")
         removeMessageListener()
     }
 
