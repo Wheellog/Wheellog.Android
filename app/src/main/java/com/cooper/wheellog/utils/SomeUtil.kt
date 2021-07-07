@@ -111,7 +111,7 @@ class SomeUtil {
 
         fun checkBatteryOptimizationsAndShowAlert(context: Context): Boolean {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isBatteryOptimizations(context)) {
-                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                AlertDialog.Builder(context)
                     .setTitle(R.string.detected_battery_optimization_title)
                     .setMessage(R.string.detected_battery_optimization)
                     .setCancelable(false)
