@@ -1,14 +1,14 @@
 package com.cooper.wheellog
 
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.wear.widget.WearableRecyclerView
+import com.cooper.wheellog.utils.CommonUtils.Companion.messagePath
+import com.cooper.wheellog.utils.CommonUtils.Companion.sendMessage
+import com.cooper.wheellog.utils.CommonUtils.Companion.vibrate
 import com.google.android.gms.wearable.*
 import java.util.*
 
@@ -18,7 +18,6 @@ class WearActivity : FragmentActivity(),
         DataClient.OnDataChangedListener {
 
     private val dataItemPath = "/wheel_data"
-    private val messagePath = "/messages"
     private lateinit var mMainRecyclerAdapter: MainRecyclerAdapter
     private var wd = WearData()
     private var toast: Toast? = null
@@ -28,8 +27,19 @@ class WearActivity : FragmentActivity(),
         setContentView(R.layout.activity_wear)
         setupViews()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        vibrate(longArrayOf(0, 100))
+        vibrate(this, longArrayOf(0, 100))
+    }
 
+    override fun onResume() {
+        super.onResume()
+        Wearable.getDataClient(this).addListener(this)
+        Wearable.getMessageClient(this).addListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Wearable.getMessageClient(this).removeListener(this)
+        Wearable.getDataClient(this).removeListener(this)
     }
 
     private fun setupViews() {
@@ -50,48 +60,10 @@ class WearActivity : FragmentActivity(),
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Wearable.getDataClient(this).addListener(this)
-        Wearable.getMessageClient(this).addListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Wearable.getMessageClient(this).removeListener(this)
-        Wearable.getDataClient(this).removeListener(this)
-    }
-
-    fun horn() {
-        sendMessage("horn")
-    }
-
-    private fun sendMessage(message: String) {
-        Wearable.getNodeClient(applicationContext).connectedNodes
-            .addOnSuccessListener {
-                it.forEach { node ->
-                    if (node.isNearby) {
-                        Wearable.getMessageClient(applicationContext)
-                            .sendMessage(node.id, messagePath, message.toByteArray(Charsets.UTF_8))
-                    }
-                }
-            }
-    }
-
     private fun showAToast(message: String?) {
         toast?.cancel()
         toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
         toast?.show()
-    }
-
-    private fun vibrate(vibrationPattern: LongArray) {
-        val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-        val indexInPatternToRepeat = -1  //-1 - don't repeat
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            vibrator.vibrate(vibrationPattern, indexInPatternToRepeat)
-        } else {
-            vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
-        }
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
@@ -99,9 +71,9 @@ class WearActivity : FragmentActivity(),
             when (messageEvent.data.toString(Charsets.UTF_8)) {
                 // TODO: Localization
                 "ping" -> {
-                    sendMessage("pong")
+                    sendMessage(this, "pong")
                     showAToast("connected!")
-                    vibrate(longArrayOf(0, 100))
+                    vibrate(this, longArrayOf(0, 100))
                 }
                 "finish" -> finish()
                 else -> showAToast("Unknown message: " + messageEvent.data.toString(Charsets.UTF_8))
@@ -142,7 +114,7 @@ class WearActivity : FragmentActivity(),
                             }
                             mMainRecyclerAdapter.updateScreen()
                             if (wd.alarmTemp || wd.alarmSpeed || wd.alarmCurrent) {
-                                vibrate(longArrayOf(0, 500, 50, 300))
+                                vibrate(this, longArrayOf(0, 500, 50, 300))
                                 // TODO: localization
                                 showAToast(
                                     when {

@@ -1,18 +1,23 @@
 package com.cooper.wheellog.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WearData
+import com.cooper.wheellog.utils.CommonUtils.Companion.sendMessage
 import java.util.*
 import kotlin.math.*
 
+@SuppressLint("ClickableViewAccessibility")
 class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(context, attrs) {
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, WearData()) {
@@ -69,6 +74,10 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
             isAntiAlias = true
             strokeWidth = outerStrokeWidth
             style = Paint.Style.STROKE
+        }
+        setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true
         }
     }
 
@@ -223,4 +232,17 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         textPaint.getTextBounds(text, 0, text.length, textBounds)
         return result
     }
+
+    private val gestureDetector = GestureDetector(
+        context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                sendMessage(context, "light")
+                return super.onDoubleTap(e)
+            }
+
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                sendMessage(context,"horn")
+                return super.onSingleTapConfirmed(e)
+            }
+        })
 }

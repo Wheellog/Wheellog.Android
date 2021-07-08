@@ -68,6 +68,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
                     pingPong = true
                 }
                 "horn" -> SomeUtil.playBeep(context)
+                "light" -> WheelData.getInstance().adapter?.switchFlashlight()
                 else -> Timber.wtf("Unknown message from wear")
             }
         }
