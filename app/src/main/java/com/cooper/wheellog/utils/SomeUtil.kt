@@ -17,13 +17,18 @@ import java.io.IOException
 
 class SomeUtil {
     companion object {
-        @Suppress("DEPRECATION")
         @ColorInt
         fun View.getColorEx(@ColorRes id: Int): Int {
+            return context.getColorEx(id)
+        }
+
+        @Suppress("DEPRECATION")
+        @ColorInt
+        fun Context.getColorEx(@ColorRes id: Int): Int {
             return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
                 resources.getColor(id)
             else
-                context.getColor(id)
+                getColor(id)
         }
 
         @SuppressLint("UseCompatLoadingForDrawables")

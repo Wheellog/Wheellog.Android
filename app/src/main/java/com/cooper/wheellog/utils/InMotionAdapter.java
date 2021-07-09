@@ -546,8 +546,8 @@ public class InMotionAdapter extends BaseAdapter {
         return (int)(batt * 100.0);
     }
 
-    private static String getWorkModeString(int value) {
-        switch (value) {
+    private static String getLegacyWorkModeString(int value) {
+        switch (value & 0xF) {
             case 0:
                 return "Idle";
             case 1:
@@ -575,6 +575,29 @@ public class InMotionAdapter extends BaseAdapter {
             default:
                 return "Unknown";
         }
+    }
+
+    private static String getWorkModeString(int value) {
+        int hValue = value >> 4;
+        String result;
+        switch (hValue) {
+            case 1:
+                result = "Shutdown";
+                break;
+            case 2:
+                result = "Drive";
+                break;
+            case 3:
+                result = "Charging";
+                break;
+            default:
+                result = "Unknown code " + hValue;
+                break;
+        }
+        if ((value & 0xF) == 1) {
+            result += " - Engine off";
+        }
+        return result;
     }
 
     public static String getModelString(Model model) {
@@ -1095,12 +1118,17 @@ public class InMotionAdapter extends BaseAdapter {
                 totalDistance = Math.round((MathsUtil.longFromBytesLE(ex_data, 44)) / 5.711016379455429E7d);
             }
             distance = (MathsUtil.intFromBytesLE(ex_data, 48));
-            int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60) & 0xF;
-//            WorkMode workMode = intToWorkMode(workModeInt);
-//            double lock = 0.0;
-//            if (workMode == WorkMode.lock) {
-//                lock = 1.0;
-//            }
+
+            String workMode;
+            int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60);
+            if (model == V8F || model == V10 || model == V10F || model == V10FT ||
+                    model == V10S || model == V10SF || model == V10T) {
+                roll = 0;
+                workMode = getWorkModeString(workModeInt);
+            } else {
+                workMode = getLegacyWorkModeString(workModeInt);
+            }
+
             WheelData wd = WheelData.getInstance();
             wd.setAngle(angle);
             wd.setRoll(roll);
@@ -1112,7 +1140,7 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setWheelDistance(distance);
             wd.setTemperature(temperature*100);
             wd.setTemperature2(temperature2*100);
-            wd.setModeStr(getWorkModeString(workModeInt));
+            wd.setModeStr(workMode);
 
             return true;
         }

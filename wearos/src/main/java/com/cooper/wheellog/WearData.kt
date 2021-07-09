@@ -15,7 +15,9 @@ class WearData {
     var batteryLowest: Int = 0
     var mainUnit: String = "kmh"
     var currentOnDial: Boolean = false
-    var alarm: Boolean = false
+    var alarmSpeed: Boolean = false
+    var alarmTemp: Boolean = false
+    var alarmCurrent: Boolean = false
     var timeStamp: Long = -1
     var timeString: String = ""
 }

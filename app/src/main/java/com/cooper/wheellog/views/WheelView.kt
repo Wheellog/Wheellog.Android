@@ -11,7 +11,6 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
-import com.cooper.wheellog.presentation.preferences.MultiSelectPreference.Companion.separator
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
@@ -175,7 +174,19 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                             } else {
                                 String.format(Locale.US, "%.3f " + resources.getString(R.string.km), WheelData.getInstance().wheelDistanceDouble)
                             }
-                        }, false)
+                        }, false),
+                ViewBlockInfo(resources.getString(R.string.remaining_distance),
+                        {
+                            if (useMph) {
+                                String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(WheelData.getInstance().remainingDistance))
+                            } else {
+                                String.format(Locale.US, "%.3f " + resources.getString(R.string.km), WheelData.getInstance().remainingDistance)
+                            }
+                        }, false),
+                ViewBlockInfo(resources.getString(R.string.battery_per_km),
+                    {
+                        String.format(Locale.US, "%.2f %%", WheelData.getInstance().batteryPerKm)
+                    }, false)
         )
 
     fun setWheelModel(mWheelModel: String) {

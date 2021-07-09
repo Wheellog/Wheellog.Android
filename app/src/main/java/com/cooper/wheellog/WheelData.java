@@ -71,6 +71,7 @@ public class WheelData {
 
     private int mBattery;
     private int mBatteryLowest;
+    private int mBatteryStart = -1;
     private double mAverageBattery;
     //    private double mAverageBatteryCount;
     private int mVoltage;
@@ -123,6 +124,8 @@ public class WheelData {
     private long timestamp_last;
     private long mLastLifeData = -1;
 
+    AudioTrack audioTrack;
+
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
             case GOTWAY_VIRTUAL:
@@ -166,7 +169,13 @@ public class WheelData {
     }
 
     void playBeep(ALARM_TYPE type) {
-        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+        if (audioTrack != null) {
+            audioTrack.flush();
+            audioTrack.stop();
+            audioTrack.release();
+
+        }
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
@@ -670,15 +679,45 @@ public class WheelData {
         return mRideTime;
     }
 
+    public double getAverageBatteryConsumption() {
+        return MathsUtil.clamp(mBatteryStart - mBattery, 0, 100);
+    }
+
+    public double getDistanceFromStart() {
+        if (mTotalDistance != 0) {
+            return  (mTotalDistance - mStartTotalDistance);
+        } else return 0;
+    }
+
+    public double getBatteryPerKm() {
+        double distance = getDistanceFromStart();
+        if (distance != 0) {
+            return getAverageBatteryConsumption() * 1000 / distance;
+        } else {
+            return 0;
+        }
+    }
+
+    public double getRemainingDistance() {
+        double batteryByKm = getBatteryPerKm();
+        if (batteryByKm != 0) {
+            return mBattery / batteryByKm;
+        } else {
+            return 0;
+        }
+    }
+
     public double getAverageSpeedDouble() {
         if (mTotalDistance != 0 && mRideTime != 0) {
-            return (((mTotalDistance - mStartTotalDistance) * 3.6) / (mRideTime + mLastRideTime));
+            // 3.6 = (60 sec * 60 mim) / 1000 meters.
+            return getDistanceFromStart() * 3.6 / (mRideTime + mLastRideTime);
         } else return 0.0;
     }
 
     public double getAverageRidingSpeedDouble() {
         if (mTotalDistance != 0 && mRidingTime != 0) {
-            return (((mTotalDistance - mStartTotalDistance) * 3.6) / mRidingTime);
+            // 3.6 = (60 sec * 60 mim) / 1000 meters.
+            return getDistanceFromStart() * 3.6 / mRidingTime;
         } else return 0.0;
     }
 
@@ -772,7 +811,7 @@ public class WheelData {
         return (int) (mTotalDistance - mStartTotalDistance);
     }
 
-    int getAlarm() {
+    public int getAlarm() {
         int alarm = 0;
         if (mSpeedAlarmExecuting) {
             alarm = alarm | 0x01;
@@ -934,6 +973,9 @@ public class WheelData {
         }
         mBatteryLowest = Math.min(battery, mBatteryLowest);
 
+        if (mBatteryStart == -1) {
+            mBatteryStart = battery;
+        }
         mBattery = battery;
 
 //        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
@@ -1255,6 +1297,7 @@ public class WheelData {
         mAngle = 0;
         mRoll = 0;
         mBattery = 0;
+        mBatteryStart = -1;
         //mAverageBatteryCount = 0;
         mCalculatedPwm = 0.0;
         mMaxPwm = 0.0;

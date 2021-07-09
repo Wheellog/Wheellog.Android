@@ -2,6 +2,7 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
@@ -155,6 +156,10 @@ class AppConfig(var context: Context) {
     var autoLog: Boolean
         get() = getValue(R.string.auto_log, false)
         set(value) = setValue(R.string.auto_log, value)
+
+    var autoWatch: Boolean
+        get() = getValue(R.string.auto_watch, false)
+        set(value) = setValue(R.string.auto_watch, value)
 
     var autoUploadEc: Boolean
         get() = getValue(R.string.auto_upload_ec, false)
@@ -465,6 +470,14 @@ class AppConfig(var context: Context) {
         set(value) = setValue("user_distance_$specificPrefix", value)
     //endregion
 
+    var lastLocationLaltitude: Double
+        get() = getValue("lastLocationLaltitude", 0.0)
+        set(value) = setValue("lastLocationLaltitude", value)
+
+    var lastLocationLongitude: Double
+        get() = getValue("lastLocationLongitude", 0.0)
+        set(value) = setValue("lastLocationLongitude", value)
+
     fun getResId(resName: String?): Int {
         return if (resName == null || resName === "") {
             -1
@@ -490,6 +503,7 @@ class AppConfig(var context: Context) {
             is String -> sharedPreferences.edit().putString(key, value).apply()
             is Int -> sharedPreferences.edit().putInt(key, value).apply()
             is Float -> sharedPreferences.edit().putFloat(key, value).apply()
+            is Double -> sharedPreferences.edit().putFloat(key, value.toFloat()).apply()
             is Boolean -> sharedPreferences.edit().putBoolean(key, value).apply()
             is Long -> sharedPreferences.edit().putLong(key, value).apply()
         }
@@ -511,6 +525,7 @@ class AppConfig(var context: Context) {
                 is String -> sharedPreferences.getString(key, defaultValue) as T
                 is Int -> sharedPreferences.getInt(key, defaultValue) as T
                 is Float -> sharedPreferences.getFloat(key, defaultValue) as T
+                is Double -> sharedPreferences.getFloat(key, defaultValue.toFloat()).toDouble() as T
                 is Boolean -> sharedPreferences.getBoolean(key, defaultValue) as T
                 is Long -> sharedPreferences.getLong(key, defaultValue) as T
                 else -> defaultValue
