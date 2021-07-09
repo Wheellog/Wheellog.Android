@@ -71,7 +71,7 @@ public class WheelData {
 
     private int mBattery;
     private int mBatteryStart = -1;
-    private int mBatteryLowest;
+    private int mBatteryLowest = 101;
     private double mAverageBattery;
     //    private double mAverageBatteryCount;
     private int mVoltage;
@@ -1297,7 +1297,7 @@ public class WheelData {
         mAngle = 0;
         mRoll = 0;
         mBattery = 0;
-        mBatteryLowest = 0;
+        mBatteryLowest = 101;
         mBatteryStart = -1;
         //mAverageBatteryCount = 0;
         mCalculatedPwm = 0.0;
