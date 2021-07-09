@@ -70,6 +70,7 @@ public class WheelData {
     private double mRoll;
 
     private int mBattery;
+    private int mBatteryLowest;
     private double mAverageBattery;
     //    private double mAverageBatteryCount;
     private int mVoltage;
@@ -535,6 +536,10 @@ public class WheelData {
         return mBattery;
     }
 
+    public int getLowestBatteryLevel() {
+        return mBatteryLowest;
+    }
+
     public int getFanStatus() {
         return mFanStatus;
     }
@@ -927,6 +932,7 @@ public class WheelData {
                 battery = (int) ((getVoltageDouble() - minVoltage) / voltagePercentStep);
             }
         }
+        mBatteryLowest = Math.min(battery, mBatteryLowest);
 
         mBattery = battery;
 
