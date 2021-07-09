@@ -38,8 +38,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
             putInt("max_temperature", wd.maxTemp)
             putDouble("max_power", wd.maxPower)
             putInt("battery",wd.batteryLevel)
-            putInt("battery_lowest", wd.batteryLevel) // TODO
-            putInt("battery", wd.batteryLevel)
+            putInt("battery_lowest", wd.batteryLowestLevel)
             putString("main_unit",
                     if (WheelLog.AppConfig.useMph)
                         context.getString(R.string.mph)
