@@ -1297,6 +1297,7 @@ public class WheelData {
         mAngle = 0;
         mRoll = 0;
         mBattery = 0;
+        mBatteryLowest = 0;
         mBatteryStart = -1;
         //mAverageBatteryCount = 0;
         mCalculatedPwm = 0.0;
