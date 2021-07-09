@@ -526,9 +526,6 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter());
         pagerAdapter.updateScreen(true);
-        if (wearOs != null) {
-            wearOs.addMessageListener();
-        }
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -540,9 +537,6 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mMainViewBroadcastReceiver);
-        if (wearOs != null) {
-            wearOs.removeMessageListener();
-        }
     }
 
     @Override
