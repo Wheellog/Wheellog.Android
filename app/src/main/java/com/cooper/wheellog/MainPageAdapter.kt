@@ -280,6 +280,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 wheelView?.apply {
                     setSpeed(data.speed)
                     setBattery(data.batteryLevel)
+                    setBatteryLowest(data.batteryLowestLevel)
                     setTemperature(data.temperature)
                     setRideTime(data.ridingTimeString)
                     setTopSpeed(data.topSpeedDouble)

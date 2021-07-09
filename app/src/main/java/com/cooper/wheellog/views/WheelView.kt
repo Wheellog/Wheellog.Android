@@ -234,12 +234,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         if (mBattery == battery) return
         mBattery = MathUtils.clamp(battery, 0, 100)
         targetBattery = (40f / 100f * mBattery).roundToInt()
-        mBatteryLowest = if (mBattery > 0) {
-            min(mBatteryLowest, mBattery)
-        } else {
-            if (mBatteryLowest > 100) mBatteryLowest else mBattery
-        }
         targetBatteryLowest = (40f / 100f * mBatteryLowest).roundToInt()
+        refresh()
+    }
+
+    fun setBatteryLowest(battery: Int) {
+        if (mBatteryLowest == battery) return
+        mBatteryLowest = min(MathUtils.clamp(mBatteryLowest, 0, 100), battery)
         refresh()
     }
 
