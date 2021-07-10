@@ -1,12 +1,17 @@
 package com.cooper.wheellog.views
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +22,7 @@ import timber.log.Timber
 import java.io.*
 
 
-class TripAdapter(var context: Context, private var tripModels: List<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
+class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
     private var uploadViewVisible: Int = View.VISIBLE
     private var font = WheelLog.ThemeManager.getTypeface(context)
@@ -30,7 +35,7 @@ class TripAdapter(var context: Context, private var tripModels: List<TripModel>)
         uploadVisible = WheelLog.AppConfig.autoUploadEc
     }
 
-    fun updateTrips(tripModels: List<TripModel>) {
+    fun updateTrips(tripModels: ArrayList<TripModel>) {
         this.tripModels = tripModels
         notifyDataSetChanged()
     }
@@ -42,11 +47,17 @@ class TripAdapter(var context: Context, private var tripModels: List<TripModel>)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val trip = tripModels[position]
-        holder.bind(trip, uploadViewVisible)
+        holder.bind(trip, uploadViewVisible, this)
     }
 
     override fun getItemCount(): Int {
         return tripModels.size
+    }
+
+    fun removeAt(position: Int) {
+        tripModels.removeAt(position)
+        notifyItemChanged(position)
+        notifyItemRangeRemoved(position, 1)
     }
 
     class ViewHolder internal constructor(var view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
@@ -116,8 +127,26 @@ class TripAdapter(var context: Context, private var tripModels: List<TripModel>)
             startActivity(view.context, shareIntent, Bundle.EMPTY)
         }
 
+        private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {
+            AlertDialog.Builder(context)
+                .setTitle(R.string.trip_menu_delete_file)
+                .setMessage(context.getString(R.string.trip_menu_delete_file_confirmation) + " " + tripModel.fileName)
+                .setCancelable(false)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                        context.deleteFile(tripModel.mediaId)
+                    } else {
+                        WheelLog.cResolver().delete(tripModel.uri, null, null)
+                    }
+                    adapter.removeAt(adapterPosition)
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                .show()
+        }
+
         @SuppressLint("ClickableViewAccessibility")
-        fun bind(tripModel: TripModel, uploadViewVisible: Int) {
+        fun bind(tripModel: TripModel, uploadViewVisible: Int, adapter: TripAdapter) {
             nameView.text = tripModel.title
             nameView.typeface = font
             descriptionView.text = tripModel.description
@@ -134,21 +163,14 @@ class TripAdapter(var context: Context, private var tripModels: List<TripModel>)
                             menu.add(0, 0, 0, R.string.trip_menu_view_map)
                             menu.add(0, 1, 0, R.string.trip_menu_upload_to_ec)
                             menu.add(0, 2, 0, R.string.trip_menu_share)
-                            //menu.add(0, 3, 0, R.string.trip_menu_delete_file)
+                            menu.add(0, 3, 0, R.string.trip_menu_delete_file)
                         }
                         popupMenu.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 0 -> showMap(tripModel)
                                 1 -> uploadToEc(tripModel)
                                 2 -> share(tripModel)
-                                3 -> { // delete
-                                    // TODO: confirmation dialog
-                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                        context.deleteFile(tripModel.mediaId)
-                                    } else {
-                                        WheelLog.cResolver().delete(tripModel.uri, null, null)
-                                    }
-                                }
+                                3 -> deleteFile(tripModel, adapter)
                             }
                             return@setOnMenuItemClickListener false
                         }
