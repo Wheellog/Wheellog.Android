@@ -1,8 +1,10 @@
 package com.cooper.wheellog
 
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.IBinder
 import android.widget.Toast
 import com.cooper.wheellog.utils.Constants
@@ -26,6 +28,14 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     private var mDevice: IQDevice? = null
     private var mMyApp: IQApp? = null
     private var mWebServer: GarminConnectIQWebServer? = null
+    private val mBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            mConnectIQ.sendMessage(mDevice, mMyApp, mapOf("dataType" to "alarmUpdate", "alarmType" to WheelData.getInstance().alarm)) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
+                Timber.d("message status: ${status.name}")
+                if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, "Failed to send an update about alarms to your Garmin device. Status: ${status.name}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         Timber.i("onBind")
@@ -41,6 +51,11 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         mMyApp = IQApp(APP_ID)
         mConnectIQ.initialize(this, false, this)
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
+
+        // Setup alarm intent receiver
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED)
+        registerReceiver(mBroadcastReceiver, intentFilter)
         return START_STICKY
     }
 
@@ -191,8 +206,15 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         try {
             mWebServer = GarminConnectIQWebServer(applicationContext)
             Timber.d("port is: ${mWebServer!!.listeningPort}")
+            val message = mapOf(
+                "protocolVersion" to protocolVersion,
+                "dataType" to "connect",
+                "wheelLogVersion" to BuildConfig.VERSION_NAME,
+                "serverPort" to mWebServer!!.listeningPort
+            )
+            Timber.d("The whole connection message is $message")
             try {
-                mConnectIQ.sendMessage(mDevice, mMyApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
+                mConnectIQ.sendMessage(mDevice, mMyApp, message) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
                     Timber.d("message status: ${status.name}")
                     if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
                 }
@@ -216,6 +238,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
     companion object {
         const val APP_ID = "487e6172-972c-4f93-a4db-26fd689f935a"
+        const val protocolVersion = 3
 
         private var instance: GarminConnectIQ? = null
         val isInstanceCreated: Boolean
@@ -242,51 +265,32 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
         return when (session.method) {
             Method.GET -> {
                 when (session.uri) {
-                    "/data/main" -> {
+                    "/data" -> {
                         val message = JSONObject()
+
                         message.put("speed", if (wd.speedDouble.toString().length > 3) {
                             ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
                         } else wd.speedDouble.toString())
-                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
                         message.put("speedLimit", ac.maxSpeed)
                         message.put("useMph", ac.useMph)
                         message.put("battery", wd.batteryLevel)
                         message.put("temp", wd.temperature)
                         message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
                         message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
-                        message.put("connectedToWheel", wd.isConnected)
+                        message.put("isConnectedToWheel", wd.isConnected)
                         message.put("wheelModel", wd.model)
-
-                        return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                    }
-                    "/data/details" -> {
-                        val message = JSONObject()
-                        message.put("useMph", ac.useMph)
-                        message.put("avgRidingSpeed", wd.averageSpeedDouble.toInt())
-                        message.put("avgSpeed", wd.averageRidingSpeedDouble.toInt())
-                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
+                        message.put("avgSpeed", wd.averageRidingSpeedDouble.toString())
+                        message.put("topSpeed", wd.topSpeedDouble.toString())
                         message.put("voltage", wd.voltageDouble.toString())
-                        message.put("maxVoltage", wd.maxVoltageForWheel.toString())
-                        message.put("battery", wd.batteryLevel)
                         message.put("ridingTime", wd.ridingTimeString)
-                        message.put("distance", wd.distance)
-                        message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
-                        message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
-                        message.put("torque", wd.torque)
-                        message.put("power", wd.powerDouble)
-                        message.put("maxPower", wd.maxPower)
-
-                        message.put("connectedToWheel", wd.isConnected)
+                        message.put("distance", wd.distanceDouble)
+                        message.put("percentageDropUnderLoad", if (wd.batteryLowestLevel > 100) 0 else wd.batteryLowestLevel)
 
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                    }
-                    "/data/alarms" -> {
-                        val message = "${wd.alarm}"
-                        newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
                     }
                     else -> {
                         Timber.i("404 Wrong endpoint")
-                        newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                        newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: Endpoint not found")
                     }
                 }
             }
@@ -296,19 +300,16 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         playHorn()
                         newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
                     }
-                    "/actions/frontLight/enable" -> {
-                        wd.updateLight(true)
+                    "/actions/toggleFrontLight" -> {
+                        wd.adapter.switchFlashlight()
                         newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
                     }
-                    "/actions/frontLight/disable" -> {
-                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
-                    }
-                    else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, action not found.")
+                    else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404: Action not found.")
                 }
             }
             else -> {
                 Timber.i("404 Wrong method")
-                newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: Method not recognised")
             }
         }
     }
