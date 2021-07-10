@@ -11,7 +11,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
-import com.cooper.wheellog.views.Trip;
+import com.cooper.wheellog.views.TripModel;
 import com.google.common.io.ByteStreams;
 
 import org.jetbrains.annotations.NotNull;
@@ -168,8 +168,8 @@ public class FileUtil {
         return String.format(Locale.US, "%.2f Kb", size / 1024f);
     }
 
-    public static ArrayList<Trip> fillTrips(Context context) {
-        ArrayList<Trip> trips = new ArrayList<>();
+    public static ArrayList<TripModel> fillTrips(Context context) {
+        ArrayList<TripModel> tripModels = new ArrayList<>();
         // Android 9 or less
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
         {
@@ -177,7 +177,7 @@ public class FileUtil {
                     Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
             File[] filesArray = dir.listFiles();
             if (filesArray == null) {
-                return trips;
+                return tripModels;
             }
             for (File wheelDir: filesArray) {
                 if (wheelDir.isDirectory()) {
@@ -192,12 +192,12 @@ public class FileUtil {
                         }
                         String extension = f.getAbsolutePath().substring(indexExt);
                         if (extension.equals(".csv") && !f.getName().startsWith("RAW")) {
-                            trips.add(new Trip(f.getName(), sizeTokb(f.length()), f.getAbsolutePath()));
+                            tripModels.add(new TripModel(f.getName(), sizeTokb(f.length()), f.getAbsolutePath()));
                         }
                     }
                 }
             }
-            return trips;
+            return tripModels;
         }
         // Android 10+
         Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
@@ -222,11 +222,11 @@ public class FileUtil {
                 }
                 String description = sizeTokb(cursor.getLong(cursor.getColumnIndex(MediaStore.Downloads.SIZE)));
                 String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
-                trips.add(new Trip(title, description, mediaId));
+                tripModels.add(new TripModel(title, description, mediaId));
             } while (cursor.moveToNext());
             cursor.close();
         }
-        return trips;
+        return tripModels;
     }
 
     public void close() {

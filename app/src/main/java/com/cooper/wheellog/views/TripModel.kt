@@ -6,7 +6,10 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import java.io.File
 
-class Trip(var title: String, var description: String, var mediaId: String) {
+class TripModel(var title: String, var description: String, var mediaId: String, var fileName: String) {
+
+    constructor(title: String, description: String, mediaId: String)
+            : this(title, description, mediaId, fileName = title)
 
     var uri: Uri
         get() {

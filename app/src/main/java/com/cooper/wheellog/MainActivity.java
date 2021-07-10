@@ -541,6 +541,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        onDestroyProcess = true;
         if (wearOs != null) {
             wearOs.stop();
         }
@@ -554,7 +555,6 @@ public class MainActivity extends AppCompatActivity {
         }
         WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
         super.onDestroy();
-        onDestroyProcess = true;
         new CountDownTimer(60000 /* 1 min */, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -676,8 +676,9 @@ public class MainActivity extends AppCompatActivity {
 
     //region services
     private void stopLoggingService() {
-        if (LoggingService.isInstanceCreated())
+        if (LoggingService.isInstanceCreated()) {
             toggleLoggingService();
+        }
     }
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -688,8 +689,12 @@ public class MainActivity extends AppCompatActivity {
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
-        if (LoggingService.isInstanceCreated())
+        if (LoggingService.isInstanceCreated()) {
             stopService(dataLoggerServiceIntent);
+            if (!onDestroyProcess) {
+                new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips(), 200);
+            }
+        }
         else if (mConnectionState == BluetoothLeService.STATE_CONNECTED)
             startService(dataLoggerServiceIntent);
     }

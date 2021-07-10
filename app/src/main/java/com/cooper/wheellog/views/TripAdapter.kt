@@ -17,7 +17,7 @@ import timber.log.Timber
 import java.io.*
 
 
-class TripAdapter(var context: Context, private var trips: List<Trip>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
+class TripAdapter(var context: Context, private var tripModels: List<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
     private var uploadViewVisible: Int = View.VISIBLE
     private var font = WheelLog.ThemeManager.getTypeface(context)
@@ -30,18 +30,23 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
         uploadVisible = WheelLog.AppConfig.autoUploadEc
     }
 
+    fun updateTrips(tripModels: List<TripModel>) {
+        this.tripModels = tripModels
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = inflater.inflate(R.layout.list_trip_item, parent, false)
         return ViewHolder(view, font)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val trip = trips[position]
+        val trip = tripModels[position]
         holder.bind(trip, uploadViewVisible)
     }
 
     override fun getItemCount(): Int {
-        return trips.size
+        return tripModels.size
     }
 
     class ViewHolder internal constructor(var view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
@@ -51,21 +56,75 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
         private var uploadView: ImageView = view.findViewById(R.id.uploadButton)
         private var uploadProgressView: ProgressBar = view.findViewById(R.id.progressBar)
         private var shareView: ImageView = view.findViewById(R.id.shareButton)
+        private val context = view.context
 
         private fun uploadInProgress(inProgress: Boolean) {
             uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
             uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
         }
 
+        private fun uploadViewEnabled(isEnabled: Boolean) {
+            uploadView.isEnabled = isEnabled
+            uploadView.imageAlpha = if (isEnabled) 0xFF else 0x20
+        }
+
+        private fun showMap(tripModel: TripModel) {
+            startActivity(context, Intent(context, MapActivity::class.java).apply {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                    putExtra("path", tripModel.mediaId)
+                } else {
+                    putExtra("uri", tripModel.uri)
+                }
+                putExtra("title", tripModel.title)
+            }, Bundle.EMPTY)
+        }
+
+        private fun uploadToEc(tripModel: TripModel) {
+            uploadInProgress(true)
+            val inputStream: InputStream? =
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                    // Android 9 or less
+                    FileInputStream(File(tripModel.mediaId))
+                } else {
+                    // Android 10+
+                    WheelLog.cResolver().openInputStream(tripModel.uri)
+                }
+            if (inputStream == null) {
+                Timber.i("Failed to create inputStream for %s", tripModel.title)
+                uploadInProgress(false)
+            } else {
+                val data = ByteStreams.toByteArray(inputStream)
+                inputStream.close()
+                ElectroClub.instance.uploadTrack(data, tripModel.title, false) { success ->
+                    MainScope().launch {
+                        uploadInProgress(false)
+                    }
+                    // hide the upload button if it was successful
+                    uploadViewEnabled(!success)
+                }
+            }
+        }
+
+        private fun share(tripModel: TripModel) {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_STREAM, tripModel.uri)
+                type = "text/csv"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(view.context, shareIntent, Bundle.EMPTY)
+        }
+
         @SuppressLint("ClickableViewAccessibility")
-        fun bind(trip: Trip, uploadViewVisible: Int) {
-            nameView.text = trip.title
+        fun bind(tripModel: TripModel, uploadViewVisible: Int) {
+            nameView.text = tripModel.title
             nameView.typeface = font
-            descriptionView.text = trip.description
+            descriptionView.text = tripModel.description
             descriptionView.typeface = font
             uploadButtonLayout.visibility = uploadViewVisible
-            val context = view.context
             uploadInProgress(false)
+
             val gestureDetector = GestureDetector(
                 context, object : GestureDetector.SimpleOnGestureListener() {
                     override fun onLongPress(e: MotionEvent) {
@@ -79,54 +138,15 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                         }
                         popupMenu.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
-                                0 -> { // show map
-                                    startActivity(context, Intent(context, MapActivity::class.java).apply {
-                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                            putExtra("path", trip.mediaId)
-                                        } else {
-                                            putExtra("uri", trip.uri)
-                                        }
-                                        putExtra("title", trip.title)
-                                    }, Bundle.EMPTY)
-                                }
-                                1 -> { // send to ec
-                                    uploadInProgress(true)
-                                    val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                        // Android 9 or less
-                                        FileInputStream(File(trip.mediaId))
-                                    } else {
-                                        // Android 10+
-                                        WheelLog.cResolver().openInputStream(trip.uri)
-                                    }
-                                    if (inputStream == null) {
-                                        Timber.i("Failed to create inputStream for %s", trip.title)
-                                        uploadInProgress(false)
-                                    } else {
-                                        val data = ByteStreams.toByteArray(inputStream)
-                                        inputStream.close()
-                                        ElectroClub.instance.uploadTrack(data, trip.title, false) {
-                                            MainScope().launch {
-                                                uploadInProgress(false)
-                                            }
-                                        }
-                                    }
-                                }
-                                2 -> { // share
-                                    val sendIntent: Intent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_STREAM, trip.uri)
-                                        type = "text/csv"
-                                    }
-
-                                    val shareIntent = Intent.createChooser(sendIntent, null)
-                                    startActivity(context, shareIntent, Bundle.EMPTY)
-                                }
+                                0 -> showMap(tripModel)
+                                1 -> uploadToEc(tripModel)
+                                2 -> share(tripModel)
                                 3 -> { // delete
                                     // TODO: confirmation dialog
                                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                        context.deleteFile(trip.mediaId)
+                                        context.deleteFile(tripModel.mediaId)
                                     } else {
-                                        WheelLog.cResolver().delete(trip.uri, null, null)
+                                        WheelLog.cResolver().delete(tripModel.uri, null, null)
                                     }
                                 }
                             }
@@ -140,36 +160,10 @@ class TripAdapter(var context: Context, private var trips: List<Trip>) : Recycle
                 true
             }
             uploadView.setOnClickListener {
-                uploadInProgress(true)
-                val inputStream: InputStream? = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    // Android 9 or less
-                    FileInputStream(File(trip.mediaId))
-                } else {
-                    // Android 10+
-                    it.context.contentResolver.openInputStream(trip.uri)
-                }
-                if (inputStream == null) {
-                    Timber.i("Failed to create inputStream for %s", trip.title)
-                    uploadInProgress(false)
-                    return@setOnClickListener
-                }
-                val data = ByteStreams.toByteArray(inputStream)
-                ElectroClub.instance.uploadTrack(data, trip.title, false) {
-                    MainScope().launch {
-                        uploadInProgress(false)
-                    }
-                }
-                inputStream.close()
+                uploadToEc(tripModel)
             }
             shareView.setOnClickListener {
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_STREAM, trip.uri)
-                    type = "text/csv"
-                }
-
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                startActivity(it.context, shareIntent, Bundle.EMPTY)
+                share(tripModel)
             }
         }
     }

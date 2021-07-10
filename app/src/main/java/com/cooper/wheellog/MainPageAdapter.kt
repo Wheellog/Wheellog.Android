@@ -137,6 +137,12 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
     }
 
+    fun updatePageOfTrips() {
+        if (listOfTrips != null) {
+            (listOfTrips!!.adapter as TripAdapter).updateTrips(FileUtil.fillTrips(activity))
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(inflater.inflate(viewType, parent, false))
@@ -540,7 +546,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
     }
 
-    // TODO - Tinder.plant and не то это место...
     private var eventsTextView: TextView? = null
     private var eventsCurrentCount = 0
     private var eventsMaxCount = 500
