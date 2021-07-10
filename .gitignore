@@ -38,12 +38,16 @@ captures/
 # Keystore files
 *.jks
 
+# HPROF
+*.hprof
+
 .idea/*
 .idea/libraries/*
 .idea/dictionaries/*
 .idea/copyright/*
 private.properties
 app/release/*
+app/schemas/*
 
 # Mac DS_Store files
 .DS_Store
