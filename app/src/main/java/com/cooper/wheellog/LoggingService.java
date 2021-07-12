@@ -128,47 +128,50 @@ public class LoggingService extends Service
                 stopSelf();
                 return START_STICKY;
             }
+        }
 
-            String locationHeaderString = "";
-            if (logLocationData) {
-                mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        String locationHeaderString = "";
+        if (logLocationData) {
+            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-                // Getting GPS Provider status
-                assert mLocationManager != null;
-                boolean isGPSEnabled = mLocationManager
-                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
+            // Getting GPS Provider status
+            assert mLocationManager != null;
+            boolean isGPSEnabled = mLocationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-                // Getting Network Provider status
-                boolean isNetworkEnabled = mLocationManager
-                        .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            // Getting Network Provider status
+            boolean isNetworkEnabled = mLocationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-                // Getting if the users wants to use GPS
-                boolean useGPS = WheelLog.AppConfig.getUseGps();
+            // Getting if the users wants to use GPS
+            boolean useGPS = WheelLog.AppConfig.getUseGps();
 
-                if (!isGPSEnabled && !isNetworkEnabled) {
-                    logLocationData = false;
-                    mLocationManager = null;
-                    showToast(R.string.logging_error_all_location_providers_disabled);
-                } else if (useGPS && !isGPSEnabled) {
-                    useGPS = false;
-                    showToast(R.string.logging_error_gps_disabled);
-                } else if (!useGPS && !isNetworkEnabled) {
-                    logLocationData = false;
-                    mLocationManager = null;
-                    showToast(R.string.logging_error_network_disabled);
-                }
-
-                if (logLocationData) {
-                    locationHeaderString = "latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,";
-                    mLocation = getLastBestLocation();
-                    mLocationProvider = LocationManager.NETWORK_PROVIDER;
-                    if (useGPS) {
-                        mLocationProvider = LocationManager.GPS_PROVIDER;
-                    }
-                    // Acquire a reference to the system Location Manager
-                    mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
-                }
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                logLocationData = false;
+                mLocationManager = null;
+                showToast(R.string.logging_error_all_location_providers_disabled);
+            } else if (useGPS && !isGPSEnabled) {
+                useGPS = false;
+                showToast(R.string.logging_error_gps_disabled);
+            } else if (!useGPS && !isNetworkEnabled) {
+                logLocationData = false;
+                mLocationManager = null;
+                showToast(R.string.logging_error_network_disabled);
             }
+
+            if (logLocationData) {
+                locationHeaderString = "latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,";
+                mLocation = getLastBestLocation();
+                mLocationProvider = LocationManager.NETWORK_PROVIDER;
+                if (useGPS) {
+                    mLocationProvider = LocationManager.GPS_PROVIDER;
+                }
+                // Acquire a reference to the system Location Manager
+                mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
+            }
+        }
+
+        if (!writeToLastLog) {
             fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
         }
 
