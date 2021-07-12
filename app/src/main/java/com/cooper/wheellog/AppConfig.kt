@@ -188,6 +188,10 @@ class AppConfig(var context: Context) {
     var startAutoLoggingWhenIsMoving: Boolean
         get() = getValue(R.string.auto_log_when_moving, false)
         set(value) = setValue(R.string.auto_log_when_moving, value)
+
+    var continueThisDayLog: Boolean
+        get() = getValue(R.string.continue_this_day_log, false)
+        set(value) = setValue(R.string.continue_this_day_log, value)
     //endregion    
     
     //region watch

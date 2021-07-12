@@ -109,56 +109,68 @@ public class LoggingService extends Service
 
         sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
 
-        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
-
-        String filename = sdFormatter.format(new Date()) + ".csv";
-
-        if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
-            stopSelf();
-            return START_STICKY;
+        Boolean writeToLastLog = false;
+        if (WheelLog.AppConfig.getContinueThisDayLog()) {
+            FileUtil lastFileUtil = FileUtil.getLastLog(getApplicationContext());
+            if (lastFileUtil != null) {
+                fileUtil = lastFileUtil;
+                fileUtil.prepareStream();
+                writeToLastLog = true;
+            }
         }
 
-        String locationHeaderString = "";
-        if (logLocationData) {
-            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!writeToLastLog) {
+            SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
 
-            // Getting GPS Provider status
-            assert mLocationManager != null;
-            boolean isGPSEnabled = mLocationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+            String filename = sdFormatter.format(new Date()) + ".csv";
 
-            // Getting Network Provider status
-            boolean isNetworkEnabled = mLocationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            // Getting if the users wants to use GPS
-            boolean useGPS = WheelLog.AppConfig.getUseGps();
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                logLocationData = false;
-                mLocationManager = null;
-                showToast(R.string.logging_error_all_location_providers_disabled);
-            } else if (useGPS && !isGPSEnabled) {
-                useGPS = false;
-                showToast(R.string.logging_error_gps_disabled);
-            } else if (!useGPS && !isNetworkEnabled) {
-                logLocationData = false;
-                mLocationManager = null;
-                showToast(R.string.logging_error_network_disabled);
+            if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
+                stopSelf();
+                return START_STICKY;
             }
 
+            String locationHeaderString = "";
             if (logLocationData) {
-                locationHeaderString = "latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,";
-                mLocation = getLastBestLocation();
-                mLocationProvider = LocationManager.NETWORK_PROVIDER;
-                if (useGPS) {
-                    mLocationProvider = LocationManager.GPS_PROVIDER;
+                mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+                // Getting GPS Provider status
+                assert mLocationManager != null;
+                boolean isGPSEnabled = mLocationManager
+                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                // Getting Network Provider status
+                boolean isNetworkEnabled = mLocationManager
+                        .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+                // Getting if the users wants to use GPS
+                boolean useGPS = WheelLog.AppConfig.getUseGps();
+
+                if (!isGPSEnabled && !isNetworkEnabled) {
+                    logLocationData = false;
+                    mLocationManager = null;
+                    showToast(R.string.logging_error_all_location_providers_disabled);
+                } else if (useGPS && !isGPSEnabled) {
+                    useGPS = false;
+                    showToast(R.string.logging_error_gps_disabled);
+                } else if (!useGPS && !isNetworkEnabled) {
+                    logLocationData = false;
+                    mLocationManager = null;
+                    showToast(R.string.logging_error_network_disabled);
                 }
-                // Acquire a reference to the system Location Manager
-                mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
+
+                if (logLocationData) {
+                    locationHeaderString = "latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,";
+                    mLocation = getLastBestLocation();
+                    mLocationProvider = LocationManager.NETWORK_PROVIDER;
+                    if (useGPS) {
+                        mLocationProvider = LocationManager.GPS_PROVIDER;
+                    }
+                    // Acquire a reference to the system Location Manager
+                    mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
+                }
             }
+            fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
         }
-        fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
