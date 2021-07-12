@@ -544,6 +544,13 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
     }
 
     private fun veteran() {
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.light_enabled)
+            title = getString(R.string.on_headlight_title)
+            summary = getString(R.string.on_headlight_description)
+            isChecked = WheelLog.AppConfig.lightEnabled
+            ps.addPreference(this)
+        }
         ListPreference(context).apply {
             key = mac + getString(R.string.pedals_mode)
             title = getString(R.string.pedals_mode_title)

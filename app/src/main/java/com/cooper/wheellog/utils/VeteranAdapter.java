@@ -112,15 +112,20 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        setLightMode(0);
+        boolean light = !WheelLog.AppConfig.getLightEnabled();
+        WheelLog.AppConfig.setLightEnabled(light);
+        setLightState(light);
     }
 
     @Override
-    public void setLightMode(int lightMode) {
-        // it is not possible to turn on light on Veteran
-        // but some people use it as "beep by wheel" on double tap
-        // let's them use it
-        WheelData.getInstance().bluetoothCmd("b".getBytes());
+    public void setLightState(final boolean lightEnable) {
+        String command = "";
+        if (lightEnable) {
+            command = "SetLightON";
+        } else {
+            command = "SetLightOFF";
+        }
+        WheelData.getInstance().bluetoothCmd(command.getBytes());
     }
 
     @Override
