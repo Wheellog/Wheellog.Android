@@ -950,7 +950,7 @@ public class WheelData {
             mVoltageSag = voltSag;
     }
 
-    private void setMaxPwm(double currentPwm) {
+    public void setMaxPwm(double currentPwm) {
         if ((currentPwm > mMaxPwm) && (currentPwm > 0))
             mMaxPwm = currentPwm;
 
@@ -1246,6 +1246,15 @@ public class WheelData {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
             mRidingTime = 0;
         }
+    }
+
+    /*
+        Only for restore from log
+     */
+    public void setStartParameters(long rideStartTime, long startTotalDistance, int batteryStart) {
+        this.rideStartTime = rideStartTime;
+        this.mStartTotalDistance = startTotalDistance;
+        this.mBatteryStart = batteryStart;
     }
 
     public void updateRideTime() {
