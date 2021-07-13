@@ -3,7 +3,7 @@ package com.cooper.wheellog.utils
 import com.cooper.wheellog.WheelData
 import timber.log.Timber
 import java.io.*
-import java.lang.IllegalArgumentException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ParserLogToWheelData {
@@ -32,24 +32,36 @@ class ParserLogToWheelData {
                 Timber.wtf("%s file does not contain geolocation data.", fileUtil.fileName)
                 return
             }
-            WheelData.getInstance().apply {
-                val firstRow = reader.readLine()!!.split(",")
-                setStartParameters(
-                    firstRow[header[LogHeaderEnum.TIME]!!].toLongOrNull() ?: 0L,
-                    firstRow[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0L
-                )
 
-                reader.forEachLine { line ->
-                    val row = line.split(",")
-                    topSpeed = (100 * (row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0)).toInt()
-                    voltage = (100 * (row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0)).toInt()
-                    setVoltageSag(voltage)
-                    setPhaseCurrent((100 * (row[header[LogHeaderEnum.PHASE_CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt())
-                    current = (100 * (row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
-                    setBatteryPercent(row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0)
-                    totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0
-                    maxTemp = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
-                    maxPwm = (row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0) / 100
+            val firstRow = reader.readLine()!!.split(",")
+            var sdf = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US)
+            val startDate = sdf.parse(firstRow[header[LogHeaderEnum.DATE]!!] + "," + firstRow[header[LogHeaderEnum.TIME]!!] )
+            val rideStartTime = startDate!!.time
+            val wd = WheelData.getInstance();
+            wd.setStartParameters(
+                rideStartTime,
+                firstRow[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0L
+            )
+
+            sdf = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
+            val lastTime = sdf.parse(firstRow[header[LogHeaderEnum.TIME]!!])!!.time
+            reader.forEachLine { line ->
+                val row = line.split(",")
+                val speed = (100 * (row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                wd.topSpeed = speed
+                val voltage = (100 * (row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                wd.voltage = voltage
+                wd.voltageSag = voltage
+                wd.phaseCurrent = (100 * (row[header[LogHeaderEnum.PHASE_CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                wd.current = (100 * (row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                wd.batteryLevel = row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0
+                wd.totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0
+                wd.maxTemp = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
+                wd.maxPwm = (row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0) / 100
+
+                val time = sdf.parse(row[header[LogHeaderEnum.TIME]!!])!!.time
+                if (time + 1000 >= lastTime && speed > 200) {
+                    wd.incrementRidingTime()
                 }
             }
         } catch (ex: Exception) {

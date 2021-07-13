@@ -82,7 +82,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setCurrent(phaseCurrent);
                 wd.setVoltage(voltage);
                 wd.setVoltageSag(voltage);
-                wd.setBatteryPercent(battery);
+                wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
                 wd.updateRideTime();
                 newDataFound = true;

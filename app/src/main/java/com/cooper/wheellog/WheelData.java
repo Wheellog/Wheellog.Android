@@ -791,6 +791,10 @@ public class WheelData {
         mPhaseCurrent = value;
     }
 
+    public int getPhaseCurrent() {
+        return mPhaseCurrent;
+    }
+
     public double getCalculatedPwm() {
         return mCalculatedPwm * 100.0;
     }
@@ -950,6 +954,10 @@ public class WheelData {
             mVoltageSag = voltSag;
     }
 
+    public int getVoltageSag() {
+        return mVoltageSag;
+    }
+
     public void setMaxPwm(double currentPwm) {
         if ((currentPwm > mMaxPwm) && (currentPwm > 0))
             mMaxPwm = currentPwm;
@@ -962,7 +970,7 @@ public class WheelData {
 
     }
 
-    public void setBatteryPercent(int battery) {
+    public void setBatteryLevel(int battery) {
         if (WheelLog.AppConfig.getFixedPercents()) {
             double maxVoltage = getMaxVoltageForWheel();
             double minVoltage = getVoltageTiltbackForWheel();
@@ -1246,6 +1254,10 @@ public class WheelData {
             rideStartTime = Calendar.getInstance().getTimeInMillis();
             mRidingTime = 0;
         }
+    }
+
+    public void incrementRidingTime() {
+        mRidingTime++;
     }
 
     /*
