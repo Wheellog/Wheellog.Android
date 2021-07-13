@@ -10,7 +10,7 @@ class ParserLogToWheelData {
     private val header = HashMap<LogHeaderEnum, Int>()
 
     fun parseFile(fileUtil: FileUtil) {
-        val inputStream: InputStream? = fileUtil.outputStream
+        val inputStream = fileUtil.inputStream
         if (inputStream == null) {
             // TODO: localize me
             Timber.wtf("Failed to create inputStream for %s", fileUtil.fileName)

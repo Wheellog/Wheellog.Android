@@ -145,7 +145,7 @@ public class FileUtil {
         }
     }
 
-    public InputStream getOutputStream() {
+    public InputStream getInputStream() {
         try {
             if (uri != null) {
                 return context.getContentResolver().openInputStream(Objects.requireNonNull(uri));
