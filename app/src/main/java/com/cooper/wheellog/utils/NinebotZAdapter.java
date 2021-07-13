@@ -193,7 +193,7 @@ public class NinebotZAdapter extends BaseAdapter {
                 wd.setTemperature(status.getTemperature() * 10);
                 wd.setAlert(status.getAlert());
                 wd.updateRideTime();
-                wd.setBatteryPercent(status.getBatt());
+                wd.setBatteryLevel(status.getBatt());
                 wd.setVoltageSag(voltage);
                 result = true;
             }

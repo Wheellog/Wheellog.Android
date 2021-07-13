@@ -392,4 +392,6 @@
     <string name="after_connect_category">После подключения</string>
     <string name="auto_watch_title">Подключаться к часам</string>
     <string name="auto_watch_description">Автоматически запускать сервис смарт часов при подключении к колесу</string>
+    <string name="continue_this_day_log_title">Продолжать лог этого дня</string>
+    <string name="continue_this_day_log_description">Лог поездки дописывается, пока не наступит следующий день. Важно! В электрокрубе нет поддержки дозаписи.</string>
 </resources>

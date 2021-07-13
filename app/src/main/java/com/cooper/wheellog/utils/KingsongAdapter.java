@@ -89,7 +89,7 @@ public class KingsongAdapter extends BaseAdapter {
                         }
                     }
                 }
-                wd.setBatteryPercent(battery);
+                wd.setBatteryLevel(battery);
                 return true;
             } else if ((data[16] & 255) == 0xB9) { // Distance/Time/Fan Data
                 long distance = MathsUtil.getInt4R(data, 2);
