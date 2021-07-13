@@ -44,7 +44,7 @@ class ParserLogToWheelData {
             )
 
             sdf = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
-            val lastTime = sdf.parse(firstRow[header[LogHeaderEnum.TIME]!!])!!.time
+            var lastTime = sdf.parse(firstRow[header[LogHeaderEnum.TIME]!!])!!.time
             reader.forEachLine { line ->
                 val row = line.split(",")
                 val speed = (100 * (row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0)).toInt()
@@ -62,6 +62,7 @@ class ParserLogToWheelData {
                 val time = sdf.parse(row[header[LogHeaderEnum.TIME]!!])!!.time
                 if (time + 1000 >= lastTime && speed > 200) {
                     wd.incrementRidingTime()
+                    lastTime = time
                 }
             }
         } catch (ex: Exception) {
