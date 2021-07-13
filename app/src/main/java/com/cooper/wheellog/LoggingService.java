@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
+import com.cooper.wheellog.utils.ParserLogToWheelData;
 import com.cooper.wheellog.utils.PermissionsUtil;
 
 import java.io.IOException;
@@ -114,6 +115,10 @@ public class LoggingService extends Service
             FileUtil lastFileUtil = FileUtil.getLastLog(getApplicationContext());
             if (lastFileUtil != null) {
                 fileUtil = lastFileUtil;
+                // parse prev log for filling wheeldata values
+                ParserLogToWheelData parser = new ParserLogToWheelData();
+                parser.parseFile(fileUtil);
+
                 fileUtil.prepareStream();
                 writeToLastLog = true;
             }

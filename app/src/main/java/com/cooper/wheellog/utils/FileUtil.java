@@ -145,6 +145,22 @@ public class FileUtil {
         }
     }
 
+    public InputStream getOutputStream() {
+        try {
+            if (uri != null) {
+                return context.getContentResolver().openInputStream(Objects.requireNonNull(uri));
+            } else if (file != null) {
+                return new FileInputStream(file);
+            }
+        } catch (FileNotFoundException e) {
+            if (!ignoreTimber) {
+                Timber.e("File not found.");
+            }
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public byte[] readBytes() throws IOException {
         InputStream inputStream = null;
         if (uri != null) {

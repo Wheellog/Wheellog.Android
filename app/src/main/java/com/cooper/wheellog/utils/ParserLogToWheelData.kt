@@ -1,0 +1,54 @@
+package com.cooper.wheellog.utils
+
+import com.cooper.wheellog.WheelData
+import timber.log.Timber
+import java.io.*
+import java.lang.IllegalArgumentException
+import java.util.*
+
+class ParserLogToWheelData {
+    private val header = HashMap<LogHeaderEnum, Int>()
+
+    fun parseFile(fileUtil: FileUtil) {
+        val inputStream: InputStream? = fileUtil.outputStream
+        if (inputStream == null) {
+            // TODO: localize me
+            Timber.wtf("Failed to create inputStream for %s", fileUtil.fileName)
+            return
+        }
+
+        try {
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val headerLine = reader.readLine().split(",").toTypedArray()
+            for (i in headerLine.indices) {
+                try {
+                    header[LogHeaderEnum.valueOf(headerLine[i].toUpperCase(Locale.US))] = i
+                } catch (ignored: IllegalArgumentException) {
+                }
+            }
+            if (!header.containsKey(LogHeaderEnum.LATITUDE) || !header.containsKey(LogHeaderEnum.LONGITUDE)) {
+                inputStream.close()
+                // TODO: localize me
+                Timber.wtf("%s file does not contain geolocation data.", fileUtil.fileName)
+                return
+            }
+            WheelData.getInstance().apply {
+                reader.forEachLine { line ->
+                    val row = line.split(",")
+                    topSpeed = (100 * (row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                    voltage = (100 * (row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                    setPhaseCurrent((100 * (row[header[LogHeaderEnum.PHASE_CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt())
+                    current = (100 * (row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                    setBatteryPercent(row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0)
+                    totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0
+                    temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
+                    temperature2 = row[header[LogHeaderEnum.TEMP2]!!].toIntOrNull() ?: 0
+                }
+            }
+        } catch (ex: Exception) {
+            Timber.wtf(ex.localizedMessage)
+        } finally {
+            inputStream.close()
+        }
+    }
+}
