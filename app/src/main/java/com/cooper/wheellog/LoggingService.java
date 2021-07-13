@@ -113,7 +113,8 @@ public class LoggingService extends Service
         Boolean writeToLastLog = false;
         if (WheelLog.AppConfig.getContinueThisDayLog()) {
             FileUtil lastFileUtil = FileUtil.getLastLog(getApplicationContext());
-            if (lastFileUtil != null) {
+            if (lastFileUtil != null &&
+                    lastFileUtil.getFile().getPath().contains(WheelData.getInstance().getMac().replace(':', '_'))) {
                 fileUtil = lastFileUtil;
                 // parse prev log for filling wheeldata values
                 ParserLogToWheelData parser = new ParserLogToWheelData();
