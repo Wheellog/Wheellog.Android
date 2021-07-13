@@ -36,20 +36,19 @@ class ParserLogToWheelData {
                 val firstRow = reader.readLine()!!.split(",")
                 setStartParameters(
                     firstRow[header[LogHeaderEnum.TIME]!!].toLongOrNull() ?: 0L,
-                    firstRow[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0L,
-                    firstRow[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0
+                    firstRow[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0L
                 )
 
                 reader.forEachLine { line ->
                     val row = line.split(",")
                     topSpeed = (100 * (row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0)).toInt()
                     voltage = (100 * (row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0)).toInt()
+                    setVoltageSag(voltage)
                     setPhaseCurrent((100 * (row[header[LogHeaderEnum.PHASE_CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt())
                     current = (100 * (row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
                     setBatteryPercent(row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0)
                     totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0
-                    temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
-                    temperature2 = row[header[LogHeaderEnum.TEMP2]!!].toIntOrNull() ?: 0
+                    maxTemp = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
                     maxPwm = (row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0) / 100
                 }
             }

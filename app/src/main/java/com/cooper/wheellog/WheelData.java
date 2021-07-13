@@ -956,7 +956,7 @@ public class WheelData {
 
     }
 
-    private void setMaxTemp(int temp) {
+    public void setMaxTemp(int temp) {
         if ((temp > mMaxTemp) && (temp > 0))
             mMaxTemp = temp;
 
@@ -1251,10 +1251,9 @@ public class WheelData {
     /*
         Only for restore from log
      */
-    public void setStartParameters(long rideStartTime, long startTotalDistance, int batteryStart) {
+    public void setStartParameters(long rideStartTime, long startTotalDistance) {
         this.rideStartTime = rideStartTime;
         this.mStartTotalDistance = startTotalDistance;
-        this.mBatteryStart = batteryStart;
     }
 
     public void updateRideTime() {
