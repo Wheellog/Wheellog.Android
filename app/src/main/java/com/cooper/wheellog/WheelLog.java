@@ -6,8 +6,10 @@ import timber.log.Timber;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 
 import com.cooper.wheellog.utils.NotificationUtil;
+import com.cooper.wheellog.utils.SomeUtil;
 import com.cooper.wheellog.utils.ThemeManager;
 import com.cooper.wheellog.utils.VolumeKeyController;
 

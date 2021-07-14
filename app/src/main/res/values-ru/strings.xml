@@ -392,4 +392,6 @@
     <string name="after_connect_category">После подключения</string>
     <string name="auto_watch_title">Подключаться к часам</string>
     <string name="auto_watch_description">Автоматически запускать сервис смарт часов при подключении к колесу</string>
+    <string name="detected_battery_optimization_title">Оптимизация батареи</string>
+    <string name="detected_battery_optimization">Обнаружена оптимизация заряда батареи телефона, это может привести к неожиданным закрытиям приложения. Чтобы это исправить отключите в настройках батареи оптимизацию для WheelLog.</string>
 </resources>

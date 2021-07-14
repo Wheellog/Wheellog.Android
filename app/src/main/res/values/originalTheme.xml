@@ -32,6 +32,7 @@
         <item name="android:textColor">@color/wheelview_textblocks</item>
         <item name="android:textColorAlertDialogListItem">@color/wheelview_textblocks</item>
         <item name="editTextColor">@color/wheelview_textblocks</item>
+        <item name="android:textColorPrimary">@color/wheelview_textblocks</item>
         <item name="android:windowBackground">@color/primary_text</item>
         <item name="android:colorBackground">@color/primary_text</item>
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
