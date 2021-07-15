@@ -35,9 +35,9 @@ class ParserLogToWheelData {
 
             val firstRow = reader.readLine()!!.split(",")
             var sdf = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US)
-            val startDate = sdf.parse(firstRow[header[LogHeaderEnum.DATE]!!] + "," + firstRow[header[LogHeaderEnum.TIME]!!] )
+            val startDate = sdf.parse(firstRow[header[LogHeaderEnum.DATE]!!] + "," + firstRow[header[LogHeaderEnum.TIME]!!])
             val rideStartTime = startDate!!.time
-            val wd = WheelData.getInstance();
+            val wd = WheelData.getInstance()
             wd.setStartParameters(
                 rideStartTime,
                 firstRow[header[LogHeaderEnum.TOTALDISTANCE]!!].toLongOrNull() ?: 0L
@@ -60,7 +60,7 @@ class ParserLogToWheelData {
                 wd.maxPwm = (row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0) / 100
 
                 val time = sdf.parse(row[header[LogHeaderEnum.TIME]!!])!!.time
-                if (time + 1000 >= lastTime && speed > 200) {
+                if (time >= lastTime + 1000 && speed > 200) {
                     wd.incrementRidingTime()
                     lastTime = time
                 }

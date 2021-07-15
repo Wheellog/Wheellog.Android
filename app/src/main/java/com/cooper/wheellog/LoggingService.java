@@ -110,11 +110,13 @@ public class LoggingService extends Service
 
         sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
 
-        Boolean writeToLastLog = false;
-        if (WheelLog.AppConfig.getContinueThisDayLog()) {
+        boolean writeToLastLog = false;
+        String mac = WheelData.getInstance().getMac();
+        if (WheelLog.AppConfig.getContinueThisDayLog() &&
+                !WheelLog.AppConfig.getContinueThisDayLogMacException().equals(mac)) {
             FileUtil lastFileUtil = FileUtil.getLastLog(getApplicationContext());
             if (lastFileUtil != null &&
-                    lastFileUtil.getFile().getPath().contains(WheelData.getInstance().getMac().replace(':', '_'))) {
+                    lastFileUtil.getFile().getPath().contains(mac.replace(':', '_'))) {
                 fileUtil = lastFileUtil;
                 // parse prev log for filling wheeldata values
                 ParserLogToWheelData parser = new ParserLogToWheelData();
@@ -134,6 +136,7 @@ public class LoggingService extends Service
                 stopSelf();
                 return START_STICKY;
             }
+            WheelLog.AppConfig.setContinueThisDayLogMacException("");
         }
 
         String locationHeaderString = "";

@@ -192,6 +192,10 @@ class AppConfig(var context: Context) {
     var continueThisDayLog: Boolean
         get() = getValue(R.string.continue_this_day_log, false)
         set(value) = setValue(R.string.continue_this_day_log, value)
+
+    var continueThisDayLogMacException: String
+        get() = getValue(R.string.continue_this_day_log_exception, "")
+        set(value) = setValue(R.string.continue_this_day_log_exception, value)
     //endregion    
     
     //region watch
