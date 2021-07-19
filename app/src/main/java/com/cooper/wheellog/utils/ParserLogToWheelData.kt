@@ -65,6 +65,7 @@ class ParserLogToWheelData {
                     lastTime = time
                 }
             }
+            wd.updateRideTime()
         } catch (ex: Exception) {
             Timber.wtf(ex.localizedMessage)
         } finally {

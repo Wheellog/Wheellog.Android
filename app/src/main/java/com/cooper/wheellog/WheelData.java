@@ -1264,6 +1264,8 @@ public class WheelData {
         Only for restore from log
      */
     public void setStartParameters(long rideStartTime, long startTotalDistance) {
+        mRidingTime = 0;
+        mLastRideTime = 0;
         this.rideStartTime = rideStartTime;
         this.mStartTotalDistance = startTotalDistance;
     }
