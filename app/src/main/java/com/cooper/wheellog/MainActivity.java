@@ -2,10 +2,12 @@ package com.cooper.wheellog;
 
 import android.Manifest;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -22,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextClock;
 import android.widget.Toast;
 
@@ -43,6 +46,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import me.relex.circleindicator.CircleIndicator3;
 import permissions.dispatcher.NeedsPermission;
@@ -604,7 +608,46 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                toggleLogging();
+                if (LoggingService.isInstanceCreated() && WheelLog.AppConfig.getContinueThisDayLog()) {
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setTitle(R.string.continue_this_day_log_alert_title)
+                            .setMessage(R.string.continue_this_day_log_alert_description)
+                            .setPositiveButton(android.R.string.yes, (dialog1, which) -> {
+                                WheelLog.AppConfig.setContinueThisDayLogMacException(WheelLog.AppConfig.getLastMac());
+                                toggleLogging();
+                            })
+                            .setNegativeButton(android.R.string.no, (dialog1, which) -> toggleLogging())
+                            .create();
+                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        private static final int AUTO_DISMISS_MILLIS = 5000;
+                        @Override
+                        public void onShow(final DialogInterface dialog) {
+                            final Button defaultButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                            final CharSequence negativeButtonText = defaultButton.getText();
+                            new CountDownTimer(AUTO_DISMISS_MILLIS, 100) {
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    defaultButton.setText(String.format(
+                                            Locale.getDefault(), "%s (%d)",
+                                            negativeButtonText,
+                                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) + 1
+                                    ));
+                                }
+                                @Override
+                                public void onFinish() {
+                                    if (((AlertDialog) dialog).isShowing()) {
+                                        WheelLog.AppConfig.setContinueThisDayLogMacException(WheelLog.AppConfig.getLastMac());
+                                        toggleLogging();
+                                        dialog.dismiss();
+                                    }
+                                }
+                            }.start();
+                        }
+                    });
+                    dialog.show();
+                } else {
+                    toggleLogging();
+                }
                 return true;
             case R.id.miWatch:
                 toggleWatch();

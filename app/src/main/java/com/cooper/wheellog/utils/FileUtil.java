@@ -24,7 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Objects;
@@ -127,7 +129,7 @@ public class FileUtil {
         return !isNull();
     }
 
-    private void prepareStream() {
+    public void prepareStream() {
         try {
             close();
             if (uri != null) {
@@ -141,6 +143,22 @@ public class FileUtil {
             }
             e.printStackTrace();
         }
+    }
+
+    public InputStream getInputStream() {
+        try {
+            if (uri != null) {
+                return context.getContentResolver().openInputStream(Objects.requireNonNull(uri));
+            } else if (file != null) {
+                return new FileInputStream(file);
+            }
+        } catch (FileNotFoundException e) {
+            if (!ignoreTimber) {
+                Timber.e("File not found.");
+            }
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public byte[] readBytes() throws IOException {
@@ -166,6 +184,70 @@ public class FileUtil {
 
     static String sizeTokb(Long size) {
         return String.format(Locale.US, "%.2f Kb", size / 1024f);
+    }
+
+    public static FileUtil getLastLog(Context context) {
+        String fileStartsWith = new SimpleDateFormat("yyyy_MM_dd", Locale.US).format(new Date());
+
+        // Android 9 or less
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+        {
+            File dir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
+            File[] filesArray = dir.listFiles();
+            if (filesArray == null) {
+                return null;
+            }
+            for (File wheelDir: filesArray) {
+                if (wheelDir.isDirectory()) {
+                    File[] wheelFiles = wheelDir.listFiles();
+                    if (wheelFiles == null) {
+                        continue;
+                    }
+                    for (File f: wheelFiles) {
+                        int indexExt = f.getAbsolutePath().lastIndexOf(".");
+                        if (f.isDirectory() || indexExt < 1) {
+                            continue;
+                        }
+                        String extension = f.getAbsolutePath().substring(indexExt);
+                        if (extension.equals(".csv") && f.getName().startsWith(fileStartsWith)) {
+                            FileUtil result = new FileUtil(context);
+                            result.file = f;
+                            result.fileName = f.getName();
+                            return result;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        // Android 10+
+        Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        String[] projection = {
+                MediaStore.Downloads.MIME_TYPE,
+                MediaStore.Downloads.DISPLAY_NAME,
+                MediaStore.Downloads.TITLE,
+                MediaStore.Downloads.SIZE,
+                MediaStore.Downloads._ID
+        };
+        String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
+        Cursor cursor = context.getContentResolver().query(uri,
+                projection,
+                where + " AND " + MediaStore.Downloads.DISPLAY_NAME + " LIKE ?",
+                new String[] { fileStartsWith + "%" },
+                MediaStore.Downloads.DATE_MODIFIED + " DESC");
+        if (cursor != null && cursor.moveToFirst()) {
+            String title = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME));
+            String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
+            cursor.close();
+            FileUtil result = new FileUtil(context);
+            Uri downloads = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL);
+            result.uri = Uri.withAppendedPath(downloads, mediaId);
+            result.file = new File(result.getPathFromUri(result.uri));
+            result.fileName = title;
+            return result;
+        }
+        return null;
     }
 
     public static ArrayList<TripModel> fillTrips(Context context) {
@@ -211,15 +293,12 @@ public class FileUtil {
         String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
         Cursor cursor = context.getContentResolver().query(uri,
                 projection,
-                where,
-                null,
+                where + " AND " + MediaStore.Downloads.DISPLAY_NAME + " NOT LIKE ?",
+                new String[] { "RAW_%" },
                 MediaStore.Downloads.DATE_MODIFIED + " DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 String title = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME));
-                if (title.startsWith("RAW")) { // TODO: move to selection filter
-                    continue;
-                }
                 String description = sizeTokb(cursor.getLong(cursor.getColumnIndex(MediaStore.Downloads.SIZE)));
                 String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
                 tripModels.add(new TripModel(title, description, mediaId));
@@ -287,7 +366,7 @@ public class FileUtil {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private String getPathFromUri(@Nullable Uri uri) {
+    protected String getPathFromUri(@Nullable Uri uri) {
         if (uri == null) {
             return "";
         }

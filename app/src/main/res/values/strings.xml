@@ -70,6 +70,8 @@
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
     <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
+    <string name="continue_this_day_log" translatable="false">continue_this_day_log</string>
+    <string name="continue_this_day_log_exception" translatable="false">continue_this_day_log_exception</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
@@ -552,4 +554,8 @@
     <string name="auto_watch" translatable="false">auto_watch</string>
     <string name="auto_watch_title">Auto watch</string>
     <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
+    <string name="continue_this_day_log_title">Continue the log of this day</string>
+    <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
+    <string name="continue_this_day_log_alert_title">Finish the trip?</string>
+    <string name="continue_this_day_log_alert_description">The trip will not continue the next time the log is enabled.</string>
 </resources>
