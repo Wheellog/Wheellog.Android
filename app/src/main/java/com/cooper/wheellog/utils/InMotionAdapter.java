@@ -1134,7 +1134,7 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setRoll(roll);
             wd.setSpeed((int)(speed * 360d));
             wd.setVoltage(voltage);
-            wd.setBatteryPercent(batt);
+            wd.setBatteryLevel(batt);
             wd.setCurrent(current);
             wd.setTotalDistance(totalDistance);
             wd.setWheelDistance(distance);

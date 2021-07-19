@@ -27,11 +27,11 @@ class WheelDataTest {
     @Test
     fun `Battery per km | 95 to 94`() {
         // Arrange.
-        data.setBatteryPercent(95)
+        data.setBatteryLevel(95)
         data.totalDistance = 1_000
 
         // Act.
-        data.setBatteryPercent(94)
+        data.setBatteryLevel(94)
         data.totalDistance += 2_000
 
         // Assert.
@@ -42,11 +42,11 @@ class WheelDataTest {
     @Test
     fun `Battery per km | 50 to 0`() {
         // Arrange.
-        data.setBatteryPercent(50)
+        data.setBatteryLevel(50)
         data.totalDistance = 0
 
         // Act.
-        data.setBatteryPercent(0)
+        data.setBatteryLevel(0)
         data.totalDistance += 25_000
 
         // Assert.

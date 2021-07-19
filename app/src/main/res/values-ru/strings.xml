@@ -394,4 +394,8 @@
     <string name="auto_watch_description">Автоматически запускать сервис смарт часов при подключении к колесу</string>
     <string name="detected_battery_optimization_title">Оптимизация батареи</string>
     <string name="detected_battery_optimization">Обнаружена оптимизация заряда батареи телефона, это может привести к неожиданным закрытиям приложения. Чтобы это исправить отключите в настройках батареи оптимизацию для WheelLog.</string>
+    <string name="continue_this_day_log_title">Продолжать лог этого дня</string>
+    <string name="continue_this_day_log_description">Лог поездки дописывается, пока не наступит следующий день.</string>
+    <string name="continue_this_day_log_alert_title">Закончить поездку?</string>
+    <string name="continue_this_day_log_alert_description">Эта поездка не будет дозаписываться при следующем логировании.</string>
 </resources>

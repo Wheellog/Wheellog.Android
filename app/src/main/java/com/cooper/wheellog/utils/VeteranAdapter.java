@@ -82,7 +82,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setCurrent(phaseCurrent);
                 wd.setVoltage(voltage);
                 wd.setVoltageSag(voltage);
-                wd.setBatteryPercent(battery);
+                wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
                 wd.updateRideTime();
                 newDataFound = true;
@@ -112,15 +112,20 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        setLightMode(0);
+        boolean light = !WheelLog.AppConfig.getLightEnabled();
+        WheelLog.AppConfig.setLightEnabled(light);
+        setLightState(light);
     }
 
     @Override
-    public void setLightMode(int lightMode) {
-        // it is not possible to turn on light on Veteran
-        // but some people use it as "beep by wheel" on double tap
-        // let's them use it
-        WheelData.getInstance().bluetoothCmd("b".getBytes());
+    public void setLightState(final boolean lightEnable) {
+        String command = "";
+        if (lightEnable) {
+            command = "SetLightON";
+        } else {
+            command = "SetLightOFF";
+        }
+        WheelData.getInstance().bluetoothCmd(command.getBytes());
     }
 
     @Override
@@ -161,7 +166,7 @@ public class VeteranAdapter extends BaseAdapter {
                 case collecting:
 
                     int bsize = buffer.size();
-                    if (((bsize == 22 || bsize == 30 || bsize > 32) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) || ((bsize == 31) && ((c & 0xFC) != 0x00))) {
+                    if (((bsize == 22 || bsize == 30 || bsize > 34) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) || ((bsize == 31) && ((c & 0xFC) != 0x00))) {
                         state = UnpackerState.done;
                         Timber.i("Data verification failed");
                         reset();

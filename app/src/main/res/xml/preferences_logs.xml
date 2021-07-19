@@ -39,4 +39,9 @@
         android:summary="@string/use_raw_description"
         android:title="@string/use_raw_title" />
 
+    <SwitchPreference
+        android:key="@string/continue_this_day_log"
+        android:summary="@string/continue_this_day_log_description"
+        android:title="@string/continue_this_day_log_title" />
+
 </PreferenceScreen>

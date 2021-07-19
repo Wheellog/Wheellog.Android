@@ -136,6 +136,30 @@ class VeteranAdapterTest {
     }
 
     @Test
+    fun `decode veteran 58fw data`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c2025cd0000071f0000c77800280000110b".hexToByteArray()
+        val byteArray2 = "0e1000010af00af00422000300140000".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(43)
+        assertThat(data.voltageDouble).isEqualTo(96.77)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(1.823)
+        assertThat(data.totalDistance).isEqualTo(2672504)
+        assertThat(data.batteryLevel).isEqualTo(89)
+        assertThat(data.version).isEqualTo("4.34 (1058)")
+    }
+
+
+    @Test
     fun `decode veteran with fail data`() {
         // Arrange.
         val byteArray1 = "dc5a5c2024dc02130a0a00001179005200450f47".hexToByteArray()
