@@ -35,6 +35,12 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
+            key = mac + getString(R.string.disable_alarm_synt)
+            title = getString(R.string.disable_alarm_synt_title)
+            summary = getString(R.string.disable_alarm_synt_description)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
             key = mac + getString(R.string.altered_alarms)
             title = getString(R.string.altered_alarms_title)
             summary = getString(R.string.altered_alarms_description)

@@ -245,6 +245,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.disable_phone_beep, false)
         set(value) = setSpecific(R.string.disable_phone_beep, value)
 
+    var disableSyntAlarm: Boolean
+        get() = getSpecific(R.string.disable_alarm_synt, false)
+        set(value) = setSpecific(R.string.disable_alarm_synt, value)
+
     var alteredAlarms: Boolean
         get() = getSpecific(R.string.altered_alarms, false)
         set(value) = setSpecific(R.string.altered_alarms, value)
