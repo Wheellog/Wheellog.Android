@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import java.util.*
 
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
@@ -167,5 +168,13 @@ class NotificationUtil(private val context: Context) {
 //                update()
 //            }
 //        }, 1000, 1000)
+// try fix RS
+            Timer().scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    if (WheelLog.AppConfig.mibandFixRs && WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && WheelData.getInstance().speedDouble > 0) {
+                    update()
+                    }
+                }
+            }, 1000, 1000)
     }
 }
