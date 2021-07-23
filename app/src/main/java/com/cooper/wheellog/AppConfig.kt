@@ -157,6 +157,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.auto_log, false)
         set(value) = setValue(R.string.auto_log, value)
 
+    var autoWatch: Boolean
+        get() = getValue(R.string.auto_watch, false)
+        set(value) = setValue(R.string.auto_watch, value)
+
     var autoUploadEc: Boolean
         get() = getValue(R.string.auto_upload_ec, false)
         set(value) = setValue(R.string.auto_upload_ec, value)
@@ -184,6 +188,14 @@ class AppConfig(var context: Context) {
     var startAutoLoggingWhenIsMoving: Boolean
         get() = getValue(R.string.auto_log_when_moving, false)
         set(value) = setValue(R.string.auto_log_when_moving, value)
+
+    var continueThisDayLog: Boolean
+        get() = getValue(R.string.continue_this_day_log, false)
+        set(value) = setValue(R.string.continue_this_day_log, value)
+
+    var continueThisDayLogMacException: String
+        get() = getValue(R.string.continue_this_day_log_exception, "")
+        set(value) = setValue(R.string.continue_this_day_log_exception, value)
     //endregion    
     
     //region watch
@@ -499,6 +511,7 @@ class AppConfig(var context: Context) {
             is String -> sharedPreferences.edit().putString(key, value).apply()
             is Int -> sharedPreferences.edit().putInt(key, value).apply()
             is Float -> sharedPreferences.edit().putFloat(key, value).apply()
+            is Double -> sharedPreferences.edit().putFloat(key, value.toFloat()).apply()
             is Boolean -> sharedPreferences.edit().putBoolean(key, value).apply()
             is Long -> sharedPreferences.edit().putLong(key, value).apply()
         }
@@ -520,6 +533,7 @@ class AppConfig(var context: Context) {
                 is String -> sharedPreferences.getString(key, defaultValue) as T
                 is Int -> sharedPreferences.getInt(key, defaultValue) as T
                 is Float -> sharedPreferences.getFloat(key, defaultValue) as T
+                is Double -> sharedPreferences.getFloat(key, defaultValue.toFloat()).toDouble() as T
                 is Boolean -> sharedPreferences.getBoolean(key, defaultValue) as T
                 is Long -> sharedPreferences.getLong(key, defaultValue) as T
                 else -> defaultValue

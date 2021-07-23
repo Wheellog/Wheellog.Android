@@ -6,23 +6,40 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.wear.widget.WearableRecyclerView
+import com.cooper.wheellog.utils.CommonUtils.Companion.messagePath
+import com.cooper.wheellog.utils.CommonUtils.Companion.sendMessage
+import com.cooper.wheellog.utils.CommonUtils.Companion.vibrate
 import com.google.android.gms.wearable.*
 import java.util.*
+
 
 class WearActivity : FragmentActivity(),
         MessageClient.OnMessageReceivedListener,
         DataClient.OnDataChangedListener {
 
     private val dataItemPath = "/wheel_data"
-    private val messagePath = "/messages"
     private lateinit var mMainRecyclerAdapter: MainRecyclerAdapter
     private var wd = WearData()
+    private var toast: Toast? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wear)
         setupViews()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        vibrate(this, longArrayOf(0, 100))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Wearable.getDataClient(this).addListener(this)
+        Wearable.getMessageClient(this).addListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Wearable.getMessageClient(this).removeListener(this)
+        Wearable.getDataClient(this).removeListener(this)
     }
 
     private fun setupViews() {
@@ -43,32 +60,10 @@ class WearActivity : FragmentActivity(),
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Wearable.getDataClient(this).addListener(this)
-        Wearable.getMessageClient(this).addListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Wearable.getMessageClient(this).removeListener(this)
-        Wearable.getDataClient(this).removeListener(this)
-    }
-
-    fun horn() {
-        sendMessage("horn")
-    }
-
-    private fun sendMessage(message: String) {
-        Wearable.getNodeClient(applicationContext).connectedNodes
-            .addOnSuccessListener {
-                it.forEach { node ->
-                    if (node.isNearby) {
-                        Wearable.getMessageClient(applicationContext)
-                            .sendMessage(node.id, messagePath, message.toByteArray(Charsets.UTF_8))
-                    }
-                }
-            }
+    private fun showAToast(message: String?) {
+        toast?.cancel()
+        toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
+        toast?.show()
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
@@ -76,16 +71,12 @@ class WearActivity : FragmentActivity(),
             when (messageEvent.data.toString(Charsets.UTF_8)) {
                 // TODO: Localization
                 "ping" -> {
-                    sendMessage("pong")
-                    Toast.makeText(
-                        applicationContext,
-                        "connected!", Toast.LENGTH_LONG
-                    ).show()
+                    sendMessage(this, "pong")
+                    showAToast("connected!")
+                    vibrate(this, longArrayOf(0, 100))
                 }
-                else -> Toast.makeText(
-                    applicationContext,
-                    "Unknown message: " + messageEvent.data.toString(Charsets.UTF_8), Toast.LENGTH_LONG
-                ).show()
+                "finish" -> finish()
+                else -> showAToast("Unknown message: " + messageEvent.data.toString(Charsets.UTF_8))
             }
         }
     }
@@ -114,11 +105,25 @@ class WearActivity : FragmentActivity(),
                                 batteryLowest = map.getInt("battery_lowest")
                                 mainUnit = map.getString("main_unit", "kmh")
                                 currentOnDial = map.getBoolean("currentOnDial")
-                                alarm = map.getBoolean("alarm")
+                                val alarmInt = map.getInt("alarm")
+                                alarmSpeed = alarmInt and 1 == 1
+                                alarmCurrent = alarmInt and 2 == 1
+                                alarmTemp = alarmInt and 4 == 1
                                 timeStamp = map.getLong("timestamp")
                                 timeString = map.getString("time_string", "waiting...")
                             }
                             mMainRecyclerAdapter.updateScreen()
+                            if (wd.alarmTemp || wd.alarmSpeed || wd.alarmCurrent) {
+                                vibrate(this, longArrayOf(0, 500, 50, 300))
+                                // TODO: localization
+                                showAToast(
+                                    when {
+                                        wd.alarmTemp -> "temperature"
+                                        wd.alarmCurrent -> "current"
+                                        else -> "speed"
+                                    }
+                                )
+                            }
                         } catch (ex: Exception) {
                         }
                     }

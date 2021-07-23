@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="kmh">"km/h"</string>
+    <string name="mph">"mph"</string>
+    <string name="km">"km"</string>
+    <string name="sec">"초"</string>
+    <string name="milli">"마일"</string>
+    <string name="garmin_connectiq_missing_app_message">"WheelLog 앱에서 사용할 이 어플리케이션이 ConnectIQ 장치에 설치되지 않았습니다. 위젯을 설치한 뒤 다시 시도하세요."</string>
+    <string name="garmin_connectiq_service_unavailable_message">"ConnectIQ 서비스를 사용할 수 없습니다"</string>
+    <string name="unknown_device">"알 수 없는 장치"</string>
+    <string name="ble_not_supported">"저전력 블루투스가 지원되지 않습니다"</string>
+    <string name="error_bluetooth_not_supported">"블루투스를 지원하지 않는 장치입니다."</string>
+    <string name="error_bluetooth_not_initialised">"블루투스를 초기화할 수 없습니다, 종료합니다"</string>
+    <string name="bluetooth_required">"블루투스가 필요하지만 올바르게 활성화되지 않았습니다."</string>
+    <string name="bluetooth_direct_connect_failed">"직접 연결에 실패했습니다. 휠을 검색합니다…"</string>
+    <string name="back_to_exit">"뒤로 가기를 한 번 더 눌러서 종료합니다"</string>
+    <string name="scan">"스캔"</string>
+    <string name="stop">"중지"</string>
+    <string name="connect">"연결"</string>
+    <string name="connecting">"연결 중"</string>
+    <string name="searching">"검색 중"</string>
+    <string name="disconnected">"연결 종료됨"</string>
+    <string name="connected">"연결됨"</string>
+    <string name="connection_failed">"연결 실패"</string>
+
+    <!-- Fuzzy -->
+    <string name="disconnect">"연결 종료"</string>
+    <string name="connect_to_wheel">"휠에 연결"</string>
+
+    <!-- Fuzzy -->
+    <string name="disconnect_from_wheel">"휠 연결 종료"</string>
+    <string name="wheel_disconnected">"휠 연결 끊김"</string>
+    <string name="wheel_connecting">"휠 연결 중…"</string>
+    <string name="wheel_searching">"휠 검색 중…"</string>
+    <string name="wheel_connected">"휠 연결됨"</string>
+    <string name="waiting_for_device">"장치 대기 중"</string>
+    <string name="start_pebble_service">"Pebble Dash 시작"</string>
+    <string name="show_settings">"설정 메뉴를 표시합니다"</string>
+    <string name="stop_pebble_service">"Start Pebble 중지"</string>
+    <string name="start_data_service">"기록 시작"</string>
+    <string name="stop_data_service">"기록 중단"</string>
+    <string name="started_logging">"%1$ 초 동안 기록 중"</string>
+    <string name="wheel_type_recognized"></string>
+    <string name="search_for_wheel">"휠 검색"</string>
+    <string name="scanning">"스캔 중…"</string>
+    <string name="devices">"장치"</string>
+    <string name="mode_learn">"초심자"</string>
+    <string name="mode_play">"숙련자"</string>
+    <string name="mode_ride">"일반"</string>
+    <string name="waiting_for_wheel">"휠을 기다리는 중…"</string>
+    <string name="no_smart_bms">"스마트 BMS가 발견되지 않았습니다"</string>
+    <string name="speed">"속도"</string>
+    <string name="average_speed">"평균 속도"</string>
+    <string name="average_riding_speed">"평균 라이딩"</string>
+    <string name="top_speed">"최고 속도"</string>
+    <string name="battery">"배터리"</string>
+    <string name="output">"모터 출력"</string>
+    <string name="cpuload">"CPU 부하"</string>
+    <string name="charging_status">"충전 중"</string>
+    <string name="distance">"거리"</string>
+    <string name="wheel_distance">"휠 거리"</string>
+    <string name="user_distance">"사용자 거리"</string>
+    <string name="ride_time">"여행 시간"</string>
+    <string name="riding_time">"라이딩 시간"</string>
+    <string name="voltage">"전압"</string>
+    <string name="voltage_sag"></string>
+    <string name="current">"전류"</string>
+
+    <!-- Fuzzy -->
+    <string name="power">"전원"</string>
+    <string name="temperature">"시스템 온도"</string>
+
+    <!-- Fuzzy -->
+    <string name="temperature2">"2차 온도"</string>
+    <string name="pwm"></string>
+    <string name="max_pwm"></string>
+
+    <!-- Fuzzy -->
+    <string name="angle">"앞뒤 기울기"</string>
+
+    <!-- Fuzzy -->
+    <string name="roll">"좌우 기울기"</string>
+    <string name="fan_status">"팬 상태"</string>
+    <string name="mode">"모드"</string>
+    <string name="total_distance">"총 거리"</string>
+    <string name="torque">"토크"</string>
+    <string name="dynamic_speed_limit">"속도 제한"</string>
+    <string name="dynamic_current_limit">"전류 제한"</string>
+    <string name="cpu_temp">"CPU 온도"</string>
+    <string name="imu_temp">"관성측정장치 온도"</string>
+    <string name="motor_power">"모터 출력"</string>
+
+    <!-- Fuzzy -->
+    <string name="total">"전체"</string>
+    <string name="name">"이름"</string>
+    <string name="model">"모델"</string>
+    <string name="version">"버전"</string>
+    <string name="serial_number">"일련번호"</string>
+    <string name="time_charge_title">"충전 시간"</string>
+
+    <!-- Fuzzy -->
+    <string name="icon_watch">"워치 아이콘"</string>
+
+    <!-- Fuzzy -->
+    <string name="icon_logging">"기록 아이콘"</string>
+
+    <!-- Fuzzy -->
+    <string name="icon_connection">"연결 아이콘"</string>
+    <string name="connection_lost_at">"%1 초 전 연결 끊김"</string>
+    <string name="enable_auto_upload_title">"자동 업로드를 활성화합니까?"</string>
+    <string name="enable_auto_upload_descriprion">"WiFi 연결 없이 자동 업로드를 할 경우 모바일 데이터를 사용하게 됩니다. 데이터 요금제가 없다면, 이로 인해 네트워크 제공자가 당신에게 과금할 수도 있습니다."</string>
+    <string name="logging_error_no_storage_permission">"외부 저장소에 대한 쓰기 권한이 없습니다. 기록을 취소합니다."</string>
+    <string name="logging_error_storage_unavailable">"외부 저장소를 사용할 수 없습니다. 기록을 취소합니다."</string>
+    <string name="logging_error_no_location_permission">"위치 기록을 요청받았으나 위치 정보에 대한 권한이 제공되지 않았습니다. 위치 정보가 기록되지 않을 것입니다."</string>
+    <string name="logging_error_gps_disabled">"GPS를 활용한 위치 기록을 요청받았으나 GPS가 비활성화되었습니다. 네트워크 데이터를 이용하여 위치 정보를 기록할 것입니다."</string>
+    <string name="logging_error_network_disabled">"GSM 네트워크를 활용한 위치 기록을 요청받았으나, 이 위치에 대한 제공자가 비활성화되었습니다. 위치 정보가 기록되지 않을 것입니다."</string>
+    <string name="logging_error_all_location_providers_disabled">"Android에서 위치 정보가 비활성화되었습니다. 위치 정보가 기록되지 않을 것입니다."</string>
+
+    <!-- Fuzzy -->
+    <string name="raw_distance">"순수 거리"</string>
+    <string name="alarm_text_speed">"속도 경고 발생됨"</string>
+    <string name="alarm_text_current">"전류 경고 발생됨"</string>
+    <string name="alarm_text_temperature">"온도 경고 발생됨"</string>
+    <string name="garmin_connectiq_enable_title">"Garmin ConnectIQ"</string>
+    <string name="garmin_connectiq_enable_description">"Garmin ConnectIQ 연결 활성화"</string>
+
+    <!-- Fuzzy -->
+    <string name="horn_mode_title">"Horn 모드"</string>
+
+    <!-- Fuzzy -->
+    <string name="horn_mode_description">"Pebble 워치의 선택 버튼을 누르면 실행됩니다"</string>
+    <string name="tilt_back_description"></string>
+    <string name="max_speed_title">"휠 속도 제한"</string>
+    <string name="alert1_title">"1차 속도 경고"</string>
+    <string name="alert2_title">"2차 속도 경고"</string>
+    <string name="alert3_title">"차 속도 경고"</string>
+    <string name="alarm3_description">"비프 알람 4회"</string>
+    <string name="alarm2_description">"비프 알람 3회"</string>
+    <string name="alarm1_description">"비프 알람 2회"</string>
+    <string name="pedals_mode_title">"발판 모드"</string>
+    <string name="led_mode_title">"LED 모드"</string>
+
+    <!-- Fuzzy -->
+    <string name="strobe_mode_title">"점멸 모드"</string>
+
+    <!-- Fuzzy -->
+    <string name="light_mode_title">"전조등 모드"</string>
+    <string name="on_off">"켬/끔"</string>
+    <string name="on_off_auto">"켬/끔/자동"</string>
+    <string name="on">"켬"</string>
+    <string name="off">"끔"</string>
+    <string name="charging">"충전 중"</string>
+    <string name="discharging">"방전 중"</string>
+    <string name="auto">"자동"</string>
+
+    <!-- Fuzzy -->
+    <string name="strobe">"점멸"</string>
+    <string name="disabled">"비활성화됨"</string>
+    <string name="enabled">"활성화됨"</string>
+    <string name="hard">"딱딱함"</string>
+    <string name="medium">"보통"</string>
+    <string name="soft">"부드러움"</string>
+    <string name="on_board_horn_ks"></string>
+
+    <!-- Fuzzy -->
+    <string name="bluetooth_audio_horn">"블루투스 오디오 사용"</string>
+    <string name="speed_settings_title">"어플리케이션 설정"</string>
+    <string name="logs_settings_title">"기록 설정"</string>
+    <string name="alarm_settings_title">"경고 설정"</string>
+
+    <!-- Fuzzy -->
+    <string name="watch_settings_title">"워치 설정"</string>
+    <string name="wheel_settings_title">"휠 설정"</string>
+    <string name="trip_settings_title">"여행 설정"</string>
+    <string name="reset_top_speed_title"></string>
+    <string name="reset_lowest_battery_title"></string>
+    <string name="reset_user_distance_title">"사용자 거리 초기화"</string>
+    <string name="edit_mac_addr_title">"MAC 주소 수정"</string>
+
+    <!-- Fuzzy -->
+    <string name="profile_name_title">"프로필 이름 수정"</string>
+    <string name="about_app_title">"WhellLog 정보"</string>
+    <string name="settings_title">"설정"</string>
+    <string name="amp">"A"</string>
+
+    <!-- Fuzzy -->
+    <string name="newton">"N*m"</string>
+    <string name="max_speed_dial_title"></string>
+    <string name="dial_measurements"></string>
+    <string name="max_speed_dial_description"></string>
+    <string name="use_mph_title">"MPH 사용"</string>
+    <string name="use_mph_description">"킬로미터가 아니라 마일로 속도를 표기합니다"</string>
+    <string name="view_blocks_title">"정보 블록"</string>
+    <string name="view_blocks_description">"속도계 아래에 정보 블록을 표시합니다"</string>
+    <string name="use_eng_alert_title">"재시작 필요"</string>
+    <string name="use_eng_alert_description">"앱에 언어 변경 사항을 적용하려면 재시작을 해 주세요"</string>
+
+    <!-- Fuzzy -->
+    <string name="use_better_percents_title">"향상된 배터리 잔량 계산"</string>
+
+    <!-- Fuzzy -->
+    <string name="use_better_percents_description">"배터리 잔량 계산 시 휠 공급사의 공식을 사용하지 않고 더 나은 식을 사용합니다"</string>
+
+    <!-- Fuzzy -->
+    <string name="fixed_percents_title">"고정된 배터리 잔량 계산"</string>
+
+    <!-- Fuzzy -->
+    <string name="fixed_percents_description">"배터리 잔량 계산 시 휠 공급사의 공식을 사용하지 않고 고정된 식을 사용합니다"</string>
+    <string name="cell_voltage_tiltback_title"></string>
+    <string name="cell_voltage_tiltback_description"></string>
+    <string name="use_pip_mode_title">"화면 속 화면 모드 활성화"</string>
+    <string name="use_pip_mode_description">"백그라운드가 아니라 화면 속 화면 모드로 돌아가도록 합니다"</string>
+    <string name="current_on_dial_title"></string>
+    <string name="current_on_dial_description"></string>
+    <string name="connection_sound_title">"연결음"</string>
+    <string name="connection_sound_description">"휠이 연결되거나 끊어질 때 소리를 재생합니다"</string>
+    <string name="no_connection_sound_title">"연결 끊김 비프음 간격"</string>
+    <string name="no_connection_sound_description"></string>
+    <string name="use_stop_music_title">"자동 음소거"</string>
+    <string name="use_stop_music_description">"속도가 3.5 km/h 미만이면 자동으로 음소거합니다"</string>
+    <string name="battery_capacity_title">"배터리 용량"</string>
+    <string name="battery_capacity_description">"Wh로 나타낸 배터리 용량"</string>
+
+    <!-- Fuzzy -->
+    <string name="charging_power_title">"충전 전류"</string>
+
+    <!-- Fuzzy -->
+    <string name="charging_power_description">"A로 나타낸 충전 전류"</string>
+    <string name="show_unknown_devices_title">"이름 없이 블루투스 표시"</string>
+    <string name="show_unknown_devices_description">"블루투스 장치를 표시할 때 이름을 나타내지 않습니다"</string>
+    <string name="connect_beep_title">"연결 소리"</string>
+    <string name="connect_beep_description">"휠 연결 시 발생될 소리"</string>
+    <string name="enable_alarms_title">"경고 활성화"</string>
+
+    <!-- Fuzzy -->
+    <string name="enable_alarms_description">"경고 시 스마트폰 진동 허용"</string>
+
+    <!-- Fuzzy -->
+    <string name="disable_phone_vibrate_title">"스마트폰 진동 비활성화"</string>
+    <string name="disable_phone_vibration_description"></string>
+    <string name="disable_phone_beep_title">"스마트폰 비프음 비활성화"</string>
+    <string name="disable_phone_beep_description"></string>
+    <string name="altered_alarms_title"></string>
+    <string name="altered_alarms_description"></string>
+    <string name="altered_alarms_pref_title"></string>
+    <string name="rotation_speed_title">"회전 속도"</string>
+
+    <!-- Fuzzy -->
+    <string name="rotation_speed_description">"당신의 휠의 회전 속도 (들어올렸을 때) 입니다"</string>
+    <string name="rotation_voltage_title"></string>
+    <string name="rotation_voltage_description"></string>
+    <string name="power_factor_title"></string>
+    <string name="power_factor_description">"무엇인지 모른다면 변경하지 마십시오. 기본값=90"</string>
+    <string name="alarm_factor1_title"></string>
+    <string name="alarm_factor1_description"></string>
+    <string name="alarm_factor2_title"></string>
+    <string name="alarm_factor2_description"></string>
+    <string name="alarm_factor3_title"></string>
+    <string name="alarm_factor3_description"></string>
+    <string name="warning_speed_title">"상세 경고"</string>
+    <string name="warning_speed_description"></string>
+    <string name="warning_pwm_title"></string>
+    <string name="warning_pwm_description"></string>
+    <string name="warning_speed_period_title">"경고 빈도"</string>
+    <string name="warning_speed_period_description"></string>
+    <string name="use_short_pwm_title"></string>
+    <string name="use_short_pwm_description"></string>
+    <string name="speed_alarm1_phone_title">"속도 경고 1"</string>
+    <string name="speed_trigger_description">"경고를 활성화할 속도 수치입니다"</string>
+    <string name="speed_alarm2_phone_title">"속도 경고 2"</string>
+    <string name="speed_alarm3_phone_title">"속도 경고 3"</string>
+
+    <!-- Fuzzy -->
+    <string name="alarm_1_battery_title">"배터리 퍼센트"</string>
+
+    <!-- Fuzzy -->
+    <string name="alarm_1_battery_description">"백분율로 나타냈을 때 경고를 활성화할 배터리 수치입니다"</string>
+
+    <!-- Fuzzy -->
+    <string name="alarm_2_battery_title">"배터리 퍼센트"</string>
+
+    <!-- Fuzzy -->
+    <string name="alarm_3_battery_title">"배터리 퍼센트"</string>
+    <string name="current_alarm_title">"전류 경고"</string>
+    <string name="current_title">"전류"</string>
+    <string name="alarm_current_description">"경고를 활성화할 전류 수치입니다"</string>
+    <string name="temperature_alarm_title">"온도 경고"</string>
+    <string name="temperature_title">"온도"</string>
+    <string name="alarm_temperature_description">"경고를 활성화할 온도 수치입니다"</string>
+    <string name="speed_axis">"속도"</string>
+    <string name="current_axis">"전류"</string>
+    <string name="no_chart_data">"정보를 사용할 수 없음"</string>
+    <string name="auto_log_title">"자동 기록"</string>
+    <string name="auto_log_description">"휠이 연결되면 자동으로 기록을 시작합니다"</string>
+
+    <!-- Fuzzy -->
+    <string name="auto_upload_log_ec_title">"electro.club에 업로드"</string>
+    <string name="auto_upload_log_ec_description">"electro.club 사이트에 기록을 자동으로 업로드합니다. GPS가 반드시 켜져 있어야 합니다."</string>
+    <string name="auto_upload_log_title">"기록 자동 업로드"</string>
+    <string name="auto_upload_log_description">"Google Drive에 기록을 자동으로 업로드합니다"</string>
+    <string name="log_location_title">"위치 기록"</string>
+    <string name="log_location_decription">"기록에 위치 정보를 포함합니다"</string>
+    <string name="use_gps_title">"위치 정보에 GPS 사용"</string>
+    <string name="use_gps_description">"위치 기록 시 네트워크 제공자보다 GPS를 우선적으로 사용합니다. GPS가 더 정확하지만 배터리 전원 소모가 더 클 것입니다"</string>
+    <string name="use_raw_title">"미가공 데이터 기록"</string>
+    <string name="use_raw_description">"휠의 미가공 데이터를 별도의 csv 파일에 기록합니다."</string>
+
+    <!-- Fuzzy -->
+    <string name="on_off_strobe">"끔/켬/점멸"</string>
+    <string name="soft_medium_hard">"부드러움/보통/딱딱함"</string>
+    <string name="alarm_settings_description">"경고 설정"</string>
+    <string name="alarm_mode_title">"경고 모드"</string>
+    <string name="calibration_title">"조정"</string>
+    <string name="is_gotway_mcm_title">"휠을 Gotway MCM로 설정"</string>
+    <string name="is_gotway_mcm_description">"당신의 휠이 Gotway MCM이며, 속도와 거리를 비롯한 여러 값이 잘못 표기될 경우, 올바르게 표기되도록 합니다."</string>
+    <string name="ks18l_scaler_title"></string>
+    <string name="ks18l_scaler_description"></string>
+    <string name="battery_voltage_title">"배터리 전압"</string>
+    <string name="battary_voltage_description">"67V/84V/100V"</string>
+    <string name="gotway_negative_title">"음의 전류 및 속도 모드"</string>
+    <string name="gotway_negative_description">"일직선으로 라이딩할 때 속도와 전류가 음수가 된다면 - 반대가 되도록 설정하시거나 절대값으로 설정하세요"</string>
+    <string name="absolute">"절대값 (양수만)"</string>
+
+    <!-- Fuzzy -->
+    <string name="reverse">"역방향"</string>
+
+    <!-- Fuzzy -->
+    <string name="straight">"정방향"</string>
+    <string name="off_level_1_alarm"></string>
+    <string name="off_level_2_alarm"></string>
+    <string name="on_level_alarm"></string>
+    <string name="metre">"m"</string>
+
+    <!-- Fuzzy -->
+    <string name="on_headlight_title">"전조등을 켭니다"</string>
+    <string name="on_headlight_description">"전조등 활성화"</string>
+    <string name="leds_settings_title"></string>
+    <string name="leds_settings_description">"측면 LED 활성화"</string>
+    <string name="disable_handle_button_title">"손잡이 버튼 비활성화"</string>
+    <string name="disable_handle_button_description">"손잡이에 있는 버튼을 눌렀을 때 휠이 정지하지 않습니다"</string>
+    <string name="speaker_volume_title">"스피커 음량"</string>
+    <string name="speaker_volume_description">"내장 스피커 음량 변경"</string>
+    <string name="pedal_horizont_title">"발판"</string>
+    <string name="pedal_horizont_description">"발판 수평 조절"</string>
+    <string name="ninebotz_settings_title">"Ninebot Z 설정은 아직 지원하지 않습니다"</string>
+    <string name="volt">"V"</string>
+    <string name="watt">"W"</string>
+    <string name="bmsBattery1Title">"배터리 1"</string>
+    <string name="bmsBattery2Title">"배터리 2"</string>
+
+    <!-- Fuzzy -->
+    <string name="bmsSn">"일련번호"</string>
+    <string name="bmsFw"></string>
+    <string name="bmsFactoryCap"></string>
+    <string name="bmsActualCap"></string>
+    <string name="bmsCycles"></string>
+    <string name="bmsChrgCount">"충전 횟수"</string>
+    <string name="bmsMfgDate"></string>
+    <string name="bmsStatus">"상태"</string>
+    <string name="bmsRemCap"></string>
+
+    <!-- Fuzzy -->
+    <string name="bmsRemPerc">"퍼센트"</string>
+    <string name="bmsCurrent">"전류"</string>
+    <string name="bmsVoltage">"전압"</string>
+    <string name="bmsTemp1">"온도 1"</string>
+    <string name="bmsTemp2">"온도 2"</string>
+    <string name="bmsHealth"></string>
+    <string name="bmsCell1">"셀 1"</string>
+    <string name="bmsCell2">"셀 2"</string>
+    <string name="bmsCell3">"셀 3"</string>
+    <string name="bmsCell4">"셀 4"</string>
+    <string name="bmsCell5">"셀 5"</string>
+    <string name="bmsCell6">"셀 6"</string>
+    <string name="bmsCell7">"셀 7"</string>
+    <string name="bmsCell8">"셀 8"</string>
+    <string name="bmsCell9">"셀 9"</string>
+    <string name="bmsCell10">"셀 10"</string>
+    <string name="bmsCell11">"셀 11"</string>
+    <string name="bmsCell12">"셀 12"</string>
+    <string name="bmsCell13">"셀 13"</string>
+    <string name="bmsCell14">"셀 14"</string>
+    <string name="bmsCell15">"셀 15"</string>
+    <string name="bmsCell16">"셀 16"</string>
+    <string name="password">"비밀번호"</string>
+    <string name="email">"이메일"</string>
+    <string name="show_page_events_description">"이벤트 페이지를 보여줍니다"</string>
+    <string name="show_page_events_title">"이벤트 페이지"</string>
+    <string name="main_view_category">"메인 뷰"</string>
+    <string name="beep_category">"비프음"</string>
+    <string name="beep_on_single_tap_title">"한 번 탭할 때 비프음"</string>
+    <string name="beep_on_single_tap_description">"메인 화면에서 한 번 탭하면 비프음이 울립니다"</string>
+    <string name="beep_on_volume_up_title">"음량 키로 비프음"</string>
+    <string name="beep_on_volume_up_description">"음량 버튼으로 비프음을 울립니다. WheelLog에서 볼륨을 조절할 수 없습니다."</string>
+    <string name="custom_beep_title">"비프음 파일 선택"</string>
+    <string name="bug_report">"버그 리포트"</string>
+    <string name="power_off">"전원 끔"</string>
+    <string name="power_off_message">"휠이 꺼집니다. 확실합니까?"</string>
+    <string name="ec_choose_transport"></string>
+    <string name="private_policy_title">"개인 정보 정책"</string>
+    <string name="private_policy"><![CDATA[앱을 사용하려면, <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">개인 정보 정책</a>과 <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">이용 약관</a>에 동의해야 합니다.]]></string>
+    <string name="private_policy_agree">"읽었으며 이에 동의합니다"</string>
+    <string name="current_mac">"MAC 주소"</string>
+    <string name="log_location_pop_up"></string>
+</resources>
