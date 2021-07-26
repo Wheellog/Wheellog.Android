@@ -170,7 +170,7 @@ public class WheelData {
 
     void playBeep(ALARM_TYPE type) {
 
-        if (WheelLog.AppConfig.getDisableSyntAlarm() && mBluetoothLeService != null) {
+        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && mBluetoothLeService != null) {
             SomeUtil.playBeep(mBluetoothLeService.getBaseContext(), true, false);
             return;
         }
