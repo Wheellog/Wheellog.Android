@@ -537,7 +537,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setSpeed(mSpeed);
             wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
             wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
-            wd.setBatteryPercent(mBatLevel);
+            wd.setBatteryLevel(mBatLevel);
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mBoardTemp * 100);
             wd.setAngle((double)mPitchAngle/100.0);

@@ -265,6 +265,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     WheelLog.AppConfig.alarmFactor2 = MathsUtil.clamp(WheelLog.AppConfig.alarmFactor1 + 10, 1,100)
                 }
             }
+            R.string.miband_fixrs_enable -> WheelLog.Notifications.updateKostilTimer()
         }
         correctState(key)
     }
