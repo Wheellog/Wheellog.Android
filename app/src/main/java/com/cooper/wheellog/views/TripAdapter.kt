@@ -187,6 +187,9 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             shareView.setOnClickListener {
                 share(tripModel)
             }
+            // Themes
+            uploadView.setImageResource(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_cloud_upload_24))
+            shareView.setImageResource(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_share_24))
         }
     }
 }

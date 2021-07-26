@@ -342,16 +342,16 @@ public class MainActivity extends AppCompatActivity {
 
         switch (WheelLog.AppConfig.getMibandMode()) {
             case Alarm:
-                miBand.setIcon(R.drawable.ic_mi_alarm);
+                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_alarm));
                 break;
             case Min:
-                miBand.setIcon(R.drawable.ic_mi_min);
+                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_min));
                 break;
             case Medium:
-                miBand.setIcon(R.drawable.ic_mi_med);
+                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_med));
                 break;
             case Max:
-                miBand.setIcon(R.drawable.ic_mi_max);
+                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_max));
                 break;
         }
 
