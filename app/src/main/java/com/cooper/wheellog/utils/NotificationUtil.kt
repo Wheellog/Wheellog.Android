@@ -13,9 +13,11 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import java.util.*
 
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
+    private var kostilTimer: Timer? = null
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
         private set
@@ -153,9 +155,28 @@ class NotificationUtil(private val context: Context) {
         }
     }
 
+    // Fix Me
+    // https://github.com/Wheellog/Wheellog.Android/pull/249
+    fun updateKostilTimer() {
+        if (WheelLog.AppConfig.mibandFixRs && kostilTimer == null) {
+            kostilTimer = Timer()
+            kostilTimer?.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && WheelData.getInstance().speedDouble > 0) {
+                        update()
+                    }
+                }
+            }, 1000, 1000)
+        } else {
+            kostilTimer?.cancel()
+            kostilTimer = null
+        }
+    }
+
     init {
         createNotificationChannel()
         builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        updateKostilTimer()
 // for test
 //        Timer().scheduleAtFixedRate(object : TimerTask() {
 //            override fun run() {

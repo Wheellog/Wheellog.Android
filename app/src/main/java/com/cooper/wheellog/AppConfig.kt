@@ -209,6 +209,10 @@ class AppConfig(var context: Context) {
     var mibandOnMainscreen: Boolean
         get() = getValue(R.string.miband_on_mainscreen_enable, false)
         set(value) = setValue(R.string.miband_on_mainscreen_enable, value)
+
+    var mibandFixRs: Boolean
+        get() = getValue(R.string.miband_fixrs_enable, false)
+        set(value) = setValue(R.string.miband_fixrs_enable, value)
     //endregion
 
     var lastMac: String
