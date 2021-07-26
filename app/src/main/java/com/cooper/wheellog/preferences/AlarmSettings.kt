@@ -35,6 +35,12 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
+            key = mac + getString(R.string.use_wheel_beep_for_alarm)
+            title = getString(R.string.use_wheel_beep_for_alarm_title)
+            summary = getString(R.string.use_wheel_beep_for_alarm_description)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
             key = mac + getString(R.string.altered_alarms)
             title = getString(R.string.altered_alarms_title)
             summary = getString(R.string.altered_alarms_description)

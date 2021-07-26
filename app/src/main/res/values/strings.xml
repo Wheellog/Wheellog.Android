@@ -11,6 +11,7 @@
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="use_wheel_beep_for_alarm" translatable="false">use_wheel_beep_for_alarm</string>
     <string name="speed_alarm1" translatable="false">speed_alarm1</string>
     <string name="speed_alarm2" translatable="false">speed_alarm2</string>
     <string name="speed_alarm3" translatable="false">speed_alarm3</string>
@@ -317,6 +318,8 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="use_wheel_beep_for_alarm_title">Use Wheel Intenal Beep for Alarm</string>
+    <string name="use_wheel_beep_for_alarm_description">Alarm will send to an internal beeper instead audio</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
     <string name="altered_alarms_pref_title">Altered alarms options</string>

@@ -405,8 +405,8 @@
     <string name="continue_this_day_log_description">Лог буде дописаний до 00.00 наступного дня.</string>
     <string name="continue_this_day_log_alert_title">Завершити лог</string>
     <string name="continue_this_day_log_alert_description">Даний лог не буде дозаписаний, якщо Ви продовжите.</string>
-    <string name="disable_alarm_synt_title">Використовувати вбудований біпер замість аудіо</string>
-    <string name="disable_alarm_synt_description">Аларми будуть передані на вбудований біпер замість навушників/колонки</string>
+    <string name="use_wheel_beep_for_alarm_title">Використовувати вбудований біпер замість аудіо</string>
+    <string name="use_wheel_beep_for_alarm_description">Аларми будуть передані на вбудований біпер замість навушників/колонки</string>
     <string name="miband_fixrs_title">Mi Band фікс для Begode RS/EX</string>
     <string name="miband_fixrs_description">Використовувати тільки якщо є проблеми з оновленням даних на Mi Band</string>
 

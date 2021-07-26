@@ -2,7 +2,6 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
@@ -244,6 +243,10 @@ class AppConfig(var context: Context) {
     var disablePhoneBeep: Boolean
         get() = getSpecific(R.string.disable_phone_beep, false)
         set(value) = setSpecific(R.string.disable_phone_beep, value)
+
+    var useWheelBeepForAlarm: Boolean
+        get() = getSpecific(R.string.use_wheel_beep_for_alarm, false)
+        set(value) = setSpecific(R.string.use_wheel_beep_for_alarm, value)
 
     var alteredAlarms: Boolean
         get() = getSpecific(R.string.altered_alarms, false)

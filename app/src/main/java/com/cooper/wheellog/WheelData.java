@@ -169,6 +169,12 @@ public class WheelData {
     }
 
     void playBeep(ALARM_TYPE type) {
+
+        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && mBluetoothLeService != null) {
+            SomeUtil.playBeep(mBluetoothLeService.getBaseContext(), true, false);
+            return;
+        }
+
         if (audioTrack != null) {
             audioTrack.flush();
             audioTrack.stop();

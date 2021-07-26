@@ -405,8 +405,8 @@
     <string name="trip_menu_share">Поделиться</string>
     <string name="trip_menu_delete_file">Удалить</string>
     <string name="trip_menu_delete_file_confirmation">Точно удалить?</string>
-    <string name="disable_alarm_synt_title">Использовать встроенную пищалку, вместо аудио</string>
-    <string name="disable_alarm_synt_description">Алармы будут уходить на встроенную пищалку колеса, вместо наушников/колонки</string>
+    <string name="use_wheel_beep_for_alarm_title">Использовать встроенную пищалку, вместо аудио</string>
+    <string name="use_wheel_beep_for_alarm_description">Алармы будут уходить на встроенную пищалку колеса, вместо наушников/колонки</string>
     <string name="miband_fixrs_title">Mi Band фикс отображения Begode RS/EX</string>
     <string name="miband_fixrs_description">Использовать если не работает отображение на Mi Band</string>
 
