@@ -396,4 +396,18 @@
     <string name="continue_this_day_log_description">Лог поездки дописывается, пока не наступит следующий день.</string>
     <string name="continue_this_day_log_alert_title">Закончить поездку?</string>
     <string name="continue_this_day_log_alert_description">Эта поездка не будет дозаписываться при следующем логировании.</string>
+    <string name="miband_desc">Смена режима Mi Band</string>
+    <string name="alarm_text_pwm">PWM аларм</string>
+    <string name="bmsSn">с/н</string>
+    <string name="bmsFw">Прошивка</string>
+    <string name="trip_menu_view_map">Показать карту</string>
+    <string name="trip_menu_upload_to_ec">Залить на electro.club</string>
+    <string name="trip_menu_share">Поделиться</string>
+    <string name="trip_menu_delete_file">Удалить</string>
+    <string name="trip_menu_delete_file_confirmation">Точно удалить?</string>
+    <string name="disable_alarm_synt_title">Использовать встроенную пищалку, вместо аудио</string>
+    <string name="disable_alarm_synt_description">Алармы будут уходить на встроенную пищалку колеса, вместо наушников/колонки</string>
+    <string name="miband_fixrs_title">Mi Band фикс отображения Begode RS/EX</string>
+    <string name="miband_fixrs_description">Использовать если не работает отображение на Mi Band</string>
+
 </resources>

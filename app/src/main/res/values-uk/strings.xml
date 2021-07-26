@@ -378,6 +378,36 @@
     <string name="icon_light">Піктобрама ліхтарика</string>
     <string name="miband_on_mainscreen_title">Mi Band в головному меню</string>
     <string name="miband_on_mainscreen_description">Показувати кнопку Mi Band на головному екрані замість кнопки годинника</string>
-
+    <string name="miband_desc">Змінити режим Mi Band</string>
+    <string name="alarm_text_pwm">PWM аларм</string>
+    <string name="newton">Н*м</string>
+    <string name="alarm_factor1_title">Початок PWM попередження</string>
+    <string name="alarm_factor1_description">Розрахунковий PWM для початку попереджень</string>
+    <string name="alarm_factor2_title">Ліміт PWM попередження</string>
+    <string name="alarm_factor2_description">Значення PWM, коли попередження перестануть перериватися</string>
+    <string name="bmsSn">с.н.</string>
+    <string name="bmsFw">Прошивка</string>
+    <string name="files_not_found">Аудіо файлів не знайдено</string>
+    <string name="replace_info_block">Замінити \"%s\" на:</string>
+    <string name="auto_log_when_moving_description">Автоматичне записування логу тільки при швидкості більше ніж 3,5 км/год.</string>
+    <string name="auto_log_when_moving_title">Автолог тільки після початку руху</string>
+    <string name="remaining_distance">Залишилося пробігу</string>
+    <string name="battery_per_km">Батарея за км</string>
+    <string name="trip_menu_view_map">Показати карту</string>
+    <string name="trip_menu_upload_to_ec">Завантажити на electro.club</string>
+    <string name="trip_menu_share">Поділитися</string>
+    <string name="trip_menu_delete_file">Видалити</string>
+    <string name="trip_menu_delete_file_confirmation">Точно видалити?</string>
+    <string name="after_connect_category">Після підключення</string>
+    <string name="auto_watch_title">Підключитися до годинника</string>
+    <string name="auto_watch_description">Автоматично запускати сервіс годинника при підключнні до колеса</string>
+    <string name="continue_this_day_log_title">Продовжити лог цього дня</string>
+    <string name="continue_this_day_log_description">Лог буде дописаний до 00.00 наступного дня.</string>
+    <string name="continue_this_day_log_alert_title">Завершити лог</string>
+    <string name="continue_this_day_log_alert_description">Даний лог не буде дозаписаний, якщо Ви продовжите.</string>
+    <string name="disable_alarm_synt_title">Використовувати вбудований біпер замість аудіо</string>
+    <string name="disable_alarm_synt_description">Аларми будуть передані на вбудований біпер замість навушників/колонки</string>
+    <string name="miband_fixrs_title">Mi Band фікс для Begode RS/EX</string>
+    <string name="miband_fixrs_description">Використовувати тільки якщо є проблеми з оновленням даних на Mi Band</string>
 
 </resources>
