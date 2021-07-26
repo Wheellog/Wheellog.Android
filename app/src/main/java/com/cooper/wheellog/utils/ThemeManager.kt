@@ -41,10 +41,10 @@ class ThemeManager {
         // menu
         ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.ajdm_watch_g
         ajdmDrawables[R.drawable.ic_action_watch_white] = R.drawable.ajdm_watch_new
-        ajdmDrawables[R.drawable.ic_mi_alarm_orig] = R.drawable.ic_mi_alarm
-        ajdmDrawables[R.drawable.ic_mi_min_orig] = R.drawable.ic_mi_min
-        ajdmDrawables[R.drawable.ic_mi_med_orig] = R.drawable.ic_mi_med
-        ajdmDrawables[R.drawable.ic_mi_max_orig] = R.drawable.ic_mi_max
+        ajdmDrawables[R.drawable.ic_mi_alarm] = R.drawable.ajdm_ic_mi_alarm
+        ajdmDrawables[R.drawable.ic_mi_min] = R.drawable.ajdm_ic_mi_min
+        ajdmDrawables[R.drawable.ic_mi_med] = R.drawable.ajdm_ic_mi_med
+        ajdmDrawables[R.drawable.ic_mi_max] = R.drawable.ajdm_ic_mi_max
         ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.ajdm_log_new_g
         ajdmDrawables[R.drawable.ic_action_logging_white] = R.drawable.ajdm_log_new
         ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.ajdm_wheel_new_g

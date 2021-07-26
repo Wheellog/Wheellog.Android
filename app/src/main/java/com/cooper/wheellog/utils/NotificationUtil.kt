@@ -90,10 +90,10 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
                 when (WheelLog.AppConfig.mibandMode) {
-                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_alarm_orig)
-                    MiBandEnum.Min -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_min_orig)
-                    MiBandEnum.Medium -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_med_orig)
-                    MiBandEnum.Max -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_max_orig)
+                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_alarm)
+                    MiBandEnum.Min -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_min)
+                    MiBandEnum.Medium -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_med)
+                    MiBandEnum.Max -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_max)
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
