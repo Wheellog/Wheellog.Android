@@ -30,7 +30,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     private var mWebServer: GarminConnectIQWebServer? = null
     private val mBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            mConnectIQ.sendMessage(mDevice, mMyApp, mapOf("dataType" to "alarmUpdate", "alarmType" to WheelData.getInstance().alarm)) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
+            mConnectIQ.sendMessage(mDevice, mMyApp, "a${WheelData.getInstance().alarm}") { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
                 Timber.d("message status: ${status.name}")
                 if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, "Failed to send an update about alarms to your Garmin device. Status: ${status.name}", Toast.LENGTH_LONG).show()
             }
@@ -206,13 +206,8 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         try {
             mWebServer = GarminConnectIQWebServer(applicationContext)
             Timber.d("port is: ${mWebServer!!.listeningPort}")
-            val message = mapOf(
-                "protocolVersion" to protocolVersion,
-                "dataType" to "connect",
-                "wheelLogVersion" to BuildConfig.VERSION_NAME,
-                "serverPort" to mWebServer!!.listeningPort
-            )
-            Timber.d("The whole connection message is $message")
+            val message = "c$protocolVersion${mWebServer!!.listeningPort}"
+            Timber.d("The connection message is $message")
             try {
                 mConnectIQ.sendMessage(mDevice, mMyApp, message) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
                     Timber.d("message status: ${status.name}")
@@ -261,33 +256,30 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     override fun serve(session: IHTTPSession): Response {
         val wd = WheelData.getInstance()
         val ac = WheelLog.AppConfig
-      
+
         return when (session.method) {
             Method.GET -> {
                 when (session.uri) {
-                    "/data" -> {
-                        val message = JSONObject()
-
-                        message.put("speed", if (wd.speedDouble.toString().length > 3) {
-                            ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
-                        } else wd.speedDouble.toString())
-                        message.put("speedLimit", ac.maxSpeed)
-                        message.put("useMph", ac.useMph)
-                        message.put("battery", wd.batteryLevel)
-                        message.put("temp", wd.temperature)
-                        message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
-                        message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
-                        message.put("isConnectedToWheel", wd.isConnected)
-                        message.put("wheelModel", wd.model)
-                        message.put("avgSpeed", wd.averageRidingSpeedDouble.toString())
-                        message.put("topSpeed", wd.topSpeedDouble.toString())
-                        message.put("voltage", wd.voltageDouble.toString())
-                        message.put("ridingTime", wd.ridingTimeString)
-                        message.put("distance", wd.distanceDouble)
-                        message.put("percentageDropUnderLoad", if (wd.batteryLowestLevel > 100) 0 else wd.batteryLowestLevel)
-
-                        return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                    }
+                    "/data" -> newFixedLengthResponse(
+                            Response.Status.OK, "application/json",
+                            arrayOf(
+                                if (wd.speedDouble.toString().length > 3) {
+                                    ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
+                                } else wd.speedDouble.toString(),
+                                ac.maxSpeed,
+                                ac.useMph,
+                                wd.batteryLevel,
+                                String.format("%02.0f", wd.calculatedPwm),
+                                String.format("%02.0f", wd.maxPwm),
+                                wd.isConnected,
+                                wd.model,
+                                wd.averageRidingSpeedDouble.toString(),
+                                wd.topSpeedDouble.toString(),
+                                wd.ridingTimeString,
+                                wd.distanceDouble,
+                                if (wd.batteryLowestLevel > 100) 0 else wd.batteryLowestLevel
+                            ).toString()
+                        ) // Send data
                     else -> {
                         Timber.i("404 Wrong endpoint")
                         newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: Endpoint not found")
