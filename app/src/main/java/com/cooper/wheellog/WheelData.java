@@ -767,7 +767,7 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower != null ? mPower : (mCurrent * mVoltage) / 10000.0);
+        return (mPower/10000.0);
     }
 
     public void setMaxPower(int power) {
@@ -775,7 +775,7 @@ public class WheelData {
     }
 
     public void setPower(int power) {
-        mPower = power;
+        mPower = power*100;
         setMaxPower(mPower);
     }
 
@@ -1215,7 +1215,7 @@ public class WheelData {
             mCurrent = (int) Math.round(mCalculatedPwm * mPhaseCurrent);
         }
         if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
-            mPower = (mCurrent * mVoltage) / 10000.0;
+            mPower = mCurrent * mVoltage;
             setMaxPower(mPower);
         }
         setMaxCurrent(mCurrent);
