@@ -1216,7 +1216,7 @@ public class WheelData {
             setCurrent((int) Math.round(mCalculatedPwm * mPhaseCurrent));
         }
         if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
-            setPower(getCurrentDouble() * mVoltage);
+            setPower((int) Math.round(getCurrentDouble() * mVoltage));
         }
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
