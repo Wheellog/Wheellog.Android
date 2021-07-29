@@ -53,4 +53,32 @@ class WheelDataTest {
         assertThat(data.batteryPerKm).isEqualTo(2)
         assertThat(data.remainingDistance).isEqualTo(0)
     }
+
+    @Test
+    fun `Max power`() {
+        // Arrange.
+        data.setPower(50)
+
+        // Act.
+        data.setPower(100)
+        data.setPower(75)
+
+        // Assert.
+        assertThat(data.powerDouble).isEqualTo(0.75)
+        assertThat(data.maxPowerDouble).isEqualTo(1)
+    }
+
+    @Test
+    fun `Max current`() {
+        // Arrange.
+        data.current = 50
+
+        // Act.
+        data.current = 100
+        data.current = 75
+
+        // Assert.
+        assertThat(data.currentDouble).isEqualTo(0.75)
+        assertThat(data.maxCurrentDouble).isEqualTo(1)
+    }
 }

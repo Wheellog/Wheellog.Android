@@ -503,11 +503,11 @@ public class WheelData {
         return mTemperature2 / 100;
     }
 
-    public double getMaxCurrent() {
+    public double getMaxCurrentDouble() {
         return mMaxCurrent / 100;
     }
 
-    public double getMaxPower() {
+    public double getMaxPowerDouble() {
         return mMaxPower / 100;
     }
 
@@ -767,28 +767,29 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower/10000.0);
+        return mPower / 100.0;
     }
 
-    public void setMaxPower(int power) {
+    private void setMaxPower(int power) {
         mMaxPower = Math.max(mMaxPower, power);
     }
 
-    public void setPower(int power) {
-        mPower = power*100;
-        setMaxPower(mPower);
+    public void setPower(int value) {
+        mPower = value;
+        setMaxPower(value);
     }
 
     public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
 
-    public void setMaxCurrent(int value) {
+    private void setMaxCurrent(int value) {
         mMaxCurrent = Math.max(mMaxCurrent, value);
     }
 
     public void setCurrent(int value) {
         mCurrent = value;
+        setMaxCurrent(value);
     }
 
     public int getCurrent() {
@@ -1212,13 +1213,11 @@ public class WheelData {
         }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int) Math.round(mCalculatedPwm * mPhaseCurrent);
+            setCurrent((int) Math.round(mCalculatedPwm * mPhaseCurrent));
         }
         if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
-            mPower = mCurrent * mVoltage;
-            setMaxPower(mPower);
+            setPower(mCurrent * mVoltage);
         }
-        setMaxCurrent(mCurrent);
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 

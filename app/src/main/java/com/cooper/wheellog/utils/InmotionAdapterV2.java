@@ -545,7 +545,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.updateRideTime();
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
-            wd.setPower(mBatPower);
+            wd.setPower(mBatPower * 100);
             wd.setWheelDistance(mMileage);
             //// state data
             int mPcMode = data[36] & 0x07; // lock, drive, shutdown, idle
