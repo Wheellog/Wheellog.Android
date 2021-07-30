@@ -50,6 +50,7 @@
         tools:targetApi="n">
         <activity android:name=".MapActivity" />
         <activity android:name=".SplashActivity"
+            android:theme="@style/SplashTheme"
             android:noHistory="true" />
         <activity
             android:name=".SettingsActivity"
@@ -83,7 +84,6 @@
             android:icon="@drawable/ajdm_notification_icon"
             android:name=".AjdmIconAlias"
             android:enabled="false"
-            android:theme="@style/AJDMTheme"
             android:targetActivity=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

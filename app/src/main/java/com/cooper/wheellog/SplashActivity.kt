@@ -2,9 +2,13 @@ package com.cooper.wheellog
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class SplashActivity: Activity() {
@@ -12,16 +16,19 @@ class SplashActivity: Activity() {
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.splash_screen)
-//        val contentView = layoutInflater.inflate(R.layout.splash_screen, null)
-//        val image = when (WheelLog.AppConfig.appTheme) {
-//            R.style.AJDMTheme -> R.drawable.ajdm_notification_icon
-//            else -> R.mipmap.ic_launcher
-//        }
-//        contentView.findViewById<ImageView>(R.id.splashImage).setImageResource(image)
-//        setContentView(contentView)
 
         val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+        } else {
+            null
+        }
+
+        GlobalScope.launch {
+            startActivity(intent, options)
+            delay(5000)
+            finish()
+        }
     }
 }
