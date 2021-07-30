@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@android:color/background_dark"/>
+        android:drawable="@drawable/background"/>
     <item
-        android:width="350dp"
-        android:height="350dp"
+        android:width="200dp"
+        android:height="200dp"
         android:drawable="@drawable/icon_splash"
         android:gravity="center">
     </item>
