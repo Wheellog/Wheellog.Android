@@ -228,6 +228,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.beep_by_wheel_title)
                 summary = getString(R.string.beep_by_wheel_description)
                 setDefaultValue(WheelLog.AppConfig.beepByWheel)
+                disableDependentsState = true
                 addPreference(this)
             }
             SwitchPreference(context).apply {
@@ -235,11 +236,12 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.custom_beep_title)
                 setDefaultValue(WheelLog.AppConfig.useCustomBeep)
                 addPreference(this)
+                dependency = getString(R.string.beep_by_wheel)
             }
         }
     }
 
-    fun selectCustomBeep(fragment: PreferencesFragment, mediaRequestCode: Int) {
+    fun selectCustomBeep(fragment: PreferencesFragment) {
         if (!WheelLog.AppConfig.useCustomBeep) {
             return
         }
@@ -289,7 +291,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 type = "audio/*"
                 addCategory(Intent.CATEGORY_OPENABLE)
             }
-            fragment.startActivityForResult(intent, mediaRequestCode)
+            fragment.mediaRequestResult.launch(intent)
         }
     }
 }

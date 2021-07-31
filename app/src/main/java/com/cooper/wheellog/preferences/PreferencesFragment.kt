@@ -10,11 +10,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.view.KeyEvent
+import android.view.View
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.preference.*
@@ -34,11 +36,64 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private var mDataWarningDisplayed = false
     private var currentScreen = SettingsScreen.Main
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
-    private val authRequestCode = 50
-    private val mediaRequestCode = 60
     private lateinit var speedSettings: SpeedSettings
     private lateinit var wheelSettings: WheelSettings
     private lateinit var alarmSettings: AlarmSettings
+
+    private val writeStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (!granted) {
+            // Access is denied
+            WheelLog.AppConfig.autoLog = false
+            WheelLog.AppConfig.enableRawData = false
+            refreshVolatileSettings()
+        }
+    }
+
+    private val readStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (!granted) {
+            // Access is denied
+            WheelLog.AppConfig.useCustomBeep = false
+            refreshVolatileSettings()
+
+        }
+    }
+
+    private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
+            if (!map.all { it.value == true }) {
+                // Any access is denied
+                WheelLog.AppConfig.useGps = false
+                refreshVolatileSettings()
+            }
+        }
+
+    private val loginActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            WheelLog.AppConfig.autoUploadEc = true
+            refreshVolatileSettings()
+            ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
+            WheelLog.AppConfig.autoUploadEc = true
+        } else {
+            ElectroClub.instance.logout()
+        }
+        refreshVolatileSettings()
+    }
+
+    val mediaRequestResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val pref = findPreference<SwitchPreference>(getString(R.string.custom_beep))
+        var isDefault = true
+        val uri = result.data?.data
+        if (result.resultCode == Activity.RESULT_OK && uri != null) {
+            isDefault = false
+            pref?.summary = uri.path
+            WheelLog.AppConfig.beepFile = uri
+        }
+        if (isDefault) {
+            pref?.summary = "default"
+            WheelLog.AppConfig.beepFile = Uri.EMPTY
+            WheelLog.AppConfig.useCustomBeep = false
+            pref?.isChecked = false
+        }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.preferences)
@@ -67,60 +122,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Timber.i("Settings onActivityResult $resultCode")
-        when (requestCode) {
-            authRequestCode -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    WheelLog.AppConfig.autoUploadEc = true
-                    refreshVolatileSettings()
-                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
-                    WheelLog.AppConfig.autoUploadEc = true
-                } else {
-                    ElectroClub.instance.logout()
-                }
-                refreshVolatileSettings()
-            }
-            mediaRequestCode -> {
-                val pref = findPreference<SwitchPreference>(getString(R.string.custom_beep))
-                var isDefault = true
-                if (resultCode == Activity.RESULT_OK && data?.data != null) {
-                    isDefault = data.data == null
-                    if (!isDefault) {
-                        pref?.summary = data.data?.path
-                        WheelLog.AppConfig.beepFile = data.data!!
-                    }
-                }
-                if (isDefault) {
-                    pref?.summary = "default"
-                    WheelLog.AppConfig.beepFile = Uri.EMPTY
-                    WheelLog.AppConfig.useCustomBeep = false
-                    pref?.isChecked = false
-                }
-            }
-        }
-    }
-
-    private fun requestPermissionsEx(permissions: Array<String>, code: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity?.requestPermissions(permissions, code)
-        } else {
-            ActivityCompat.requestPermissions(activity as Activity, permissions, code)
-        }
-    }
-
     private fun checkAndRequestPermissions() {
-        if (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                    && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
-                requestPermissionsEx(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        SettingsActivity.permissionWriteCode)
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+            && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
+            writeStoragePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && WheelLog.AppConfig.useCustomBeep) {
-            requestPermissionsEx(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    SettingsActivity.permissionReadCode)
+            readStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
         if (WheelLog.AppConfig.useGps) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -138,13 +146,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .setMessage(getString(R.string.log_location_pop_up))
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                            requestPermissionsEx(
-                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                    SettingsActivity.permissionLocationCode)
+                            locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
                         } else {
-                            requestPermissionsEx(
-                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                                    SettingsActivity.permissionLocationCode)
+                            locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION))
                         }
                     }
                     .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
@@ -178,7 +182,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = true
                                 if (WheelLog.AppConfig.ecToken == null) {
-                                    startActivityForResult(Intent(activity, LoginActivity::class.java), authRequestCode)
+                                    loginActivityResult.launch(Intent(activity, LoginActivity::class.java))
                                 } else {
                                     ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                                 }
@@ -250,7 +254,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
             R.string.custom_beep -> {
                 checkAndRequestPermissions()
-                speedSettings.selectCustomBeep(this, mediaRequestCode)
+                speedSettings.selectCustomBeep(this)
             }
             R.string.notification_buttons -> WheelLog.Notifications.update()
             R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(WheelLog.AppConfig.useBeepOnVolumeUp)
@@ -431,7 +435,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         alarmSettings.switchAlarmsIsVisible(this)
     }
 
-    fun refreshVolatileSettings() {
+    private fun refreshVolatileSettings() {
         if (currentScreen == SettingsScreen.Logs) {
             correctState(getString(R.string.auto_log))
             correctState(getString(R.string.use_raw_data))
@@ -475,6 +479,23 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         super.onResume()
         preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         setupScreen()
+
+        // override Back key
+        view?.apply {
+            isFocusableInTouchMode = true
+            requestFocus()
+            setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+                if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (currentScreen != SettingsScreen.Main) {
+                        showMainMenu()
+                        return@OnKeyListener true
+                    } else {
+                        return@OnKeyListener false
+                    }
+                }
+                false
+            })
+        }
     }
 
     override fun onPause() {
