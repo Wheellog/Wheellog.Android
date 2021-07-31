@@ -285,9 +285,9 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 Timber.wtf(getString(R.string.files_not_found))
                 WheelLog.AppConfig.useCustomBeep = false
             }
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // Android 10 or less
-            val intent = Intent("android.intent.action.OPEN_DOCUMENT").apply {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 type = "audio/*"
                 addCategory(Intent.CATEGORY_OPENABLE)
             }
