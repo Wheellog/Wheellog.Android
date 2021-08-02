@@ -41,6 +41,10 @@ class ThemeManager {
         // menu
         ajdmDrawables[R.drawable.ic_action_watch_orange] = R.drawable.ajdm_watch_g
         ajdmDrawables[R.drawable.ic_action_watch_white] = R.drawable.ajdm_watch_new
+        ajdmDrawables[R.drawable.ic_mi_alarm] = R.drawable.ajdm_ic_mi_alarm
+        ajdmDrawables[R.drawable.ic_mi_min] = R.drawable.ajdm_ic_mi_min
+        ajdmDrawables[R.drawable.ic_mi_med] = R.drawable.ajdm_ic_mi_med
+        ajdmDrawables[R.drawable.ic_mi_max] = R.drawable.ajdm_ic_mi_max
         ajdmDrawables[R.drawable.ic_action_logging_orange] = R.drawable.ajdm_log_new_g
         ajdmDrawables[R.drawable.ic_action_logging_white] = R.drawable.ajdm_log_new
         ajdmDrawables[R.drawable.ic_action_wheel_orange] = R.drawable.ajdm_wheel_new_g
@@ -57,6 +61,9 @@ class ThemeManager {
         ajdmDrawables[R.drawable.ic_baseline_vibration_24] = R.drawable.ajdm_alarm
         ajdmDrawables[R.drawable.ic_wheel_white_24] = R.drawable.ajdm_wheel_set
         ajdmDrawables[R.drawable.ic_baseline_explore_24] = R.drawable.ajdm_trip
+        //trip page
+        ajdmDrawables[R.drawable.ic_baseline_cloud_upload_24] = R.drawable.ajdm_cloud
+        ajdmDrawables[R.drawable.ic_baseline_share_24] = R.drawable.ajdm_share
     }
 
     @DrawableRes
