@@ -130,9 +130,9 @@
     <string name="absolute">Абсолютный (всегда положительный)</string>
     <string name="reverse">Обратный</string>
     <string name="straight">Прямой</string>
-    <string name="off_level_1_alarm">35 км/ч + 80% PWM</string>
+    <string name="off_level_1_alarm">35 (45) км/ч + 80% PWM</string>
     <string name="off_level_2_alarm">Только 80% PWM</string>
-    <string name="on_level_alarm">30 + 35 км/ч + 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 (45) км/ч + 80% PWM</string>
     <string name="metre">м</string>
     <string name="on_headlight_title">Включение фонаря</string>
     <string name="on_headlight_description">Включает передний фонарь для освещения дороги.</string>

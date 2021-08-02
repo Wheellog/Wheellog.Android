@@ -120,9 +120,9 @@
     <string name="is_gotway_mcm_description">Фікс для Gotway MCM</string>
     <string name="battery_voltage_title">Напруга батареї</string>
     <string name="battary_voltage_description">67В/84В/100В</string>
-    <string name="off_level_1_alarm">Відключити перше попередження.</string>
-    <string name="off_level_2_alarm">Відключити друге попередження.</string>
-    <string name="on_level_alarm">Відключити всі попередження</string>
+    <string name="off_level_1_alarm">35 (45) км/г + 80% PWM</string>
+    <string name="off_level_2_alarm">Тiльки 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 (45) км/г + 80% PWM</string>
     <string name="metre">м</string>
     <string name="on_headlight_title">Увімкнути фару</string>
     <string name="on_headlight_description">Вмикає передній ліхтар</string>

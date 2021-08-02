@@ -318,7 +318,7 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
-    <string name="use_wheel_beep_for_alarm_title">Use Wheel Intenal Beep for Alarm</string>
+    <string name="use_wheel_beep_for_alarm_title">Use Wheel built-in Beep for Alarm</string>
     <string name="use_wheel_beep_for_alarm_description">Alarm will send to an internal beeper instead audio</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
@@ -551,7 +551,7 @@
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
     <string name="remaining_distance">Remaining distance</string>
     <string name="battery_per_km">Battery per km</string>
-    <string name="trip_menu_view_map">View map (beta)</string>
+    <string name="trip_menu_view_map">View map</string>
     <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
     <string name="trip_menu_share">Share</string>
     <string name="trip_menu_delete_file">Delete file</string>
