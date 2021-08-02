@@ -562,6 +562,8 @@
     <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
     <string name="detected_battery_optimization_title">Battery optimization</string>
     <string name="detected_battery_optimization">Optimization of the phone\'s battery has been detected, this may lead to unexpected closing of the application. To fix this, go to the battery settings and disable optimization for WheelLog. Battery optimization - All apps - WheelLog - Don\'t optimize.</string>
+    <string name="detected_battery_optimization_app_button">Go to app info</string>
+    <string name="detected_battery_optimization_settings_button">Go to battery settings</string>
     <string name="continue_this_day_log_title">Continue the log of this day</string>
     <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
     <string name="continue_this_day_log_alert_title">Finish the trip?</string>
