@@ -36,11 +36,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_15
-        targetCompatibility JavaVersion.VERSION_15
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
 
@@ -55,6 +55,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'com.google.android.wearable:wearable:2.8.1'
     // coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
 }
