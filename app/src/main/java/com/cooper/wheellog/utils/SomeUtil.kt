@@ -106,7 +106,7 @@ class SomeUtil {
         /**
          * return false if in App's Battery settings "Not optimized" and true if "Optimizing battery use"
          */
-        fun isBatteryOptimizations(context: Context): Boolean {
+        private fun isBatteryOptimizations(context: Context): Boolean {
             val powerManager =
                 context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
             val name = context.applicationContext.packageName

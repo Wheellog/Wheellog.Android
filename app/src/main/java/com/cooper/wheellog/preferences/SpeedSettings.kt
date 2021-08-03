@@ -237,6 +237,12 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 addPreference(this)
             }
         }
+        SwitchPreference(context).apply {
+            key = getString(R.string.use_detect_battery_optimization)
+            title = getString(R.string.detected_battery_optimization_title)
+            setDefaultValue(WheelLog.AppConfig.detectBatteryOptimization)
+            ps.addPreference(this)
+        }
     }
 
     fun selectCustomBeep(fragment: PreferencesFragment, mediaRequestCode: Int) {
