@@ -44,6 +44,12 @@
     </Preference>
 
     <Preference
+        android:key="@string/donate"
+        android:title="@string/donate_title"
+        app:icon="@drawable/ic_donate_24">
+    </Preference>
+
+    <Preference
         android:enabled="true"
         android:icon="@drawable/ic_baseline_info_24"
         android:key="@string/about"
