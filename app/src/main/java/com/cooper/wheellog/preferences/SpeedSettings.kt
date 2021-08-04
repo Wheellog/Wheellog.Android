@@ -228,6 +228,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.beep_by_wheel_title)
                 summary = getString(R.string.beep_by_wheel_description)
                 setDefaultValue(WheelLog.AppConfig.beepByWheel)
+                disableDependentsState = true
                 addPreference(this)
             }
             SwitchPreference(context).apply {
@@ -235,11 +236,12 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.custom_beep_title)
                 setDefaultValue(WheelLog.AppConfig.useCustomBeep)
                 addPreference(this)
+                dependency = getString(R.string.beep_by_wheel)
             }
         }
     }
 
-    fun selectCustomBeep(fragment: PreferencesFragment, mediaRequestCode: Int) {
+    fun selectCustomBeep(fragment: PreferencesFragment) {
         if (!WheelLog.AppConfig.useCustomBeep) {
             return
         }
@@ -283,13 +285,13 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 Timber.wtf(getString(R.string.files_not_found))
                 WheelLog.AppConfig.useCustomBeep = false
             }
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // Android 10 or less
-            val intent = Intent("android.intent.action.OPEN_DOCUMENT").apply {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 type = "audio/*"
                 addCategory(Intent.CATEGORY_OPENABLE)
             }
-            fragment.startActivityForResult(intent, mediaRequestCode)
+            fragment.mediaRequestResult.launch(intent)
         }
     }
 }
