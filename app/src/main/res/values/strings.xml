@@ -107,6 +107,7 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
 
@@ -560,6 +561,11 @@
     <string name="auto_watch" translatable="false">auto_watch</string>
     <string name="auto_watch_title">Auto watch</string>
     <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
+    <string name="use_detect_battery_optimization_title">Detection of battery optimization</string>
+    <string name="detected_battery_optimization_title">Battery optimization</string>
+    <string name="detected_battery_optimization">Optimization of the phone\'s battery has been detected, this may lead to unexpected closing of the application. To fix this, go to the battery settings and disable optimization for WheelLog. Battery optimization - All apps - WheelLog - Don\'t optimize.</string>
+    <string name="detected_battery_optimization_app_button">Go to app info</string>
+    <string name="detected_battery_optimization_settings_button">Go to battery settings</string>
     <string name="continue_this_day_log_title">Continue the log of this day</string>
     <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
     <string name="continue_this_day_log_alert_title">Finish the trip?</string>

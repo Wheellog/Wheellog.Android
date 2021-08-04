@@ -32,6 +32,7 @@
         <item name="android:textColor">@color/wheelview_textblocks</item>
         <item name="android:textColorAlertDialogListItem">@color/wheelview_textblocks</item>
         <item name="editTextColor">@color/wheelview_textblocks</item>
+        <item name="android:textColorPrimary">@color/wheelview_textblocks</item>
         <item name="android:windowBackground">@color/primary_text</item>
         <item name="android:colorBackground">@color/primary_text</item>
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
@@ -109,7 +110,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="android:divider">@color/divider</item>
+        <item name="android:dividerHeight">3dp</item>
         <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/settings_bg</item>

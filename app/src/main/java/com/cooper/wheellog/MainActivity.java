@@ -515,6 +515,9 @@ public class MainActivity extends AppCompatActivity {
             WheelLog.VolumeKeyController.setActive(true);
         }
 
+        if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
+            SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
+        }
     }
 
     @Override
