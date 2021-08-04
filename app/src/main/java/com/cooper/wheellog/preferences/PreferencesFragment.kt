@@ -257,7 +257,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 speedSettings.selectCustomBeep(this)
             }
             R.string.notification_buttons -> WheelLog.Notifications.update()
-            R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(WheelLog.AppConfig.useBeepOnVolumeUp)
+            R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(wd.isConnected && WheelLog.AppConfig.useBeepOnVolumeUp)
             R.string.use_reconnect -> {
                 if (WheelLog.AppConfig.useReconnect)
                     wd.bluetoothLeService?.startReconnectTimer()

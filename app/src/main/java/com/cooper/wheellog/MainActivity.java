@@ -133,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
                         ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
+                    if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                        WheelLog.VolumeKeyController.setActive(true);
+                    }
                 }
                 hideSnackBar();
                 break;
@@ -147,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                    WheelLog.VolumeKeyController.setActive(false);
+                }
                 break;
         }
         mConnectionState = connectionState;
@@ -511,9 +517,6 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter());
         WheelLog.Notifications.update();
-        if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-            WheelLog.VolumeKeyController.setActive(true);
-        }
 
         if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
             SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
