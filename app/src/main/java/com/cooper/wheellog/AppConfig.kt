@@ -2,7 +2,6 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
@@ -147,6 +146,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_reconnect, false)
         set(value) = setValue(R.string.use_reconnect, value)
 
+    var detectBatteryOptimization: Boolean
+        get() = getValue(R.string.use_detect_battery_optimization, true)
+        set(value) = setValue(R.string.use_detect_battery_optimization, value)
+
     var privatePolicyAccepted: Boolean
         get() = getValue(R.string.private_policy_accepted, false)
         set(value) = setValue(R.string.private_policy_accepted, value)
@@ -188,6 +191,14 @@ class AppConfig(var context: Context) {
     var startAutoLoggingWhenIsMoving: Boolean
         get() = getValue(R.string.auto_log_when_moving, false)
         set(value) = setValue(R.string.auto_log_when_moving, value)
+
+    var continueThisDayLog: Boolean
+        get() = getValue(R.string.continue_this_day_log, false)
+        set(value) = setValue(R.string.continue_this_day_log, value)
+
+    var continueThisDayLogMacException: String
+        get() = getValue(R.string.continue_this_day_log_exception, "")
+        set(value) = setValue(R.string.continue_this_day_log_exception, value)
     //endregion    
     
     //region watch
@@ -202,6 +213,10 @@ class AppConfig(var context: Context) {
     var mibandOnMainscreen: Boolean
         get() = getValue(R.string.miband_on_mainscreen_enable, false)
         set(value) = setValue(R.string.miband_on_mainscreen_enable, value)
+
+    var mibandFixRs: Boolean
+        get() = getValue(R.string.miband_fixrs_enable, false)
+        set(value) = setValue(R.string.miband_fixrs_enable, value)
     //endregion
 
     var lastMac: String
@@ -236,6 +251,10 @@ class AppConfig(var context: Context) {
     var disablePhoneBeep: Boolean
         get() = getSpecific(R.string.disable_phone_beep, false)
         set(value) = setSpecific(R.string.disable_phone_beep, value)
+
+    var useWheelBeepForAlarm: Boolean
+        get() = getSpecific(R.string.use_wheel_beep_for_alarm, false)
+        set(value) = setSpecific(R.string.use_wheel_beep_for_alarm, value)
 
     var alteredAlarms: Boolean
         get() = getSpecific(R.string.altered_alarms, false)

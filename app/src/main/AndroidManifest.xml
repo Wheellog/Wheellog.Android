@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.cooper.wheellog">
 
     <queries>
@@ -45,8 +46,12 @@
         android:label="@string/app_name"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:theme="@style/OriginalTheme">
-        <activity android:name=".MapActivity"></activity>
+        android:theme="@style/OriginalTheme"
+        tools:targetApi="n">
+        <activity android:name=".MapActivity" />
+        <activity android:name=".SplashActivity"
+            android:theme="@style/SplashTheme"
+            android:noHistory="true" />
         <activity
             android:name=".SettingsActivity"
             android:configChanges="orientation|screenSize">
@@ -68,7 +73,7 @@
             android:icon="@mipmap/ic_launcher"
             android:name=".OriginalIconAlias"
             android:enabled="true"
-            android:targetActivity=".MainActivity">
+            android:targetActivity=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -79,7 +84,7 @@
             android:icon="@drawable/ajdm_notification_icon"
             android:name=".AjdmIconAlias"
             android:enabled="false"
-            android:targetActivity=".MainActivity">
+            android:targetActivity=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

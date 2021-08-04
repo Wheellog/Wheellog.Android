@@ -13,9 +13,11 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import java.util.*
 
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
+    private var kostilTimer: Timer? = null
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
         private set
@@ -90,10 +92,10 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
                 when (WheelLog.AppConfig.mibandMode) {
-                    MiBandEnum.Alarm -> R.drawable.ic_mi_alarm
-                    MiBandEnum.Min -> R.drawable.ic_mi_min
-                    MiBandEnum.Medium -> R.drawable.ic_mi_med
-                    MiBandEnum.Max -> R.drawable.ic_mi_max
+                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_alarm)
+                    MiBandEnum.Min -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_min)
+                    MiBandEnum.Medium -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_med)
+                    MiBandEnum.Max -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_max)
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
@@ -153,9 +155,28 @@ class NotificationUtil(private val context: Context) {
         }
     }
 
+    // Fix Me
+    // https://github.com/Wheellog/Wheellog.Android/pull/249
+    fun updateKostilTimer() {
+        if (WheelLog.AppConfig.mibandFixRs && kostilTimer == null) {
+            kostilTimer = Timer()
+            kostilTimer?.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && WheelData.getInstance().speedDouble > 0) {
+                        update()
+                    }
+                }
+            }, 1000, 1000)
+        } else {
+            kostilTimer?.cancel()
+            kostilTimer = null
+        }
+    }
+
     init {
         createNotificationChannel()
         builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        updateKostilTimer()
 // for test
 //        Timer().scheduleAtFixedRate(object : TimerTask() {
 //            override fun run() {

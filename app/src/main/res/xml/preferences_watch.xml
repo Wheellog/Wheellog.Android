@@ -21,4 +21,10 @@
         android:key="@string/miband_on_mainscreen_enable"
         android:summary="@string/miband_on_mainscreen_description"
         android:title="@string/miband_on_mainscreen_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/miband_fixrs_enable"
+        android:summary="@string/miband_fixrs_description"
+        android:title="@string/miband_fixrs_title" />
 </PreferenceScreen>

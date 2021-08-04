@@ -11,6 +11,7 @@
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="use_wheel_beep_for_alarm" translatable="false">use_wheel_beep_for_alarm</string>
     <string name="speed_alarm1" translatable="false">speed_alarm1</string>
     <string name="speed_alarm2" translatable="false">speed_alarm2</string>
     <string name="speed_alarm3" translatable="false">speed_alarm3</string>
@@ -70,6 +71,8 @@
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
     <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
+    <string name="continue_this_day_log" translatable="false">continue_this_day_log</string>
+    <string name="continue_this_day_log_exception" translatable="false">continue_this_day_log_exception</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
@@ -104,6 +107,7 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
 
@@ -315,6 +319,8 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="use_wheel_beep_for_alarm_title">Use Wheel built-in Beep for Alarm</string>
+    <string name="use_wheel_beep_for_alarm_description">Alarm will send to an internal beeper instead audio</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
     <string name="altered_alarms_pref_title">Altered alarms options</string>
@@ -394,9 +400,9 @@
     <string name="absolute">Absolute (only positive)</string>
     <string name="reverse">Reverse</string>
     <string name="straight">Straight</string>
-    <string name="off_level_1_alarm">35 km/h + 80% PWM</string>
+    <string name="off_level_1_alarm">35 (45) km/h + 80% PWM</string>
     <string name="off_level_2_alarm">80% PWM only</string>
-    <string name="on_level_alarm">30 + 35 km/h + 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 (45) km/h + 80% PWM</string>
     <string name="metre">m</string>
     <string name="on_headlight_title">Switch on the light</string>
     <string name="on_headlight_description">Activate headlight</string>
@@ -534,6 +540,9 @@
     <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>
     <string name="miband_on_mainscreen_enable" translatable="false">miband_on_mainscreen_enable</string>
     <string name="miband_on_mainscreen_description">Show Mi Band button on main screen instead watch button</string>
+    <string name="miband_fixrs_title">Mi Band fix for Begode RS/EX</string>
+    <string name="miband_fixrs_enable" translatable="false">miband_fixrs_enable</string>
+    <string name="miband_fixrs_description">Use this only if have no data updates on Mi Band</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
@@ -543,12 +552,22 @@
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
     <string name="remaining_distance">Remaining distance</string>
     <string name="battery_per_km">Battery per km</string>
-    <string name="trip_menu_view_map">View map (beta)</string>
+    <string name="trip_menu_view_map">View map</string>
     <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
     <string name="trip_menu_share">Share</string>
     <string name="trip_menu_delete_file">Delete file</string>
+    <string name="trip_menu_delete_file_confirmation">Delete a trip file?</string>
     <string name="after_connect_category">After connect to wheel</string>
     <string name="auto_watch" translatable="false">auto_watch</string>
     <string name="auto_watch_title">Auto watch</string>
     <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
+    <string name="use_detect_battery_optimization_title">Detection of battery optimization</string>
+    <string name="detected_battery_optimization_title">Battery optimization</string>
+    <string name="detected_battery_optimization">Optimization of the phone\'s battery has been detected, this may lead to unexpected closing of the application. To fix this, go to the battery settings and disable optimization for WheelLog. Battery optimization - All apps - WheelLog - Don\'t optimize.</string>
+    <string name="detected_battery_optimization_app_button">Go to app info</string>
+    <string name="detected_battery_optimization_settings_button">Go to battery settings</string>
+    <string name="continue_this_day_log_title">Continue the log of this day</string>
+    <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
+    <string name="continue_this_day_log_alert_title">Finish the trip?</string>
+    <string name="continue_this_day_log_alert_description">The trip will not continue the next time the log is enabled.</string>
 </resources>
