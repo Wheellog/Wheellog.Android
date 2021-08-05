@@ -57,7 +57,7 @@ public class WheelData {
     private double mCurrentLimit;
     private long mTotalDistance;
     private int mCurrent;
-    private Integer mPower = null;
+    private int mPower = 0;
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
@@ -1327,7 +1327,7 @@ public class WheelData {
         mCurrentLimit = 0;
         mTotalDistance = 0;
         mCurrent = 0;
-        mPower = null;
+        mPower = 0;
         mTemperature = 0;
         mTemperature2 = 0;
         mCpuLoad = 0;
