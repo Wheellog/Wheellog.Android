@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.cooper.wheellog.utils.BleStateEnum;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.ParserLogToWheelData;
@@ -55,8 +56,8 @@ public class LoggingService extends Service
             switch (action) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     if (mLocationManager != null && logLocationData) {
-                        int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
-                        if (connectionState == BluetoothLeService.STATE_CONNECTED) {
+                        int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BleStateEnum.Disconnected.ordinal());
+                        if (connectionState == BleStateEnum.Connected.ordinal()) {
                             mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
                         } else {
                             mLocationManager.removeUpdates(locationListener);
