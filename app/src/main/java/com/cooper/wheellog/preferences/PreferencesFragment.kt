@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.net.Uri
@@ -38,7 +39,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private val dialogTag = "wheellog.MainPreferenceFragment.DIALOG"
     private lateinit var speedSettings: SpeedSettings
     private lateinit var wheelSettings: WheelSettings
-    private lateinit var alarmSettings: AlarmSettings
+    private lateinit var generalSettings: GeneralSettings
 
     private val writeStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (!granted) {
@@ -99,14 +100,14 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         addPreferencesFromResource(R.xml.preferences)
         speedSettings = SpeedSettings(requireContext(), preferenceScreen)
         wheelSettings = WheelSettings(requireContext(), preferenceScreen)
-        alarmSettings = AlarmSettings(requireContext(), preferenceScreen)
+        generalSettings = GeneralSettings(requireContext(), preferenceScreen)
         changeWheelType()
         checkAndRequestPermissions()
     }
 
     private fun changeWheelType() {
         switchSpecificSettingsIsVisible()
-        alarmSettings.switchAlarmsIsVisible(this)
+        generalSettings.switchAlarmsIsVisible(this)
     }
 
     override fun onDisplayPreferenceDialog(preference: Preference?) {
@@ -171,7 +172,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         when (WheelLog.AppConfig.getResId(resName)) {
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
-            R.string.alarms_enabled, R.string.altered_alarms -> alarmSettings.switchAlarmsIsVisible(this)
+            R.string.alarms_enabled, R.string.altered_alarms -> generalSettings.switchAlarmsIsVisible(this)
             R.string.auto_upload_ec -> {
                 // TODO check user token
                 if (WheelLog.AppConfig.autoUploadEc) {
@@ -299,6 +300,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 val wheelButton: Preference? = findPreference(getString(R.string.wheel_settings))
                 val tripButton: Preference? = findPreference(getString(R.string.trip_settings))
                 val aboutButton: Preference? = findPreference(getString(R.string.about))
+                val donateButton: Preference? = findPreference(getString(R.string.donate))
                 speedButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Speed
                     speedSettings.fill(WheelData.getInstance().mac + "_")
@@ -322,7 +324,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 alarmButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Alarms
-                    alarmSettings.fill(WheelData.getInstance().mac + "_")
+                    generalSettings.fill(WheelData.getInstance().mac + "_")
                     setupScreen()
                     true
                 }
@@ -362,6 +364,21 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .show()
                     true
                 }
+                donateButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    val kvm = mapOf(
+                        "Paypal" to "https://paypal.me/wheellog",
+                        "Patreon" to "https://patreon.com/paymicro",
+                        "Credit card (only from russian bank)" to "https://tinkoff.ru/sl/6iw4b0ugfpC")
+                    AlertDialog.Builder(requireActivity())
+                        .setTitle(R.string.donate_title)
+                        .setItems(kvm.keys.toTypedArray()) { _, which ->
+                            val uri = Uri.parse(kvm[kvm.keys.elementAt(which)])
+                            startActivity(Intent(ACTION_VIEW, uri))
+                        }
+                        .setIcon(R.drawable.ic_donate_24)
+                        .show()
+                    true
+                }
                 // Themes
                 if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
                     speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_speedometer_white_24dp))
@@ -371,6 +388,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_wheel_white_24))
                     tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_explore_24))
                     findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_bug_report_24))
+                    donateButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_donate_24))
                     aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_info_24))
                 }
             }
@@ -385,7 +403,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Alarms -> {
                 tb.title = getText(R.string.alarm_settings_title)
-                alarmSettings.switchAlarmsIsVisible(this)
+                generalSettings.switchAlarmsIsVisible(this)
             }
             SettingsScreen.Watch -> {
                 tb.title = getText(R.string.watch_settings_title)
@@ -432,7 +450,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
 
         switchSpecificSettingsIsVisible()
-        alarmSettings.switchAlarmsIsVisible(this)
+        generalSettings.switchAlarmsIsVisible(this)
     }
 
     private fun refreshVolatileSettings() {

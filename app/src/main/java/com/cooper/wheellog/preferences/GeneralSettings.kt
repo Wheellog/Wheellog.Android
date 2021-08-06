@@ -12,7 +12,7 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.MathsUtil
 
-class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
+class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
 
     override fun fill(mac: String) {
         ps.removeAll()

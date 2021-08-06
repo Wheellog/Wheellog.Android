@@ -6,6 +6,7 @@
     <string name="watch_preferences" translatable="false">watch_preferences</string>
     <string name="wheel_settings" translatable="false">wheel_settings</string>
     <string name="trip_settings" translatable="false">trip_settings</string>
+    <string name="donate" translatable="false">donate</string>
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
@@ -469,6 +470,7 @@
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
+    <string name="donate_title">Donate</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>
