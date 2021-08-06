@@ -6,6 +6,7 @@
     <string name="watch_preferences" translatable="false">watch_preferences</string>
     <string name="wheel_settings" translatable="false">wheel_settings</string>
     <string name="trip_settings" translatable="false">trip_settings</string>
+    <string name="donate" translatable="false">donate</string>
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
@@ -107,6 +108,7 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
 
@@ -318,7 +320,7 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
-    <string name="use_wheel_beep_for_alarm_title">Use Wheel Intenal Beep for Alarm</string>
+    <string name="use_wheel_beep_for_alarm_title">Use Wheel built-in Beep for Alarm</string>
     <string name="use_wheel_beep_for_alarm_description">Alarm will send to an internal beeper instead audio</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
@@ -468,6 +470,7 @@
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
+    <string name="donate_title">Donate</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>
@@ -551,7 +554,7 @@
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
     <string name="remaining_distance">Remaining distance</string>
     <string name="battery_per_km">Battery per km</string>
-    <string name="trip_menu_view_map">View map (beta)</string>
+    <string name="trip_menu_view_map">View map</string>
     <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
     <string name="trip_menu_share">Share</string>
     <string name="trip_menu_delete_file">Delete file</string>
@@ -560,6 +563,11 @@
     <string name="auto_watch" translatable="false">auto_watch</string>
     <string name="auto_watch_title">Auto watch</string>
     <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
+    <string name="use_detect_battery_optimization_title">Detection of battery optimization</string>
+    <string name="detected_battery_optimization_title">Battery optimization</string>
+    <string name="detected_battery_optimization">Optimization of the phone\'s battery has been detected, this may lead to unexpected closing of the application. To fix this, go to the battery settings and disable optimization for WheelLog. Battery optimization - All apps - WheelLog - Don\'t optimize.</string>
+    <string name="detected_battery_optimization_app_button">Go to app info</string>
+    <string name="detected_battery_optimization_settings_button">Go to battery settings</string>
     <string name="continue_this_day_log_title">Continue the log of this day</string>
     <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
     <string name="continue_this_day_log_alert_title">Finish the trip?</string>

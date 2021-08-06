@@ -2,7 +2,6 @@ package com.cooper.wheellog.utils
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
-import com.cooper.wheellog.BluetoothLeService
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
@@ -20,11 +19,11 @@ class GotwayVirtualAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
-        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
+        every { data.bleConnector.context } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY_VIRTUAL
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
-        mockkStatic(BluetoothLeService::class)
+        mockkStatic(BleConnector::class)
         every { WheelData.getInstance() } returns data
     }
 

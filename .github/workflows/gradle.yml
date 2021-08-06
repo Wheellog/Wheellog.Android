@@ -14,11 +14,15 @@ jobs:
   gradle-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up JAVA
+      uses: actions/setup-java@v2
       with:
-        java-version: 1.8
+        distribution: 'adopt'
+        java-version: '15'
+        check-latest: true
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew

@@ -21,7 +21,7 @@ class VeteranAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
-        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
+        every { data.bleConnector.context } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.VETERAN
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)

@@ -65,8 +65,8 @@ class NotificationUtil(private val context: Context) {
                     PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
         }
         val wd = WheelData.getInstance()
-        val connectionState = wd.bluetoothLeService?.connectionState
-                ?: BluetoothLeService.STATE_DISCONNECTED
+        val connectionState = wd.bleConnector?.connectionState
+                ?: BleStateEnum.Disconnected
         val batteryLevel = wd.batteryLevel
         val temperature = wd.temperature
         val distance = wd.distanceDouble
@@ -75,7 +75,7 @@ class NotificationUtil(private val context: Context) {
         val title_ride = WheelData.getInstance().getRideTimeString()
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
-        if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
+        if (connectionState == BleStateEnum.Connected || distance + temperature + batteryLevel + speed > 0) {
             if (WheelLog.AppConfig.mibandMode == MiBandEnum.Alarm) {
                 notificationView.setTextViewText(R.id.text_message, context.getString(R.string.alarmmiband))
             } else {
@@ -108,8 +108,8 @@ class NotificationUtil(private val context: Context) {
         }
         notificationView.setImageViewResource(R.id.ib_connection,
                 when (connectionState) {
-                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_light_orange)
-                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange)
+                    BleStateEnum.Connecting -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_light_orange)
+                    BleStateEnum.Connected -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange)
                     else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
@@ -129,7 +129,7 @@ class NotificationUtil(private val context: Context) {
                 .priority = NotificationCompat.PRIORITY_LOW
 
         builder.setContentTitle(
-                if (connectionState == BluetoothLeService.STATE_CONNECTED && distance + temperature + batteryLevel + speed > 0)
+                if (connectionState == BleStateEnum.Connected && distance + temperature + batteryLevel + speed > 0)
                     title_ride
                 else
                     title)
