@@ -54,6 +54,7 @@ import timber.log.Timber;
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity {
     public static AudioManager audioManager = null;
+    public static Logger logger;
 
     private EventsLoggingTree eventsLoggingTree;
 
@@ -191,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelData.getInstance().setConnected(connectionState == BleStateEnum.Connected);
                     switch (connectionState) {
                         case Connected:
-                            if (!LoggingService.isInstanceCreated() &&
+                            if (!logger.isStarted() &&
                                     WheelLog.AppConfig.getAutoLog() &&
                                     !WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving()) {
                                 toggleLoggingService();
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                     if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
                         WheelLog.Notifications.update();
                     }
-                    if (!LoggingService.isInstanceCreated() &&
+                    if (!logger.isStarted() &&
                             WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving() &&
                             WheelLog.AppConfig.getAutoLog() &&
                             WheelData.getInstance().getSpeedDouble() > 3.5) {
@@ -345,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
             miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_white));
         }
 
-        if (LoggingService.isInstanceCreated()) {
+        if (logger.isStarted()) {
             miLogging.setTitle(R.string.stop_data_service);
             miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange));
         } else {
@@ -433,6 +434,7 @@ public class MainActivity extends AppCompatActivity {
         setTheme(WheelLog.AppConfig.getAppTheme());
 
         super.onCreate(savedInstanceState);
+        logger = new Logger(getApplicationContext());
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
         WheelData.initiate();
@@ -525,9 +527,11 @@ public class MainActivity extends AppCompatActivity {
         if (wearOs != null) {
             wearOs.stop();
         }
+        if (logger != null) {
+            logger.stop();
+        }
         stopPebbleService();
         stopGarminConnectIQ();
-        stopLoggingService();
         WheelData.getInstance().full_reset();
         if (getBleConnector() != null) {
             WheelData.getInstance().setBleConnector(null);
@@ -537,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
         new CountDownTimer(60000 /* 1 min */, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if (!LoggingService.isInstanceCreated()) {
+                if (logger == null || !logger.isStarted()) {
                     onFinish();
                 }
             }
@@ -583,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                if (LoggingService.isInstanceCreated() && WheelLog.AppConfig.getContinueThisDayLog()) {
+                if (logger.isStarted() && WheelLog.AppConfig.getContinueThisDayLog()) {
                     AlertDialog dialog = new AlertDialog.Builder(this)
                             .setTitle(R.string.continue_this_day_log_alert_title)
                             .setMessage(R.string.continue_this_day_log_alert_description)
@@ -693,12 +697,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //region services
-    private void stopLoggingService() {
-        if (LoggingService.isInstanceCreated()) {
-            toggleLoggingService();
-        }
-    }
-
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingServiceLegacy() {
         toggleLoggingService();
@@ -706,15 +704,15 @@ public class MainActivity extends AppCompatActivity {
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingService() {
-        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
-        if (LoggingService.isInstanceCreated()) {
-            stopService(dataLoggerServiceIntent);
+        if (logger.isStarted()) {
+            logger.stop();
             if (!onDestroyProcess) {
                 new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips(), 200);
             }
         }
-        else if (mConnectionState == BleStateEnum.Connected)
-            startService(dataLoggerServiceIntent);
+        else if (mConnectionState == BleStateEnum.Connected) {
+            logger.start();
+        }
     }
 
     private void stopPebbleService() {

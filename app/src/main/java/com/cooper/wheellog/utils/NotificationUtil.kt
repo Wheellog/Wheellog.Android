@@ -113,7 +113,7 @@ class NotificationUtil(private val context: Context) {
                     else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
-                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
+                if (MainActivity.logger?.isStarted == true) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
                 else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_grey))
         notificationView.setImageViewResource(R.id.ib_watch,
                 if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange)
