@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!logger.isStarted() &&
                                     WheelLog.AppConfig.getAutoLog() &&
                                     !WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving()) {
-                                toggleLoggingService();
+                                toggleLogger();
                             }
                             if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
                                 KingsongAdapter.getInstance().requestNameData();
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                             WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving() &&
                             WheelLog.AppConfig.getAutoLog() &&
                             WheelData.getInstance().getSpeedDouble() > 3.5) {
-                        toggleLoggingService();
+                        toggleLogger();
                     }
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
@@ -299,9 +299,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void toggleLogging() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            toggleLoggingService();
+            toggleLogger();
         } else {
-            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithPermissionCheck(this);
+            MainActivityPermissionsDispatcher.toggleLoggerLegacyWithPermissionCheck(this);
         }
     }
 
@@ -698,12 +698,12 @@ public class MainActivity extends AppCompatActivity {
 
     //region services
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void toggleLoggingServiceLegacy() {
-        toggleLoggingService();
+    void toggleLoggerLegacy() {
+        toggleLogger();
     }
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void toggleLoggingService() {
+    void toggleLogger() {
         if (logger.isStarted()) {
             logger.stop();
             if (!onDestroyProcess) {

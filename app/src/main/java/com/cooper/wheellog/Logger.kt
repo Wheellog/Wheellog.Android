@@ -72,6 +72,9 @@ class Logger(val context: Context) {
     }
 
     private fun updateFile() {
+        if (!isStarted) {
+            return
+        }
         var locationDataString = ""
         if (logLocationData) {
             var longitude = ""
@@ -129,7 +132,7 @@ class Logger(val context: Context) {
     }
 
     // Define a listener that responds to location updates
-    var locationListener: LocationListener = LocationListener { location ->
+    private var locationListener: LocationListener = LocationListener { location ->
         // Called when a new location is found by the network location provider.
         mLocation = location
     }
