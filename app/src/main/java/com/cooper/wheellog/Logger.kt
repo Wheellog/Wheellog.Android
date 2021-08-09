@@ -33,30 +33,8 @@ class Logger(val context: Context) {
 
     private val mBluetoothUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                Constants.ACTION_BLUETOOTH_CONNECTION_STATE ->
-                    if (mLocationManager != null && logLocationData) {
-                        val connectionState = intent.getIntExtra(
-                            Constants.INTENT_EXTRA_CONNECTION_STATE,
-                            BleStateEnum.Disconnected.ordinal
-                        )
-                        if (connectionState == BleStateEnum.Connected.ordinal) {
-                            if (PermissionsUtil.checkLocationPermission(context)) {
-                                mLocationManager!!.requestLocationUpdates(
-                                    mLocationProvider,
-                                    250,
-                                    0f,
-                                    locationListener
-                                )
-                            } else {
-                                showToast(R.string.logging_error_no_location_permission)
-                            }
-
-                        } else {
-                            mLocationManager!!.removeUpdates(locationListener)
-                        }
-                    }
-                Constants.ACTION_WHEEL_DATA_AVAILABLE -> updateFile()
+            if (intent.action == Constants.ACTION_WHEEL_DATA_AVAILABLE) {
+                updateFile()
             }
         }
     }
