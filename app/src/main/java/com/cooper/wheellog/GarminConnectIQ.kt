@@ -274,7 +274,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
                         message.put("torque", wd.torque)
                         message.put("power", wd.powerDouble)
-                        message.put("maxPower", wd.maxPower)
+                        message.put("maxPower", wd.maxPowerDouble)
 
                         message.put("connectedToWheel", wd.isConnected)
 

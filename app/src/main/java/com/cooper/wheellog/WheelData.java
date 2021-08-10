@@ -48,7 +48,7 @@ public class WheelData {
     private double mCurrentLimit;
     private long mTotalDistance;
     private int mCurrent;
-    private Integer mPower = null;
+    private int mPower = 0;
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
@@ -498,11 +498,11 @@ public class WheelData {
         return mTemperature2 / 100;
     }
 
-    public double getMaxCurrent() {
+    public double getMaxCurrentDouble() {
         return mMaxCurrent / 100;
     }
 
-    public double getMaxPower() {
+    public double getMaxPowerDouble() {
         return mMaxPower / 100;
     }
 
@@ -755,7 +755,6 @@ public class WheelData {
 
     public void setVoltage(int voltage) {
         mVoltage = voltage;
-        mMaxPower = Math.max(mMaxPower, mCurrent * mVoltage / 100.0);
     }
 
     double getVoltageSagDouble() {
@@ -763,21 +762,29 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower != null ? mPower : (mCurrent * mVoltage) / 10000.0);
+        return mPower / 100.0;
     }
 
-    public void setPower(int power) {
-        mPower = power;
+    private void setMaxPower(int power) {
         mMaxPower = Math.max(mMaxPower, power);
+    }
+
+    public void setPower(int value) {
+        mPower = value;
+        setMaxPower(value);
     }
 
     public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
 
+    private void setMaxCurrent(int value) {
+        mMaxCurrent = Math.max(mMaxCurrent, value);
+    }
+
     public void setCurrent(int value) {
         mCurrent = value;
-        mMaxCurrent = Math.max(mMaxCurrent, value);
+        setMaxCurrent(value);
     }
 
     public int getCurrent() {
@@ -1201,7 +1208,10 @@ public class WheelData {
         }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int) Math.round(mCalculatedPwm * mPhaseCurrent);
+            setCurrent((int) Math.round(mCalculatedPwm * mPhaseCurrent));
+        }
+        if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
+            setPower((int) Math.round(getCurrentDouble() * mVoltage));
         }
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
@@ -1312,7 +1322,7 @@ public class WheelData {
         mCurrentLimit = 0;
         mTotalDistance = 0;
         mCurrent = 0;
-        mPower = null;
+        mPower = 0;
         mTemperature = 0;
         mTemperature2 = 0;
         mCpuLoad = 0;
