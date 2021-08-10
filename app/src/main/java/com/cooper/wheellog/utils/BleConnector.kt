@@ -555,6 +555,9 @@ class BleConnector(val context: Context) {
     }
 
     private fun broadcastConnectionUpdate(newState: BleStateEnum, auto_connect: Boolean = false) {
+        if (connectionState == newState) {
+            return
+        }
         connectionState = newState
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.ordinal)
