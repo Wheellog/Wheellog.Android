@@ -79,7 +79,6 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setWheelDistance(distance);
                     wd.setTemperature(temperature);
                     wd.setPhaseCurrent(phaseCurrent);
-                    wd.setCurrent(phaseCurrent);
                     wd.setVoltage(voltage);
                     wd.setVoltageSag(voltage);
                     wd.setBatteryLevel(battery);
