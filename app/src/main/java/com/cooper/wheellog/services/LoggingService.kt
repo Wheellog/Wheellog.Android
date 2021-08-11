@@ -1,6 +1,7 @@
-package com.cooper.wheellog
+package com.cooper.wheellog.services
 
 import android.annotation.SuppressLint
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,7 +11,12 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Environment
+import android.os.IBinder
 import android.widget.Toast
+import com.cooper.wheellog.ElectroClub
+import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.*
 import timber.log.Timber
 import java.io.IOException
@@ -18,7 +24,7 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Logger(val context: Context) {
+class LoggingService: Service() {
     private lateinit var sdf: SimpleDateFormat
     private var mLocation: Location? = null
     private var mLastLocation: Location? = null
@@ -27,15 +33,231 @@ class Logger(val context: Context) {
     private var mLocationProvider = LocationManager.NETWORK_PROVIDER
     private var logLocationData = false
     private lateinit var fileUtil: FileUtil
-    var isStarted: Boolean = false
-        private set
 
 
     private val mBluetoothUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Constants.ACTION_WHEEL_DATA_AVAILABLE) {
-                updateFile()
+            when (intent.action) {
+                Constants.ACTION_BLUETOOTH_CONNECTION_STATE ->
+                    if (mLocationManager != null && logLocationData) {
+                        val connectionState = intent.getIntExtra(
+                            Constants.INTENT_EXTRA_CONNECTION_STATE,
+                            BleStateEnum.Disconnected.ordinal
+                        )
+                        if (connectionState == BleStateEnum.Connected.ordinal) {
+                            if (PermissionsUtil.checkLocationPermission(context)) {
+                                mLocationManager!!.requestLocationUpdates(
+                                    mLocationProvider,
+                                    250,
+                                    0f,
+                                    locationListener
+                                )
+                            } else {
+                                showToast(R.string.logging_error_no_location_permission)
+                            }
+
+                        } else {
+                            mLocationManager!!.removeUpdates(locationListener)
+                        }
+                    }
+                Constants.ACTION_WHEEL_DATA_AVAILABLE -> updateFile()
             }
+        }
+    }
+
+    private fun start(): Boolean {
+        fileUtil = FileUtil(applicationContext)
+
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
+        applicationContext.registerReceiver(mBluetoothUpdateReceiver, intentFilter)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!PermissionsUtil.checkExternalFilePermission(applicationContext)) {
+                showToast(R.string.logging_error_no_storage_permission)
+                return false
+            }
+            if (!isExternalStorageReadable() || !isExternalStorageWritable()) {
+                showToast(R.string.logging_error_storage_unavailable)
+                return false
+            }
+        }
+
+        logLocationData = WheelLog.AppConfig.logLocationData
+
+        if (logLocationData && !PermissionsUtil.checkLocationPermission(applicationContext)) {
+            showToast(R.string.logging_error_no_location_permission)
+            logLocationData = false
+        }
+
+        sdf = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US)
+
+        var writeToLastLog = false
+        val mac = WheelData.getInstance().mac
+        if (WheelLog.AppConfig.continueThisDayLog &&
+            WheelLog.AppConfig.continueThisDayLogMacException != mac
+        ) {
+            val lastFileUtil = FileUtil.getLastLog(applicationContext)
+            if (lastFileUtil != null &&
+                lastFileUtil.file.path.contains(mac.replace(':', '_'))
+            ) {
+                fileUtil = lastFileUtil
+                // parse prev log for filling wheeldata values
+                val parser = ParserLogToWheelData()
+                parser.parseFile(fileUtil)
+                fileUtil.prepareStream()
+                writeToLastLog = true
+            }
+        }
+
+        if (!writeToLastLog) {
+            val sdFormatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
+            val filename = sdFormatter.format(Date()) + ".csv"
+            if (!fileUtil.prepareFile(filename, WheelData.getInstance().mac)) {
+                return false
+            }
+            WheelLog.AppConfig.continueThisDayLogMacException = ""
+        }
+
+        var locationHeaderString = ""
+        if (logLocationData) {
+            mLocationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if (mLocationManager == null) {
+                return false
+            }
+            val isGPSEnabled: Boolean = mLocationManager!!
+                .isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+            // Getting Network Provider status
+            val isNetworkEnabled: Boolean = mLocationManager!!
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+            // Getting if the users wants to use GPS
+            var useGPS = WheelLog.AppConfig.useGps
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                logLocationData = false
+                mLocationManager = null
+                showToast(R.string.logging_error_all_location_providers_disabled)
+            } else if (useGPS && !isGPSEnabled) {
+                useGPS = false
+                showToast(R.string.logging_error_gps_disabled)
+            } else if (!useGPS && !isNetworkEnabled) {
+                logLocationData = false
+                mLocationManager = null
+                showToast(R.string.logging_error_network_disabled)
+            }
+            if (logLocationData) {
+                locationHeaderString =
+                    ("${LogHeaderEnum.LATITUDE}," +
+                            "${LogHeaderEnum.LONGITUDE}," +
+                            "${LogHeaderEnum.GPS_SPEED}," +
+                            "${LogHeaderEnum.GPS_ALT}," +
+                            "${LogHeaderEnum.GPS_HEADING}," +
+                            "${LogHeaderEnum.GPS_DISTANCE},").lowercase()
+                mLocation = getLastBestLocation()
+                mLocationProvider = LocationManager.NETWORK_PROVIDER
+                if (useGPS) {
+                    mLocationProvider = LocationManager.GPS_PROVIDER
+                }
+                // Acquire a reference to the system Location Manager
+                mLocationManager?.requestLocationUpdates(
+                    mLocationProvider,
+                    250,
+                    0f,
+                    locationListener
+                )
+            }
+        }
+
+        if (!writeToLastLog) {
+            fileUtil.writeLine(
+                ("${LogHeaderEnum.DATE}," +
+                        "${LogHeaderEnum.TIME}," +
+                        locationHeaderString +
+                        "${LogHeaderEnum.SPEED}," +
+                        "${LogHeaderEnum.VOLTAGE}," +
+                        "${LogHeaderEnum.PHASE_CURRENT}," +
+                        "${LogHeaderEnum.CURRENT}," +
+                        "${LogHeaderEnum.POWER}," +
+                        "${LogHeaderEnum.TORQUE}," +
+                        "${LogHeaderEnum.PWM}," +
+                        "${LogHeaderEnum.BATTERY_LEVEL}," +
+                        "${LogHeaderEnum.DISTANCE}," +
+                        "${LogHeaderEnum.TOTALDISTANCE}," +
+                        "${LogHeaderEnum.SYSTEM_TEMP}," +
+                        "${LogHeaderEnum.TEMP2}," +
+                        "${LogHeaderEnum.TILT}," +
+                        "${LogHeaderEnum.ROLL}," +
+                        "${LogHeaderEnum.MODE}," +
+                        "${LogHeaderEnum.ALERT}").lowercase()
+            )
+        }
+
+        val serviceIntent = Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
+        serviceIntent.putExtra(
+            Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION,
+            fileUtil.absolutePath
+        )
+        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true)
+        applicationContext.sendBroadcast(serviceIntent)
+        Timber.i("DataLogger Started")
+        isStarted = true
+        return true
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (!start()) {
+            stopSelf()
+        } else {
+            startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
+        }
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (logLocationData && mLastLocation != null) {
+            WheelLog.AppConfig.lastLocationLaltitude = mLastLocation!!.latitude
+            WheelLog.AppConfig.lastLocationLongitude = mLastLocation!!.longitude
+        }
+
+        var isBusy = false
+        val path = fileUtil.absolutePath
+        fileUtil.close()
+
+        Timber.wtf("DataLogger Stopping...")
+
+        // electro.club upload
+        if (fileUtil.fileName != "" && WheelLog.AppConfig.autoUploadEc) {
+            isBusy = true
+            try {
+                Timber.wtf("Uploading %s to electro.club", fileUtil.fileName)
+                val data = fileUtil.readBytes()
+                ElectroClub.instance.uploadTrack(
+                    data,
+                    fileUtil.fileName,
+                    true
+                ) { success: Boolean ->
+                    if (!success) {
+                        Timber.wtf("Upload failed...")
+                    }
+                    realDestroy(null)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Timber.wtf("Error upload log to electro.club: %s", e.toString())
+                realDestroy(path)
+            }
+        }
+
+        if (!isBusy) {
+            realDestroy(path)
         }
     }
 
@@ -115,203 +337,15 @@ class Logger(val context: Context) {
         mLocation = location
     }
 
-    fun start(): Boolean {
-        if (isStarted) {
-            return true
-        }
-        fileUtil = FileUtil(context)
-
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
-        context.registerReceiver(mBluetoothUpdateReceiver, intentFilter)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            if (!PermissionsUtil.checkExternalFilePermission(context)) {
-                showToast(R.string.logging_error_no_storage_permission)
-                return false
-            }
-            if (!isExternalStorageReadable() || !isExternalStorageWritable()) {
-                showToast(R.string.logging_error_storage_unavailable)
-                return false
-            }
-        }
-
-        logLocationData = WheelLog.AppConfig.logLocationData
-
-        if (logLocationData && !PermissionsUtil.checkLocationPermission(context)) {
-            showToast(R.string.logging_error_no_location_permission)
-            logLocationData = false
-        }
-
-        sdf = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US)
-
-        var writeToLastLog = false
-        val mac = WheelData.getInstance().mac
-        if (WheelLog.AppConfig.continueThisDayLog &&
-            WheelLog.AppConfig.continueThisDayLogMacException != mac
-        ) {
-            val lastFileUtil = FileUtil.getLastLog(context)
-            if (lastFileUtil != null &&
-                lastFileUtil.file.path.contains(mac.replace(':', '_'))
-            ) {
-                fileUtil = lastFileUtil
-                // parse prev log for filling wheeldata values
-                val parser = ParserLogToWheelData()
-                parser.parseFile(fileUtil)
-                fileUtil.prepareStream()
-                writeToLastLog = true
-            }
-        }
-
-        if (!writeToLastLog) {
-            val sdFormatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-            val filename = sdFormatter.format(Date()) + ".csv"
-            if (!fileUtil.prepareFile(filename, WheelData.getInstance().mac)) {
-                return false
-            }
-            WheelLog.AppConfig.continueThisDayLogMacException = ""
-        }
-
-        var locationHeaderString = ""
-        if (logLocationData) {
-            mLocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (mLocationManager == null) {
-                return false
-            }
-            val isGPSEnabled: Boolean = mLocationManager!!
-                .isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-            // Getting Network Provider status
-            val isNetworkEnabled: Boolean = mLocationManager!!
-                .isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-
-            // Getting if the users wants to use GPS
-            var useGPS = WheelLog.AppConfig.useGps
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                logLocationData = false
-                mLocationManager = null
-                showToast(R.string.logging_error_all_location_providers_disabled)
-            } else if (useGPS && !isGPSEnabled) {
-                useGPS = false
-                showToast(R.string.logging_error_gps_disabled)
-            } else if (!useGPS && !isNetworkEnabled) {
-                logLocationData = false
-                mLocationManager = null
-                showToast(R.string.logging_error_network_disabled)
-            }
-            if (logLocationData) {
-                locationHeaderString =
-                    ("${LogHeaderEnum.LATITUDE}," +
-                            "${LogHeaderEnum.LONGITUDE}," +
-                            "${LogHeaderEnum.GPS_SPEED}," +
-                            "${LogHeaderEnum.GPS_ALT}," +
-                            "${LogHeaderEnum.GPS_HEADING}," +
-                            "${LogHeaderEnum.GPS_DISTANCE},").lowercase()
-                mLocation = getLastBestLocation()
-                mLocationProvider = LocationManager.NETWORK_PROVIDER
-                if (useGPS) {
-                    mLocationProvider = LocationManager.GPS_PROVIDER
-                }
-                // Acquire a reference to the system Location Manager
-                mLocationManager?.requestLocationUpdates(
-                    mLocationProvider,
-                    250,
-                    0f,
-                    locationListener
-                )
-            }
-        }
-
-        if (!writeToLastLog) {
-            fileUtil.writeLine(
-                ("${LogHeaderEnum.DATE}," +
-                        "${LogHeaderEnum.TIME}," +
-                        locationHeaderString +
-                        "${LogHeaderEnum.SPEED}," +
-                        "${LogHeaderEnum.VOLTAGE}," +
-                        "${LogHeaderEnum.PHASE_CURRENT}," +
-                        "${LogHeaderEnum.CURRENT}," +
-                        "${LogHeaderEnum.POWER}," +
-                        "${LogHeaderEnum.TORQUE}," +
-                        "${LogHeaderEnum.PWM}," +
-                        "${LogHeaderEnum.BATTERY_LEVEL}," +
-                        "${LogHeaderEnum.DISTANCE}," +
-                        "${LogHeaderEnum.TOTALDISTANCE}," +
-                        "${LogHeaderEnum.SYSTEM_TEMP}," +
-                        "${LogHeaderEnum.TEMP2}," +
-                        "${LogHeaderEnum.TILT}," +
-                        "${LogHeaderEnum.ROLL}," +
-                        "${LogHeaderEnum.MODE}," +
-                        "${LogHeaderEnum.ALERT}").lowercase()
-            )
-        }
-
-        val serviceIntent = Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
-        serviceIntent.putExtra(
-            Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION,
-            fileUtil.absolutePath
-        )
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true)
-        context.sendBroadcast(serviceIntent)
-        Timber.i("DataLogger Started")
-        isStarted = true
-        return true
-    }
-
-    fun stop() {
-        if (!isStarted) {
-            return
-        }
-
-        if (logLocationData && mLastLocation != null) {
-            WheelLog.AppConfig.lastLocationLaltitude = mLastLocation!!.latitude
-            WheelLog.AppConfig.lastLocationLongitude = mLastLocation!!.longitude
-        }
-
-        var isBusy = false
-        val path = fileUtil.absolutePath
-        fileUtil.close()
-
-        Timber.wtf("DataLogger Stopping...")
-
-        // electro.club upload
-        if (fileUtil.fileName != "" && WheelLog.AppConfig.autoUploadEc) {
-            isBusy = true
-            try {
-                Timber.wtf("Uploading %s to electro.club", fileUtil.fileName)
-                val data = fileUtil.readBytes()
-                ElectroClub.instance.uploadTrack(
-                    data,
-                    fileUtil.fileName,
-                    true
-                ) { success: Boolean ->
-                    if (!success) {
-                        Timber.wtf("Upload failed...")
-                    }
-                    realStop(null)
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Timber.wtf("Error upload log to electro.club: %s", e.toString())
-                realStop(path)
-            }
-        }
-
-        if (!isBusy) {
-            realStop(path)
-        }
-    }
-
-    private fun realStop(path: String?) {
+    private fun realDestroy(path: String?) {
         val serviceIntent = Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
         if (path.isNullOrEmpty()) {
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path)
         }
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
-        context.sendBroadcast(serviceIntent)
+        applicationContext.sendBroadcast(serviceIntent)
         try {
-            context.unregisterReceiver(mBluetoothUpdateReceiver)
+            applicationContext.unregisterReceiver(mBluetoothUpdateReceiver)
             if (mLocationManager != null && logLocationData) mLocationManager!!.removeUpdates(
                 locationListener
             )
@@ -335,6 +369,12 @@ class Logger(val context: Context) {
     }
 
     private fun showToast(message_id: Int) {
-        Toast.makeText(context, message_id, Toast.LENGTH_LONG).show()
+        Toast.makeText(applicationContext, message_id, Toast.LENGTH_LONG).show()
+    }
+
+    companion object {
+        @JvmStatic
+        var isStarted: Boolean = false
+            private set
     }
 }

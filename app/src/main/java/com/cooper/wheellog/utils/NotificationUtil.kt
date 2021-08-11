@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import com.cooper.wheellog.services.LoggingService
 import java.util.*
 
 class NotificationUtil(private val context: Context) {
@@ -113,7 +114,7 @@ class NotificationUtil(private val context: Context) {
                     else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
-                if (MainActivity.logger?.isStarted == true) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
+                if (LoggingService.isStarted) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
                 else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_grey))
         notificationView.setImageViewResource(R.id.ib_watch,
                 if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange)
