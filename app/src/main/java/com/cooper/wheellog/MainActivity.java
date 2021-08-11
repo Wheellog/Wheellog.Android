@@ -132,15 +132,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     pagerAdapter.updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
-                    if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
-                        WheelLog.Notifications.update();
-                    }
-                    if (!LoggingService.isStarted() &&
-                            WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving() &&
-                            WheelLog.AppConfig.getAutoLog() &&
-                            WheelData.getInstance().getSpeedDouble() > 3.5) {
-                        toggleLogger();
-                    }
                     break;
                 case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
                     Timber.i("Received news");
@@ -155,22 +146,27 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.ACTION_ALARM_TRIGGERED:
-                    int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
-                    double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
-                    if (alarmType < 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1f",alarmValue), 3000);
+                    ALARM_TYPE alarmType = (ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE);
+                    String alarmValue = "undefined alarm";
+                    switch (alarmType) {
+                        case SPEED1:
+                        case SPEED2:
+                        case SPEED3:
+                            alarmValue = getString(R.string.alarm_text_speed);
+                            break;
+                        case CURRENT:
+                            alarmValue = getString(R.string.alarm_text_current);
+                            break;
+                        case TEMPERATURE:
+                            alarmValue = getString(R.string.alarm_text_temperature);
+                            break;
+                        case PWM:
+                            alarmValue = getString(R.string.alarm_text_pwm);
+                            break;
                     }
-                    if (alarmType == 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_current)+String.format(": %.1f",alarmValue), 3000);
-                    }
-                    if (alarmType == 5) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_temperature)+String.format(": %.1f",alarmValue), 3000);
-                    }
-                    if (alarmType == 6) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_pwm)+String.format(": %.1f",alarmValue), 3000);
-                    }
+                    alarmValue += String.format(Locale.US, ": %.1f", intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d));
+                    showSnackBar(alarmValue, 3000);
                     break;
-
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     BleStateEnum connectionState = BleStateEnum.values()[intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BleStateEnum.Disconnected.ordinal())];
                     setConnectionState(connectionState);
@@ -187,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
                         String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
                         if (running) {
-                            showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
+                            showSnackBar(getString(R.string.started_logging, filepath), 5000);
                         }
                     }
                     setMenuIconStates();
