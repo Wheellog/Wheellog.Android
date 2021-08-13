@@ -517,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mMainViewBroadcastReceiver);
+        WheelLog.Notifications.update();
     }
 
     @Override
@@ -529,10 +530,12 @@ public class MainActivity extends AppCompatActivity {
         stopGarminConnectIQ();
         stopLoggingService();
         WheelData.getInstance().full_reset();
+        unregisterReceiver(mCoreBroadcastReceiver);
         if (getBleConnector() != null) {
             WheelData.getInstance().setBleConnector(null);
         }
         WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
+        WheelLog.Notifications.cancel();
         super.onDestroy();
         new CountDownTimer(60000 /* 1 min */, 1000) {
             @Override
@@ -547,7 +550,6 @@ public class MainActivity extends AppCompatActivity {
                 Timber.uproot(eventsLoggingTree);
                 eventsLoggingTree.close();
                 eventsLoggingTree = null;
-                unregisterReceiver(mCoreBroadcastReceiver);
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
 
