@@ -285,7 +285,7 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
     fun switchAlarmsIsVisible(fragment: PreferencesFragment) {
         val alarmsEnabled = WheelLog.AppConfig.alarmsEnabled
         val alteredAlarms = WheelLog.AppConfig.alteredAlarms
-        val ksAlteredAlarms = WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG
+        val ksAlteredAlarms = (WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG) && (WheelData.getInstance().model.compareTo("KS-18A") != 0)
         val categoryPreferencesNormal = arrayOf(
                 getString(R.string.speed_alarm1),
                 getString(R.string.speed_alarm2),

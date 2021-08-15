@@ -438,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(mMainViewBroadcastReceiver);
+        WheelLog.Notifications.update();
     }
 
     @Override
@@ -450,6 +451,7 @@ public class MainActivity extends AppCompatActivity {
         stopCoreService();
         WheelData.getInstance().full_reset();
         WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
+        WheelLog.Notifications.cancel();
         super.onDestroy();
         new CountDownTimer(60000 /* 1 min */, 1000) {
             @Override

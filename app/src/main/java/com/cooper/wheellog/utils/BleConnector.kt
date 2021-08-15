@@ -557,6 +557,9 @@ class BleConnector(val context: Context) {
     }
 
     private fun broadcastConnectionUpdate(newState: BleStateEnum, auto_connect: Boolean = false) {
+        if (connectionState == newState) {
+            return
+        }
         connectionState = newState
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.ordinal)
@@ -671,7 +674,7 @@ class BleConnector(val context: Context) {
                     writeBluetoothGattDescriptor(descriptor)
                 }
                 WHEEL_TYPE.GOTWAY.toString() -> {
-                    wd.wheelType = WHEEL_TYPE.GOTWAY
+                    wd.wheelType = WHEEL_TYPE.GOTWAY_VIRTUAL
                     setWheelServices(
                         Constants.GOTWAY_SERVICE_UUID,
                         Constants.GOTWAY_READ_CHARACTER_UUID,
