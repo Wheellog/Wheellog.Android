@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private BleStateEnum mConnectionState = BleStateEnum.Disconnected;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss ", Locale.US);
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         return WheelData.getInstance().getBleConnector();
     }
 
-    @SuppressLint("StringFormatInvalid")
     private void setConnectionState(BleStateEnum connectionState) {
         switch (connectionState) {
             case Connected:
@@ -105,10 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 if (mConnectionState == BleStateEnum.Connecting) {
                     showSnackBar(R.string.bluetooth_direct_connect_failed);
                 } else if (getBleConnector() != null && getBleConnector().getDisconnectTime() != null) {
-                    showSnackBar(
-                            getString(R.string.connection_lost_at,
-                                    timeFormatter.format(getBleConnector().getDisconnectTime())),
-                            Snackbar.LENGTH_INDEFINITE);
+                    var text = timeFormatter.format(getBleConnector().getDisconnectTime()) +
+                            getString(R.string.connection_lost_at);
+                    showSnackBar(text, Snackbar.LENGTH_INDEFINITE);
                 }
                 break;
         }
