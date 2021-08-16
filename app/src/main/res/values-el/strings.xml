@@ -64,7 +64,7 @@
 	<string name="icon_watch">Εικονίδιο Ρολογιού</string>
 	<string name="icon_logging">Εικονίδιο Καταγραφής</string>
 	<string name="icon_connection">Εικονίδιο Σύνδεσης</string>
-	<string name="connection_lost_at">Έγινε αποσύνδεση στις %1s</string>
+	<string name="connection_lost_at">Έγινε αποσύνδεση στις</string>
 	<string name="enable_auto_upload_title">Ενεργοποίηση Αυτόματης Μεταφόρτωσης ?</string>
 	<string name="enable_auto_upload_descriprion">Η αυτόματη μεταφόρτωση ενώ δεν είναι συνδεδεμένη στο WiFi θα χρησιμοποιεί τα δεδομένα σας από το κινητό. Αυτό μπορεί να έχει ως αποτέλεσμα χρεώσεις από τον πάροχο δικτύου σας.</string>
 	<string name="logging_error_no_storage_permission">Δεν υπάρχει άδεια για εγγραφή σε εξωτερικό αποθηκευτικό χώρο. Η καταγραφή ακυρώθηκε.</string>

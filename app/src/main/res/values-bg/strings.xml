@@ -64,7 +64,7 @@
 	<string name="icon_watch">Икона Часовник</string>
 	<string name="icon_logging">Икона Лог</string>
 	<string name="icon_connection">Икона на Връзката</string>
-	<string name="connection_lost_at">Връзката прекратена в %1s</string>
+	<string name="connection_lost_at">Връзката прекратена</string>
 	<string name="enable_auto_upload_title">Да включ ли авто ъплоуда?</string>
 	<string name="enable_auto_upload_descriprion">Автоматично ъплоудване докато не сте включени към WiFi ще използва вашите мобилни данни.  Това може да се таксува от вашия оператор в зависимост от вашия план за мобилни данни.</string>
 	<string name="logging_error_no_storage_permission">Нямам разрешение за запис във външното пространство. Прекратявам лога.</string>

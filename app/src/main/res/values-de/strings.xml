@@ -64,7 +64,7 @@
 	<string name="icon_watch">Uhrsymbol</string>
 	<string name="icon_logging">Logging Symbol</string>
 	<string name="icon_connection">Verbindungssymbol</string>
-	<string name="connection_lost_at">Verbindug unterbrochen %1s</string>
+	<string name="connection_lost_at">Verbindug unterbrochen</string>
 	<string name="enable_auto_upload_title">Autom. Hochladen aktivieren?</string>
 	<string name="enable_auto_upload_descriprion">Autom. Hochladen ohne WiFi benutzt mobile Daten. Das kann zusätzliche Kosten verursachen.</string>
 	<string name="logging_error_no_storage_permission">Schreiberlaubnis für den externent Speicher fehlt. Logging beendet.</string>
