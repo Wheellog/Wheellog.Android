@@ -137,7 +137,9 @@ class SomeUtil {
                     .setNegativeButton(R.string.detected_battery_optimization_settings_button) { _: DialogInterface?, _: Int ->
                         context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                     }
-                    .setNeutralButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
+                    .setNeutralButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
+                        WheelLog.AppConfig.detectBatteryOptimization = false
+                    }
                     .show()
                 return true
             }
