@@ -1,6 +1,7 @@
 package com.cooper.wheellog
 
 import android.content.Context
+import com.cooper.wheellog.services.CoreService
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
@@ -19,7 +20,7 @@ class RawDataTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
-        every { data.bleConnector.context } returns mockkClass(Context::class, relaxed = true)
+        every { data.coreService } returns mockkClass(CoreService::class, relaxed = true)
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data

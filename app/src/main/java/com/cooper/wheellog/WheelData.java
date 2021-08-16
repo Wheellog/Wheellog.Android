@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Vibrator;
 
+import com.cooper.wheellog.services.CoreService;
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -25,7 +26,7 @@ public class WheelData {
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
     private Timer ridingTimerControl;
-    private BleConnector mBleConnector;
+    private CoreService mCoreService;
 
     private long graph_last_update_time;
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
@@ -145,28 +146,31 @@ public class WheelData {
     }
 
     public BleConnector getBleConnector() {
-        return mBleConnector;
+        if (mCoreService == null) {
+            return null;
+        }
+        return mCoreService.bleConnector;
     }
 
     public boolean bluetoothCmd(byte[] cmd) {
-        if (mBleConnector == null) {
+        if (getBleConnector() == null) {
             return false;
         }
-        return mBleConnector.writeBluetoothGattCharacteristic(cmd);
+        return getBleConnector().writeBluetoothGattCharacteristic(cmd);
     }
 
-    public synchronized void setBleConnector(BleConnector value) {
-        if (mBleConnector != null) {
-            mBleConnector.disconnect();
-            mBleConnector.close();
-        }
-        mBleConnector = value;
+    public void setCoreService(CoreService value) {
+        mCoreService = value;
+    }
+
+    public CoreService getCoreService() {
+        return mCoreService;
     }
 
     void playBeep(ALARM_TYPE type) {
 
-        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && mBleConnector != null) {
-            SomeUtil.playBeep(mBleConnector.getContext(), true, false);
+        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && getBleConnector() != null) {
+            SomeUtil.playBeep(getCoreService(), true, false);
             return;
         }
 
@@ -255,7 +259,7 @@ public class WheelData {
                 mCurrent = 10000;
                 mTemperature = 6000;
                 //Timber.i("pwm = %0.2f", mCalculatedPwm);
-                Context mContext = getBleConnector().getContext();
+                Context mContext = getCoreService();
                 checkAlarmStatus(mContext);
             }
         };
@@ -582,7 +586,7 @@ public class WheelData {
         boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
         if (isChanged) {
-            Context mContext = getBleConnector().getContext();
+            Context mContext = getCoreService();
             Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
             mContext.sendBroadcast(intent);
         }
@@ -649,7 +653,7 @@ public class WheelData {
                 : String.format(Locale.US, "~%d min *", chargeTime);
     }
 
-    String getAlert() {
+    public String getAlert() {
         String nAlert = mAlert.toString();
         mAlert = new StringBuilder();
         return nAlert;
@@ -819,7 +823,7 @@ public class WheelData {
         return mTopSpeed / 100.0;
     }
 
-    int getDistance() {
+    public int getDistance() {
         return (int) (mTotalDistance - mStartTotalDistance);
     }
 

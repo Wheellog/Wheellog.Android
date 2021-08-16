@@ -1,8 +1,12 @@
 package com.cooper.wheellog
 
 import android.app.Activity
+import android.content.Context
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -157,7 +161,7 @@ class ElectroClub {
         })
     }
 
-    fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, activity: Activity, success: (String?) -> Unit) {
+    fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, context: Context, success: (String?) -> Unit) {
         if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null)
             return // not connected or already selected
 
@@ -171,10 +175,10 @@ class ElectroClub {
             }
 
             // UI with list select garage if mac isn't found
-            activity.runOnUiThread {
+            MainScope().launch {
                 var selectedTransport: Transport? = null
-                AlertDialog.Builder(activity, R.style.OriginalTheme_Dialog_Alert)
-                        .setTitle(activity.getString(R.string.ec_choose_transport))
+                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                        .setTitle(context.getString(R.string.ec_choose_transport))
                         .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
                             if (which != -1) {
                                 selectedTransport = transportList[which]

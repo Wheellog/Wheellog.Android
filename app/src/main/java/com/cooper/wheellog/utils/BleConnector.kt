@@ -36,17 +36,19 @@ class BleConnector(val context: Context) {
     var mgr: PowerManager? = null
     var wl: WakeLock? = null
     private var fileUtilRawData: FileUtil? = null
-    val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
+    private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
     private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private val wakeLogTag = "WhellLog:WakeLockTag"
 
     var connectionState = BleStateEnum.Disconnected
 
-    fun setDeviceAddress(address: String?) {
-        if (!address.isNullOrEmpty()) {
-            mBluetoothDeviceAddress = address
+    var deviceAddress: String?
+        get() = mBluetoothDeviceAddress
+        set(value) {
+            if (!value.isNullOrEmpty()) {
+                mBluetoothDeviceAddress = value
+            }
         }
-    }
 
     fun toggleConnectToWheel() {
         if (connectionState == BleStateEnum.Disconnected) {
@@ -456,11 +458,11 @@ class BleConnector(val context: Context) {
      *
      * @return A `List` of supported services.
      */
-    fun getSupportedGattServices(): List<BluetoothGattService?>? {
+    private fun getSupportedGattServices(): List<BluetoothGattService?>? {
         return if (mBluetoothGatt == null) null else mBluetoothGatt!!.services
     }
 
-    fun getGattService(service_id: UUID?): BluetoothGattService? {
+    private fun getGattService(service_id: UUID?): BluetoothGattService? {
         return mBluetoothGatt!!.getService(service_id)
     }
 
@@ -495,7 +497,7 @@ class BleConnector(val context: Context) {
             Timber.e(context.resources.getString(R.string.error_bluetooth_not_initialised))
             Toast.makeText(context, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show()
         } else {
-            setDeviceAddress(WheelLog.AppConfig.lastMac)
+            deviceAddress = WheelLog.AppConfig.lastMac
             toggleConnectToWheel()
         }
     }
@@ -577,7 +579,7 @@ class BleConnector(val context: Context) {
         return mDisconnectTime
     }
 
-    private fun setWheelServices(serviceUUID: String, charUUID: String, decriptorUUID: String?) {
+    private fun setWheelServices(serviceUUID: String, charUUID: String, descriptorUUID: String?) {
         val targetService = getGattService(UUID.fromString(serviceUUID))
         Timber.i("service UUID")
         val notifyCharacteristic = targetService?.getCharacteristic(UUID.fromString(charUUID))
@@ -587,9 +589,9 @@ class BleConnector(val context: Context) {
         }
         setCharacteristicNotification(notifyCharacteristic)
         Timber.i("notify UUID")
-        if (decriptorUUID != null) {
+        if (descriptorUUID != null) {
             val descriptor =
-                notifyCharacteristic!!.getDescriptor(UUID.fromString(decriptorUUID))
+                notifyCharacteristic!!.getDescriptor(UUID.fromString(descriptorUUID))
             Timber.i("descr UUID")
             if (descriptor == null) {
                 Timber.i("it seems that descr UUID doesn't exist")
@@ -656,7 +658,7 @@ class BleConnector(val context: Context) {
                 Timber.i("It seems to be RochWheel, force to Kingsong proto")
                 adapterName = WHEEL_TYPE.KINGSONG.toString()
             }
-            when (adapterName.toUpperCase(Locale.ROOT)) {
+            when (adapterName.uppercase(Locale.ROOT)) {
                 WHEEL_TYPE.KINGSONG.toString() -> {
                     wd.wheelType = WHEEL_TYPE.KINGSONG
                     val targetService =

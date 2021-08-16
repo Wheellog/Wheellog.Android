@@ -4,6 +4,7 @@ import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.services.CoreService
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -19,7 +20,7 @@ class GotwayVirtualAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
-        every { data.bleConnector.context } returns mockkClass(Context::class, relaxed = true)
+        every { data.coreService } returns mockkClass(CoreService::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY_VIRTUAL
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)

@@ -6,10 +6,12 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
@@ -18,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,11 +33,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.cooper.wheellog.companion.WearOs;
-
+import com.cooper.wheellog.services.CoreService;
+import com.cooper.wheellog.services.LoggingService;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -73,13 +75,13 @@ public class MainActivity extends AppCompatActivity {
     MenuItem miBand;
     MenuItem miLogging;
 
+    private CoreService mCoreService;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
     private BleStateEnum mConnectionState = BleStateEnum.Disconnected;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
     private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss ", Locale.US);
-    private WearOs wearOs;
     //endregion
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
@@ -96,15 +98,6 @@ public class MainActivity extends AppCompatActivity {
         switch (connectionState) {
             case Connected:
                 pagerAdapter.configureSecondDisplay();
-                if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
-                    WheelLog.AppConfig.setLastMac(mDeviceAddress);
-                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
-                    }
-                    if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                        WheelLog.VolumeKeyController.setActive(true);
-                    }
-                }
                 hideSnackBar();
                 break;
             case Connecting:
@@ -114,11 +107,6 @@ public class MainActivity extends AppCompatActivity {
                     var text = timeFormatter.format(getBleConnector().getDisconnectTime()) +
                             getString(R.string.connection_lost_at);
                     showSnackBar(text, Snackbar.LENGTH_INDEFINITE);
-                }
-                break;
-            case Disconnected:
-                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    WheelLog.VolumeKeyController.setActive(false);
                 }
                 break;
         }
@@ -155,150 +143,82 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.ACTION_ALARM_TRIGGERED:
-                    int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
-                    double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
-                    if (alarmType < 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1f",alarmValue), 3000);
+                    ALARM_TYPE alarmType = (ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE);
+                    String alarmValue = "undefined alarm";
+                    switch (alarmType) {
+                        case SPEED1:
+                        case SPEED2:
+                        case SPEED3:
+                            alarmValue = getString(R.string.alarm_text_speed);
+                            break;
+                        case CURRENT:
+                            alarmValue = getString(R.string.alarm_text_current);
+                            break;
+                        case TEMPERATURE:
+                            alarmValue = getString(R.string.alarm_text_temperature);
+                            break;
+                        case PWM:
+                            alarmValue = getString(R.string.alarm_text_pwm);
+                            break;
                     }
-                    if (alarmType == 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_current)+String.format(": %.1f",alarmValue), 3000);
-                    }
-                    if (alarmType == 5) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_temperature)+String.format(": %.1f",alarmValue), 3000);
-                    }
-                    if (alarmType == 6) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_pwm)+String.format(": %.1f",alarmValue), 3000);
-                    }
+                    alarmValue += String.format(Locale.US, ": %.1f", intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d));
+                    showSnackBar(alarmValue, 3000);
                     break;
-            }
-        }
-    };
-
-    /**
-     * A broadcast receiver that always works. It shouldn't have any UI work.
-     **/
-    private final BroadcastReceiver mCoreBroadcastReceiver = new BroadcastReceiver() {
-        @SuppressLint("StringFormatInvalid")
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     BleStateEnum connectionState = BleStateEnum.values()[intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BleStateEnum.Disconnected.ordinal())];
-                    Timber.i("Bluetooth state = %s", connectionState);
                     setConnectionState(connectionState);
-                    WheelData.getInstance().setConnected(connectionState == BleStateEnum.Connected);
-                    switch (connectionState) {
-                        case Connected:
-                            if (!LoggingService.isInstanceCreated() &&
-                                    WheelLog.AppConfig.getAutoLog() &&
-                                    !WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving()) {
-                                toggleLoggingService();
-                            }
-                            if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG) {
-                                KingsongAdapter.getInstance().requestNameData();
-                            }
-                            if (WheelLog.AppConfig.getAutoWatch() && wearOs == null) {
-                                toggleWatch();
-                            }
-                            WheelLog.Notifications.setNotificationMessageId(R.string.connected);
-                            break;
-                        case Disconnected:
-                            switch (WheelData.getInstance().getWheelType()) {
-                                case INMOTION:
-                                    InMotionAdapter.newInstance();
-                                case INMOTION_V2:
-                                    InmotionAdapterV2.newInstance();
-                                case NINEBOT_Z:
-                                    NinebotZAdapter.newInstance();
-                                case NINEBOT:
-                                    NinebotAdapter.newInstance();
-                            }
-                            WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
-                            break;
-                        case Connecting:
-                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
-                                WheelLog.Notifications.setNotificationMessageId(R.string.searching);
-                            } else {
-                                WheelLog.Notifications.setNotificationMessageId(R.string.connecting);
-                            }
-                            break;
-                    }
-                    WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
                     pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
-                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
-                    if (wearOs != null) {
-                        wearOs.updateData();
-                    }
-                    if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
-                        WheelLog.Notifications.update();
-                    }
-                    if (!LoggingService.isInstanceCreated() &&
-                            WheelLog.AppConfig.getStartAutoLoggingWhenIsMoving() &&
-                            WheelLog.AppConfig.getAutoLog() &&
-                            WheelData.getInstance().getSpeedDouble() > 3.5) {
-                        toggleLoggingService();
-                    }
-                    break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
-                    WheelLog.Notifications.update();
                     break;
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                        String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        var filepath = " " + intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
                         if (running) {
-                            showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
+                            var text = getString(R.string.started_logging) + filepath;
+                            showSnackBar(text, 5000);
                         }
                     }
                     setMenuIconStates();
-                    WheelLog.Notifications.update();
-                    break;
-                case Constants.NOTIFICATION_BUTTON_CONNECTION:
-                    toggleConnectToWheel();
-                    WheelLog.Notifications.update();
-                    break;
-                case Constants.NOTIFICATION_BUTTON_LOGGING:
-                    toggleLogging();
-                    WheelLog.Notifications.update();
-                    break;
-                case Constants.NOTIFICATION_BUTTON_WATCH:
-                    toggleWatch();
-                    WheelLog.Notifications.update();
-                    break;
-                case Constants.NOTIFICATION_BUTTON_BEEP:
-                    SomeUtil.playBeep(getApplicationContext());
-                    break;
-                case Constants.NOTIFICATION_BUTTON_LIGHT:
-                    if (WheelData.getInstance().getAdapter() != null) {
-                        WheelData.getInstance().getAdapter().switchFlashlight();
-                    }
-                    break;
-                case Constants.NOTIFICATION_BUTTON_MIBAND:
-                    toggleSwitchMiBand();
                     break;
             }
         }
     };
 
-    private void toggleWatch() {
-        togglePebbleService();
-        if (WheelLog.AppConfig.getGarminConnectIqEnable())
-            toggleGarminConnectIQ();
-        else
-            stopGarminConnectIQ();
-        toggleWearOs();
+    private final ServiceConnection mCoreServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mCoreService = ((CoreService.LocalBinder) service).getService();
+            WheelData.getInstance().setCoreService(mCoreService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            WheelData.getInstance().setCoreService(null);
+            Timber.e("CoreService disconnected");
+        }
+    };
+
+    private void startCoreService() {
+        bindService(new Intent(this, CoreService.class),
+                mCoreServiceConnection,
+                BIND_AUTO_CREATE);
+    }
+
+    private void stopCoreService() {
+        unbindService(mCoreServiceConnection);
     }
 
     private void toggleLogging() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            toggleLoggingService();
+            toggleLogger();
         } else {
-            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithPermissionCheck(this);
+            MainActivityPermissionsDispatcher.toggleLoggerLegacyWithPermissionCheck(this);
         }
     }
 
@@ -343,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
             miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_white));
         }
 
-        if (LoggingService.isInstanceCreated()) {
+        if (LoggingService.isStarted()) {
             miLogging.setTitle(R.string.stop_data_service);
             miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange));
         } else {
@@ -480,10 +400,8 @@ public class MainActivity extends AppCompatActivity {
             if (!mBluetoothAdapter.isEnabled())
                 startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT);
         } else {
-            WheelData.getInstance().setBleConnector(new BleConnector(getApplicationContext()));
+            startCoreService();
         }
-
-        registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter());
         WheelLog.Notifications.update();
 
         if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
@@ -504,6 +422,9 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter());
         pagerAdapter.updateScreen(true);
+        if (!LoggingService.isStarted()) {
+            pagerAdapter.updatePageOfTrips();
+        }
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -521,24 +442,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         onDestroyProcess = true;
-        if (wearOs != null) {
-            wearOs.stop();
+        if (LoggingService.isStarted()) {
+            toggleLogger();
         }
-        stopPebbleService();
-        stopGarminConnectIQ();
-        stopLoggingService();
+        unregisterReceiver(mMainViewBroadcastReceiver);
+        stopCoreService();
         WheelData.getInstance().full_reset();
-        unregisterReceiver(mCoreBroadcastReceiver);
-        if (getBleConnector() != null) {
-            WheelData.getInstance().setBleConnector(null);
-        }
         WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
         WheelLog.Notifications.cancel();
         super.onDestroy();
         new CountDownTimer(60000 /* 1 min */, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if (!LoggingService.isInstanceCreated()) {
+                if (!LoggingService.isStarted()) {
                     onFinish();
                 }
             }
@@ -583,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                if (LoggingService.isInstanceCreated() && WheelLog.AppConfig.getContinueThisDayLog()) {
+                if (LoggingService.isStarted() && WheelLog.AppConfig.getContinueThisDayLog()) {
                     AlertDialog dialog = new AlertDialog.Builder(this)
                             .setTitle(R.string.continue_this_day_log_alert_title)
                             .setMessage(R.string.continue_this_day_log_alert_description)
@@ -625,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.miWatch:
-                toggleWatch();
+                mCoreService.toggleWatch();
                 return true;
             case R.id.miBand:
                 toggleSwitchMiBand();
@@ -693,71 +609,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //region services
-    private void stopLoggingService() {
-        if (LoggingService.isInstanceCreated()) {
-            toggleLoggingService();
-        }
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void toggleLoggerLegacy() {
+        toggleLogger();
     }
 
     @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void toggleLoggingServiceLegacy() {
-        toggleLoggingService();
-    }
-
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void toggleLoggingService() {
-        Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
-        if (LoggingService.isInstanceCreated()) {
-            stopService(dataLoggerServiceIntent);
-            if (!onDestroyProcess) {
-                new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips(), 200);
-            }
+    void toggleLogger() {
+        if (!mCoreService.toggleLogger() && !onDestroyProcess) {
+            new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips(), 200);
         }
-        else if (mConnectionState == BleStateEnum.Connected)
-            startService(dataLoggerServiceIntent);
-    }
-
-    private void stopPebbleService() {
-        if (PebbleService.isInstanceCreated())
-            togglePebbleService();
-    }
-
-    private void togglePebbleService() {
-        Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleService.class);
-        if (PebbleService.isInstanceCreated())
-            stopService(pebbleServiceIntent);
-        else
-            ContextCompat.startForegroundService(this, pebbleServiceIntent);
-    }
-
-    private void toggleWearOs() {
-        if (wearOs == null) {
-            wearOs = new WearOs(this);
-        } else {
-            wearOs.stop();
-            wearOs = null;
-        }
-    }
-
-    private void stopGarminConnectIQ() {
-        if (GarminConnectIQ.Companion.isInstanceCreated())
-            toggleGarminConnectIQ();
-    }
-
-    private void toggleGarminConnectIQ() {
-        Intent garminConnectIQIntent = new Intent(getApplicationContext(), GarminConnectIQ.class);
-        if (GarminConnectIQ.Companion.isInstanceCreated())
-            stopService(garminConnectIQIntent);
-        else
-            ContextCompat.startForegroundService(this, garminConnectIQIntent);
     }
 
     private void toggleSwitchMiBand() {
-        MiBandEnum buttonMiBand = WheelLog.AppConfig.getMibandMode().next();
-        WheelLog.AppConfig.setMibandMode(buttonMiBand);
-        WheelLog.Notifications.update();
-
-        switch (buttonMiBand) {
+        switch (mCoreService.toggleSwitchMiBand()) {
             case Alarm:
                 showSnackBar(R.string.alarmmiband);
                 break;
@@ -821,7 +686,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case RESULT_REQUEST_ENABLE_BT:
                 if (mBluetoothAdapter.isEnabled())
-                    WheelData.getInstance().setBleConnector(new BleConnector(getApplicationContext()));
+                    startCoreService();
                 else {
                     Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show();
                     finish();
@@ -846,22 +711,8 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-        return intentFilter;
-    }
-
-    private IntentFilter makeCoreIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_BEEP);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LIGHT);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_MIBAND);
         return intentFilter;
     }
 }
