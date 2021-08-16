@@ -86,7 +86,6 @@ class CoreService: Service() {
     }
 
     private val mCoreBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        @SuppressLint("StringFormatInvalid")
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Constants.ACTION_BLUETOOTH_CONNECTION_STATE -> {

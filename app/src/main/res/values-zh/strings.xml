@@ -27,8 +27,7 @@
     <string name="stop_pebble_service">停止Pebble Dash</string>
     <string name="start_data_service">开始记录</string>
     <string name="stop_data_service">停止记录</string>
-    <string name="started_logging">开始记录到 %1$s</string>
-    <string name="wheel_type_recognized">检测到的车轮协议 %1$s</string>
+    <string name="started_logging">开始记录到</string>
     <string name="search_for_wheel">搜索轮子</string>
     <string name="scanning">选择你的轮子…</string>
     <string name="devices">设备</string>

@@ -39,8 +39,7 @@
     <string name="stop_pebble_service">"Start Pebble 중지"</string>
     <string name="start_data_service">"기록 시작"</string>
     <string name="stop_data_service">"기록 중단"</string>
-    <string name="started_logging">"%1$ 초 동안 기록 중"</string>
-    <string name="wheel_type_recognized"></string>
+    <string name="started_logging">"초 동안 기록 중"</string>
     <string name="search_for_wheel">"휠 검색"</string>
     <string name="scanning">"스캔 중…"</string>
     <string name="devices">"장치"</string>

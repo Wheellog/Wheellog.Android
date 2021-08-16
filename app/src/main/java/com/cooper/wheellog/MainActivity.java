@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
      * Intents are accepted only if MainView is active.
      **/
     private final BroadcastReceiver mMainViewBroadcastReceiver = new BroadcastReceiver() {
-        @SuppressLint("StringFormatInvalid")
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
@@ -181,9 +180,10 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                        String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        var filepath = " " + intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
                         if (running) {
-                            showSnackBar(getString(R.string.started_logging, filepath), 5000);
+                            var text = getString(R.string.started_logging) + filepath;
+                            showSnackBar(text, 5000);
                         }
                     }
                     setMenuIconStates();
