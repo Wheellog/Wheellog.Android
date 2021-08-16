@@ -445,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
         if (LoggingService.isStarted()) {
             toggleLogger();
         }
-        unregisterReceiver(mMainViewBroadcastReceiver);
         stopCoreService();
         WheelData.getInstance().full_reset();
         WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
