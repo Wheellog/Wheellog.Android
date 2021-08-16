@@ -64,7 +64,7 @@
 	<string name="icon_watch">Watch Icon</string>
 	<string name="icon_logging">Logging Icon</string>
 	<string name="icon_connection">Connection Icon</string>
-	<string name="connection_lost_at">Conexion perdida. %1s</string>
+	<string name="connection_lost_at">Conexion perdida.</string>
 	<string name="enable_auto_upload_title">¿Habilitar descarga automática?</string>
 	<string name="enable_auto_upload_descriprion">La descarga automática sin conexión WiFi utilizará la red móvil. Esto puede incurrir en cargos adicionales.</string>
 	<string name="logging_error_no_storage_permission">Error de registro, sin permiso de almacenamiento.</string>

@@ -64,7 +64,7 @@
 	<string name="icon_watch">Icona Orologio</string>
 	<string name="icon_logging">Icona Logging</string>
 	<string name="icon_connection">Icona Connessione</string>
-	<string name="connection_lost_at">Connessione persa alle %1s</string>
+	<string name="connection_lost_at">Connessione persa alle</string>
 	<string name="enable_auto_upload_title">Abilita Auto Upload?</string>
 	<string name="enable_auto_upload_descriprion">L\'invio automatico utilizza i dati mobili quando non sei connesso tramite WiFi. Questo può aumentare i costi se non hai un piano dati..</string>
 	<string name="logging_error_no_storage_permission">Mancano permessi per scrivere sullo storage esterno. Logging cancellato.</string>

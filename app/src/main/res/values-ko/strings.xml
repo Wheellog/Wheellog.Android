@@ -106,7 +106,7 @@
 
     <!-- Fuzzy -->
     <string name="icon_connection">"연결 아이콘"</string>
-    <string name="connection_lost_at">"%1 초 전 연결 끊김"</string>
+    <string name="connection_lost_at">"초 전 연결 끊김"</string>
     <string name="enable_auto_upload_title">"자동 업로드를 활성화합니까?"</string>
     <string name="enable_auto_upload_descriprion">"WiFi 연결 없이 자동 업로드를 할 경우 모바일 데이터를 사용하게 됩니다. 데이터 요금제가 없다면, 이로 인해 네트워크 제공자가 당신에게 과금할 수도 있습니다."</string>
     <string name="logging_error_no_storage_permission">"외부 저장소에 대한 쓰기 권한이 없습니다. 기록을 취소합니다."</string>

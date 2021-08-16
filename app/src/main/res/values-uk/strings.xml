@@ -148,7 +148,7 @@
     <string name="connect_to_wheel">Підключити до колеса</string>
     <string name="connected">Підключено</string>
     <string name="connection_failed">Сбій підключення</string>
-    <string name="connection_lost_at">Підключення розірвано %1s</string>
+    <string name="connection_lost_at">Підключення розірвано</string>
     <string name="current_on_dial_description">Відображати силу струму у зовнішньому колі</string>
     <string name="current_on_dial_title">Сила струму у зовнішньому колі</string>
     <string name="devices">Пристрої</string>
