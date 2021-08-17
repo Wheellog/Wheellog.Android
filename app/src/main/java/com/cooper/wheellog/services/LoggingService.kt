@@ -10,6 +10,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.widget.Toast
@@ -332,9 +333,14 @@ class LoggingService: Service() {
     }
 
     // Define a listener that responds to location updates
-    private var locationListener: LocationListener = LocationListener { location ->
-        // Called when a new location is found by the network location provider.
-        mLocation = location
+    private var locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            // Called when a new location is found by the network location provider.
+            mLocation = location
+        }
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
     }
 
     private fun realDestroy(path: String?) {
