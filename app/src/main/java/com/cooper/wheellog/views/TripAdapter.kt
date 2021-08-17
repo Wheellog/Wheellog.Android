@@ -122,7 +122,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         }
 
         private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
                 .setTitle(R.string.trip_menu_delete_file)
                 .setMessage(context.getString(R.string.trip_menu_delete_file_confirmation) + " " + tripModel.fileName)
                 .setCancelable(false)
