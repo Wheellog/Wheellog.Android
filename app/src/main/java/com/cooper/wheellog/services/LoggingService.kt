@@ -223,6 +223,10 @@ class LoggingService: Service() {
     override fun onDestroy() {
         super.onDestroy()
 
+        if (!isStarted) {
+            return
+        }
+
         if (logLocationData && mLastLocation != null) {
             WheelLog.AppConfig.lastLocationLaltitude = mLastLocation!!.latitude
             WheelLog.AppConfig.lastLocationLongitude = mLastLocation!!.longitude
