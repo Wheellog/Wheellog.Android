@@ -595,12 +595,12 @@ class BleConnector(val context: Context) {
             Timber.i("descr UUID")
             if (descriptor == null) {
                 Timber.i("it seems that descr UUID doesn't exist")
+            } else {
+                descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                Timber.i("enable notify UUID")
+                writeBluetoothGattDescriptor(descriptor)
+                Timber.i("write notify")
             }
-            descriptor!!.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-
-            Timber.i("enable notify UUID")
-            writeBluetoothGattDescriptor(descriptor)
-            Timber.i("write notify")
         }
     }
 
@@ -661,17 +661,10 @@ class BleConnector(val context: Context) {
             when (adapterName.uppercase(Locale.ROOT)) {
                 WHEEL_TYPE.KINGSONG.toString() -> {
                     wd.wheelType = WHEEL_TYPE.KINGSONG
-                    val targetService =
-                        getGattService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID))
-                    val notifyCharacteristic =
-                        targetService?.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID))
-                    setCharacteristicNotification(notifyCharacteristic)
-                    val descriptor =
-                        notifyCharacteristic?.getDescriptor(UUID.fromString(Constants.KINGSONG_DESCRIPTER_UUID))
-                            ?.apply {
-                                value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                            }
-                    writeBluetoothGattDescriptor(descriptor)
+                    setWheelServices(
+                        Constants.KINGSONG_SERVICE_UUID,
+                        Constants.KINGSONG_READ_CHARACTER_UUID,
+                        Constants.KINGSONG_DESCRIPTER_UUID)
                 }
                 WHEEL_TYPE.GOTWAY.toString() -> {
                     wd.wheelType = WHEEL_TYPE.GOTWAY_VIRTUAL
