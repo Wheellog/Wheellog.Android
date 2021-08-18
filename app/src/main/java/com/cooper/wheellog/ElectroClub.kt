@@ -3,6 +3,8 @@ package com.cooper.wheellog
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -198,8 +200,14 @@ class ElectroClub {
                             successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
                         }
                         .setCancelable(false)
-                        .create()
-                        .show()
+                        .create().apply {
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                window?.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
+                            } else {
+                                window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+                            }
+                            show()
+                        }
             }
         }
     }
