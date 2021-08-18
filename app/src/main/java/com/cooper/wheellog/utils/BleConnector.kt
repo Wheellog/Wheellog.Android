@@ -194,8 +194,7 @@ class BleConnector(val context: Context) {
                                 broadcastConnectionUpdate(BleStateEnum.Connecting, true)
                             } else {
                                 Timber.i("Disconnected")
-                                connectionState = BleStateEnum.Disconnected
-                                broadcastConnectionUpdate(connectionState)
+                                broadcastConnectionUpdate(BleStateEnum.Disconnected)
                             }
                         }
                         else -> {
