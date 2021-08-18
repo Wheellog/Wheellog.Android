@@ -531,11 +531,6 @@ class BleConnector(val context: Context) {
         when (wd.wheelType) {
             WHEEL_TYPE.KINGSONG -> if (characteristic.uuid.toString() == Constants.KINGSONG_READ_CHARACTER_UUID) {
                 wd.decodeResponse(value, context)
-                if (wd.name.isEmpty()) {
-                    KingsongAdapter.getInstance().requestNameData()
-                } else if (wd.serial.isEmpty()) {
-                    KingsongAdapter.getInstance().requestSerialData()
-                }
             }
             WHEEL_TYPE.GOTWAY,
             WHEEL_TYPE.GOTWAY_VIRTUAL,
@@ -665,6 +660,11 @@ class BleConnector(val context: Context) {
                         Constants.KINGSONG_SERVICE_UUID,
                         Constants.KINGSONG_READ_CHARACTER_UUID,
                         Constants.KINGSONG_DESCRIPTER_UUID)
+                    KingsongAdapter.getInstance().apply {
+                        requestNameData()
+                        requestSerialData()
+                    }
+                    Timber.i("starting KINGSONG adapter")
                 }
                 WHEEL_TYPE.GOTWAY.toString() -> {
                     wd.wheelType = WHEEL_TYPE.GOTWAY_VIRTUAL
