@@ -216,7 +216,11 @@ class CoreService: Service() {
         bleConnector.close()
         stopGarminConnectIQ()
         stopPebbleService()
-        super.unbindService(conn)
+        try {
+            super.unbindService(conn)
+        } catch (e: IllegalArgumentException) {
+            Timber.i("CoreService exception: %s", e.localizedMessage)
+        }
     }
 
     private fun makeCoreIntentFilter(): IntentFilter {
