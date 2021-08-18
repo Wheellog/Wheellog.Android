@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     MenuItem miLogging;
 
     private CoreService mCoreService;
+    private Boolean coreServiceIsBinded = false;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
     private BleStateEnum mConnectionState = BleStateEnum.Disconnected;
@@ -199,19 +200,23 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            mCoreService = null;
             WheelData.getInstance().setCoreService(null);
             Timber.e("CoreService disconnected");
         }
     };
 
     private void startCoreService() {
-        bindService(new Intent(this, CoreService.class),
+        coreServiceIsBinded = bindService(new Intent(this, CoreService.class),
                 mCoreServiceConnection,
                 BIND_AUTO_CREATE);
     }
 
     private void stopCoreService() {
-        unbindService(mCoreServiceConnection);
+        if (coreServiceIsBinded) {
+            coreServiceIsBinded = false;
+            unbindService(mCoreServiceConnection);
+        }
     }
 
     private void toggleLogging() {
