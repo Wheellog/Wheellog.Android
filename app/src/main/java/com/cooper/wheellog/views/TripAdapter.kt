@@ -6,12 +6,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -63,20 +60,17 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     class ViewHolder internal constructor(var view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
         private var nameView: TextView = view.findViewById(R.id.name)
         private var descriptionView: TextView = view.findViewById(R.id.description)
-        private var uploadButtonLayout: RelativeLayout = view.findViewById(R.id.uploadButtonLayout)
-        private var uploadView: ImageView = view.findViewById(R.id.uploadButton)
-        private var uploadProgressView: ProgressBar = view.findViewById(R.id.progressBar)
-        private var shareView: ImageView = view.findViewById(R.id.shareButton)
+        private var popupView: ImageView = view.findViewById(R.id.popupButton)
         private val context = view.context
 
         private fun uploadInProgress(inProgress: Boolean) {
-            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
-            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
+//            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
+//            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
         }
 
         private fun uploadViewEnabled(isEnabled: Boolean) {
-            uploadView.isEnabled = isEnabled
-            uploadView.imageAlpha = if (isEnabled) 0xFF else 0x20
+//            uploadView.isEnabled = isEnabled
+//            uploadView.imageAlpha = if (isEnabled) 0xFF else 0x20
         }
 
         private fun showMap(tripModel: TripModel) {
@@ -128,7 +122,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         }
 
         private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
                 .setTitle(R.string.trip_menu_delete_file)
                 .setMessage(context.getString(R.string.trip_menu_delete_file_confirmation) + " " + tripModel.fileName)
                 .setCancelable(false)
@@ -145,35 +139,46 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 .show()
         }
 
-        @SuppressLint("ClickableViewAccessibility")
+        @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
         fun bind(tripModel: TripModel, uploadViewVisible: Int, adapter: TripAdapter) {
             nameView.text = tripModel.title
             nameView.typeface = font
             descriptionView.text = tripModel.description
             descriptionView.typeface = font
-            uploadButtonLayout.visibility = uploadViewVisible
             uploadInProgress(false)
+
+            val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
+            val popupMenu = PopupMenu(wrapper, popupView).apply {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                    menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =
+                        context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_map_24))
+                    menu.add(0, 1, 1, R.string.trip_menu_upload_to_ec).apply {
+                        icon = context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_cloud_upload_24))
+                        isVisible = uploadViewVisible == View.VISIBLE
+                    }
+                    menu.add(0, 2, 2, R.string.trip_menu_share).icon =
+                        context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_share_24))
+                    menu.add(0, 3, 3, R.string.trip_menu_delete_file).icon =
+                        context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_delete_24))
+                }
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        0 -> showMap(tripModel)
+                        1 -> uploadToEc(tripModel)
+                        2 -> share(tripModel)
+                        3 -> deleteFile(tripModel, adapter)
+                    }
+                    return@setOnMenuItemClickListener false
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    setForceShowIcon(true)
+                }
+            }
 
             val gestureDetector = GestureDetector(
                 context, object : GestureDetector.SimpleOnGestureListener() {
                     override fun onLongPress(e: MotionEvent) {
                         super.onLongPress(e)
-                        val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
-                        val popupMenu = PopupMenu(wrapper, view).apply {
-                            menu.add(0, 0, 0, R.string.trip_menu_view_map)
-                            menu.add(0, 1, 0, R.string.trip_menu_upload_to_ec)
-                            menu.add(0, 2, 0, R.string.trip_menu_share)
-                            menu.add(0, 3, 0, R.string.trip_menu_delete_file)
-                        }
-                        popupMenu.setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                0 -> showMap(tripModel)
-                                1 -> uploadToEc(tripModel)
-                                2 -> share(tripModel)
-                                3 -> deleteFile(tripModel, adapter)
-                            }
-                            return@setOnMenuItemClickListener false
-                        }
                         popupMenu.show()
                     }
                 })
@@ -181,15 +186,11 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 gestureDetector.onTouchEvent(event)
                 true
             }
-            uploadView.setOnClickListener {
-                uploadToEc(tripModel)
-            }
-            shareView.setOnClickListener {
-                share(tripModel)
+            popupView.setOnClickListener {
+                popupMenu.show()
             }
             // Themes
-            uploadView.setImageResource(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_cloud_upload_24))
-            shareView.setImageResource(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_share_24))
+            popupView.setImageResource(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_arrow_drop_down_circle_24))
         }
     }
 }
