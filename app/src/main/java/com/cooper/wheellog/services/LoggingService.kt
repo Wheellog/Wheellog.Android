@@ -95,7 +95,8 @@ class LoggingService: Service() {
         sdf = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US)
 
         var writeToLastLog = false
-        val mac = WheelData.getInstance().mac
+        // TODO: fix me. WheelData не должна быть null
+        val mac = WheelData.getInstance()?.mac ?: ""
         if (WheelLog.AppConfig.continueThisDayLog &&
             WheelLog.AppConfig.continueThisDayLogMacException != mac
         ) {
@@ -115,7 +116,7 @@ class LoggingService: Service() {
         if (!writeToLastLog) {
             val sdFormatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
             val filename = sdFormatter.format(Date()) + ".csv"
-            if (!fileUtil.prepareFile(filename, WheelData.getInstance().mac)) {
+            if (!fileUtil.prepareFile(filename, mac)) {
                 return false
             }
             WheelLog.AppConfig.continueThisDayLogMacException = ""
@@ -308,7 +309,7 @@ class LoggingService: Service() {
                 mLocationDistance
             )
         }
-        WheelData.getInstance().apply {
+        WheelData.getInstance()?.apply {
             fileUtil.writeLine(
                 String.format(
                     Locale.US,
