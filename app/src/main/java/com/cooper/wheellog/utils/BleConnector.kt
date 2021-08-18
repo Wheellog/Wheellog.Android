@@ -29,7 +29,7 @@ class BleConnector(val context: Context) {
     private var reconnectTimer: Timer? = null
 
     private var disconnectRequested = false
-    private var autoConnect = false
+    internal var autoConnect = false
 
     private var beepTimer: Timer? = null
     private var timerTicks = 0
@@ -39,8 +39,17 @@ class BleConnector(val context: Context) {
     private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
     private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private val wakeLogTag = "WhellLog:WakeLockTag"
+    private var mConnectionState = BleStateEnum.Disconnected
 
-    var connectionState = BleStateEnum.Disconnected
+    var connectionState
+        get() = mConnectionState
+        private set(value) {
+            mConnectionState = value
+            val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
+            intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, value.ordinal)
+            context.sendBroadcast(intent)
+        }
+
 
     var deviceAddress: String?
         get() = mBluetoothDeviceAddress
@@ -76,7 +85,7 @@ class BleConnector(val context: Context) {
             // because disconnectRequested is false
             disconnectRequested = false
             mBluetoothGatt!!.disconnect()
-            broadcastConnectionUpdate(BleStateEnum.Disconnected)
+            connectionState = BleStateEnum.Disconnected
         }
     }
 
@@ -101,7 +110,7 @@ class BleConnector(val context: Context) {
             Timber.i("Trying to use an existing mBluetoothGatt for connection.")
             return if (mBluetoothGatt!!.connect()) {
                 WheelData.getInstance().btName = mBluetoothGatt!!.device.name
-                broadcastConnectionUpdate(BleStateEnum.Connecting)
+                connectionState = BleStateEnum.Connecting
                 true
             } else {
                 false
@@ -147,7 +156,7 @@ class BleConnector(val context: Context) {
                                 "Attempting to start service discovery:%b",
                                 mBluetoothGatt?.discoverServices()
                             )
-                            broadcastConnectionUpdate(state)
+                            connectionState = BleStateEnum.Connected
                         }
                         BleStateEnum.Disconnected -> {
                             Timber.i("Disconnected from GATT server.")
@@ -191,17 +200,16 @@ class BleConnector(val context: Context) {
                                         this
                                     )
                                 }
-                                broadcastConnectionUpdate(BleStateEnum.Connecting, true)
+                                connectionState = BleStateEnum.Connecting
                             } else {
                                 Timber.i("Disconnected")
-                                broadcastConnectionUpdate(BleStateEnum.Disconnected)
+                                connectionState = BleStateEnum.Disconnected
                             }
                         }
                         else -> {
-                            Toast.makeText(
-                                context,
-                                "Unknown Connection State\rState = $newState", Toast.LENGTH_SHORT
-                            ).show()
+                            val message = "Unknown connection state: $newState"
+                            Timber.i(message)
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -213,7 +221,7 @@ class BleConnector(val context: Context) {
                         Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS")
                         val recognisedWheel = detectWheel(mBluetoothDeviceAddress)
                         if (recognisedWheel) {
-                            broadcastConnectionUpdate(BleStateEnum.Connected)
+                            connectionState = BleStateEnum.Connected
                         } else {
                             disconnect()
                         }
@@ -251,7 +259,7 @@ class BleConnector(val context: Context) {
                 }
             })
         Timber.i("Trying to create a new connection.")
-        broadcastConnectionUpdate(BleStateEnum.Connecting)
+        connectionState = BleStateEnum.Connecting
         return true
     }
 
@@ -266,11 +274,11 @@ class BleConnector(val context: Context) {
         disconnectRequested = true
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Timber.i("BluetoothAdapter not initialized")
-            broadcastConnectionUpdate(BleStateEnum.Disconnected)
+            connectionState = BleStateEnum.Disconnected
             return
         }
         mBluetoothGatt!!.disconnect()
-        broadcastConnectionUpdate(BleStateEnum.Disconnected)
+        connectionState = BleStateEnum.Disconnected
     }
 
     /**
@@ -553,19 +561,6 @@ class BleConnector(val context: Context) {
             }
             else -> {}
         }
-    }
-
-    private fun broadcastConnectionUpdate(newState: BleStateEnum, auto_connect: Boolean = false) {
-        if (connectionState == newState) {
-            return
-        }
-        connectionState = newState
-        val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
-        intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.ordinal)
-        if (auto_connect) {
-            intent.putExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT, true)
-        }
-        context.sendBroadcast(intent)
     }
 
     private fun getAdapter(): BluetoothAdapter? {
