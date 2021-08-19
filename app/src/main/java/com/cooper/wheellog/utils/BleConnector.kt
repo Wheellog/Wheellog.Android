@@ -333,18 +333,18 @@ class BleConnector(val context: Context) {
                         Timber.i("writeBluetoothGattCharacteristic service == null")
                         return false
                     }
-                    val characteristic =
+                    val gwCharacteristic =
                         gwService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID))
-                    if (characteristic == null) {
+                    if (gwCharacteristic == null) {
                         Timber.i("writeBluetoothGattCharacteristic characteristic == null")
                         return false
                     }
-                    characteristic.value = cmd
+                    gwCharacteristic.value = cmd
                     Timber.i(
                         "writeBluetoothGattCharacteristic writeType = %d",
-                        characteristic.writeType
+                        gwCharacteristic.writeType
                     )
-                    return mBluetoothGatt!!.writeCharacteristic(characteristic)
+                    return mBluetoothGatt!!.writeCharacteristic(gwCharacteristic)
                 }
                 WHEEL_TYPE.NINEBOT_Z -> {
                     val nzService =
@@ -659,6 +659,8 @@ class BleConnector(val context: Context) {
                         Constants.KINGSONG_SERVICE_UUID,
                         Constants.KINGSONG_READ_CHARACTER_UUID,
                         Constants.KINGSONG_DESCRIPTER_UUID)
+                    Timber.i("starting Kingsong adapter")
+                    KingsongAdapter.getInstance().requestNameData();
                 }
                 WHEEL_TYPE.GOTWAY.toString() -> {
                     wd.wheelType = WHEEL_TYPE.GOTWAY_VIRTUAL
