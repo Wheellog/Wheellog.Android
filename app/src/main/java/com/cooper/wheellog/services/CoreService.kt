@@ -150,7 +150,7 @@ class CoreService: Service() {
                         }
                         BleStateEnum.Connecting ->
                             WheelLog.Notifications.notificationMessageId =
-                                if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
+                                if (bleConnector.autoConnect) {
                                     R.string.searching
                                 } else {
                                     R.string.connecting
