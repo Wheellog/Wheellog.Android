@@ -167,6 +167,8 @@ public class KingsongAdapter extends BaseAdapter {
     }
 
     public void startStartingTimer() {
+        WheelData.getInstance().setName("");
+        WheelData.getInstance().setSerial("");
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
