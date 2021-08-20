@@ -517,7 +517,7 @@ class BleConnector(val context: Context) {
 
     init {
         mBluetoothAdapter = getAdapter(context)
-        if (bleIsEnabled) {
+        if (!bleIsEnabled) {
             Timber.e(context.resources.getString(R.string.error_bluetooth_not_initialised))
             Toast.makeText(context, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show()
         } else {
