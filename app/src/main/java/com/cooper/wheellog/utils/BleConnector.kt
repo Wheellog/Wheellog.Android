@@ -176,7 +176,6 @@ class BleConnector(val context: Context) {
                                 when (WheelData.getInstance().wheelType) {
                                     WHEEL_TYPE.INMOTION -> {
                                         InMotionAdapter.stopTimer()
-                                        InmotionAdapterV2.stopTimer()
                                         NinebotZAdapter.getInstance().resetConnection()
                                         NinebotAdapter.getInstance().resetConnection()
                                     }
@@ -186,10 +185,17 @@ class BleConnector(val context: Context) {
                                         NinebotAdapter.getInstance().resetConnection()
                                     }
                                     WHEEL_TYPE.NINEBOT_Z -> {
+                                        NinebotZAdapter.stopTimer()
                                         NinebotZAdapter.getInstance().resetConnection()
                                         NinebotAdapter.getInstance().resetConnection()
                                     }
-                                    WHEEL_TYPE.NINEBOT -> NinebotAdapter.getInstance().resetConnection()
+                                    WHEEL_TYPE.KINGSONG -> {
+                                        KingsongAdapter.stopTimer()
+                                    }
+                                    WHEEL_TYPE.NINEBOT -> {
+                                        NinebotAdapter.stopTimer()
+                                        NinebotAdapter.getInstance().resetConnection()
+                                    }
                                     else -> {}
                                 }
                                 if (!autoConnect) {
@@ -538,11 +544,6 @@ class BleConnector(val context: Context) {
         when (wd.wheelType) {
             WHEEL_TYPE.KINGSONG -> if (characteristic.uuid.toString() == Constants.KINGSONG_READ_CHARACTER_UUID) {
                 wd.decodeResponse(value, context)
-                if (wd.name.isEmpty()) {
-                    KingsongAdapter.getInstance().requestNameData()
-                } else if (wd.serial.isEmpty()) {
-                    KingsongAdapter.getInstance().requestSerialData()
-                }
             }
             WHEEL_TYPE.GOTWAY,
             WHEEL_TYPE.GOTWAY_VIRTUAL,
@@ -660,7 +661,7 @@ class BleConnector(val context: Context) {
                         Constants.KINGSONG_READ_CHARACTER_UUID,
                         Constants.KINGSONG_DESCRIPTER_UUID)
                     Timber.i("starting Kingsong adapter")
-                    KingsongAdapter.getInstance().requestNameData();
+                    KingsongAdapter.getInstance().startStartingTimer();
                 }
                 WHEEL_TYPE.GOTWAY.toString() -> {
                     wd.wheelType = WHEEL_TYPE.GOTWAY_VIRTUAL
