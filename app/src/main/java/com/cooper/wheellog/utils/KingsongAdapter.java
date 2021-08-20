@@ -3,11 +3,14 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import timber.log.Timber;
 
 public class KingsongAdapter extends BaseAdapter {
     private static KingsongAdapter INSTANCE;
-
+    private Timer startingTimer;
     private int mKSAlarm1Speed = 0;
     private int mKSAlarm2Speed = 0;
     private int mKSAlarm3Speed = 0;
@@ -130,6 +133,10 @@ public class KingsongAdapter extends BaseAdapter {
                 sndata[17] = (byte) 0;
                 wd.setSerial(new String(sndata));
                 updateKSAlarmAndSpeed();
+                if (startingTimer != null) {
+                    startingTimer.cancel();
+                    startingTimer = null;
+                }
                 return false;
             } else if ((data[16] & 255) == 0xF5) { //cpu load
                 wd.setCpuLoad(data[14]);
@@ -157,6 +164,23 @@ public class KingsongAdapter extends BaseAdapter {
             }
         }
         return false;
+    }
+
+    public void startStartingTimer() {
+        WheelData.getInstance().setName("");
+        WheelData.getInstance().setSerial("");
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (WheelData.getInstance().getName().isEmpty()) {
+                    requestNameData();
+                } else if (WheelData.getInstance().getSerial().isEmpty()) {
+                    requestSerialData();
+                }
+            }
+        };
+        startingTimer = new Timer();
+        startingTimer.scheduleAtFixedRate(timerTask, 200, 100);
     }
 
     @Override
@@ -324,6 +348,15 @@ public class KingsongAdapter extends BaseAdapter {
         data[2] = (byte) strobeMode;
         data[16] = (byte) 0x53;
         WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public static synchronized void stopTimer() {
+        if (INSTANCE != null && INSTANCE.startingTimer != null) {
+            INSTANCE.startingTimer.cancel();
+            INSTANCE.startingTimer = null;
+        }
+        Timber.i("Kill kingsong adapter instance, stop timer");
+        INSTANCE = null;
     }
 
 }
