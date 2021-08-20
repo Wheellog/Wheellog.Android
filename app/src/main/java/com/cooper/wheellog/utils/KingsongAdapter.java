@@ -351,7 +351,7 @@ public class KingsongAdapter extends BaseAdapter {
     public static synchronized void stopTimer() {
         if (INSTANCE != null && INSTANCE.startingTimer != null) {
             INSTANCE.startingTimer.cancel();
-            INSTANCE.startStartingTimer(); = null;
+            INSTANCE.startingTimer = null;
         }
         Timber.i("Kill kingsong adapter instance, stop timer");
         INSTANCE = null;
