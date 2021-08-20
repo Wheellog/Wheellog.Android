@@ -1,7 +1,6 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -352,13 +351,16 @@ public class MainActivity extends AppCompatActivity {
             android.os.Process.killProcess(android.os.Process.myPid());
             return;
         }
+
         AppCompatDelegate.setDefaultNightMode(WheelLog.AppConfig.getDayNightThemeMode());
         setTheme(WheelLog.AppConfig.getAppTheme());
+
+        WheelData.initiate();
+        WheelLog.Notifications.update();
 
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
-        WheelData.initiate();
 
         ElectroClub.getInstance().setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
@@ -407,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startCoreService();
         }
-        WheelLog.Notifications.update();
 
         if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
             SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
