@@ -2,11 +2,13 @@ package com.cooper.wheellog
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.CycleInterpolator
 import android.view.animation.TranslateAnimation
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
@@ -26,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
         val ok = convertView.findViewById<Button>(R.id.ok_button)
         val cancel = convertView.findViewById<Button>(R.id.btn_cancel)
         val title = convertView.findViewById<TextView>(R.id.alertTitle)
+        val error = convertView.findViewById<TextView>(R.id.textError)
         title.text = "electro.club"
 
         dialog = AlertDialog.Builder(this)
@@ -44,6 +47,11 @@ class LoginActivity : AppCompatActivity() {
                         finish()
                     } else {
                         password.startAnimation(shakeError())
+                        error?.apply {
+                            visibility = View.VISIBLE
+                            text = ElectroClub.instance.lastError
+                        }
+                        Toast.makeText(applicationContext, ElectroClub.instance.lastError, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -56,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun shakeError(): TranslateAnimation {
         val shake = TranslateAnimation(0F, 15F, 0F, 10F)
-        shake.duration = 500
+        shake.duration = 1500
         shake.interpolator = CycleInterpolator(7F)
         return shake
     }
