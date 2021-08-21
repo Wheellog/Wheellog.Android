@@ -18,12 +18,13 @@ import org.json.JSONException
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
+import android.bluetooth.BluetoothAdapter
 
 class BleConnector(val context: Context) {
 
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private var mBluetoothDeviceAddress: String? = null
-    private var mBluetoothGatt: BluetoothGatt? = null
+    internal var mBluetoothGatt: BluetoothGatt? = null
 
     private var mDisconnectTime: Date? = null
     private var reconnectTimer: Timer? = null
@@ -40,16 +41,22 @@ class BleConnector(val context: Context) {
     private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private val wakeLogTag = "WhellLog:WakeLockTag"
     private var mConnectionState = BleStateEnum.Disconnected
+    private var mLastData = 0L
 
     var connectionState
         get() = mConnectionState
         private set(value) {
+            if (mConnectionState == value) {
+                return
+            }
             mConnectionState = value
             val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
             intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, value.ordinal)
             context.sendBroadcast(intent)
         }
 
+    private val bleIsEnabled
+        get() = mBluetoothAdapter?.isEnabled == true
 
     var deviceAddress: String?
         get() = mBluetoothDeviceAddress
@@ -99,6 +106,9 @@ class BleConnector(val context: Context) {
      */
     @Synchronized
     fun connect(): Boolean {
+        if (connectionState == BleStateEnum.Connected) {
+            return true
+        }
         disconnectRequested = false
         autoConnect = false
         mDisconnectTime = null
@@ -152,10 +162,8 @@ class BleConnector(val context: Context) {
                             }
                             mDisconnectTime = null
                             // Attempts to discover services after successful connection.
-                            Timber.i(
-                                "Attempting to start service discovery:%b",
-                                mBluetoothGatt?.discoverServices()
-                            )
+                            val discover = mBluetoothGatt?.discoverServices()
+                            Timber.i("Attempting to start service discovery:%b", discover)
                             connectionState = BleStateEnum.Connected
                         }
                         BleStateEnum.Disconnected -> {
@@ -244,6 +252,9 @@ class BleConnector(val context: Context) {
                     super.onCharacteristicRead(gatt, characteristic, status)
                     Timber.i("onCharacteristicRead called %s", characteristic.uuid.toString())
                     readData(characteristic, status)
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        mLastData = System.currentTimeMillis()
+                    }
                 }
 
                 override fun onCharacteristicChanged(
@@ -253,6 +264,7 @@ class BleConnector(val context: Context) {
                     super.onCharacteristicChanged(gatt, characteristic)
                     Timber.i("onCharacteristicChanged called %s", characteristic.uuid.toString())
                     readData(characteristic, BluetoothGatt.GATT_SUCCESS)
+                    mLastData = System.currentTimeMillis()
                 }
 
                 override fun onDescriptorWrite(
@@ -277,6 +289,9 @@ class BleConnector(val context: Context) {
      */
     @Synchronized
     fun disconnect() {
+        if (connectionState == BleStateEnum.Disconnected) {
+            return
+        }
         disconnectRequested = true
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Timber.i("BluetoothAdapter not initialized")
@@ -472,15 +487,11 @@ class BleConnector(val context: Context) {
      * @return A `List` of supported services.
      */
     private fun getSupportedGattServices(): List<BluetoothGattService?>? {
-        return if (mBluetoothGatt == null) null else mBluetoothGatt!!.services
+        return mBluetoothGatt?.services
     }
 
     private fun getGattService(service_id: UUID?): BluetoothGattService? {
-        return mBluetoothGatt!!.getService(service_id)
-    }
-
-    fun getBluetoothDeviceAddress(): String? {
-        return mBluetoothDeviceAddress
+        return mBluetoothGatt?.getService(service_id)
     }
 
     fun startReconnectTimer() {
@@ -489,14 +500,14 @@ class BleConnector(val context: Context) {
         }
         reconnectTimer = Timer()
         val wd = WheelData.getInstance()
-        val magicPeriod = 15000
+        val magicPeriod = 15_000L
         reconnectTimer!!.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 if (connectionState == BleStateEnum.Connected && wd.lastLifeData > 0 && (System.currentTimeMillis() - wd.lastLifeData) / 1000 > magicPeriod) {
                     toggleReconnectToWheel()
                 }
             }
-        }, magicPeriod.toLong(), magicPeriod.toLong())
+        }, magicPeriod, magicPeriod)
     }
 
     fun stopReconnectTimer() {
@@ -505,21 +516,14 @@ class BleConnector(val context: Context) {
     }
 
     init {
-        mBluetoothAdapter = getAdapter()
-        if (mBluetoothAdapter == null) {
+        mBluetoothAdapter = getAdapter(context)
+        if (!bleIsEnabled) {
             Timber.e(context.resources.getString(R.string.error_bluetooth_not_initialised))
             Toast.makeText(context, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show()
-        } else {
-            deviceAddress = WheelLog.AppConfig.lastMac
-            toggleConnectToWheel()
         }
     }
 
-    private fun readData(characteristic: BluetoothGattCharacteristic, status: Int) {
-        if (status != BluetoothGatt.GATT_SUCCESS) {
-            return
-        }
-
+    private fun writeRAWData(value: ByteArray) {
         // RAW data
         if (WheelLog.AppConfig.enableRawData) {
             if (fileUtilRawData == null) {
@@ -533,12 +537,19 @@ class BleConnector(val context: Context) {
                 String.format(
                     Locale.US, "%s,%s",
                     sdf2.format(System.currentTimeMillis()),
-                    toHexStringRaw(characteristic.value)
+                    toHexStringRaw(value)
                 )
             )
         } else if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
             fileUtilRawData!!.close()
         }
+    }
+
+    private fun readData(characteristic: BluetoothGattCharacteristic, status: Int) {
+        if (status != BluetoothGatt.GATT_SUCCESS) {
+            return
+        }
+        writeRAWData(characteristic.value)
         val wd = WheelData.getInstance()
         val value = characteristic.value
         when (wd.wheelType) {
@@ -562,12 +573,6 @@ class BleConnector(val context: Context) {
             }
             else -> {}
         }
-    }
-
-    private fun getAdapter(): BluetoothAdapter? {
-        val bluetoothManager =
-            context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        return bluetoothManager.adapter
     }
 
     fun getDisconnectTime(): Date? {

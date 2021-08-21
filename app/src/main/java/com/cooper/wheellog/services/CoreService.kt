@@ -204,7 +204,8 @@ class CoreService: Service() {
     override fun onBind(intent: Intent?): IBinder {
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         bleConnector = BleConnector(this).apply {
-            connect()
+            deviceAddress = WheelLog.AppConfig.lastMac
+            toggleConnectToWheel()
         }
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter())
         Timber.i("Core service started!")

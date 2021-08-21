@@ -864,7 +864,7 @@ public class WheelData {
 
     public String getMac() {
         return getBleConnector() != null
-                ? getBleConnector().getBluetoothDeviceAddress()
+                ? getBleConnector().getDeviceAddress()
                 : "default";
     }
 

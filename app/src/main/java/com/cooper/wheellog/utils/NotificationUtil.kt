@@ -20,7 +20,7 @@ class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
     private var kostilTimer: Timer? = null
     var notificationMessageId = R.string.disconnected
-    var notification: Notification? = null
+    lateinit var notification: Notification
         private set
     var alarmText: String = ""
 

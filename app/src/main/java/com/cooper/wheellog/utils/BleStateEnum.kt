@@ -4,5 +4,6 @@ enum class BleStateEnum {
     Disconnected,
     Connecting,
     Connected,
+    Disconnecting,
     Unknown;
 }
