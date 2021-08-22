@@ -19,6 +19,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGattCharacteristic
 
 class BleConnector(val context: Context) {
 
@@ -319,6 +320,26 @@ class BleConnector(val context: Context) {
         mBluetoothGatt = null
     }
 
+    private fun getCharacteristic(serviceUUID: String, characteristicUUID: String, cmd: ByteArray? = null): BluetoothGattCharacteristic? {
+        val service =
+            mBluetoothGatt!!.getService(UUID.fromString(serviceUUID))
+        if (service == null) {
+            Timber.i("[ble] getCharacteristic / service == null")
+            return null
+        }
+        val characteristic =
+            service.getCharacteristic(UUID.fromString(characteristicUUID))
+        if (characteristic == null) {
+            Timber.i("[ble] getCharacteristic / characteristic == null")
+            return null
+        }
+        if (cmd != null) {
+            characteristic.value = cmd
+        }
+        Timber.i("[ble] getCharacteristic / writeType = %d", characteristic.writeType)
+        return characteristic
+    }
+
     @Synchronized
     fun writeBluetoothGattCharacteristic(cmd: ByteArray?): Boolean {
         if (mBluetoothGatt == null || cmd == null) {
@@ -332,104 +353,55 @@ class BleConnector(val context: Context) {
         try {
             when (WheelData.getInstance().wheelType) {
                 WHEEL_TYPE.KINGSONG -> {
-                    val ksService =
-                        mBluetoothGatt!!.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID))
-                    if (ksService == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val ksCharacteristic =
-                        ksService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID))
-                    if (ksCharacteristic == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    ksCharacteristic.value = cmd
-                    Timber.i("[ble] writeBluetoothGattCharacteristic writeType = %d", ksCharacteristic.writeType)
-                    ksCharacteristic.writeType = 1
+                    val ksCharacteristic = getCharacteristic(
+                        Constants.KINGSONG_SERVICE_UUID,
+                        Constants.KINGSONG_READ_CHARACTER_UUID,
+                        cmd
+                    ) ?: return false
+                    ksCharacteristic.writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
                     return mBluetoothGatt!!.writeCharacteristic(ksCharacteristic)
                 }
                 WHEEL_TYPE.GOTWAY,
                 WHEEL_TYPE.GOTWAY_VIRTUAL,
                 WHEEL_TYPE.VETERAN -> {
-                    val gwService =
-                        mBluetoothGatt!!.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID))
-                    if (gwService == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val gwCharacteristic =
-                        gwService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID))
-                    if (gwCharacteristic == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    gwCharacteristic.value = cmd
-                    Timber.i(
-                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
-                        gwCharacteristic.writeType
-                    )
+                    val gwCharacteristic = getCharacteristic(
+                        Constants.GOTWAY_SERVICE_UUID,
+                        Constants.GOTWAY_READ_CHARACTER_UUID,
+                        cmd
+                    ) ?: return false
                     return mBluetoothGatt!!.writeCharacteristic(gwCharacteristic)
                 }
                 WHEEL_TYPE.NINEBOT_Z -> {
-                    val nzService =
-                        mBluetoothGatt!!.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID))
-                    if (nzService == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val nzCharacteristic =
-                        nzService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID))
-                    if (nzCharacteristic == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    nzCharacteristic.value = cmd
-                    Timber.i(
-                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
-                        nzCharacteristic.writeType
-                    )
+                    val nzCharacteristic = getCharacteristic(
+                        Constants.NINEBOT_Z_SERVICE_UUID,
+                        Constants.NINEBOT_Z_WRITE_CHARACTER_UUID,
+                        cmd
+                    ) ?: return false
                     return mBluetoothGatt!!.writeCharacteristic(nzCharacteristic)
                 }
                 WHEEL_TYPE.NINEBOT -> {
-                    val nbService =
-                        mBluetoothGatt!!.getService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID))
-                    if (nbService == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val nbCharacteristic =
-                        nbService.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID))
-                    if (nbCharacteristic == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    nbCharacteristic.value = cmd
-                    Timber.i(
-                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
-                        nbCharacteristic.writeType
-                    )
+                    val nbCharacteristic = getCharacteristic(
+                        Constants.NINEBOT_SERVICE_UUID,
+                        Constants.NINEBOT_WRITE_CHARACTER_UUID,
+                        cmd
+                    ) ?: return false
                     return mBluetoothGatt!!.writeCharacteristic(nbCharacteristic)
                 }
                 WHEEL_TYPE.INMOTION -> {
-                    val imService =
-                        mBluetoothGatt!!.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID))
-                    if (imService == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val imCharacteristic =
-                        imService.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID))
-                    if (imCharacteristic == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
+                    val imCharacteristic = getCharacteristic(
+                        Constants.INMOTION_WRITE_SERVICE_UUID,
+                        Constants.INMOTION_WRITE_CHARACTER_UUID
+                    ) ?: return false
+
+                    // splitting the cmd into parts equal to 20 bytes
+                    // all commands are 22+ bytes each =)
                     val buf = ByteArray(20)
-                    val i2 = cmd.size / 20
-                    val i3 = cmd.size - i2 * 20
-                    var i4 = 0
-                    while (i4 < i2) {
-                        System.arraycopy(cmd, i4 * 20, buf, 0, 20)
+                    val fullPartCount = cmd.size / 20
+                    val remainPart = cmd.size - fullPartCount * 20
+                    var fullPartIndex = 0
+                    Timber.i("[ble] writeBluetoothGattCharacteristic cmdSize = ${cmd.size} | fullParts = $fullPartCount")
+                    while (fullPartIndex < fullPartCount) {
+                        System.arraycopy(cmd, fullPartIndex * 20, buf, 0, 20)
                         imCharacteristic.value = buf
                         if (!mBluetoothGatt!!.writeCharacteristic(imCharacteristic)) return false
                         try {
@@ -437,40 +409,25 @@ class BleConnector(val context: Context) {
                         } catch (e: InterruptedException) {
                             e.printStackTrace()
                         }
-                        i4++
+                        fullPartIndex++
                     }
-                    if (i3 > 0) {
-                        System.arraycopy(cmd, i2 * 20, buf, 0, i3)
+                    if (remainPart > 0) {
+                        System.arraycopy(cmd, fullPartCount * 20, buf, 0, remainPart)
                         imCharacteristic.value = buf
                         if (!mBluetoothGatt!!.writeCharacteristic(imCharacteristic)) return false
                     }
-                    Timber.i(
-                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
-                        imCharacteristic.writeType
-                    )
                     return true
                 }
                 WHEEL_TYPE.INMOTION_V2 -> {
-                    val inv2Service =
-                        mBluetoothGatt!!.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID))
-                    if (inv2Service == null) {
-                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val inv2Characteristic =
-                        inv2Service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID))
-                    if (inv2Characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    inv2Characteristic.value = cmd
-                    Timber.i(
-                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
-                        inv2Characteristic.writeType
-                    )
+                    val inv2Characteristic = getCharacteristic(
+                        Constants.INMOTION_V2_SERVICE_UUID,
+                        Constants.INMOTION_V2_WRITE_CHARACTER_UUID
+                    ) ?: return false
                     return mBluetoothGatt!!.writeCharacteristic(inv2Characteristic)
                 }
-                else -> {}
+                else -> {
+                    Timber.i("[ble] writeBluetoothGattCharacteristic !!! unknown wheelType = ${WheelData.getInstance().wheelType}")
+                }
             }
         } catch (e: NullPointerException) {
             // sometimes mBluetoothGatt is null... If the user starts to connect and disconnect quickly
