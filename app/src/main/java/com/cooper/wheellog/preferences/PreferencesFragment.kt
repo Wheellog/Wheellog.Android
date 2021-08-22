@@ -68,15 +68,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
         }
 
-    private val loginActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            WheelLog.AppConfig.autoUploadEc = true
-            refreshVolatileSettings()
-            ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
-            WheelLog.AppConfig.autoUploadEc = true
-        } else {
-            ElectroClub.instance.logout()
-        }
+    private val loginActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         refreshVolatileSettings()
     }
 
@@ -184,11 +176,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             .setMessage(getString(R.string.enable_auto_upload_descriprion))
                             .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 mDataWarningDisplayed = true
-                                if (WheelLog.AppConfig.ecToken == null) {
-                                    loginActivityResult.launch(Intent(activity, LoginActivity::class.java))
-                                } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
-                                }
+                                loginActivityResult.launch(Intent(requireContext(), LoginActivity::class.java))
                             }
                             .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
                                 ElectroClub.instance.logout()

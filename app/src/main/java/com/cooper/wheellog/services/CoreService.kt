@@ -1,6 +1,5 @@
 package com.cooper.wheellog.services
 
-import android.annotation.SuppressLint
 import android.app.Service
 import android.content.*
 import android.os.Binder
@@ -97,17 +96,11 @@ class CoreService: Service() {
                         BleStateEnum.Disconnected.ordinal
                     )]
                     Timber.i("[core] Bluetooth state = %s", connectionState)
-                    WheelData.getInstance().isConnected = connectionState === BleStateEnum.Connected
                     when (connectionState) {
                         BleStateEnum.Connected -> {
                             if (bleConnector.deviceAddress?.isNotEmpty() == true) {
                                 WheelLog.AppConfig.lastMac = bleConnector.deviceAddress!!
-                                if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
-                                        WheelLog.AppConfig.lastMac,
-                                        this@CoreService
-                                    ) {}
-                                }
+                                ElectroClub.instance.getAndSelectGarageByMac {  }
                                 if (WheelLog.AppConfig.useBeepOnVolumeUp) {
                                     WheelLog.VolumeKeyController.setActive(true)
                                 }

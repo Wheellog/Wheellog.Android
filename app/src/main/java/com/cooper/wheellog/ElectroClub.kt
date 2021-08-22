@@ -163,51 +163,17 @@ class ElectroClub {
         })
     }
 
-    fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, context: Context, success: (String?) -> Unit) {
-        if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null)
+    fun getAndSelectGarageByMac(success: (String) -> Unit) {
+        if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null) {
             return // not connected or already selected
+        }
 
         getGarage { transportList ->
-            val transport = transportList.find { it.mac == mac }
+            val transport = transportList.find { it.mac == WheelLog.AppConfig.lastMac }
             if (transport != null) {
                 WheelLog.AppConfig.ecGarage = transport.id
                 success(transport.id)
                 successListener?.invoke(GET_GARAGE_METHOD_FILTRED, transport.name)
-                return@getGarage
-            }
-
-            // UI with list select garage if mac isn't found
-            MainScope().launch {
-                var selectedTransport: Transport? = null
-                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
-                        .setTitle(context.getString(R.string.ec_choose_transport))
-                        .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
-                            if (which != -1) {
-                                selectedTransport = transportList[which]
-                            }
-                        }
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            if (selectedTransport != null) {
-                                WheelLog.AppConfig.ecGarage = selectedTransport!!.id
-                                success(selectedTransport!!.id)
-                                successListener?.invoke(GET_GARAGE_METHOD_FILTRED, selectedTransport!!.name)
-                            } else {
-                                errorListener?.invoke(GET_GARAGE_METHOD_FILTRED, "selected item not valid")
-                            }
-                        }
-                        .setNegativeButton(android.R.string.cancel) { _, _ ->
-                            WheelLog.AppConfig.ecGarage = "0"
-                            successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
-                        }
-                        .setCancelable(false)
-                        .create().apply {
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                                window?.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
-                            } else {
-                                window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
-                            }
-                            show()
-                        }
             }
         }
     }

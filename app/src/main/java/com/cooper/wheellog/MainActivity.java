@@ -631,7 +631,6 @@ public class MainActivity extends AppCompatActivity {
         toggleLogger();
     }
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLogger() {
         if (!mCoreService.toggleLogger() && !onDestroyProcess) {
             new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips(), 200);
@@ -693,12 +692,7 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     getBleConnector().close();
                     toggleConnectToWheel();
-                    if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(
-                                mDeviceAddress,
-                                this,
-                                success -> null);
-                    }
+
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:
