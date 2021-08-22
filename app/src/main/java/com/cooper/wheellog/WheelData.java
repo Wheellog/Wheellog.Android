@@ -919,6 +919,7 @@ public class WheelData {
     }
 
     public void resetBmsData() {
+        Timber.i("[wd] resetBmsData called");
         mNinebotBms1.reset();
         mNinebotBms2.reset();
     }
@@ -937,7 +938,7 @@ public class WheelData {
 
     public void setConnected(boolean connected) {
         mConnectionState = connected;
-        Timber.i("State %b", connected);
+        Timber.i("[wd] State %b", connected);
     }
 
     public void setWheelDistance(long distance) {
@@ -1012,7 +1013,7 @@ public class WheelData {
                 @Override
                 public void run() {
                     playBeep(ALARM_TYPE.PWM);
-                    Timber.i("Scheduled alarm");
+                    Timber.i("[wd] Scheduled alarm");
                 }
             };
             speedAlarmTimer = new Timer();
@@ -1030,7 +1031,7 @@ public class WheelData {
                     speedAlarmTimer.cancel();
                     speedAlarmTimer = null;
                 }
-                Timber.i("Alarm canceled by watchdog");
+                Timber.i("[wd] Alarm canceled by watchdog");
             }
         };
         speedAlarmWatchdogTimer = new Timer();
@@ -1043,7 +1044,7 @@ public class WheelData {
             @Override
             public void run() {
                 mTemperatureAlarmExecuting = false;
-                Timber.i("Stop Temp <<<<<<<<<");
+                Timber.i("[wd] Stop Temp <<<<<<<<<");
             }
         };
         Timer timerTemp = new Timer();
@@ -1056,7 +1057,7 @@ public class WheelData {
             @Override
             public void run() {
                 mCurrentAlarmExecuting = false;
-                Timber.i("Stop Curr <<<<<<<<<");
+                Timber.i("[wd] Stop Curr <<<<<<<<<");
             }
 
         };
@@ -1188,9 +1189,9 @@ public class WheelData {
         StringBuilder stringBuilder = new StringBuilder(data.length);
         for (byte aData : data)
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
-        Timber.i("Received: %s", stringBuilder);
+        Timber.i("[wd] Received: %s", stringBuilder);
         if (protoVer != "") {
-            Timber.i("Decode, proto: %s", protoVer);
+            Timber.i("[wd] Decode, proto: %s", protoVer);
         }
         boolean new_data = getAdapter().setContext(mContext).decode(data);
 
@@ -1291,17 +1292,18 @@ public class WheelData {
     }
 
     void full_reset() {
+        Timber.i("[wd] full_reset called");
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
         if (mWheelType == WHEEL_TYPE.INMOTION_V2) InmotionAdapterV2.stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
             if (protoVer.compareTo("S2") == 0) {
-                Timber.i("Ninebot S2 stop!");
+                Timber.i("[wd] Ninebot S2 stop!");
                 NinebotAdapter.stopTimer();
             } else if (protoVer.compareTo("Mini") == 0) {
-                Timber.i("Ninebot Mini stop!");
+                Timber.i("[wd] Ninebot Mini stop!");
                 NinebotAdapter.stopTimer();
             } else {
-                Timber.i("Ninebot Z stop!");
+                Timber.i("[wd] Ninebot Z stop!");
                 NinebotZAdapter.stopTimer();
             }
         }
@@ -1313,6 +1315,7 @@ public class WheelData {
         currentAxis.clear();
         reset();
         resetBmsData();
+        Timber.i("[wd] full_reset ended");
     }
 
     void reset() {

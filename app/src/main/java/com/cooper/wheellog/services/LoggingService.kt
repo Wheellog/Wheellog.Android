@@ -213,6 +213,7 @@ class LoggingService: Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Timber.i("[log] onStartCommand called")
         if (!start()) {
             stopSelf()
         } else {
@@ -224,8 +225,18 @@ class LoggingService: Service() {
     override fun onDestroy() {
         super.onDestroy()
 
+        Timber.i("[log] onDestroy called.")
         if (!isStarted) {
             return
+        }
+
+        isStarted = false
+        try {
+            applicationContext.unregisterReceiver(mBluetoothUpdateReceiver)
+            if (mLocationManager != null && logLocationData) mLocationManager!!.removeUpdates(
+                locationListener
+            )
+        } catch (ignored: Exception) {
         }
 
         if (logLocationData && mLastLocation != null) {
@@ -237,7 +248,7 @@ class LoggingService: Service() {
         val path = fileUtil.absolutePath
         fileUtil.close()
 
-        Timber.wtf("DataLogger Stopping...")
+        Timber.wtf("[log] Stopping...")
 
         // electro.club upload
         if (fileUtil.fileName != "" && WheelLog.AppConfig.autoUploadEc) {
@@ -281,6 +292,7 @@ class LoggingService: Service() {
         if (!isStarted) {
             return
         }
+        Timber.i("[log] updateFile called.")
         var locationDataString = ""
         if (logLocationData) {
             var longitude = ""
@@ -355,15 +367,7 @@ class LoggingService: Service() {
         }
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
         applicationContext.sendBroadcast(serviceIntent)
-        try {
-            applicationContext.unregisterReceiver(mBluetoothUpdateReceiver)
-            if (mLocationManager != null && logLocationData) mLocationManager!!.removeUpdates(
-                locationListener
-            )
-        } catch (ignored: Exception) {
-        }
-        isStarted = false
-        Timber.wtf("DataLogger Stopped")
+        Timber.wtf("[log] Stopped")
     }
 
     @SuppressLint("MissingPermission")

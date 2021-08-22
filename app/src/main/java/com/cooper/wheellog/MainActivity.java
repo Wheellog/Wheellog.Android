@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
-                    Timber.i("Wheel type switched");
+                    Timber.i("[ma] Wheel type switched");
                     pagerAdapter.configureSecondDisplay();
                     pagerAdapter.updateScreen(true);
                     break;
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     pagerAdapter.updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
                 case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
-                    Timber.i("Received news");
+                    Timber.i("[ma] Received news");
                     showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
                     break;
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     setConnectionState(connectionState);
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
-                    Timber.i("Reset battery lowest");
+                    Timber.i("[ma] Reset battery lowest");
                     pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
@@ -195,23 +195,26 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             mCoreService = ((CoreService.LocalBinder) service).getService();
             WheelData.getInstance().setCoreService(mCoreService);
+            Timber.i("[ma] CoreService connected.");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mCoreService = null;
             WheelData.getInstance().setCoreService(null);
-            Timber.e("CoreService disconnected");
+            Timber.e("[ma] CoreService disconnected");
         }
     };
 
     private void startCoreService() {
+        Timber.i("[ma] startCoreService called.");
         coreServiceIsBinded = bindService(new Intent(this, CoreService.class),
                 mCoreServiceConnection,
                 BIND_AUTO_CREATE);
     }
 
     private void stopCoreService() {
+        Timber.i("[ma] stopCoreService called.");
         if (coreServiceIsBinded) {
             coreServiceIsBinded = false;
             unbindService(mCoreServiceConnection);
@@ -219,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toggleLogging() {
+        Timber.i("[ma] toggleLogging called.");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             toggleLogger();
         } else {
@@ -351,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
             android.os.Process.killProcess(android.os.Process.myPid());
             return;
         }
+        Timber.i("[ma] onCreate called");
 
         AppCompatDelegate.setDefaultNightMode(WheelLog.AppConfig.getDayNightThemeMode());
         setTheme(WheelLog.AppConfig.getAppTheme());
@@ -413,10 +418,12 @@ public class MainActivity extends AppCompatActivity {
         if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
             SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
         }
+        Timber.i("[ma] onCreate ended");
     }
 
     @Override
     public void onResume() {
+        Timber.i("[ma] onResume called");
         super.onResume();
         if (getBleConnector() != null && mConnectionState != getBleConnector().getConnectionState()) {
             setConnectionState(getBleConnector().getConnectionState());
@@ -440,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        Timber.i("[ma] onPause called");
         super.onPause();
         unregisterReceiver(mMainViewBroadcastReceiver);
         WheelLog.Notifications.update();
@@ -447,6 +455,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Timber.i("[ma] onDestroy called");
         onDestroyProcess = true;
         if (LoggingService.isStarted()) {
             toggleLogger();
@@ -496,6 +505,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Timber.i("[ma] onOptionsItemSelected called.");
         switch (item.getItemId()) {
             case R.id.miSearch:
                 MainActivityPermissionsDispatcher.startScanActivityWithPermissionCheck(this);
@@ -504,7 +514,9 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
+                Timber.i("[ma] logging menu toggled.");
                 if (LoggingService.isStarted() && WheelLog.AppConfig.getContinueThisDayLog()) {
+                    Timber.i("[ma] finish trip alert show.");
                     AlertDialog dialog = new AlertDialog.Builder(this)
                             .setTitle(R.string.continue_this_day_log_alert_title)
                             .setMessage(R.string.continue_this_day_log_alert_description)
@@ -666,14 +678,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Timber.i("onActivityResult");
+        Timber.i("[ma] onActivityResult");
         switch (requestCode) {
             case RESULT_DEVICE_SCAN_REQUEST:
                 if (resultCode == RESULT_OK && getBleConnector() != null) {
                     mDeviceAddress = data.getStringExtra("MAC");
-                    Timber.i("Device selected = %s", mDeviceAddress);
+                    Timber.i("[ma] Device selected = %s", mDeviceAddress);
                     String mDeviceName = data.getStringExtra("NAME");
-                    Timber.i("Device selected = %s", mDeviceName);
+                    Timber.i("[ma] Device selected = %s", mDeviceName);
                     getBleConnector().setDeviceAddress(mDeviceAddress);
                     WheelData.getInstance().full_reset();
                     WheelData.getInstance().setBtName(mDeviceName);

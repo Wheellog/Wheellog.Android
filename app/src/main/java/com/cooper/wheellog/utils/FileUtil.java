@@ -121,7 +121,7 @@ public class FileUtil {
                     Environment.DIRECTORY_DOWNLOADS), path);
 
             if (!dir.mkdirs() && !ignoreTimber)
-                Timber.i("Directory not created");
+                Timber.i("[file] Directory not created");
 
             file = new File(dir, fileName);
         }
@@ -139,7 +139,7 @@ public class FileUtil {
             }
         } catch (FileNotFoundException e) {
             if (!ignoreTimber) {
-                Timber.e("File not found.");
+                Timber.e("[file] File not found.");
             }
             e.printStackTrace();
         }
@@ -154,7 +154,7 @@ public class FileUtil {
             }
         } catch (FileNotFoundException e) {
             if (!ignoreTimber) {
-                Timber.e("File not found.");
+                Timber.e("[file] File not found.");
             }
             e.printStackTrace();
         }
@@ -323,13 +323,13 @@ public class FileUtil {
     public void writeLine(String line) {
         if (isNull()) {
             if (!ignoreTimber) {
-                Timber.e("Write failed. File is null");
+                Timber.e("[file] Write failed. File is null");
             }
             return;
         }
         if (stream == null) {
             if (!ignoreTimber) {
-                Timber.e("Write failed. Stream is null. Forgot to call prepareStream()?");
+                Timber.e("[file] Write failed. Stream is null. Forgot to call prepareStream()?");
             }
             return;
         }
@@ -339,7 +339,7 @@ public class FileUtil {
             stream.flush();
         } catch (IOException e) {
             if (!ignoreTimber) {
-                Timber.e("IOException");
+                Timber.e("[file] IOException");
             }
             e.printStackTrace();
         }

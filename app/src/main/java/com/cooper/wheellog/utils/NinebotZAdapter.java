@@ -23,69 +23,69 @@ public class NinebotZAdapter extends BaseAdapter {
     NinebotZUnpacker unpacker = new NinebotZUnpacker();
 
     public void startKeepAliveTimer() {
-        Timber.i("Ninebot Z timer starting");
+        Timber.i("[nz] timer starting");
         updateStep = 0;
         stateCon = 0;
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 if (updateStep == 0) {
-                    Timber.i("State connection %d", stateCon);
+                    Timber.i("[nz] State connection %d", stateCon);
                     if (stateCon == 0) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.startCommunication().writeBuffer())) {
-                            Timber.i("Sent start message");
-                        } else Timber.i("Unable to send start message");
+                            Timber.i("[nz] Sent start message");
+                        } else Timber.i("[nz] Unable to send start message");
 
                     } else if (stateCon == 1) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getKey().writeBuffer())) {
-                            Timber.i("Sent getkey message");
-                        } else Timber.i("Unable to send getkey message");
+                            Timber.i("[nz] Sent getkey message");
+                        } else Timber.i("[nz] Unable to send getkey message");
 
                     } else if (stateCon == 2) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getSerialNumber().writeBuffer())) {
-                            Timber.i("Sent serial number message");
-                        } else Timber.i("Unable to send serial number message");
+                            Timber.i("[nz] Sent serial number message");
+                        } else Timber.i("[nz] Unable to send serial number message");
 
                     } else if (stateCon == 3) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getVersion().writeBuffer())) {
-                            Timber.i("Sent version message");
-                        } else Timber.i("Unable to send version message");
+                            Timber.i("[nz] Sent version message");
+                        } else Timber.i("[nz] Unable to send version message");
 
                     } else if (stateCon == 4) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Sn().writeBuffer())) {
-                            Timber.i("Sent BMS1 SN message");
-                        } else Timber.i("Unable to send BMS1 SN message");
+                            Timber.i("[nz] Sent BMS1 SN message");
+                        } else Timber.i("[nz] Unable to send BMS1 SN message");
                     } else if (stateCon == 5) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Life().writeBuffer())) {
-                            Timber.i("Sent BMS1 life message");
-                        } else Timber.i("Unable to send BMS1 life message");
+                            Timber.i("[nz] Sent BMS1 life message");
+                        } else Timber.i("[nz] Unable to send BMS1 life message");
                     } else if (stateCon == 6) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Cells().writeBuffer())) {
-                            Timber.i("Sent BMS1 cells message");
-                        } else Timber.i("Unable to send BMS1 cells message");
+                            Timber.i("[nz] Sent BMS1 cells message");
+                        } else Timber.i("[nz] Unable to send BMS1 cells message");
                     } else if (stateCon == 7) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Sn().writeBuffer())) {
-                            Timber.i("Sent BMS2 SN message");
-                        } else Timber.i("Unable to send BMS2 SN message");
+                            Timber.i("[nz] Sent BMS2 SN message");
+                        } else Timber.i("[nz] Unable to send BMS2 SN message");
                     } else if (stateCon == 8) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Life().writeBuffer())) {
-                            Timber.i("Sent BMS2 life message");
-                        } else Timber.i("Unable to send BMS2 life message");
+                            Timber.i("[nz] Sent BMS2 life message");
+                        } else Timber.i("[nz] Unable to send BMS2 life message");
                     } else if (stateCon == 9) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Cells().writeBuffer())) {
-                            Timber.i("Sent BMS2 cells message");
-                        } else Timber.i("Unable to send BMS2 cells message");
+                            Timber.i("[nz] Sent BMS2 cells message");
+                        } else Timber.i("[nz] Unable to send BMS2 cells message");
 
                     } else if (settingCommandReady) {
                         if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             settingCommandReady = false;
-                            Timber.i("Sent command message");
-                        } else Timber.i("Unable to send command message");
+                            Timber.i("[nz] Sent command message");
+                        } else Timber.i("[nz] Unable to send command message");
                     } else {
                         if (!WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getLiveData().writeBuffer())) {
-                            Timber.i("Unable to send keep-alive message");
+                            Timber.i("[nz] Unable to send keep-alive message");
                         } else {
-                            Timber.i("Sent keep-alive message");
+                            Timber.i("[nz] Sent keep-alive message");
                         }
                     }
 
@@ -94,22 +94,22 @@ public class NinebotZAdapter extends BaseAdapter {
 
                 if ((updateStep == 5) && (stateCon > 3) && (stateCon < 10)) {
                     stateCon += 1;
-                    Timber.i("Change state to %d 1", stateCon);
+                    Timber.i("[nz] Change state to %d 1", stateCon);
                     if (stateCon > 9) stateCon = 4;
                 }
                 if (bmsMode && (stateCon == 10)) {
                     stateCon = 4;
-                    Timber.i("Change state to %d 2", stateCon);
+                    Timber.i("[nz] Change state to %d 2", stateCon);
                 }
                 if (!bmsMode && (stateCon > 3) && (stateCon < 10)) {
                     stateCon = 10;
-                    Timber.i("Change state to %d 3", stateCon);
+                    Timber.i("[nz] Change state to %d 3", stateCon);
                 }
                 updateStep %= 5;
-                Timber.i("Step: %d", updateStep);
+                Timber.i("[nz] Step: %d", updateStep);
             }
         };
-        Timber.i("Ninebot Z timer started");
+        Timber.i("[nz] timer started");
         keepAliveTimer = new Timer();
         keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 25);
     }
@@ -127,7 +127,7 @@ public class NinebotZAdapter extends BaseAdapter {
 
     @Override
     public boolean decode(byte[] data) {
-        Timber.i("Ninebot_z decoding");
+        Timber.i("[nz] decoding");
         WheelData wd = WheelData.getInstance();
         setBmsReadingMode(wd.getBmsView());
         ArrayList<NinebotZAdapter.Status> statuses = charUpdated(data);

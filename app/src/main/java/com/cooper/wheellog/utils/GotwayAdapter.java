@@ -16,7 +16,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public boolean decode(byte[] data) {
-        Timber.i("Decode Gotway/Begode");
+        Timber.i("[gw] Decode");
 
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
@@ -31,7 +31,7 @@ public class GotwayAdapter extends BaseAdapter {
                 int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
 
                 if (buff[18] == (byte) 0x00) {
-                    Timber.i("Begode frame A found (live data)");
+                    Timber.i("[gw] frame A found (live data)");
 
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
@@ -87,7 +87,7 @@ public class GotwayAdapter extends BaseAdapter {
                     newDataFound = true;
 
                 } else if (buff[18] == (byte) 0x04) {
-                    Timber.i("Begode frame B found (total distance and flags)");
+                    Timber.i("[gw] frame B found (total distance and flags)");
 
                     int totalDistance = (int) MathsUtil.getInt4(buff, 2);
                     if (useRatio) {
@@ -228,18 +228,18 @@ public class GotwayAdapter extends BaseAdapter {
                 oldc = c;
                 int size = buffer.size();
                 if ((size == 20 && c != (byte) 0x18) || (size > 20 && size <= 24 && c != (byte) 0x5A)) {
-                    Timber.i("Invalid frame footer (expected 18 5A 5A 5A 5A)");
+                    Timber.i("[gw] Invalid frame footer (expected 18 5A 5A 5A 5A)");
                     state = UnpackerState.unknown;
                     return false;
                 }
                 if (size == 24) {
                     state = UnpackerState.done;
-                    Timber.i("Valid frame received");
+                    Timber.i("[gw] Valid frame received");
                     return true;
                 }
             } else {
                 if (c == (byte) 0xAA && oldc == (byte) 0x55) {
-                    Timber.i("Frame header found (55 AA), collecting data");
+                    Timber.i("[gw] Frame header found (55 AA), collecting data");
                     buffer = new ByteArrayOutputStream();
                     buffer.write(0x55);
                     buffer.write(0xAA);

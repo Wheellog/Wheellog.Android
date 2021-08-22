@@ -95,7 +95,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     WheelLog.cResolver().openInputStream(tripModel.uri)
                 }
             if (inputStream == null) {
-                Timber.i("Failed to create inputStream for %s", tripModel.title)
+                Timber.i("[trip] Failed to create inputStream for %s", tripModel.title)
                 uploadInProgress(false)
             } else {
                 val data = ByteStreams.toByteArray(inputStream)

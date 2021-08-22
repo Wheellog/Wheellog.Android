@@ -63,6 +63,7 @@ class CoreService: Service() {
     }
 
     fun toggleSwitchMiBand(): MiBandEnum {
+        Timber.i("[core] toggleSwitchMiBand called")
         val buttonMiBand = WheelLog.AppConfig.mibandMode.next()
         WheelLog.AppConfig.mibandMode = buttonMiBand
         WheelLog.Notifications.update()
@@ -70,6 +71,7 @@ class CoreService: Service() {
     }
 
     fun toggleLogger(): Boolean {
+        Timber.i("[core] toggleLogger called")
         val dataLoggerServiceIntent = Intent(applicationContext, LoggingService::class.java)
         if (LoggingService.isStarted) {
             stopService(dataLoggerServiceIntent)
@@ -87,13 +89,14 @@ class CoreService: Service() {
 
     private val mCoreBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+            Timber.i("[core] BroadcastReceiver onReceive, action = ${intent.action}")
             when (intent.action) {
                 Constants.ACTION_BLUETOOTH_CONNECTION_STATE -> {
                     val connectionState = BleStateEnum.values()[intent.getIntExtra(
                         Constants.INTENT_EXTRA_CONNECTION_STATE,
                         BleStateEnum.Disconnected.ordinal
                     )]
-                    Timber.i("Bluetooth state = %s", connectionState)
+                    Timber.i("[core] Bluetooth state = %s", connectionState)
                     WheelData.getInstance().isConnected = connectionState === BleStateEnum.Connected
                     when (connectionState) {
                         BleStateEnum.Connected -> {
@@ -208,7 +211,7 @@ class CoreService: Service() {
             toggleConnectToWheel()
         }
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter())
-        Timber.i("Core service started!")
+        Timber.i("[core] service started!")
         return binder
     }
 
