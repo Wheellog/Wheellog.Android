@@ -579,7 +579,7 @@ class BleConnector(val context: Context) {
         return mDisconnectTime
     }
 
-    private fun setWheelServices(serviceUUID: String, charUUID: String, descriptorUUID: String?) {
+    private fun setWheelServices(serviceUUID: String, charUUID: String, descriptorUUID: String? = null) {
         val targetService = getGattService(UUID.fromString(serviceUUID))
         Timber.i("service UUID")
         val notifyCharacteristic = targetService?.getCharacteristic(UUID.fromString(charUUID))
@@ -672,8 +672,7 @@ class BleConnector(val context: Context) {
                     wd.wheelType = WHEEL_TYPE.GOTWAY_VIRTUAL
                     setWheelServices(
                         Constants.GOTWAY_SERVICE_UUID,
-                        Constants.GOTWAY_READ_CHARACTER_UUID,
-                        null)
+                        Constants.GOTWAY_READ_CHARACTER_UUID)
                     // Let the user know it's working by making the wheel beep
                     if (WheelLog.AppConfig.connectBeep) {
                         writeBluetoothGattCharacteristic("b".toByteArray())
@@ -745,7 +744,6 @@ class BleConnector(val context: Context) {
                 }
             }
         }
-        wd.isConnected = detectedWheel
         return detectedWheel
     }
 

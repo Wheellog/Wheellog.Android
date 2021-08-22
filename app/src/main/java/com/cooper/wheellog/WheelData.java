@@ -76,7 +76,6 @@ public class WheelData {
     private int mVoltageSag;
     private int mFanStatus;
     private int mChargingStatus;
-    private boolean mConnectionState = false;
     private String mName = "Unknown";
     private String mModel = "Unknown";
     private String mModeStr = "Unknown";
@@ -241,7 +240,7 @@ public class WheelData {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (mConnectionState && (mSpeed > RIDING_SPEED)) mRidingTime += 1;
+                if (isConnected() && (mSpeed > RIDING_SPEED)) mRidingTime += 1;
             }
         };
         ridingTimerControl = new Timer();
@@ -571,7 +570,10 @@ public class WheelData {
     }
 
     public boolean isConnected() {
-        return mConnectionState;
+        if (getBleConnector() == null) {
+            return false;
+        }
+        return getBleConnector().getConnectionState() == BleStateEnum.Connected;
     }
 
     public String getVersion() {
@@ -933,11 +935,6 @@ public class WheelData {
 
     ArrayList<Float> getSpeedAxis() {
         return speedAxis;
-    }
-
-    public void setConnected(boolean connected) {
-        mConnectionState = connected;
-        Timber.i("State %b", connected);
     }
 
     public void setWheelDistance(long distance) {
@@ -1359,6 +1356,5 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
         protoVer = "";
-
     }
 }
