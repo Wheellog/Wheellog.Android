@@ -204,13 +204,23 @@ public class MainActivity extends AppCompatActivity {
             WheelData.getInstance().setCoreService(null);
             Timber.e("[ma] CoreService disconnected");
         }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            Timber.i("[ma] onBindingDied - coreService Died -=|o_0]=- how the hell did this happen?");
+            if (!onDestroyProcess) {
+                Timber.i("[ma] onBindingDied - restarting coreService");
+                stopCoreService();
+                startCoreService();
+            }
+        }
     };
 
     private void startCoreService() {
         Timber.i("[ma] startCoreService called.");
         coreServiceIsBinded = bindService(new Intent(this, CoreService.class),
                 mCoreServiceConnection,
-                BIND_AUTO_CREATE);
+                BIND_AUTO_CREATE | BIND_IMPORTANT);
     }
 
     private void stopCoreService() {

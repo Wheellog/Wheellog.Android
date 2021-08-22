@@ -208,7 +208,12 @@ class CoreService: Service() {
         return binder
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
+
     override fun unbindService(conn: ServiceConnection) {
+        Timber.i("[core] service unbind!")
         bleConnector.disconnect()
         bleConnector.close()
         stopGarminConnectIQ()
@@ -216,7 +221,7 @@ class CoreService: Service() {
         try {
             super.unbindService(conn)
         } catch (e: IllegalArgumentException) {
-            Timber.i("CoreService exception: %s", e.localizedMessage)
+            Timber.i("[core] unbind exception: ${e.message}")
         }
     }
 
