@@ -33,7 +33,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 Message result = Message.verify(unpacker.getBuffer());
 
                 if (result != null) {
-                    Timber.i("Get new data, command: %02X", result.command);
+                    Timber.i("[im2] Get new data, command: %02X", result.command);
                     if (result.flags == Message.Flag.Initial.getValue()) {
                         if (result.command == Message.Command.MainInfo.getValue()) {
                             return result.parseMainData();
@@ -56,7 +56,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
                             return result.parseRealTimeInfo(mContext);
                         } else {
-                            Timber.i("Get unknown command: %02X", result.command);
+                            Timber.i("[im2] Get unknown command: %02X", result.command);
                         }
                     }
                 }
@@ -67,10 +67,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     public static InmotionAdapterV2 getInstance() {
         if (INSTANCE == null) {
-            Timber.i("New instance");
+            Timber.i("[im2] New instance");
             INSTANCE = new InmotionAdapterV2();
         }
-        Timber.i("Get instance");
+        Timber.i("[im2] Get instance");
         return INSTANCE;
 
     }
@@ -84,50 +84,50 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 if (updateStep == 0) {
                     if (stateCon == 0) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getCarType().writeBuffer())) {
-                            Timber.i("Sent car type message");
+                            Timber.i("[im2] Sent car type message");
                         } else updateStep = 35;
 
                     } else if (stateCon == 1) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getSerialNumber().writeBuffer())) {
-                            Timber.i("Sent s/n message");
+                            Timber.i("[im2] Sent s/n message");
                         } else updateStep = 35;
 
                     } else if (stateCon == 2) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getVersions().writeBuffer())) {
                             stateCon += 1;
-                            Timber.i("Sent versions message");
+                            Timber.i("[im2] Sent versions message");
                         } else updateStep = 35;
 
                     } else if (settingCommandReady) {
     					if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
                             settingCommandReady = false;
                             requestSettings = true;
-                            Timber.i("Sent command message");
+                            Timber.i("[im2] Sent command message");
                         } else updateStep = 35; // after +1 and %10 = 0
     				} else if (stateCon == 3 | requestSettings) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getCurrentSettings().writeBuffer())) {
                             stateCon += 1;
-                            Timber.i("Sent unknown data message");
+                            Timber.i("[im2] Sent unknown data message");
                         } else updateStep = 35;
 
                     }
                     else if (stateCon == 4) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getUselessData().writeBuffer())) {
-                            Timber.i("Sent useless data message");
+                            Timber.i("[im2] Sent useless data message");
                             stateCon += 1;
                         } else updateStep = 35;
 
                     }
                     else if (stateCon == 5) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getStatistics().writeBuffer())) {
-                            Timber.i("Sent statistics data message");
+                            Timber.i("[im2] Sent statistics data message");
                             stateCon += 1;
                         } else updateStep = 35;
 
                     }
                     else  {
                         if (WheelData.getInstance().bluetoothCmd(InmotionAdapterV2.Message.getRealTimeData().writeBuffer())) {
-                            Timber.i("Sent realtime data message");
+                            Timber.i("[im2] Sent realtime data message");
                             stateCon = 5;
                         } else updateStep = 35;
 
@@ -137,7 +137,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 				}
                 updateStep += 1;
                 updateStep %= 10;
-                Timber.i("Step: %d", updateStep);
+                Timber.i("[im2] Step: %d", updateStep);
             }
         };
         keepAliveTimer = new Timer();

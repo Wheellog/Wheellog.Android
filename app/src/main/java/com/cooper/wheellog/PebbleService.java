@@ -257,7 +257,7 @@ public class PebbleService extends Service {
         mHandler.post(mSendPebbleData);
 
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
-        Timber.d("PebbleConnectivity Started");
+        Timber.d("[pebble] Started");
         return START_STICKY;
     }
 
@@ -275,7 +275,7 @@ public class PebbleService extends Service {
         serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
         sendBroadcast(serviceStartedIntent);
         stopForeground(false);
-        Timber.i("PebbleConnectivity Stopped");
+        Timber.i("[pebble] Stopped");
     }
 
     private final PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {

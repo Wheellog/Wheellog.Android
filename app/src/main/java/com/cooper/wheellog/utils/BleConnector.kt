@@ -49,6 +49,7 @@ class BleConnector(val context: Context) {
             if (mConnectionState == value) {
                 return
             }
+            Timber.i("[ble] connectionState changed. New state = $connectionState")
             mConnectionState = value
             val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
             intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, value.ordinal)
@@ -67,6 +68,7 @@ class BleConnector(val context: Context) {
         }
 
     fun toggleConnectToWheel() {
+        Timber.i("[ble] toggleConnectToWheel called. state = $connectionState")
         if (connectionState == BleStateEnum.Disconnected) {
             connect()
         } else {
@@ -76,16 +78,17 @@ class BleConnector(val context: Context) {
     }
 
     private fun setCharacteristicNotification(characteristic: BluetoothGattCharacteristic?) {
-        Timber.i("Set characteristic start")
+        Timber.i("[ble] Set characteristic start")
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Timber.i("BluetoothAdapter not initialized")
+            Timber.i("[ble] BluetoothAdapter not initialized")
             return
         }
         val success = mBluetoothGatt!!.setCharacteristicNotification(characteristic, true)
-        Timber.i("Set characteristic %b", success)
+        Timber.i("[ble] Set characteristic %b", success)
     }
 
     private fun toggleReconnectToWheel() {
+        Timber.i("[ble] toggleReconnectToWheel called")
         if (connectionState == BleStateEnum.Connected) {
             Timber.wtf("Trying to reconnect")
             // After disconnect, the method onConnectionStateChange will automatically reconnect
@@ -106,6 +109,7 @@ class BleConnector(val context: Context) {
      */
     @Synchronized
     fun connect(): Boolean {
+        Timber.i("[ble] connect called")
         if (connectionState == BleStateEnum.Connected) {
             return true
         }
@@ -113,11 +117,11 @@ class BleConnector(val context: Context) {
         autoConnect = false
         mDisconnectTime = null
         if (mBluetoothAdapter == null || mBluetoothDeviceAddress == null || mBluetoothDeviceAddress!!.isEmpty()) {
-            Timber.i("BluetoothAdapter not initialized or unspecified address.")
+            Timber.i("[ble] BluetoothAdapter not initialized or unspecified address.")
             return false
         }
         if (mBluetoothGatt != null && mBluetoothGatt!!.device.address == mBluetoothDeviceAddress) {
-            Timber.i("Trying to use an existing mBluetoothGatt for connection.")
+            Timber.i("[ble] Trying to use an existing mBluetoothGatt for connection.")
             return if (mBluetoothGatt!!.connect()) {
                 WheelData.getInstance().btName = mBluetoothGatt!!.device.name
                 connectionState = BleStateEnum.Connecting
@@ -128,7 +132,7 @@ class BleConnector(val context: Context) {
         }
         val device = mBluetoothAdapter!!.getRemoteDevice(mBluetoothDeviceAddress)
         if (device == null) {
-            Timber.i("Device not found.  Unable to connect.")
+            Timber.i("[ble] Device not found.  Unable to connect.")
             return false
         }
         mBluetoothGatt = device.connectGatt(
@@ -147,9 +151,11 @@ class BleConnector(val context: Context) {
                         BleStateEnum.Unknown
                     }
 
+                    Timber.i("[ble] onConnectionStateChange. oldState = $connectionState / newState = $state")
+
                     when (state) {
                         BleStateEnum.Connected -> {
-                            Timber.i("Connected to GATT server.")
+                            Timber.i("[ble] Connected to GATT server.")
                             if (connectionSound) {
                                 if (noConnectionSound > 0) {
                                     stopBeepTimer()
@@ -163,11 +169,11 @@ class BleConnector(val context: Context) {
                             mDisconnectTime = null
                             // Attempts to discover services after successful connection.
                             val discover = mBluetoothGatt?.discoverServices()
-                            Timber.i("Attempting to start service discovery:%b", discover)
+                            Timber.i("[ble] Attempting to start service discovery:%b", discover)
                             connectionState = BleStateEnum.Connected
                         }
                         BleStateEnum.Disconnected -> {
-                            Timber.i("Disconnected from GATT server.")
+                            Timber.i("[ble] Disconnected from GATT server.")
                             if (connectionState == BleStateEnum.Connected) {
                                 mDisconnectTime = Date()
                                 if (connectionSound) {
@@ -180,7 +186,7 @@ class BleConnector(val context: Context) {
                                 }
                             }
                             if (!disconnectRequested && mBluetoothGatt?.device != null) {
-                                Timber.i("Trying to reconnect")
+                                Timber.i("[ble] Trying to reconnect")
                                 when (WheelData.getInstance().wheelType) {
                                     WHEEL_TYPE.INMOTION -> {
                                         InMotionAdapter.stopTimer()
@@ -216,12 +222,12 @@ class BleConnector(val context: Context) {
                                 }
                                 connectionState = BleStateEnum.Connecting
                             } else {
-                                Timber.i("Disconnected")
+                                Timber.i("[ble] Disconnected")
                                 connectionState = BleStateEnum.Disconnected
                             }
                         }
                         else -> {
-                            val message = "Unknown connection state: $newState"
+                            val message = "[ble] Unknown connection state: $newState"
                             Timber.i(message)
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
@@ -230,9 +236,8 @@ class BleConnector(val context: Context) {
 
                 override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
                     super.onServicesDiscovered(gatt, status)
-                    Timber.i("onServicesDiscovered called")
+                    Timber.i("[ble] onServicesDiscovered called, status = %s", status.toString())
                     if (status == BluetoothGatt.GATT_SUCCESS) {
-                        Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS")
                         val recognisedWheel = detectWheel(mBluetoothDeviceAddress)
                         if (recognisedWheel) {
                             connectionState = BleStateEnum.Connected
@@ -241,7 +246,6 @@ class BleConnector(val context: Context) {
                         }
                         return
                     }
-                    Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_FAILURE")
                 }
 
                 override fun onCharacteristicRead(
@@ -250,7 +254,7 @@ class BleConnector(val context: Context) {
                     status: Int
                 ) {
                     super.onCharacteristicRead(gatt, characteristic, status)
-                    Timber.i("onCharacteristicRead called %s", characteristic.uuid.toString())
+                    Timber.i("[ble] onCharacteristicRead called %s", characteristic.uuid.toString())
                     readData(characteristic, status)
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         mLastData = System.currentTimeMillis()
@@ -262,7 +266,7 @@ class BleConnector(val context: Context) {
                     characteristic: BluetoothGattCharacteristic
                 ) {
                     super.onCharacteristicChanged(gatt, characteristic)
-                    Timber.i("onCharacteristicChanged called %s", characteristic.uuid.toString())
+                    Timber.i("[ble] onCharacteristicChanged called %s", characteristic.uuid.toString())
                     readData(characteristic, BluetoothGatt.GATT_SUCCESS)
                     mLastData = System.currentTimeMillis()
                 }
@@ -273,10 +277,10 @@ class BleConnector(val context: Context) {
                     status: Int
                 ) {
                     super.onDescriptorWrite(gatt, descriptor, status)
-                    Timber.i("onDescriptorWrite %d", status)
+                    Timber.i("[ble] onDescriptorWrite %d", status)
                 }
             })
-        Timber.i("Trying to create a new connection.")
+        Timber.i("[ble] Trying to create a new connection.")
         connectionState = BleStateEnum.Connecting
         return true
     }
@@ -289,12 +293,14 @@ class BleConnector(val context: Context) {
      */
     @Synchronized
     fun disconnect() {
+        Timber.i("[ble] disconnect called")
         if (connectionState == BleStateEnum.Disconnected) {
+            Timber.i("[ble] already disconnected")
             return
         }
         disconnectRequested = true
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Timber.i("BluetoothAdapter not initialized")
+            Timber.i("[ble] BluetoothAdapter not initialized")
             connectionState = BleStateEnum.Disconnected
             return
         }
@@ -308,6 +314,7 @@ class BleConnector(val context: Context) {
      */
     @Synchronized
     fun close() {
+        Timber.i("[ble] close called")
         mBluetoothGatt?.close()
         mBluetoothGatt = null
     }
@@ -321,27 +328,24 @@ class BleConnector(val context: Context) {
         for (aData in cmd) {
             stringBuilder.append(String.format(Locale.US, "%02X", aData))
         }
-        Timber.i("Transmitted: %s", stringBuilder.toString())
+        Timber.i("[ble] Transmitted: %s", stringBuilder.toString())
         try {
             when (WheelData.getInstance().wheelType) {
                 WHEEL_TYPE.KINGSONG -> {
                     val ksService =
                         mBluetoothGatt!!.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID))
                     if (ksService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
                         return false
                     }
                     val ksCharacteristic =
                         ksService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID))
                     if (ksCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
                         return false
                     }
                     ksCharacteristic.value = cmd
-                    Timber.i(
-                        "writeBluetoothGattCharacteristic writeType = %d",
-                        ksCharacteristic.writeType
-                    )
+                    Timber.i("[ble] writeBluetoothGattCharacteristic writeType = %d", ksCharacteristic.writeType)
                     ksCharacteristic.writeType = 1
                     return mBluetoothGatt!!.writeCharacteristic(ksCharacteristic)
                 }
@@ -351,18 +355,18 @@ class BleConnector(val context: Context) {
                     val gwService =
                         mBluetoothGatt!!.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID))
                     if (gwService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
                         return false
                     }
                     val gwCharacteristic =
                         gwService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID))
                     if (gwCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
                         return false
                     }
                     gwCharacteristic.value = cmd
                     Timber.i(
-                        "writeBluetoothGattCharacteristic writeType = %d",
+                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
                         gwCharacteristic.writeType
                     )
                     return mBluetoothGatt!!.writeCharacteristic(gwCharacteristic)
@@ -371,18 +375,18 @@ class BleConnector(val context: Context) {
                     val nzService =
                         mBluetoothGatt!!.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID))
                     if (nzService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
                         return false
                     }
                     val nzCharacteristic =
                         nzService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID))
                     if (nzCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
                         return false
                     }
                     nzCharacteristic.value = cmd
                     Timber.i(
-                        "writeBluetoothGattCharacteristic writeType = %d",
+                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
                         nzCharacteristic.writeType
                     )
                     return mBluetoothGatt!!.writeCharacteristic(nzCharacteristic)
@@ -391,18 +395,18 @@ class BleConnector(val context: Context) {
                     val nbService =
                         mBluetoothGatt!!.getService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID))
                     if (nbService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
                         return false
                     }
                     val nbCharacteristic =
                         nbService.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID))
                     if (nbCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
                         return false
                     }
                     nbCharacteristic.value = cmd
                     Timber.i(
-                        "writeBluetoothGattCharacteristic writeType = %d",
+                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
                         nbCharacteristic.writeType
                     )
                     return mBluetoothGatt!!.writeCharacteristic(nbCharacteristic)
@@ -411,13 +415,13 @@ class BleConnector(val context: Context) {
                     val imService =
                         mBluetoothGatt!!.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID))
                     if (imService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
                         return false
                     }
                     val imCharacteristic =
                         imService.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID))
                     if (imCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic characteristic == null")
                         return false
                     }
                     val buf = ByteArray(20)
@@ -441,7 +445,7 @@ class BleConnector(val context: Context) {
                         if (!mBluetoothGatt!!.writeCharacteristic(imCharacteristic)) return false
                     }
                     Timber.i(
-                        "writeBluetoothGattCharacteristic writeType = %d",
+                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
                         imCharacteristic.writeType
                     )
                     return true
@@ -450,7 +454,7 @@ class BleConnector(val context: Context) {
                     val inv2Service =
                         mBluetoothGatt!!.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID))
                     if (inv2Service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
+                        Timber.i("[ble] writeBluetoothGattCharacteristic service == null")
                         return false
                     }
                     val inv2Characteristic =
@@ -461,7 +465,7 @@ class BleConnector(val context: Context) {
                     }
                     inv2Characteristic.value = cmd
                     Timber.i(
-                        "writeBluetoothGattCharacteristic writeType = %d",
+                        "[ble] writeBluetoothGattCharacteristic writeType = %d",
                         inv2Characteristic.writeType
                     )
                     return mBluetoothGatt!!.writeCharacteristic(inv2Characteristic)
@@ -470,14 +474,14 @@ class BleConnector(val context: Context) {
             }
         } catch (e: NullPointerException) {
             // sometimes mBluetoothGatt is null... If the user starts to connect and disconnect quickly
-            Timber.i("writeBluetoothGattCharacteristic throws NullPointerException: %s", e.message)
+            Timber.i("[ble] writeBluetoothGattCharacteristic throws NullPointerException: %s", e.message)
         }
         return false
     }
 
     private fun writeBluetoothGattDescriptor(descriptor: BluetoothGattDescriptor?) {
         val success = mBluetoothGatt?.writeDescriptor(descriptor) == true
-        Timber.i("Write descriptor %b", success)
+        Timber.i("[ble] Write descriptor %b", success)
     }
 
     /**
@@ -495,6 +499,7 @@ class BleConnector(val context: Context) {
     }
 
     fun startReconnectTimer() {
+        Timber.i("[ble] startReconnectTimer called")
         if (reconnectTimer != null) {
             stopReconnectTimer()
         }
@@ -511,6 +516,7 @@ class BleConnector(val context: Context) {
     }
 
     fun stopReconnectTimer() {
+        Timber.i("[ble] stopReconnectTimer called")
         reconnectTimer?.cancel()
         reconnectTimer = null
     }
@@ -521,6 +527,7 @@ class BleConnector(val context: Context) {
             Timber.e(context.resources.getString(R.string.error_bluetooth_not_initialised))
             Toast.makeText(context, R.string.error_bluetooth_not_initialised, Toast.LENGTH_SHORT).show()
         }
+        Timber.i("[ble] init")
     }
 
     private fun writeRAWData(value: ByteArray) {
@@ -546,12 +553,14 @@ class BleConnector(val context: Context) {
     }
 
     private fun readData(characteristic: BluetoothGattCharacteristic, status: Int) {
+        Timber.i("[ble] readData called.")
         if (status != BluetoothGatt.GATT_SUCCESS) {
             return
         }
-        writeRAWData(characteristic.value)
-        val wd = WheelData.getInstance()
         val value = characteristic.value
+        writeRAWData(value)
+        val wd = WheelData.getInstance()
+        Timber.i("[ble] readData. wheel type = ${wd.wheelType}")
         when (wd.wheelType) {
             WHEEL_TYPE.KINGSONG -> if (characteristic.uuid.toString() == Constants.KINGSONG_READ_CHARACTER_UUID) {
                 wd.decodeResponse(value, context)
@@ -581,30 +590,31 @@ class BleConnector(val context: Context) {
 
     private fun setWheelServices(serviceUUID: String, charUUID: String, descriptorUUID: String? = null) {
         val targetService = getGattService(UUID.fromString(serviceUUID))
-        Timber.i("service UUID")
+        Timber.i("[ble] service UUID")
         val notifyCharacteristic = targetService?.getCharacteristic(UUID.fromString(charUUID))
-        Timber.i("read UUID")
+        Timber.i("[ble] read UUID")
         if (notifyCharacteristic == null) {
-            Timber.i("it seems that RX UUID doesn't exist")
+            Timber.i("[ble] it seems that RX UUID doesn't exist")
         }
         setCharacteristicNotification(notifyCharacteristic)
-        Timber.i("notify UUID")
+        Timber.i("[ble] notify UUID")
         if (descriptorUUID != null) {
             val descriptor =
                 notifyCharacteristic!!.getDescriptor(UUID.fromString(descriptorUUID))
-            Timber.i("descr UUID")
+            Timber.i("[ble] descr UUID")
             if (descriptor == null) {
-                Timber.i("it seems that descr UUID doesn't exist")
+                Timber.i("[ble] it seems that descr UUID doesn't exist")
             } else {
                 descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                Timber.i("enable notify UUID")
+                Timber.i("[ble] enable notify UUID")
                 writeBluetoothGattDescriptor(descriptor)
-                Timber.i("write notify")
+                Timber.i("[ble] write notify")
             }
         }
     }
 
     private fun detectWheel(deviceAddress: String?): Boolean {
+        Timber.i("[ble] detectWheel called")
         WheelLog.AppConfig.lastMac = deviceAddress!!
         val advData = WheelLog.AppConfig.advDataForWheel
         var adapterName = ""
@@ -651,11 +661,11 @@ class BleConnector(val context: Context) {
         }
         val wd = WheelData.getInstance()
         if (detectedWheel) {
-            Timber.i("Protocol recognized as %s", adapterName)
+            Timber.i("[ble] Protocol recognized as %s", adapterName)
             if (WHEEL_TYPE.GOTWAY.toString().equals(adapterName, ignoreCase = true) &&
                 (mBluetoothGatt!!.device.name == "RW" || WheelData.getInstance().name.startsWith("ROCKW"))
             ) {
-                Timber.i("It seems to be RochWheel, force to Kingsong proto")
+                Timber.i("[ble] It seems to be RochWheel, force to Kingsong proto")
                 adapterName = WHEEL_TYPE.KINGSONG.toString()
             }
             when (adapterName.uppercase(Locale.ROOT)) {
@@ -665,7 +675,7 @@ class BleConnector(val context: Context) {
                         Constants.KINGSONG_SERVICE_UUID,
                         Constants.KINGSONG_READ_CHARACTER_UUID,
                         Constants.KINGSONG_DESCRIPTER_UUID)
-                    Timber.i("starting Kingsong adapter")
+                    Timber.i("[ble] starting Kingsong adapter")
                     KingsongAdapter.getInstance().startStartingTimer();
                 }
                 WHEEL_TYPE.GOTWAY.toString() -> {
@@ -677,7 +687,7 @@ class BleConnector(val context: Context) {
                     if (WheelLog.AppConfig.connectBeep) {
                         writeBluetoothGattCharacteristic("b".toByteArray())
                     }
-                    Timber.i("starting Gotway adapter")
+                    Timber.i("[ble] starting Gotway adapter")
                 }
                 WHEEL_TYPE.INMOTION.toString() -> {
                     wd.wheelType = WHEEL_TYPE.INMOTION
@@ -688,10 +698,10 @@ class BleConnector(val context: Context) {
                     val password = WheelLog.AppConfig.passwordForWheel
                     if (password.isNotEmpty()) {
                         InMotionAdapter.getInstance().startKeepAliveTimer(password)
-                        Timber.i("starting Inmotion adapter")
+                        Timber.i("[ble] starting Inmotion adapter")
                     } else {
                         detectedWheel = false
-                        Timber.i("error: password in Inmotion adapter.")
+                        Timber.i("[ble] error: password in Inmotion adapter.")
                     }
                 }
                 WHEEL_TYPE.INMOTION_V2.toString() -> {
@@ -701,7 +711,7 @@ class BleConnector(val context: Context) {
                         Constants.INMOTION_V2_READ_CHARACTER_UUID,
                         Constants.INMOTION_V2_DESCRIPTER_UUID)
                     InmotionAdapterV2.getInstance().startKeepAliveTimer()
-                    Timber.i("starting Inmotion V2 adapter")
+                    Timber.i("[ble] starting Inmotion V2 adapter")
                 }
                 WHEEL_TYPE.NINEBOT_Z.toString() -> {
                     wd.wheelType = WHEEL_TYPE.NINEBOT_Z
@@ -714,28 +724,28 @@ class BleConnector(val context: Context) {
                     } else {
                         NinebotZAdapter.getInstance().startKeepAliveTimer()
                     }
-                    Timber.i("starting ninebot adapter")
+                    Timber.i("[ble] starting ninebot adapter")
                 }
                 WHEEL_TYPE.NINEBOT.toString() -> {
-                    Timber.i("Trying to start Ninebot")
+                    Timber.i("[ble] Trying to start Ninebot")
                     wd.wheelType = WHEEL_TYPE.NINEBOT
                     setWheelServices(
                         Constants.NINEBOT_SERVICE_UUID,
                         Constants.NINEBOT_READ_CHARACTER_UUID,
                         Constants.NINEBOT_DESCRIPTER_UUID)
                     NinebotAdapter.getInstance().startKeepAliveTimer(protoVer)
-                    Timber.i("starting ninebot adapter")
+                    Timber.i("[ble] starting ninebot adapter")
                 }
                 else -> {
                     WheelLog.AppConfig.lastMac = ""
-                    Timber.i("Protocol recognized as Unknown")
+                    Timber.i("[ble] Protocol recognized as Unknown")
                     val services = getSupportedGattServices()
                     if (services != null) {
                         for (service in services) {
                             if (service != null) {
-                                Timber.i("Service: %s", service.uuid.toString())
+                                Timber.i("[ble] Service: %s", service.uuid.toString())
                                 for (characteristics in service.characteristics) {
-                                    Timber.i("Characteristics: %s", characteristics.uuid.toString())
+                                    Timber.i("[ble] Characteristics: %s", characteristics.uuid.toString())
                                 }
                             }
                         }
@@ -748,6 +758,7 @@ class BleConnector(val context: Context) {
     }
 
     private fun startBeepTimer() {
+        Timber.i("[ble] startBeepTimer called")
         wl = mgr!!.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag)?.apply {
             acquire(5 * 60 * 1000L /*5 minutes*/)
         }
@@ -767,6 +778,7 @@ class BleConnector(val context: Context) {
     }
 
     private fun stopBeepTimer() {
+        Timber.i("[ble] stopBeepTimer called")
         wl?.release()
         wl = null
         beepTimer?.cancel()

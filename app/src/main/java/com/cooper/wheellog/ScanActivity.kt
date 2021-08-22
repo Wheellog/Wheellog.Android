@@ -112,9 +112,8 @@ class ScanActivity: AppCompatActivity() {
         val deviceAddress = device.address
         val deviceName = device.name
         val advData = mDeviceListAdapter!!.getAdvData(i)
-        Timber.i("Device selected MAC = %s", deviceAddress)
-        Timber.i("Device selected Name = %s", deviceName)
-        Timber.i("Device selected Data = %s", advData)
+        Timber.i("[scan] Device selected MAC = %s | Name = %s | Data = %s",
+            deviceAddress, deviceName, advData)
         val intent = Intent()
         intent.putExtra("MAC", deviceAddress)
         intent.putExtra("NAME", deviceName)
@@ -153,7 +152,7 @@ class ScanActivity: AppCompatActivity() {
                 result = toHexStringRaw(data)
             }
         }
-        Timber.i("Found data: %s", result)
+        Timber.i("[scan] Found data: %s", result)
         return result
     }
 

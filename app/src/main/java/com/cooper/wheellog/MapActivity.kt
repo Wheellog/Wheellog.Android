@@ -32,6 +32,7 @@ class MapActivity : AppCompatActivity() {
     private val header = HashMap<LogHeaderEnum, Int>()
 
     private fun parseFileToPolyLine(extras: Bundle): Polyline? {
+        Timber.i("[map] parseFileToPolyLine called")
         val inputStream: InputStream?
         try {
             inputStream = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -143,6 +144,7 @@ class MapActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.i("[map] onCreate called")
         super.onCreate(savedInstanceState)
         val context = applicationContext
 
