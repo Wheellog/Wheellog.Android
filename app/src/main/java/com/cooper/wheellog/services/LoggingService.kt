@@ -213,10 +213,9 @@ class LoggingService: Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         if (!start()) {
             stopSelf()
-        } else {
-            startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         }
         return START_STICKY
     }

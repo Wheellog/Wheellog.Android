@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.CycleInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
@@ -16,6 +14,19 @@ import com.google.android.material.textfield.TextInputLayout
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var dialog: AlertDialog
+    private lateinit var error: TextView
+
+    private fun showError() {
+        error.apply {
+            visibility = View.VISIBLE
+            text = ElectroClub.instance.lastError
+        }
+        Toast.makeText(
+            applicationContext,
+            ElectroClub.instance.lastError,
+            Toast.LENGTH_LONG
+        ).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
         val ok = convertView.findViewById<Button>(R.id.ok_button)
         val cancel = convertView.findViewById<Button>(R.id.btn_cancel)
         val title = convertView.findViewById<TextView>(R.id.alertTitle)
-        val error = convertView.findViewById<TextView>(R.id.textError)
+        error = convertView.findViewById(R.id.textError)
         title.text = "electro.club"
 
         dialog = AlertDialog.Builder(this)
@@ -40,18 +51,15 @@ class LoginActivity : AppCompatActivity() {
             ElectroClub.instance.login(
                     email.editText?.text.toString(),
                     password.editText?.text.toString()
-            ) {
+            ) { login ->
                 this.runOnUiThread {
-                    if (it) {
+                    if (login) {
+                        ElectroClub.instance.getAndSelectGarageByMac {  }
                         setResult(RESULT_OK, Intent())
                         finish()
                     } else {
                         password.startAnimation(shakeError())
-                        error?.apply {
-                            visibility = View.VISIBLE
-                            text = ElectroClub.instance.lastError
-                        }
-                        Toast.makeText(applicationContext, ElectroClub.instance.lastError, Toast.LENGTH_LONG).show()
+                        showError()
                     }
                 }
             }
