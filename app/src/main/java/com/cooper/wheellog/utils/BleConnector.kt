@@ -412,8 +412,7 @@ class BleConnector(val context: Context) {
                         fullPartIndex++
                     }
                     if (remainPart > 0) {
-                        System.arraycopy(cmd, fullPartCount * 20, buf, 0, remainPart)
-                        imCharacteristic.value = buf
+                        imCharacteristic.value = cmd.copyOfRange(fullPartCount * 20, cmd.size)
                         if (!mBluetoothGatt!!.writeCharacteristic(imCharacteristic)) return false
                     }
                     return true
