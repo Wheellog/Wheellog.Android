@@ -158,7 +158,7 @@
     <string name="connect_to_wheel">Подключить к колесу</string>
     <string name="connected">Подключено</string>
     <string name="connection_failed">Сбой подключения</string>
-    <string name="connection_lost_at">Подключение потеряно %1s</string>
+    <string name="connection_lost_at">Подключение потеряно</string>
     <string name="current_on_dial_description">Рисовать ток на главной шкале вместо скорости</string>
     <string name="current_on_dial_title">Ток на главной шкале</string>
     <string name="devices">Устройства</string>

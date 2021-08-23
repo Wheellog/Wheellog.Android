@@ -65,7 +65,7 @@
     <string name="icon_watch">手表图标</string>
     <string name="icon_logging">日志图标</string>
     <string name="icon_connection">连接图标</string>
-    <string name="connection_lost_at">连接在%1s丢失</string>
+    <string name="connection_lost_at">连接在丢失</string>
 
     <string name="enable_auto_upload_title">启用自动上传？</string>
     <string name="enable_auto_upload_descriprion">未连接到WiFi时自动上传将使用您的移动数据。 如果您没有数据计划，这可能会导致网络提供商收取费用。</string>

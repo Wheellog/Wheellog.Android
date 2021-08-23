@@ -64,7 +64,7 @@
 	<string name="icon_watch">Ikona hodinek</string>
 	<string name="icon_logging">Ikona záznamu</string>
 	<string name="icon_connection">Ikona připojení</string>
-	<string name="connection_lost_at">Spojení ztraceno v %1s</string>
+	<string name="connection_lost_at">Spojení ztraceno</string>
 	<string name="enable_auto_upload_title">Zapnout automatické nahrávání?</string>
 	<string name="enable_auto_upload_descriprion">Automatické nahrávání během přopojení přes mobilní data (mimo WiFi) může být zpoplatněno tvým operátorem.</string>
 	<string name="logging_error_no_storage_permission">Přístup k uložišti zamítnut. Záznam vypnut.</string>

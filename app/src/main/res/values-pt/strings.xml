@@ -64,7 +64,7 @@
 	<string name="icon_watch">Relógio</string>
 	<string name="icon_logging">Registro</string>
 	<string name="icon_connection">Conexão</string>
-	<string name="connection_lost_at">Conexão perdida em %1s</string>
+	<string name="connection_lost_at">Conexão perdida</string>
 	<string name="enable_auto_upload_title">Ativar envio automático</string>
 	<string name="enable_auto_upload_descriprion">O envio automático sem estar conectado no WIFI irá consumir seu plano de dados do celular. Isso pode resultar em cobranças da operadora.</string>
 	<string name="logging_error_no_storage_permission">Sem permissão para gravar no dispositivo externo. Tentativa cancelada</string>

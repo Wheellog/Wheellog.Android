@@ -220,7 +220,7 @@
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
     <string name="icon_beep">Horn Icon</string>
-    <string name="connection_lost_at">Connection lost at %1s</string>
+    <string name="connection_lost_at">Connection lost</string>
     <string name="enable_auto_upload_title">Enable Auto Upload?</string>
     <string name="enable_auto_upload_descriprion">Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.</string>
     <string name="logging_error_no_storage_permission">No permission to write to external storage. Logging cancelled.</string>

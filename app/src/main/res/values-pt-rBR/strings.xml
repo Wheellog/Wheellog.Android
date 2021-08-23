@@ -64,7 +64,7 @@
 	<string name="icon_watch">Ikona zegarka</string>
 	<string name="icon_logging">Ikona rejestrowania</string>
 	<string name="icon_connection">Ikona połączenia</string>
-	<string name="connection_lost_at">Utracono połączenie o %1$s</string>
+	<string name="connection_lost_at">Utracono połączenie</string>
 	<string name="enable_auto_upload_title">Włączyć przesyłanie rejestrów?</string>
 	<string name="enable_auto_upload_descriprion">Przesyłanie rejestrów z danymi przy braku połączenia WiFi odbędzie się przez sieć komórkową. To może spowodować naliczenie dodatkowych opłat.</string>
 	<string name="logging_error_no_storage_permission">Brak uprawnień do zapisu w pamięci zewnętrznej. Rejestracja przerwana.</string>
