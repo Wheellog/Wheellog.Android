@@ -64,7 +64,7 @@
 	<string name="icon_watch">Watch Icon</string>
 	<string name="icon_logging">Logging Icon</string>
 	<string name="icon_connection">Connection Icon</string>
-	<string name="connection_lost_at">Perte de connexion à %1s</string>
+	<string name="connection_lost_at">Perte de connexion</string>
 	<string name="enable_auto_upload_title">Activer le téléchargement automatique?</string>
 	<string name="enable_auto_upload_descriprion">Le téléchargement automatique hors connexion WiFi va utiliser le réseau mobile. Ceci peut occasionner des frais supplémentaire auprès de votre fournisseur d\'accès internet si ce n\'est pas prévu dans votre forfait de données mobiles.</string>
 	<string name="logging_error_no_storage_permission">Ecriture impossible sur le stockage externe. Journalisation annulée.</string>

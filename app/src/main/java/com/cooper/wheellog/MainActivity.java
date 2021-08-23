@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss ", Locale.US);
     private WearOs wearOs;
     //endregion
 
@@ -143,10 +143,9 @@ public class MainActivity extends AppCompatActivity {
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING) {
                     showSnackBar(R.string.bluetooth_direct_connect_failed);
                 } else if (getBluetoothLeService() != null && getBluetoothLeService().getDisconnectTime() != null) {
-                    showSnackBar(
-                            getString(R.string.connection_lost_at,
-                                    timeFormatter.format(getBluetoothLeService().getDisconnectTime())),
-                            Snackbar.LENGTH_INDEFINITE);
+                    var text = timeFormatter.format(getBluetoothLeService().getDisconnectTime()) +
+                            getString(R.string.connection_lost_at);
+                    showSnackBar(text, Snackbar.LENGTH_INDEFINITE);
                 }
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
