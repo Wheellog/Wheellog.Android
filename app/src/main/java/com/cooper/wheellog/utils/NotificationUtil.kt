@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import com.cooper.wheellog.companion.services.PebbleService
 import com.cooper.wheellog.services.LoggingService
 import java.util.*
 

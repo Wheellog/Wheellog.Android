@@ -1,4 +1,4 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.companion.services;
 
 import android.util.Log;
 

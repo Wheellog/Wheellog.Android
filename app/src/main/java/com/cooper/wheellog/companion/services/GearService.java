@@ -1,4 +1,4 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.companion.services;
 
 import android.Manifest;
 import android.app.Notification;
@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.Constants;
 import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.accessory.SA;

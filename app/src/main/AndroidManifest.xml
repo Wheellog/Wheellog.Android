@@ -100,14 +100,14 @@
             android:name=".PrivacyPolicyActivity"
             android:theme="@style/OriginalTheme.Transparent" />
 
-        <service android:name=".PebbleService" android:foregroundServiceType="connectedDevice" android:exported="true"/>
         <service android:name=".services.LoggingService" android:foregroundServiceType="location" />
         <service android:name=".services.CoreService" android:foregroundServiceType="dataSync|location|connectedDevice" />
-        <service android:name="com.cooper.wheellog.GearService" /> <!-- Services needed for Samsung Gear watches -->
-        <service android:name="com.cooper.wheellog.GarminConnectIQ" /> <!-- Services needed for Garmin ConnectIQ devices -->
+        <service android:name=".companion.services.PebbleService" android:foregroundServiceType="connectedDevice" android:exported="true"/>
+        <service android:name=".companion.services.GearService" /> <!-- Services needed for Samsung Gear watches -->
+        <service android:name=".companion.services.GarminConnectIQ" /> <!-- Services needed for Garmin ConnectIQ devices -->
 
         <receiver
-            android:name=".PebbleBroadcastReceiver"
+            android:name=".companion.services.PebbleBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.getpebble.action.app.RECEIVE" />

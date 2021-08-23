@@ -622,7 +622,7 @@ public class WheelData {
         mModeStr = value;
     }
 
-    double getMaxVoltageForWheel() {
+    public double getMaxVoltageForWheel() {
         BaseAdapter adapter = getAdapter();
         if (adapter == null) {
             return 0;
@@ -630,7 +630,7 @@ public class WheelData {
         return Constants.MAX_CELL_VOLTAGE * adapter.getCellSForWheel();
     }
 
-    double getVoltageTiltbackForWheel() {
+    public double getVoltageTiltbackForWheel() {
         BaseAdapter adapter = getAdapter();
         if (adapter == null) {
             return 0;
@@ -682,7 +682,7 @@ public class WheelData {
 
     }
 
-    int getRideTime() {
+    public int getRideTime() {
         return mRideTime;
     }
 
@@ -738,7 +738,7 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    String getRidingTimeString() {
+    public String getRidingTimeString() {
         long hours = TimeUnit.SECONDS.toHours(mRidingTime);
         long minutes = TimeUnit.SECONDS.toMinutes(mRidingTime) -
                 TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(mRidingTime));

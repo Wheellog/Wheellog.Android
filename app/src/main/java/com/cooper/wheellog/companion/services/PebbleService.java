@@ -1,4 +1,4 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.companion.services;
 
 import android.app.Notification;
 import android.app.Service;
@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 
+import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
 import com.getpebble.android.kit.PebbleKit;

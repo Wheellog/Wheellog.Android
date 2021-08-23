@@ -34,7 +34,7 @@
             role="provider"
             serviceLimit="any"
             version="1.0"
-            serviceImpl="com.cooper.wheellog.GearService"
+            serviceImpl="com.cooper.wheellog.companion.services.GearService"
             >
             <supportedTransports>
                 <transport type="TRANSPORT_BT"/>

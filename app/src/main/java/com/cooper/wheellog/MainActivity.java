@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cooper.wheellog.companion.services.PebbleService;
 import com.cooper.wheellog.services.CoreService;
 import com.cooper.wheellog.services.LoggingService;
 import com.cooper.wheellog.utils.Constants;

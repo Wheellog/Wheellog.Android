@@ -1,9 +1,11 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog.companion.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.cooper.wheellog.MainActivity;
+import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.SomeUtil;
 import com.getpebble.android.kit.Constants;
 import com.getpebble.android.kit.PebbleKit;

@@ -1,10 +1,13 @@
-package com.cooper.wheellog
+package com.cooper.wheellog.companion.services
 
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
+import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
 import com.garmin.android.connectiq.ConnectIQ.*

@@ -8,6 +8,8 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.cooper.wheellog.*
 import com.cooper.wheellog.companion.WearOs
+import com.cooper.wheellog.companion.services.GarminConnectIQ
+import com.cooper.wheellog.companion.services.PebbleService
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
