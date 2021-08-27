@@ -134,7 +134,7 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
-        assertThat(result3).isFalse()
+        assertThat(result3).isTrue()
         assertThat(data.bms1.cells[0]).isEqualTo(4.148)
         assertThat(data.bms1.cells[1]).isEqualTo(4.102)
         assertThat(data.bms1.cells[2]).isEqualTo(4.145)
@@ -217,7 +217,7 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
-        assertThat(result3).isFalse()
+        assertThat(result3).isTrue()
         assertThat(data.bms2.cells[0]).isEqualTo(4.123)
         assertThat(data.bms2.cells[1]).isEqualTo(4.140)
         assertThat(data.bms2.cells[2]).isEqualTo(4.130)
