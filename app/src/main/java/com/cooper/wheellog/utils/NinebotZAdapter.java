@@ -184,6 +184,7 @@ public class NinebotZAdapter extends BaseAdapter {
                 bms.getCells()[13] = cells.getCell14() / 1000.0;
                 bms.getCells()[14] = cells.getCell15() / 1000.0;
                 bms.getCells()[15] = cells.getCell16() / 1000.0;
+                result = true;
             } else {
                 int voltage = status.getVoltage();
                 wd.setSpeed(status.getSpeed());
@@ -1143,7 +1144,7 @@ public class NinebotZAdapter extends BaseAdapter {
                             if (status != null) {
                                 outValues.add(status);
                             }
-                            stateCon = 4;
+                            stateCon = 10;
                         }
                     }
                 }
