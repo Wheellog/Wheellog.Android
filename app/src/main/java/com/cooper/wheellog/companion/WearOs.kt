@@ -10,6 +10,9 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
+import com.wheellog.shared.WearPage
+import com.wheellog.shared.and
+import com.wheellog.shared.serialize
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,6 +52,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
             putLong("timestamp", wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             putString("time_string", sdf.format(Date(wd.lastLifeData)))
+            putString("pages", (WearPage.Main and WearPage.Voltage and WearPage.Current and WearPage.Temperature).serialize())
         }
         val request = dataRequest.asPutDataRequest()
         request.setUrgent()

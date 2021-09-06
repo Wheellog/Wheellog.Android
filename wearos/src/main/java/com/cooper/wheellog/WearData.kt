@@ -9,6 +9,7 @@ class WearData {
     var pwm: Double = 0.0
     var maxPwm: Double = 0.0
     var temperature: Int = 0
+    var distance: Long = 0
     var maxTemperature: Int = 0
     var maxPower: Double = 0.0
     var battery: Int = 0

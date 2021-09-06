@@ -16,4 +16,5 @@
     <color name="battery_dial">#01BF50</color>
     <color name="battery_low_dial">#ffcc00</color>
     <color name="temperature_dial">#00ffff</color>
+    <color name="temperature_bg">#FF5722</color>
 </resources>
