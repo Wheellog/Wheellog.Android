@@ -159,7 +159,7 @@ class RawDataTest {
         }
 
         // Assert.
-        assertThat(data.model).isAtMost(InMotionAdapter.Model.V8S.name)
+        assertThat(data.model).isEqualTo(InMotionAdapter.getModelString(InMotionAdapter.Model.V8S))
         assertThat(data.batteryLevel).isEqualTo(96)
         assertThat(data.temperature).isEqualTo(30)
         assertThat(data.temperature2).isEqualTo(-109) // Fix me
