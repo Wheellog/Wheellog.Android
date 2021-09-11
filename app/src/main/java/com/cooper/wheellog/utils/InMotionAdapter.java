@@ -489,7 +489,7 @@ public class InMotionAdapter extends BaseAdapter {
             }
         } else {
             Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-            if (model.belongToInputType("5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F) {
+            if (model.belongToInputType("5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F || model == Model.V8S) {
                 if (useBetterPercents) {
                     if (volts > 84.00) {
                         batt = 1.0;
@@ -1112,7 +1112,7 @@ public class InMotionAdapter extends BaseAdapter {
             if (model.belongToInputType("1") || model.belongToInputType("5") ||
                     model == V8 || model == Glide3 || model == V10 || model == V10F ||
                     model == V10S || model == V10SF || model == V10T || model == V10FT ||
-                    model == V8F) {
+                    model == V8F || model == V8S) {
                 totalDistance = (MathsUtil.intFromBytesLE(ex_data, 44)); ///// V10F 48 byte - trip distance
             } else if (model == R0) {
                 totalDistance = (MathsUtil.longFromBytesLE(ex_data, 44));
