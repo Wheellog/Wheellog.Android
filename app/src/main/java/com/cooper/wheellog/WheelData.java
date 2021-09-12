@@ -42,10 +42,10 @@ public class WheelData {
     private final ArrayList<String> xAxis = new ArrayList<>();
     private final ArrayList<Float> currentAxis = new ArrayList<>();
     private final ArrayList<Float> speedAxis = new ArrayList<>();
-
-    private final NinebotBms mNinebotBms2 = new NinebotBms();    private final NinebotBms mNinebotBms1 = new NinebotBms();
-
+    
     // BMS
+    private final NinebotBms mNinebotBms1 = new NinebotBms();
+    private final NinebotBms mNinebotBms2 = new NinebotBms();    
 
     //all
     private int mSpeed;
