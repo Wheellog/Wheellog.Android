@@ -112,17 +112,18 @@ public class NinebotZAdapter extends BaseAdapter {
                             Timber.i("Sent BMS2 cells message");
                         } else Timber.i("Unable to send BMS2 cells message");
 
+                    } else if (settingCommandReady) {
+                        if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
+                            settingCommandReady = false;
+                            Timber.i("Sent command message");
+                        } else Timber.i("Unable to send command message");
+
                     } else if (settingRequestReady) {
                         if (WheelData.getInstance().bluetoothCmd(settingRequest)) {
                             settingRequestReady = false;
                             Timber.i("Sent settings request message");
                         } else Timber.i("Unable to send settings request message");
 
-                    } else if (settingCommandReady) {
-                        if (WheelData.getInstance().bluetoothCmd(settingCommand)) {
-                            settingCommandReady = false;
-                            Timber.i("Sent command message");
-                        } else Timber.i("Unable to send command message");
                     } else {
                         if (!WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getLiveData().writeBuffer())) {
                             Timber.i("Unable to send keep-alive message");
@@ -153,7 +154,7 @@ public class NinebotZAdapter extends BaseAdapter {
         };
         Timber.i("Ninebot Z timer started");
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 25);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 250);
     }
 
     public void resetConnection() {
@@ -164,7 +165,7 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 //// mocks
     public int getWheelAlarmMax(){
-        return 500;
+        return 100;
     }
 
     public int getWheelLimitedSpeed(){
@@ -220,17 +221,17 @@ public class NinebotZAdapter extends BaseAdapter {
                     } else if ((result.parameter == CANMessage.Param.LockMode.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get param1 number");
                         result.parseParams1();
-                        stateCon = 4;
+                        stateCon = 5;
 
                     } else if ((result.parameter == CANMessage.Param.LedMode.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get param2 number");
                         result.parseParams2();
-                        stateCon = 5;
+                        stateCon = 12;
 
                     } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get version number");
                         result.parseVersionNumber();
-                        stateCon = 12;
+                        stateCon = 4;
 
                     } else if ((result.parameter == CANMessage.Param.LiveData.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get life data");
@@ -277,14 +278,19 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setDrl(final boolean drl) {
         // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFFE) | (drl ? 1 : 0); // need to have driveflags before
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
 
     @Override
-    public void setLightState(final boolean lightEnable) {
+    public void setLightState(final boolean lightEnable) { //not working yet, need more tests
         // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFFB) | ((lightEnable ? 1 : 0) << 2) ; // need to have driveflags before
+        //driveFlags = (driveFlags & 0xFF7F) | ((lightEnable ? 1 : 0) << 7) ; // need to have driveflags before
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
@@ -293,6 +299,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setTailLightState(final boolean drl) {
         // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFFD) | ((drl ? 1 : 0) << 1) ; // need to have driveflags before
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
@@ -301,6 +309,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setHandleButtonState(final boolean handleButtonEnable) {
         // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFF7) | ((handleButtonEnable ? 0 : 1) << 3) ; // need to have driveflags before
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
@@ -309,6 +319,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setBrakeAssist(final boolean brakeAssist) {
         // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFEF) | ((brakeAssist ? 0 : 1) << 4) ; // need to have driveflags before
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
@@ -317,6 +329,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setAlarm1Enabled(final boolean value) {
         // ToDo check if it is the same as old value
         alarms = (alarms & 0xFFFE) | (value ? 1 : 0); // need to have alarms before
+        settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
         settingCommandReady = true;
     }
@@ -325,6 +339,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setAlarm2Enabled(final boolean value) {
         // ToDo check if it is the same as old value
         alarms = (alarms & 0xFFFD) | ((value ? 1 : 0) << 1); // need to have alarms before
+        settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
         settingCommandReady = true;
     }
@@ -333,6 +349,8 @@ public class NinebotZAdapter extends BaseAdapter {
     public void setAlarm3Enabled(final boolean value) {
         // ToDo check if it is the same as old value
         alarms = (alarms & 0xFFFB) | ((value ? 1 : 0) << 2); // need to have alarms before
+        settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+        settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
         settingCommandReady = true;
     }
@@ -340,6 +358,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setAlarm1Speed(final int value) {
         if (alarm1Speed != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setAlarm1Speed(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -348,6 +368,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setAlarm2Speed(final int value) {
         if (alarm2Speed != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setAlarm2Speed(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -356,6 +378,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setAlarm3Speed(final int value) {
         if (alarm3Speed != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setAlarm3Speed(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -364,6 +388,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setLimitedModeEnabled(final boolean value) {
         if ((limitedMode == 1) != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setLimitedMode(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -372,6 +398,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setLimitedSpeed(final int value) {
         if (limitModeSpeed != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setLimitedSpeed(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -380,6 +408,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setPedalSensivity(final int value) {
         if (pedalSensivity != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setPedalSensivity(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -388,6 +418,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void updateLedMode(final int value) {
         if (ledMode != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setLedMode(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -396,6 +428,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setSpeakerVolume(final int value) {
         if (speakerVolume != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setSpeakerVolume(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -404,6 +438,8 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public void setLockMode(final boolean value) {
         if ((lockMode == 1) != value) {
+            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
+            settingRequestReady = true;
             settingCommand = NinebotZAdapter.CANMessage.setLockMode(value).writeBuffer();
             settingCommandReady = true;
         }
@@ -804,12 +840,13 @@ public class NinebotZAdapter extends BaseAdapter {
         }
 
         public static CANMessage setAlarm1Speed(int value) {
+            int speed = value * 100;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.Alarm1Speed.getValue();
-            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -817,12 +854,13 @@ public class NinebotZAdapter extends BaseAdapter {
 
 
         public static CANMessage setAlarm2Speed(int value) {
+            int speed = value * 100;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.Alarm2Speed.getValue();
-            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -830,24 +868,26 @@ public class NinebotZAdapter extends BaseAdapter {
 
 
         public static CANMessage setAlarm3Speed(int value) {
+            int speed = value * 100;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.Alarm3Speed.getValue();
-            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
         }
 
         public static CANMessage setLimitedSpeed(int value) {
+            int speed = value * 100;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.LimitModeSpeed.getValue();
-            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -899,7 +939,7 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.LockMode.getValue();
-            msg.data = new byte[]{value};
+            msg.data = new byte[]{value, 0x00};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -915,7 +955,7 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.Calibration.getValue();
-            msg.data = new byte[]{value};
+            msg.data = new byte[]{value, 0x00};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -943,18 +983,21 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelData wd = WheelData.getInstance();
             getInstance().lockMode = MathsUtil.shortFromBytesLE(data, 0);
             getInstance().limitedMode = MathsUtil.shortFromBytesLE(data, 4);
-            getInstance().limitModeSpeed1Km = MathsUtil.shortFromBytesLE(data, 6);
-            getInstance().limitModeSpeed = MathsUtil.shortFromBytesLE(data, 8);
-            getInstance().alarms = MathsUtil.shortFromBytesLE(data, 18);
-            getInstance().alarm1Speed = MathsUtil.shortFromBytesLE(data, 20);
-            getInstance().alarm2Speed = MathsUtil.shortFromBytesLE(data, 22);
-            getInstance().alarm3Speed = MathsUtil.shortFromBytesLE(data, 24);
+            getInstance().limitModeSpeed1Km = MathsUtil.shortFromBytesLE(data, 6)/100;
+            getInstance().limitModeSpeed = MathsUtil.shortFromBytesLE(data, 8)/100;
+            getInstance().alarms = MathsUtil.shortFromBytesLE(data, 24);
+            getInstance().alarm1Speed = MathsUtil.shortFromBytesLE(data, 26)/100;
+            getInstance().alarm2Speed = MathsUtil.shortFromBytesLE(data, 28)/100;
+            getInstance().alarm3Speed = MathsUtil.shortFromBytesLE(data, 30)/100;
             WheelLog.AppConfig.setLockMode(getInstance().lockMode==1);
-            WheelLog.AppConfig.setWheelLimitedModeEnabled(getInstance().limitedMode==1);
+            WheelLog.AppConfig.setWheelLimitedModeEnabled(getInstance().limitedMode == 1);
             WheelLog.AppConfig.setWheelLimitedModeSpeed(getInstance().limitModeSpeed);
             WheelLog.AppConfig.setWheelAlarm1Speed(getInstance().alarm1Speed);
             WheelLog.AppConfig.setWheelAlarm2Speed(getInstance().alarm2Speed);
             WheelLog.AppConfig.setWheelAlarm3Speed(getInstance().alarm3Speed);
+            WheelLog.AppConfig.setWheelAlarm1Enabled((getInstance().alarms & 0x0001) == 1);
+            WheelLog.AppConfig.setWheelAlarm2Enabled(((getInstance().alarms >> 1) & 0x0001) == 1);
+            WheelLog.AppConfig.setWheelAlarm3Enabled(((getInstance().alarms >> 2) & 0x0001) == 1);
             wd.setDataForLog(false);
         }
 
@@ -962,11 +1005,20 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelData wd = WheelData.getInstance();
             getInstance().ledMode = MathsUtil.shortFromBytesLE(data, 0);
             getInstance().ledColor1 = MathsUtil.intFromBytesLE(data, 4);
-            getInstance().ledColor2 = MathsUtil.intFromBytesLE(data, 4);
-            getInstance().ledColor3 = MathsUtil.intFromBytesLE(data, 8);
-            getInstance().ledColor4 = MathsUtil.intFromBytesLE(data, 12);
+            getInstance().ledColor2 = MathsUtil.intFromBytesLE(data, 8);
+            getInstance().ledColor3 = MathsUtil.intFromBytesLE(data, 12);
+            getInstance().ledColor4 = MathsUtil.intFromBytesLE(data, 16);
             getInstance().pedalSensivity = MathsUtil.shortFromBytesLE(data, 24);
             getInstance().driveFlags = MathsUtil.shortFromBytesLE(data, 26);
+            WheelLog.AppConfig.setLedMode(Integer.toString(getInstance().ledMode));
+            WheelLog.AppConfig.setPedalSensivity(getInstance().pedalSensivity);
+            WheelLog.AppConfig.setLightEnabled(((getInstance().driveFlags >> 2) & 0x0001) == 1);
+            WheelLog.AppConfig.setTaillightEnabled(((getInstance().driveFlags >> 1) & 0x0001) == 1);
+            WheelLog.AppConfig.setDrlEnabled((getInstance().driveFlags & 0x0001) == 1);
+            WheelLog.AppConfig.setHandleButtonDisabled(((getInstance().driveFlags >> 3) & 0x0001) == 0);
+            WheelLog.AppConfig.setBrakeAssistantEnabled(((getInstance().driveFlags >> 4) & 0x0001) == 1);
+            Timber.i("Param2: %s",StringUtil.toHexStringRaw(data));
+            Timber.i("Led colors %04X, %04X, %04X, %04X", getInstance().ledColor1,getInstance().ledColor2,getInstance().ledColor3,getInstance().ledColor4);
             wd.setDataForLog(false);
         }
 
