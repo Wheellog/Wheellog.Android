@@ -49,6 +49,10 @@ class MultiSelectPreference(context: Context, attrs: AttributeSet?)
         notifyChanged()
     }
 
+    fun setValues(v: Array<String>) {
+        this.setValues(v.toList())
+    }
+
     private fun getValues(): String {
         return values.joinToString(separator)
     }

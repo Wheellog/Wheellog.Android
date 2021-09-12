@@ -8,12 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.ByteBuffer;
 
 public class MathsUtil {
+    public static double kmToMilesMultiplier =  0.62137119223733;
+
     public static double kmToMiles(double km) {
-        return km * 0.62137119;
+        return km * kmToMilesMultiplier;
     }
 
     public static float kmToMiles(float km) {
-        return km * 0.62137119F;
+        return (float) kmToMiles((double) km);
     }
 
     public static int dpToPx(@NotNull Context context, int dp) {
@@ -125,5 +127,13 @@ public class MathsUtil {
             return ((bytes[starting+1] << 8) | (bytes[starting] & 0xFF));
         }
         return 0;
+    }
+
+    public static double clamp(double val, double min, double max) {
+        return Math.max(min, Math.min(max, val));
+    }
+
+    public static int clamp(int val, int min, int max) {
+        return Math.max(min, Math.min(max, val));
     }
 }

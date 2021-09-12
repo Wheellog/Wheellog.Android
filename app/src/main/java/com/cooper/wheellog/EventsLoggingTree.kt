@@ -2,6 +2,8 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -45,7 +47,9 @@ class EventsLoggingTree(var context: Context, var mainAdapter: MainPageAdapter) 
             val formattedMessage = String.format("%s - %s%n", timeFormatter.format(Date()), message)
             outputStream.write(formattedMessage.toByteArray())
             outputStream.flush()
-            mainAdapter.logEvent(formattedMessage)
+            MainScope().launch {
+                mainAdapter.logEvent(formattedMessage)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

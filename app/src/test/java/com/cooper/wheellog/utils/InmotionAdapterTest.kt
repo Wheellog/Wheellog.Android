@@ -73,7 +73,7 @@ class InmotionAdapterTest {
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
         assertThat(result7).isFalse()
-        assertThat(result8).isTrue()
+        assertThat(result8).isFalse()
         assertThat(data.serial).isEqualTo("1271285CBA76001B")
         assertThat(data.model).isEqualTo("Inmotion V5F")
         assertThat(data.version).isEqualTo("1.3.506")
@@ -153,7 +153,7 @@ class InmotionAdapterTest {
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
         assertThat(result7).isFalse()
-        assertThat(result8).isTrue()
+        assertThat(result8).isFalse()
         assertThat(data.serial).isEqualTo("14604A5EBD9B000E")
         assertThat(data.model).isEqualTo("Inmotion V8F")
         assertThat(data.version).isEqualTo("2.2.21")
@@ -184,7 +184,8 @@ class InmotionAdapterTest {
         assertThat(data.totalDistance).isEqualTo(21679)
         assertThat(data.batteryLevel).isEqualTo(100)
         assertThat(data.angle).isEqualTo(0.0099945068359375)
-        assertThat(data.roll).isEqualTo(6.722222222222222)
+        assertThat(data.roll).isEqualTo(0.0)
+        assertThat(data.modeStr).isEqualTo("Drive")
     }
 
     @Test
@@ -237,7 +238,7 @@ class InmotionAdapterTest {
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
         assertThat(result7).isFalse()
-        assertThat(result8).isTrue()
+        assertThat(result8).isFalse()
         assertThat(data.serial).isEqualTo("14604A5EBD9B000E")
         assertThat(data.model).isEqualTo("Inmotion V8F")
         assertThat(data.version).isEqualTo("2.2.21")
@@ -268,8 +269,95 @@ class InmotionAdapterTest {
         assertThat(data.totalDistance).isEqualTo(21687)
         assertThat(data.batteryLevel).isEqualTo(100)
         assertThat(data.angle).isEqualTo(0.079986572265625)
-        assertThat(data.roll).isEqualTo(16.133333333333333)
+        assertThat(data.roll).isEqualTo(0.0)
+        assertThat(data.modeStr).isEqualTo("Drive")
     }
+
+    @Test
+    fun `decode with v8s full data`() {
+        // Arrange.
+        val byteArray1 = "aaaa1401a5550f8500000000000000fe02010006".hexToByteArray()
+        val byteArray2 = "0146bd5ea5aa7115000000000000000000000000".hexToByteArray()
+        val byteArray3 = "0000000015000266000000000700036600000000".hexToByteArray()
+        val byteArray4 = "260301010000000000000a000000000000000800".hexToByteArray()
+        val byteArray5 = "b888000043100000001000000000000000000000".hexToByteArray()
+        val byteArray6 = "0000000001000000000000000000000000000000".hexToByteArray()
+        val byteArray7 = "000000000700000800000000b005004f00000065".hexToByteArray()
+        val byteArray8 = "00000000801027000001000a01a05555".hexToByteArray()
+
+        val byteArray11 = "aaaa1301a5550f9500000000000000fe02010015".hexToByteArray()
+        val byteArray12 = "eeffff0000000000000000000000000000000007".hexToByteArray()
+        val byteArray13 = "00000006200000000000001e1e92920000000004".hexToByteArray()
+        val byteArray14 = "000000af04000000000000000d370c1203d00723".hexToByteArray()
+        val byteArray15 = "0000000000000000000000bcfeffff1400000000".hexToByteArray()
+        val byteArray16 = "0000001100000000000000000000000040000892".hexToByteArray()
+        val byteArray17 = "00007f0500006600000083b205004f0000006502".hexToByteArray()
+        val byteArray18 = "0000ca45000000000000d51f0000600000001100".hexToByteArray()
+        val byteArray19 = "0000040004000000bf5555".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+
+        val result11 = adapter.decode(byteArray11)
+        val result12 = adapter.decode(byteArray12)
+        val result13 = adapter.decode(byteArray13)
+        val result14 = adapter.decode(byteArray14)
+        val result15 = adapter.decode(byteArray15)
+        val result16 = adapter.decode(byteArray16)
+        val result17 = adapter.decode(byteArray17)
+        val result18 = adapter.decode(byteArray18)
+        val result19 = adapter.decode(byteArray19)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isFalse()
+        assertThat(data.serial).isEqualTo("1571AA5EBD460106")
+        assertThat(data.model).isEqualTo("Inmotion V8S")
+        assertThat(data.version).isEqualTo("102.2.21")
+/*        assertThat(data.wheelLight).isFalse()
+        assertThat(data.wheelLed).isTrue()
+        assertThat(data.wheelHandleButton).isFalse()
+        assertThat(data.wheelMaxSpeed).isEqualTo(45)
+        assertThat(data.speakerVolume).isEqualTo(100)
+        assertThat(data.pedalsPosition).isEqualTo(0)
+        assertThat(data.pedalHardness).isEqualTo(100)
+        assertThat(data.rideMode).isFalse()
+*/
+        assertThat(result11).isFalse()
+        assertThat(result12).isFalse()
+        assertThat(result13).isFalse()
+        assertThat(result14).isFalse()
+        assertThat(result15).isFalse()
+        assertThat(result16).isFalse()
+        assertThat(result17).isFalse()
+        assertThat(result18).isFalse()
+        assertThat(result19).isTrue()
+        assertThat(data.speedDouble).isEqualTo(0.0)
+        assertThat(data.temperature).isEqualTo(30)
+        assertThat(data.temperature2).isEqualTo(-110)
+        assertThat(data.voltageDouble).isEqualTo(81.98)
+        assertThat(data.currentDouble).isEqualTo(0.07)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
+        assertThat(data.totalDistance).isEqualTo(1199)
+        assertThat(data.batteryLevel).isEqualTo(96)
+        assertThat(data.angle).isEqualTo(-0.0699920654296875)
+        assertThat(data.roll).isEqualTo(0.0)
+        assertThat(data.modeStr).isEqualTo("Drive")
+    }
+
 
     @Test
     fun `decode data with escaped checksum`() {
@@ -290,7 +378,7 @@ class InmotionAdapterTest {
         }
 
         // Assert.
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
         assertThat(data.model).isEqualTo("Inmotion V8F")
         assertThat(data.version).isEqualTo("2.2.21")
     }

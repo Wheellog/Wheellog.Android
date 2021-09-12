@@ -6,11 +6,13 @@
     <string name="watch_preferences" translatable="false">watch_preferences</string>
     <string name="wheel_settings" translatable="false">wheel_settings</string>
     <string name="trip_settings" translatable="false">trip_settings</string>
+    <string name="donate" translatable="false">donate</string>
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="use_wheel_beep_for_alarm" translatable="false">use_wheel_beep_for_alarm</string>
     <string name="speed_alarm1" translatable="false">speed_alarm1</string>
     <string name="speed_alarm2" translatable="false">speed_alarm2</string>
     <string name="speed_alarm3" translatable="false">speed_alarm3</string>
@@ -79,6 +81,9 @@
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
+    <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
+    <string name="continue_this_day_log" translatable="false">continue_this_day_log</string>
+    <string name="continue_this_day_log_exception" translatable="false">continue_this_day_log_exception</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
@@ -113,7 +118,9 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
+    <string name="use_reconnect" translatable="false">use_reconnect</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
@@ -162,6 +169,7 @@
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
     <string name="show_settings">Show settings menu</string>
+    <string name="miband_desc">Change Mi Band mode</string>
     <string name="stop_pebble_service">Stop Pebble Dash</string>
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>
@@ -215,14 +223,14 @@
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
     <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
-    <string name="notification_text_ajdm_theme" translatable="false">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
+    <string name="notification_text_ajdm_theme">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
     <string name="notification_channel_name" translatable="false">Notify</string>
     <string name="notification_channel_description" translatable="false">Default Notify</string>
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
     <string name="icon_beep">Horn Icon</string>
-    <string name="connection_lost_at">Connection lost at %1s</string>
+    <string name="connection_lost_at">Connection lost</string>
     <string name="enable_auto_upload_title">Enable Auto Upload?</string>
     <string name="enable_auto_upload_descriprion">Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.</string>
     <string name="logging_error_no_storage_permission">No permission to write to external storage. Logging cancelled.</string>
@@ -231,10 +239,10 @@
     <string name="logging_error_gps_disabled">Location logging using GPS was requested but GPS is disabled. Location will be logged using Network data.</string>
     <string name="logging_error_network_disabled">Location logging using GSM Network was requested but this location provider is disabled. No location data will be logged.</string>
     <string name="logging_error_all_location_providers_disabled">Location has been disabled within Android. No location data will be logged.</string>
-    <string name="raw_distance">Raw Distance</string>
     <string name="alarm_text_speed">Speed alarm triggered</string>
     <string name="alarm_text_current">Current alarm triggered</string>
     <string name="alarm_text_temperature">Temperature alarm triggered</string>
+    <string name="alarm_text_pwm">PWM alarm triggered</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
     <string name="horn_mode_title">Horn Mode</string>
@@ -276,7 +284,7 @@
     <string name="speed_settings_title">Application Settings</string>
     <string name="logs_settings_title">Log Settings</string>
     <string name="alarm_settings_title">Alarm Settings</string>
-    <string name="watch_settings_title">Watch Preferences</string>
+    <string name="watch_settings_title">Watch/Band Preferences</string>
     <string name="wheel_settings_title">Wheel Settings</string>
     <string name="trip_settings_title">Trip Settings</string>
     <string name="reset_top_speed_title">Reset top speed and PWM</string>
@@ -329,6 +337,8 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="use_wheel_beep_for_alarm_title">Use Wheel built-in Beep for Alarm</string>
+    <string name="use_wheel_beep_for_alarm_description">Alarm will send to an internal beeper instead audio</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
     <string name="altered_alarms_pref_title">Altered alarms options</string>
@@ -338,10 +348,10 @@
     <string name="rotation_voltage_description">Voltage at which rotation speed was measured</string>
     <string name="power_factor_title">Power factor</string>
     <string name="power_factor_description">Don\'t change if you don\'t understand what is that, default=90</string>
-    <string name="alarm_factor1_title">First alarm PWM</string>
-    <string name="alarm_factor1_description">Calculated PWM on which first alarm should occur</string>
-    <string name="alarm_factor2_title">Second alarm PWM</string>
-    <string name="alarm_factor2_description">Should be higher than first alarm</string>
+    <string name="alarm_factor1_title">PWM alarm start</string>
+    <string name="alarm_factor1_description">Calculated PWM on which first alarm starts</string>
+    <string name="alarm_factor2_title">PWM alarm max</string>
+    <string name="alarm_factor2_description">Calculated PWM on which alarm becomes permanent</string>
     <string name="alarm_factor3_title">Third alarm PWM</string>
     <string name="alarm_factor3_description">Should be higher than second alarm</string>
     <string name="warning_speed_title">Advance warning</string>
@@ -380,7 +390,6 @@
     <string name="use_gps_title">Use GPS for location</string>
     <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
     <string name="use_raw_title">Write Raw data</string>
-    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="on_off_strobe">Off/On/Strobe</string>
     <string name="soft_medium_hard">Soft/Medium/Hard</string>
     <string name="alarm_settings_description">Alarm settings</string>
@@ -409,9 +418,9 @@
     <string name="absolute">Absolute (only positive)</string>
     <string name="reverse">Reverse</string>
     <string name="straight">Straight</string>
-    <string name="off_level_1_alarm">35 km/h + 80% PWM</string>
+    <string name="off_level_1_alarm">35 (45) km/h + 80% PWM</string>
     <string name="off_level_2_alarm">80% PWM only</string>
-    <string name="on_level_alarm">30 + 35 km/h + 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 (45) km/h + 80% PWM</string>
     <string name="metre">m</string>
     <string name="on_headlight_title">Switch on the light</string>
     <string name="on_headlight_description">Activate headlight</string>
@@ -483,7 +492,7 @@
     <string name="bmsCell15">Cell 15</string>
     <string name="bmsCell16">Cell 16</string>
     <string name="password">Password</string>
-    <string name="email">Email</string>
+    <string name="email">E-mail</string>
     <string name="show_page_events" translatable="false">show_page_events</string>
     <string name="show_page_events_description">Show the events page</string>
     <string name="show_page_events_title">Events page</string>
@@ -497,6 +506,7 @@
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
+    <string name="donate_title">Donate</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>
@@ -509,7 +519,6 @@
     <string name="wheel_calibration_message_nb">Please set wheel in center position before start, EUC will be locked, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
-    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="private_policy_agree">I read and agree</string>
     <string name="current_mac">MAC address</string>
     <string name="log_location_pop_up">This app collects location data to enable GPS data in CSV logs when WheelLog is running in the background or when the screen is off. GPS data is not collected when EUC is disconnected.</string>
@@ -553,21 +562,54 @@
     <string name="start_miband_alert">Start MiBand Alert</string>
     <string name="maxcurrent">Max Current</string>
     <string name="maxpower">Max Power</string>
-    <string name="notification_text_min">Spd: %1$.0f\nBatt: %2$d\n %%\nDist: %3$.1f</string>
-    <string name="notification_text_med">Spd: %1$.0f\nAvg: %2$.0f\n\nBat.: %3$d %%\nTemp: %4$d°C\nDist: %5$.1f km</string>
-    <string name="notification_text_max">Spd: %1$.0f\nMax: %2$.0f\n\nPWM: %3$.0f %%\nBatt.: %4$d %%\nOut: %5$.0f W\nTemp: %6$d°C\nDist: %7$.1f km</string>
-    <string name="notification_text_alarm">Spd: %1$.0f\nCurr.: %2$.1f A\nVolt.: %3$.2f V\nBatt.: %4$d %%\nTemp: %5$d°C</string>
-    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d°C</string>
+    <string name="notification_text_min">[SPEED]  \n - %1$.0f k/h \n  - %2$.0f max  \n\n[POWER]  \n - %3$d %%  \n\n[TRIP]  \n - %4$.1f km</string>
+    <string name="notification_text_med">[SPEED]  \n - %1$.0f k/h  \n - %2$.0f avg \n  - %3$.0f pwm  \n\n[OTHER]  \n - %4$d %%  \n - %5$d °C  \n - %6$.1f km</string>
+    <string name="notification_text_max">[SPEED]  \n ⭐ %1$.0f k/h  \n 🔥 %2$.0f top  \n 🙈 %3$.0f avg \n\n[POWER]  \n 💧 %4$d %% \n  ⚡ %5$.2f V \n  💪 %6$.0f W \n  ❄ %7$d °C  \n\n[TRIP] \n  👣 %8$.1f km</string>
+    <string name="notification_text_alarm">[DATA]  \n - %1$.0f k/h \n  - %2$.1f A \n  - %3$.2f V  \n - %4$d %%  \n - %5$d °C</string>
+    <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d °C</string>
     <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
-    <string name="titlealarm">Alarm Triggered!</string>
+    <string name="titlealarm">Alarm!</string>
     <string name="titlealarm_text">Alarm Mode</string>
     <string name="alarmmiband">Alarm Mode Mi Band</string>
-    <string name="minmiband">Minimal Mode Mi Band</string>
-    <string name="medmiband">Medium Mode Mi Band</string>
-    <string name="maxmiband">Maximum Mode Mi Band</string>
-    <string name="alarm_text_speed_v">Speed alarm at %1$.0f k/h</string>
-    <string name="alarm_text_current_v">Current alarm at %1$.0f A</string>
-    <string name="alarm_text_temperature_v">Temperature alarm at %1$d°C</string>
+    <string name="minmiband">Basic Mode for Mi Band 4/5/6/Amazfit</string>
+    <string name="medmiband">Advanced Mode for Mi Band 4/5/6</string>
+    <string name="maxmiband">Mode with icons for Mi Band 6/New Amazfit only</string>
+    <string name="alarm_text_speed_v">[SPEED] \n  - %1$.0f k/h</string>
+    <string name="alarm_text_current_v">[CURRENT] \n  - %1$.0f A</string>
+    <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
+    <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>
+    <string name="miband_on_mainscreen_enable" translatable="false">miband_on_mainscreen_enable</string>
+    <string name="miband_on_mainscreen_description">Show Mi Band button on main screen instead watch button</string>
+    <string name="miband_fixrs_title">Mi Band fix for Begode RS/EX</string>
+    <string name="miband_fixrs_enable" translatable="false">miband_fixrs_enable</string>
+    <string name="miband_fixrs_description">Use this only if have no data updates on Mi Band</string>
+    <string name="use_reconnect_title">Use reconnect</string>
+    <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
+    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
+    <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
+    <string name="replace_info_block">Replace \"%s\" to:</string>
+    <string name="auto_log_when_moving_description">Start auto logging only when wheel speed more than 3,5 km/h (2.17 mph).</string>
+    <string name="auto_log_when_moving_title">Start logging when is moving</string>
+    <string name="remaining_distance">Remaining distance</string>
+    <string name="battery_per_km">Battery per km</string>
+    <string name="trip_menu_view_map">View map</string>
+    <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
+    <string name="trip_menu_share">Share</string>
+    <string name="trip_menu_delete_file">Delete file</string>
+    <string name="trip_menu_delete_file_confirmation">Delete a trip file?</string>
+    <string name="after_connect_category">After connect to wheel</string>
+    <string name="auto_watch" translatable="false">auto_watch</string>
+    <string name="auto_watch_title">Auto watch</string>
+    <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
+    <string name="use_detect_battery_optimization_title">Detection of battery optimization</string>
+    <string name="detected_battery_optimization_title">Battery optimization</string>
+    <string name="detected_battery_optimization">Optimization of the phone\'s battery has been detected, this may lead to unexpected closing of the application. To fix this, go to the battery settings and disable optimization for WheelLog. Battery optimization - All apps - WheelLog - Don\'t optimize.</string>
+    <string name="detected_battery_optimization_app_button">Go to app info</string>
+    <string name="detected_battery_optimization_settings_button">Go to battery settings</string>
+    <string name="continue_this_day_log_title">Continue the log of this day</string>
+    <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
+    <string name="continue_this_day_log_alert_title">Finish the trip?</string>
+    <string name="continue_this_day_log_alert_description">The trip will not continue the next time the log is enabled.</string>
 </resources>

@@ -3,12 +3,8 @@ package com.cooper.wheellog
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.os.Build
 import android.view.*
-import android.view.GestureDetector.SimpleOnGestureListener
-import android.view.View.OnTouchListener
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.gridlayout.widget.GridLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
@@ -142,6 +137,12 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
     }
 
+    fun updatePageOfTrips() {
+        if (listOfTrips != null) {
+            (listOfTrips!!.adapter as TripAdapter).updateTrips(FileUtil.fillTrips(activity))
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(inflater.inflate(viewType, parent, false))
@@ -154,28 +155,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         when (pages[position]) {
             R.layout.main_view_main -> {
                 wheelView = view.findViewById(R.id.wheelView)
-                wheelView?.setOnTouchListener(object : OnTouchListener {
-                    private val gestureDetector = GestureDetector(
-                            activity, object : SimpleOnGestureListener() {
-                        override fun onDoubleTap(e: MotionEvent): Boolean {
-                            WheelData.getInstance().adapter?.switchFlashlight()
-                            return super.onDoubleTap(e)
-                        }
-
-                        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                            if (WheelLog.AppConfig.useBeepOnSingleTap) {
-                                playBeep(activity)
-                                return true
-                            }
-                            return super.onSingleTapConfirmed(e)
-                        }
-                    })
-
-                    override fun onTouch(v: View, event: MotionEvent): Boolean {
-                        gestureDetector.onTouchEvent(event)
-                        return true
-                    }
-                })
             }
             R.layout.main_view_params_list -> {
                 createSecondPage()
@@ -307,6 +286,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 wheelView?.apply {
                     setSpeed(data.speed)
                     setBattery(data.batteryLevel)
+                    setBatteryLowest(data.batteryLowestLevel)
                     setTemperature(data.temperature)
                     setRideTime(data.ridingTimeString)
                     setTopSpeed(data.topSpeedDouble)
@@ -566,7 +546,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
     }
 
-    // TODO - Tinder.plant and не то это место...
     private var eventsTextView: TextView? = null
     private var eventsCurrentCount = 0
     private var eventsMaxCount = 500
@@ -610,13 +589,20 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private fun createSecondPage() {
         val layout = pagesView[R.layout.main_view_params_list]?.findViewById<GridLayout>(R.id.page_two_grid) ?: return
         layout.removeAllViews()
+        val font = WheelLog.ThemeManager.getTypeface(activity)
         for ((key, value) in secondPageValues) {
-            val headerText = activity.layoutInflater.inflate(
-                    R.layout.textview_title_template, layout, false) as TextView
-            val valueText = activity.layoutInflater.inflate(
-                    R.layout.textview_value_template, layout, false) as TextView
-            headerText.text = activity.getString(key)
-            valueText.text = value
+            val headerText = (activity.layoutInflater.inflate(
+                R.layout.textview_title_template, layout, false
+            ) as TextView).apply {
+                text = activity.getString(key)
+                typeface = font
+            }
+            val valueText = (activity.layoutInflater.inflate(
+                R.layout.textview_value_template, layout, false
+            ) as TextView).apply {
+                text = value
+                typeface = font
+            }
             layout.addView(headerText)
             layout.addView(valueText)
         }
@@ -662,6 +648,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.current)
                 setupFieldForSecondPage(R.string.power)
                 setupFieldForSecondPage(R.string.fan_status)
+                setupFieldForSecondPage(R.string.charging_status)
                 setupFieldForSecondPage(R.string.charging)
                 setupFieldForSecondPage(R.string.mode)
                 setupFieldForSecondPage(R.string.name)
@@ -686,10 +673,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.voltage_sag)
                 setupFieldForSecondPage(R.string.current)
                 setupFieldForSecondPage(R.string.power)
+                setupFieldForSecondPage(R.string.charging_status)
                 setupFieldForSecondPage(R.string.charging)
                 setupFieldForSecondPage(R.string.model)
                 setupFieldForSecondPage(R.string.version)
-                setupFieldForSecondPage(R.string.charging)
             }
             WHEEL_TYPE.GOTWAY -> {
                 setupFieldForSecondPage(R.string.speed)
@@ -708,6 +695,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.voltage_sag)
                 setupFieldForSecondPage(R.string.current)
                 setupFieldForSecondPage(R.string.power)
+                setupFieldForSecondPage(R.string.charging_status)
+                setupFieldForSecondPage(R.string.charging)
             }
             WHEEL_TYPE.INMOTION_V2 -> {
                 setupFieldForSecondPage(R.string.speed)
@@ -764,6 +753,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.model)
                 setupFieldForSecondPage(R.string.version)
                 setupFieldForSecondPage(R.string.serial_number)
+                setupFieldForSecondPage(R.string.charging_status)
+                setupFieldForSecondPage(R.string.charging)
             }
             WHEEL_TYPE.NINEBOT_Z, WHEEL_TYPE.NINEBOT -> {
                 setupFieldForSecondPage(R.string.speed)
