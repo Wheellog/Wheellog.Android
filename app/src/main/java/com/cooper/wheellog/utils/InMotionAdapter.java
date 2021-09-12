@@ -131,6 +131,7 @@ public class InMotionAdapter extends BaseAdapter {
             case Glide3:
                 return 35;
             case V8F:
+            case V8S:
             case V10S:
             case V10SF:
             case V10:
@@ -147,6 +148,7 @@ public class InMotionAdapter extends BaseAdapter {
             case Glide3:
             case V8:
             case V8F:
+            case V8S:
             case V10S:
             case V10SF:
             case V10T:
@@ -161,6 +163,7 @@ public class InMotionAdapter extends BaseAdapter {
     public boolean getWheelModesWheel() {
         switch (model) {
             case V8F:
+            case V8S:
             case V10S:
             case V10SF:
             case V10T:
@@ -199,6 +202,7 @@ public class InMotionAdapter extends BaseAdapter {
         V5D("53", 3812.0d),
         V8("80", 3812.0d),
         V8F("86", 3812.0d),
+        V8S("87", 3812.0d),
         Glide3("85", 3812.0d),
         V10S("100", 3812.0d),
         V10SF("101", 3812.0d),
@@ -485,7 +489,7 @@ public class InMotionAdapter extends BaseAdapter {
             }
         } else {
             Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-            if (model.belongToInputType("5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F) {
+            if (model.belongToInputType("5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F || model == Model.V8S) {
                 if (useBetterPercents) {
                     if (volts > 84.00) {
                         batt = 1.0;
@@ -656,6 +660,8 @@ public class InMotionAdapter extends BaseAdapter {
                 return "Solowheel Glide 3";
             case "86":
                 return "Inmotion V8F";
+            case "87":
+                return "Inmotion V8S";
             case "100":
                 return "Inmotion V10S";
             case "101":
@@ -978,7 +984,7 @@ public class InMotionAdapter extends BaseAdapter {
             msg.ch = 5;
             msg.type = CanFrame.DataFrame.getValue();
 			msg.data = new byte[]{1, 0, 0, 0, value[1], value[0], 0, 0};
-			
+
             return msg;
         }
 
@@ -1045,8 +1051,8 @@ public class InMotionAdapter extends BaseAdapter {
 
             return msg;
         }
-		
-		
+
+
         public static CANMessage getBatteryLevelsdata() {
             CANMessage msg = new CANMessage();
 
@@ -1106,7 +1112,7 @@ public class InMotionAdapter extends BaseAdapter {
             if (model.belongToInputType("1") || model.belongToInputType("5") ||
                     model == V8 || model == Glide3 || model == V10 || model == V10F ||
                     model == V10S || model == V10SF || model == V10T || model == V10FT ||
-                    model == V8F) {
+                    model == V8F || model == V8S) {
                 totalDistance = (MathsUtil.intFromBytesLE(ex_data, 44)); ///// V10F 48 byte - trip distance
             } else if (model == R0) {
                 totalDistance = (MathsUtil.longFromBytesLE(ex_data, 44));
@@ -1121,7 +1127,7 @@ public class InMotionAdapter extends BaseAdapter {
 
             String workMode;
             int workModeInt = MathsUtil.intFromBytesLE(ex_data, 60);
-            if (model == V8F || model == V10 || model == V10F || model == V10FT ||
+            if (model == V8F || model == V8S || model == V10 || model == V10F || model == V10FT ||
                     model == V10S || model == V10SF || model == V10T) {
                 roll = 0;
                 workMode = getWorkModeString(workModeInt);

@@ -132,4 +132,42 @@ class RawDataTest {
         // Assert.
         //assertThat(data.alert).isEqualTo("")
     }
+
+    @Test
+    fun `Inmotion v8s - decode after connect`() {
+        // Arrange.
+        val adapter = InMotionAdapter()
+        data.wheelType = Constants.WHEEL_TYPE.INMOTION
+        val inputStream: InputStream = File("src/test/resources/RAW_inmotion_V8S.csv").inputStream()
+        val startTime = sdf.parse("13:10:19.699")
+
+        val dataList = mutableListOf<String>()
+        inputStream.bufferedReader().useLines { lines ->
+            lines.forEach {
+                val row = it.split(',')
+                val time = sdf.parse(row[0])
+                if (time != null && time > startTime) {
+                    dataList.add(row[1])
+                }
+            }
+        }
+
+        // Act.
+        dataList.forEach {
+            val byteArray = it.hexToByteArray()
+            adapter.decode(byteArray)
+        }
+
+        // Assert.
+        assertThat(data.model).isEqualTo(InMotionAdapter.getModelString(InMotionAdapter.Model.V8S))
+        assertThat(data.batteryLevel).isEqualTo(96)
+        assertThat(data.temperature).isEqualTo(30)
+        assertThat(data.temperature2).isEqualTo(-109) // Fix me
+        assertThat(data.voltageDouble).isEqualTo(81.99)
+        assertThat(data.angle).isLessThan(-0.07)
+        assertThat(data.roll).isEqualTo(0)
+        assertThat(data.speed).isEqualTo(0)
+        assertThat(data.current).isEqualTo(8)
+        assertThat(data.modeStr).isEqualTo("Drive")
+    }
 }
