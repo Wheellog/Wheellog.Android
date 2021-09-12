@@ -135,17 +135,17 @@ public class NinebotZAdapter extends BaseAdapter {
                 }
                 updateStep += 1;
 
-                if ((updateStep == 5) && (stateCon > 3) && (stateCon < 10)) {
+                if ((updateStep == 5) && (stateCon > 5) && (stateCon < 12)) {
                     stateCon += 1;
                     Timber.i("Change state to %d 1", stateCon);
-                    if (stateCon > 9) stateCon = 4;
+                    if (stateCon > 11) stateCon = 6;
                 }
-                if (bmsMode && (stateCon == 10)) {
-                    stateCon = 4;
+                if (bmsMode && (stateCon == 12)) {
+                    stateCon = 6;
                     Timber.i("Change state to %d 2", stateCon);
                 }
-                if (!bmsMode && (stateCon > 3) && (stateCon < 10)) {
-                    stateCon = 10;
+                if (!bmsMode && (stateCon > 5) && (stateCon < 12)) {
+                    stateCon = 12;
                     Timber.i("Change state to %d 3", stateCon);
                 }
                 updateStep %= 5;
@@ -154,7 +154,7 @@ public class NinebotZAdapter extends BaseAdapter {
         };
         Timber.i("Ninebot Z timer started");
         keepAliveTimer = new Timer();
-        keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 250);
+        keepAliveTimer.scheduleAtFixedRate(timerTask, 200, 25);
     }
 
     public void resetConnection() {
@@ -1055,14 +1055,14 @@ public class NinebotZAdapter extends BaseAdapter {
             //int avgspeed = MathsUtil.shortFromBytesLE(data, 30); //the same as avgspeed
             int power = voltage * current/100;
             String alert;
-            alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
+            //alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
 
             wd.setSpeed(speed);
             wd.setVoltage(voltage);
             wd.setCurrent(current);
             wd.setTotalDistance(distance);
             wd.setTemperature(temperature * 10);
-            wd.setAlert(alert);
+            //wd.setAlert(alert);
             wd.updateRideTime();
             wd.setBatteryLevel(batt);
             wd.setVoltageSag(voltage);
