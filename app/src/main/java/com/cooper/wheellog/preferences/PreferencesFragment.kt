@@ -246,17 +246,19 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.strobe_mode -> wd.updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
             R.string.led_mode -> {
                 wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
-                findPreference<ListPreference>(wd.mac+"_"+ getString(R.string.led_mode))?.summary =
-                        when (WheelLog.AppConfig.ledMode) {
-                            "0" -> getString(R.string.off)
-                            "1" -> getString(R.string.led_type1)
-                            "2" -> getString(R.string.led_type2)
-                            "3" -> getString(R.string.led_type3)
-                            "4" -> getString(R.string.led_type4)
-                            "5" -> getString(R.string.led_type5)
-                            "6" -> getString(R.string.led_type6)
-                            else -> getString(R.string.led_mode_nb_description)
-                        }
+                if (wd.wheelType == WHEEL_TYPE.NINEBOT_Z) {
+                    findPreference<ListPreference>(wd.mac + "_" + getString(R.string.led_mode))?.summary =
+                            when (WheelLog.AppConfig.ledMode) {
+                                "0" -> getString(R.string.off)
+                                "1" -> getString(R.string.led_type1)
+                                "2" -> getString(R.string.led_type2)
+                                "3" -> getString(R.string.led_type3)
+                                "4" -> getString(R.string.led_type4)
+                                "5" -> getString(R.string.led_type5)
+                                "6" -> getString(R.string.led_type6)
+                                else -> getString(R.string.led_mode_nb_description)
+                            }
+                }
             }
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
