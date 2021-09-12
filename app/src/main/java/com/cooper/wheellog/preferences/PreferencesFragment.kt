@@ -248,14 +248,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
-            R.string.wheel_alarm1_enabled -> wd.updateAlarm1Enabled(WheelLog.AppConfig.wheelAlarm1Enabled)
+            R.string.wheel_alarm1_enabled -> {
+                wd.updateAlarm1Enabled(WheelLog.AppConfig.wheelAlarm1Enabled)
+
+            }
             R.string.wheel_alarm2_enabled -> wd.updateAlarm2Enabled(WheelLog.AppConfig.wheelAlarm2Enabled)
             R.string.wheel_alarm3_enabled -> wd.updateAlarm3Enabled(WheelLog.AppConfig.wheelAlarm3Enabled)
-            R.string.wheel_alarm1 -> wd.updateAlarm1Speed(Integer.parseInt(WheelLog.AppConfig.wheelAlarm1Speed))
-            R.string.wheel_alarm2 -> wd.updateAlarm2Speed(Integer.parseInt(WheelLog.AppConfig.wheelAlarm2Speed))
-            R.string.wheel_alarm3 -> wd.updateAlarm3Speed(Integer.parseInt(WheelLog.AppConfig.wheelAlarm3Speed))
-            R.string.wheel_limited_mode_enabled -> wd.updateLimitedModeEnabled(WheelLog.AppConfig.wheelLimitedModeEnabled))
-            R.string.wheel_limited_speed -> wd.updateLimitedSpeed(Integer.parseInt(WheelLog.AppConfig.wheelLimitedModeSpeed))
+            R.string.wheel_alarm1 -> wd.updateAlarm1Speed(WheelLog.AppConfig.wheelAlarm1Speed)
+            R.string.wheel_alarm2 -> wd.updateAlarm2Speed(WheelLog.AppConfig.wheelAlarm2Speed)
+            R.string.wheel_alarm3 -> wd.updateAlarm3Speed(WheelLog.AppConfig.wheelAlarm3Speed)
+            R.string.wheel_limited_mode_enabled -> wd.updateLimitedModeEnabled(WheelLog.AppConfig.wheelLimitedModeEnabled)
+            R.string.wheel_limited_speed -> wd.updateLimitedSpeed(WheelLog.AppConfig.wheelLimitedModeSpeed)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
             R.string.current_on_dial -> Timber.i("Change dial type to %b", WheelLog.AppConfig.currentOnDial)
             R.string.custom_beep -> {

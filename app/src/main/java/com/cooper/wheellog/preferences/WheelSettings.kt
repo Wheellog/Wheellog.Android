@@ -143,6 +143,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setDefaultValue(NinebotZAdapter.getInstance().pedalSensivity)
             ps.addPreference(this)
         }
+
         ListPreference(context).apply {
             key = mac + getString(R.string.led_mode)
             title = getString(R.string.led_mode_title)
@@ -161,7 +162,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 100
             unit = "%"
             increment = 1
-            isVisible = false // not implemented in adapter yet
+            isVisible = false // FixMe not implemented in adapter yet
             setDefaultValue(NinebotZAdapter.getInstance().speakerVolume)
             ps.addPreference(this)
         }

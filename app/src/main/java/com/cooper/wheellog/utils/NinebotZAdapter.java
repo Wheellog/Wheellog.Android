@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class NinebotZAdapter extends BaseAdapter {
     private int limitModeSpeed = 0;
     private int limitModeSpeed1Km = 0; // not sure (?)
     private int LimitModeSpeed = 0;
+    private int speakerVolume = 0;
     private int alarms = 0;
     private int alarm1Speed = 0;
     private int alarm2Speed = 0;
@@ -173,8 +175,8 @@ public class NinebotZAdapter extends BaseAdapter {
         return 1;
     }
 
-    public int getLedMode(){
-        return 1;
+    public String getLedMode(){
+        return "1";
     }
 
     public int getSpeakerVolume(){
@@ -272,21 +274,24 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
-    public void setLightState(final boolean lightEnable) {
-        driveFlags = (driveFlags & 0xFFFE) | lightEnable ? 1 : 0; // need to have driveflags before
+    public void setDrl(final boolean drl) {
+        // ToDo check if it is the same as old value
+        driveFlags = (driveFlags & 0xFFFE) | (drl ? 1 : 0); // need to have driveflags before
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
 
     @Override
-    public void setDrl(final boolean drl) {
-        driveFlags = (driveFlags & 0xFFFB) | ((drl ? 1 : 0) << 2) ; // need to have driveflags before
+    public void setLightState(final boolean lightEnable) {
+        // ToDo check if it is the same as old value
+        driveFlags = (driveFlags & 0xFFFB) | ((lightEnable ? 1 : 0) << 2) ; // need to have driveflags before
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
     }
 
     @Override
     public void setTailLightState(final boolean drl) {
+        // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFFD) | ((drl ? 1 : 0) << 1) ; // need to have driveflags before
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
@@ -294,6 +299,7 @@ public class NinebotZAdapter extends BaseAdapter {
 
     @Override
     public void setHandleButtonState(final boolean handleButtonEnable) {
+        // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFF7) | ((handleButtonEnable ? 0 : 1) << 3) ; // need to have driveflags before
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
@@ -301,6 +307,7 @@ public class NinebotZAdapter extends BaseAdapter {
 
     @Override
     public void setBrakeAssist(final boolean brakeAssist) {
+        // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFEF) | ((brakeAssist ? 0 : 1) << 4) ; // need to have driveflags before
         settingCommand = NinebotZAdapter.CANMessage.setDriveFlags(driveFlags).writeBuffer();
         settingCommandReady = true;
@@ -308,46 +315,103 @@ public class NinebotZAdapter extends BaseAdapter {
 
     @Override
     public void setAlarm1Enabled(final boolean value) {
-        alarms = (alarms & 0xFFFE) | (value ? 1 : 0); // need to have driveflags before
+        // ToDo check if it is the same as old value
+        alarms = (alarms & 0xFFFE) | (value ? 1 : 0); // need to have alarms before
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
         settingCommandReady = true;
     }
 
     @Override
     public void setAlarm2Enabled(final boolean value) {
-        alarms = (alarms & 0xFFFD) | ((value ? 1 : 0) << 1); // need to have driveflags before
+        // ToDo check if it is the same as old value
+        alarms = (alarms & 0xFFFD) | ((value ? 1 : 0) << 1); // need to have alarms before
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
         settingCommandReady = true;
     }
 
     @Override
     public void setAlarm3Enabled(final boolean value) {
-        alarms = (alarms & 0xFFFB) | ((value ? 1 : 0) << 2); // need to have driveflags before
+        // ToDo check if it is the same as old value
+        alarms = (alarms & 0xFFFB) | ((value ? 1 : 0) << 2); // need to have alarms before
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
         settingCommandReady = true;
     }
 
     @Override
     public void setAlarm1Speed(final int value) {
-        settingCommand = NinebotZAdapter.CANMessage.setAlarm1Speed(value).writeBuffer();
-        settingCommandReady = true;
+        if (alarm1Speed != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setAlarm1Speed(value).writeBuffer();
+            settingCommandReady = true;
+        }
     }
 
     @Override
     public void setAlarm2Speed(final int value) {
-        settingCommand = NinebotZAdapter.CANMessage.setAlarm2Speed(value).writeBuffer();
-        settingCommandReady = true;
+        if (alarm2Speed != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setAlarm2Speed(value).writeBuffer();
+            settingCommandReady = true;
+        }
     }
 
     @Override
     public void setAlarm3Speed(final int value) {
-        settingCommand = NinebotZAdapter.CANMessage.setAlarm3Speed(value).writeBuffer();
-        settingCommandReady = true;
+        if (alarm3Speed != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setAlarm3Speed(value).writeBuffer();
+            settingCommandReady = true;
+        }
     }
 
     @Override
     public void setLimitedModeEnabled(final boolean value) {
-        settingCommand = NinebotZAdapter.CANMessage.setLimitedMode(value).writeBuffer();
+        if ((limitedMode == 1) != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setLimitedMode(value).writeBuffer();
+            settingCommandReady = true;
+        }
+    }
+
+    @Override
+    public void setLimitedSpeed(final int value) {
+        if (limitModeSpeed != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setLimitedSpeed(value).writeBuffer();
+            settingCommandReady = true;
+        }
+    }
+
+    @Override
+    public void setPedalSensivity(final int value) {
+        if (pedalSensivity != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setPedalSensivity(value).writeBuffer();
+            settingCommandReady = true;
+        }
+    }
+
+    @Override
+    public void updateLedMode(final int value) {
+        if (ledMode != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setLedMode(value).writeBuffer();
+            settingCommandReady = true;
+        }
+    }
+
+    @Override
+    public void setSpeakerVolume(final int value) {
+        if (speakerVolume != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setSpeakerVolume(value).writeBuffer();
+            settingCommandReady = true;
+        }
+    }
+
+    @Override
+    public void setLockMode(final boolean value) {
+        if ((lockMode == 1) != value) {
+            settingCommand = NinebotZAdapter.CANMessage.setLockMode(value).writeBuffer();
+            settingCommandReady = true;
+        }
+    }
+
+    @Override
+    public void wheelCalibration() {
+        settingCommand = NinebotZAdapter.CANMessage.runCalibration(true).writeBuffer();
         settingCommandReady = true;
     }
 
@@ -403,6 +467,7 @@ public class NinebotZAdapter extends BaseAdapter {
             LimitModeSpeed1Km(0x73), // not sure (?)
             LimitModeSpeed(0x74),
             Calibration(0x75),
+            SpeakerVolume(0xFF), // FixMe
             Alarms(0x7c),
             Alarm1Speed(0x7d),
             Alarm2Speed(0x7e),
@@ -776,19 +841,85 @@ public class NinebotZAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setDriveFlags(int drFl) {
+        public static CANMessage setLimitedSpeed(int value) {
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
-            msg.parameter = Param.DriveFlags.getValue();
-            msg.data = new byte[]{(byte)(drFl & 0xFF), (byte)((drFl >> 8)  & 0xFF)};
+            msg.parameter = Param.LimitModeSpeed.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
         }
 
+        public static CANMessage setPedalSensivity(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.PedalSensivity.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
 
+        public static CANMessage setLedMode(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LedMode.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setSpeakerVolume(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.SpeakerVolume.getValue();
+            msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setLockMode(Boolean on) {
+            byte value = 0;
+            if (on) {
+                value = 1;
+            }
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LockMode.getValue();
+            msg.data = new byte[]{value};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage runCalibration(Boolean on) {
+            byte value = 0;
+            if (on) {
+                value = 1;
+            }
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.Calibration.getValue();
+            msg.data = new byte[]{value};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
 
         private byte[] parseKey() {
             byte[] gammaTemp = Arrays.copyOfRange(data, 0, data.length);
@@ -818,6 +949,12 @@ public class NinebotZAdapter extends BaseAdapter {
             getInstance().alarm1Speed = MathsUtil.shortFromBytesLE(data, 20);
             getInstance().alarm2Speed = MathsUtil.shortFromBytesLE(data, 22);
             getInstance().alarm3Speed = MathsUtil.shortFromBytesLE(data, 24);
+            WheelLog.AppConfig.setLockMode(getInstance().lockMode==1);
+            WheelLog.AppConfig.setWheelLimitedModeEnabled(getInstance().limitedMode==1);
+            WheelLog.AppConfig.setWheelLimitedModeSpeed(getInstance().limitModeSpeed);
+            WheelLog.AppConfig.setWheelAlarm1Speed(getInstance().alarm1Speed);
+            WheelLog.AppConfig.setWheelAlarm2Speed(getInstance().alarm2Speed);
+            WheelLog.AppConfig.setWheelAlarm3Speed(getInstance().alarm3Speed);
             wd.setDataForLog(false);
         }
 
