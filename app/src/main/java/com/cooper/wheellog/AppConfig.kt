@@ -452,6 +452,48 @@ class AppConfig(var context: Context) {
         set(value) = setSpecific(R.string.connect_beep, value)
     //endregion
 
+    //region ninebot Z10
+    var taillightEnabled: Boolean
+        get() = getSpecific(R.string.taillight_enabled, false)
+        set(value) = setSpecific(R.string.taillight_enabled, value)
+
+    var wheelAlarm1Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm1_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm1_enabled, value)
+
+    var wheelAlarm2Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm2_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm2_enabled, value)
+
+    var wheelAlarm3Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm3_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm3_enabled, value)
+
+    var wheelAlarm1Speed: Int
+        get() = getSpecific(R.string.wheel_alarm1, 0)
+        set(value) = setSpecific(R.string.wheel_alarm1, value)
+
+    var wheelAlarm2Speed: Int
+        get() = getSpecific(R.string.wheel_alarm2, 0)
+        set(value) = setSpecific(R.string.wheel_alarm2, value)
+
+    var wheelAlarm3Speed: Int
+        get() = getSpecific(R.string.wheel_alarm3, 0)
+        set(value) = setSpecific(R.string.wheel_alarm3, value)
+
+    var wheelLimitedModeEnabled: Boolean
+        get() = getSpecific(R.string.wheel_limited_mode_enabled, false)
+        set(value) = setSpecific(R.string.wheel_limited_mode_enabled, value)
+
+    var wheelLimitedModeSpeed: Int
+        get() = getSpecific(R.string.wheel_limited_speed, 10)
+        set(value) = setSpecific(R.string.wheel_limited_speed, value)
+
+    var brakeAssistantEnabled: Boolean
+        get() = getSpecific(R.string.brake_assistant_enabled, false)
+        set(value) = setSpecific(R.string.brake_assistant_enabled, value)
+    //endregion
+
     var lightEnabled: Boolean
         get() = getSpecific(R.string.light_enabled, false)
         set(value) = setSpecific(R.string.light_enabled, value)

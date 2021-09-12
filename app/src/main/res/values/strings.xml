@@ -69,6 +69,17 @@
     <string name="light_brightness" translatable="false">light_brightness</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
 
+    <string name="wheel_alarm1_enabled" translatable="false">wheel_alarm1_enabled</string>
+    <string name="wheel_alarm2_enabled" translatable="false">wheel_alarm2_enabled</string>
+    <string name="wheel_alarm3_enabled" translatable="false">wheel_alarm3_enabled</string>
+    <string name="wheel_alarm1" translatable="false">wheel_alarm1</string>
+    <string name="wheel_alarm2" translatable="false">wheel_alarm2</string>
+    <string name="wheel_alarm3" translatable="false">wheel_alarm3</string>
+    <string name="taillight_enabled" translatable="false">taillight_enabled</string>
+    <string name="wheel_limited_mode_enabled" translatable="false">wheel_limited_mode_enabled</string>
+    <string name="wheel_limited_speed" translatable="false">wheel_limited_speed</string>
+    <string name="brake_assistant_enabled" translatable="false">brake_assistant_enabled</string>
+
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
     <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
@@ -134,6 +145,37 @@
     <string name="garmin_connectiq_service_unavailable_message">The ConnectIQ service is unavailable.</string>
 
     // Other
+    <string name="led_mode_nb_description">Choose led mode</string>
+    <string name="led_type1">Flash</string>
+    <string name="led_type2">Two colors alternating</string>
+    <string name="led_type3">Full-color flash</string>
+    <string name="led_type4">Dynamic breathing</string>
+    <string name="led_type5">Flowing</string>
+    <string name="led_type6">Alter-color flash</string>
+    <string name="disable_handle_button_nb_description">Wheel will not disable when you hold the handle</string>wheel_alarm1_enabled_title
+    <string name="wheel_alarm1_enabled_title">First alarm</string>
+    <string name="wheel_alarm2_enabled_title">Second alarm</string>
+    <string name="wheel_alarm3_enabled_title">Third alarm</string>
+    <string name="wheel_alarm1_enabled_description">Enable first alarm</string>
+    <string name="wheel_alarm2_enabled_description">Enable second alarm</string>
+    <string name="wheel_alarm3_enabled_description">Enable third alarm</string>
+    <string name="wheel_alarm1_title">First alarm</string>
+    <string name="wheel_alarm2_title">Second alarm</string>
+    <string name="wheel_alarm3_title">Third alarm</string>
+    <string name="wheel_alarm1_description">First alarm speed</string>
+    <string name="wheel_alarm2_description">Second alarm speed</string>
+    <string name="wheel_alarm3_description">Third alarm speed</string>
+    <string name="wheel_limited_mode_title">Limited mode</string>
+    <string name="wheel_limited_mode_description">Limit maximum speed</string>wheel_limited_speed_title
+    <string name="wheel_limited_speed_title">Speed</string>
+    <string name="wheel_limited_speed_description">Speed to limit</string>
+    <string name="brake_assistant_title">Brake assistant</string>
+    <string name="brake_assistant_description">Wheel will tilt back by 3 degrees while braking</string>
+    <string name="pedal_sensivity_nb_description">Lower number - more sensitive</string>
+    <string name="taillight_settings_title">Tail light</string>
+    <string name="drl_settings_description_inmo">Enable front O-ring and backlight</string>
+    <string name="drl_settings_description_nb">Enable front O-ring</string>
+    <string name="taillight_settings_description">Enable or disable tail light</string>
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>
@@ -480,6 +522,7 @@
     <string name="wheel_calibration_message_inmo">Please set wheel in parking position before start, continue?</string>
     <string name="wheel_calibration_message_begode">Please set wheel in center position before start, then reboot wheel, continue?</string>
     <string name="wheel_calibration_message_kingsong">Please set wheel in center position before start, then reboot wheel, continue?</string>
+    <string name="wheel_calibration_message_nb">Please set wheel in center position before start, EUC will be locked, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
     <string name="private_policy_agree">I read and agree</string>

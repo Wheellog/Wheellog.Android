@@ -30,6 +30,7 @@ import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MathsUtil
+import com.cooper.wheellog.utils.NinebotZAdapter
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import timber.log.Timber
 
@@ -247,7 +248,22 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.light_mode -> wd.adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
             R.string.alarm_mode -> wd.updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
             R.string.strobe_mode -> wd.updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
-            R.string.led_mode -> wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
+            R.string.led_mode -> {
+                wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
+                if (wd.wheelType == WHEEL_TYPE.NINEBOT_Z) {
+                    findPreference<ListPreference>(wd.mac + "_" + getString(R.string.led_mode))?.summary =
+                        when (WheelLog.AppConfig.ledMode) {
+                            "0" -> getString(R.string.off)
+                            "1" -> getString(R.string.led_type1)
+                            "2" -> getString(R.string.led_type2)
+                            "3" -> getString(R.string.led_type3)
+                            "4" -> getString(R.string.led_type4)
+                            "5" -> getString(R.string.led_type5)
+                            "6" -> getString(R.string.led_type6)
+                            else -> getString(R.string.led_mode_nb_description)
+                        }
+                }
+            }
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
@@ -271,6 +287,28 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.miband_fixrs_enable -> WheelLog.Notifications.updateKostilTimer()
+            R.string.taillight_enabled -> (wd.adapter as? NinebotZAdapter)?.setTailLightState(WheelLog.AppConfig.taillightEnabled)
+            R.string.brake_assistant_enabled ->  (wd.adapter as? NinebotZAdapter)?.setBrakeAssist(WheelLog.AppConfig.brakeAssistantEnabled)
+            R.string.wheel_alarm1_enabled -> {
+                (wd.adapter as? NinebotZAdapter)?.setAlarm1Enabled(WheelLog.AppConfig.wheelAlarm1Enabled)
+                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm1))?.isVisible = WheelLog.AppConfig.wheelAlarm1Enabled
+            }
+            R.string.wheel_alarm2_enabled -> {
+                (wd.adapter as? NinebotZAdapter)?.setAlarm2Enabled(WheelLog.AppConfig.wheelAlarm2Enabled)
+                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm2))?.isVisible = WheelLog.AppConfig.wheelAlarm2Enabled
+            }
+            R.string.wheel_alarm3_enabled -> {
+                (wd.adapter as? NinebotZAdapter)?.setAlarm3Enabled(WheelLog.AppConfig.wheelAlarm3Enabled)
+                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm3))?.isVisible = WheelLog.AppConfig.wheelAlarm3Enabled
+            }
+            R.string.wheel_alarm1 -> (wd.adapter as? NinebotZAdapter)?.setAlarm1Speed(WheelLog.AppConfig.wheelAlarm1Speed)
+            R.string.wheel_alarm2 -> (wd.adapter as? NinebotZAdapter)?.setAlarm2Speed(WheelLog.AppConfig.wheelAlarm2Speed)
+            R.string.wheel_alarm3 -> (wd.adapter as? NinebotZAdapter)?.setAlarm3Speed(WheelLog.AppConfig.wheelAlarm3Speed)
+            R.string.wheel_limited_mode_enabled -> {
+                (wd.adapter as? NinebotZAdapter)?.setLimitedModeEnabled(WheelLog.AppConfig.wheelLimitedModeEnabled)
+                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_limited_speed))?.isVisible = WheelLog.AppConfig.wheelLimitedModeEnabled
+            }
+            R.string.wheel_limited_speed -> (wd.adapter as? NinebotZAdapter)?.setLimitedSpeed(WheelLog.AppConfig.wheelLimitedModeSpeed)
         }
         correctState(key)
     }
