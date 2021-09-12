@@ -196,7 +196,6 @@ public class NinebotZAdapter extends BaseAdapter {
         boolean retResult = false;
         for (byte c : data) {
             if (unpacker.addChar(c)) {
-                retResult = true;
                 Timber.i("Starting verification");
                 CANMessage result = CANMessage.verify(unpacker.getBuffer());
 
@@ -235,6 +234,7 @@ public class NinebotZAdapter extends BaseAdapter {
                     } else if ((result.parameter == CANMessage.Param.LiveData.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get life data");
                         result.parseLiveData();
+                        retResult = true;
 
                     } else if (result.source == CANMessage.Addr.BMS1.getValue()) {
                         Timber.i("Get info from BMS1");
@@ -1053,7 +1053,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
             //int speed = MathsUtil.shortFromBytesLE(data, 28); //the same as speed
             //int avgspeed = MathsUtil.shortFromBytesLE(data, 30); //the same as avgspeed
-            int power = voltage * current;
+            int power = voltage * current/100;
             String alert;
             alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
 
