@@ -64,7 +64,7 @@
 	<string name="icon_watch">Watch Icon</string>
 	<string name="icon_logging">Logging Icon</string>
 	<string name="icon_connection">Connection Icon</string>
-	<string name="connection_lost_at">Conexion perdida. %1s</string>
+	<string name="connection_lost_at">Conexion perdida.</string>
 	<string name="enable_auto_upload_title">¿Habilitar descarga automática?</string>
 	<string name="enable_auto_upload_descriprion">La descarga automática sin conexión WiFi utilizará la red móvil. Esto puede incurrir en cargos adicionales.</string>
 	<string name="logging_error_no_storage_permission">Error de registro, sin permiso de almacenamiento.</string>
@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Error de registro, GPS desactivado.</string>
 	<string name="logging_error_network_disabled">Error de registro, red deshabilitada.</string>
 	<string name="logging_error_all_location_providers_disabled">Error de registro, todos los proveedores de ubicación deshabilitados.</string>
-	<string name="raw_distance">Distancia en bruto.</string>
 	<string name="alarm_text_speed">Alarma de velocidad</string>
 	<string name="alarm_text_current">Alarma de corriente</string>
 	<string name="alarm_text_temperature">Alarma de temperatura</string>

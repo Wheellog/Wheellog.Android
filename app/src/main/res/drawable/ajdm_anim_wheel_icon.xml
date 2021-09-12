@@ -2,5 +2,5 @@
     android:oneshot="false"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/ajdm_wheel_new_g" android:duration="500" />
-    <item android:drawable="@drawable/connect_ajdm_y" android:duration="500" />
+    <item android:drawable="@drawable/connect_ajdm_o" android:duration="500" />
 </animation-list>

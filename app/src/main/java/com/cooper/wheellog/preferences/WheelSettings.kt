@@ -11,10 +11,13 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.InMotionAdapter
 import com.cooper.wheellog.utils.NinebotZAdapter
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.VeteranAdapter
 
 class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
     private var mac: String = ""
+    private var speedMultipier: Double = 1.0
+    private var speedUnit: String = ""
 
     private fun ninebotZ() {
         SwitchPreference(context).apply {
@@ -233,7 +236,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             summary = getString(R.string.tilt_back_description)
             min = 3
             max = InMotionAdapter.getInstance().maxSpeed
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             increment = 1
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
@@ -290,10 +294,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.power_off))
                             .setMessage(getString(R.string.power_off_message))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().powerOff()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
@@ -307,10 +311,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.wheel_calibration))
                             .setMessage(getString(R.string.wheel_calibration_message_inmo))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().wheelCalibration()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
@@ -391,7 +395,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             summary = getString(R.string.tilt_back_description)
             min = 3
             max = 60
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             increment = 1
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
@@ -464,10 +469,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.power_off))
                             .setMessage(getString(R.string.power_off_message))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().powerOff()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
@@ -481,10 +486,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.wheel_calibration))
                             .setMessage(getString(R.string.wheel_calibration_message_inmo))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().wheelCalibration()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
@@ -538,7 +543,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
         }
@@ -549,7 +555,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelKsAlarm3)
             ps.addPreference(this)
         }
@@ -560,7 +567,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelKsAlarm2)
             ps.addPreference(this)
         }
@@ -571,7 +579,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             increment = 1
             max = 50
             min = 0
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelKsAlarm1)
             ps.addPreference(this)
         }
@@ -589,10 +598,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.wheel_calibration))
                             .setMessage(getString(R.string.wheel_calibration_message_kingsong))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().wheelCalibration()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                             .show()
                     true
@@ -606,10 +615,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                     AlertDialog.Builder(context)
                             .setTitle(getString(R.string.power_off))
                             .setMessage(getString(R.string.power_off_message))
-                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                                 WheelData.getInstance().powerOff()
                             }
-                            .setNegativeButton(android.R.string.no, null)
+                            .setNegativeButton(android.R.string.cancel, null)
                             .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
                             .show()
                     true
@@ -654,7 +663,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 99
             min = 0
             increment = 1
-            unit = getString(R.string.kmh)
+            unit = speedUnit
+            multiplier = speedMultipier
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
         }
@@ -665,10 +675,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 AlertDialog.Builder(context)
                         .setTitle(getString(R.string.wheel_calibration))
                         .setMessage(getString(R.string.wheel_calibration_message_begode))
-                        .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                             WheelData.getInstance().wheelCalibration()
                         }
-                        .setNegativeButton(android.R.string.no, null)
+                        .setNegativeButton(android.R.string.cancel, null)
                         .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
                         .show()
                 true
@@ -709,6 +719,13 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
     }
 
     private fun veteran() {
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.light_enabled)
+            title = getString(R.string.on_headlight_title)
+            summary = getString(R.string.on_headlight_description)
+            isChecked = WheelLog.AppConfig.lightEnabled
+            ps.addPreference(this)
+        }
         ListPreference(context).apply {
             key = mac + getString(R.string.pedals_mode)
             title = getString(R.string.pedals_mode_title)
@@ -724,10 +741,10 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 AlertDialog.Builder(context)
                         .setTitle(getString(R.string.reset_trip))
                         .setMessage(getString(R.string.reset_trip_message))
-                        .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                             VeteranAdapter.getInstance().resetTrip()
                         }
-                        .setNegativeButton(android.R.string.no, null)
+                        .setNegativeButton(android.R.string.cancel, null)
                         .show()
                 true
             }
@@ -789,6 +806,13 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
 
     override fun fill(mac: String) {
         ps.removeAll()
+        if (WheelLog.AppConfig.useMph) {
+            speedMultipier = MathsUtil.kmToMilesMultiplier
+            speedUnit = getString(R.string.mph)
+        } else {
+            speedMultipier = 1.0
+            speedUnit = getString(R.string.kmh)
+        }
         this.mac = mac
         when (WheelData.getInstance().wheelType) {
             Constants.WHEEL_TYPE.NINEBOT_Z -> ninebotZ()

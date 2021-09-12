@@ -19,7 +19,6 @@
 
             <TextView
                 android:id="@+id/tvWaitText"
-                android:fontFamily="@font/prime"
                 android:text="@string/waiting_for_wheel"
                 android:textSize="32sp"
                 app:layout_columnSpan="2"

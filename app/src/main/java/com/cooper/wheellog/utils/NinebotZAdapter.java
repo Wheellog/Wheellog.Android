@@ -194,7 +194,6 @@ public class NinebotZAdapter extends BaseAdapter {
         WheelData wd = WheelData.getInstance();
         setBmsReadingMode(wd.getBmsView());
         boolean retResult = false;
-
         for (byte c : data) {
             if (unpacker.addChar(c)) {
                 retResult = true;
@@ -976,7 +975,6 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelData wd = WheelData.getInstance();
             wd.setSerial(serialNumber);
             wd.setModel("Ninebot Z");
-            wd.setDataForLog(false);
         }
 
         void parseParams1() {
@@ -998,7 +996,6 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelLog.AppConfig.setWheelAlarm1Enabled((getInstance().alarms & 0x0001) == 1);
             WheelLog.AppConfig.setWheelAlarm2Enabled(((getInstance().alarms >> 1) & 0x0001) == 1);
             WheelLog.AppConfig.setWheelAlarm3Enabled(((getInstance().alarms >> 2) & 0x0001) == 1);
-            wd.setDataForLog(false);
         }
 
         void parseParams2() {
@@ -1019,7 +1016,6 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelLog.AppConfig.setBrakeAssistantEnabled(((getInstance().driveFlags >> 4) & 0x0001) == 1);
             Timber.i("Param2: %s",StringUtil.toHexStringRaw(data));
             Timber.i("Led colors %04X, %04X, %04X, %04X", getInstance().ledColor1,getInstance().ledColor2,getInstance().ledColor3,getInstance().ledColor4);
-            wd.setDataForLog(false);
         }
 
         void parseVersionNumber() {
@@ -1029,7 +1025,6 @@ public class NinebotZAdapter extends BaseAdapter {
             versionNumber += String.format("%1X.", (data[0] >> 4) & 0x0f);
             versionNumber += String.format("%1X", (data[0]) & 0x0f);
             wd.setVersion(versionNumber);
-            wd.setDataForLog(false);
         }
 
         void parseActivationDate() { ////// ToDo: add to wheeldata
@@ -1062,7 +1057,6 @@ public class NinebotZAdapter extends BaseAdapter {
             String alert;
             alert = String.format(Locale.ENGLISH, "error: %04X, warn: %04X, status: %04X", errorcode, alarmcode, escstatus);
 
-            wd.setDataForLog(true);
             wd.setSpeed(speed);
             wd.setVoltage(voltage);
             wd.setCurrent(current);
@@ -1070,7 +1064,7 @@ public class NinebotZAdapter extends BaseAdapter {
             wd.setTemperature(temperature * 10);
             wd.setAlert(alert);
             wd.updateRideTime();
-            wd.setBatteryPercent(batt);
+            wd.setBatteryLevel(batt);
             wd.setVoltageSag(voltage);
             wd.setPower(power);
         }
@@ -1091,7 +1085,6 @@ public class NinebotZAdapter extends BaseAdapter {
             int mounth = (mfgDate >> 5) & 0x0f;
             int day = mfgDate & 0x1f;
             String mfgDateStr = String.format("%02d.%02d.20%02d", day, mounth, year);
-            wd.setDataForLog(false);
             NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
             bms.setSerialNumber(serialNumber);
             bms.setVersionNumber(versionNumber);
@@ -1114,7 +1107,6 @@ public class NinebotZAdapter extends BaseAdapter {
             int balanceMap = MathsUtil.shortFromBytesLE(data, 12);
             int health = MathsUtil.shortFromBytesLE(data, 22);
             NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
-            wd.setDataForLog(false);
             bms.setStatus(bmsStatus);
             bms.setRemCap(remCap);
             bms.setRemPerc(remPerc);
@@ -1146,7 +1138,6 @@ public class NinebotZAdapter extends BaseAdapter {
             int cell16 = MathsUtil.shortFromBytesLE(data, 30);
 
             NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
-            wd.setDataForLog(false);
             bms.getCells()[0] = cell1 / 1000.0;
             bms.getCells()[1] = cell2 / 1000.0;
             bms.getCells()[2] = cell3 / 1000.0;

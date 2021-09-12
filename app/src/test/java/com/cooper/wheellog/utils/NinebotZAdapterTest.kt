@@ -40,7 +40,7 @@ class NinebotZAdapterTest {
 
         // Assert.
         assertThat(result1).isFalse()
-        assertThat(result2).isTrue()
+        assertThat(result2).isFalse()
         assertThat(data.serial).isEqualTo("N3OTC2020T0001")
     }
 
@@ -53,7 +53,7 @@ class NinebotZAdapterTest {
         val result1 = adapter.decode(byteArray1)
 
         // Assert.
-        assertThat(result1).isTrue()
+        assertThat(result1).isFalse()
         assertThat(data.version).isEqualTo("0.7.7")
     }
 
@@ -111,7 +111,7 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
-        assertThat(result3).isTrue()
+        assertThat(result3).isFalse()
         assertThat(data.bms1.serialNumber).isEqualTo("49YEQ18H1Q0423")
         assertThat(data.bms1.versionNumber).isEqualTo("1.1.6")
         assertThat(data.bms1.factoryCap).isEqualTo(9600)
@@ -133,7 +133,7 @@ class NinebotZAdapterTest {
 
         // Assert.
         assertThat(result1).isFalse()
-        assertThat(result2).isTrue()
+        assertThat(result2).isFalse()
         assertThat(data.bms1.status).isEqualTo(513)
         assertThat(data.bms1.remCap).isEqualTo(9663)
         assertThat(data.bms1.remPerc).isEqualTo(100)
@@ -194,7 +194,7 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
-        assertThat(result3).isTrue()
+        assertThat(result3).isFalse()
         assertThat(data.bms2.serialNumber).isEqualTo("49YEQ18H1Q0423")
         assertThat(data.bms2.versionNumber).isEqualTo("1.1.6")
         assertThat(data.bms2.factoryCap).isEqualTo(9600)
@@ -216,7 +216,7 @@ class NinebotZAdapterTest {
 
         // Assert.
         assertThat(result1).isFalse()
-        assertThat(result2).isTrue()
+        assertThat(result2).isFalse()
         assertThat(data.bms2.status).isEqualTo(513)
         assertThat(data.bms2.remCap).isEqualTo(9628)
         assertThat(data.bms2.remPerc).isEqualTo(100)

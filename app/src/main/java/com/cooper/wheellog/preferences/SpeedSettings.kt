@@ -38,13 +38,21 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = getString(R.string.day_night_theme)
             title = getString(R.string.day_night_theme_title)
             summary = when (WheelLog.AppConfig.dayNightThemeMode) {
-                AppCompatDelegate.MODE_NIGHT_NO ->  getString(R.string.day_night_theme_day)
+                AppCompatDelegate.MODE_NIGHT_NO -> getString(R.string.day_night_theme_day)
                 AppCompatDelegate.MODE_NIGHT_YES -> getString(R.string.day_night_theme_night)
                 else -> getString(R.string.day_night_theme_as_system)
             }
-            entries = arrayOf(getString(R.string.day_night_theme_as_system), getString(R.string.day_night_theme_day), getString(R.string.day_night_theme_night))
-            entryValues = arrayOf(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
-                    .map {x -> x.toString()}.toTypedArray()
+            entries = arrayOf(
+                getString(R.string.day_night_theme_as_system),
+                getString(R.string.day_night_theme_day),
+                getString(R.string.day_night_theme_night)
+            )
+            entryValues = arrayOf(
+                AppCompatDelegate.MODE_NIGHT_UNSPECIFIED,
+                AppCompatDelegate.MODE_NIGHT_NO,
+                AppCompatDelegate.MODE_NIGHT_YES
+            )
+                .map { x -> x.toString() }.toTypedArray()
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
@@ -80,6 +88,24 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         PreferenceCategory(context).apply {
+            title = getString(R.string.after_connect_category)
+            ps.addPreference(this)
+            SwitchPreference(context).apply {
+                key = getString(R.string.auto_log)
+                title = getString(R.string.auto_log_title)
+                summary = getString(R.string.auto_log_description)
+                icon = getDrawable(R.drawable.ic_baseline_magic_log_24)
+                addPreference(this)
+            }
+            SwitchPreference(context).apply {
+                key = getString(R.string.auto_watch)
+                title = getString(R.string.auto_watch_title)
+                summary = getString(R.string.auto_watch_description)
+                icon = getDrawable(R.drawable.ic_baseline_watch_24)
+                addPreference(this)
+            }
+        }
+        PreferenceCategory(context).apply {
             title = getString(R.string.main_view_category)
             ps.addPreference(this)
             MultiSelectPreference(context).apply {
@@ -89,7 +115,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 icon = getDrawable(R.drawable.ic_baseline_dashboard_customize_24)
                 dialogTitle = title
                 dialogIcon = icon
-                setDefaultValue(WheelLog.AppConfig.viewBlocksString)
+                setValues(WheelLog.AppConfig.viewBlocks)
                 entries = context.resources.getTextArray(R.array.view_blocks_values)
                 addPreference(this)
             }
@@ -100,18 +126,16 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 icon = getDrawable(R.drawable.ic_notification)
                 dialogTitle = title
                 dialogIcon = icon
-                entries = arrayOf(getString(R.string.icon_connection),
-                        getString(R.string.icon_logging),
-                        getString(R.string.icon_watch),
-                        getString(R.string.icon_beep),
-                        getString(R.string.icon_light),
-                        getString(R.string.icon_miband))
+                setValues(WheelLog.AppConfig.notificationButtons)
+                entries = arrayOf(
+                    getString(R.string.icon_connection),
+                    getString(R.string.icon_logging),
+                    getString(R.string.icon_watch),
+                    getString(R.string.icon_beep),
+                    getString(R.string.icon_light),
+                    getString(R.string.icon_miband)
+                )
                 useSort = false
-                if (WheelLog.AppConfig.notifivationButtons == null) {
-                    setValues(listOf(getString(R.string.icon_connection),
-                            getString(R.string.icon_logging),
-                            getString(R.string.icon_watch)))
-                }
                 addPreference(this)
             }
             SeekBarPreference(context).apply {
@@ -186,6 +210,12 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setDefaultValue(WheelLog.AppConfig.showUnknownDevices)
             ps.addPreference(this)
         }
+        SwitchPreference(context).apply {
+            key = getString(R.string.use_reconnect)
+            title = getString(R.string.use_reconnect_title)
+            summary = getString(R.string.use_reconnect_description)
+            ps.addPreference(this)
+        }
         PreferenceCategory(context).apply {
             title = getString(R.string.beep_category)
             ps.addPreference(this)
@@ -208,6 +238,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.beep_by_wheel_title)
                 summary = getString(R.string.beep_by_wheel_description)
                 setDefaultValue(WheelLog.AppConfig.beepByWheel)
+                disableDependentsState = true
                 addPreference(this)
             }
             SwitchPreference(context).apply {
@@ -215,11 +246,18 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.custom_beep_title)
                 setDefaultValue(WheelLog.AppConfig.useCustomBeep)
                 addPreference(this)
+                dependency = getString(R.string.beep_by_wheel)
             }
+        }
+        SwitchPreference(context).apply {
+            key = getString(R.string.use_detect_battery_optimization)
+            title = getString(R.string.use_detect_battery_optimization_title)
+            setDefaultValue(WheelLog.AppConfig.detectBatteryOptimization)
+            ps.addPreference(this)
         }
     }
 
-    fun selectCustomBeep(fragment: PreferencesFragment, mediaRequestCode: Int) {
+    fun selectCustomBeep(fragment: PreferencesFragment) {
         if (!WheelLog.AppConfig.useCustomBeep) {
             return
         }
@@ -263,13 +301,13 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 Timber.wtf(getString(R.string.files_not_found))
                 WheelLog.AppConfig.useCustomBeep = false
             }
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // Android 10 or less
-            val intent = Intent("android.intent.action.OPEN_DOCUMENT").apply {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 type = "audio/*"
                 addCategory(Intent.CATEGORY_OPENABLE)
             }
-            fragment.startActivityForResult(intent, mediaRequestCode)
+            fragment.mediaRequestResult.launch(intent)
         }
     }
 }

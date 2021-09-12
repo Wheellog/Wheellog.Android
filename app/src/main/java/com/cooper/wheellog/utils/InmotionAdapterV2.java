@@ -537,7 +537,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setSpeed(mSpeed);
             wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
             wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
-            wd.setBatteryPercent(mBatLevel);
+            wd.setBatteryLevel(mBatLevel);
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mBoardTemp * 100);
             wd.setAngle((double)mPitchAngle/100.0);
@@ -545,7 +545,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.updateRideTime();
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
-            wd.setPower(mBatPower);
+            wd.setPower(mBatPower * 100);
             wd.setWheelDistance(mMileage);
             //// state data
             int mPcMode = data[36] & 0x07; // lock, drive, shutdown, idle

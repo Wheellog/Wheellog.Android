@@ -64,7 +64,7 @@
 	<string name="icon_watch">Relógio</string>
 	<string name="icon_logging">Registro</string>
 	<string name="icon_connection">Conexão</string>
-	<string name="connection_lost_at">Conexão perdida em %1s</string>
+	<string name="connection_lost_at">Conexão perdida</string>
 	<string name="enable_auto_upload_title">Ativar envio automático</string>
 	<string name="enable_auto_upload_descriprion">O envio automático sem estar conectado no WIFI irá consumir seu plano de dados do celular. Isso pode resultar em cobranças da operadora.</string>
 	<string name="logging_error_no_storage_permission">Sem permissão para gravar no dispositivo externo. Tentativa cancelada</string>
@@ -73,7 +73,6 @@
 	<string name="logging_error_gps_disabled">Uso do GPS foi solicitado mas está desligado, localização usará a rede de dados do celular.</string>
 	<string name="logging_error_network_disabled">Localização usando a rede de dados do celular foi solicitada mas o provedor está indisponível. A localização não será registrada.</string>
 	<string name="logging_error_all_location_providers_disabled">Localização está desligada no Android. A localização não será registrada.</string>
-	<string name="raw_distance">Distância Completa</string>
 	<string name="alarm_text_speed">Alarme de Velocidade emitido</string>
 	<string name="alarm_text_current">Alarme de Corrente emitido</string>
 	<string name="alarm_text_temperature">Alarme de Temperatura emitido</string>

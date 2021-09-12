@@ -12,16 +12,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
         <TextView
             android:id="@+id/scan_title"
             style="?android:attr/textAppearanceLarge"
-            android:singleLine="true"
-            android:ellipsize="end"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:text="@string/scanning"
-            android:layout_weight="1"/>
+            android:textAlignment="viewStart"
+            android:textColor="@color/wheelview_textblocks" />
         <ProgressBar
             android:id="@+id/scanProgress"
             android:layout_width="wrap_content"
@@ -56,12 +58,15 @@
             android:id="@+id/last_mac_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:textColorHint="@color/wheelview_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/current_mac" />
+                android:hint="@string/current_mac"
+                android:textColor="@color/wheelview_textblocks"
+                android:textColorHint="@color/wheelview_text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -70,6 +75,7 @@
             android:layout_height="40dp"
             android:background="@android:color/transparent"
             android:foreground="@drawable/ic_baseline_login_24"
+            android:textColorHint="@color/wheelview_text"
             tools:ignore="UnusedAttribute" />
     </LinearLayout>
 </LinearLayout>

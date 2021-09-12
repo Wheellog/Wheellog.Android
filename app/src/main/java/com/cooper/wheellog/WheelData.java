@@ -42,11 +42,9 @@ public class WheelData {
     private final ArrayList<String> xAxis = new ArrayList<>();
     private final ArrayList<Float> currentAxis = new ArrayList<>();
     private final ArrayList<Float> speedAxis = new ArrayList<>();
-
-    private final NinebotBms mNinebotBms2 = new NinebotBms();    private final NinebotBms mNinebotBms1 = new NinebotBms();
-
     // BMS
-
+    private final NinebotBms mNinebotBms1 = new NinebotBms();
+    private final NinebotBms mNinebotBms2 = new NinebotBms();
     //all
     private int mSpeed;
     private double mTorque;
@@ -57,7 +55,7 @@ public class WheelData {
     private double mCurrentLimit;
     private long mTotalDistance;
     private int mCurrent;
-    private Integer mPower = null;
+    private int mPower = 0;
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
@@ -70,6 +68,8 @@ public class WheelData {
     private double mRoll;
 
     private int mBattery;
+    private int mBatteryStart = -1;
+    private int mBatteryLowest = 101;
     private double mAverageBattery;
     //    private double mAverageBatteryCount;
     private int mVoltage;
@@ -106,7 +106,6 @@ public class WheelData {
     private boolean mCurrentAlarmExecuting = false;
     private boolean mTemperatureAlarmExecuting = false;
     private boolean mBmsView = false;
-    private boolean mDataForLog = true;
     private String protoVer = "";
 
     private final int duration = 1; // duration of sound
@@ -115,10 +114,15 @@ public class WheelData {
     //    private double samples[] = new double[numSamples];
     private final short[] buffer = new short[numSamples];
     private final int sfreq = 440;
+    private int toneDuration = 0;
+    private Timer speedAlarmTimer;
+    private Timer speedAlarmWatchdogTimer;
 
     private long timestamp_raw;
     private long timestamp_last;
-    private static AudioTrack audioTrack = null;
+    private long mLastLifeData = -1;
+
+    AudioTrack audioTrack;
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
@@ -163,20 +167,30 @@ public class WheelData {
     }
 
     void playBeep(ALARM_TYPE type) {
+
+        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && mBluetoothLeService != null) {
+            SomeUtil.playBeep(mBluetoothLeService.getBaseContext(), true, false);
+            return;
+        }
+
+        if (audioTrack != null) {
+            audioTrack.flush();
+            audioTrack.stop();
+            audioTrack.release();
+
+        }
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, buffer.length,
                 AudioTrack.MODE_STATIC);
-        if (type.getValue() < 4) {
-            audioTrack.write(buffer, sampleRate / 20, ((type.getValue()) * sampleRate) / 20); //50, 100, 150 ms depends on number of speed alarm
+        if ((type.getValue() < 4) || (type.getValue() == 6)) {
+            audioTrack.write(buffer, sampleRate / 20, (toneDuration * sampleRate) / 1000); //50, 100, 150 ms depends on number of speed alarm
 
         } else if (type == ALARM_TYPE.CURRENT) {
             audioTrack.write(buffer, sampleRate * 3 / 10, (2 * sampleRate) / 20); //100 ms for current
 
         } else {
-            audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //300 ms temperature
-
-
+            audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //600 ms temperature
         }
 
         //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
@@ -197,6 +211,7 @@ public class WheelData {
         mInstance.full_reset();
         mInstance.prepareTone(mInstance.sfreq);
         mInstance.startRidingTimerControl();
+        //mInstance.startAlarmTest(); // test
     }
 
     private void prepareTone(int freq) {
@@ -231,6 +246,26 @@ public class WheelData {
         ridingTimerControl = new Timer();
         ridingTimerControl.scheduleAtFixedRate(timerTask, 0, 1000);
     }
+
+    ///// test purpose, please let it be
+    public void startAlarmTest() {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mCalculatedPwm = WheelLog.AppConfig.getMaxSpeed()/100d;
+                mAverageBattery = 70;
+                mSpeed = WheelLog.AppConfig.getMaxSpeed() * 100;
+                mCurrent = 10000;
+                mTemperature = 6000;
+                //Timber.i("pwm = %0.2f", mCalculatedPwm);
+                Context mContext = getBluetoothLeService().getApplicationContext();
+                checkAlarmStatus(mContext);
+            }
+        };
+        ridingTimerControl = new Timer();
+        ridingTimerControl.scheduleAtFixedRate(timerTask, 5000, 200);
+    }
+    /////
 
     public static WheelData getInstance() {
         return mInstance;
@@ -526,11 +561,11 @@ public class WheelData {
         return mTemperature2 / 100;
     }
 
-    public double getMaxCurrent() {
+    public double getMaxCurrentDouble() {
         return mMaxCurrent / 100;
     }
 
-    public double getMaxPower() {
+    public double getMaxPowerDouble() {
         return mMaxPower / 100;
     }
 
@@ -572,6 +607,10 @@ public class WheelData {
 
     public int getBatteryLevel() {
         return mBattery;
+    }
+
+    public int getBatteryLowestLevel() {
+        return mBatteryLowest;
     }
 
     public int getFanStatus() {
@@ -704,15 +743,45 @@ public class WheelData {
         return mRideTime;
     }
 
+    public double getAverageBatteryConsumption() {
+        return MathsUtil.clamp(mBatteryStart - mBattery, 0, 100);
+    }
+
+    public double getDistanceFromStart() {
+        if (mTotalDistance != 0) {
+            return  (mTotalDistance - mStartTotalDistance);
+        } else return 0;
+    }
+
+    public double getBatteryPerKm() {
+        double distance = getDistanceFromStart();
+        if (distance != 0) {
+            return getAverageBatteryConsumption() * 1000 / distance;
+        } else {
+            return 0;
+        }
+    }
+
+    public double getRemainingDistance() {
+        double batteryByKm = getBatteryPerKm();
+        if (batteryByKm != 0) {
+            return mBattery / batteryByKm;
+        } else {
+            return 0;
+        }
+    }
+
     public double getAverageSpeedDouble() {
         if (mTotalDistance != 0 && mRideTime != 0) {
-            return (((mTotalDistance - mStartTotalDistance) * 3.6) / (mRideTime + mLastRideTime));
+            // 3.6 = (60 sec * 60 mim) / 1000 meters.
+            return getDistanceFromStart() * 3.6 / (mRideTime + mLastRideTime);
         } else return 0.0;
     }
 
     public double getAverageRidingSpeedDouble() {
         if (mTotalDistance != 0 && mRidingTime != 0) {
-            return (((mTotalDistance - mStartTotalDistance) * 3.6) / mRidingTime);
+            // 3.6 = (60 sec * 60 mim) / 1000 meters.
+            return getDistanceFromStart() * 3.6 / mRidingTime;
         } else return 0.0;
     }
 
@@ -749,7 +818,6 @@ public class WheelData {
 
     public void setVoltage(int voltage) {
         mVoltage = voltage;
-        mMaxPower = Math.max(mMaxPower, mCurrent * mVoltage / 100.0);
     }
 
     double getVoltageSagDouble() {
@@ -757,21 +825,29 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower != null ? mPower : (mCurrent * mVoltage) / 10000.0);
+        return mPower / 100.0;
     }
 
-    public void setPower(int power) {
-        mPower = power;
+    private void setMaxPower(int power) {
         mMaxPower = Math.max(mMaxPower, power);
+    }
+
+    public void setPower(int value) {
+        mPower = value;
+        setMaxPower(value);
     }
 
     public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
 
+    private void setMaxCurrent(int value) {
+        mMaxCurrent = Math.max(mMaxCurrent, value);
+    }
+
     public void setCurrent(int value) {
         mCurrent = value;
-        mMaxCurrent = Math.max(mMaxCurrent, value);
+        setMaxCurrent(value);
     }
 
     public int getCurrent() {
@@ -784,6 +860,10 @@ public class WheelData {
 
     public void setPhaseCurrent(int value) {
         mPhaseCurrent = value;
+    }
+
+    public int getPhaseCurrent() {
+        return mPhaseCurrent;
     }
 
     public double getCalculatedPwm() {
@@ -806,7 +886,7 @@ public class WheelData {
         return (int) (mTotalDistance - mStartTotalDistance);
     }
 
-    int getAlarm() {
+    public int getAlarm() {
         int alarm = 0;
         if (mSpeedAlarmExecuting) {
             alarm = alarm | 0x01;
@@ -945,19 +1025,23 @@ public class WheelData {
             mVoltageSag = voltSag;
     }
 
-    private void setMaxPwm(double currentPwm) {
+    public int getVoltageSag() {
+        return mVoltageSag;
+    }
+
+    public void setMaxPwm(double currentPwm) {
         if ((currentPwm > mMaxPwm) && (currentPwm > 0))
             mMaxPwm = currentPwm;
 
     }
 
-    private void setMaxTemp(int temp) {
+    public void setMaxTemp(int temp) {
         if ((temp > mMaxTemp) && (temp > 0))
             mMaxTemp = temp;
 
     }
 
-    public void setBatteryPercent(int battery) {
+    public void setBatteryLevel(int battery) {
         if (WheelLog.AppConfig.getFixedPercents()) {
             double maxVoltage = getMaxVoltageForWheel();
             double minVoltage = getVoltageTiltbackForWheel();
@@ -966,7 +1050,11 @@ public class WheelData {
                 battery = (int) ((getVoltageDouble() - minVoltage) / voltagePercentStep);
             }
         }
+        mBatteryLowest = Math.min(mBatteryLowest, battery);
 
+        if (mBatteryStart == -1) {
+            mBatteryStart = battery;
+        }
         mBattery = battery;
 
 //        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
@@ -977,17 +1065,35 @@ public class WheelData {
     }
 
     private void startSpeedAlarmCount() {
-        mSpeedAlarmExecuting = true;
-        TimerTask stopSpeedAlarmExecuring = new TimerTask() {
+        if (!mSpeedAlarmExecuting) {
+            mSpeedAlarmExecuting = true;
+            TimerTask playBeepAgain = new TimerTask() {
+                @Override
+                public void run() {
+                    playBeep(ALARM_TYPE.PWM);
+                    Timber.i("Scheduled alarm");
+                }
+            };
+            speedAlarmTimer = new Timer();
+            speedAlarmTimer.scheduleAtFixedRate(playBeepAgain, 0, 200);
+        }
+        if (speedAlarmWatchdogTimer != null) {
+            speedAlarmWatchdogTimer.cancel();
+            speedAlarmWatchdogTimer = null;
+        }
+
+        TimerTask alarmWatchdog = new TimerTask() {
             @Override
             public void run() {
-                mSpeedAlarmExecuting = false;
-                Timber.i("Stop Speed <<<<<<<<<");
+                if (speedAlarmTimer != null) {
+                    speedAlarmTimer.cancel();
+                    speedAlarmTimer = null;
+                }
+                Timber.i("Alarm canceled by watchdog");
             }
         };
-        Timer timerCurrent = new Timer();
-        timerCurrent.schedule(stopSpeedAlarmExecuring, 170);
-
+        speedAlarmWatchdogTimer = new Timer();
+        speedAlarmWatchdogTimer.schedule(alarmWatchdog, 5000);
     }
 
     private void startTempAlarmCount() {
@@ -1018,101 +1124,124 @@ public class WheelData {
     }
 
     private void checkAlarmStatus(Context mContext) {
-        // SPEED ALARM
-        if (!mSpeedAlarmExecuting) {
-            if (WheelLog.AppConfig.getAlteredAlarms()) {
-                if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor3() / 100d) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor2() / 100d) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                } else if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED1, mContext);
+
+        if (WheelLog.AppConfig.getAlteredAlarms()) {
+            if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
+                toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
+                toneDuration = MathsUtil.clamp(toneDuration, 20, 200);
+                raiseAlarm(ALARM_TYPE.PWM, mCalculatedPwm*100d, mContext);
+            } else {
+                // check if speed alarm executing and stop it
+                mSpeedAlarmExecuting = false;
+                if (speedAlarmTimer != null) {
+                    speedAlarmTimer.cancel();
+                    speedAlarmTimer = null;
+                }
+                // prealarm
+                double warningPwm = WheelLog.AppConfig.getWarningPwm() / 100d;
+                int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
+                if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
+                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
+                    SomeUtil.playSound(mContext, R.raw.warning_pwm);
                 } else {
-                    double warningPwm = WheelLog.AppConfig.getWarningPwm() / 100d;
-                    int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
-                    if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
+                    int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
+                    if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
                         mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                        SomeUtil.playSound(mContext, R.raw.warning_pwm);
-                    } else {
-                        int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
-                        if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
-                            mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                            SomeUtil.playSound(mContext, R.raw.sound_warning_speed);
-                        }
+                        SomeUtil.playSound(mContext, R.raw.sound_warning_speed);
                     }
                 }
+            }
+        } else {
+            if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm1Speed(), WheelLog.AppConfig.getAlarm1Battery())) {
+                toneDuration = 50;
+                raiseAlarm(ALARM_TYPE.SPEED1, getSpeedDouble(), mContext);
+            } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm2Speed(), WheelLog.AppConfig.getAlarm2Battery())) {
+                toneDuration = 100;
+                raiseAlarm(ALARM_TYPE.SPEED2, getSpeedDouble(),mContext);
+            } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm3Speed(), WheelLog.AppConfig.getAlarm3Battery())) {
+                toneDuration = 180;
+                raiseAlarm(ALARM_TYPE.SPEED3, getSpeedDouble(), mContext);
             } else {
-                int alarm1Speed = WheelLog.AppConfig.getAlarm1Speed();
-                int alarm1Battery = WheelLog.AppConfig.getAlarm1Battery();
-                if (alarm1Speed > 0 && alarm1Battery > 0 && mAverageBattery <= alarm1Battery && getSpeedDouble() >= alarm1Speed) {
-                    startSpeedAlarmCount();
-                    raiseAlarm(ALARM_TYPE.SPEED1, mContext);
-                } else {
-                    int alarm2Speed = WheelLog.AppConfig.getAlarm2Speed();
-                    int alarm2Battery = WheelLog.AppConfig.getAlarm2Battery();
-                    if (alarm2Speed > 0 && alarm2Battery > 0 && mAverageBattery <= alarm2Battery && getSpeedDouble() >= alarm2Speed) {
-                        startSpeedAlarmCount();
-                        raiseAlarm(ALARM_TYPE.SPEED2, mContext);
-                    } else {
-                        int alarm3Speed = WheelLog.AppConfig.getAlarm3Speed();
-                        int alarm3Battery = WheelLog.AppConfig.getAlarm3Battery();
-                        if (alarm3Speed > 0 && alarm3Battery > 0 && mAverageBattery <= alarm3Battery && getSpeedDouble() >= alarm3Speed) {
-                            startSpeedAlarmCount();
-                            raiseAlarm(ALARM_TYPE.SPEED3, mContext);
-                        }
-                    }
+                // check if speed alarm executing and stop it
+                mSpeedAlarmExecuting = false;
+                if (speedAlarmTimer != null) {
+                    speedAlarmTimer.cancel();
+                    speedAlarmTimer = null;
                 }
             }
         }
 
         int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
-        if (alarmCurrent > 0 && mCurrent >= alarmCurrent && !mCurrentAlarmExecuting) {
+        if ((alarmCurrent > 0) && (mCurrent >= alarmCurrent) && !mCurrentAlarmExecuting) {
             startCurrentAlarmCount();
-            raiseAlarm(ALARM_TYPE.CURRENT, mContext);
+            raiseAlarm(ALARM_TYPE.CURRENT, getCurrentDouble(), mContext);
         }
 
         int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature() * 100;
-        if (alarmTemperature > 0 && mTemperature >= alarmTemperature && !mTemperatureAlarmExecuting) {
+        if ((alarmTemperature > 0) && (mTemperature >= alarmTemperature) && !mTemperatureAlarmExecuting) {
             startTempAlarmCount();
-            raiseAlarm(ALARM_TYPE.TEMPERATURE, mContext);
+            raiseAlarm(ALARM_TYPE.TEMPERATURE, getTemperature(), mContext);
         }
     }
 
-    private void raiseAlarm(ALARM_TYPE alarmType, Context mContext) {
+    private boolean alarmSpeedCheck(int alarmSpeed, int alarmBattery) {
+        return alarmSpeed > 0 && alarmBattery > 0 && mAverageBattery <= alarmBattery && getSpeedDouble() >= alarmSpeed;
+    }
+
+    private void raiseAlarm(ALARM_TYPE alarmType, double value, Context mContext) {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0};
         Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
-
+        intent.putExtra(Constants.INTENT_EXTRA_ALARM_VALUE, value);
         switch (alarmType) {
             case SPEED1:
             case SPEED2:
             case SPEED3:
+            case PWM:
                 pattern = new long[]{0, 100, 100};
                 break;
 
             case CURRENT:
                 pattern = new long[]{0, 50, 50, 50, 50};
-//                mCurrentAlarmExecuted = true;
                 break;
             case TEMPERATURE:
                 pattern = new long[]{0, 500, 500};
-//                mCurrentAlarmExecuted = true;
                 break;
         }
-        mContext.sendBroadcast(intent);
         if (v.hasVibrator() && !WheelLog.AppConfig.getDisablePhoneVibrate())
             v.vibrate(pattern, -1);
         if (!WheelLog.AppConfig.getDisablePhoneBeep()) {
-            playBeep(alarmType);
+            if ((alarmType.getValue() > 3) && (alarmType.getValue() != 6)) {
+                playBeep(alarmType);
+            } else {
+                startSpeedAlarmCount();
+            }
+        }
+        mContext.sendBroadcast(intent);
+
+        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Alarm) {
+            String mi_text = "";
+            switch (alarmType) {
+                case SPEED1:
+                case SPEED2:
+                case SPEED3:
+                case PWM:
+                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_speed_v), WheelData.getInstance().getSpeedDouble());
+                    break;
+                case CURRENT:
+                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_current_v), WheelData.getInstance().getCurrentDouble());
+                    break;
+                case TEMPERATURE:
+                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_temperature_v), WheelData.getInstance().getTemperature());
+                    break;
+            }
+            WheelLog.Notifications.setAlarmText(mi_text);
+            WheelLog.Notifications.update();
         }
     }
 
     void decodeResponse(byte[] data, Context mContext) {
-        mDataForLog = true;
         timestamp_raw = System.currentTimeMillis();//new Date(); //sdf.format(new Date());
 
         StringBuilder stringBuilder = new StringBuilder(data.length);
@@ -1126,6 +1255,7 @@ public class WheelData {
 
         if (!new_data)
             return;
+        mLastLifeData = System.currentTimeMillis();
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);
@@ -1141,13 +1271,13 @@ public class WheelData {
         }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int) Math.round(mCalculatedPwm * mPhaseCurrent);
+            setCurrent((int) Math.round(mCalculatedPwm * mPhaseCurrent));
+        }
+        if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
+            setPower((int) Math.round(getCurrentDouble() * mVoltage));
         }
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        if (mDataForLog) {
-            intent.putExtra(Constants.INTENT_EXTRA_DATA_TO_LOGS, true);
-        }
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
@@ -1169,6 +1299,10 @@ public class WheelData {
         mContext.sendBroadcast(intent);
 
         CheckMuteMusic();
+    }
+
+    public long getLastLifeData() {
+        return mLastLifeData;
     }
 
     private void CheckMuteMusic() {
@@ -1196,14 +1330,24 @@ public class WheelData {
         }
     }
 
+    public void incrementRidingTime() {
+        mRidingTime++;
+    }
+
+    /*
+        Only for restore from log
+     */
+    public void setStartParameters(long rideStartTime, long startTotalDistance) {
+        mRidingTime = 0;
+        mLastRideTime = 0;
+        this.rideStartTime = rideStartTime;
+        this.mStartTotalDistance = startTotalDistance;
+    }
+
     public void updateRideTime() {
         int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
         setCurrentTime(currentTime);
     }
-
-    public void setDataForLog(boolean value) {
-        mDataForLog = value;
-    } // пока работает, но нужно убрать
 
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
@@ -1222,6 +1366,7 @@ public class WheelData {
         }
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.stopTimer();
         mWheelType = WHEEL_TYPE.Unknown;
+        //mWheelType = WHEEL_TYPE.GOTWAY; //test
         xAxis.clear();
         speedAxis.clear();
         currentAxis.clear();
@@ -1240,7 +1385,7 @@ public class WheelData {
         mCurrentLimit = 0;
         mTotalDistance = 0;
         mCurrent = 0;
-        mPower = null;
+        mPower = 0;
         mTemperature = 0;
         mTemperature2 = 0;
         mCpuLoad = 0;
@@ -1248,6 +1393,8 @@ public class WheelData {
         mAngle = 0;
         mRoll = 0;
         mBattery = 0;
+        mBatteryLowest = 101;
+        mBatteryStart = -1;
         //mAverageBatteryCount = 0;
         mCalculatedPwm = 0.0;
         mMaxPwm = 0.0;
