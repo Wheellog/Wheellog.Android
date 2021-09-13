@@ -59,6 +59,11 @@
     <string name="wheel_limited_mode_enabled" translatable="false">wheel_limited_mode_enabled</string>
     <string name="wheel_limited_speed" translatable="false">wheel_limited_speed</string>
     <string name="brake_assistant_enabled" translatable="false">brake_assistant_enabled</string>
+    <string name="nb_led_color1" translatable="false">nb_led_color1</string>
+    <string name="nb_led_color2" translatable="false">nb_led_color2</string>
+    <string name="nb_led_color3" translatable="false">nb_led_color3</string>
+    <string name="nb_led_color4" translatable="false">nb_led_color4</string>
+
     <string name="strobe_mode" translatable="false">strobe_mode</string>
     <string name="led_mode" translatable="false">led_mode</string>
     <string name="alarm_mode" translatable="false">alarm_mode</string>
@@ -447,6 +452,11 @@
     <string name="wheel_limited_speed_title">Speed</string>
     <string name="wheel_limited_speed_description">Speed to limit</string>
     <string name="brake_assistant_title">Brake assistant</string>
+    <string name="nb_led_color1_title">Led color 1</string>
+    <string name="nb_led_color2_title">Led color 2</string>
+    <string name="nb_led_color3_title">Led color 3</string>
+    <string name="nb_led_color4_title">Led color 4</string>
+    <string name="nb_led_color_description">Choose led color</string>
     <string name="brake_assistant_description">Wheel will tilt back by 3 degrees while braking</string>
     <string name="speaker_volume_title">Speaker volume</string>
     <string name="speaker_volume_description">Change built-in speaker volume</string>

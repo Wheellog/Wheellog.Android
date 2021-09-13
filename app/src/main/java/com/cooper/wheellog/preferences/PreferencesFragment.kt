@@ -264,8 +264,37 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 "7" -> getString(R.string.led_type7)
                                 else -> getString(R.string.led_mode_nb_description)
                             }
+                    findPreference<SeekBarPreference>(wd.mac + "_" + getString(R.string.nb_led_color1))?.isVisible =
+                        when (WheelLog.AppConfig.ledMode) {
+                            "1" -> true
+                            "2" -> true
+                            "3" -> true
+                            "4" -> true
+                            "5" -> true
+                            else -> false
+                        }
+                    findPreference<SeekBarPreference>(wd.mac + "_" + getString(R.string.nb_led_color2))?.isVisible =
+                        when (WheelLog.AppConfig.ledMode) {
+                            "2" -> true
+                            "3" -> true
+                            else -> false
+                        }
+                    findPreference<SeekBarPreference>(wd.mac + "_" + getString(R.string.nb_led_color3))?.isVisible =
+                        when (WheelLog.AppConfig.ledMode) {
+                            "3" -> true
+                            else -> false
+                        }
+                    findPreference<SeekBarPreference>(wd.mac + "_" + getString(R.string.nb_led_color4))?.isVisible =
+                        when (WheelLog.AppConfig.ledMode) {
+                            "3" -> true
+                            else -> false
+                        }
                 }
             }
+            R.string.nb_led_color1 -> wd.setLedColor1(WheelLog.AppConfig.ledColor1)
+            R.string.nb_led_color2 -> wd.setLedColor2(WheelLog.AppConfig.ledColor2)
+            R.string.nb_led_color3 -> wd.setLedColor3(WheelLog.AppConfig.ledColor3)
+            R.string.nb_led_color4 -> wd.setLedColor4(WheelLog.AppConfig.ledColor4)
             R.string.wheel_ks_alarm3 -> KingsongAdapter.getInstance().updateKSAlarm3(WheelLog.AppConfig.wheelKsAlarm3)
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)

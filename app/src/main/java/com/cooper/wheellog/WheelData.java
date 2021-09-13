@@ -413,6 +413,30 @@ public class WheelData {
         }
     }
 
+    public void setLedColor1(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLedColor1(value);
+        }
+    }
+
+    public void setLedColor2(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLedColor2(value);
+        }
+    }
+
+    public void setLedColor3(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLedColor3(value);
+        }
+    }
+
+    public void setLedColor4(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLedColor4(value);
+        }
+    }
+
     public void updateAlarm1Enabled(boolean value) {
         if (getAdapter() != null) {
             getAdapter().setAlarm1Enabled(value);

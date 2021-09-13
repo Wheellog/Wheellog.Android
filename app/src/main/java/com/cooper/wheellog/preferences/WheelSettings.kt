@@ -166,6 +166,75 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         }
 
         SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color1)
+            title = getString(R.string.nb_led_color1_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 255
+            unit = ""
+            increment = 1
+            isVisible = when (WheelLog.AppConfig.ledMode) {
+                "1" -> true
+                "2" -> true
+                "3" -> true
+                "4" -> true
+                "5" -> true
+                else -> false
+            }
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor1)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color2)
+            title = getString(R.string.nb_led_color2_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 255
+            unit = ""
+            increment = 1
+            isVisible = when (WheelLog.AppConfig.ledMode) {
+                "2" -> true
+                "3" -> true
+                else -> false
+            }
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor2)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color3)
+            title = getString(R.string.nb_led_color3_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 255
+            unit = ""
+            increment = 1
+            isVisible = when (WheelLog.AppConfig.ledMode) {
+                "3" -> true
+                else -> false
+            }
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor3)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color4)
+            title = getString(R.string.nb_led_color4_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 255
+            unit = ""
+            increment = 1
+            isVisible = when (WheelLog.AppConfig.ledMode) {
+                "3" -> true
+                else -> false
+            }
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor4)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
             key = mac + getString(R.string.speaker_volume)
             title = getString(R.string.speaker_volume_title)
             summary = getString(R.string.speaker_volume_description)

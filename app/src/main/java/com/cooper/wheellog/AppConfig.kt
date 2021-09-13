@@ -374,6 +374,22 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.wheel_limited_speed, 10)
         set(value) = setSpecific(R.string.wheel_limited_speed, value)
 
+    var ledColor1: Int
+        get() = getSpecific(R.string.nb_led_color1, 0)
+        set(value) = setSpecific(R.string.nb_led_color1, value)
+
+    var ledColor2: Int
+        get() = getSpecific(R.string.nb_led_color2, 0)
+        set(value) = setSpecific(R.string.nb_led_color2, value)
+
+    var ledColor3: Int
+        get() = getSpecific(R.string.nb_led_color3, 0)
+        set(value) = setSpecific(R.string.nb_led_color3, value)
+
+    var ledColor4: Int
+        get() = getSpecific(R.string.nb_led_color4, 0)
+        set(value) = setSpecific(R.string.nb_led_color4, value)
+
     var brakeAssistantEnabled: Boolean
         get() = getSpecific(R.string.brake_assistant_enabled, false)
         set(value) = setSpecific(R.string.brake_assistant_enabled, value)

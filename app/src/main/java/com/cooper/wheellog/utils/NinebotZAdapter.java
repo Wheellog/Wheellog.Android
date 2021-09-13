@@ -177,7 +177,23 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     public String getLedMode(){
-        return "1";
+        return Integer.toString(ledMode);
+    }
+
+    public int getLedColor1(){
+        return ledColor1;
+    }
+
+    public int getLedColor2(){
+        return ledColor2;
+    }
+
+    public int getLedColor3(){
+        return ledColor3;
+    }
+
+    public int getLedColor4(){
+        return ledColor4;
     }
 
     public int getSpeakerVolume(){
@@ -324,6 +340,37 @@ public class NinebotZAdapter extends BaseAdapter {
         settingCommandReady = true;
     }
 
+    @Override
+    public void setLedColor1(final int value) {
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
+        settingCommand = NinebotZAdapter.CANMessage.setLedColor1(value).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setLedColor2(final int value) {
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
+        settingCommand = NinebotZAdapter.CANMessage.setLedColor2(value).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setLedColor3(final int value) {
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
+        settingCommand = NinebotZAdapter.CANMessage.setLedColor3(value).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    @Override
+    public void setLedColor4(final int value) {
+        settingRequest = NinebotZAdapter.CANMessage.getParams2().writeBuffer();
+        settingRequestReady = true;
+        settingCommand = NinebotZAdapter.CANMessage.setLedColor4(value).writeBuffer();
+        settingCommandReady = true;
+    }
     @Override
     public void setAlarm1Enabled(final boolean value) {
         // ToDo check if it is the same as old value
@@ -826,6 +873,54 @@ public class NinebotZAdapter extends BaseAdapter {
             return msg;
         }
 
+        public static CANMessage setLedColor1(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LedColor1.getValue();
+            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setLedColor2(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LedColor2.getValue();
+            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setLedColor3(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LedColor3.getValue();
+            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setLedColor4(int value) {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.LedColor4.getValue();
+            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
         public static CANMessage setAlarms(int value) {
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
@@ -1001,10 +1096,10 @@ public class NinebotZAdapter extends BaseAdapter {
         void parseParams2() {
             WheelData wd = WheelData.getInstance();
             getInstance().ledMode = MathsUtil.shortFromBytesLE(data, 0);
-            getInstance().ledColor1 = MathsUtil.intFromBytesLE(data, 4);
-            getInstance().ledColor2 = MathsUtil.intFromBytesLE(data, 8);
-            getInstance().ledColor3 = MathsUtil.intFromBytesLE(data, 12);
-            getInstance().ledColor4 = MathsUtil.intFromBytesLE(data, 16);
+            getInstance().ledColor1 = (MathsUtil.intFromBytesLE(data, 4) >> 16) & 0xFF;
+            getInstance().ledColor2 = (MathsUtil.intFromBytesLE(data, 8) >> 16) & 0xFF;
+            getInstance().ledColor3 = (MathsUtil.intFromBytesLE(data, 12) >> 16) & 0xFF;
+            getInstance().ledColor4 = (MathsUtil.intFromBytesLE(data, 16) >> 16) & 0xFF;
             getInstance().pedalSensivity = MathsUtil.shortFromBytesLE(data, 24);
             getInstance().driveFlags = MathsUtil.shortFromBytesLE(data, 26);
             WheelLog.AppConfig.setLedMode(Integer.toString(getInstance().ledMode));
