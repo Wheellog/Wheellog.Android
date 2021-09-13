@@ -261,6 +261,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 "4" -> getString(R.string.led_type4)
                                 "5" -> getString(R.string.led_type5)
                                 "6" -> getString(R.string.led_type6)
+                                "7" -> getString(R.string.led_type7)
                                 else -> getString(R.string.led_mode_nb_description)
                             }
                 }

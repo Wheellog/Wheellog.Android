@@ -261,7 +261,8 @@
     <string name="led_type3">Full-color flash</string>
     <string name="led_type4">Dynamic breathing</string>
     <string name="led_type5">Flowing</string>
-    <string name="led_type6">Alter-color flash</string>
+    <string name="led_type6">Full color wave</string>
+    <string name="led_type7">Alter color breathing</string>
     <string name="pedals_mode_title">Pedals Mode</string>
     <string name="led_mode_title">Leds mode</string>
     <string name="strobe_mode_title">Strobe Mode</string>

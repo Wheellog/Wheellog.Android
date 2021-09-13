@@ -83,6 +83,7 @@
         <item>@string/led_type4</item>
         <item>@string/led_type5</item>
         <item>@string/led_type6</item>
+        <item>@string/led_type7</item>
     </string-array>
 
     <string-array name="led_mode_nb_values">
@@ -93,6 +94,7 @@
         <item>4</item>
         <item>5</item>
         <item>6</item>
+        <item>7</item>
     </string-array>
 
 	<string-array name="led_mode_values">

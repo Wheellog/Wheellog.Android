@@ -156,6 +156,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 "4" -> getString(R.string.led_type4)
                 "5" -> getString(R.string.led_type5)
                 "6" -> getString(R.string.led_type6)
+                "7" -> getString(R.string.led_type7)
                 else -> getString(R.string.led_mode_nb_description)
             }
             setEntries(R.array.led_mode_nb)
