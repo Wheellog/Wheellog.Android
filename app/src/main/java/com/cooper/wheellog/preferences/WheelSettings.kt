@@ -242,7 +242,6 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 100
             unit = "%"
             increment = 1
-            isVisible = false // FixMe not implemented in adapter yet
             setDefaultValue(NinebotZAdapter.getInstance().speakerVolume)
             ps.addPreference(this)
         }

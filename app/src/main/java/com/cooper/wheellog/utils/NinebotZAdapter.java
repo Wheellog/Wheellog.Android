@@ -88,26 +88,31 @@ public class NinebotZAdapter extends BaseAdapter {
                         } else Timber.i("Unable to send getParams2 message");
 
                     } else if (stateCon == 6) {
+                        if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getParams3().writeBuffer())) {
+                            Timber.i("Sent getParams3 message");
+                        } else Timber.i("Unable to send getParams2 message");
+
+                    } else if (stateCon == 7) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Sn().writeBuffer())) {
                             Timber.i("Sent BMS1 SN message");
                         } else Timber.i("Unable to send BMS1 SN message");
-                    } else if (stateCon == 7) {
+                    } else if (stateCon == 8) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Life().writeBuffer())) {
                             Timber.i("Sent BMS1 life message");
                         } else Timber.i("Unable to send BMS1 life message");
-                    } else if (stateCon == 8) {
+                    } else if (stateCon == 9) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms1Cells().writeBuffer())) {
                             Timber.i("Sent BMS1 cells message");
                         } else Timber.i("Unable to send BMS1 cells message");
-                    } else if (stateCon == 9) {
+                    } else if (stateCon == 10) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Sn().writeBuffer())) {
                             Timber.i("Sent BMS2 SN message");
                         } else Timber.i("Unable to send BMS2 SN message");
-                    } else if (stateCon == 10) {
+                    } else if (stateCon == 11) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Life().writeBuffer())) {
                             Timber.i("Sent BMS2 life message");
                         } else Timber.i("Unable to send BMS2 life message");
-                    } else if (stateCon == 11) {
+                    } else if (stateCon == 12) {
                         if (WheelData.getInstance().bluetoothCmd(NinebotZAdapter.CANMessage.getBms2Cells().writeBuffer())) {
                             Timber.i("Sent BMS2 cells message");
                         } else Timber.i("Unable to send BMS2 cells message");
@@ -135,17 +140,17 @@ public class NinebotZAdapter extends BaseAdapter {
                 }
                 updateStep += 1;
 
-                if ((updateStep == 5) && (stateCon > 5) && (stateCon < 12)) {
+                if ((updateStep == 5) && (stateCon > 6) && (stateCon < 13)) {
                     stateCon += 1;
                     Timber.i("Change state to %d 1", stateCon);
-                    if (stateCon > 11) stateCon = 6;
+                    if (stateCon > 12) stateCon = 7;
                 }
-                if (bmsMode && (stateCon == 12)) {
-                    stateCon = 6;
+                if (bmsMode && (stateCon == 13)) {
+                    stateCon = 7;
                     Timber.i("Change state to %d 2", stateCon);
                 }
-                if (!bmsMode && (stateCon > 5) && (stateCon < 12)) {
-                    stateCon = 12;
+                if (!bmsMode && (stateCon > 6) && (stateCon < 13)) {
+                    stateCon = 13;
                     Timber.i("Change state to %d 3", stateCon);
                 }
                 updateStep %= 5;
@@ -172,9 +177,7 @@ public class NinebotZAdapter extends BaseAdapter {
         return 500;
     }
 
-    public int getPedalSensivity(){
-        return 1;
-    }
+    public int getPedalSensivity(){ return pedalSensivity; }
 
     public String getLedMode(){
         return Integer.toString(ledMode);
@@ -197,7 +200,7 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     public int getSpeakerVolume(){
-        return 100;
+        return speakerVolume;
     }
 /// end of mocks
     public void setBmsReadingMode(boolean mode) {
@@ -240,7 +243,12 @@ public class NinebotZAdapter extends BaseAdapter {
                     } else if ((result.parameter == CANMessage.Param.LedMode.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get param2 number");
                         result.parseParams2();
-                        stateCon = 12;
+                        stateCon = 6;
+
+                    } else if ((result.parameter == CANMessage.Param.SpeakerVolume.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
+                        Timber.i("Get param3 number");
+                        result.parseParams3();
+                        stateCon = 13;
 
                     } else if ((result.parameter == CANMessage.Param.Firmware.getValue()) && (result.source == CANMessage.Addr.Controller.getValue())) {
                         Timber.i("Get version number");
@@ -256,30 +264,30 @@ public class NinebotZAdapter extends BaseAdapter {
                         Timber.i("Get info from BMS1");
                         if (result.parameter == 0x10) {
                             result.parseBmsSn(1);
-                            stateCon = 7;
+                            stateCon = 8;
                         }
                         if (result.parameter == 0x30) {
                             result.parseBmsLife(1);
-                            stateCon = 8;
+                            stateCon = 9;
                         }
                         if (result.parameter == 0x40) {
                             result.parseBmsCells(1);
-                            stateCon = 9;
+                            stateCon = 10;
                         }
 
                     } else if (result.source == CANMessage.Addr.BMS2.getValue()) {
                         Timber.i("Get info from BMS2");
                         if (result.parameter == 0x10) {
                             result.parseBmsSn(2);
-                            stateCon = 10;
+                            stateCon = 11;
                         }
                         if (result.parameter == 0x30) {
                             result.parseBmsLife(2);
-                            stateCon = 11;
+                            stateCon = 12;
                         }
                         if (result.parameter == 0x40) {
                             result.parseBmsCells(2);
-                            stateCon = 12;
+                            stateCon = 13;
                         }
                     }
                 }
@@ -476,7 +484,7 @@ public class NinebotZAdapter extends BaseAdapter {
         if (speakerVolume != value) {
             settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
             settingRequestReady = true;
-            settingCommand = NinebotZAdapter.CANMessage.setSpeakerVolume(value).writeBuffer();
+            settingCommand = NinebotZAdapter.CANMessage.setSpeakerVolume(value*10).writeBuffer();
             settingCommandReady = true;
         }
     }
@@ -549,7 +557,6 @@ public class NinebotZAdapter extends BaseAdapter {
             LimitModeSpeed1Km(0x73), // not sure (?)
             LimitModeSpeed(0x74),
             Calibration(0x75),
-            SpeakerVolume(0xFF), // FixMe
             Alarms(0x7c),
             Alarm1Speed(0x7d),
             Alarm2Speed(0x7e),
@@ -561,8 +568,8 @@ public class NinebotZAdapter extends BaseAdapter {
             LedColor3(0xcc),
             LedColor4(0xce),
             PedalSensivity(0xd2),
-            DriveFlags(0xd3); // 1bit - Light(DRL?), 2bit - Taillight, 3bit- Light(???), 4bit - StrainGuage, 5bit - BrakeAssist, ,
-
+            DriveFlags(0xd3), // 1bit - Light(DRL?), 2bit - Taillight, 3bit- Light(???), 4bit - StrainGuage, 5bit - BrakeAssist, ,
+            SpeakerVolume(0xf5);
             private final int value;
 
             Param(int value) {
@@ -767,6 +774,18 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.command = Comm.Read.getValue();
             msg.parameter = Param.LedMode.getValue();
             msg.data = new byte[]{0x1c};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage getParams3() {
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Read.getValue();
+            msg.parameter = Param.SpeakerVolume.getValue();
+            msg.data = new byte[]{0x02};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -1094,7 +1113,6 @@ public class NinebotZAdapter extends BaseAdapter {
         }
 
         void parseParams2() {
-            WheelData wd = WheelData.getInstance();
             getInstance().ledMode = MathsUtil.shortFromBytesLE(data, 0);
             getInstance().ledColor1 = (MathsUtil.intFromBytesLE(data, 4) >> 16) & 0xFF;
             getInstance().ledColor2 = (MathsUtil.intFromBytesLE(data, 8) >> 16) & 0xFF;
@@ -1109,8 +1127,11 @@ public class NinebotZAdapter extends BaseAdapter {
             WheelLog.AppConfig.setDrlEnabled((getInstance().driveFlags & 0x0001) == 1);
             WheelLog.AppConfig.setHandleButtonDisabled(((getInstance().driveFlags >> 3) & 0x0001) == 0);
             WheelLog.AppConfig.setBrakeAssistantEnabled(((getInstance().driveFlags >> 4) & 0x0001) == 1);
-            Timber.i("Param2: %s",StringUtil.toHexStringRaw(data));
-            Timber.i("Led colors %04X, %04X, %04X, %04X", getInstance().ledColor1,getInstance().ledColor2,getInstance().ledColor3,getInstance().ledColor4);
+        }
+
+        void parseParams3() {
+            getInstance().speakerVolume = MathsUtil.shortFromBytesLE(data, 0)/10;
+            WheelLog.AppConfig.setSpeakerVolume(getInstance().speakerVolume);
         }
 
         void parseVersionNumber() {
