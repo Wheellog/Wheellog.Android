@@ -170,7 +170,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.nb_led_color1_title)
             summary = getString(R.string.nb_led_color_description)
             min = 0
-            max = 255
+            max = 256
             unit = ""
             increment = 1
             isVisible = when (WheelLog.AppConfig.ledMode) {
@@ -190,7 +190,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.nb_led_color2_title)
             summary = getString(R.string.nb_led_color_description)
             min = 0
-            max = 255
+            max = 256
             unit = ""
             increment = 1
             isVisible = when (WheelLog.AppConfig.ledMode) {
@@ -207,7 +207,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.nb_led_color3_title)
             summary = getString(R.string.nb_led_color_description)
             min = 0
-            max = 255
+            max = 256
             unit = ""
             increment = 1
             isVisible = when (WheelLog.AppConfig.ledMode) {
@@ -223,7 +223,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.nb_led_color4_title)
             summary = getString(R.string.nb_led_color_description)
             min = 0
-            max = 255
+            max = 256
             unit = ""
             increment = 1
             isVisible = when (WheelLog.AppConfig.ledMode) {

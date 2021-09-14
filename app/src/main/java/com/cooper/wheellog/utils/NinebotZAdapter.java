@@ -898,7 +898,11 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.LedColor1.getValue();
-            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            if (value < 256) {
+                msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            } else {
+                msg.data = new byte[]{(byte) (0x00), (byte) (0x00), 0x00, 0x00};
+            }
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -910,7 +914,11 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.LedColor2.getValue();
-            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            if (value < 256) {
+                msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            } else {
+                msg.data = new byte[]{(byte) (0x00), (byte) (0x00), 0x00, 0x00};
+            }
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -922,7 +930,11 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.LedColor3.getValue();
-            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            if (value < 256) {
+                msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            } else {
+                msg.data = new byte[]{(byte) (0x00), (byte) (0x00), 0x00, 0x00};
+            }
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -934,7 +946,11 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.LedColor4.getValue();
-            msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            if (value < 256) {
+                msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
+            } else {
+                msg.data = new byte[]{(byte) (0x00), (byte) (0x00), 0x00, 0x00};
+            }
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
