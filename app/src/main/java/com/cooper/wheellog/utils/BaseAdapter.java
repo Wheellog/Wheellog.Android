@@ -33,16 +33,7 @@ public abstract class BaseAdapter {
     public void setBrakeAssist(boolean on) {
     }
 
-    public void setLedColor1(int value) {
-    }
-
-    public void setLedColor2(int value) {
-    }
-
-    public void setLedColor3(int value) {
-    }
-
-    public void setLedColor4(int value) {
+    public void setLedColor(int value, int ledNum) {
     }
 
     public void setAlarm1Enabled(boolean on) {

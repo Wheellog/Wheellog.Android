@@ -239,8 +239,8 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.speaker_volume_title)
             summary = getString(R.string.speaker_volume_description)
             min = 0
-            max = 100
-            unit = "%"
+            max = 127
+            unit = ""
             increment = 1
             setDefaultValue(NinebotZAdapter.getInstance().speakerVolume)
             ps.addPreference(this)

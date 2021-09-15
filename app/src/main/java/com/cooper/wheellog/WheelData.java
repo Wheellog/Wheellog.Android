@@ -413,27 +413,9 @@ public class WheelData {
         }
     }
 
-    public void setLedColor1(int value) {
+    public void setLedColor(int value, int ledNum) {
         if (getAdapter() != null) {
-            getAdapter().setLedColor1(value);
-        }
-    }
-
-    public void setLedColor2(int value) {
-        if (getAdapter() != null) {
-            getAdapter().setLedColor2(value);
-        }
-    }
-
-    public void setLedColor3(int value) {
-        if (getAdapter() != null) {
-            getAdapter().setLedColor3(value);
-        }
-    }
-
-    public void setLedColor4(int value) {
-        if (getAdapter() != null) {
-            getAdapter().setLedColor4(value);
+            getAdapter().setLedColor(value, ledNum);
         }
     }
 
