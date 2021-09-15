@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -208,6 +209,21 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
+    public String getLedModeString() {
+        switch (WheelLog.AppConfig.getLedMode()) {
+            case "0": return mContext.getString(R.string.off);
+            case "1": return mContext.getString(R.string.led_type1);
+            case "2": return mContext.getString(R.string.led_type2);
+            case "3": return mContext.getString(R.string.led_type3);
+            case "4": return mContext.getString(R.string.led_type4);
+            case "5": return mContext.getString(R.string.led_type5);
+            case "6": return mContext.getString(R.string.led_type6);
+            case "7": return mContext.getString(R.string.led_type7);
+            default: return mContext.getString(R.string.led_mode_nb_description);
+        }
+    }
+
+    @Override
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_z decoding");
         WheelData wd = WheelData.getInstance();
@@ -357,9 +373,10 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
-    public void setAlarm1Enabled(final boolean value) {
-        // ToDo check if it is the same as old value
-        alarms = (alarms & 0xFFFE) | (value ? 1 : 0); // need to have alarms before
+    public void setAlarmEnabled(final boolean value, final int num) {
+        if (num == 1) alarms = (alarms & 0xFFFE) | (value ? 1 : 0);
+        else if (num == 2) alarms = (alarms & 0xFFFD) | ((value ? 1 : 0) << 1);
+        else alarms = (alarms & 0xFFFB) | ((value ? 1 : 0) << 2);
         settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
         settingRequestReady = true;
         settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
@@ -367,51 +384,11 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
-    public void setAlarm2Enabled(final boolean value) {
-        // ToDo check if it is the same as old value
-        alarms = (alarms & 0xFFFD) | ((value ? 1 : 0) << 1); // need to have alarms before
-        settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
-        settingRequestReady = true;
-        settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
-        settingCommandReady = true;
-    }
-
-    @Override
-    public void setAlarm3Enabled(final boolean value) {
-        // ToDo check if it is the same as old value
-        alarms = (alarms & 0xFFFB) | ((value ? 1 : 0) << 2); // need to have alarms before
-        settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
-        settingRequestReady = true;
-        settingCommand = NinebotZAdapter.CANMessage.setAlarms(alarms).writeBuffer();
-        settingCommandReady = true;
-    }
-
-    @Override
-    public void setAlarm1Speed(final int value) {
+    public void setAlarmSpeed(final int value, final int num) {
         if (alarm1Speed != value) {
             settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
             settingRequestReady = true;
-            settingCommand = NinebotZAdapter.CANMessage.setAlarm1Speed(value).writeBuffer();
-            settingCommandReady = true;
-        }
-    }
-
-    @Override
-    public void setAlarm2Speed(final int value) {
-        if (alarm2Speed != value) {
-            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
-            settingRequestReady = true;
-            settingCommand = NinebotZAdapter.CANMessage.setAlarm2Speed(value).writeBuffer();
-            settingCommandReady = true;
-        }
-    }
-
-    @Override
-    public void setAlarm3Speed(final int value) {
-        if (alarm3Speed != value) {
-            settingRequest = NinebotZAdapter.CANMessage.getParams1().writeBuffer();
-            settingRequestReady = true;
-            settingCommand = NinebotZAdapter.CANMessage.setAlarm3Speed(value).writeBuffer();
+            settingCommand = NinebotZAdapter.CANMessage.setAlarmSpeed(value, num).writeBuffer();
             settingCommandReady = true;
         }
     }
@@ -874,7 +851,7 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
-            msg.parameter = Param.LedColor1.getValue() + ledNum * 2;
+            msg.parameter = Param.LedColor1.getValue() + (ledNum-1) * 2;
             if (value < 256) {
                 msg.data = new byte[]{(byte)(0xF0), (byte)(value & 0xFF), 0x00, 0x00};
             } else {
@@ -892,6 +869,19 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.command = Comm.Write.getValue();
             msg.parameter = Param.Alarms.getValue();
             msg.data = new byte[]{(byte)(value & 0xFF), (byte)((value >> 8)  & 0xFF)};
+            msg.len = msg.data.length;
+            msg.crc = 0;
+            return msg;
+        }
+
+        public static CANMessage setAlarmSpeed(int value, int alarmNum) {
+            int speed = value * 100;
+            CANMessage msg = new CANMessage();
+            msg.source = Addr.App.getValue();
+            msg.destination = Addr.Controller.getValue();
+            msg.command = Comm.Write.getValue();
+            msg.parameter = Param.Alarm1Speed.getValue() + (alarmNum-1);
+            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;

@@ -148,17 +148,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         ListPreference(context).apply {
             key = mac + getString(R.string.led_mode)
             title = getString(R.string.led_mode_title)
-            summary = when (WheelLog.AppConfig.ledMode) {
-                "0" -> getString(R.string.off)
-                "1" -> getString(R.string.led_type1)
-                "2" -> getString(R.string.led_type2)
-                "3" -> getString(R.string.led_type3)
-                "4" -> getString(R.string.led_type4)
-                "5" -> getString(R.string.led_type5)
-                "6" -> getString(R.string.led_type6)
-                "7" -> getString(R.string.led_type7)
-                else -> getString(R.string.led_mode_nb_description)
-            }
+            summary = WheelData.getInstance().adapter?.getLedModeString()
             setEntries(R.array.led_mode_nb)
             setEntryValues(R.array.led_mode_nb_values)
             setDefaultValue(NinebotZAdapter.getInstance().ledMode)

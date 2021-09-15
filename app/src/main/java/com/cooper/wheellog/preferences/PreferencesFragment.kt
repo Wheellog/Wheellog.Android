@@ -252,18 +252,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.led_mode -> {
                 wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
                 if (wd.wheelType == WHEEL_TYPE.NINEBOT_Z) {
-                    findPreference<ListPreference>(wd.mac + "_" + getString(R.string.led_mode))?.summary =
-                            when (WheelLog.AppConfig.ledMode) {
-                                "0" -> getString(R.string.off)
-                                "1" -> getString(R.string.led_type1)
-                                "2" -> getString(R.string.led_type2)
-                                "3" -> getString(R.string.led_type3)
-                                "4" -> getString(R.string.led_type4)
-                                "5" -> getString(R.string.led_type5)
-                                "6" -> getString(R.string.led_type6)
-                                "7" -> getString(R.string.led_type7)
-                                else -> getString(R.string.led_mode_nb_description)
-                            }
+                    findPreference<ListPreference>(wd.mac + "_" + getString(R.string.led_mode))?.summary = wd.adapter?.getLedModeString()
                     findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color1))?.isVisible =
                         when (WheelLog.AppConfig.ledMode) {
                             "1" -> true
@@ -299,20 +288,20 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_ks_alarm2 -> KingsongAdapter.getInstance().updateKSAlarm2(WheelLog.AppConfig.wheelKsAlarm2)
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.wheel_alarm1_enabled -> {
-                wd.updateAlarm1Enabled(WheelLog.AppConfig.wheelAlarm1Enabled)
+                wd.updateAlarmEnabled(WheelLog.AppConfig.wheelAlarm1Enabled, 1)
                 findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm1))?.isVisible = WheelLog.AppConfig.wheelAlarm1Enabled
             }
             R.string.wheel_alarm2_enabled -> {
-                wd.updateAlarm2Enabled(WheelLog.AppConfig.wheelAlarm2Enabled)
+                wd.updateAlarmEnabled(WheelLog.AppConfig.wheelAlarm2Enabled, 2)
                 findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm2))?.isVisible = WheelLog.AppConfig.wheelAlarm2Enabled
             }
             R.string.wheel_alarm3_enabled -> {
-                wd.updateAlarm3Enabled(WheelLog.AppConfig.wheelAlarm3Enabled)
+                wd.updateAlarmEnabled(WheelLog.AppConfig.wheelAlarm3Enabled, 3)
                 findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm3))?.isVisible = WheelLog.AppConfig.wheelAlarm3Enabled
             }
-            R.string.wheel_alarm1 -> wd.updateAlarm1Speed(WheelLog.AppConfig.wheelAlarm1Speed)
-            R.string.wheel_alarm2 -> wd.updateAlarm2Speed(WheelLog.AppConfig.wheelAlarm2Speed)
-            R.string.wheel_alarm3 -> wd.updateAlarm3Speed(WheelLog.AppConfig.wheelAlarm3Speed)
+            R.string.wheel_alarm1 -> wd.updateAlarmSpeed(WheelLog.AppConfig.wheelAlarm1Speed, 1)
+            R.string.wheel_alarm2 -> wd.updateAlarmSpeed(WheelLog.AppConfig.wheelAlarm2Speed, 2)
+            R.string.wheel_alarm3 -> wd.updateAlarmSpeed(WheelLog.AppConfig.wheelAlarm3Speed, 3)
             R.string.wheel_limited_mode_enabled -> {
                 wd.updateLimitedModeEnabled(WheelLog.AppConfig.wheelLimitedModeEnabled)
                 findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_limited_speed))?.isVisible = WheelLog.AppConfig.wheelLimitedModeEnabled

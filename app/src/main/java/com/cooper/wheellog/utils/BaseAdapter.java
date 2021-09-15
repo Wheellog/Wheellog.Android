@@ -36,13 +36,11 @@ public abstract class BaseAdapter {
     public void setLedColor(int value, int ledNum) {
     }
 
-    public void setAlarm1Enabled(boolean on) {
+    public void setAlarmEnabled(boolean on, int num) {
     }
 
-    public void setAlarm2Enabled(boolean on) {
-    }
-
-    public void setAlarm3Enabled(boolean on) {
+    public String getLedModeString() {
+        return "";
     }
 
     public void setLimitedModeEnabled(boolean on) {
@@ -52,13 +50,7 @@ public abstract class BaseAdapter {
     }
 
 
-    public void setAlarm1Speed(int value) {
-    }
-
-    public void setAlarm2Speed(int value) {
-    }
-
-    public void setAlarm3Speed(int value) {
+    public void setAlarmSpeed(int value, int num) {
     }
 
     public void setRideMode(boolean on) {

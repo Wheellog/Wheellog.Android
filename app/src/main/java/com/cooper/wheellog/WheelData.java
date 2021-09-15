@@ -419,39 +419,15 @@ public class WheelData {
         }
     }
 
-    public void updateAlarm1Enabled(boolean value) {
+    public void updateAlarmEnabled(boolean value, int num) {
         if (getAdapter() != null) {
-            getAdapter().setAlarm1Enabled(value);
+            getAdapter().setAlarmEnabled(value, num);
         }
     }
 
-    public void updateAlarm2Enabled(boolean value) {
+    public void updateAlarmSpeed(int value, int num) {
         if (getAdapter() != null) {
-            getAdapter().setAlarm2Enabled(value);
-        }
-    }
-
-    public void updateAlarm3Enabled(boolean value) {
-        if (getAdapter() != null) {
-            getAdapter().setAlarm3Enabled(value);
-        }
-    }
-
-    public void updateAlarm1Speed(int value) {
-        if (getAdapter() != null) {
-            getAdapter().setAlarm1Speed(value);
-        }
-    }
-
-    public void updateAlarm2Speed(int value) {
-        if (getAdapter() != null) {
-            getAdapter().setAlarm2Speed(value);
-        }
-    }
-
-    public void updateAlarm3Speed(int value) {
-        if (getAdapter() != null) {
-            getAdapter().setAlarm3Speed(value);
+            getAdapter().setAlarmSpeed(value, num);
         }
     }
 
