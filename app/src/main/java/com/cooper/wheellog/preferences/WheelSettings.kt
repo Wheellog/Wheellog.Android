@@ -163,7 +163,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(1)
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(1)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor1)
             ps.addPreference(this)
         }
@@ -176,7 +176,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(2)
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(2)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor2)
             ps.addPreference(this)
         }
@@ -189,7 +189,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(3)
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(3)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor3)
             ps.addPreference(this)
         }
@@ -202,7 +202,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(4)
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(4)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor4)
             ps.addPreference(this)
         }
