@@ -504,7 +504,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Timber.i("Parse realtime stats data");
             WheelData wd = WheelData.getInstance();
             int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
-            //int mVoltage2 = MathsUtil.getInt2R(data, 0); looks ok
             int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
             int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
             int mTorque = MathsUtil.signedShortFromBytesLE(data, 6);

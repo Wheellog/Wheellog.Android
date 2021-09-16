@@ -135,5 +135,53 @@ class InmotionAdapterV2Test {
         assertThat(data.roll).isEqualTo(1.24)
     }
 
+    @Test
+    fun `decode with v12 full data`() {
+        // Arrange.
+        val byteArray1 = "aaaa110882010207010103009c".hexToByteArray() // wheel type
+        val byteArray2 = "aaaa11178202413033313135353133303030393733300000000000fb".hexToByteArray() // s/n
+        val byteArray3 = "aaaa111d820622700002042000060221180004017d000602232400010203000402bc".hexToByteArray() //versions
+        val byteArray5 = "aaaa142b900001082608000000c1b55622330000000000cdceb0ce0000000000000000000000000000000008000000ce".hexToByteArray() // probably statistics
+        val byteArray6 = "aaaa1419916350000074471800d1140400c68e00007d350200b0ce000039".hexToByteArray() // totals
+        val byteArray7 = "aaaa144384cd26090000000e00040000000000000000000000eafb000062009d2450463b1b581b000000000000cdce00ced1d0b03d2828000000004900000000000000000000008c".hexToByteArray()
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isTrue()
+        assertThat(data.serial).isEqualTo("1480CA122207002B")
+        assertThat(data.model).isEqualTo("Inmotion V11")
+        assertThat(data.version).isEqualTo("rev: 2.1")
+
+
+        assertThat(data.speedDouble).isEqualTo(24.01)
+        assertThat(data.temperature).isEqualTo(27)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(-176)
+        assertThat(data.cpuTemp).isEqualTo(-176)
+        assertThat(data.motorPower).isEqualTo(1184.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(44.26)
+        assertThat(data.voltageDouble).isEqualTo(79.10)
+        assertThat(data.currentDouble).isEqualTo(15.15)
+        assertThat(data.wheelDistanceDouble).isEqualTo(4.79)
+        assertThat(data.totalDistance).isEqualTo(278800)
+        assertThat(data.batteryLevel).isEqualTo(88)
+        assertThat(data.powerDouble).isEqualTo(1198.0)
+        assertThat(data.angle).isEqualTo(3.3)
+        assertThat(data.roll).isEqualTo(-0.44)
+    }
+
 
 }
