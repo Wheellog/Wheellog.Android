@@ -21,9 +21,7 @@ import java.util.*
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
-
 @RunWith(RobolectricTestRunner::class)
-@Config(minSdk = Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BluetoothTest {
     private lateinit var bleService: BluetoothLeService
 
@@ -77,7 +75,7 @@ class BluetoothTest {
         // Assert.
         assertThat(result).isEqualTo(true)
         assertThat(bleService.connectionState).isEqualTo(BluetoothLeService.STATE_CONNECTING)
-        verify (exactly = 1) { bleService.sendBroadcast(any()) }
+        verify(exactly = 1) { bleService.sendBroadcast(any()) }
     }
 
     @Test
@@ -94,7 +92,7 @@ class BluetoothTest {
 
         // Assert.
         assertThat(bleService.connectionState).isEqualTo(BluetoothLeService.STATE_CONNECTING)
-        verify (exactly = 1) { bleService.sendBroadcast(any()) }
+        verify(exactly = 1) { bleService.sendBroadcast(any()) }
     }
 
     private fun <T> getPrivateField(name: String): T {
