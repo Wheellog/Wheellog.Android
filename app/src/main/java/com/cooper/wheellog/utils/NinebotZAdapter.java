@@ -892,7 +892,11 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Write.getValue();
-            msg.parameter = Param.Alarm1Speed.getValue() + (alarmNum-1);
+            switch (alarmNum) {
+                case 1: msg.parameter = Param.Alarm1Speed.getValue();
+                case 2: msg.parameter = Param.Alarm2Speed.getValue();
+                case 3: msg.parameter = Param.Alarm3Speed.getValue();
+            }
             msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
             msg.len = msg.data.length;
             msg.crc = 0;
