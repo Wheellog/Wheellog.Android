@@ -304,7 +304,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_alarm3 -> wd.updateAlarmSpeed(WheelLog.AppConfig.wheelAlarm3Speed, 3)
             R.string.wheel_limited_mode_enabled -> {
                 wd.updateLimitedModeEnabled(WheelLog.AppConfig.wheelLimitedModeEnabled)
-                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_limited_speed))?.isVisible = WheelLog.AppConfig.wheelLimitedModeEnabled
+                findPreference<Preference>(wd.mac + "_" + getString(R.string.wheel_limited_speed))?.isVisible = WheelLog.AppConfig.wheelLimitedModeEnabled
             }
             R.string.wheel_limited_speed -> wd.updateLimitedSpeed(WheelLog.AppConfig.wheelLimitedModeSpeed)
             R.string.ks18l_scaler -> KingsongAdapter.getInstance().set18Lkm(WheelLog.AppConfig.ks18LScaler)
