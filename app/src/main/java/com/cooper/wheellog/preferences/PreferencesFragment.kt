@@ -297,7 +297,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             R.string.wheel_alarm3_enabled -> {
                 wd.updateAlarmEnabled(WheelLog.AppConfig.wheelAlarm3Enabled, 3)
-                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm3))?.isVisible = WheelLog.AppConfig.wheelAlarm3Enabled
+                findPreference<Preference>(wd.mac + "_" + getString(R.string.wheel_alarm3))?.isVisible = WheelLog.AppConfig.wheelAlarm3Enabled
             }
             R.string.wheel_alarm1 -> wd.updateAlarmSpeed(WheelLog.AppConfig.wheelAlarm1Speed, 1)
             R.string.wheel_alarm2 -> wd.updateAlarmSpeed(WheelLog.AppConfig.wheelAlarm2Speed, 2)
