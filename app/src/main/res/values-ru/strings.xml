@@ -413,4 +413,24 @@
     <string name="use_wheel_beep_for_alarm_description">Алармы будут уходить на встроенную пищалку колеса, вместо наушников/колонки</string>
     <string name="miband_fixrs_title">Mi Band фикс отображения Begode RS/EX</string>
     <string name="miband_fixrs_description">Использовать если не работает отображение на Mi Band</string>
+    <string name="disable_handle_button_nb_description">Колесо не будет отключаться при поднятии за ручку</string>
+    <string name="brake_assistant_description">Колесо будет наклоняться назад на 3 градуса при торможении</string>
+    <string name="brake_assistant_title">Помощь при торможении</string>
+    <string name="nb_led_color_description">Выберите цвет светодиодов</string>
+    <string name="nb_led_color1_title">Цвет 1</string>
+    <string name="nb_led_color2_title">Цвет 2</string>
+    <string name="nb_led_color3_title">Цвет 3</string>
+    <string name="nb_led_color4_title">Цвет 4</string>
+    <string name="wheel_alarm1_description">Скорость первого оповещения</string>
+    <string name="wheel_alarm1_enabled_description">Включить первое оповещение</string>
+    <string name="wheel_alarm1_enabled_title">Первое оповещение</string>
+    <string name="wheel_alarm1_title">Первое оповещение</string>
+    <string name="wheel_alarm2_description">Скорость второго оповещения</string>
+    <string name="wheel_alarm2_enabled_description">Включить второе оповещение</string>
+    <string name="wheel_alarm2_enabled_title">Второе оповещение</string>
+    <string name="wheel_alarm2_title">Второе оповещение</string>
+    <string name="wheel_alarm3_description">Скорость третьего предупреждения</string>
+    <string name="wheel_alarm3_enabled_description">Включить третье предупреждение</string>
+    <string name="wheel_alarm3_enabled_title">Третье предупреждение</string>
+    <string name="wheel_alarm3_title">Третье предупреждение</string>
 </resources>
