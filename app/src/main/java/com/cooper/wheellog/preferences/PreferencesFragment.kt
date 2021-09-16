@@ -251,33 +251,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.strobe_mode -> wd.updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
             R.string.led_mode -> {
                 wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
-                if (wd.wheelType == WHEEL_TYPE.NINEBOT_Z) {
+                if (wd.wheelType == WHEEL_TYPE.NINEBOT_Z) { // to avoid issues with KS
                     findPreference<Preference>(wd.mac + "_" + getString(R.string.led_mode))?.summary = wd.adapter?.getLedModeString()
-                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color1))?.isVisible =
-                        when (WheelLog.AppConfig.ledMode) {
-                            "1" -> true
-                            "2" -> true
-                            "3" -> true
-                            "4" -> true
-                            "5" -> true
-                            else -> false
-                        }
-                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color2))?.isVisible =
-                        when (WheelLog.AppConfig.ledMode) {
-                            "2" -> true
-                            "3" -> true
-                            else -> false
-                        }
-                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color3))?.isVisible =
-                        when (WheelLog.AppConfig.ledMode) {
-                            "3" -> true
-                            else -> false
-                        }
-                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color4))?.isVisible =
-                        when (WheelLog.AppConfig.ledMode) {
-                            "3" -> true
-                            else -> false
-                        }
+                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color1))?.isVisible = wd.adapter?.getLedIsAvailable(1)
+                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color2))?.isVisible = wd.adapter?.getLedIsAvailable(2)
+                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color3))?.isVisible = wd.adapter?.getLedIsAvailable(3)
+                    findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color4))?.isVisible = wd.adapter?.getLedIsAvailable(4)
+
                 }
             }
             R.string.nb_led_color1 -> wd.setLedColor(WheelLog.AppConfig.ledColor1, 1)

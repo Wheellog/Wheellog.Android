@@ -163,14 +163,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = when (WheelLog.AppConfig.ledMode) {
-                "1" -> true
-                "2" -> true
-                "3" -> true
-                "4" -> true
-                "5" -> true
-                else -> false
-            }
+            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(1)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor1)
             ps.addPreference(this)
         }
@@ -183,11 +176,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = when (WheelLog.AppConfig.ledMode) {
-                "2" -> true
-                "3" -> true
-                else -> false
-            }
+            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(2)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor2)
             ps.addPreference(this)
         }
@@ -200,10 +189,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = when (WheelLog.AppConfig.ledMode) {
-                "3" -> true
-                else -> false
-            }
+            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(3)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor3)
             ps.addPreference(this)
         }
@@ -216,10 +202,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             max = 256
             unit = ""
             increment = 1
-            isVisible = when (WheelLog.AppConfig.ledMode) {
-                "3" -> true
-                else -> false
-            }
+            isVisible = WheelData.getInstance().adapter?.getLedIsAvailable(4)
             setDefaultValue(NinebotZAdapter.getInstance().ledColor4)
             ps.addPreference(this)
         }

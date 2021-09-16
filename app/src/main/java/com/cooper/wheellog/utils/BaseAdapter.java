@@ -43,6 +43,10 @@ public abstract class BaseAdapter {
         return "";
     }
 
+    public Boolean getLedIsAvailable(int ledNum) {
+        return false;
+    }
+
     public void setLimitedModeEnabled(boolean on) {
     }
 

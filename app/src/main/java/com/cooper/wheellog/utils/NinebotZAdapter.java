@@ -224,6 +224,22 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
+    public Boolean getLedIsAvailable(int ledNum) {
+        switch (WheelLog.AppConfig.getLedMode()) {
+            case "1":
+            case "4":
+            case "5":
+                return ledNum == 1;
+            case "2":
+                return ledNum < 3;
+            case "3":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_z decoding");
         WheelData wd = WheelData.getInstance();
