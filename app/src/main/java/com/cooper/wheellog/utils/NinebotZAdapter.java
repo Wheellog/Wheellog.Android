@@ -746,10 +746,7 @@ public class NinebotZAdapter extends BaseAdapter {
         }
 
         public static CANMessage setLimitedMode(Boolean on) {
-            byte value = 0;
-            if (on) {
-                value = 1;
-            }
+            byte value = on ? (byte) 1 : 0;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
@@ -760,7 +757,6 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.crc = 0;
             return msg;
         }
-
 
         public static CANMessage getBms1Sn() {
             CANMessage msg = new CANMessage();
@@ -887,47 +883,6 @@ public class NinebotZAdapter extends BaseAdapter {
             return msg;
         }
 
-        public static CANMessage setAlarm1Speed(int value) {
-            int speed = value * 100;
-            CANMessage msg = new CANMessage();
-            msg.source = Addr.App.getValue();
-            msg.destination = Addr.Controller.getValue();
-            msg.command = Comm.Write.getValue();
-            msg.parameter = Param.Alarm1Speed.getValue();
-            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
-            msg.len = msg.data.length;
-            msg.crc = 0;
-            return msg;
-        }
-
-
-        public static CANMessage setAlarm2Speed(int value) {
-            int speed = value * 100;
-            CANMessage msg = new CANMessage();
-            msg.source = Addr.App.getValue();
-            msg.destination = Addr.Controller.getValue();
-            msg.command = Comm.Write.getValue();
-            msg.parameter = Param.Alarm2Speed.getValue();
-            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
-            msg.len = msg.data.length;
-            msg.crc = 0;
-            return msg;
-        }
-
-
-        public static CANMessage setAlarm3Speed(int value) {
-            int speed = value * 100;
-            CANMessage msg = new CANMessage();
-            msg.source = Addr.App.getValue();
-            msg.destination = Addr.Controller.getValue();
-            msg.command = Comm.Write.getValue();
-            msg.parameter = Param.Alarm3Speed.getValue();
-            msg.data = new byte[]{(byte)(speed & 0xFF), (byte)((speed >> 8)  & 0xFF)};
-            msg.len = msg.data.length;
-            msg.crc = 0;
-            return msg;
-        }
-
         public static CANMessage setLimitedSpeed(int value) {
             int speed = value * 100;
             CANMessage msg = new CANMessage();
@@ -978,10 +933,7 @@ public class NinebotZAdapter extends BaseAdapter {
         }
 
         public static CANMessage setLockMode(Boolean on) {
-            byte value = 0;
-            if (on) {
-                value = 1;
-            }
+            byte value = on ? (byte) 1 : 0;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
@@ -994,10 +946,7 @@ public class NinebotZAdapter extends BaseAdapter {
         }
 
         public static CANMessage runCalibration(Boolean on) {
-            byte value = 0;
-            if (on) {
-                value = 1;
-            }
+            byte value = on ? (byte) 1 : 0;
             CANMessage msg = new CANMessage();
             msg.source = Addr.App.getValue();
             msg.destination = Addr.Controller.getValue();
@@ -1027,7 +976,6 @@ public class NinebotZAdapter extends BaseAdapter {
         }
 
         void parseParams1() {
-            WheelData wd = WheelData.getInstance();
             getInstance().lockMode = MathsUtil.shortFromBytesLE(data, 0);
             getInstance().limitedMode = MathsUtil.shortFromBytesLE(data, 4);
             getInstance().limitModeSpeed1Km = MathsUtil.shortFromBytesLE(data, 6)/100;
