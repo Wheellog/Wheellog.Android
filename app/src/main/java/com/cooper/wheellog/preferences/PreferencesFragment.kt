@@ -252,7 +252,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.led_mode -> {
                 wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
                 if (wd.wheelType == WHEEL_TYPE.NINEBOT_Z) {
-                    findPreference<ListPreference>(wd.mac + "_" + getString(R.string.led_mode))?.summary = wd.adapter?.getLedModeString()
+                    findPreference<Preference>(wd.mac + "_" + getString(R.string.led_mode))?.summary = wd.adapter?.getLedModeString()
                     findPreference<Preference>(wd.mac + "_" + getString(R.string.nb_led_color1))?.isVisible =
                         when (WheelLog.AppConfig.ledMode) {
                             "1" -> true
