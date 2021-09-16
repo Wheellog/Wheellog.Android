@@ -289,7 +289,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.wheel_ks_alarm1 -> KingsongAdapter.getInstance().updateKSAlarm1(WheelLog.AppConfig.wheelKsAlarm1)
             R.string.wheel_alarm1_enabled -> {
                 wd.updateAlarmEnabled(WheelLog.AppConfig.wheelAlarm1Enabled, 1)
-                findPreference<SeekBarPreference>(wd.mac+"_"+ getString(R.string.wheel_alarm1))?.isVisible = WheelLog.AppConfig.wheelAlarm1Enabled
+                findPreference<Preference>(wd.mac + "_" + getString(R.string.wheel_alarm1))?.isVisible = WheelLog.AppConfig.wheelAlarm1Enabled
             }
             R.string.wheel_alarm2_enabled -> {
                 wd.updateAlarmEnabled(WheelLog.AppConfig.wheelAlarm2Enabled, 2)
