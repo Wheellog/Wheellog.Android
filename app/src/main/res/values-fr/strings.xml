@@ -186,7 +186,6 @@
 	<string name="speaker_volume_description">Changer le volume par défaut des haut-parleurs</string>
 	<string name="pedal_horizont_title">Pédales</string>
 	<string name="pedal_horizont_description">Réglage horizontal des pédales</string>
-	<string name="ninebotz_settings_title">Les paramètres de la roue pour la Ninebot Z ne sont pas encore disponibles</string>
-	<string name="volt">V</string>
+    <string name="volt">V</string>
 	<string name="watt">W</string>
 </resources>

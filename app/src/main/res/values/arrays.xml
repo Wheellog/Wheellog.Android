@@ -74,7 +74,29 @@
         <item>@string/off</item>
         <item>@string/on</item>
     </string-array>
-	
+
+    <string-array name="led_mode_nb">
+        <item>@string/off</item>
+        <item>@string/led_type1</item>
+        <item>@string/led_type2</item>
+        <item>@string/led_type3</item>
+        <item>@string/led_type4</item>
+        <item>@string/led_type5</item>
+        <item>@string/led_type6</item>
+        <item>@string/led_type7</item>
+    </string-array>
+
+    <string-array name="led_mode_nb_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
 	<string-array name="led_mode_values">
         <item>1</item>
         <item>0</item>        

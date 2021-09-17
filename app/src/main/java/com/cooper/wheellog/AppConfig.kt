@@ -338,6 +338,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.drl_enabled, false)
         set(value) = setSpecific(R.string.drl_enabled, value)
 
+    var taillightEnabled: Boolean
+        get() = getSpecific(R.string.taillight_enabled, false)
+        set(value) = setSpecific(R.string.taillight_enabled, value)
+
     var handleButtonDisabled: Boolean
         get() = getSpecific(R.string.handle_button_disabled, false)
         set(value) = setSpecific(R.string.handle_button_disabled, value)
@@ -391,7 +395,62 @@ class AppConfig(var context: Context) {
         set(value) = setSpecific(R.string.light_brightness, value)
 
     //endregion
-    
+
+    //region ninebotZ
+    var wheelAlarm1Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm1_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm1_enabled, value)
+
+    var wheelAlarm2Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm2_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm2_enabled, value)
+
+    var wheelAlarm3Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm3_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm3_enabled, value)
+
+    var wheelAlarm1Speed: Int
+        get() = getSpecific(R.string.wheel_alarm1, 0)
+        set(value) = setSpecific(R.string.wheel_alarm1, value)
+
+    var wheelAlarm2Speed: Int
+        get() = getSpecific(R.string.wheel_alarm2, 0)
+        set(value) = setSpecific(R.string.wheel_alarm2, value)
+
+    var wheelAlarm3Speed: Int
+        get() = getSpecific(R.string.wheel_alarm3, 0)
+        set(value) = setSpecific(R.string.wheel_alarm3, value)
+
+    var wheelLimitedModeEnabled: Boolean
+        get() = getSpecific(R.string.wheel_limited_mode_enabled, false)
+        set(value) = setSpecific(R.string.wheel_limited_mode_enabled, value)
+
+    var wheelLimitedModeSpeed: Int
+        get() = getSpecific(R.string.wheel_limited_speed, 10)
+        set(value) = setSpecific(R.string.wheel_limited_speed, value)
+
+    var ledColor1: Int
+        get() = getSpecific(R.string.nb_led_color1, 0)
+        set(value) = setSpecific(R.string.nb_led_color1, value)
+
+    var ledColor2: Int
+        get() = getSpecific(R.string.nb_led_color2, 0)
+        set(value) = setSpecific(R.string.nb_led_color2, value)
+
+    var ledColor3: Int
+        get() = getSpecific(R.string.nb_led_color3, 0)
+        set(value) = setSpecific(R.string.nb_led_color3, value)
+
+    var ledColor4: Int
+        get() = getSpecific(R.string.nb_led_color4, 0)
+        set(value) = setSpecific(R.string.nb_led_color4, value)
+
+    var brakeAssistantEnabled: Boolean
+        get() = getSpecific(R.string.brake_assistant_enabled, false)
+        set(value) = setSpecific(R.string.brake_assistant_enabled, value)
+
+    //end region
+
     //region kingsong
     var lightMode: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.light_mode, "0")

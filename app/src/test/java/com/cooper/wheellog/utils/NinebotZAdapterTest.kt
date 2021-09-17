@@ -73,6 +73,31 @@ class NinebotZAdapterTest {
     }
 
     @Test
+    fun `decode z10 life data`() { // to think about
+        // Arrange.
+        val byteArray1 = "5aa520143e04b000000000489800004e009c0a7a".hexToByteArray()
+        val byteArray2 = "059b97280023016d0472011a1892119c0a7a052a".hexToByteArray()
+        val byteArray3 = "f8".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+        assertThat(data.speedDouble).isEqualTo(27.16)
+        assertThat(data.voltageDouble).isEqualTo(61.7)
+        assertThat(data.currentDouble).isEqualTo(44.98)
+        assertThat(data.temperature).isEqualTo(37)
+        assertThat(data.totalDistance).isEqualTo(2660251)
+        assertThat(data.powerDouble).isEqualTo(2775.26)
+        assertThat(data.batteryLevel).isEqualTo(78)
+    }
+
+    @Test
     fun `decode z10 bms1 sn data`() {
         // Arrange.
         val byteArray1 = "5AA522113E041034395945513138483151303432".hexToByteArray()
@@ -134,7 +159,7 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
-        assertThat(result3).isTrue()
+        assertThat(result3).isFalse()
         assertThat(data.bms1.cells[0]).isEqualTo(4.148)
         assertThat(data.bms1.cells[1]).isEqualTo(4.102)
         assertThat(data.bms1.cells[2]).isEqualTo(4.145)
@@ -217,7 +242,7 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
-        assertThat(result3).isTrue()
+        assertThat(result3).isFalse()
         assertThat(data.bms2.cells[0]).isEqualTo(4.123)
         assertThat(data.bms2.cells[1]).isEqualTo(4.140)
         assertThat(data.bms2.cells[2]).isEqualTo(4.130)

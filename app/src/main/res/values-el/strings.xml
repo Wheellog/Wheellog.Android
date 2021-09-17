@@ -186,7 +186,6 @@
 	<string name="speaker_volume_description">Αλλάξτε την ένταση του ενσωματωμένου ηχείου</string>
 	<string name="pedal_horizont_title">Πεντάλ</string>
 	<string name="pedal_horizont_description">Οριζόντια ρύθμιση πεντάλ</string>
-	<string name="ninebotz_settings_title">Οι ρυθμίσεις ρόδας για το Ninebot Z δεν είναι ακόμα διαθέσιμες</string>
-	<string name="volt">V</string>
+    <string name="volt">V</string>
 	<string name="watt">W</string>
 </resources>

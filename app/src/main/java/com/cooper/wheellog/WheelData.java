@@ -42,11 +42,9 @@ public class WheelData {
     private final ArrayList<String> xAxis = new ArrayList<>();
     private final ArrayList<Float> currentAxis = new ArrayList<>();
     private final ArrayList<Float> speedAxis = new ArrayList<>();
-
     // BMS
     private final NinebotBms mNinebotBms1 = new NinebotBms();
     private final NinebotBms mNinebotBms2 = new NinebotBms();
-
     //all
     private int mSpeed;
     private double mTorque;
@@ -353,6 +351,12 @@ public class WheelData {
         }
     }
 
+    public void updateTailLight(boolean tailLight) {
+        if (getAdapter() != null) {
+            getAdapter().setTailLightState(tailLight);
+        }
+    }
+
     public void wheelBeep() {
         if (getAdapter() != null) {
             getAdapter().wheelBeep();
@@ -400,6 +404,42 @@ public class WheelData {
     public void updateHandleButton(boolean enabledButton) {
         if (getAdapter() != null) {
             getAdapter().setHandleButtonState(enabledButton);
+        }
+    }
+
+    public void updateBrakeAssistant(boolean brakeAssist) {
+        if (getAdapter() != null) {
+            getAdapter().setBrakeAssist(brakeAssist);
+        }
+    }
+
+    public void setLedColor(int value, int ledNum) {
+        if (getAdapter() != null) {
+            getAdapter().setLedColor(value, ledNum);
+        }
+    }
+
+    public void updateAlarmEnabled(boolean value, int num) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarmEnabled(value, num);
+        }
+    }
+
+    public void updateAlarmSpeed(int value, int num) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarmSpeed(value, num);
+        }
+    }
+
+    public void updateLimitedModeEnabled(boolean value) {
+        if (getAdapter() != null) {
+            getAdapter().setLimitedModeEnabled(value);
+        }
+    }
+
+    public void updateLimitedSpeed(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLimitedSpeed(value);
         }
     }
 
