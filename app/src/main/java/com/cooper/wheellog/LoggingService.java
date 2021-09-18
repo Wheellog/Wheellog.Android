@@ -79,6 +79,11 @@ public class LoggingService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        if (WheelData.getInstance() == null) {
+            stopSelf();
+            return START_NOT_STICKY; // kill itself without restart
+        }
+
         instance = this;
         fileUtil = new FileUtil(getApplicationContext());
 
