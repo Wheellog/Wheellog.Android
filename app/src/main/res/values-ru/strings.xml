@@ -35,8 +35,7 @@
     <string name="fan_status">Вентилятор</string>
     <string name="speed">Скорость</string>
     <string name="mode">Режим работы</string>
-    <string name="wheel_type_recognized">Модель колеса определена %1$s</string>
-    <string name="started_logging">Начало записи в %1$s</string>
+    <string name="started_logging">Начало записи</string>
     <string name="scanning">Поиск...</string>
     <string name="back_to_exit">Повторно нажмите назад для выхода</string>
     <string name="kmh">км/ч</string>

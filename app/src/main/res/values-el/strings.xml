@@ -27,8 +27,7 @@
 	<string name="stop_pebble_service">Λήξη Pebble Dash</string>
 	<string name="start_data_service">Εκκίνηση Καταγραφής</string>
 	<string name="stop_data_service">Λήξη Καταγραφής</string>
-	<string name="started_logging">Έναρξη καταγραφής στο %1$s</string>
-	<string name="wheel_type_recognized">Βρέθηκε πρωτόκολλο ρόδας %1$s</string>
+	<string name="started_logging">Έναρξη καταγραφής στο</string>
 	<string name="search_for_wheel">Αναζήτηση για Ρόδα</string>
 	<string name="scanning">Αναζήτηση…</string>
 	<string name="devices">Συσκευές</string>

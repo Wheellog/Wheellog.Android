@@ -27,8 +27,7 @@
 	<string name="stop_pebble_service">Detener servicios pebble.</string>
 	<string name="start_data_service">Iniciar datos</string>
 	<string name="stop_data_service">Detener datos</string>
-	<string name="started_logging">Iniciar registro %1$s</string>
-	<string name="wheel_type_recognized">Detectar %1$s</string>
+	<string name="started_logging">Iniciar registro</string>
 	<string name="search_for_wheel">Buscar </string>
 	<string name="scanning">Buscando…</string>
 	<string name="devices">Equipo</string>
