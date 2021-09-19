@@ -15,10 +15,10 @@ import timber.log.Timber;
 public class NinebotZAdapter extends BaseAdapter {
     private static NinebotZAdapter INSTANCE;
     private Timer keepAliveTimer;
-    private boolean settingCommandReady = false;
+    protected boolean settingCommandReady = false;
     private boolean settingRequestReady = false;
     private static int updateStep = 0;
-    private byte[] settingCommand;
+    protected byte[] settingCommand;
     private byte[] settingRequest;
     private static byte[] gamma = new byte[16];
     private static int stateCon = 0;
