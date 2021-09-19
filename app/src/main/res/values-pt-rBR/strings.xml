@@ -27,8 +27,7 @@
 	<string name="stop_pebble_service">Zatrzymaj Pebble Dash</string>
 	<string name="start_data_service">Rozpocznij rejestrowanie</string>
 	<string name="stop_data_service">Zatrzymaj rejestrowanie</string>
-	<string name="started_logging">Rozpoczęto rejestrowanie do %1$s</string>
-	<string name="wheel_type_recognized">Wykryto protokół monocykla %1$s</string>
+	<string name="started_logging">Rozpoczęto rejestrowanie do</string>
 	<string name="search_for_wheel">Wyszukaj</string>
 	<string name="scanning">Skanowanie…</string>
 	<string name="devices">Urządzenia</string>

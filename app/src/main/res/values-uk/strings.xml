@@ -34,8 +34,7 @@
     <string name="fan_status">Кулер</string>
     <string name="speed">Швидкість</string>
     <string name="mode">Режим роботы</string>
-    <string name="wheel_type_recognized">Модель колеса знайдена %1$s</string>
-    <string name="started_logging">Початок запису в %1$s</string>
+    <string name="started_logging">Початок запису</string>
     <string name="scanning">Пошук...</string>
     <string name="back_to_exit">Натисніть назад для виходу</string>
     <string name="kmh">км/г</string>

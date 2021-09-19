@@ -27,8 +27,7 @@
 	<string name="stop_pebble_service">Vypnout Pebble Dash</string>
 	<string name="start_data_service">Zapnout záznam</string>
 	<string name="stop_data_service">Zastavit záznam</string>
-	<string name="started_logging">Zaznamenávám do %1$s</string>
-	<string name="wheel_type_recognized">Detekován EUC protokol %1$s</string>
+	<string name="started_logging">Zaznamenávám do</string>
 	<string name="search_for_wheel">Hledat jednokolku</string>
 	<string name="scanning">Hledám…</string>
 	<string name="devices">Zařízení</string>

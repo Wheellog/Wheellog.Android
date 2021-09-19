@@ -282,8 +282,9 @@ public class MainActivity extends AppCompatActivity {
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
                         String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        var fileName = filepath.substring(filepath.lastIndexOf("\\") + 1);
                         if (running) {
-                            showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
+                            showSnackBar(getResources().getString(R.string.started_logging) + " " + fileName, 5000);
                         }
                     }
                     setMenuIconStates();

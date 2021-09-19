@@ -27,8 +27,7 @@
 	<string name="stop_pebble_service">Спри Pebble Dash</string>
 	<string name="start_data_service">Стартирай лога</string>
 	<string name="stop_data_service">Спри лога</string>
-	<string name="started_logging">Започни лог към %1$s</string>
-	<string name="wheel_type_recognized">Засечен протокол на колело %1$s</string>
+	<string name="started_logging">Започни лог към</string>
 	<string name="search_for_wheel">Търси Колело</string>
 	<string name="scanning">Сканирам…</string>
 	<string name="devices">Устройства</string>

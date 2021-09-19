@@ -27,8 +27,7 @@
 	<string name="stop_pebble_service">Stop Pebble Dash</string>
 	<string name="start_data_service">Starte Logging</string>
 	<string name="stop_data_service">Stop Logging</string>
-	<string name="started_logging">Starte logging auf %1$s</string>
-	<string name="wheel_type_recognized">Radprotokol erkannt %1$s</string>
+	<string name="started_logging">Starte logging auf</string>
 	<string name="search_for_wheel">Suche nach Rad</string>
 	<string name="scanning">Suche …</string>
 	<string name="devices">Geräte</string>
