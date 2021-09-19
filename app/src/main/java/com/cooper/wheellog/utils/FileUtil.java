@@ -141,7 +141,7 @@ public class FileUtil {
             if (!ignoreTimber) {
                 Timber.e("File not found.");
             }
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
