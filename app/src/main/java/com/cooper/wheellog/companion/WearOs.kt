@@ -1,7 +1,9 @@
 package com.cooper.wheellog.companion
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -10,38 +12,57 @@ import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
-import com.wheellog.shared.WearPage
-import com.wheellog.shared.and
+import com.wheellog.shared.Constants
 import com.wheellog.shared.serialize
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
-    private val dataItemPath = "/wheel_data"
-    private val messagePath = "/messages"
+class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, SharedPreferences.OnSharedPreferenceChangeListener {
     private var pingPong = false
 
+    fun updatePages() {
+        if (!pingPong) {
+            // pingPong - means that WearOS is successfully connected.
+            return
+        }
+        val dataRequest = PutDataMapRequest.create(Constants.wearOsPagesItemPath)
+        dataRequest.dataMap.apply {
+            putString("pages", WheelLog.AppConfig.wearOsPages.serialize())
+            putLong("time", System.currentTimeMillis())
+        }
+        val request = dataRequest.asPutDataRequest()
+        request.setUrgent()
+        Wearable.getDataClient(context).putDataItem(request)
+            .addOnFailureListener {
+                Timber.e("[wear] %s", it.localizedMessage)
+            }
+    }
+
     fun updateData() {
+        if (!pingPong) {
+            // pingPong - means that WearOS is successfully connected.
+            return
+        }
         val wd = WheelData.getInstance()
-        val dataRequest = PutDataMapRequest.create(dataItemPath)
+        val dataRequest = PutDataMapRequest.create(Constants.wearOsDataItemPath)
         dataRequest.dataMap.apply {
             putDouble("speed", wd.speedDouble)
-            putInt("max_speed", wd.topSpeed)
+            putDouble("max_speed", wd.topSpeed.toDouble())
             putDouble("voltage", wd.voltageDouble)
             putDouble("current", wd.currentDouble)
             putDouble("max_current", wd.maxCurrentDouble)
+            putDouble("power", wd.powerDouble)
+            putDouble("max_power", wd.maxPowerDouble)
             putDouble("pwm", wd.calculatedPwm)
             putDouble("max_pwm", wd.maxPwm)
             putInt("temperature", wd.temperature)
             putInt("max_temperature", wd.maxTemp)
-            putDouble("max_power", wd.maxPowerDouble)
             putInt("battery",wd.batteryLevel)
             putInt("battery_lowest", wd.batteryLowestLevel)
+            putDouble("distance", wd.distanceDouble)
             putString("main_unit",
                     if (WheelLog.AppConfig.useMph)
                         context.getString(R.string.mph)
@@ -52,7 +73,6 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
             putLong("timestamp", wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             putString("time_string", sdf.format(Date(wd.lastLifeData)))
-            putString("pages", (WearPage.Main and WearPage.Voltage and WearPage.Current and WearPage.Temperature).serialize())
         }
         val request = dataRequest.asPutDataRequest()
         request.setUrgent()
@@ -63,21 +83,22 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
-        if (messageEvent.path == messagePath) {
+        if (messageEvent.path == Constants.wearOsDataMessagePath) {
             when (messageEvent.data.toString(Charsets.UTF_8)) {
                 // TODO: localization
-                "pong" -> {
+                Constants.wearOsPong  -> {
                     Toast.makeText(context,"WearOs watch connected successfully!", Toast.LENGTH_LONG).show()
                     pingPong = true
+                    updatePages()
                 }
-                "horn" -> SomeUtil.playBeep(context)
-                "light" -> WheelData.getInstance().adapter?.switchFlashlight()
+                Constants.wearOsHorn -> SomeUtil.playBeep(context)
+                Constants.wearOsLight -> WheelData.getInstance().adapter?.switchFlashlight()
                 else -> Timber.wtf("Unknown message from wear")
             }
         }
     }
 
-    private fun sendMessage(message: String, path: String = messagePath) {
+    private fun sendMessage(message: String, path: String = Constants.wearOsDataMessagePath) {
         Wearable.getNodeClient(context).connectedNodes
             .addOnSuccessListener {
                 it.forEach { node ->
@@ -88,7 +109,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
                 }
             }
             .addOnFailureListener {
-                Timber.wtf("[wear] exception %s", it.localizedMessage)
+                Timber.e("[wear] exception %s", it.localizedMessage)
             }
     }
 
@@ -96,26 +117,36 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener {
         addMessageListener()
         updateData()
         GlobalScope.launch {
-            sendMessage("ping")
+            sendMessage( Constants.wearOsPing)
             delay(500)
             // if the wear application did not receive a response from the ping,
             // then an attempt to launch it
             if (!pingPong) {
-                sendMessage("", "/start/wearos")
+                sendMessage("", Constants.wearOsStartPath)
             }
         }
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
     fun stop() {
-        sendMessage("finish")
+        sendMessage(Constants.wearOsFinish)
         removeMessageListener()
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    fun addMessageListener() {
+    private fun addMessageListener() {
         Wearable.getMessageClient(context).addListener(this)
     }
 
-    fun removeMessageListener() {
+    private fun removeMessageListener() {
         Wearable.getMessageClient(context).removeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == "wearos_pages") {
+            updatePages()
+        }
     }
 }

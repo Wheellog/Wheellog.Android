@@ -14,7 +14,7 @@ enum class WearPage {
     infix fun and(other: WearPage): WearPages = WearPages.of(this, other)
 
     companion object {
-        private const val separator = "|"
+        private const val separator = ";"
 
         fun serialize(set: WearPages): String {
             return set.joinToString(separator)

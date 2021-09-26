@@ -77,37 +77,37 @@ class MainRecyclerAdapter(var pages: WearPages, private var wd: WearData): Recyc
             model.apply {
                 when (page) {
                     WearPage.Current -> {
-                        value.set("${wd.current}")
-                        min.set("-")
-                        max.set("${wd.maxCurrent}")
+                        value.set("${wd.current.value}")
+                        min.set("${wd.current.min}")
+                        max.set("${wd.current.max}")
                     }
                     WearPage.Voltage -> {
-                        value.set("${wd.voltage}")
-                        min.set("-")
-                        max.set("-")
+                        value.set("${wd.voltage.value}")
+                        min.set("${wd.voltage.min}")
+                        max.set("${wd.voltage.max}")
                     }
                     WearPage.Power -> {
-                        value.set("${wd.maxPower}")
-                        min.set("-")
-                        max.set("${wd.maxPower}")
+                        value.set("${wd.power.value}")
+                        min.set("${wd.power.min}")
+                        max.set("${wd.power.max}")
                     }
                     WearPage.PWM -> {
-                        value.set("${wd.pwm}%")
-                        minTitle.set("AVG")
-                        min.set("-")
-                        max.set("${wd.maxPwm}%")
+                        value.set("${wd.pwm.value}")
+                        minTitle.set("")
+                        min.set("")
+                        max.set("${wd.pwm.max}")
                     }
                     WearPage.Temperature -> {
-                        value.set("${wd.temperature}℃")
-                        min.set("-")
-                        max.set("${wd.maxTemperature}℃")
+                        value.set("${wd.temperature.value}℃")
+                        min.set("${wd.temperature.min}℃")
+                        max.set("${wd.temperature.max}℃")
                     }
                     WearPage.Distance -> {
                         value.set("${wd.distance}")
-                        minTitle.set("START") // TODO localization
-                        min.set("${1234}")
-                        maxTitle.set("TRIP") // TODO localization
-                        max.set("${5678}")
+                        minTitle.set("")
+                        min.set("")
+                        maxTitle.set("")
+                        max.set("")
                     }
                     else -> {
                     }
