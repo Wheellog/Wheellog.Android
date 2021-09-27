@@ -1,7 +1,6 @@
 package com.cooper.wheellog
 
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
@@ -14,8 +13,6 @@ import com.cooper.wheellog.utils.CommonUtils.Companion.vibrate
 import com.google.android.gms.wearable.*
 import com.wheellog.shared.Constants
 import com.wheellog.shared.WearPage
-import com.wheellog.shared.WearPages
-import java.lang.IllegalArgumentException
 import java.util.*
 
 
@@ -86,12 +83,12 @@ class WearActivity : FragmentActivity(),
         if (messageEvent.path == messagePath) {
             when (messageEvent.data.toString(Charsets.UTF_8)) {
                 // TODO: Localization
-                Constants.wearOsPing -> {
-                    sendMessage(this, Constants.wearOsPong)
+                Constants.wearOsPingMessage -> {
+                    sendMessage(this, Constants.wearOsPongMessage)
                     showAToast("connected!")
                     vibrate(this, longArrayOf(0, 100))
                 }
-                Constants.wearOsFinish -> finish()
+                Constants.wearOsFinishMessage -> finish()
                 else -> showAToast("Unknown message: " + messageEvent.data.toString(Charsets.UTF_8))
             }
         }
@@ -101,39 +98,39 @@ class WearActivity : FragmentActivity(),
         try {
             wd.apply {
                 speed.apply {
-                    value = map.getDouble("speed")
-                    max = map.getDouble("max_speed", max)
+                    value = map.getDouble(Constants.wearOsSpeedData)
+                    max = map.getDouble(Constants.wearOsMaxSpeedData, max)
                 }
                 voltage.apply {
-                    value = map.getDouble("voltage")
+                    value = map.getDouble(Constants.wearOsVoltageData)
                 }
                 current.apply {
-                    value = map.getDouble("current")
-                    max = map.getDouble("max_current", max)
+                    value = map.getDouble(Constants.wearOsCurrentData)
+                    max = map.getDouble(Constants.wearOsMaxCurrentData, max)
                 }
                 pwm.apply {
-                    value = map.getDouble("pwm")
-                    max = map.getDouble("max_pwm", max)
+                    value = map.getDouble(Constants.wearOsPWMData)
+                    max = map.getDouble(Constants.wearOsMaxPWMData, max)
                 }
                 temperature.apply {
-                    value = map.getDouble("temperature")
-                    max = map.getDouble("max_temperature", max)
+                    value = map.getDouble(Constants.wearOsTemperatureData)
+                    max = map.getDouble(Constants.wearOsMaxTemperatureData, max)
                 }
                 power.apply {
-                    value = map.getDouble("power")
-                    max = map.getDouble("max_power", max)
+                    value = map.getDouble(Constants.wearOsPowerData)
+                    max = map.getDouble(Constants.wearOsMaxPowerData, max)
                 }
-                distance = map.getDouble("distance", 0.0)
-                battery = map.getInt("battery")
-                batteryLowest = map.getInt("battery_lowest")
-                mainUnit = map.getString("main_unit", "kmh")
-                currentOnDial = map.getBoolean("currentOnDial")
-                val alarmInt = map.getInt("alarm")
+                distance = map.getDouble(Constants.wearOsDistanceData, 0.0)
+                battery = map.getInt(Constants.wearOsBatteryData)
+                batteryLowest = map.getInt(Constants.wearOsBatteryLowData)
+                mainUnit = map.getString(Constants.wearOsUnitData, "kmh")
+                currentOnDial = map.getBoolean(Constants.wearOsCurrentOnDialData)
+                val alarmInt = map.getInt(Constants.wearOsAlarmData)
                 alarmSpeed = alarmInt and 1 == 1
                 alarmCurrent = alarmInt and 2 == 1
                 alarmTemp = alarmInt and 4 == 1
-                timeStamp = map.getLong("timestamp")
-                timeString = map.getString("time_string", "waiting...")
+                timeStamp = map.getLong(Constants.wearOsTimestampData)
+                timeString = map.getString(Constants.wearOsTimeStringData, "waiting...")
             }
             mMainRecyclerAdapter.updateScreen()
             if (wd.alarmTemp || wd.alarmSpeed || wd.alarmCurrent) {
@@ -152,7 +149,7 @@ class WearActivity : FragmentActivity(),
     }
 
     private fun updatePages(map: DataMap) {
-        val pagesString = map.getString("pages", "")
+        val pagesString = map.getString(Constants.wearOsPagesData, "")
         if (pagesString == "") {
             val newPages = WearPage.deserialize(pagesString)
             val newAdapter = MainRecyclerAdapter(newPages, wd)

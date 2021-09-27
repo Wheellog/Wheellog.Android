@@ -3,14 +3,9 @@ package com.cooper.wheellog.preferences
 import android.content.Context
 import androidx.preference.*
 import com.cooper.wheellog.R
-import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
-import com.cooper.wheellog.presentation.preferences.SeekBarPreference
-import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.ThemeEnum
-import com.wheellog.shared.WearPage
+import com.wheellog.shared.*
 
 class WatchSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
 
@@ -44,7 +39,7 @@ class WatchSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         MultiSelectPreference(context).apply {
-            key = getString(R.string.wearos_pages)
+            key = Constants.wearPages
             title = getString(R.string.wearos_pages_title)
             summary = getString(R.string.wearos_pages_description)
             dialogTitle = title

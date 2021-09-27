@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.utils.MiBandEnum
 import com.cooper.wheellog.utils.ThemeEnum
+import com.wheellog.shared.Constants
 import com.wheellog.shared.WearPage
 import com.wheellog.shared.WearPages
 
@@ -222,9 +223,9 @@ class AppConfig(var context: Context) {
 
     var wearOsPages: WearPages
         get() = WearPage.deserialize(
-            getValue(R.string.wearos_pages,
+            getValue(Constants.wearPages,
                 WearPage.serialize(WearPage.Main and WearPage.Voltage)))
-        set(value) = setValue(R.string.wearos_pages, WearPage.serialize(value))
+        set(value) = setValue(Constants.wearPages, WearPage.serialize(value))
     //endregion
 
     var lastMac: String
