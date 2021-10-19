@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.utils.MiBandEnum
 import com.cooper.wheellog.utils.ThemeEnum
+import com.wheellog.shared.Constants
+import com.wheellog.shared.WearPage
+import com.wheellog.shared.WearPages
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -217,6 +220,12 @@ class AppConfig(var context: Context) {
     var mibandFixRs: Boolean
         get() = getValue(R.string.miband_fixrs_enable, false)
         set(value) = setValue(R.string.miband_fixrs_enable, value)
+
+    var wearOsPages: WearPages
+        get() = WearPage.deserialize(
+            getValue(Constants.wearPages,
+                WearPage.serialize(WearPage.Main and WearPage.Voltage)))
+        set(value) = setValue(Constants.wearPages, WearPage.serialize(value))
     //endregion
 
     var lastMac: String

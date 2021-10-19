@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (wearOs != null) {
-                        wearOs.updateData();
+                        wearOs.sendUpdateData();
                     }
                     if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
                         WheelLog.Notifications.update();

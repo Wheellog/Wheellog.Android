@@ -40,6 +40,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private lateinit var speedSettings: SpeedSettings
     private lateinit var wheelSettings: WheelSettings
     private lateinit var generalSettings: GeneralSettings
+    private lateinit var watchSettings: WatchSettings
 
     private val writeStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (!granted) {
@@ -101,6 +102,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         speedSettings = SpeedSettings(requireContext(), preferenceScreen)
         wheelSettings = WheelSettings(requireContext(), preferenceScreen)
         generalSettings = GeneralSettings(requireContext(), preferenceScreen)
+        watchSettings = WatchSettings(requireContext(), preferenceScreen)
         changeWheelType()
         checkAndRequestPermissions()
     }
@@ -365,8 +367,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 watchButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Watch
-                    preferenceScreen.removeAll()
-                    addPreferencesFromResource(R.xml.preferences_watch)
+                    watchSettings.fill(WheelData.getInstance().mac + "_")
                     setupScreen()
                     true
                 }

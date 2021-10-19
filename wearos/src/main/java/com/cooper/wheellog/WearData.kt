@@ -1,16 +1,15 @@
 package com.cooper.wheellog
 
+import com.wheellog.shared.SmartDouble
+
 class WearData {
-    var speed: Double = 0.0
-    var maxSpeed: Int = 1
-    var voltage: Double = 0.0
-    var current: Double = 0.0
-    var maxCurrent: Double = 1.0
-    var pwm: Double = 0.0
-    var maxPwm: Double = 0.0
-    var temperature: Int = 0
-    var maxTemperature: Int = 0
-    var maxPower: Double = 0.0
+    var speed: SmartDouble = SmartDouble()
+    var voltage: SmartDouble = SmartDouble()
+    var current: SmartDouble = SmartDouble()
+    var pwm: SmartDouble = SmartDouble()
+    var temperature: SmartDouble = SmartDouble()
+    var power: SmartDouble = SmartDouble()
+    var distance: Double = 0.0
     var battery: Int = 0
     var batteryLowest: Int = 0
     var mainUnit: String = "kmh"

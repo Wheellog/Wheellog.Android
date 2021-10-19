@@ -595,6 +595,8 @@
     <string name="miband_fixrs_title">Mi Band fix for Begode RS/EX</string>
     <string name="miband_fixrs_enable" translatable="false">miband_fixrs_enable</string>
     <string name="miband_fixrs_description">Use this only if have no data updates on Mi Band</string>
+    <string name="wearos_pages_title" >WearOs Pages</string>
+    <string name="wearos_pages_description">Pages on WearOs</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>

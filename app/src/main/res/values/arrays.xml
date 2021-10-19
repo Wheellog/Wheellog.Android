@@ -5,18 +5,6 @@
         <item>@string/mode_learn</item>
     </string-array>
 
-    <string-array name="horn_modes">
-        <item>@string/disabled</item>
-        <item>@string/on_board_horn_ks</item>
-        <item>@string/bluetooth_audio_horn</item>
-    </string-array>
-
-    <string-array name="horn_mode_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-	
 	<string-array name="pedals_mode">
         <item>@string/hard</item>
         <item>@string/medium</item>
