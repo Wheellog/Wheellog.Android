@@ -105,8 +105,11 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
             // Register to receive messages from the device
             try {
-                mConnectIQ.registerForAppEvents(mDevice, mStableApp, this)
-                mConnectIQ.registerForAppEvents(mDevice, mBetaApp, this)
+                if (WheelLog.AppConfig.useGarminBetaCompanion) {
+                    mConnectIQ.registerForAppEvents(mDevice, mBetaApp, this)
+                } else {
+                    mConnectIQ.registerForAppEvents(mDevice, mStableApp, this)
+                }
             } catch (e: InvalidStateException) {
                 Toast.makeText(this, "ConnectIQ is not in a valid state", Toast.LENGTH_LONG).show()
             }
@@ -120,12 +123,14 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             // release resources and prevent unwanted callbacks.
             try {
                 mConnectIQ.unregisterForDeviceEvents(mDevice)
-                if (mStableApp != null) {
-                    mConnectIQ.unregisterForApplicationEvents(mDevice, mStableApp)
-                }
-
-                if (mBetaApp != null) {
-                    mConnectIQ.unregisterForApplicationEvents(mDevice, mBetaApp)
+                if (WheelLog.AppConfig.useGarminBetaCompanion) {
+                    if (mBetaApp != null) {
+                        mConnectIQ.unregisterForApplicationEvents(mDevice, mBetaApp)
+                    }
+                } else {
+                    if (mStableApp != null) {
+                        mConnectIQ.unregisterForApplicationEvents(mDevice, mStableApp)
+                    }
                 }
             } catch (ignored: InvalidStateException) {
 
@@ -200,11 +205,14 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             mWebServer = GarminConnectIQWebServer(applicationContext)
             Timber.d("port is: ${mWebServer!!.listeningPort}")
             try {
-                mConnectIQ.sendMessage(mDevice, mStableApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
-                    Timber.d("message status: ${status.name}")
-                }
-                mConnectIQ.sendMessage(mDevice, mBetaApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
-                    Timber.d("message status: ${status.name}")
+                if (WheelLog.AppConfig.useGarminBetaCompanion) {
+                    mConnectIQ.sendMessage(mDevice, mBetaApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
+                        Timber.d("message status: ${status.name}")
+                    }
+                } else {
+                    mConnectIQ.sendMessage(mDevice, mStableApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
+                        Timber.d("message status: ${status.name}")
+                    }
                 }
             } catch (e: InvalidStateException) {
                 Timber.e("ConnectIQ is not in a valid state")

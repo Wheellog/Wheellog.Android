@@ -130,6 +130,7 @@
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
     <string name="garmin_connectiq_enable" translatable="false">garmin_connectiq_enable</string>
+    <string name="garmin_connectiq_use_beta" translatable="false">garmin_connectiq_use_beta</string>
 
     // TRIP PREFERENCES
     <string name="reset_top_speed" translatable="false">reset_top_speed</string>
@@ -249,6 +250,8 @@
     <string name="alarm_text_pwm">PWM alarm triggered</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
+    <string name="garmin_connectiq_use_beta_title">Beta Garmin companion</string>
+    <string name="garmin_connectiq_use_beta_description">Use beta Garmin companion instead of a stable one</string>
     <string name="horn_mode_title">Horn Mode</string>
     <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
     <string name="tilt_back_description">Tiltback speed</string>
