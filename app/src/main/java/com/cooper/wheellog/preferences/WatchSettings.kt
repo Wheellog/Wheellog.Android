@@ -21,15 +21,15 @@ class WatchSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
-            key = getString(R.string.garmin_connectiq_use_beta)
-            title = getString(R.string.garmin_connectiq_use_beta_title)
-            summary = getString(R.string.garmin_connectiq_use_beta_description)
-            ps.addPreference(this)
-        }
-        SwitchPreference(context).apply {
             key = getString(R.string.garmin_connectiq_enable)
             title = getString(R.string.garmin_connectiq_enable_title)
             summary = getString(R.string.garmin_connectiq_enable_description)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = getString(R.string.garmin_connectiq_use_beta)
+            title = getString(R.string.garmin_connectiq_use_beta_title)
+            summary = getString(R.string.garmin_connectiq_use_beta_description)
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
