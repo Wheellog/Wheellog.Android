@@ -220,7 +220,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
     companion object {
         const val STABLE_APP_ID = "487e6172-972c-4f93-a4db-26fd689f935a"
-        const val BETA_APP_ID = "90443537-281c-4b3c-a796-39040a4b4605"
+        const val BETA_APP_ID = "433c30dc-f316-4d11-a16e-de153d297705"
 
         private var instance: GarminConnectIQ? = null
         val isInstanceCreated: Boolean
