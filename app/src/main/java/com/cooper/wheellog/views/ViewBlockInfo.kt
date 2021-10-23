@@ -8,13 +8,13 @@ class ViewBlockInfo : Comparable<ViewBlockInfo> {
     private var value: Callable<String>
     var index = -1
 
-    constructor(title: String, value: Callable<String>, enabled: Boolean) {
+    constructor(title: String, enabled: Boolean, value: Callable<String>) {
         this.title = title
         this.value = value
         this.enabled = enabled
     }
 
-    constructor(title: String, value: Callable<String>) : this(title, value, true)
+    constructor(title: String, value: Callable<String>) : this(title, true, value)
 
     @Throws(Exception::class)
     fun getValue(): String {
