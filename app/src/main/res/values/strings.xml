@@ -308,7 +308,7 @@
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
     <string name="use_fahrenheit_title">Use Fahrenheit</string>
-    <string name="use_fahrenheit_description">Show temperature in Fahrenheit rather than Celcius</string>
+    <string name="use_fahrenheit_description">Show temperature in Fahrenheit rather than Celsius</string>
     <string name="view_blocks_string" translatable="false">view_blocks_string</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>

@@ -408,5 +408,7 @@
     <string name="use_wheel_beep_for_alarm_description">Аларми будуть передані на вбудований біпер замість навушників/колонки</string>
     <string name="miband_fixrs_title">Mi Band фікс для Begode RS/EX</string>
     <string name="miband_fixrs_description">Використовувати тільки якщо є проблеми з оновленням даних на Mi Band</string>
+    <string name="use_fahrenheit_title">Використовувати Фаренгейт</string>
+    <string name="use_fahrenheit_description">Показувати температуру в Фаренгейті замість Цельсію</string>
 
 </resources>

@@ -432,4 +432,6 @@
     <string name="wheel_alarm3_enabled_description">Включить третье предупреждение</string>
     <string name="wheel_alarm3_enabled_title">Третье предупреждение</string>
     <string name="wheel_alarm3_title">Третье предупреждение</string>
+    <string name="use_fahrenheit_title">Использовать Фаренгейт</string>
+    <string name="use_fahrenheit_description">Показывать температуру в Фаренгейтах вместо Цельсия</string>
 </resources>
