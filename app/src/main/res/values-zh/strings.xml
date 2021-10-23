@@ -84,7 +84,7 @@
     <string name="kmh">km/h</string>
     <string name="mph">mph</string>
     <string name="km">km</string>
-    <string name="milli">mi</string>
+    <string name="miles">mi</string>
     <string name="horn_mode_title">喇叭模式</string>
     <string name="horn_mode_description">按下Pebble手表上的选择按钮时执行</string>
     <string name="tilt_back_description" >翘板速度</string>

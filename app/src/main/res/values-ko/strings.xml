@@ -4,7 +4,7 @@
     <string name="mph">"mph"</string>
     <string name="km">"km"</string>
     <string name="sec">"초"</string>
-    <string name="milli">"마일"</string>
+    <string name="miles">"마일"</string>
     <string name="garmin_connectiq_missing_app_message">"WheelLog 앱에서 사용할 이 어플리케이션이 ConnectIQ 장치에 설치되지 않았습니다. 위젯을 설치한 뒤 다시 시도하세요."</string>
     <string name="garmin_connectiq_service_unavailable_message">"ConnectIQ 서비스를 사용할 수 없습니다"</string>
     <string name="unknown_device">"알 수 없는 장치"</string>

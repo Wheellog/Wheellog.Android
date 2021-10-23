@@ -40,7 +40,7 @@
     <string name="kmh">км/г</string>
     <string name="mph">миль/г</string>
     <string name="km">км</string>
-    <string name="milli">милі</string>
+    <string name="miles">милі</string>
     <string name="horn_mode_title">Налаштування Сигналу</string>
     <string name="tilt_back_description">Швидкість підйому педалей</string>
     <string name="alarm3_description">4 звукові сигнали</string>

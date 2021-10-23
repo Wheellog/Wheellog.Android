@@ -90,7 +90,7 @@
 	<string name="kmh">km/h</string>
 	<string name="mph">mph</string>
 	<string name="km">km</string>
-	<string name="milli">mi</string>
+	<string name="miles">mi</string>
 	<string name="horn_mode_title">Modo da Buzina</string>
 	<string name="horn_mode_description">Executado quando o botão de seleção do relógio Pebble é pressionado</string>
 	<string name="tilt_back_description">Velocidade de início do Tiltback</string>

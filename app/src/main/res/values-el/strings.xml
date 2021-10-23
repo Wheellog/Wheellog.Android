@@ -90,7 +90,7 @@
 	<string name="kmh">km/h</string>
 	<string name="mph">mph</string>
 	<string name="km">km</string>
-	<string name="milli">mi</string>
+	<string name="miles">mi</string>
 	<string name="horn_mode_title">Λειτουργία Κόρνας</string>
 	<string name="horn_mode_description">Εκτελείται όταν πατηθεί το κουμπί επιλογής στο ρολόι Pebble</string>
 	<string name="tilt_back_description">Ταχύτητα απόκλισης</string>

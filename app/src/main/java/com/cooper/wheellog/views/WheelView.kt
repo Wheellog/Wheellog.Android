@@ -126,7 +126,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 },
                 ViewBlockInfo(resources.getString(R.string.distance)) {
                     if (useMph) {
-                        String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(mDistance))
+                        String.format(Locale.US, "%.2f " + resources.getString(R.string.miles), kmToMiles(mDistance))
                     } else {
                         if (mDistance < 1) {
                             String.format(Locale.US, "%.0f " + resources.getString(R.string.metre), mDistance * 1000)
@@ -137,7 +137,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 },
                 ViewBlockInfo(resources.getString(R.string.total)) {
                     if (useMph) {
-                        String.format(Locale.US, "%.0f " + resources.getString(R.string.milli), kmToMiles(mTotalDistance))
+                        String.format(Locale.US, "%.0f " + resources.getString(R.string.miles), kmToMiles(mTotalDistance))
                     } else {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
@@ -242,7 +242,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         if (useMph) {
                             String.format(
                                 Locale.US,
-                                "%.2f " + resources.getString(R.string.milli),
+                                "%.2f " + resources.getString(R.string.miles),
                                 kmToMiles(WheelData.getInstance().wheelDistanceDouble)
                             )
                         } else {
@@ -261,7 +261,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         if (useMph) {
                             String.format(
                                 Locale.US,
-                                "%.2f " + resources.getString(R.string.milli),
+                                "%.2f " + resources.getString(R.string.miles),
                                 kmToMiles(WheelData.getInstance().remainingDistance)
                             )
                         } else {

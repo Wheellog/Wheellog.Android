@@ -90,7 +90,7 @@
 	<string name="kmh">km/h</string>
 	<string name="mph">mph</string>
 	<string name="km">km</string>
-	<string name="milli">mi</string>
+	<string name="miles">mi</string>
 	<string name="horn_mode_title">Modo de bocina</string>
 	<string name="horn_mode_description">Se ejecuta cuando se presiona el botón de selección en el reloj Pebble.</string>
 	<string name="tilt_back_description">Velocidad maxima</string>
