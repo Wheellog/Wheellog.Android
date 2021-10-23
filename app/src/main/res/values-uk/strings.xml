@@ -35,7 +35,7 @@
     <string name="speed">Швидкість</string>
     <string name="mode">Режим роботы</string>
     <string name="started_logging">Початок запису</string>
-    <string name="scanning">Пошук...</string>
+    <string name="scanning">Пошук…</string>
     <string name="back_to_exit">Натисніть назад для виходу</string>
     <string name="kmh">км/г</string>
     <string name="mph">миль/г</string>
@@ -189,7 +189,7 @@
     <string name="voltage_sag">Просадка напруги</string>
     <string name="waiting_for_device">Очікування пристрою</string>
     <string name="wheel_connected">Колесо підключене</string>
-    <string name="wheel_connecting">Підключення до колеса...</string>
+    <string name="wheel_connecting">Підключення до колеса…</string>
     <string name="wheel_disconnected">Колесо відключене</string>
     <string name="wheel_searching">Пошук колеса</string>
     <string name="max_speed_dial_description">Максимальне значення зовнішньої шкали (швидкість та сила струму)</string>
@@ -410,5 +410,6 @@
     <string name="miband_fixrs_description">Використовувати тільки якщо є проблеми з оновленням даних на Mi Band</string>
     <string name="use_fahrenheit_title">Використовувати Фаренгейт</string>
     <string name="use_fahrenheit_description">Показувати температуру в Фаренгейті замість Цельсію</string>
+    <string name="measurement_systems_category_title">Системи вимірювання</string>
 
 </resources>

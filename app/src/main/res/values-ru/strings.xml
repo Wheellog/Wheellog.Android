@@ -203,9 +203,9 @@
     <string name="voltage_sag">Просадка напряжения</string>
     <string name="waiting_for_device">Ожидание устройства</string>
     <string name="wheel_connected">Колесо подключено</string>
-    <string name="wheel_connecting">Подключение к колесу...</string>
+    <string name="wheel_connecting">Подключение к колесу…</string>
     <string name="wheel_disconnected">Колесо отключено</string>
-    <string name="wheel_searching">Поиск колеса...</string>
+    <string name="wheel_searching">Поиск колеса…</string>
     <string name="max_speed_dial_description">Максимальное значение внешней шкалы (скорость или ток)</string>
     <string name="connection_sound_description">Проигрывать звуки подключения и отключения колеса</string>
     <string name="connection_sound_title">Звуки подключения колеса</string>
@@ -434,4 +434,5 @@
     <string name="wheel_alarm3_title">Третье предупреждение</string>
     <string name="use_fahrenheit_title">Использовать Фаренгейт</string>
     <string name="use_fahrenheit_description">Показывать температуру в Фаренгейтах вместо Цельсия</string>
+    <string name="measurement_systems_category_title">Системы измерения</string>
 </resources>
