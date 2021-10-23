@@ -204,7 +204,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     }
                 }
             }
-            R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
+            R.string.max_speed, R.string.use_mph, R.string.use_fahrenheit -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
             R.string.use_eng, R.string.app_theme -> {
                 WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
                 AlertDialog.Builder(requireContext())
