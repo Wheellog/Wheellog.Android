@@ -63,7 +63,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var mMaxPwm = 0.0
     private var mAverageSpeed = 0.0
     private var useMph: Boolean
-    private var useFahrenheit: Boolean
     private var mWheelModel = ""
     private val versionString = String.format("ver %s %s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_DATE)
     private var outerStrokeWidth = 0f
@@ -167,54 +166,17 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     },
                     false
                 ),
-                ViewBlockInfo(
-                    resources.getString(R.string.temperature),
-                    {
-                        if (useFahrenheit) {
-                            String.format(
-                                Locale.US,
-                                "%d ℉",
-                                WheelData.getInstance().temperature
-                            )
-                        } else {
-                            String.format(
-                                Locale.US,
-                                "%d ℃",
-                                WheelData.getInstance().temperature
-                            )
-                        }
-                    },
-                    false
-                ),
+                ViewBlockInfo(resources.getString(R.string.temperature), {
+                    mTemperature.toTempString()
+                },
+                false),
                 ViewBlockInfo(resources.getString(R.string.temperature2), {
-                    if (useFahrenheit) {
-                        String.format(
-                            Locale.US,
-                            "%d ℉",
-                            MathsUtil.celsiusToFahrenheit(WheelData.getInstance().temperature2.toFloat())
-                        )
-                    } else {
-                        String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature2)
-                    }
+                    WheelData.getInstance().temperature2.toTempString()
                 }, false),
                 ViewBlockInfo(resources.getString(R.string.maxtemperature), {
-                    if (useFahrenheit) {
-                        String.format(
-                            Locale.US,
-                            "%d ℉",
-                            mMaxTemperature
-                        )
-                    } else {
-                        String.format(
-                            Locale.US,
-                            "%d ℃",
-                            MathsUtil.celsiusToFahrenheit(mMaxTemperature.toFloat())
-                        )
-                    }
+                    mMaxTemperature.toTempString()
                 }, false),
-                ViewBlockInfo(
-                    resources.getString(R.string.average_speed),
-                    {
+                ViewBlockInfo(resources.getString(R.string.average_speed), {
                         if (useMph) {
                             String.format(
                                 Locale.US,
@@ -341,7 +303,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     fun setTemperature(temperature: Int) {
         if (mTemperature == temperature) return
         mTemperature = MathUtils.clamp(temperature, -100, 100)
-        targetTemperature = 112 - (40f / (if (WheelLog.AppConfig.useFahrenheit) 160f else 80f) * MathUtils.clamp(mTemperature, 0, 80)).roundToInt()
+        targetTemperature = 112 - (40f / 80f * MathUtils.clamp(mTemperature, 0, 80)).roundToInt()
         refresh()
     }
 
@@ -1093,7 +1055,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         }
 
         useMph = WheelLog.AppConfig.useMph
-        useFahrenheit = WheelLog.AppConfig.useFahrenheit
         mViewBlocks = viewBlockInfo
         updateViewBlocksVisibility()
         onChangeTheme()
