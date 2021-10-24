@@ -199,6 +199,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             try {
                 mConnectIQ.sendMessage(mDevice, mApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
                     Timber.d("message status: ${status.name}")
+                    if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
                 }
             } catch (e: InvalidStateException) {
                 Timber.e("ConnectIQ is not in a valid state")
