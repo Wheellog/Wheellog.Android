@@ -11,12 +11,12 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
-import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
 import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
@@ -688,17 +688,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     width - paddingRight).toFloat(), (
                     height - paddingBottom).toFloat(),
                     versionPaint)
-        }
-    }
-
-    /**
-     * Converts supplied Int value to a temperature string.
-     */
-    private fun Int.toTempString(): String {
-        return if (WheelLog.AppConfig.useFahrenheit) {
-            String.format(Locale.US, "%02d℉", MathsUtil.celsiusToFahrenheit(this.toDouble()).toInt())
-        } else {
-            String.format(Locale.US, "%02d℃", this)
         }
     }
 
