@@ -168,10 +168,6 @@
     <string name="disconnect">Disconnect</string>
     <string name="connect_to_wheel">Connect to Wheel</string>
     <string name="disconnect_from_wheel">Disconnect from Wheel</string>
-    <string name="wheel_disconnected">Wheel Disconnected</string>
-    <string name="wheel_connecting">Connecting to Wheel…</string>
-    <string name="wheel_searching">Searching for Wheel…</string>
-    <string name="wheel_connected">Wheel Connected</string>
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
     <string name="show_settings">Show settings menu</string>

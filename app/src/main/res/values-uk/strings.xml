@@ -188,10 +188,6 @@
     <string name="use_pip_mode_title">Картинка-в-Картинці</string>
     <string name="voltage_sag">Просадка напруги</string>
     <string name="waiting_for_device">Очікування пристрою</string>
-    <string name="wheel_connected">Колесо підключене</string>
-    <string name="wheel_connecting">Підключення до колеса…</string>
-    <string name="wheel_disconnected">Колесо відключене</string>
-    <string name="wheel_searching">Пошук колеса</string>
     <string name="max_speed_dial_description">Максимальне значення зовнішньої шкали (швидкість та сила струму)</string>
     <string name="connection_sound_description">Програвати звуки підключення і відключення колеса</string>
     <string name="connection_sound_title">Звуки підключення колеса</string>
