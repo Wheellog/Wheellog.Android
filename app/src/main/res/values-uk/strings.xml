@@ -408,5 +408,7 @@
     <string name="use_wheel_beep_for_alarm_description">Аларми будуть передані на вбудований біпер замість навушників/колонки</string>
     <string name="miband_fixrs_title">Mi Band фікс для Begode RS/EX</string>
     <string name="miband_fixrs_description">Використовувати тільки якщо є проблеми з оновленням даних на Mi Band</string>
+    <string name="garmin_connectiq_use_beta_title">Бета компаньон Garmin</string>
+    <string name="garmin_connectiq_use_beta_description">Використовувати бета-версію компаньона замість стабільного</string>
 
 </resources>

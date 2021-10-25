@@ -432,4 +432,6 @@
     <string name="wheel_alarm3_enabled_description">Включить третье предупреждение</string>
     <string name="wheel_alarm3_enabled_title">Третье предупреждение</string>
     <string name="wheel_alarm3_title">Третье предупреждение</string>
+    <string name="garmin_connectiq_use_beta_title">Бета компаньон Garmin</string>
+    <string name="garmin_connectiq_use_beta_description">Использовать бета-версию компаньона вместо стабильной</string>
 </resources>
