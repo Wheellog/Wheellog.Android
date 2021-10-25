@@ -26,6 +26,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     private var mDevice: IQDevice? = null
     private var mApp: IQApp? = null
     private var mWebServer: GarminConnectIQWebServer? = null
+    private var useBeta = WheelLog.AppConfig.useGarminBetaCompanion
 
     override fun onBind(intent: Intent): IBinder? {
         Timber.i("onBind")
@@ -38,10 +39,10 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         instance = this
 
         // Setup Connect IQ
-        if (WheelLog.AppConfig.useGarminBetaCompanion) {
-            mApp = IQApp(BETA_APP_ID)
+        mApp = if (useBeta) {
+            IQApp(BETA_APP_ID)
         } else {
-            mApp = IQApp(STABLE_APP_ID)
+            IQApp(STABLE_APP_ID)
         }
         mConnectIQ.initialize(this, false, this)
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
@@ -98,7 +99,11 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
             // Register for application status updates
             try {
-                mConnectIQ.getApplicationInfo(STABLE_APP_ID, mDevice, this)
+                if (useBeta) {
+                    mConnectIQ.getApplicationInfo(BETA_APP_ID, mDevice, this)
+                } else {
+                    mConnectIQ.getApplicationInfo(STABLE_APP_ID, mDevice, this)
+                }
             } catch (e1: InvalidStateException) {
                 Timber.d("e1: ${e1.message}")
             } catch (e1: ServiceUnavailableException) {
