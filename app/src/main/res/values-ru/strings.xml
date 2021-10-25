@@ -431,4 +431,6 @@
     <string name="use_fahrenheit_title">Использовать Фаренгейт</string>
     <string name="use_fahrenheit_description">Показывать температуру в Фаренгейтах вместо Цельсия</string>
     <string name="measurement_systems_category_title">Системы измерения</string>
+    <string name="garmin_connectiq_use_beta_title">Бета компаньон Garmin</string>
+    <string name="garmin_connectiq_use_beta_description">Использовать бета-версию компаньона вместо стабильной</string>
 </resources>

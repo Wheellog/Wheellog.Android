@@ -27,6 +27,12 @@ class WatchSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
+            key = getString(R.string.garmin_connectiq_use_beta)
+            title = getString(R.string.garmin_connectiq_use_beta_title)
+            summary = getString(R.string.garmin_connectiq_use_beta_description)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
             key = getString(R.string.miband_on_mainscreen_enable)
             title = getString(R.string.miband_on_mainscreen_title)
             summary = getString(R.string.miband_on_mainscreen_description)
