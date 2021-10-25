@@ -18,11 +18,7 @@
 	<string name="disconnect">Unterbreche Verbindung</string>
 	<string name="connect_to_wheel">Verbinde mit dem Rad</string>
 	<string name="disconnect_from_wheel">Unterbreche Verbindung zum Rad</string>
-	<string name="wheel_disconnected">Verbindung zum Rad unterbrochen</string>
-	<string name="wheel_connecting">Verbinde mit dem Rad …</string>
-	<string name="wheel_searching">Suche Rad …</string>
-	<string name="wheel_connected">Rad verbunden</string>
-	<string name="waiting_for_device">Warte auf das Gerät</string>
+    <string name="waiting_for_device">Warte auf das Gerät</string>
 	<string name="start_pebble_service">Starte Pebble Dash</string>
 	<string name="stop_pebble_service">Stop Pebble Dash</string>
 	<string name="start_data_service">Starte Logging</string>
@@ -90,7 +86,7 @@
 	<string name="kmh">km/h</string>
 	<string name="mph">mph</string>
 	<string name="km">km</string>
-	<string name="milli">mi</string>
+	<string name="miles">mi</string>
 	<string name="horn_mode_title">Hornmodus</string>
 	<string name="horn_mode_description">Wird ausgeführt wenn der Auswahl-Knopf der Pebble-Watch gedrückt wird</string>
 	<string name="tilt_back_description">Tiltback Geschwindigkeit</string>

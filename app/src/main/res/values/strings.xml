@@ -100,6 +100,7 @@
 
     // APP PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
+    <string name="use_fahrenheit" translatable="false">use_fahrenheit</string>
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="app_theme" translatable="false">app_theme</string>
     <string name="day_night_theme" translatable="false">day_night_theme</string>
@@ -143,7 +144,7 @@
     <string name="mph">mph</string>
     <string name="km">km</string>
     <string name="sec">sec</string>
-    <string name="milli">mi</string>
+    <string name="miles">mi</string>
 
     // Garmin ConnectIQ dialogs
     <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
@@ -168,10 +169,6 @@
     <string name="disconnect">Disconnect</string>
     <string name="connect_to_wheel">Connect to Wheel</string>
     <string name="disconnect_from_wheel">Disconnect from Wheel</string>
-    <string name="wheel_disconnected">Wheel Disconnected</string>
-    <string name="wheel_connecting">Connecting to Wheel…</string>
-    <string name="wheel_searching">Searching for Wheel…</string>
-    <string name="wheel_connected">Wheel Connected</string>
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
     <string name="show_settings">Show settings menu</string>
@@ -306,8 +303,11 @@
     <string name="newton">N*m</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>
+    <string name="measurement_systems_category_title">Measurement systems</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
+    <string name="use_fahrenheit_title">Use Fahrenheit</string>
+    <string name="use_fahrenheit_description">Show temperature in Fahrenheit rather than Celsius</string>
     <string name="view_blocks_string" translatable="false">view_blocks_string</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>

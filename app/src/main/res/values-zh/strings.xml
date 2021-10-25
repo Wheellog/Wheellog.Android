@@ -18,10 +18,6 @@
     <string name="disconnect">断开</string>
     <string name="connect_to_wheel">连接到轮子</string>
     <string name="disconnect_from_wheel">断开轮子</string>
-    <string name="wheel_disconnected">轮子断开</string>
-    <string name="wheel_connecting">连接轮子中…</string>
-    <string name="wheel_searching">搜索轮子中…</string>
-    <string name="wheel_connected">轮子连接</string>
     <string name="waiting_for_device">等待设备</string>
     <string name="start_pebble_service">启动Pebble Dash</string>
     <string name="stop_pebble_service">停止Pebble Dash</string>
@@ -84,7 +80,7 @@
     <string name="kmh">km/h</string>
     <string name="mph">mph</string>
     <string name="km">km</string>
-    <string name="milli">mi</string>
+    <string name="miles">mi</string>
     <string name="horn_mode_title">喇叭模式</string>
     <string name="horn_mode_description">按下Pebble手表上的选择按钮时执行</string>
     <string name="tilt_back_description" >翘板速度</string>

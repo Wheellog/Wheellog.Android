@@ -35,12 +35,12 @@
     <string name="speed">Швидкість</string>
     <string name="mode">Режим роботы</string>
     <string name="started_logging">Початок запису</string>
-    <string name="scanning">Пошук...</string>
+    <string name="scanning">Пошук…</string>
     <string name="back_to_exit">Натисніть назад для виходу</string>
     <string name="kmh">км/г</string>
     <string name="mph">миль/г</string>
     <string name="km">км</string>
-    <string name="milli">милі</string>
+    <string name="miles">милі</string>
     <string name="horn_mode_title">Налаштування Сигналу</string>
     <string name="tilt_back_description">Швидкість підйому педалей</string>
     <string name="alarm3_description">4 звукові сигнали</string>
@@ -188,10 +188,6 @@
     <string name="use_pip_mode_title">Картинка-в-Картинці</string>
     <string name="voltage_sag">Просадка напруги</string>
     <string name="waiting_for_device">Очікування пристрою</string>
-    <string name="wheel_connected">Колесо підключене</string>
-    <string name="wheel_connecting">Підключення до колеса...</string>
-    <string name="wheel_disconnected">Колесо відключене</string>
-    <string name="wheel_searching">Пошук колеса</string>
     <string name="max_speed_dial_description">Максимальне значення зовнішньої шкали (швидкість та сила струму)</string>
     <string name="connection_sound_description">Програвати звуки підключення і відключення колеса</string>
     <string name="connection_sound_title">Звуки підключення колеса</string>
@@ -408,7 +404,9 @@
     <string name="use_wheel_beep_for_alarm_description">Аларми будуть передані на вбудований біпер замість навушників/колонки</string>
     <string name="miband_fixrs_title">Mi Band фікс для Begode RS/EX</string>
     <string name="miband_fixrs_description">Використовувати тільки якщо є проблеми з оновленням даних на Mi Band</string>
+    <string name="use_fahrenheit_title">Використовувати Фаренгейт</string>
+    <string name="use_fahrenheit_description">Показувати температуру в Фаренгейті замість Цельсію</string>
+    <string name="measurement_systems_category_title">Системи вимірювання</string>
     <string name="garmin_connectiq_use_beta_title">Бета компаньон Garmin</string>
     <string name="garmin_connectiq_use_beta_description">Використовувати бета-версію компаньона замість стабільного</string>
-
 </resources>
