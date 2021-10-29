@@ -24,9 +24,13 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     private var mSdkReady = false
     private var mConnectIQ = getInstance(this, IQConnectType.WIRELESS)
     private var mDevice: IQDevice? = null
-    private var mApp: IQApp? = null
-    private var mWebServer: GarminConnectIQWebServer? = null
     private var useBeta = WheelLog.AppConfig.useGarminBetaCompanion
+    private var mApp: IQApp = if (useBeta) {
+        IQApp(BETA_APP_ID)
+    } else {
+        IQApp(STABLE_APP_ID)
+    }
+    private var mWebServer: GarminConnectIQWebServer? = null
 
     override fun onBind(intent: Intent): IBinder? {
         Timber.i("onBind")
@@ -39,11 +43,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         instance = this
 
         // Setup Connect IQ
-        mApp = if (useBeta) {
-            IQApp(BETA_APP_ID)
-        } else {
-            IQApp(STABLE_APP_ID)
-        }
         mConnectIQ.initialize(this, false, this)
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         return START_STICKY
