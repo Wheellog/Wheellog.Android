@@ -174,7 +174,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     // IQApplicationEventListener
     override fun onMessageReceived(device: IQDevice, app: IQApp, message: List<Any>, status: IQMessageStatus) {
         Timber.d("onMessageReceived")
-        // This thing won't do anything, because every data transmit is done through a web server
+        // analyze the index manifest
     }
 
     // ConnectIQListener METHODS
@@ -231,94 +231,94 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         val isInstanceCreated: Boolean
             get() = instance != null
     }
-}
 
-internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1", 0) {
-    private var applicationContext: Context
+    private class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1", 0) {
+        private var applicationContext: Context
 
-    init {
-        start(SOCKET_READ_TIMEOUT, false)
-        applicationContext = context
-    }
+        init {
+            start(SOCKET_READ_TIMEOUT, false)
+            applicationContext = context
+        }
 
-    private fun playHorn() {
-        playBeep(applicationContext, WheelLog.AppConfig.hornMode == 1, false)
-    }
+        private fun playHorn() {
+            playBeep(applicationContext, WheelLog.AppConfig.hornMode == 1, false)
+        }
 
-    override fun serve(session: IHTTPSession): Response {
-        val wd = WheelData.getInstance()
-        val ac = WheelLog.AppConfig
-      
-        return when (session.method) {
-            Method.GET -> {
-                when (session.uri) {
-                    "/data/main" -> {
-                        val message = JSONObject()
-                        message.put("speed", if (wd.speedDouble.toString().length > 3) {
-                            ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
-                        } else wd.speedDouble.toString())
-                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
-                        message.put("speedLimit", ac.maxSpeed)
-                        message.put("useMph", ac.useMph)
-                        message.put("battery", wd.batteryLevel)
-                        message.put("temp", wd.temperature)
-                        message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
-                        message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
-                        message.put("connectedToWheel", wd.isConnected)
-                        message.put("wheelModel", wd.model)
+        override fun serve(session: IHTTPSession): Response {
+            val wd = WheelData.getInstance()
+            val ac = WheelLog.AppConfig
+        
+            return when (session.method) {
+                Method.GET -> {
+                    when (session.uri) {
+                        "/data/main" -> {
+                            val message = JSONObject()
+                            message.put("speed", if (wd.speedDouble.toString().length > 3) {
+                                ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
+                            } else wd.speedDouble.toString())
+                            message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
+                            message.put("speedLimit", ac.maxSpeed)
+                            message.put("useMph", ac.useMph)
+                            message.put("battery", wd.batteryLevel)
+                            message.put("temp", wd.temperature)
+                            message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
+                            message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
+                            message.put("connectedToWheel", wd.isConnected)
+                            message.put("wheelModel", wd.model)
 
-                        return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                    }
-                    "/data/details" -> {
-                        val message = JSONObject()
-                        message.put("useMph", ac.useMph)
-                        message.put("avgRidingSpeed", wd.averageSpeedDouble.toInt())
-                        message.put("avgSpeed", wd.averageRidingSpeedDouble.toInt())
-                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
-                        message.put("voltage", wd.voltageDouble.toString())
-                        message.put("maxVoltage", wd.maxVoltageForWheel.toString())
-                        message.put("battery", wd.batteryLevel)
-                        message.put("ridingTime", wd.ridingTimeString)
-                        message.put("distance", wd.distance)
-                        message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
-                        message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
-                        message.put("torque", wd.torque)
-                        message.put("power", wd.powerDouble)
-                        message.put("maxPower", wd.maxPowerDouble)
+                            return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
+                        }
+                        "/data/details" -> {
+                            val message = JSONObject()
+                            message.put("useMph", ac.useMph)
+                            message.put("avgRidingSpeed", wd.averageSpeedDouble.toInt())
+                            message.put("avgSpeed", wd.averageRidingSpeedDouble.toInt())
+                            message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
+                            message.put("voltage", wd.voltageDouble.toString())
+                            message.put("maxVoltage", wd.maxVoltageForWheel.toString())
+                            message.put("battery", wd.batteryLevel)
+                            message.put("ridingTime", wd.ridingTimeString)
+                            message.put("distance", wd.distance)
+                            message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
+                            message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
+                            message.put("torque", wd.torque)
+                            message.put("power", wd.powerDouble)
+                            message.put("maxPower", wd.maxPowerDouble)
 
-                        message.put("connectedToWheel", wd.isConnected)
+                            message.put("connectedToWheel", wd.isConnected)
 
-                        return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
-                    }
-                    "/data/alarms" -> {
-                        val message = "${wd.alarm}"
-                        newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
-                    }
-                    else -> {
-                        Timber.i("404 Wrong endpoint")
-                        newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                            return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
+                        }
+                        "/data/alarms" -> {
+                            val message = "${wd.alarm}"
+                            newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
+                        }
+                        else -> {
+                            Timber.i("404 Wrong endpoint")
+                            newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                        }
                     }
                 }
-            }
-            Method.POST -> {
-                when (session.uri) {
-                    "/actions/triggerHorn" -> {
-                        playHorn()
-                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                Method.POST -> {
+                    when (session.uri) {
+                        "/actions/triggerHorn" -> {
+                            playHorn()
+                            newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                        }
+                        "/actions/frontLight/enable" -> {
+                            wd.updateLight(true)
+                            newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                        }
+                        "/actions/frontLight/disable" -> {
+                            newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
+                        }
+                        else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, action not found.")
                     }
-                    "/actions/frontLight/enable" -> {
-                        wd.updateLight(true)
-                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
-                    }
-                    "/actions/frontLight/disable" -> {
-                        newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, "Executed!") // Send data
-                    }
-                    else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, action not found.")
                 }
-            }
-            else -> {
-                Timber.i("404 Wrong method")
-                newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                else -> {
+                    Timber.i("404 Wrong method")
+                    newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404: File not found")
+                }
             }
         }
     }
