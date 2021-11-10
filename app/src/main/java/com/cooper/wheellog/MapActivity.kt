@@ -1,9 +1,12 @@
 package com.cooper.wheellog
 
+import android.content.DialogInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
@@ -23,7 +26,6 @@ import org.osmdroid.views.overlay.compass.CompassOverlay
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import timber.log.Timber
 import java.io.*
-import java.lang.IllegalArgumentException
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -62,6 +64,7 @@ class MapActivity : AppCompatActivity() {
         if (!header.containsKey(LogHeaderEnum.LATITUDE) || !header.containsKey(LogHeaderEnum.LONGITUDE)) {
             inputStream.close()
             // TODO: localize me
+
             Timber.wtf("%s file does not contain geolocation data.", extras.get("title"))
             return null
         }
@@ -185,7 +188,19 @@ class MapActivity : AppCompatActivity() {
                 return@launch
             }
             if (line == null) {
-                this@MapActivity.finish()
+                MainScope().launch {
+                    map.isVisible = true
+                    AlertDialog.Builder(applicationContext)
+                        .setTitle("Failed to open map.")
+                        .setMessage("Trip file does not contain geolocation data. It can't be opened on a map, but you can enable GPS recording, so you will be able to see trips maps")
+                        .setPositiveButton("Enable GPS") { _, _ ->
+                            this@MapActivity.finish()
+                        }
+                        .setNegativeButton("Exit") { _, _ ->
+                            this@MapActivity.finish()
+                        }
+                        .show()
+                }
                 return@launch
             }
 
