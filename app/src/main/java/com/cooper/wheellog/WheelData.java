@@ -1278,6 +1278,7 @@ public class WheelData {
             checkAlarmStatus(mContext);
 
         timestamp_last = timestamp_raw;
+        intent.putExtra("Speed", mSpeed);
         mContext.sendBroadcast(intent);
 
         CheckMuteMusic();
