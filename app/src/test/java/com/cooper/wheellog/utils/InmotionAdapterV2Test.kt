@@ -183,5 +183,106 @@ class InmotionAdapterV2Test {
         assertThat(data.roll).isEqualTo(-0.44)
     }
 
+    @Test
+    fun `decode with v12 full data 2`() {
+        // Arrange.
+        val byteArray1 = "aaaa110882010207010103009c".hexToByteArray() // wheel type
+        val byteArray2 = "aaaa11178202413033313135353133303030393733300000000000fb".hexToByteArray() // s/n
+        val byteArray3 = "aaaa111d820622700002042000060221180004017d000602232400010203000402bc".hexToByteArray() //versions
+        val byteArray5 = "aaaa142b900001082608000000c1b55622330000000000cdceb0ce0000000000000000000000000000000008000000ce".hexToByteArray() // probably statistics
+        val byteArray6 = "aaaa1419916350000074471800d1140400c68e00007d350200b0ce000039".hexToByteArray() // totals
+        val byteArray7 = "aaaa144384ae24600479135909c61536085a0b00003f000000eb003700a5aa21b61f50463b1b581b000000000000ddd900dfe5e4b0f9646400000000490800000000000000000000dd".hexToByteArray()
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isTrue()
+        assertThat(data.serial).isEqualTo("1480CA122207002B")
+        assertThat(data.model).isEqualTo("Inmotion V11")
+        assertThat(data.version).isEqualTo("rev: 2.1")
+
+
+        assertThat(data.speedDouble).isEqualTo(24.01)
+        assertThat(data.temperature).isEqualTo(27)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(-176)
+        assertThat(data.cpuTemp).isEqualTo(-176)
+        assertThat(data.motorPower).isEqualTo(1184.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(44.26)
+        assertThat(data.voltageDouble).isEqualTo(79.10)
+        assertThat(data.currentDouble).isEqualTo(15.15)
+        assertThat(data.wheelDistanceDouble).isEqualTo(4.79)
+        assertThat(data.totalDistance).isEqualTo(278800)
+        assertThat(data.batteryLevel).isEqualTo(88)
+        assertThat(data.powerDouble).isEqualTo(1198.0)
+        assertThat(data.angle).isEqualTo(3.3)
+        assertThat(data.roll).isEqualTo(-0.44)
+    }
+
+    @Test
+    fun `decode with v12 data 3`() {
+        // Arrange.
+        val byteArray1 = "aaaa14438415273500930496014b0535003a0000008d000000fdfe010010271c255046581b581b000000000000ceca00cfd1d0b08d646400000000490000000000000000000000bc".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(29.16)
+        assertThat(data.temperature).isEqualTo(16)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(35)
+        assertThat(data.cpuTemp).isEqualTo(33)
+        assertThat(data.motorPower).isEqualTo(89.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(2.75)
+        assertThat(data.voltageDouble).isEqualTo(78.50)
+        assertThat(data.currentDouble).isEqualTo(1.29)
+        assertThat(data.wheelDistanceDouble).isEqualTo(10.45)
+        assertThat(data.batteryLevel).isEqualTo(76)
+        assertThat(data.powerDouble).isEqualTo(101.0)
+        assertThat(data.angle).isEqualTo(0.24)
+        assertThat(data.roll).isEqualTo(1.24)
+    }
+
+
+    @Test
+    fun `decode with v12 data 4`() {
+        // Arrange.
+        val byteArray1 = "aaaa1443842627090000000000060000000000000000000000b3fd000010271c255046581b581b000000000000ceca00ced0cfb048282800000000490000000000000000000000ef".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(29.16)
+        assertThat(data.temperature).isEqualTo(16)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(35)
+        assertThat(data.cpuTemp).isEqualTo(33)
+        assertThat(data.motorPower).isEqualTo(89.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(2.75)
+        assertThat(data.voltageDouble).isEqualTo(78.50)
+        assertThat(data.currentDouble).isEqualTo(1.29)
+        assertThat(data.wheelDistanceDouble).isEqualTo(10.45)
+        assertThat(data.batteryLevel).isEqualTo(76)
+        assertThat(data.powerDouble).isEqualTo(101.0)
+        assertThat(data.angle).isEqualTo(0.24)
+        assertThat(data.roll).isEqualTo(1.24)
+    }
+
 
 }

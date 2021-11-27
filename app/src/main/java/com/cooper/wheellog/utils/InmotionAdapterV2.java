@@ -54,7 +54,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.TotalStats.getValue()) {
                             return result.parseTotalStats();
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                            return result.parseRealTimeInfo(mContext);
+                            return result.parseRealTimeInfov12(mContext);
                         } else {
                             Timber.i("Get unknown command: %02X", result.command);
                         }
@@ -583,6 +583,91 @@ public class InmotionAdapterV2 extends BaseAdapter {
             }
             return true;
         }
+
+        boolean parseRealTimeInfov12(Context sContext) {
+            Timber.i("Parse realtime stats data");
+            WheelData wd = WheelData.getInstance();
+            int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
+            int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
+            int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
+            int mTorque = MathsUtil.signedShortFromBytesLE(data, 6);
+            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 8);
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 10);
+            int mMileage = MathsUtil.shortFromBytesLE(data, 12) * 10;
+            int mRemainMileage = MathsUtil.shortFromBytesLE(data, 14) * 10;
+            int mBatLevel = data[16] & 0x7f;
+            int mBatMode = (data[16] >> 7)  & 0x1;
+            int mMosTemp = (data[40] & 0xff) + 80 - 256;
+            int mMotTemp = (data[41] & 0xff) + 80 - 256;
+            int mBatTemp = (data[42] & 0xff) + 80 - 256;
+            int mBoardTemp = (data[43] & 0xff) + 80 - 256;
+            int mLampTemp = (data[44] & 0xff) + 80 - 256;
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 24);
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 26);
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 28);
+            int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 30);
+            int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 32);
+            int mBrightness = data[32]& 0xff;
+            int mLightBrightness = data[33]& 0xff;
+            int mCpuTemp = (data[44] & 0xff) + 80 - 256;
+            int mImuTemp = (data[45] & 0xff) + 80 - 256;
+            wd.setVoltage(mVoltage);
+            wd.setTorque((double)mTorque/100.0);
+            wd.setMotorPower(mMotPower);
+            wd.setCpuTemp(mCpuTemp);
+            wd.setImuTemp(mImuTemp);
+            wd.setCurrent(mCurrent);
+            wd.setSpeed(mSpeed);
+            wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
+            wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
+            wd.setBatteryLevel(mBatLevel);
+            wd.setTemperature(mMosTemp * 100);
+            wd.setTemperature2(mBoardTemp * 100);
+            wd.setAngle((double)mPitchAngle/100.0);
+            wd.setRoll((double)mRollAngle/100.0);
+            wd.updateRideTime();
+            wd.setTopSpeed(mSpeed);
+            wd.setVoltageSag(mVoltage);
+            wd.setPower(mBatPower * 100);
+            wd.setWheelDistance(mMileage);
+            //// state data
+            int mPcMode = data[36] & 0x07; // lock, drive, shutdown, idle
+            int mMcMode = (data[36]>>3)&0x07;
+            int mMotState = (data[36]>>6)&0x01;
+            int chrgState = (data[36]>>7)&0x01;
+            int lightState = (data[37])&0x01;
+            int decorLiState = (data[37] >> 1) & 0x01;
+            int liftedState = (data[37]>>2)&0x01;
+            int tailLiState = (data[37]>>3)&0x03;
+            int fanState = (data[37]>>5)&0x01;
+            String wmode = "";
+            if (mMotState == 1) {wmode = wmode + "Active";}
+            if (chrgState == 1) {wmode = wmode + " Charging";}
+            if (liftedState == 1) {wmode = wmode + " Lifted";}
+            wd.setModeStr(wmode);
+            //WheelLog.AppConfig.setFanEnabled(fanState != 0); // bad behaviour
+
+            if (WheelLog.AppConfig.getLightEnabled() != (lightState == 1)) {
+                if (lightSwitchCounter > 3) {
+                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    lightSwitchCounter = 0;
+                } else lightSwitchCounter += 1;
+            } else lightSwitchCounter = 0;
+
+            //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
+
+            //// errors data
+            String inmoError = getError();
+            wd.setAlert(inmoError);
+            if ((inmoError != "") && (sContext != null)) {
+                Timber.i("News to send: %s, sending Intent", inmoError);
+                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                sContext.sendBroadcast(intent);
+            }
+            return true;
+        }
+
 
         public static Message getCarType() {
             Message msg = new Message();
