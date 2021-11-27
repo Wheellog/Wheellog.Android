@@ -13,6 +13,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
@@ -316,10 +317,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.mph), MathsUtil.kmToMiles(WheelData.getInstance().averageSpeedDouble)))
                     updateFieldForSecondPage(R.string.average_riding_speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.mph), MathsUtil.kmToMiles(WheelData.getInstance().averageRidingSpeedDouble)))
                     updateFieldForSecondPage(R.string.dynamic_speed_limit, String.format(Locale.US, "%.1f " + activity.getString(R.string.mph), MathsUtil.kmToMiles(WheelData.getInstance().speedLimit)))
-                    updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.milli), MathsUtil.kmToMiles(WheelData.getInstance().distanceDouble)))
-                    updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.milli), MathsUtil.kmToMiles(WheelData.getInstance().wheelDistanceDouble)))
-                    updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.milli), MathsUtil.kmToMiles(WheelData.getInstance().userDistanceDouble)))
-                    updateFieldForSecondPage(R.string.total_distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.milli), MathsUtil.kmToMiles(WheelData.getInstance().totalDistanceDouble)))
+                    updateFieldForSecondPage(R.string.distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.miles), MathsUtil.kmToMiles(WheelData.getInstance().distanceDouble)))
+                    updateFieldForSecondPage(R.string.wheel_distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.miles), MathsUtil.kmToMiles(WheelData.getInstance().wheelDistanceDouble)))
+                    updateFieldForSecondPage(R.string.user_distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.miles), MathsUtil.kmToMiles(WheelData.getInstance().userDistanceDouble)))
+                    updateFieldForSecondPage(R.string.total_distance, String.format(Locale.US, "%.2f " + activity.getString(R.string.miles), MathsUtil.kmToMiles(WheelData.getInstance().totalDistanceDouble)))
                 } else {
                     updateFieldForSecondPage(R.string.speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.kmh), WheelData.getInstance().speedDouble))
                     updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.kmh), WheelData.getInstance().topSpeedDouble))
@@ -333,10 +334,12 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 }
                 updateFieldForSecondPage(R.string.voltage, String.format(Locale.US, "%.2f " + activity.getString(R.string.volt), WheelData.getInstance().voltageDouble))
                 updateFieldForSecondPage(R.string.voltage_sag, String.format(Locale.US, "%.2f " + activity.getString(R.string.volt), WheelData.getInstance().voltageSagDouble))
-                updateFieldForSecondPage(R.string.temperature, String.format(Locale.US, "%d°C", WheelData.getInstance().temperature))
-                updateFieldForSecondPage(R.string.temperature2, String.format(Locale.US, "%d°C", WheelData.getInstance().temperature2))
-                updateFieldForSecondPage(R.string.cpu_temp, String.format(Locale.US, "%d°C", WheelData.getInstance().cpuTemp))
-                updateFieldForSecondPage(R.string.imu_temp, String.format(Locale.US, "%d°C", WheelData.getInstance().imuTemp))
+
+                updateFieldForSecondPage(R.string.temperature, WheelData.getInstance().temperature.toTempString())
+                updateFieldForSecondPage(R.string.temperature2, WheelData.getInstance().temperature2.toTempString())
+                updateFieldForSecondPage(R.string.cpu_temp, WheelData.getInstance().cpuTemp.toTempString())
+                updateFieldForSecondPage(R.string.imu_temp, WheelData.getInstance().imuTemp.toTempString())
+
                 updateFieldForSecondPage(R.string.angle, String.format(Locale.US, "%.2f°", WheelData.getInstance().angle))
                 updateFieldForSecondPage(R.string.roll, String.format(Locale.US, "%.2f°", WheelData.getInstance().roll))
                 updateFieldForSecondPage(R.string.current, String.format(Locale.US, "%.2f " + activity.getString(R.string.amp), WheelData.getInstance().currentDouble))

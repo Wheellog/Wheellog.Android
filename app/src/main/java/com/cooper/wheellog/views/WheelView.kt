@@ -16,6 +16,7 @@ import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
 import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
@@ -107,8 +108,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 ViewBlockInfo(resources.getString(R.string.pwm)) { String.format(Locale.US, "%.2f%%", mPwm) },
                 ViewBlockInfo(resources.getString(R.string.max_pwm)) { String.format(Locale.US, "%.2f%%", mMaxPwm) },
                 ViewBlockInfo(resources.getString(R.string.voltage)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), mVoltage) },
-                ViewBlockInfo(resources.getString(R.string.average_riding_speed))
-                {
+                ViewBlockInfo(resources.getString(R.string.average_riding_speed)) {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mAverageSpeed))
                     } else {
@@ -116,18 +116,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     }
                 },
                 ViewBlockInfo(resources.getString(R.string.riding_time)) { mCurrentTime },
-                ViewBlockInfo(resources.getString(R.string.top_speed))
-                {
+                ViewBlockInfo(resources.getString(R.string.top_speed)) {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mTopSpeed))
                     } else {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), mTopSpeed)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.distance))
-                {
+                ViewBlockInfo(resources.getString(R.string.distance)) {
                     if (useMph) {
-                        String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(mDistance))
+                        String.format(Locale.US, "%.2f " + resources.getString(R.string.miles), kmToMiles(mDistance))
                     } else {
                         if (mDistance < 1) {
                             String.format(Locale.US, "%.0f " + resources.getString(R.string.metre), mDistance * 1000)
@@ -136,10 +134,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         }
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.total))
-                {
+                ViewBlockInfo(resources.getString(R.string.total)) {
                     if (useMph) {
-                        String.format(Locale.US, "%.0f " + resources.getString(R.string.milli), kmToMiles(mTotalDistance))
+                        String.format(Locale.US, "%.0f " + resources.getString(R.string.miles), kmToMiles(mTotalDistance))
                     } else {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
@@ -147,46 +144,105 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 ViewBlockInfo(resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
                 ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
                 ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrentDouble) },
-                ViewBlockInfo(resources.getString(R.string.power),
-                        { String.format(Locale.US, "%.2f " + resources.getString(R.string.watt), WheelData.getInstance().powerDouble) }, false),
-                ViewBlockInfo(resources.getString(R.string.maxpower),
-                        { String.format(Locale.US, "%.0f " + resources.getString(R.string.watt), WheelData.getInstance().maxPowerDouble) }, false),
-                ViewBlockInfo(resources.getString(R.string.temperature),
-                        { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature) }, false),
-                ViewBlockInfo(resources.getString(R.string.temperature2),
-                        { String.format(Locale.US, "%d ℃", WheelData.getInstance().temperature2) }, false),
-                ViewBlockInfo(resources.getString(R.string.maxtemperature),
-                        { String.format(Locale.US, "%d ℃", mMaxTemperature) }, false),
-                ViewBlockInfo(resources.getString(R.string.average_speed),
-                        {
-                            if (useMph) {
-                                String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(WheelData.getInstance().averageSpeedDouble))
-                            } else {
-                                String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), WheelData.getInstance().averageSpeedDouble)
-                            }
-                        }, false),
-                ViewBlockInfo(resources.getString(R.string.ride_time),
-                        { WheelData.getInstance().rideTimeString }, false),
-                ViewBlockInfo(resources.getString(R.string.wheel_distance),
-                        {
-                            if (useMph) {
-                                String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(WheelData.getInstance().wheelDistanceDouble))
-                            } else {
-                                String.format(Locale.US, "%.3f " + resources.getString(R.string.km), WheelData.getInstance().wheelDistanceDouble)
-                            }
-                        }, false),
-                ViewBlockInfo(resources.getString(R.string.remaining_distance),
-                        {
-                            if (useMph) {
-                                String.format(Locale.US, "%.2f " + resources.getString(R.string.milli), kmToMiles(WheelData.getInstance().remainingDistance))
-                            } else {
-                                String.format(Locale.US, "%.3f " + resources.getString(R.string.km), WheelData.getInstance().remainingDistance)
-                            }
-                        }, false),
-                ViewBlockInfo(resources.getString(R.string.battery_per_km),
+                ViewBlockInfo(
+                    resources.getString(R.string.power),
+                    {
+                        String.format(
+                            Locale.US,
+                            "%.2f " + resources.getString(R.string.watt),
+                            WheelData.getInstance().powerDouble
+                        )
+                    },
+                    false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.maxpower),
+                    {
+                        String.format(
+                            Locale.US,
+                            "%.0f " + resources.getString(R.string.watt),
+                            WheelData.getInstance().maxPowerDouble
+                        )
+                    },
+                    false
+                ),
+                ViewBlockInfo(resources.getString(R.string.temperature), {
+                    mTemperature.toTempString()
+                },
+                false),
+                ViewBlockInfo(resources.getString(R.string.temperature2), {
+                    WheelData.getInstance().temperature2.toTempString()
+                }, false),
+                ViewBlockInfo(resources.getString(R.string.maxtemperature), {
+                    mMaxTemperature.toTempString()
+                }, false),
+                ViewBlockInfo(resources.getString(R.string.average_speed), {
+                        if (useMph) {
+                            String.format(
+                                Locale.US,
+                                "%.1f " + resources.getString(R.string.mph),
+                                kmToMiles(WheelData.getInstance().averageSpeedDouble)
+                            )
+                        } else {
+                            String.format(
+                                Locale.US,
+                                "%.1f " + resources.getString(R.string.kmh),
+                                WheelData.getInstance().averageSpeedDouble
+                            )
+                        }
+                    },
+                    false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.ride_time),
+                    { WheelData.getInstance().rideTimeString },
+                    false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.wheel_distance),
+                    {
+                        if (useMph) {
+                            String.format(
+                                Locale.US,
+                                "%.2f " + resources.getString(R.string.miles),
+                                kmToMiles(WheelData.getInstance().wheelDistanceDouble)
+                            )
+                        } else {
+                            String.format(
+                                Locale.US,
+                                "%.3f " + resources.getString(R.string.km),
+                                WheelData.getInstance().wheelDistanceDouble
+                            )
+                        }
+                    },
+                    false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.remaining_distance),
+                    {
+                        if (useMph) {
+                            String.format(
+                                Locale.US,
+                                "%.2f " + resources.getString(R.string.miles),
+                                kmToMiles(WheelData.getInstance().remainingDistance)
+                            )
+                        } else {
+                            String.format(
+                                Locale.US,
+                                "%.3f " + resources.getString(R.string.km),
+                                WheelData.getInstance().remainingDistance
+                            )
+                        }
+                    },
+                    false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.battery_per_km),
                     {
                         String.format(Locale.US, "%.2f %%", WheelData.getInstance().batteryPerKm)
-                    }, false)
+                    },
+                    false
+                )
         )
 
     fun setWheelModel(mWheelModel: String) {
@@ -610,15 +666,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 canvas.save()
             }
             if (width > height) canvas.rotate(143.5f + currentTemperature * 2.25f, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(143.5f + currentTemperature * 2.25f, innerArcRect.centerY(), innerArcRect.centerX())
-            val temperatureString = String.format(Locale.US, "%02d℃", mTemperature)
-            canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
+            canvas.drawText(mTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
             canvas.restore()
             canvas.save()
 
             // Max temperature
             if (width > height) canvas.rotate(-50f, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(-50f, innerArcRect.centerY(), innerArcRect.centerX())
-            val maxTemperatureString = String.format(Locale.US, "%02d℃", mMaxTemperature)
-            canvas.drawText(maxTemperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
+            canvas.drawText(mMaxTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
             canvas.restore()
             canvas.save()
         }
@@ -780,8 +834,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 canvas.save()
             }
             if (width > height) canvas.rotate(138f + 120 * 2.25f, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(135f + 120 * 2.25f, innerArcRect.centerY(), innerArcRect.centerX())
-            val temperatureString = java.lang.String.format(Locale.US, "%02d℃", mTemperature)
-            canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
+            canvas.drawText(mTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
             canvas.restore()
             canvas.save()
         }

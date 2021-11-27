@@ -18,17 +18,12 @@
 	<string name="disconnect">Desconectar</string>
 	<string name="connect_to_wheel">Conectar ao Monociclo</string>
 	<string name="disconnect_from_wheel">Desconectar do Monociclo</string>
-	<string name="wheel_disconnected">Monociclo Desconectado</string>
-	<string name="wheel_connecting">Conectando ao monociclo...</string>
-	<string name="wheel_searching">Procurando por monociclo</string>
-	<string name="wheel_connected">Monociclo Conectado</string>
-	<string name="waiting_for_device">Aguardando dispositivo</string>
+    <string name="waiting_for_device">Aguardando dispositivo</string>
 	<string name="start_pebble_service">Iniciar Pebble Dash</string>
 	<string name="stop_pebble_service">Parar Pebble Dash</string>
 	<string name="start_data_service">Iniciar Registro</string>
 	<string name="stop_data_service">Parar Registro</string>
-	<string name="started_logging">Iniciar registro %1$s</string>
-	<string name="wheel_type_recognized">Detectado protocolo do Monociclo %1$s</string>
+	<string name="started_logging">Iniciar registro</string>
 	<string name="search_for_wheel">Procurar Monociclo</string>
 	<string name="scanning">Procurando...</string>
 	<string name="devices">Dispositivos</string>
@@ -91,7 +86,7 @@
 	<string name="kmh">km/h</string>
 	<string name="mph">mph</string>
 	<string name="km">km</string>
-	<string name="milli">mi</string>
+	<string name="miles">mi</string>
 	<string name="horn_mode_title">Modo da Buzina</string>
 	<string name="horn_mode_description">Executado quando o botão de seleção do relógio Pebble é pressionado</string>
 	<string name="tilt_back_description">Velocidade de início do Tiltback</string>
@@ -186,7 +181,6 @@
 	<string name="speaker_volume_description">Mudar volume do alto-falante</string>
 	<string name="pedal_horizont_title">Pedais</string>
 	<string name="pedal_horizont_description">Ajuste horizontal dos pedais</string>
-	<string name="ninebotz_settings_title">Configurações do monociclo Ninebot Z ainda não disponíveis</string>
-	<string name="volt">V</string>
+    <string name="volt">V</string>
 	<string name="watt">W</string>
 </resources>

@@ -7,5 +7,9 @@ class Utils {
         fun String.hexToByteArray(): ByteArray {
             return this.decodeHex().toByteArray()
         }
+
+        fun ByteArray.toHex(): String {
+            return joinToString(separator = "") { eachByte -> "%02x".format(eachByte) }
+        }
     }
 }

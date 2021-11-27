@@ -81,11 +81,21 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
             dependency = getString(R.string.fixed_percents)
         }
-        SwitchPreference(context).apply {
-            key = getString(R.string.use_mph)
-            title = getString(R.string.use_mph_title)
-            summary = getString(R.string.use_mph_description)
+        PreferenceCategory(context).apply {
+            title = getString(R.string.measurement_systems_category_title)
             ps.addPreference(this)
+            SwitchPreference(context).apply {
+                key = getString(R.string.use_mph)
+                title = getString(R.string.use_mph_title)
+                summary = getString(R.string.use_mph_description)
+                ps.addPreference(this)
+            }
+            SwitchPreference(context).apply {
+                key = getString(R.string.use_fahrenheit)
+                title = getString(R.string.use_fahrenheit_title)
+                summary = getString(R.string.use_fahrenheit_description)
+                ps.addPreference(this)
+            }
         }
         PreferenceCategory(context).apply {
             title = getString(R.string.after_connect_category)

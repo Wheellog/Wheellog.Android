@@ -106,8 +106,10 @@ public class BluetoothLeService extends Service {
                 }
                 mDisconnectTime = null;
                 // Attempts to discover services after successful connection.
-                Timber.i("Attempting to start service discovery:%b",
-                        mBluetoothGatt.discoverServices());
+                if (mBluetoothGatt != null) {
+                    Timber.i("Attempting to start service discovery:%b",
+                            mBluetoothGatt.discoverServices());
+                }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Timber.i("Disconnected from GATT server.");
                 if (mConnectionState == STATE_CONNECTED) {

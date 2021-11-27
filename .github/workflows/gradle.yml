@@ -49,10 +49,16 @@ jobs:
         rm -f ~/.gradle/caches/modules-2/gc.properties
 
     - name: Get APK
-      uses: actions/upload-artifact@v2.2.2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+          
+    - name: Get wearos APK
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: wearos-debug
+        path: wearos/build/outputs/apk/debug/wearos-debug.apk
 
     - name: Send apk to telegram
       env: 

@@ -18,6 +18,11 @@ public class MathsUtil {
         return (float) kmToMiles((double) km);
     }
 
+    public static double celsiusToFahrenheit(double temp) {
+        // celsius-to-fahrenheit.org
+        return temp * 9.0 / 5.0 + 32;
+    }
+
     public static int dpToPx(@NotNull Context context, int dp) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()));
     }

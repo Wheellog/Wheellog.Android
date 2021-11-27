@@ -129,7 +129,13 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                        context.deleteFile(tripModel.mediaId.replace(':', '_'))
+                        val file = File(tripModel.mediaId.replace(':', '_'))
+                        if (file.exists()) {
+                            file.canonicalFile.delete()
+                            if (file.exists()) {
+                                file.delete()
+                            }
+                        }
                     } else {
                         WheelLog.cResolver().delete(tripModel.uri, null, null)
                     }

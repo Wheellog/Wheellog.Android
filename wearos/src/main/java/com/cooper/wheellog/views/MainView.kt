@@ -25,10 +25,14 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
             wd.apply {
                 timeString = "15:50"
                 currentOnDial = false
-                speed = 2.5
-                maxSpeed = 50
-                temperature = 33
-                maxTemperature = 80
+                speed.apply {
+                    value = 2.5
+                    max = 50.0
+                }
+                temperature.apply {
+                    value = 33.0
+                    max = 80.0
+                }
                 battery = 90
                 batteryLowest = 50
             }
@@ -144,9 +148,9 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         var currentDial: Int = if (wd.currentOnDial) {
-            (112 * wd.current / MathUtils.clamp(wd.maxCurrent, 1.0, 100.0)).roundToInt()
+            (112 * wd.current.value / MathUtils.clamp(wd.current.max, 1.0, 100.0)).roundToInt()
         } else {
-            (112 * wd.speed / MathUtils.clamp(wd.maxSpeed, 1, 100)).roundToInt()
+            (112 * wd.speed.value / MathUtils.clamp(wd.speed.max, 1.0, 100.0)).roundToInt()
         }
 
         //####################################################
@@ -176,8 +180,8 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         canvas.drawArc(innerArcRect, 144f + batteryValue, batteryLowestValue - batteryValue, false, innerArcPaint)
 
         // 0 - max | -90 - min
-        val value = MathUtils.clamp(wd.temperature, 0, 80) / 2f * 2.25f - 90f
-        if (wd.temperature > 0) {
+        val value = MathUtils.clamp(wd.temperature.value, 0.0, 80.0).toFloat() / 2f * 2.25f - 90f
+        if (wd.temperature.value > 0) {
             innerArcPaint.color = context.getColor(R.color.temperature_dial)
             canvas.drawArc(innerArcRect, 306 - value, 90 + value, false, innerArcPaint)
         } else {
@@ -188,7 +192,7 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         //####################################################
         //################# DRAW SPEED TEXT ##################
         //####################################################
-        val speed = wd.speed
+        val speed = wd.speed.value
         val speedString: String =
             if (speed < 10) String.format(Locale.US, "%.1f", speed)
             else String.format(Locale.US, "%02d", speed.toInt())
@@ -213,7 +217,7 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
             textPaint.textSize = innerArcTextSize
             val bestBatteryString = java.lang.String.format(Locale.US, "%02d%%", wd.battery)
             canvas.drawText(bestBatteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint)
-            val temperatureString = java.lang.String.format(Locale.US, "%02d℃", wd.temperature)
+            val temperatureString = java.lang.String.format(Locale.US, "%02d℃", wd.temperature.value.toInt())
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
         }
     }
