@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -24,6 +25,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     private static int stateCon = 0;
     private static int lightSwitchCounter = 0;
     private byte[] settingCommand;
+    private static Model mModel = Model.UNKNOWN;
     InmotionUnpackerV2 unpacker = new InmotionUnpackerV2();
 
     @Override
@@ -54,7 +56,12 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.TotalStats.getValue()) {
                             return result.parseTotalStats();
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                            return result.parseRealTimeInfov12(mContext);
+                            if (getInstance().getModel() == Model.V12) {
+                                return result.parseRealTimeInfoV12(mContext);
+                            } else {
+                                return result.parseRealTimeInfoV11(mContext);
+                            }
+
                         } else {
                             Timber.i("Get unknown command: %02X", result.command);
                         }
@@ -63,6 +70,45 @@ public class InmotionAdapterV2 extends BaseAdapter {
             }
         }
         return false;
+    }
+
+
+    public enum Model {
+        V11(6, "Inmotion V11"),
+        V12(7, "Inmotion V12"),
+        UNKNOWN(0,"Inmotion Unknown");
+
+
+        private final int value;
+        private final String name;
+
+        Model(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public int getValue() {
+            return value;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public static Model findById(int id) {
+            Timber.i("Model %d", id);
+            for (Model m : Model.values()) {
+                if (m.getValue() == id) return m;
+            }
+            return Model.UNKNOWN;
+        }
+    }
+
+    public void setModel(Model value){
+        mModel = value;
+    }
+
+    public Model getModel(){
+        return mModel;
     }
 
     public static InmotionAdapterV2 getInstance() {
@@ -335,14 +381,17 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if ((data[0] == (byte) 0x01) && len >= 6) {
                 stateCon += 1;
                 Timber.i("Parse car type");
+                // 020601010100 -v11
+                // 020701010100 -v12
                 int mainSeries = data[1]; //02
                 int series = data[2];    // 06
                 int type = data[3];      // 01
                 int batch = data[4];     // 02
                 int feature = data[5];   // 01
                 int reverse = data[6];   // 00
-                wd.setModel("Inmotion V11");
-                wd.setVersion(String.format(Locale.ENGLISH,"rev: %d.%d",batch,feature));
+                getInstance().setModel(Model.findById(series));
+                wd.setModel(mModel.getName());
+                wd.setVersion(String.format(Locale.ENGLISH,"-")); // need to find how to parse
             } else if ((data[0] == (byte) 0x02) && len >= 17) {
                 stateCon += 1;
                 Timber.i("Parse serial num");
@@ -456,52 +505,52 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return false;
         }
 
-        String getError(){
+        String getError(int i){
             String inmoError = "";
-            if (((data[40])&0x01) == 1) inmoError += "err_iPhaseSensorState ";
-            if (((data[40]>>1) & 0x01) == 1) inmoError += "err_iBusSensorState ";
-            if (((data[40] >> 2) & 0x01)==1) inmoError += "err_motorHallState ";
-            if (((data[40] >> 3) & 0x01)==1) inmoError += "err_batteryState ";
-            if (((data[40] >> 4) & 0x01)==1) inmoError += "err_imuSensorState ";
-            if (((data[40] >> 5) & 0x01)==1) inmoError += "err_controllerCom1State ";
-            if (((data[40] >> 6) & 0x01)==1) inmoError += "err_controllerCom2State ";
-            if (((data[40] >> 7) & 0x01)==1) inmoError += "err_bleCom1State ";
-            if (((data[41]) & 0x01)==1) inmoError += "err_bleCom2State ";
-            if (((data[41] >> 1) & 0x01)==1) inmoError += "err_mosTempSensorState ";
-            if (((data[41] >> 2) & 0x01)==1) inmoError += "err_motorTempSensorState ";
-            if (((data[41] >> 3) & 0x01)==1) inmoError += "err_batteryTempSensorState ";
-            if (((data[41] >> 4) & 0x01)==1) inmoError += "err_boardTempSensorState ";
-            if (((data[41] >> 5) & 0x01)==1) inmoError += "err_fanState ";
-            if (((data[41] >> 6) & 0x01)==1) inmoError += "err_rtcState ";
-            if (((data[41] >> 7) & 0x01)==1) inmoError += "err_externalRomState ";
-            if (((data[42]) & 0x01)==1) inmoError += "err_vBusSensorState ";
-            if (((data[42] >> 1) & 0x01)==1) inmoError += "err_vBatterySensorState ";
-            if (((data[42] >> 2) & 0x01)==1) inmoError += "err_canNotPowerOffState";
-            if (((data[43]) & 0x01)==1) inmoError += "err_underVoltageState ";
-            if (((data[43] >> 1) & 0x01)==1) inmoError += "err_overVoltageState ";
-            if (((data[43] >> 2) & 0x03)==1) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
-            if (((data[43] >> 4) & 0x03)==1) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
-            if (((data[43] >> 6) & 0x01)==1) inmoError += "err_mosTempState ";
-            if (((data[43] >> 7) & 0x01)==1) inmoError += "err_motorTempState ";
-            if (((data[44]) & 0x01)==1) inmoError += "err_batteryTempState ";
-            if (((data[44] >> 1) & 0x01)==1) inmoError += "err_overBoardTempState ";
-            if (((data[44] >> 2) & 0x01)==1) inmoError += "err_overSpeedState ";
-            if (((data[44] >> 3) & 0x01)==1) inmoError += "err_outputSaturationState ";
-            if (((data[44] >> 4) & 0x01)==1) inmoError += "err_motorSpinState ";
-            if (((data[44] >> 5) & 0x01)==1) inmoError += "err_motorBlockState ";
-            if (((data[44] >> 6) & 0x01)==1) inmoError += "err_postureState ";
-            if (((data[44] >> 7) & 0x01)==1) inmoError += "err_riskBehaviourState ";
-            if (((data[45]) & 0x01)==1) inmoError += "err_motorNoLoadState ";
-            if (((data[45] >> 1) & 0x01)==1) inmoError += "err_noSelfTestState ";
-            if (((data[45] >> 2) & 0x01)==1) inmoError += "err_compatibilityState ";
-            if (((data[45] >> 3) & 0x01)==1) inmoError += "err_powerKeyLongPressState ";
-            if (((data[45] >> 6) & 0x01)==1) inmoError += "err_cpuOverTempState ";
-            if (((data[45] >> 7) & 0x01)==1) inmoError += "err_imuOverTempState ";
+            if (((data[i])&0x01) == 1) inmoError += "err_iPhaseSensorState ";
+            if (((data[i]>>1) & 0x01) == 1) inmoError += "err_iBusSensorState ";
+            if (((data[i] >> 2) & 0x01)==1) inmoError += "err_motorHallState ";
+            if (((data[i] >> 3) & 0x01)==1) inmoError += "err_batteryState ";
+            if (((data[i] >> 4) & 0x01)==1) inmoError += "err_imuSensorState ";
+            if (((data[i] >> 5) & 0x01)==1) inmoError += "err_controllerCom1State ";
+            if (((data[i] >> 6) & 0x01)==1) inmoError += "err_controllerCom2State ";
+            if (((data[i] >> 7) & 0x01)==1) inmoError += "err_bleCom1State ";
+            if (((data[i+1]) & 0x01)==1) inmoError += "err_bleCom2State ";
+            if (((data[i+1] >> 1) & 0x01)==1) inmoError += "err_mosTempSensorState ";
+            if (((data[i+1] >> 2) & 0x01)==1) inmoError += "err_motorTempSensorState ";
+            if (((data[i+1] >> 3) & 0x01)==1) inmoError += "err_batteryTempSensorState ";
+            if (((data[i+1] >> 4) & 0x01)==1) inmoError += "err_boardTempSensorState ";
+            if (((data[i+1] >> 5) & 0x01)==1) inmoError += "err_fanState ";
+            if (((data[i+1] >> 6) & 0x01)==1) inmoError += "err_rtcState ";
+            if (((data[i+1] >> 7) & 0x01)==1) inmoError += "err_externalRomState ";
+            if (((data[i+2]) & 0x01)==1) inmoError += "err_vBusSensorState ";
+            if (((data[i+2] >> 1) & 0x01)==1) inmoError += "err_vBatterySensorState ";
+            if (((data[i+2] >> 2) & 0x01)==1) inmoError += "err_canNotPowerOffState";
+            if (((data[i+3]) & 0x01)==1) inmoError += "err_underVoltageState ";
+            if (((data[i+3] >> 1) & 0x01)==1) inmoError += "err_overVoltageState ";
+            if (((data[i+3] >> 2) & 0x03)==1) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
+            if (((data[i+3] >> 4) & 0x03)==1) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
+            if (((data[i+3] >> 6) & 0x01)==1) inmoError += "err_mosTempState ";
+            if (((data[i+3] >> 7) & 0x01)==1) inmoError += "err_motorTempState ";
+            if (((data[i+4]) & 0x01)==1) inmoError += "err_batteryTempState ";
+            if (((data[i+4] >> 1) & 0x01)==1) inmoError += "err_overBoardTempState ";
+            if (((data[i+4] >> 2) & 0x01)==1) inmoError += "err_overSpeedState ";
+            if (((data[i+4] >> 3) & 0x01)==1) inmoError += "err_outputSaturationState ";
+            if (((data[i+4] >> 4) & 0x01)==1) inmoError += "err_motorSpinState ";
+            if (((data[i+4] >> 5) & 0x01)==1) inmoError += "err_motorBlockState ";
+            if (((data[i+4] >> 6) & 0x01)==1) inmoError += "err_postureState ";
+            if (((data[i+4] >> 7) & 0x01)==1) inmoError += "err_riskBehaviourState ";
+            if (((data[i+5]) & 0x01)==1) inmoError += "err_motorNoLoadState ";
+            if (((data[i+5] >> 1) & 0x01)==1) inmoError += "err_noSelfTestState ";
+            if (((data[i+5] >> 2) & 0x01)==1) inmoError += "err_compatibilityState ";
+            if (((data[i+5] >> 3) & 0x01)==1) inmoError += "err_powerKeyLongPressState ";
+            if (((data[i+5] >> 6) & 0x01)==1) inmoError += "err_cpuOverTempState ";
+            if (((data[i+5] >> 7) & 0x01)==1) inmoError += "err_imuOverTempState ";
             return inmoError;
         }
 
-        boolean parseRealTimeInfo(Context sContext) {
-            Timber.i("Parse realtime stats data");
+        boolean parseRealTimeInfoV11(Context sContext) {
+            Timber.i("Parse V11 realtime stats data");
             WheelData wd = WheelData.getInstance();
             int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
             int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
@@ -573,7 +622,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
             //// errors data
-            String inmoError = getError();
+            String inmoError = getError(40);
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
@@ -584,33 +633,38 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return true;
         }
 
-        boolean parseRealTimeInfov12(Context sContext) {
-            Timber.i("Parse realtime stats data");
+        boolean parseRealTimeInfoV12(Context sContext) {
+            Timber.i("Parse V12 realtime stats data");
             WheelData wd = WheelData.getInstance();
             int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
             int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
             int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
             int mTorque = MathsUtil.signedShortFromBytesLE(data, 6);
-            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 8);
-            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 10);
-            int mMileage = MathsUtil.shortFromBytesLE(data, 12) * 10;
-            int mRemainMileage = MathsUtil.shortFromBytesLE(data, 14) * 10;
-            int mBatLevel = data[16] & 0x7f;
-            int mBatMode = (data[16] >> 7)  & 0x1;
-            int mMosTemp = (data[40] & 0xff) + 80 - 256;
-            int mMotTemp = (data[41] & 0xff) + 80 - 256;
-            int mBatTemp = (data[42] & 0xff) + 80 - 256;
-            int mBoardTemp = (data[43] & 0xff) + 80 - 256;
-            int mLampTemp = (data[44] & 0xff) + 80 - 256;
-            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 24);
-            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 26);
-            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 28);
+            int mPwm = MathsUtil.signedShortFromBytesLE(data, 8);
+            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 10);
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 12);
+            int mXz = MathsUtil.signedShortFromBytesLE(data, 14); // always 0
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 16);
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 18);
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 20);
+            int mMileage = MathsUtil.shortFromBytesLE(data, 22) * 10;
+            int mBatLevel = MathsUtil.shortFromBytesLE(data, 24);
+            int mRemainMileage = MathsUtil.shortFromBytesLE(data, 26) * 10;
+            int mSomeThing180 = MathsUtil.shortFromBytesLE(data, 28); // always 18000
             int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 30);
             int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 32);
-            int mBrightness = data[32]& 0xff;
-            int mLightBrightness = data[33]& 0xff;
+            int mMosTemp = (data[40] & 0xff) + 80 - 256;
+            int mMotTemp = (data[41] & 0xff) + 80 - 256;
+            int mBatTemp = (data[42] & 0xff) + 80 - 256; // 0
+            int mBoardTemp = (data[43] & 0xff) + 80 - 256;
             int mCpuTemp = (data[44] & 0xff) + 80 - 256;
             int mImuTemp = (data[45] & 0xff) + 80 - 256;
+            int mLampTemp = (data[46] & 0xff) + 80 - 256; // 0
+// don't remove
+//            int mBrightness = data[48]& 0xff;
+//            int mLightBrightness = data[49]& 0xff;
+//            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Rem Km: %.3f, Bat: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
+//                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, mXz, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/10.0, mRemainMileage/1000.0, mBatLevel/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
             wd.setVoltage(mVoltage);
             wd.setTorque((double)mTorque/100.0);
             wd.setMotorPower(mMotPower);
@@ -620,9 +674,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setSpeed(mSpeed);
             wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
             wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
-            wd.setBatteryLevel(mBatLevel);
+            wd.setBatteryLevel((int)Math.round(mBatLevel/100.0));
             wd.setTemperature(mMosTemp * 100);
-            wd.setTemperature2(mBoardTemp * 100);
+            wd.setTemperature2(mMotTemp * 100);
+            wd.setOutput((int)Math.round(mPwm/100.0));
+            //wd.setMotorTemp(mMotTemp * 100); not existed in WD
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
             wd.updateRideTime();
@@ -631,33 +687,32 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setPower(mBatPower * 100);
             wd.setWheelDistance(mMileage);
             //// state data
-            int mPcMode = data[36] & 0x07; // lock, drive, shutdown, idle
-            int mMcMode = (data[36]>>3)&0x07;
-            int mMotState = (data[36]>>6)&0x01;
-            int chrgState = (data[36]>>7)&0x01;
-            int lightState = (data[37])&0x01;
-            int decorLiState = (data[37] >> 1) & 0x01;
-            int liftedState = (data[37]>>2)&0x01;
-            int tailLiState = (data[37]>>3)&0x03;
-            int fanState = (data[37]>>5)&0x01;
+            int mPcMode = data[54] & 0x07; // lock, drive, shutdown, idle
+            int mMcMode = (data[54]>>3)&0x07;
+            int mMotState = (data[54]>>6)&0x01;
+            int chrgState = (data[54]>>7)&0x01;
+            int lowLightState = (data[55])&0x01;
+            int highLightState = (data[55] >> 1) & 0x01;
+            int liftedState = (data[55]>>2)&0x01;
+            int tailLiState = (data[55]>>3)&0x03;
+            int fwUpdateState = (data[55]>>5)&0x01;
             String wmode = "";
             if (mMotState == 1) {wmode = wmode + "Active";}
             if (chrgState == 1) {wmode = wmode + " Charging";}
             if (liftedState == 1) {wmode = wmode + " Lifted";}
+            //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
-            //WheelLog.AppConfig.setFanEnabled(fanState != 0); // bad behaviour
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lightState == 1)) {
+            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
                 if (lightSwitchCounter > 3) {
                     //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
 
-            //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
-
             //// errors data
-            String inmoError = getError();
+            String inmoError = getError(59);
+            //if (!inmoError.equals("")) System.out.println(String.format(Locale.US,"Err: %s", inmoError));
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
