@@ -48,7 +48,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
                     } else if (result.flags == Message.Flag.Default.getValue()) {
                         if (result.command == Message.Command.Settings.getValue()) {
                             requestSettings = false;
-                            return result.parseSettings();
+                            if (getInstance().getModel() == Model.V12) {
+                                return false;
+                            } else {
+                                return result.parseSettings();
+                            }
                         } else if (result.command == Message.Command.Diagnistic.getValue()) {
                             return result.parseDiagnostic();
                         } else if (result.command == Message.Command.BatteryRealTimeInfo.getValue()) {
