@@ -560,7 +560,7 @@ public class WheelData {
     }
 
     public int getOutput() {
-        return mOutput;
+        return mOutput/100;
     }
 
     public void setOutput(int value) {
@@ -1243,8 +1243,8 @@ public class WheelData {
         setTopSpeed(mSpeed);
         setVoltageSag(mVoltage);
         setMaxTemp(mTemperature);
-        if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            mCalculatedPwm = (double) mOutput / 100.0;
+        if ((mWheelType == WHEEL_TYPE.KINGSONG) || (mWheelType == WHEEL_TYPE.INMOTION_V2)) {
+            mCalculatedPwm = (double) mOutput / 10000.0;
         } else {
             double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
             double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;

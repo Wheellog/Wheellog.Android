@@ -8,11 +8,7 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
-import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.InMotionAdapter
-import com.cooper.wheellog.utils.NinebotZAdapter
-import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.VeteranAdapter
+import com.cooper.wheellog.utils.*
 
 class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
     private var mac: String = ""
@@ -436,7 +432,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.max_speed_title)
             summary = getString(R.string.tilt_back_description)
             min = 3
-            max = 60
+            max = InmotionAdapterV2.getInstance().maxSpeed
             unit = speedUnit
             multiplier = speedMultipier
             increment = 1

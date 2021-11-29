@@ -133,7 +133,7 @@ public class KingsongAdapter extends BaseAdapter {
                 return false;
             } else if ((data[16] & 255) == 0xF5) { //cpu load
                 wd.setCpuLoad(data[14]);
-                wd.setOutput(data[15]);
+                wd.setOutput(data[15]*100);
                 return false;
             } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
                 mSpeedLimit = MathsUtil.getInt2R(data, 2) / 100.0;
