@@ -1243,17 +1243,8 @@ public class WheelData {
         setTopSpeed(mSpeed);
         setVoltageSag(mVoltage);
         setMaxTemp(mTemperature);
-        if (mWheelType == WHEEL_TYPE.KINGSONG) {
+        if ((mWheelType == WHEEL_TYPE.KINGSONG) || (mWheelType == WHEEL_TYPE.INMOTION_V2)) {
             mCalculatedPwm = (double) mOutput / 100.0;
-        } else if (mWheelType == WHEEL_TYPE.INMOTION_V2){
-            if (InmotionAdapterV2.getInstance().getModel() == InmotionAdapterV2.Model.V12) {
-                mCalculatedPwm = (double) mOutput / 100.0;
-            } else {
-                double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
-                double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;
-                double powerFactor = WheelLog.AppConfig.getPowerFactor() / 100d;
-                mCalculatedPwm = mSpeed / (rotationSpeed / rotationVoltage * mVoltage * powerFactor);
-            }
         } else {
             double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
             double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;

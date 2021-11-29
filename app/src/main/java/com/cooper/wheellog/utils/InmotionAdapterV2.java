@@ -2,7 +2,6 @@ package com.cooper.wheellog.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -105,6 +104,16 @@ public class InmotionAdapterV2 extends BaseAdapter {
             }
             return Model.UNKNOWN;
         }
+    }
+
+    public int getMaxSpeed() {
+        switch (mModel) {
+            case V11:
+                return 60;
+            case V12:
+                return 70;
+        }
+        return 100;
     }
 
     public void setModel(Model value){
@@ -580,6 +589,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mLightBrightness = data[33]& 0xff;
             int mCpuTemp = (data[34] & 0xff) + 80 - 256;
             int mImuTemp = (data[35] & 0xff) + 80 - 256;
+            int mPwm = MathsUtil.shortFromBytesLE(data, 36);
             wd.setVoltage(mVoltage);
             wd.setTorque((double)mTorque/100.0);
             wd.setMotorPower(mMotPower);
@@ -594,21 +604,24 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTemperature2(mBoardTemp * 100);
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
+            wd.setOutput((int)Math.round(mPwm/100.0));
             wd.updateRideTime();
             wd.setTopSpeed(mSpeed);
             wd.setVoltageSag(mVoltage);
             wd.setPower(mBatPower * 100);
             wd.setWheelDistance(mMileage);
             //// state data
-            int mPcMode = data[36] & 0x07; // lock, drive, shutdown, idle
-            int mMcMode = (data[36]>>3)&0x07;
-            int mMotState = (data[36]>>6)&0x01;
-            int chrgState = (data[36]>>7)&0x01;
-            int lightState = (data[37])&0x01;
-            int decorLiState = (data[37] >> 1) & 0x01;
-            int liftedState = (data[37]>>2)&0x01;
-            int tailLiState = (data[37]>>3)&0x03;
-            int fanState = (data[37]>>5)&0x01;
+            int i = (data.length < 49) ? 36 : 38;
+
+            int mPcMode = data[i] & 0x07; // lock, drive, shutdown, idle
+            int mMcMode = (data[i]>>3)&0x07;
+            int mMotState = (data[i]>>6)&0x01;
+            int chrgState = (data[i]>>7)&0x01;
+            int lightState = (data[i+1])&0x01;
+            int decorLiState = (data[i+1] >> 1) & 0x01;
+            int liftedState = (data[i+1]>>2)&0x01;
+            int tailLiState = (data[i+1]>>3)&0x03;
+            int fanState = (data[i+1]>>5)&0x01;
             String wmode = "";
             if (mMotState == 1) {wmode = wmode + "Active";}
             if (chrgState == 1) {wmode = wmode + " Charging";}
@@ -626,7 +639,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
             //// errors data
-            String inmoError = getError(40);
+            String inmoError = getError(i+5);
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
@@ -634,6 +647,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
                 sContext.sendBroadcast(intent);
             }
+//            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Rem Km: %.3f, Bat: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
+//                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/10.0, mRemainMileage/1000.0, mBatLevel/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+
+//            if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
+//            if (!inmoError.equals("")) System.out.println(String.format(Locale.US,"Err: %s", inmoError));
             return true;
         }
 

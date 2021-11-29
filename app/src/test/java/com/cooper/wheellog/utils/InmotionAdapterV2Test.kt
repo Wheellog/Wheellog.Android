@@ -116,6 +116,33 @@ class InmotionAdapterV2Test {
     }
 
     @Test
+    fun `decode v11 new fw with PWM`() {
+        // Arrange.
+        adapter.setModel(InmotionAdapterV2.Model.V11)
+        val byteArray1 = "aaaa143384411f8e03a5a506e90bd80242021600122a5acbb000cc002a0000000bfd7c1564190000d4d1ff09490a0000000000000000000010".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(17.01)
+        assertThat(data.temperature).isEqualTo(27)
+        assertThat(data.temperature2).isEqualTo(28)
+        assertThat(data.imuTemp).isEqualTo(33)
+        assertThat(data.cpuTemp).isEqualTo(36)
+        assertThat(data.motorPower).isEqualTo(578.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(30.49)
+        assertThat(data.voltageDouble).isEqualTo(80.01)
+        assertThat(data.currentDouble).isEqualTo(9.1)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.22)
+        assertThat(data.batteryLevel).isEqualTo(90)
+        assertThat(data.powerDouble).isEqualTo(728.0)
+        assertThat(data.angle).isEqualTo(0.42)
+        assertThat(data.roll).isEqualTo(-7.57)
+    }
+
+    @Test
     fun `decode with v11 escape data2`() {
         // Arrange.
         adapter.setModel(InmotionAdapterV2.Model.V11)
@@ -296,10 +323,10 @@ class InmotionAdapterV2Test {
     @Test
     fun `Inmotion v12 - decode long trip`() {
         // Arrange.
-        adapter.setModel(InmotionAdapterV2.Model.V12)
-        val inputStream: InputStream = File("src/test/resources/RAW_2021_10_30_09_28_22.csv").inputStream()
+        adapter.setModel(InmotionAdapterV2.Model.V11)
+        val inputStream: InputStream = File("src/test/resources/RAW_2021_11_29_09_14_06.csv").inputStream()
         //val startTime = sdf.parse("09:30:10.000")
-        val startTime = sdf.parse("10:00:00.000")
+        val startTime = sdf.parse("09:00:00.000")
         val stopTime = sdf.parse("10:20:00.000")
         var decodeSuccessCounter = 0
         inputStream.bufferedReader().useLines { lines ->
