@@ -539,10 +539,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (((data[i+2]) & 0x01)==1) inmoError += "err_vBusSensorState ";
             if (((data[i+2] >> 1) & 0x01)==1) inmoError += "err_vBatterySensorState ";
             if (((data[i+2] >> 2) & 0x01)==1) inmoError += "err_canNotPowerOffState";
+            if (((data[i+2] >> 3) & 0x01)==1) inmoError += "err_notKnown1 ";
             if (((data[i+3]) & 0x01)==1) inmoError += "err_underVoltageState ";
             if (((data[i+3] >> 1) & 0x01)==1) inmoError += "err_overVoltageState ";
-            if (((data[i+3] >> 2) & 0x03)==1) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
-            if (((data[i+3] >> 4) & 0x03)==1) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
+            if (((data[i+3] >> 2) & 0x03)>0) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
+            if (((data[i+3] >> 4) & 0x03)>0) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
             if (((data[i+3] >> 6) & 0x01)==1) inmoError += "err_mosTempState ";
             if (((data[i+3] >> 7) & 0x01)==1) inmoError += "err_motorTempState ";
             if (((data[i+4]) & 0x01)==1) inmoError += "err_batteryTempState ";
@@ -557,8 +558,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (((data[i+5] >> 1) & 0x01)==1) inmoError += "err_noSelfTestState ";
             if (((data[i+5] >> 2) & 0x01)==1) inmoError += "err_compatibilityState ";
             if (((data[i+5] >> 3) & 0x01)==1) inmoError += "err_powerKeyLongPressState ";
+            if (((data[i+5] >> 4) & 0x01)==1) inmoError += "err_forceDfuState ";
+            if (((data[i+5] >> 5) & 0x01)==1) inmoError += "err_deviceLockState ";
             if (((data[i+5] >> 6) & 0x01)==1) inmoError += "err_cpuOverTempState ";
             if (((data[i+5] >> 7) & 0x01)==1) inmoError += "err_imuOverTempState ";
+            if (((data[i+6] >> 1) & 0x01)==1) inmoError += "err_hwCompatibilityState ";
+            if (((data[i+6] >> 2) & 0x01)==1) inmoError += "err_fanLowSpeedState ";
+            if (((data[i+6] >> 3) & 0x01)==1) inmoError += "err_notKnown2 ";
+
             return inmoError;
         }
 
