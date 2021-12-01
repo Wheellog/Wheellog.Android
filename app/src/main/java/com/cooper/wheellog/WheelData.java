@@ -1412,10 +1412,10 @@ public class WheelData {
         protoVer = "";
         if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
             protoVer = "S2";
-        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf", "5600"})) {
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf"}) || StringUtil.startsWith(advData, "5600")) {
             protoVer = "Mini";
         }
-
+        Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
         String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
         try {

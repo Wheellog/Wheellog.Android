@@ -500,7 +500,7 @@ public class NinebotAdapter extends BaseAdapter {
                 speed = MathsUtil.shortFromBytesLE(data, 28); //speed up to 320.00 km/h
             }
             else {
-                speed = MathsUtil.shortFromBytesLE(data, 10) / 10; //speed up to 32.000 km/h
+                speed = Math.abs(MathsUtil.signedShortFromBytesLE(data, 10) / 10); //speed up to 32.000 km/h
             }
             int distance = MathsUtil.intFromBytesLE(data, 14);
             int temperature = MathsUtil.shortFromBytesLE(data, 22);
