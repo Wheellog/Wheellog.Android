@@ -27,6 +27,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
 
     fun sendUpdateData() {
         if (!isConnected) {
+            sendMessage(Constants.wearOsPingMessage)
             return
         }
         val wd = WheelData.getInstance()
@@ -93,7 +94,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
         addMessageListener()
         sendUpdateData()
         sendPingJob = backgroundScope.launch {
-            sendMessage( Constants.wearOsPingMessage)
+            sendMessage(Constants.wearOsPingMessage)
             delay(500)
             ensureActive()
             // if the wear application did not receive a response from the ping,
