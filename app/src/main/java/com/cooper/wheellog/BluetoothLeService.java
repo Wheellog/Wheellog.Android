@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.widget.Toast;
 
 import com.cooper.wheellog.utils.*;
@@ -46,25 +45,22 @@ public class BluetoothLeService extends Service {
 
     private Timer beepTimer;
     private int timerTicks;
-    PowerManager mgr;
-    PowerManager.WakeLock wl;
     FileUtil fileUtilRawData;
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
     final SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
-    private final String wakeLogTag = "WhellLog:WakeLockTag";
     private final IBinder mBinder = new LocalBinder();
+    private WheelData data;
 
     public void startReconnectTimer() {
         if (reconnectTimer != null) {
             stopReconnectTimer();
         }
         reconnectTimer = new Timer();
-        WheelData wd = WheelData.getInstance();
         int magicPeriod = 15_000;
         reconnectTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (mConnectionState == STATE_CONNECTED && wd.getLastLifeData() > 0 && ((System.currentTimeMillis() -  wd.getLastLifeData()) / 1000 > magicPeriod)) {
+                if (mConnectionState == STATE_CONNECTED && data.getLastLifeData() > 0 && ((System.currentTimeMillis() -  data.getLastLifeData()) / 1000 > magicPeriod)) {
                     toggleReconnectToWheel();
                 }
             }
@@ -88,7 +84,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            Boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
+            boolean connectionSound = WheelLog.AppConfig.getConnectionSound();
             int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Timber.i("Connected to GATT server.");
@@ -96,12 +92,6 @@ public class BluetoothLeService extends Service {
                     if (noConnectionSound > 0) {
                         stopBeepTimer();
                     }
-                    if (wl != null) {
-                        wl.release();
-                        wl = null;
-                    }
-                    wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag);
-                    wl.acquire(5 * 60 * 1000L /*5 minutes*/);
                     SomeUtil.playSound(getApplicationContext(), R.raw.sound_connect);
                 }
                 mDisconnectTime = null;
@@ -116,10 +106,6 @@ public class BluetoothLeService extends Service {
                     mDisconnectTime = Calendar.getInstance().getTime();
                     if (connectionSound) {
                         SomeUtil.playSound(getApplicationContext(), R.raw.sound_disconnect);
-                        if (wl != null) {
-                            wl.release();
-                            wl = null;
-                        }
                         if (noConnectionSound > 0) {
                             startBeepTimer();
                         }
@@ -128,7 +114,7 @@ public class BluetoothLeService extends Service {
                 if (!disconnectRequested &&
                         mBluetoothGatt != null && mBluetoothGatt.getDevice() != null) {
                     Timber.i("Trying to reconnect");
-                    switch (WheelData.getInstance().getWheelType()) {
+                    switch (data.getWheelType()) {
                         case INMOTION:
                             InMotionAdapter.stopTimer();
                         case INMOTION_V2:
@@ -159,8 +145,8 @@ public class BluetoothLeService extends Service {
             Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
-                boolean recognisedWheel = WheelData.getInstance().detectWheel(mBluetoothDeviceAddress);
-                WheelData.getInstance().setConnected(recognisedWheel);
+                boolean recognisedWheel = data.detectWheel(mBluetoothDeviceAddress);
+                data.setConnected(recognisedWheel);
                 if (recognisedWheel) {
                     sendBroadcast(new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED));
                     mConnectionState = STATE_CONNECTED;
@@ -206,7 +192,7 @@ public class BluetoothLeService extends Service {
             }
             if (fileUtilRawData.isNull()) {
                 String fileNameForRawData = "RAW_" + sdf.format(new Date()) + ".csv";
-                fileUtilRawData.prepareFile(fileNameForRawData, WheelData.getInstance().getMac());
+                fileUtilRawData.prepareFile(fileNameForRawData, data.getMac());
             }
             fileUtilRawData.writeLine(String.format(Locale.US, "%s,%s",
                     sdf2.format(System.currentTimeMillis()),
@@ -215,15 +201,14 @@ public class BluetoothLeService extends Service {
             fileUtilRawData.close();
         }
 
-        WheelData wd = WheelData.getInstance();
         byte[] value = characteristic.getValue();
-        switch (wd.getWheelType()) {
+        switch (data.getWheelType()) {
             case KINGSONG:
                 if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
-                    wd.decodeResponse(value, getApplicationContext());
-                    if (WheelData.getInstance().getName().isEmpty()) {
+                    data.decodeResponse(value, getApplicationContext());
+                    if (data.getName().isEmpty()) {
                         KingsongAdapter.getInstance().requestNameData();
-                    } else if (WheelData.getInstance().getSerial().isEmpty()) {
+                    } else if (data.getSerial().isEmpty()) {
                         KingsongAdapter.getInstance().requestSerialData();
                     }
                 }
@@ -231,26 +216,26 @@ public class BluetoothLeService extends Service {
             case GOTWAY:
             case GOTWAY_VIRTUAL:
             case VETERAN:
-                WheelData.getInstance().decodeResponse(value, getApplicationContext());
+                data.decodeResponse(value, getApplicationContext());
                 break;
             case INMOTION:
                 if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
-                    wd.decodeResponse(value, getApplicationContext());
+                    data.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case INMOTION_V2:
                 if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
-                    wd.decodeResponse(value, getApplicationContext());
+                    data.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case NINEBOT_Z:
                 if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
-                    wd.decodeResponse(value, getApplicationContext());
+                    data.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case NINEBOT:
                 if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID)) {
-                    wd.decodeResponse(value, getApplicationContext());
+                    data.decodeResponse(value, getApplicationContext());
                 }
                 break;
         }
@@ -289,7 +274,7 @@ public class BluetoothLeService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        data = WheelData.getInstance();
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         if (WheelLog.AppConfig.getUseReconnect()) {
             startReconnectTimer();
@@ -352,7 +337,7 @@ public class BluetoothLeService extends Service {
         if (mBluetoothGatt != null && mBluetoothGatt.getDevice().getAddress().equals(mBluetoothDeviceAddress)) {
             Timber.i("Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
-                WheelData.getInstance().setBtName(mBluetoothGatt.getDevice().getName());
+                data.setBtName(mBluetoothGatt.getDevice().getName());
                 mConnectionState = STATE_CONNECTING;
                 broadcastConnectionUpdate(mConnectionState);
                 return true;
@@ -434,6 +419,24 @@ public class BluetoothLeService extends Service {
         Timber.i("Set characteristic %b", success);
     }
 
+    private BluetoothGattCharacteristic getCharacteristic(String serviceUUID, String characteristicUUID, byte[] cmd) {
+        var service = mBluetoothGatt.getService(UUID.fromString(serviceUUID));
+        if (service == null) {
+            Timber.i("[ble] getCharacteristic / service == null");
+            return null;
+        }
+        var characteristic = service.getCharacteristic(UUID.fromString(characteristicUUID));
+        if (characteristic == null) {
+            Timber.i("[ble] getCharacteristic / characteristic == null");
+            return null;
+        }
+        if (cmd != null) {
+            characteristic.setValue(cmd);
+        }
+        Timber.i("[ble] getCharacteristic / writeType = %d", characteristic.getWriteType());
+        return characteristic;
+    }
+
     public synchronized boolean writeBluetoothGattCharacteristic(byte[] cmd) {
         if (this.mBluetoothGatt == null || cmd == null) {
             return false;
@@ -444,75 +447,57 @@ public class BluetoothLeService extends Service {
         }
         Timber.i("Transmitted: %s", stringBuilder.toString());
         try {
-            switch (WheelData.getInstance().getWheelType()) {
+            switch (data.getWheelType()) {
                 case KINGSONG:
-                    BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
-                    if (ks_service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                    var ksCharacteristic = getCharacteristic(
+                            Constants.KINGSONG_SERVICE_UUID,
+                            Constants.KINGSONG_READ_CHARACTER_UUID,
+                            cmd
+                    );
+                    if (ksCharacteristic == null) {
                         return false;
                     }
-                    BluetoothGattCharacteristic ks_characteristic = ks_service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
-                    if (ks_characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                        return false;
-                    }
-                    ks_characteristic.setValue(cmd);
-                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", ks_characteristic.getWriteType());
-                    ks_characteristic.setWriteType(1);
-                    return this.mBluetoothGatt.writeCharacteristic(ks_characteristic);
+                    ksCharacteristic.setWriteType(1);
+                    return this.mBluetoothGatt.writeCharacteristic(ksCharacteristic);
                 case GOTWAY:
                 case GOTWAY_VIRTUAL:
                 case VETERAN:
-                    BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
-                    if (gw_service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                    var gwCharacteristic = getCharacteristic(
+                            Constants.GOTWAY_SERVICE_UUID,
+                            Constants.GOTWAY_READ_CHARACTER_UUID,
+                            cmd
+                    );
+                    if (gwCharacteristic == null) {
                         return false;
                     }
-                    BluetoothGattCharacteristic characteristic = gw_service.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
-                    if (characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                        return false;
-                    }
-                    characteristic.setValue(cmd);
-                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", characteristic.getWriteType());
-                    return this.mBluetoothGatt.writeCharacteristic(characteristic);
+                    return this.mBluetoothGatt.writeCharacteristic(gwCharacteristic);
                 case NINEBOT_Z:
-                    BluetoothGattService nz_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
-                    if (nz_service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                    var nzCharacteristic = getCharacteristic(
+                            Constants.NINEBOT_Z_SERVICE_UUID,
+                            Constants.NINEBOT_Z_WRITE_CHARACTER_UUID,
+                            cmd
+                    );
+                    if (nzCharacteristic == null) {
                         return false;
                     }
-                    BluetoothGattCharacteristic nz_characteristic = nz_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID));
-                    if (nz_characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                        return false;
-                    }
-                    nz_characteristic.setValue(cmd);
-                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", nz_characteristic.getWriteType());
-                    return this.mBluetoothGatt.writeCharacteristic(nz_characteristic);
+                    return this.mBluetoothGatt.writeCharacteristic(nzCharacteristic);
                 case NINEBOT:
-                    BluetoothGattService nb_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
-                    if (nb_service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                    var nbCharacteristic = getCharacteristic(
+                            Constants.NINEBOT_SERVICE_UUID,
+                            Constants.NINEBOT_WRITE_CHARACTER_UUID,
+                            cmd
+                    );
+                    if (nbCharacteristic == null) {
                         return false;
                     }
-                    BluetoothGattCharacteristic nb_characteristic = nb_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID));
-                    if (nb_characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                        return false;
-                    }
-                    nb_characteristic.setValue(cmd);
-                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", nb_characteristic.getWriteType());
-                    return this.mBluetoothGatt.writeCharacteristic(nb_characteristic);
+                    return this.mBluetoothGatt.writeCharacteristic(nbCharacteristic);
                 case INMOTION:
-                    BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID));
-                    if (im_service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null");
-                        return false;
-                    }
-                    BluetoothGattCharacteristic im_characteristic = im_service.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID));
-                    if (im_characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
+                    var imCharacteristic = getCharacteristic(
+                            Constants.INMOTION_WRITE_SERVICE_UUID,
+                            Constants.INMOTION_WRITE_CHARACTER_UUID,
+                            null
+                    );
+                    if (imCharacteristic == null) {
                         return false;
                     }
                     byte[] buf = new byte[20];
@@ -520,8 +505,8 @@ public class BluetoothLeService extends Service {
                     int i3 = cmd.length - (i2 * 20);
                     for (int i4 = 0; i4 < i2; i4++) {
                         System.arraycopy(cmd, i4 * 20, buf, 0, 20);
-                        im_characteristic.setValue(buf);
-                        if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic))
+                        imCharacteristic.setValue(buf);
+                        if (!this.mBluetoothGatt.writeCharacteristic(imCharacteristic))
                             return false;
                         try {
                             Thread.sleep(20);
@@ -531,26 +516,22 @@ public class BluetoothLeService extends Service {
                     }
                     if (i3 > 0) {
                         System.arraycopy(cmd, i2 * 20, buf, 0, i3);
-                        im_characteristic.setValue(buf);
-                        if (!this.mBluetoothGatt.writeCharacteristic(im_characteristic))
+                        imCharacteristic.setValue(buf);
+                        if (!this.mBluetoothGatt.writeCharacteristic(imCharacteristic))
                             return false;
                     }
-                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
+                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", imCharacteristic.getWriteType());
                     return true;
                 case INMOTION_V2:
-                    BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
-                    if (inv2_service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null");
+                    var imv2Characteristic = getCharacteristic(
+                            Constants.INMOTION_WRITE_SERVICE_UUID,
+                            Constants.INMOTION_WRITE_CHARACTER_UUID,
+                            null
+                    );
+                    if (imv2Characteristic == null) {
                         return false;
                     }
-                    BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID));
-                    if (inv2_characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null");
-                        return false;
-                    }
-                    inv2_characteristic.setValue(cmd);
-                    Timber.i("writeBluetoothGattCharacteristic writeType = %d", inv2_characteristic.getWriteType());
-                    return this.mBluetoothGatt.writeCharacteristic(inv2_characteristic);
+                    return this.mBluetoothGatt.writeCharacteristic(imv2Characteristic);
             }
         } catch (NullPointerException e) {
             // sometimes mBluetoothGatt is null... If the user starts to connect and disconnect quickly
@@ -589,8 +570,6 @@ public class BluetoothLeService extends Service {
     }
 
     private void startBeepTimer() {
-        wl = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag);
-        wl.acquire(5 * 60 * 1000L /*5 minutes*/);
         timerTicks = 0;
         final int noConnectionSound = WheelLog.AppConfig.getNoConnectionSound() * 1000;
         TimerTask beepTimerTask = new TimerTask() {
@@ -609,10 +588,6 @@ public class BluetoothLeService extends Service {
     }
 
     private void stopBeepTimer() {
-        if (wl != null) {
-            wl.release();
-            wl = null;
-        }
         if (beepTimer != null) {
             beepTimer.cancel();
             beepTimer = null;
