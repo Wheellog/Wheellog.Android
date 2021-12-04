@@ -137,10 +137,6 @@ public class WheelData {
             case NINEBOT:
                 return NinebotAdapter.getInstance();
             case NINEBOT_Z:
-                // Костыль форева
-                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
-                    return NinebotAdapter.getInstance();
-                }
                 return NinebotZAdapter.getInstance();
             case INMOTION:
                 return InMotionAdapter.getInstance();
@@ -1335,18 +1331,7 @@ public class WheelData {
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
         if (mWheelType == WHEEL_TYPE.INMOTION_V2) InmotionAdapterV2.stopTimer();
-        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
-            if (protoVer.compareTo("S2") == 0) {
-                Timber.i("Ninebot S2 stop!");
-                NinebotAdapter.stopTimer();
-            } else if (protoVer.compareTo("Mini") == 0) {
-                Timber.i("Ninebot Mini stop!");
-                NinebotAdapter.stopTimer();
-            } else {
-                Timber.i("Ninebot Z stop!");
-                NinebotZAdapter.stopTimer();
-            }
-        }
+        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.stopTimer();
         mWheelType = WHEEL_TYPE.Unknown;
         //mWheelType = WHEEL_TYPE.GOTWAY; //test
@@ -1412,10 +1397,10 @@ public class WheelData {
         protoVer = "";
         if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
             protoVer = "S2";
-        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf", "5600"})) {
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf"}) || (advData.startsWith("5600"))) {
             protoVer = "Mini";
         }
-
+        Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
         String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
         try {
@@ -1522,7 +1507,13 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
-                setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                if (protoVer.compareTo("") == 0) {
+                    Timber.i("really Z");
+                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                } else {
+                    Timber.i("no, switch to NB");
+                    setWheelType(WHEEL_TYPE.NINEBOT);
+                }
                 BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
                 Timber.i("service UUID");
                 BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
@@ -1543,10 +1534,12 @@ public class WheelData {
                 Timber.i("write notify");
                 if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
                     NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
+                    Timber.i("starting ninebot adapter, proto: %s", protoVer);
                 } else {
                     NinebotZAdapter.getInstance().startKeepAliveTimer();
+                    Timber.i("starting ninebot Z adapter");
                 }
-                Timber.i("starting ninebot adapter");
+
                 return true;
             } else if (WHEEL_TYPE.NINEBOT.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot");

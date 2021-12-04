@@ -479,7 +479,12 @@ public class NinebotAdapter extends BaseAdapter {
         }
 
         versionStatus parseVersionNumber() {
-            String versionNumber = String.format(Locale.US, "%d.%d.%d", data[1] >> 4, data[0] >> 4, data[0] & 0xf);
+            String versionNumber ="";
+            if (protoVersion == 1) {
+                versionNumber = String.format(Locale.US, "%d.%d.%d", data[1] >> 4, data[0] >> 4, data[0] & 0xf);
+            } else if (protoVersion == 2) {
+                versionNumber = String.format(Locale.US, "%d.%d.%d", data[1] & 0xf, data[0] >> 4, data[0] & 0xf);
+            }
             Timber.i("Version Number: %s", versionNumber);
             return new versionStatus(versionNumber);
         }
@@ -500,13 +505,13 @@ public class NinebotAdapter extends BaseAdapter {
                 speed = MathsUtil.shortFromBytesLE(data, 28); //speed up to 320.00 km/h
             }
             else {
-                speed = MathsUtil.shortFromBytesLE(data, 10) / 10; //speed up to 32.000 km/h
+                speed = Math.abs(MathsUtil.signedShortFromBytesLE(data, 10) / 10); //speed up to 32.000 km/h
             }
             int distance = MathsUtil.intFromBytesLE(data, 14);
             int temperature = MathsUtil.shortFromBytesLE(data, 22);
             int voltage = MathsUtil.shortFromBytesLE(data, 24);
             if (protoVersion == 2) {
-                voltage = voltage / 10;
+                voltage = 0; // no voltage for mini
             }
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
             int power = voltage * current;
