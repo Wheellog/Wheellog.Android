@@ -166,7 +166,7 @@ class NotificationUtil(private val context: Context) {
                         update()
                     }
                 }
-            }, 1000, 1000)
+            }, 5000, 1000)
         } else {
             kostilTimer?.cancel()
             kostilTimer = null
