@@ -479,7 +479,12 @@ public class NinebotAdapter extends BaseAdapter {
         }
 
         versionStatus parseVersionNumber() {
-            String versionNumber = String.format(Locale.US, "%d.%d.%d", data[1] >> 4, data[0] >> 4, data[0] & 0xf);
+            String versionNumber ="";
+            if (protoVersion == 1) {
+                versionNumber = String.format(Locale.US, "%d.%d.%d", data[1] >> 4, data[0] >> 4, data[0] & 0xf);
+            } else if (protoVersion == 2) {
+                versionNumber = String.format(Locale.US, "%d.%d.%d", data[1] & 0xf, data[0] >> 4, data[0] & 0xf);
+            }
             Timber.i("Version Number: %s", versionNumber);
             return new versionStatus(versionNumber);
         }

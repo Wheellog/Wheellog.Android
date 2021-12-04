@@ -1507,9 +1507,11 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
-                if (protoVer != "") {
+                if (protoVer.compareTo("") == 0) {
+                    Timber.i("really Z");
                     setWheelType(WHEEL_TYPE.NINEBOT_Z);
                 } else {
+                    Timber.i("no, switch to NB");
                     setWheelType(WHEEL_TYPE.NINEBOT);
                 }
                 BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));

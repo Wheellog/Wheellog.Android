@@ -244,13 +244,16 @@ public class BluetoothLeService extends Service {
                 }
                 break;
             case NINEBOT_Z:
+                Timber.i("Ninebot Z reading");
                 if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
                     wd.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case NINEBOT:
+                Timber.i("Ninebot reading");
                 if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID) ||
                         characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) { // in case of S2 or Mini
+                    Timber.i("Ninebot read cont");
                     wd.decodeResponse(value, getApplicationContext());
                 }
                 break;
@@ -493,6 +496,7 @@ public class BluetoothLeService extends Service {
                         Timber.i("writeBluetoothGattCharacteristic writeType = %d", nb_characteristic.getWriteType());
                         return this.mBluetoothGatt.writeCharacteristic(nb_characteristic);
                     } // if S2 or Mini, then pass to Ninebot_Z case
+                    Timber.i("Passing to NZ");
                 case NINEBOT_Z:
                     BluetoothGattService nz_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
                     if (nz_service == null) {
