@@ -506,7 +506,7 @@ public class NinebotAdapter extends BaseAdapter {
             int temperature = MathsUtil.shortFromBytesLE(data, 22);
             int voltage = MathsUtil.shortFromBytesLE(data, 24);
             if (protoVersion == 2) {
-                voltage = voltage / 10;
+                voltage = 0; // no voltage for mini
             }
             int current = MathsUtil.signedShortFromBytesLE(data, 26);
             int power = voltage * current;
