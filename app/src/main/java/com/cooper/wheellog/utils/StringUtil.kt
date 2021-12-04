@@ -11,10 +11,6 @@ class StringUtil {
             return value in array
         }
 
-        @JvmStatic
-        fun startsWith(str: String, substr: String): Boolean {
-            return str.startsWith(substr)
-        }
         /**
          * Converts supplied Int value to a temperature string.
          */
