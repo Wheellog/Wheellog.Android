@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.preference.PreferenceScreen
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.ThemeIconEnum
 
 abstract class BaseSettingsClass(var context: Context, var ps: PreferenceScreen) {
 
@@ -13,11 +14,11 @@ abstract class BaseSettingsClass(var context: Context, var ps: PreferenceScreen)
     }
 
     @Suppress("DEPRECATION")
-    fun getDrawable(id: Int): Drawable? {
-        val themedId = WheelLog.ThemeManager.getDrawableId(id)
+    fun getDrawable(id: ThemeIconEnum): Drawable? {
+        val resId = WheelLog.ThemeManager.getId(id)
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            context.resources.getDrawable(WheelLog.ThemeManager.getDrawableId(themedId))
-        else context.getDrawable(WheelLog.ThemeManager.getDrawableId(themedId))
+            context.resources.getDrawable(resId)
+        else context.getDrawable(resId)
     }
 
     abstract fun fill (mac: String)

@@ -13,6 +13,7 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.ThemeEnum
+import com.cooper.wheellog.utils.ThemeIconEnum
 import timber.log.Timber
 
 class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
@@ -23,7 +24,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = getString(R.string.use_eng)
             title = getString(R.string.use_eng_title)
             summary = getString(R.string.use_eng_description)
-            icon = getDrawable(R.drawable.ic_baseline_translate_24)
+            icon = getDrawable(ThemeIconEnum.SettingsLanguage)
             ps.addPreference(this)
         }
         ListPreference(context).apply {
@@ -104,14 +105,14 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 key = getString(R.string.auto_log)
                 title = getString(R.string.auto_log_title)
                 summary = getString(R.string.auto_log_description)
-                icon = getDrawable(R.drawable.ic_baseline_magic_log_24)
+                icon = getDrawable(ThemeIconEnum.SettingsAutoLog)
                 addPreference(this)
             }
             SwitchPreference(context).apply {
                 key = getString(R.string.auto_watch)
                 title = getString(R.string.auto_watch_title)
                 summary = getString(R.string.auto_watch_description)
-                icon = getDrawable(R.drawable.ic_baseline_watch_24)
+                icon = getDrawable(ThemeIconEnum.SettingsWatch)
                 addPreference(this)
             }
         }
@@ -122,7 +123,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 key = getString(R.string.view_blocks_string)
                 title = getString(R.string.view_blocks_title)
                 summary = getString(R.string.view_blocks_description)
-                icon = getDrawable(R.drawable.ic_baseline_dashboard_customize_24)
+                icon = getDrawable(ThemeIconEnum.SettingsBlocks)
                 dialogTitle = title
                 dialogIcon = icon
                 setValues(WheelLog.AppConfig.viewBlocks)
@@ -133,7 +134,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 key = getString(R.string.notification_buttons)
                 title = getString(R.string.notification_buttons_title)
                 summary = getString(R.string.notification_buttons_description)
-                icon = getDrawable(R.drawable.ic_notification)
+                icon = getDrawable(ThemeIconEnum.SettingsNotification)
                 dialogTitle = title
                 dialogIcon = icon
                 setValues(WheelLog.AppConfig.notificationButtons)
@@ -176,13 +177,13 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = getString(R.string.show_page_events)
             title = getString(R.string.show_page_events_title)
             summary = getString(R.string.show_page_events_description)
-            icon = getDrawable(R.drawable.ic_baseline_event_note_24)
+            icon = getDrawable(ThemeIconEnum.SettingsPageEvents)
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
             key = getString(R.string.show_page_trips)
             title = getString(R.string.show_page_trips_title)
-            icon = getDrawable(R.drawable.ic_baseline_road_with_two_placeholders_24)
+            icon = getDrawable(ThemeIconEnum.SettingsPageTrips)
             setDefaultValue(WheelLog.AppConfig.pageTrips)
             ps.addPreference(this)
         }
@@ -190,7 +191,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = getString(R.string.connection_sound)
             title = getString(R.string.connection_sound_title)
             summary = getString(R.string.connection_sound_description)
-            icon = getDrawable(R.drawable.ic_baseline_music_note_24)
+            icon = getDrawable(ThemeIconEnum.SettingsConnectionSound)
             setDefaultValue(WheelLog.AppConfig.connectionSound)
             ps.addPreference(this)
         }
@@ -210,7 +211,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = getString(R.string.use_stop_music)
             title = getString(R.string.use_stop_music_title)
             summary = getString(R.string.use_stop_music_description)
-            icon = getDrawable(R.drawable.ic_baseline_volume_off_24)
+            icon = getDrawable(ThemeIconEnum.SettingsAutoMute)
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {

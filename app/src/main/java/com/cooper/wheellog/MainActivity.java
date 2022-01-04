@@ -348,16 +348,16 @@ public class MainActivity extends AppCompatActivity {
 
         switch (WheelLog.AppConfig.getMibandMode()) {
             case Alarm:
-                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_alarm));
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm));
                 break;
             case Min:
-                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_min));
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin));
                 break;
             case Medium:
-                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_med));
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed));
                 break;
             case Max:
-                miBand.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_max));
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax));
                 break;
         }
 
@@ -370,22 +370,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (PebbleService.isInstanceCreated()) {
-            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
+            miWatch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOn));
         } else {
-            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_white));
+            miWatch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOff));
         }
 
         if (LoggingService.isInstanceCreated()) {
             miLogging.setTitle(R.string.stop_data_service);
-            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange));
+            miLogging.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOn));
         } else {
             miLogging.setTitle(R.string.start_data_service);
-            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_white));
+            miLogging.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOff));
         }
 
         switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange));
+                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOn));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 miSearch.setEnabled(false);
                 miSearch.getIcon().setAlpha(64);
@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(255);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
-                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.anim_wheel_icon));
+                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 ((AnimationDrawable) miWheel.getIcon()).start();
                 miSearch.setEnabled(false);
@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(64);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_white));
+                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff));
                 miWheel.setTitle(R.string.connect_to_wheel);
                 miSearch.setEnabled(true);
                 miSearch.getIcon().setAlpha(255);
@@ -598,8 +598,8 @@ public class MainActivity extends AppCompatActivity {
         // Themes
         if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
             MenuItem miSettings = mMenu.findItem(R.id.miSettings);
-            miSettings.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_settings_24));
-            miSearch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_bluetooth_searching_white));
+            miSettings.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuSettings));
+            miSearch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuBluetooth));
         }
         return true;
     }

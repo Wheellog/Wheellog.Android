@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.*
+import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -157,15 +158,15 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             val popupMenu = PopupMenu(wrapper, popupView).apply {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                     menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =
-                        context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_map_24))
+                        context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsMap))
                     menu.add(0, 1, 1, R.string.trip_menu_upload_to_ec).apply {
-                        icon = context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_cloud_upload_24))
+                        icon = context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsUpload))
                         isVisible = uploadViewVisible == View.VISIBLE
                     }
                     menu.add(0, 2, 2, R.string.trip_menu_share).icon =
-                        context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_share_24))
+                        context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsShare))
                     menu.add(0, 3, 3, R.string.trip_menu_delete_file).icon =
-                        context.getDrawable(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_delete_24))
+                        context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsDelete))
                 }
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
@@ -196,7 +197,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 popupMenu.show()
             }
             // Themes
-            popupView.setImageResource(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_arrow_drop_down_circle_24))
+            popupView.setImageResource(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsPopupButton))
         }
     }
 }
