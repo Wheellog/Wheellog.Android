@@ -44,9 +44,9 @@ class ThemeManager {
         ajdm[ThemeIconEnum.NotificationConnecting] = R.drawable.ajdm_wheel_new_g
         ajdm[ThemeIconEnum.NotificationConnected] = R.drawable.ajdm_wheel_new
         ajdm[ThemeIconEnum.NotificationDisconnected] = R.drawable.ajdm_wheel_new_b
-        ajdm[ThemeIconEnum.NotificationLogOn] = R.drawable.ajdm_log_new_g
+        ajdm[ThemeIconEnum.NotificationLogOn] = R.drawable.ajdm_log_new
         ajdm[ThemeIconEnum.NotificationLogOff] = R.drawable.ajdm_log_new_b
-        ajdm[ThemeIconEnum.NotificationWatchOn] = R.drawable.ajdm_watch_g
+        ajdm[ThemeIconEnum.NotificationWatchOn] = R.drawable.ajdm_watch_new
         ajdm[ThemeIconEnum.NotificationWatchOff] = R.drawable.ajdm_watch_new_b
         ajdm[ThemeIconEnum.NotificationHorn] = R.drawable.horn_ajdm_b
         ajdm[ThemeIconEnum.NotificationLight] = R.drawable.light_ajdm_b
