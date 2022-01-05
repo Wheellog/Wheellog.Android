@@ -44,12 +44,12 @@ class ThemeManager {
         ajdm[ThemeIconEnum.NotificationConnecting] = R.drawable.ajdm_wheel_new_g
         ajdm[ThemeIconEnum.NotificationConnected] = R.drawable.ajdm_wheel_new
         ajdm[ThemeIconEnum.NotificationDisconnected] = R.drawable.ajdm_wheel_new_b
-        ajdm[ThemeIconEnum.NotificationLogOn] = R.drawable.ajdm_log_new_o
+        ajdm[ThemeIconEnum.NotificationLogOn] = R.drawable.ajdm_log_new_g
         ajdm[ThemeIconEnum.NotificationLogOff] = R.drawable.ajdm_log_new_b
-        ajdm[ThemeIconEnum.NotificationWatchOn] = R.drawable.ajdm_watch_new_o
+        ajdm[ThemeIconEnum.NotificationWatchOn] = R.drawable.ajdm_watch_g
         ajdm[ThemeIconEnum.NotificationWatchOff] = R.drawable.ajdm_watch_new_b
-        ajdm[ThemeIconEnum.NotificationHorn] = R.drawable.horn_ajdm_o
-        ajdm[ThemeIconEnum.NotificationLight] = R.drawable.light_ajdm_o
+        ajdm[ThemeIconEnum.NotificationHorn] = R.drawable.horn_ajdm_b
+        ajdm[ThemeIconEnum.NotificationLight] = R.drawable.light_ajdm_b
         // menu
         original[ThemeIconEnum.MenuWatchOn] = R.drawable.ic_action_watch_orange
         original[ThemeIconEnum.MenuWatchOff] = R.drawable.ic_action_watch_white
@@ -63,7 +63,7 @@ class ThemeManager {
         original[ThemeIconEnum.MenuWheelSearch] = R.drawable.anim_wheel_icon
         original[ThemeIconEnum.MenuWheelOff] = R.drawable.ic_action_wheel_white
         original[ThemeIconEnum.MenuSettings] = R.drawable.ic_baseline_settings_24
-        original[ThemeIconEnum.MenuBluetooth] = R.drawable.ic_action_bluetooth_searching_white        
+        original[ThemeIconEnum.MenuBluetooth] = R.drawable.ic_action_bluetooth_searching_white
         ajdm[ThemeIconEnum.MenuWatchOn] = R.drawable.ajdm_watch_g
         ajdm[ThemeIconEnum.MenuWatchOff] = R.drawable.ajdm_watch_new
         ajdm[ThemeIconEnum.MenuMiBandAlarm] = R.drawable.ajdm_ic_mi_alarm
