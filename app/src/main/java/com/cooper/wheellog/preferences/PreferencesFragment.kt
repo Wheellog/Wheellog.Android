@@ -31,6 +31,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
+import com.cooper.wheellog.utils.ThemeIconEnum
 import timber.log.Timber
 
 class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -416,17 +417,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     true
                 }
                 // Themes
-                if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
-                    speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_speedometer_white_24dp))
-                    logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_show_chart_white_24dp))
-                    alarmButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_vibration_24))
-                    watchButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_watch_24))
-                    wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_wheel_white_24))
-                    tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_explore_24))
-                    findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_bug_report_24))
-                    donateButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_donate_24))
-                    aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_info_24))
-                }
+                speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsSpeedometer))
+                logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsLog))
+                alarmButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsVibration))
+                watchButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsWatch))
+                wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsWheel))
+                tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsTrips))
+                findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsBug))
+                donateButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsDonate))
+                aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsAbout))
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)

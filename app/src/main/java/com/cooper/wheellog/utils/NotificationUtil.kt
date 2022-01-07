@@ -72,7 +72,7 @@ class NotificationUtil(private val context: Context) {
         val distance = wd.distanceDouble
         val speed = wd.speedDouble
         val title = context.getString(notificationMessageId)
-        val title_ride = WheelData.getInstance().getRideTimeString()
+        val title_ride = WheelData.getInstance().rideTimeString
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
         if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
@@ -92,10 +92,10 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
                 when (WheelLog.AppConfig.mibandMode) {
-                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_alarm)
-                    MiBandEnum.Min -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_min)
-                    MiBandEnum.Medium -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_med)
-                    MiBandEnum.Max -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_mi_max)
+                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
+                    MiBandEnum.Min -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
+                    MiBandEnum.Medium -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
+                    MiBandEnum.Max -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
@@ -108,20 +108,20 @@ class NotificationUtil(private val context: Context) {
         }
         notificationView.setImageViewResource(R.id.ib_connection,
                 when (connectionState) {
-                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_light_orange)
-                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange)
-                    else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
+                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
+                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
+                    else -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
-                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
-                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_grey))
+                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOn)
+                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOff))
         notificationView.setImageViewResource(R.id.ib_watch,
-                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange)
-                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_grey))
-        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_horn_32_gray))
-        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_sun_32_gray))
+                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOn)
+                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOff))
+        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationHorn))
+        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLight))
 
-        builder.setSmallIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_stat_wheel))
+        builder.setSmallIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationIcon))
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
