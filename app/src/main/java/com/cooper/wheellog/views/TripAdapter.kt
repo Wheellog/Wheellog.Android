@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.*
+import com.cooper.wheellog.map.MapActivity
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
