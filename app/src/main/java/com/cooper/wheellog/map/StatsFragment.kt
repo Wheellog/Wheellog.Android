@@ -12,6 +12,7 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
@@ -34,7 +35,7 @@ class StatsFragment: Fragment() {
         chart = view.findViewById(R.id.chart)
         chart.apply {
             setDrawGridBackground(false)
-            description.isEnabled = false
+            description.isEnabled = true
             setHardwareAccelerationEnabled(true)
             legend.textColor = getColorEx(android.R.color.white)
             setNoDataText(resources.getString(R.string.no_chart_data))
@@ -62,33 +63,14 @@ class StatsFragment: Fragment() {
                 lineData.addDataSet(it)
             }
             chart.data = lineData
+            chart.marker = ChartMarkerView(requireContext(), chart.xAxis.valueFormatter, tripData)
             chart.invalidate()
-        })
-
-        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener
-        {
-            override fun onValueSelected(e: Entry, h: Highlight?) {
-//                val x = e.x.toString()
-//                val y = e.y
-                //val selectedXAxisCount = x.substringBefore(".") //this value is float so use substringbefore method
-                chart.highlightValue(h)
-                // another method shown below
-                //val nonFloat=lineChart.getXAxis().getValueFormatter().getFormattedValue(e.x)
-                //if you are display any string in x axis you will get this
-            }
-
-            override fun onNothingSelected() {}
         })
     }
 
     private var chartAxisValueFormatter: ValueFormatter = object : ValueFormatter() {
         override fun getFormattedValue(value: Float): String {
             return timeFormatter.format(Date((value).toLong() * 100))
-        }
-
-        // we don't draw numbers, so no decimal digits needed
-        fun getDecimalDigits(): Int {
-            return 0
         }
     }
 }

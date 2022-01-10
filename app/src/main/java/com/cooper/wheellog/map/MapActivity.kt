@@ -27,6 +27,7 @@ class MapActivity : AppCompatActivity() {
     private lateinit var adapter: MapActivityAdapter
     private lateinit var viewPager: ViewPager2
     private lateinit var tabs: TabLayout
+    // TODO: localize me
     private val tabNames: Array<String> = arrayOf(
         "Map",
         "Stats",
@@ -77,6 +78,7 @@ class MapActivity : AppCompatActivity() {
 
     private fun parseFile(extras: Bundle): TripData {
         val title = extras.get("title") as String
+        val tripData = TripData(title)
         val inputStream: InputStream?
         try {
             inputStream = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -88,12 +90,13 @@ class MapActivity : AppCompatActivity() {
             }
         } catch (ex: Exception) {
             Timber.wtf(ex.localizedMessage)
-            return TripData(title, null, null, "Could not open the file " + ex.localizedMessage)
+            // TODO: localize me
+            return tripData.apply { errorMessage = "Could not open the file " + ex.localizedMessage }
         }
         if (inputStream == null) {
             // TODO: localize me
             Timber.wtf("Failed to create inputStream for %s", extras.get("title"))
-            return TripData(title, null, null, "Failed to create inputStream.")
+            return tripData.apply { errorMessage = "Failed to create inputStream."}
         }
 
         val reader = BufferedReader(InputStreamReader(inputStream))
@@ -108,17 +111,15 @@ class MapActivity : AppCompatActivity() {
             inputStream.close()
             // TODO: localize me
             Timber.wtf("%s file does not contain geolocation data.", extras.get("title"))
-            return TripData(title, null, null, "File does not contain GPS data.")
+            return tripData.apply { errorMessage = "File does not contain GPS data." }
         }
 
         // for statistics
         var latitude = 0.0
         var longitude = 0.0
-        var maxSpeed = 0.0
         var distance: Int
-        var startBattery: Int
         var endBattery: Int
-        val sdf_time = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
+        val sdfTime = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
 
         val geoLine = ArrayList<LogGeoPoint>()
         val lineDataSets = ArrayList<LineDataSet>()
@@ -126,6 +127,8 @@ class MapActivity : AppCompatActivity() {
         val entriesCurrent = ArrayList<Entry>()
         val entriesPower = ArrayList<Entry>()
         val entriesSpeed = ArrayList<Entry>()
+        val entriesBattery = ArrayList<Entry>()
+        val entriesTemperature = ArrayList<Entry>()
 
         try {
             var i = 0
@@ -135,29 +138,26 @@ class MapActivity : AppCompatActivity() {
                 val longitudeNew = row[header[LogHeaderEnum.LONGITUDE]!!].toDoubleOrNull() ?: 0.0
                 // stats
                 val batteryLevel = row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0
-                if (i == 1) {
-                    startBattery = batteryLevel
-                }
                 endBattery = batteryLevel
                 val voltage = row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0
                 val current = row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0
                 val power = row[header[LogHeaderEnum.POWER]!!].toDoubleOrNull() ?: 0.0
                 var speed = row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0
                 val temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
-                val time = sdf_time.parse(row[header[LogHeaderEnum.TIME]!!])!!.time / 100f
+                val timeString = row[header[LogHeaderEnum.TIME]!!]
+                val time = sdfTime.parse(timeString)!!.time / 100f
                 entriesVoltage.add(Entry(time, voltage.toFloat()))
                 entriesCurrent.add(Entry(time, current.toFloat()))
                 entriesPower.add(Entry(time, power.toFloat()))
                 entriesSpeed.add(Entry(time, speed.toFloat()))
+                entriesBattery.add(Entry(time, batteryLevel.toFloat()))
+                entriesTemperature.add(Entry(time, temperature.toFloat()))
                 // map
                 if (latitudeNew != latitude && longitudeNew != longitude) {
                     latitude = latitudeNew
                     longitude = longitudeNew
                     val altitude = row[header[LogHeaderEnum.GPS_ALT]!!].toDoubleOrNull() ?: 0.0
-
-                    // stats
                     speed = row[header[LogHeaderEnum.GPS_SPEED]!!].toDoubleOrNull() ?: 0.0
-                    maxSpeed = maxSpeed.coerceAtLeast(speed)
                     distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0
 
                     geoLine.add(LogGeoPoint(latitude, longitude, altitude).also {
@@ -166,17 +166,20 @@ class MapActivity : AppCompatActivity() {
                         it.battery = endBattery
                         it.distance = distance
                         it.temperature = temperature
+                        it.timeString = timeString
                     })
                     i++
                 }
             }
         } catch (ex: Exception) {
             Timber.wtf(ex.localizedMessage)
-            return TripData(title, null, null, "Unexpected exception when parsing file: " + ex.localizedMessage)
+            // TODO: localize me
+            return tripData.apply { errorMessage = "Unexpected exception when parsing file: " + ex.localizedMessage }
         } finally {
             inputStream.close()
         }
 
+        // TODO: localize me
         lineDataSets.apply {
             add(LineDataSet(entriesVoltage, "Voltage (V)").apply {
                 color = Color.GREEN
@@ -202,8 +205,17 @@ class MapActivity : AppCompatActivity() {
                 axisDependency = YAxis.AxisDependency.LEFT
                 lineWidth = 2f
             })
+            add(LineDataSet(entriesTemperature, "Temperature (°C)").apply {
+                color = Color.RED
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.LEFT
+                lineWidth = 2f
+            })
         }
 
-        return TripData(title, geoLine, lineDataSets)
+        return tripData.apply {
+            this.geoLine = geoLine
+            stats = lineDataSets
+        }
     }
 }

@@ -13,9 +13,11 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.ScaleBarOverlay
 import org.osmdroid.views.overlay.TilesOverlay
@@ -80,12 +82,16 @@ class MapFragment : Fragment() {
                     setOnClickListener { polyline, mapView, eventPos ->
                         try {
                             val pointOnLine = polyline.getCloseTo(eventPos, MathsUtil.dpToPx(context, 24).toDouble(), mapView)
-                            val logGeoPoint = polyline.actualPoints.firstOrNull { p -> p.distanceToAsDouble(pointOnLine) < 1.0 } as LogGeoPoint?
-                            if (logGeoPoint != null) {
-                                polyline.apply {
-                                    title = logGeoPoint.toString()
-                                    infoWindowLocation = logGeoPoint
-                                    showInfoWindow()
+                            if (pointOnLine != null) {
+                                val logGeoPoint = polyline.actualPoints.firstOrNull { p ->
+                                    p.distanceToAsDouble(pointOnLine) < 1.0
+                                } as LogGeoPoint?
+                                if (logGeoPoint != null) {
+                                    polyline.apply {
+                                        title = logGeoPoint.toString()
+                                        infoWindowLocation = logGeoPoint
+                                        showInfoWindow()
+                                    }
                                 }
                             }
                         } catch (ex: java.lang.Exception) {
@@ -94,10 +100,42 @@ class MapFragment : Fragment() {
                         true
                     }
                 }
-                tripData.geoLine.forEach {
+                tripData.geoLine!!.forEach {
                     polyLine.addPoint(it)
                 }
                 overlays.add(polyLine)
+                val startPoint = tripData.geoLine!!.first()
+                Marker(this).apply {
+                    title = "Start!\n%s".format(startPoint.toString())
+                    position = startPoint
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    icon = getDrawableEx(R.drawable.ic_start_marker)
+                    overlays.add(this)
+                }
+                val finishPoint = tripData.geoLine!!.last()
+                Marker(this).apply {
+                    title = "Finish!\n%s".format(finishPoint.toString())
+                    position = finishPoint
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    icon = getDrawableEx(R.drawable.ic_finish_marker)
+                    overlays.add(this)
+                }
+                try {
+                    if (tripData.geoLine!!.size > 100) {
+                        val maxSpeedPoint = tripData.geoLine!!.maxByOrNull { it.speed }
+                        if (maxSpeedPoint != null && maxSpeedPoint.speed > 20) {
+                            Marker(this).apply {
+                                title = "Max speed!\n%s".format(maxSpeedPoint.toString())
+                                position = maxSpeedPoint
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                icon = getDrawableEx(R.drawable.ic_maxspeed_marker)
+                                overlays.add(this)
+                            }
+                        }
+                    }
+                } catch (ex: Exception) {
+                    Timber.wtf(ex.localizedMessage);
+                }
                 zoomToBoundingBox(polyLine.bounds, true, MathsUtil.dpToPx(context, 24))
             }
         })
