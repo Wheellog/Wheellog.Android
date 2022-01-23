@@ -27,4 +27,11 @@
     <color name="settings_bg">#222222</color>
     <color name="splash_status_bar">#FFFFFF</color>
 
+    <color name="stats_speed">#00E676</color>
+    <color name="stats_battery">#0D47A1</color>
+    <color name="stats_temp">#F50057</color>
+    <color name="stats_voltage">#1DE9B6</color>
+    <color name="stats_current">#EC407A</color>
+    <color name="stats_power">#FFEA00</color>
+    <color name="stats_pwm">#8F8F8F</color>
 </resources>

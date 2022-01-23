@@ -65,80 +65,82 @@ class MapFragment : Fragment() {
                     .setMessage(tripData.errorMessage)
                     .setPositiveButton(android.R.string.ok) { _, _ -> }
                     .show()
-
-                return@observe
-            }
-
-            // show map and line
-            map.apply {
-                isVisible = true
-                val polyLine = Polyline(map, true).apply {
-                    outlinePaint.apply {
-                        color = context.getColorEx(R.color.accent)
-                        isAntiAlias = true
-                        strokeWidth = 15f
-                    }
-                    title = tripData.title
-                    setOnClickListener { polyline, mapView, eventPos ->
-                        try {
-                            val pointOnLine = polyline.getCloseTo(eventPos, MathsUtil.dpToPx(context, 24).toDouble(), mapView)
-                            if (pointOnLine != null) {
-                                val logGeoPoint = polyline.actualPoints.firstOrNull { p ->
-                                    p.distanceToAsDouble(pointOnLine) < 1.0
-                                } as LogGeoPoint?
-                                if (logGeoPoint != null) {
-                                    polyline.apply {
-                                        title = logGeoPoint.toString()
-                                        infoWindowLocation = logGeoPoint
-                                        showInfoWindow()
-                                    }
-                                }
-                            }
-                        } catch (ex: java.lang.Exception) {
-                            Timber.wtf(ex)
-                        }
-                        true
-                    }
-                }
-                tripData.geoLine!!.forEach {
-                    polyLine.addPoint(it)
-                }
-                overlays.add(polyLine)
-                val startPoint = tripData.geoLine!!.first()
-                Marker(this).apply {
-                    title = "Start!\n%s".format(startPoint.toString())
-                    position = startPoint
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    icon = getDrawableEx(R.drawable.ic_start_marker)
-                    overlays.add(this)
-                }
-                val finishPoint = tripData.geoLine!!.last()
-                Marker(this).apply {
-                    title = "Finish!\n%s".format(finishPoint.toString())
-                    position = finishPoint
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    icon = getDrawableEx(R.drawable.ic_finish_marker)
-                    overlays.add(this)
-                }
-                try {
-                    if (tripData.geoLine!!.size > 100) {
-                        val maxSpeedPoint = tripData.geoLine!!.maxByOrNull { it.speed }
-                        if (maxSpeedPoint != null && maxSpeedPoint.speed > 20) {
-                            Marker(this).apply {
-                                title = "Max speed!\n%s".format(maxSpeedPoint.toString())
-                                position = maxSpeedPoint
-                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                icon = getDrawableEx(R.drawable.ic_maxspeed_marker)
-                                overlays.add(this)
-                            }
-                        }
-                    }
-                } catch (ex: Exception) {
-                    Timber.wtf(ex.localizedMessage);
-                }
-                zoomToBoundingBox(polyLine.bounds, true, MathsUtil.dpToPx(context, 24))
+            } else {
+                drawMap(tripData)
             }
         })
+    }
+
+    private fun drawMap(tripData: TripData) {
+        val polyLine = Polyline(map, true).apply {
+            outlinePaint.apply {
+                color = requireContext().getColorEx(R.color.accent)
+                isAntiAlias = true
+                strokeWidth = 15f
+            }
+            title = tripData.title
+            setOnClickListener { polyline, mapView, eventPos ->
+                try {
+                    val pointOnLine = polyline.getCloseTo(eventPos, MathsUtil.dpToPx(requireContext(), 24).toDouble(), mapView)
+                    if (pointOnLine != null) {
+                        val logGeoPoint = polyline.actualPoints.firstOrNull { p ->
+                            p.distanceToAsDouble(pointOnLine) < 1.0
+                        } as LogGeoPoint?
+                        if (logGeoPoint != null) {
+                            polyline.apply {
+                                title = logGeoPoint.toString()
+                                infoWindowLocation = logGeoPoint
+                                showInfoWindow()
+                            }
+                        }
+                    }
+                } catch (ex: java.lang.Exception) {
+                    Timber.wtf(ex)
+                }
+                true
+            }
+        }
+
+        map.apply {
+            isVisible = true
+            tripData.geoLine!!.forEach {
+                polyLine.addPoint(it)
+            }
+            overlays.add(polyLine)
+            val startPoint = tripData.geoLine!!.first()
+            Marker(this).apply {
+                title = "Start!\n%s".format(startPoint.toString())
+                position = startPoint
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                icon = getDrawableEx(R.drawable.ic_start_marker)
+                overlays.add(this)
+            }
+            val finishPoint = tripData.geoLine!!.last()
+            Marker(this).apply {
+                title = "Finish!\n%s".format(finishPoint.toString())
+                position = finishPoint
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                icon = getDrawableEx(R.drawable.ic_finish_marker)
+                overlays.add(this)
+            }
+            try {
+                if (tripData.geoLine!!.size > 100) {
+                    val maxSpeedPoint = tripData.geoLine!!.maxByOrNull { it.speed }
+                    if (maxSpeedPoint != null && maxSpeedPoint.speed > 20) {
+                        Marker(this).apply {
+                            title = "Max speed!\n%s".format(maxSpeedPoint.toString())
+                            position = maxSpeedPoint
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            icon = getDrawableEx(R.drawable.ic_maxspeed_marker)
+                            overlays.add(this)
+                        }
+                    }
+                }
+            } catch (ex: Exception) {
+                Timber.wtf(ex.localizedMessage)
+            }
+            zoomToBoundingBox(polyLine.bounds, true, MathsUtil.dpToPx(context, 24))
+        }
     }
 
     override fun onResume() {

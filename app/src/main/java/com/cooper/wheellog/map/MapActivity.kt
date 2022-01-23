@@ -1,6 +1,5 @@
 package com.cooper.wheellog.map
 
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +9,7 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.cooper.wheellog.R
 import com.cooper.wheellog.utils.LogHeaderEnum
+import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
@@ -122,10 +122,10 @@ class MapActivity : AppCompatActivity() {
         val sdfTime = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
 
         val geoLine = ArrayList<LogGeoPoint>()
-        val lineDataSets = ArrayList<LineDataSet>()
         val entriesVoltage = ArrayList<Entry>()
         val entriesCurrent = ArrayList<Entry>()
         val entriesPower = ArrayList<Entry>()
+        val entriesPWM = ArrayList<Entry>()
         val entriesSpeed = ArrayList<Entry>()
         val entriesBattery = ArrayList<Entry>()
         val entriesTemperature = ArrayList<Entry>()
@@ -146,12 +146,14 @@ class MapActivity : AppCompatActivity() {
                 val temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0
                 val timeString = row[header[LogHeaderEnum.TIME]!!]
                 val time = sdfTime.parse(timeString)!!.time / 100f
+                val pwm = row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0
                 entriesVoltage.add(Entry(time, voltage.toFloat()))
                 entriesCurrent.add(Entry(time, current.toFloat()))
                 entriesPower.add(Entry(time, power.toFloat()))
                 entriesSpeed.add(Entry(time, speed.toFloat()))
                 entriesBattery.add(Entry(time, batteryLevel.toFloat()))
                 entriesTemperature.add(Entry(time, temperature.toFloat()))
+                entriesPWM.add(Entry(time, pwm.toFloat()))
                 // map
                 if (latitudeNew != latitude && longitudeNew != longitude) {
                     latitude = latitudeNew
@@ -179,43 +181,56 @@ class MapActivity : AppCompatActivity() {
             inputStream.close()
         }
 
-        // TODO: localize me
-        lineDataSets.apply {
-            add(LineDataSet(entriesVoltage, "Voltage (V)").apply {
-                color = Color.GREEN
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            })
-            add(LineDataSet(entriesCurrent, "Current (A)").apply {
-                color = Color.YELLOW
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.RIGHT
-                lineWidth = 2f
-            })
-            add(LineDataSet(entriesPower, "Power (W)").apply {
-                color = Color.GRAY
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.RIGHT
-                lineWidth = 1f
-            })
-            add(LineDataSet(entriesSpeed, "Speed (km/h)").apply {
-                color = Color.CYAN
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            })
-            add(LineDataSet(entriesTemperature, "Temperature (°C)").apply {
-                color = Color.RED
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            })
-        }
 
+        // TODO: localize me
+        val chart1DataSets = listOf(
+             LineDataSet(entriesBattery, "Battery %").apply {
+                color = getColorEx(R.color.stats_battery)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.LEFT
+                lineWidth = 2f
+            },
+            LineDataSet(entriesSpeed, "Speed (km/h)").apply {
+                color = getColorEx(R.color.stats_speed)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.LEFT
+                lineWidth = 2f
+            },
+            LineDataSet(entriesTemperature, "Temperature (°C)").apply {
+                color = getColorEx(R.color.stats_temp)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.RIGHT
+                lineWidth = 2f
+            })
+        val chart2DataSets = listOf(
+            LineDataSet(entriesPWM, "PWM").apply {
+                color = getColorEx(R.color.stats_pwm)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.LEFT
+                lineWidth = 2f
+            },
+            LineDataSet(entriesVoltage, "Voltage (V)").apply {
+                color = getColorEx(R.color.stats_voltage)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.LEFT
+                lineWidth = 2f
+            },
+            LineDataSet(entriesPower, "Power (W)").apply {
+                color = getColorEx(R.color.stats_power)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.RIGHT
+                lineWidth = 2f
+            },
+            LineDataSet(entriesCurrent, "Current (A)").apply {
+                color = getColorEx(R.color.stats_current)
+                setDrawCircles(false)
+                axisDependency = YAxis.AxisDependency.LEFT
+                lineWidth = 2f
+            })
         return tripData.apply {
             this.geoLine = geoLine
-            stats = lineDataSets
+            stats1 = chart1DataSets
+            stats2 = chart2DataSets
         }
     }
 }
