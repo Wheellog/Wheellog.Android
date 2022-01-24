@@ -48,7 +48,8 @@
         android:supportsRtl="true"
         android:theme="@style/OriginalTheme"
         tools:targetApi="n">
-        <activity android:name=".MapActivity" />
+        <activity android:name=".map.MapActivity"
+            android:configChanges="orientation|screenSize" />
         <activity android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
             android:noHistory="true" />

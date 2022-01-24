@@ -23,7 +23,8 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
@@ -395,8 +396,12 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                         dataSetSpeed = chart1!!.data.getDataSetByLabel(activity.getString(R.string.speed_axis), true) as LineDataSet
                         dataSetCurrent = chart1!!.data.getDataSetByLabel(activity.getString(R.string.current_axis), true) as LineDataSet
                     }
+                    // TODO: fix me
+                    // ужасно-тормозной код по перерисовывнию графика.
+                    // например каждая очистка вызывает перерисовку
                     dataSetSpeed.clear()
                     dataSetCurrent.clear()
+
                     val currentAxis = ArrayList(WheelData.getInstance().currentAxis)
                     val speedAxis = ArrayList(WheelData.getInstance().speedAxis)
                     for (d in currentAxis) {
@@ -407,8 +412,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     for (d in speedAxis) {
                         var value = 0f
                         if (d != null) value = d
-                        if (WheelLog.AppConfig.useMph) dataSetSpeed.addEntry(Entry(dataSetSpeed.entryCount.toFloat(), MathsUtil.kmToMiles(value)))
-                        else dataSetSpeed.addEntry(Entry(dataSetSpeed.entryCount.toFloat(), value))
+                        if (WheelLog.AppConfig.useMph)
+                            dataSetSpeed.addEntry(Entry(dataSetSpeed.entryCount.toFloat(), MathsUtil.kmToMiles(value)))
+                        else
+                            dataSetSpeed.addEntry(Entry(dataSetSpeed.entryCount.toFloat(), value))
                     }
                     dataSetCurrent.notifyDataSetChanged()
                     dataSetSpeed.notifyDataSetChanged()
@@ -565,13 +572,13 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         eventsTextView?.text = logsCashe
     }
 
-    private var chartAxisValueFormatter: IAxisValueFormatter = object : IAxisValueFormatter {
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+    private var chartAxisValueFormatter: IndexAxisValueFormatter = object : IndexAxisValueFormatter () {
+        override fun getFormattedValue(value: Float): String {
             return if (value < xAxisLabels.size) xAxisLabels[value.toInt()] else ""
         }
 
         // we don't draw numbers, so no decimal digits needed
-        override fun getDecimalDigits(): Int {
+        fun getDecimalDigits(): Int {
             return 0
         }
     }
