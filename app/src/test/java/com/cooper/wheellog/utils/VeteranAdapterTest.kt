@@ -267,6 +267,29 @@ class VeteranAdapterTest {
     }
 
     @Test
+    fun `decode veteran abrams 2`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c20268000004aaf00004aaf000000040ac0".hexToByteArray()
+        val byteArray2 = "0dff00000af00af007d20003fff80004".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(27)
+        assertThat(data.voltageDouble).isEqualTo(98.56)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.4)
+        assertThat(data.wheelDistanceDouble).isEqualTo(19.119)
+        assertThat(data.totalDistance).isEqualTo(19119)
+        assertThat(data.batteryLevel).isEqualTo(99)
+        assertThat(data.version).isEqualTo("7.-46 (2002)")
+    }
+
+    @Test
     fun `update pedals mode`() {
         // Arrange.
         mockkConstructor(android.os.Handler::class)
