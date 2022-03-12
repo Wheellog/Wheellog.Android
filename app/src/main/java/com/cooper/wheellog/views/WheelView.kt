@@ -242,6 +242,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         String.format(Locale.US, "%.2f %%", WheelData.getInstance().batteryPerKm)
                     },
                     false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.user_distance),
+                    {
+                        String.format(
+                            Locale.US,
+                            "%.3f " + resources.getString(R.string.km),
+                            WheelData.getInstance().userDistanceDouble)
+                    },
+                    false
                 )
         )
 
