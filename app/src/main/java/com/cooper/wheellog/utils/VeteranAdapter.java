@@ -42,7 +42,7 @@ public class VeteranAdapter extends BaseAdapter {
                 String version = String.format(Locale.US, "%03d.%01d.%02d", ver/1000, (ver%1000)/100, (ver%100));
                 int pedalsMode = MathsUtil.shortFromBytesBE(buff, 30);
                 int reserved1 = MathsUtil.shortFromBytesBE(buff,32);
-                int reserved2 = MathsUtil.shortFromBytesBE(buff, 34);
+                int hwPwm = MathsUtil.shortFromBytesBE(buff, 34);
 
                 int battery;
                 if (useBetterPercents) {
@@ -85,6 +85,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setVoltageSag(voltage);
                 wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
+                wd.setOutput(hwPwm);
                 wd.updateRideTime();
                 newDataFound = true;
             }
