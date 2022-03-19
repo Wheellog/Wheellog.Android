@@ -433,4 +433,6 @@
     <string name="measurement_systems_category_title">Системы измерения</string>
     <string name="garmin_connectiq_use_beta_title">Бета компаньон Garmin</string>
     <string name="garmin_connectiq_use_beta_description">Использовать бета-версию компаньона вместо стабильной</string>
+    <string name="hw_pwm_title">Использовать аппаратный PWM</string>
+    <string name="hw_pwm_description">Современные прошивки Veteran передают PWM в протоколе, включите чтобы активировать</string>
 </resources>

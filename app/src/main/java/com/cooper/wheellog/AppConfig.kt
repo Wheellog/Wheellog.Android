@@ -523,6 +523,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.gotway_negative, "0")
         set(value) = setSpecific(R.string.gotway_negative, value)
 
+    var hwPwm: Boolean
+        get() = getSpecific(R.string.hw_pwm, false)
+        set(value) = setSpecific(R.string.hw_pwm, value)
+
     var connectBeep: Boolean
         get() = getSpecific(R.string.connect_beep, true)
         set(value) = setSpecific(R.string.connect_beep, value)

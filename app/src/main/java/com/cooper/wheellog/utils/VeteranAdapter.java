@@ -38,10 +38,11 @@ public class VeteranAdapter extends BaseAdapter {
                 int chargeMode = MathsUtil.shortFromBytesBE(buff,22);
                 int speedAlert = MathsUtil.shortFromBytesBE(buff, 24) * 10;
                 int speedTiltback = MathsUtil.shortFromBytesBE(buff,26) * 10;
-                String version = String.format(Locale.US, "%d.%d (%d)", buff[28], buff[29],MathsUtil.shortFromBytesBE(buff,28));
+                int ver = MathsUtil.shortFromBytesBE(buff,28);
+                String version = String.format(Locale.US, "%03d.%01d.%02d", ver/1000, (ver%1000)/100, (ver%100));
                 int pedalsMode = MathsUtil.shortFromBytesBE(buff, 30);
                 int reserved1 = MathsUtil.shortFromBytesBE(buff,32);
-                int reserved2 = MathsUtil.shortFromBytesBE(buff, 34);
+                int hwPwm = MathsUtil.shortFromBytesBE(buff, 34);
 
                 int battery;
                 if (useBetterPercents) {
@@ -84,6 +85,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setVoltageSag(voltage);
                 wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
+                wd.setOutput(hwPwm);
                 wd.updateRideTime();
                 newDataFound = true;
             }
@@ -166,7 +168,7 @@ public class VeteranAdapter extends BaseAdapter {
                 case collecting:
 
                     int bsize = buffer.size();
-                    if (((bsize == 22 || bsize == 30 || bsize > 34) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) || ((bsize == 31) && ((c & 0xFC) != 0x00))) {
+                    if (((bsize == 22 || bsize == 30) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) || ((bsize == 31) && ((c & 0xFC) != 0x00))) {
                         state = UnpackerState.done;
                         Timber.i("Data verification failed");
                         reset();

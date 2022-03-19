@@ -804,6 +804,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setDefaultValue(WheelLog.AppConfig.gotwayNegative)
             ps.addPreference(this)
         }
+
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.hw_pwm)
+            title = getString(R.string.hw_pwm_title)
+            summary = getString(R.string.hw_pwm_description)
+            setDefaultValue(false)
+            ps.addPreference(this)
+        }
     }
 
     private fun forAllWheel() {

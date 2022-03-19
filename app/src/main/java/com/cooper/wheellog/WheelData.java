@@ -1239,7 +1239,7 @@ public class WheelData {
         setTopSpeed(mSpeed);
         setVoltageSag(mVoltage);
         setMaxTemp(mTemperature);
-        if ((mWheelType == WHEEL_TYPE.KINGSONG) || (mWheelType == WHEEL_TYPE.INMOTION_V2)) {
+        if ((mWheelType == WHEEL_TYPE.KINGSONG) || (mWheelType == WHEEL_TYPE.INMOTION_V2) || WheelLog.AppConfig.getHwPwm()) {
             mCalculatedPwm = (double) mOutput / 10000.0;
         } else {
             double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
