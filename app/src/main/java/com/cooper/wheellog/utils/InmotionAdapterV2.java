@@ -25,6 +25,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     private static int lightSwitchCounter = 0;
     private byte[] settingCommand;
     private static Model mModel = Model.UNKNOWN;
+    private static int protoVer = 0;
     InmotionUnpackerV2 unpacker = new InmotionUnpackerV2();
 
     @Override
@@ -61,10 +62,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
                             if (getInstance().getModel() == Model.V12) {
                                 return result.parseRealTimeInfoV12(mContext);
+                            } else if (protoVer < 2) {
+                                return result.parseRealTimeInfoV11(mContext);
                             } else {
                                 return result.parseRealTimeInfoV11_1_4(mContext);
                             }
-
                         } else {
                             Timber.i("Get unknown command: %02X", result.command);
                         }
@@ -118,6 +120,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     public void setModel(Model value){
         mModel = value;
+    }
+    public void setProto(int value){
+        protoVer = value;
     }
 
     public Model getModel(){
@@ -414,6 +419,45 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 wd.setSerial(serialNumber);
             } else if ((data[0] == (byte) 0x06) && len >= 10) {
                 Timber.i("Parse versions");
+                protoVer = 0;
+                int DriverBoard3 = MathsUtil.shortFromBytesLE(data, 2);
+                int DriverBoard2 = data[4];
+                int DriverBoard1 = data[5];
+                String DriverBoard = String.format(Locale.US, "%d.%d.%d",DriverBoard1, DriverBoard2, DriverBoard3);
+                int smth13 = MathsUtil.shortFromBytesLE(data, 6);
+                int smth12 = data[8];
+                int smth11 = data[9];
+                String smth1 = String.format(Locale.US, "%d.%d.%d",smth11, smth12, smth13);
+
+                int MainBoard3 = MathsUtil.shortFromBytesLE(data, 11);
+                int MainBoard2 = data[13];
+                int MainBoard1 = data[14];
+                String MainBoard = String.format(Locale.US, "%d.%d.%d",MainBoard1, MainBoard2, MainBoard3);
+
+                int smth23 = MathsUtil.shortFromBytesLE(data, 16);
+                int smth22 = data[18];
+                int smth21 = data[19];
+                String smth2 = String.format(Locale.US, "%d.%d.%d",smth21, smth22, smth23);
+
+                int Ble3 = MathsUtil.shortFromBytesLE(data, 20);
+                int Ble2 = data[22];
+                int Ble1 = data[23];
+                String Ble = String.format(Locale.US, "%d.%d.%d",Ble1, Ble2, Ble3);
+
+                int smth33 = MathsUtil.shortFromBytesLE(data, 16);
+                int smth32 = data[18];
+                int smth31 = data[19];
+                String smth3 = String.format(Locale.US, "%d.%d.%d",smth31, smth32, smth33);
+
+                String vers = String.format(Locale.US, "Main:%s Drv:%s BLE:%s",MainBoard, DriverBoard, Ble);
+                wd.setVersion(vers);
+                if (mModel == Model.V11) {
+                    if ((MainBoard1 < 2) && (MainBoard2 < 4)) { // main board ver before 1.4
+                        protoVer = 1;
+                    } else protoVer = 2; // main board 1.4+
+                }
+
+
             }
             return false;
         }
@@ -709,7 +753,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
             wd.setBatteryLevel((int)Math.round(mBatLevel/100.0));
             wd.setTemperature(mMosTemp * 100);
-            wd.setTemperature2(mMotTemp * 100);
+            wd.setTemperature2(mBoardTemp * 100);
             wd.setOutput(mPwm);
             //wd.setMotorTemp(mMotTemp * 100); not existed in WD
             wd.setAngle((double)mPitchAngle/100.0);
