@@ -170,6 +170,33 @@ class InmotionAdapterV2Test {
     }
 
     @Test
+    fun `decode with v11 v1_4_0`() {
+        // Arrange.
+        adapter.setModel(InmotionAdapterV2.Model.V11)
+        val byteArray1 = "aaaa1445842d1d10000000efff070000000000000000002b0300000000000000008a149612e02e8813641900000000cbb000cccad1000028000000000049140000000000000000000021".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(29.16)
+        assertThat(data.temperature).isEqualTo(16)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(35)
+        assertThat(data.cpuTemp).isEqualTo(33)
+        assertThat(data.motorPower).isEqualTo(89.0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(55.00)
+        assertThat(data.torque).isEqualTo(2.75)
+        assertThat(data.voltageDouble).isEqualTo(78.50)
+        assertThat(data.currentDouble).isEqualTo(1.29)
+        assertThat(data.wheelDistanceDouble).isEqualTo(10.45)
+        assertThat(data.batteryLevel).isEqualTo(76)
+        assertThat(data.powerDouble).isEqualTo(101.0)
+        assertThat(data.angle).isEqualTo(0.24)
+        assertThat(data.roll).isEqualTo(1.24)
+    }
+
+    @Test
     fun `decode with v12 full data`() {
         // Arrange.
         val byteArray1 = "aaaa110882010207010103009c".hexToByteArray() // wheel type
