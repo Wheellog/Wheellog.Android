@@ -121,7 +121,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     public void setModel(Model value){
         mModel = value;
     }
-    public void setProto(int value){
+    public void setProto(int value){ // for tests
         protoVer = value;
     }
 
