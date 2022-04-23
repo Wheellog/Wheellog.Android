@@ -65,7 +65,7 @@ class InmotionAdapterV2Test {
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("1480CA122207002B")
         assertThat(data.model).isEqualTo("Inmotion V11")
-        assertThat(data.version).isEqualTo("-")
+        assertThat(data.version).isEqualTo("Main:1.1.64 Drv:3.4.8 BLE:1.1.13")
 
 
         assertThat(data.speedDouble).isEqualTo(24.01)
@@ -119,6 +119,7 @@ class InmotionAdapterV2Test {
     fun `decode v11 new fw with PWM`() {
         // Arrange.
         adapter.setModel(InmotionAdapterV2.Model.V11)
+        adapter.setProto(1)
         val byteArray1 = "aaaa143384411f8e03a5a506e90bd80242021600122a5acbb000cc002a0000000bfd7c1564190000d4d1ff09490a0000000000000000000010".hexToByteArray() // wheel type
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -146,6 +147,7 @@ class InmotionAdapterV2Test {
     fun `decode with v11 escape data2`() {
         // Arrange.
         adapter.setModel(InmotionAdapterV2.Model.V11)
+        adapter.setProto(1)
         val byteArray1 = "aaaa143184a5aa1e8100640b1301650059001504a0234cc0b000ce00180000007c007c1564190000d1d3492b00000000000000000000a5a5".hexToByteArray() // wheel type
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -167,6 +169,59 @@ class InmotionAdapterV2Test {
         assertThat(data.powerDouble).isEqualTo(101.0)
         assertThat(data.angle).isEqualTo(0.24)
         assertThat(data.roll).isEqualTo(1.24)
+    }
+
+    @Test
+    fun `decode with v11 v1_4_0`() {
+        // Arrange.
+        adapter.setModel(InmotionAdapterV2.Model.V11)
+        adapter.setProto(2)
+        val byteArray1 = "aaaa1445842d1d10000000efff070000000000000000002b0300000000000000008a149612e02e8813641900000000cbb000cccad1000028000000000049140000000000000000000021".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isTrue()
+        assertThat(data.speedDouble).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(27)
+        assertThat(data.temperature2).isEqualTo(28)
+        assertThat(data.imuTemp).isEqualTo(33)
+        assertThat(data.cpuTemp).isEqualTo(26)
+        assertThat(data.motorPower).isEqualTo(0)
+        assertThat(data.currentLimit).isEqualTo(65.00)
+        assertThat(data.speedLimit).isEqualTo(50.00)
+        assertThat(data.torque).isEqualTo(-0.17)
+        assertThat(data.voltageDouble).isEqualTo(74.69)
+        assertThat(data.currentDouble).isEqualTo(0.16)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0)
+        assertThat(data.batteryLevel).isEqualTo(53)
+        assertThat(data.powerDouble).isEqualTo(0)
+        assertThat(data.angle).isEqualTo(0)
+        assertThat(data.roll).isEqualTo(0)
+    }
+
+    @Test
+    fun `decode version with v11 v1_4_0`() {
+        // Arrange.
+        adapter.setModel(InmotionAdapterV2.Model.V11)
+        val byteArray1 = "aaaa111d820622000003040300070221000004011a000602230d00010107000001b9".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(data.version).isEqualTo("Main:1.4.0 Drv:4.3.0 BLE:1.1.13")
+    }
+
+    @Test
+    fun `decode version with v12`() {
+        // Arrange.
+        adapter.setModel(InmotionAdapterV2.Model.V11)
+        val byteArray1 = "aaaa111d820622790002042000060221040005017d000602233700010203000402bb".hexToByteArray() // wheel type
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(data.version).isEqualTo("Main:1.5.4 Drv:4.2.121 BLE:2.1.55")
+
     }
 
     @Test
@@ -195,7 +250,7 @@ class InmotionAdapterV2Test {
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A031155130009730")
         assertThat(data.model).isEqualTo("Inmotion V12")
-        assertThat(data.version).isEqualTo("-")
+        assertThat(data.version).isEqualTo("Main:1.4.24 Drv:4.2.112 BLE:2.1.36")
 
 
         assertThat(data.speedDouble).isEqualTo(0.0)
@@ -243,7 +298,7 @@ class InmotionAdapterV2Test {
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A031155130009730")
         assertThat(data.model).isEqualTo("Inmotion V12")
-        assertThat(data.version).isEqualTo("-")
+        assertThat(data.version).isEqualTo("Main:1.4.24 Drv:4.2.112 BLE:2.1.36")
 
 
         assertThat(data.speedDouble).isEqualTo(49.85)
