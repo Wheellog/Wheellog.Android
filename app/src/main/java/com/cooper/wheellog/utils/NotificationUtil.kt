@@ -43,9 +43,14 @@ class NotificationUtil(private val context: Context) {
 
     private fun build(): Notification {
         val notificationIntent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
         val buttonSettings = WheelLog.AppConfig.notificationButtons
+        val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= 23) {
+            PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getActivity(context, 0, notificationIntent, 0)
+        }
+
 
         notificationView.setViewVisibility(R.id.ib_actions_layout,
                 if (buttonSettings.any()) View.VISIBLE

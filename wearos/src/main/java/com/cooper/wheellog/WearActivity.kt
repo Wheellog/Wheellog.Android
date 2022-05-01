@@ -150,7 +150,7 @@ class WearActivity : FragmentActivity(),
 
     private fun updatePages(map: DataMap) {
         val pagesString = map.getString(Constants.wearOsPagesData, "")
-        if (pagesString == "") {
+        if (pagesString != "") {
             val newPages = WearPage.deserialize(pagesString)
             val newAdapter = MainRecyclerAdapter(newPages, wd)
             recyclerView.swapAdapter(newAdapter, false)
