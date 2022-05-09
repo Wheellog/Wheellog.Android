@@ -68,6 +68,26 @@ public class KingsongAdapter extends BaseAdapter {
                             battery = (voltage - 6250) / 20;
                         }
                     }
+                } else if (is126vWheel()) {
+                    if (useBetterPercents) {
+                        if (voltage > 12525) {
+                            battery = 100;
+                        } else if (voltage > 10200) {
+                            battery = (int) Math.round((voltage - 9975) / 25.5);
+                        } else if (voltage > 9600) {
+                            battery = (int) Math.round((voltage - 9600) / 67.5);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage < 9375) {
+                            battery = 0;
+                        } else if (voltage >= 12375) {
+                            battery = 100;
+                        } else {
+                            battery = (voltage - 9375) / 30;
+                        }
+                    }
                 } else {
                     if (useBetterPercents) {
                         if (voltage > 6680) {
@@ -202,9 +222,17 @@ public class KingsongAdapter extends BaseAdapter {
                 || wd.getBtName().compareTo("RW") == 0;
     }
 
+    private boolean is126vWheel() {
+        WheelData wd = WheelData.getInstance();
+        return StringUtil.inArray(wd.getModel(), new String[]{"KS-S20", "KS-S22"});
+    }
+
     @Override
     public int getCellSForWheel() {
-        return is84vWheel() ? 20 : 16;
+        int cells = 16;
+        if (is84vWheel()) {cells = 20; }
+        else if (is126vWheel()) {cells = 30; }
+        return cells;
     }
 
     public static KingsongAdapter getInstance() {
