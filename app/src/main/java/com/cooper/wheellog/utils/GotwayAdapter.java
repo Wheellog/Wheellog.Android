@@ -280,7 +280,6 @@ public class GotwayAdapter extends BaseAdapter {
             case 4:
                 scaler = 2.0;
                 break;
-
         }
         return value * scaler;
     }
