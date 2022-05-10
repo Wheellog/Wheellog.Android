@@ -199,6 +199,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 listOfTrips?.adapter = TripAdapter(activity, FileUtil.fillTrips(activity))
             }
             R.layout.main_view_smart_bms -> {
+                createSmartBmsPage()
+/*
                 tvBms1Sn = view.findViewById(R.id.tvBms1Sn)
                 tvBms2Sn = view.findViewById(R.id.tvBms2Sn)
                 tvBms1Fw = view.findViewById(R.id.tvBms1Fw)
@@ -265,6 +267,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 tvBms1Cell16 = view.findViewById(R.id.tvBms1Cell16)
                 tvTitleBms2Cell16 = view.findViewById(R.id.tvTitleBms2Cell16)
                 tvBms2Cell16 = view.findViewById(R.id.tvBms2Cell16)
+
+ */
             }
         }
     }
@@ -428,6 +432,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             }
             R.layout.main_view_smart_bms -> {
                 data.bmsView = true
+                /// ADD
+                //updateFieldForSmartBmsPage()
+                //updateSmartBmsPage()
+                ///END
                 tvBms1Sn?.text = data.bms1.serialNumber
                 tvBms1Fw?.text = data.bms1.versionNumber
                 tvBms1FactoryCap?.text = String.format(Locale.US, "%d mAh", data.bms1.factoryCap)
@@ -790,6 +798,147 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
         createSecondPage()
     }
+
+    //region SmartBMS page
+    private val smartBmsPageValues = LinkedHashMap<Int, String>()
+
+    private fun setupFieldForSmartBmsPage(resId: Int) {
+        smartBmsPageValues[resId] = ""
+    }
+
+    private fun updateFieldForSmartBmsPage(resId: Int, value: String) {
+        if (smartBmsPageValues.containsKey(resId)) {
+            smartBmsPageValues[resId] = value
+        }
+    }
+
+    private fun createSmartBmsPage() {
+        val layout = pagesView[R.layout.main_view_smart_bms]?.findViewById<GridLayout>(R.id.page_smart_bms_grid) ?: return
+        layout.removeAllViews()
+        val font = WheelLog.ThemeManager.getTypeface(activity)
+        val bat1Text = (activity.layoutInflater.inflate(
+                R.layout.textview_smart_bms_battery_template, layout, false
+        ) as TextView).apply {
+            text = activity.getString(R.string.bmsBattery1Title)
+            typeface = font
+        }
+        val bat2Text = (activity.layoutInflater.inflate(
+                R.layout.textview_smart_bms_battery_template, layout, false
+        ) as TextView).apply {
+            text = activity.getString(R.string.bmsBattery2Title)
+            typeface = font
+        }
+        layout.addView(bat1Text)
+        layout.addView(bat2Text)
+
+        for ((key, value) in smartBmsPageValues) {
+            val headerText = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_title_template, layout, false
+            ) as TextView).apply {
+                text = activity.getString(key)
+                typeface = font
+            }
+            val valueText = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_value_template, layout, false
+            ) as TextView).apply {
+                text = value
+                typeface = font
+            }
+            layout.addView(headerText)
+            layout.addView(valueText)
+        }
+    }
+
+    private fun updateSmartBmsPage() {
+        val layout = pagesView[R.layout.main_view_smart_bms]?.findViewById<GridLayout>(R.id.page_smart_bms_grid) ?: return
+        val count = layout.childCount
+        if (smartBmsPageValues.size * 2 != count) {
+            return
+        }
+        var index = 3
+        for (value in smartBmsPageValues.values) {
+            val valueText = layout.getChildAt(index) as TextView
+            valueText.text = value
+            index += 2
+        }
+    }
+    //endregion
+
+    fun configureSmartBmsDisplay() {
+        smartBmsPageValues.clear()
+        when (WheelData.getInstance().wheelType) {
+            WHEEL_TYPE.KINGSONG -> {
+                setupFieldForSmartBmsPage(R.string.speed)
+            }
+            WHEEL_TYPE.NINEBOT_Z -> {
+                setupFieldForSmartBmsPage(R.string.bmsSn)
+                setupFieldForSmartBmsPage(R.string.bmsSn)
+                setupFieldForSmartBmsPage(R.string.bmsFw)
+                setupFieldForSmartBmsPage(R.string.bmsFw)
+                setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
+                setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
+                setupFieldForSmartBmsPage(R.string.bmsActualCap)
+                setupFieldForSmartBmsPage(R.string.bmsActualCap)
+                setupFieldForSmartBmsPage(R.string.bmsCycles)
+                setupFieldForSmartBmsPage(R.string.bmsCycles)
+                setupFieldForSmartBmsPage(R.string.bmsChrgCount)
+                setupFieldForSmartBmsPage(R.string.bmsChrgCount)
+                setupFieldForSmartBmsPage(R.string.bmsMfgDate)
+                setupFieldForSmartBmsPage(R.string.bmsMfgDate)
+                setupFieldForSmartBmsPage(R.string.bmsStatus)
+                setupFieldForSmartBmsPage(R.string.bmsStatus)
+                setupFieldForSmartBmsPage(R.string.bmsRemCap)
+                setupFieldForSmartBmsPage(R.string.bmsRemCap)
+                setupFieldForSmartBmsPage(R.string.bmsRemPerc)
+                setupFieldForSmartBmsPage(R.string.bmsRemPerc)
+                setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                setupFieldForSmartBmsPage(R.string.bmsHealth)
+                setupFieldForSmartBmsPage(R.string.bmsHealth)
+                setupFieldForSmartBmsPage(R.string.bmsCell1)
+                setupFieldForSmartBmsPage(R.string.bmsCell1)
+                setupFieldForSmartBmsPage(R.string.bmsCell2)
+                setupFieldForSmartBmsPage(R.string.bmsCell2)
+                setupFieldForSmartBmsPage(R.string.bmsCell3)
+                setupFieldForSmartBmsPage(R.string.bmsCell3)
+                setupFieldForSmartBmsPage(R.string.bmsCell4)
+                setupFieldForSmartBmsPage(R.string.bmsCell4)
+                setupFieldForSmartBmsPage(R.string.bmsCell5)
+                setupFieldForSmartBmsPage(R.string.bmsCell5)
+                setupFieldForSmartBmsPage(R.string.bmsCell6)
+                setupFieldForSmartBmsPage(R.string.bmsCell6)
+                setupFieldForSmartBmsPage(R.string.bmsCell7)
+                setupFieldForSmartBmsPage(R.string.bmsCell7)
+                setupFieldForSmartBmsPage(R.string.bmsCell8)
+                setupFieldForSmartBmsPage(R.string.bmsCell8)
+                setupFieldForSmartBmsPage(R.string.bmsCell9)
+                setupFieldForSmartBmsPage(R.string.bmsCell9)
+                setupFieldForSmartBmsPage(R.string.bmsCell10)
+                setupFieldForSmartBmsPage(R.string.bmsCell10)
+                setupFieldForSmartBmsPage(R.string.bmsCell11)
+                setupFieldForSmartBmsPage(R.string.bmsCell11)
+                setupFieldForSmartBmsPage(R.string.bmsCell12)
+                setupFieldForSmartBmsPage(R.string.bmsCell12)
+                setupFieldForSmartBmsPage(R.string.bmsCell13)
+                setupFieldForSmartBmsPage(R.string.bmsCell13)
+                setupFieldForSmartBmsPage(R.string.bmsCell14)
+                setupFieldForSmartBmsPage(R.string.bmsCell14)
+                setupFieldForSmartBmsPage(R.string.bmsCell15)
+                setupFieldForSmartBmsPage(R.string.bmsCell15)
+                setupFieldForSmartBmsPage(R.string.bmsCell16)
+                setupFieldForSmartBmsPage(R.string.bmsCell16)
+            }
+            else -> {}
+        }
+        createSmartBmsPage()
+    }
+
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (WheelLog.AppConfig.getResId(key)) {

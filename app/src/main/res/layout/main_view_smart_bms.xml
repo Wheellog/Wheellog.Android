@@ -10,19 +10,12 @@
 
         <androidx.gridlayout.widget.GridLayout
             xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/page_smart_bms_grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:columnCount="4"
             android:animateLayoutChanges="true"
             app:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvBmsWaitText"
-                android:text="@string/no_smart_bms"
-                android:visibility="gone"
-                android:textSize="24sp"
-                app:layout_gravity="center_horizontal|center_vertical"
-                app:layout_columnSpan="4"/>
 
             <TextView
                 android:id="@+id/tvTitleBmsBattery1"

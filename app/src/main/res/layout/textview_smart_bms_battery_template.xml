@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_gravity="center_horizontal|center_vertical"
+    android:textSize="20sp"
+    style="@style/StatsBMS.Title"
+    app:layout_columnSpan="2" />
