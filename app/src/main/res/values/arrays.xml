@@ -91,15 +91,19 @@
     </string-array>
 
     <string-array name="gotway_voltage">
-        <item>67 V</item>
-        <item>84 V</item>
-        <item>100 V</item>
+        <item>67.2 V</item>
+        <item>84.0 V</item>
+        <item>100.8 V</item>
+        <item>116.8 V</item>
+        <item>134.4 V</item>
     </string-array>
 
     <string-array name="gotway_voltage_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
     <string-array name="gotway_negative">
