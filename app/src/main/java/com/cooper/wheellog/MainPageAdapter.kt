@@ -806,6 +806,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBmsPageValues[resId] = ""
     }
 
+
+    // THINK HOW TO MAKE SAME KEYS DIFFERENT!!!<<<<<
     private fun updateFieldForSmartBmsPage(resId: Int, value: String) {
         if (smartBmsPageValues.containsKey(resId)) {
             smartBmsPageValues[resId] = value
