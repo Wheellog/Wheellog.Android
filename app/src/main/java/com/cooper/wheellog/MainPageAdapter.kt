@@ -436,50 +436,72 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 //updateFieldForSmartBmsPage()
                 //updateSmartBmsPage()
                 ///END
-                tvBms1Sn?.text = data.bms1.serialNumber
-                tvBms1Fw?.text = data.bms1.versionNumber
-                tvBms1FactoryCap?.text = String.format(Locale.US, "%d mAh", data.bms1.factoryCap)
-                tvBms1ActualCap?.text = String.format(Locale.US, "%d mAh", data.bms1.actualCap)
-                tvBms1Cycles?.text = String.format(Locale.US, "%d", data.bms1.fullCycles)
-                tvBms1ChrgCount?.text = String.format(Locale.US, "%d", data.bms1.chargeCount)
-                tvBms1MfgDate?.text = data.bms1.mfgDateStr
-                tvBms1Status?.text = String.format(Locale.US, "%d", data.bms1.status)
-                tvBms1RemCap?.text = String.format(Locale.US, "%d mAh", data.bms1.remCap)
-                tvBms1RemPerc?.text = String.format(Locale.US, "%d %%", data.bms1.remPerc)
-                tvBms1Current?.text = String.format(Locale.US, "%.2f A", data.bms1.current)
-                tvBms1Voltage?.text = String.format(Locale.US, "%.2f V", data.bms1.voltage)
-                tvBms1Temp1?.text = String.format(Locale.US, "%d°C", data.bms1.temp1)
-                tvBms1Temp2?.text = String.format(Locale.US, "%d°C", data.bms1.temp2)
-                tvBms1Health?.text = String.format(Locale.US, "%d %%", data.bms1.health)
-                var balanceMap = data.bms1.balanceMap
-                var bal = if (balanceMap and 0x01 == 1) "[B]" else ""
-                tvBms1Cell1?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[0], bal)
-                bal = if (balanceMap shr 1 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell2?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[1], bal)
-                bal = if (balanceMap shr 2 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell3?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[2], bal)
-                bal = if (balanceMap shr 3 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell4?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[3], bal)
-                bal = if (balanceMap shr 4 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell5?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[4], bal)
-                bal = if (balanceMap shr 5 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell6?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[5], bal)
-                bal = if (balanceMap shr 6 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell7?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[6], bal)
-                bal = if (balanceMap shr 7 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell8?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[7], bal)
-                bal = if (balanceMap shr 8 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell9?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[8], bal)
-                bal = if (balanceMap shr 9 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell10?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[9], bal)
-                bal = if (balanceMap shr 10 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell11?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[10], bal)
-                bal = if (balanceMap shr 11 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell12?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[11], bal)
-                bal = if (balanceMap shr 12 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell13?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[12], bal)
-                bal = if (balanceMap shr 13 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell14?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[13], bal)
+                updateFieldForSmartBmsPage(R.string.bmsSn, data.bms1.serialNumber, data.bms2.serialNumber)
+                updateFieldForSmartBmsPage(R.string.bmsFw, data.bms1.versionNumber, data.bms2.versionNumber)
+                updateFieldForSmartBmsPage(R.string.bmsFactoryCap, String.format(Locale.US, "%d mAh", data.bms1.factoryCap), String.format(Locale.US, "%d mAh", data.bms2.factoryCap))
+                updateFieldForSmartBmsPage(R.string.bmsActualCap, String.format(Locale.US, "%d mAh", data.bms1.actualCap), String.format(Locale.US, "%d mAh", data.bms2.actualCap))
+                updateFieldForSmartBmsPage(R.string.bmsCycles, String.format(Locale.US, "%d", data.bms1.fullCycles), String.format(Locale.US, "%d", data.bms2.fullCycles))
+                updateFieldForSmartBmsPage(R.string.bmsChrgCount, String.format(Locale.US, "%d", data.bms1.chargeCount), String.format(Locale.US, "%d", data.bms2.chargeCount))
+                updateFieldForSmartBmsPage(R.string.bmsMfgDate, data.bms1.mfgDateStr, data.bms2.mfgDateStr)
+                updateFieldForSmartBmsPage(R.string.bmsStatus, String.format(Locale.US, "%d", data.bms1.status), String.format(Locale.US, "%d", data.bms2.status))
+                updateFieldForSmartBmsPage(R.string.bmsRemCap, String.format(Locale.US, "%d mAh", data.bms1.remCap), String.format(Locale.US, "%d mAh", data.bms2.remCap))
+                updateFieldForSmartBmsPage(R.string.bmsRemPerc, String.format(Locale.US, "%d %%", data.bms1.remPerc), String.format(Locale.US, "%d %%", data.bms2.remPerc))
+                updateFieldForSmartBmsPage(R.string.bmsCurrent, String.format(Locale.US, "%.2f A", data.bms1.current), String.format(Locale.US, "%.2f A", data.bms2.current))
+                updateFieldForSmartBmsPage(R.string.bmsVoltage, String.format(Locale.US, "%.2f V", data.bms1.voltage), String.format(Locale.US, "%.2f V", data.bms2.voltage))
+                updateFieldForSmartBmsPage(R.string.bmsTemp1, String.format(Locale.US, "%d°C", data.bms1.temp1), String.format(Locale.US, "%d°C", data.bms2.temp1))
+                updateFieldForSmartBmsPage(R.string.bmsTemp2, String.format(Locale.US, "%d°C", data.bms1.temp2), String.format(Locale.US, "%d°C", data.bms2.temp2))
+                updateFieldForSmartBmsPage(R.string.bmsHealth, String.format(Locale.US, "%d %%", data.bms1.health), String.format(Locale.US, "%d %%", data.bms2.health))
+                var balanceMap1 = data.bms1.balanceMap
+                var balanceMap2 = data.bms2.balanceMap
+                var bal1 = if (balanceMap1 and 0x01 == 1) "[B]" else ""
+                var bal2 = if (balanceMap2 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell1, String.format(Locale.US, "%.3f V %s", data.bms1.cells[0], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[0], bal2))
+                bal1 = if (balanceMap1 shr 1 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 1 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell2, String.format(Locale.US, "%.3f V %s", data.bms1.cells[1], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[1], bal2))
+                bal1 = if (balanceMap1 shr 2 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 2 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell3, String.format(Locale.US, "%.3f V %s", data.bms1.cells[2], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[2], bal2))
+                bal1 = if (balanceMap1 shr 3 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 3 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell4, String.format(Locale.US, "%.3f V %s", data.bms1.cells[3], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[3], bal2))
+                bal1 = if (balanceMap1 shr 4 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 4 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell5, String.format(Locale.US, "%.3f V %s", data.bms1.cells[4], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[4], bal2))
+                bal1 = if (balanceMap1 shr 5 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 5 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell6, String.format(Locale.US, "%.3f V %s", data.bms1.cells[5], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[5], bal2))
+                bal1 = if (balanceMap1 shr 6 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 6 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell7, String.format(Locale.US, "%.3f V %s", data.bms1.cells[6], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[6], bal2))
+                bal1 = if (balanceMap1 shr 7 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 7 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell8, String.format(Locale.US, "%.3f V %s", data.bms1.cells[7], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[7], bal2))
+                bal1 = if (balanceMap1 shr 8 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 8 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell9, String.format(Locale.US, "%.3f V %s", data.bms1.cells[8], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[8], bal2))
+                bal1 = if (balanceMap1 shr 9 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 9 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell10, String.format(Locale.US, "%.3f V %s", data.bms1.cells[9], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[9], bal2))
+                bal1 = if (balanceMap1 shr 10 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 10 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell11, String.format(Locale.US, "%.3f V %s", data.bms1.cells[10], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[10], bal2))
+                bal1 = if (balanceMap1 shr 11 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 11 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell12, String.format(Locale.US, "%.3f V %s", data.bms1.cells[11], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[11], bal2))
+                bal1 = if (balanceMap1 shr 12 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 12 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell13, String.format(Locale.US, "%.3f V %s", data.bms1.cells[12], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[12], bal2))
+                bal1 = if (balanceMap1 shr 13 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 13 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell14, String.format(Locale.US, "%.3f V %s", data.bms1.cells[13], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[13], bal2))
+                bal1 = if (balanceMap1 shr 14 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 14 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell15, String.format(Locale.US, "%.3f V %s", data.bms1.cells[14], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[14], bal2))
+                bal1 = if (balanceMap1 shr 15 and 0x01 == 1) "[B]" else ""
+                bal2 = if (balanceMap2 shr 15 and 0x01 == 1) "[B]" else ""
+                updateFieldForSmartBmsPage(R.string.bmsCell16, String.format(Locale.US, "%.3f V %s", data.bms1.cells[15], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[15], bal2))
+                /*
                 if (data.bms1.cells[14] == 0.0) {
                     tvBms1Cell15?.visibility = View.GONE
                     tvTitleBms1Cell15?.visibility = View.GONE
@@ -494,54 +516,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     tvBms1Cell16?.visibility = View.VISIBLE
                     tvTitleBms1Cell16?.visibility = View.VISIBLE
                 }
-                bal = if (balanceMap shr 14 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell15?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[14], bal)
-                bal = if (balanceMap shr 15 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell16?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[15], bal)
-                tvBms2Sn?.text = data.bms2.serialNumber
-                tvBms2Fw?.text = data.bms2.versionNumber
-                tvBms2FactoryCap?.text = String.format(Locale.US, "%d mAh", data.bms2.factoryCap)
-                tvBms2ActualCap?.text = String.format(Locale.US, "%d mAh", data.bms2.actualCap)
-                tvBms2Cycles?.text = String.format(Locale.US, "%d", data.bms2.fullCycles)
-                tvBms2ChrgCount?.text = String.format(Locale.US, "%d", data.bms2.chargeCount)
-                tvBms2MfgDate?.text = data.bms2.mfgDateStr
-                tvBms2Status?.text = String.format(Locale.US, "%d", data.bms2.status)
-                tvBms2RemCap?.text = String.format(Locale.US, "%d mAh", data.bms2.remCap)
-                tvBms2RemPerc?.text = String.format(Locale.US, "%d %%", data.bms2.remPerc)
-                tvBms2Current?.text = String.format(Locale.US, "%.2f A", data.bms2.current)
-                tvBms2Voltage?.text = String.format(Locale.US, "%.2f V", data.bms2.voltage)
-                tvBms2Temp1?.text = String.format(Locale.US, "%d°C", data.bms2.temp1)
-                tvBms2Temp2?.text = String.format(Locale.US, "%d°C", data.bms2.temp2)
-                tvBms2Health?.text = String.format(Locale.US, "%d %%", data.bms2.health)
-                balanceMap = data.bms2.balanceMap
-                bal = if (balanceMap and 0x01 == 1) "[B]" else ""
-                tvBms2Cell1?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[0], bal)
-                bal = if (balanceMap shr 1 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell2?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[1], bal)
-                bal = if (balanceMap shr 2 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell3?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[2], bal)
-                bal = if (balanceMap shr 3 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell4?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[3], bal)
-                bal = if (balanceMap shr 4 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell5?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[4], bal)
-                bal = if (balanceMap shr 5 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell6?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[5], bal)
-                bal = if (balanceMap shr 6 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell7?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[6], bal)
-                bal = if (balanceMap shr 7 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell8?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[7], bal)
-                bal = if (balanceMap shr 8 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell9?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[8], bal)
-                bal = if (balanceMap shr 9 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell10?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[9], bal)
-                bal = if (balanceMap shr 10 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell11?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[10], bal)
-                bal = if (balanceMap shr 11 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell12?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[11], bal)
-                bal = if (balanceMap shr 12 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell13?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[12], bal)
-                bal = if (balanceMap shr 13 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell14?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[13], bal)
+
                 if (data.bms2.cells[14] == 0.0) {
                     tvBms2Cell15?.visibility = View.GONE
                     tvTitleBms2Cell15?.visibility = View.GONE
@@ -556,10 +531,9 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     tvBms2Cell16?.visibility = View.VISIBLE
                     tvTitleBms2Cell16?.visibility = View.VISIBLE
                 }
-                bal = if (balanceMap shr 14 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell15?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[14], bal)
-                bal = if (balanceMap shr 15 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell16?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[15], bal)
+
+                 */
+
             }
         }
     }
@@ -800,17 +774,23 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     }
 
     //region SmartBMS page
-    private val smartBmsPageValues = LinkedHashMap<Int, String>()
+    private val smartBms1PageValues = LinkedHashMap<Int, String>()
+    private val smartBms2PageValues = LinkedHashMap<Int, String>()
+
 
     private fun setupFieldForSmartBmsPage(resId: Int) {
-        smartBmsPageValues[resId] = ""
+        smartBms1PageValues[resId] = ""
+        smartBms2PageValues[resId] = ""
     }
 
 
     // THINK HOW TO MAKE SAME KEYS DIFFERENT!!!<<<<<
-    private fun updateFieldForSmartBmsPage(resId: Int, value: String) {
-        if (smartBmsPageValues.containsKey(resId)) {
-            smartBmsPageValues[resId] = value
+    private fun updateFieldForSmartBmsPage(resId: Int, value1: String, value2: String) {
+        if (smartBms1PageValues.containsKey(resId)) {
+            smartBms1PageValues[resId] = value1
+        }
+        if (smartBms2PageValues.containsKey(resId)) {
+            smartBms2PageValues[resId] = value2
         }
     }
 
@@ -833,7 +813,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         layout.addView(bat1Text)
         layout.addView(bat2Text)
 
-        for ((key, value) in smartBmsPageValues) {
+        for ((key, value) in smartBms1PageValues) {
             val headerText = (activity.layoutInflater.inflate(
                     R.layout.textview_smart_bms_title_template, layout, false
             ) as TextView).apply {
@@ -848,92 +828,70 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             }
             layout.addView(headerText)
             layout.addView(valueText)
+            layout.addView(headerText)
+            layout.addView(valueText)
         }
     }
 
     private fun updateSmartBmsPage() {
         val layout = pagesView[R.layout.main_view_smart_bms]?.findViewById<GridLayout>(R.id.page_smart_bms_grid) ?: return
         val count = layout.childCount
-        if (smartBmsPageValues.size * 2 != count) {
+        if (smartBms1PageValues.size * 4 != count-2) {
             return
         }
         var index = 3
-        for (value in smartBmsPageValues.values) {
+        for (value in smartBms1PageValues.values) {
             val valueText = layout.getChildAt(index) as TextView
             valueText.text = value
-            index += 2
+            index += 4
+        }
+        index = 5
+        for (value in smartBms2PageValues.values) {
+            val valueText = layout.getChildAt(index) as TextView
+            valueText.text = value
+            index += 4
         }
     }
     //endregion
 
     fun configureSmartBmsDisplay() {
-        smartBmsPageValues.clear()
+        smartBms1PageValues.clear()
+        smartBms2PageValues.clear()
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
                 setupFieldForSmartBmsPage(R.string.speed)
             }
             WHEEL_TYPE.NINEBOT_Z -> {
                 setupFieldForSmartBmsPage(R.string.bmsSn)
-                setupFieldForSmartBmsPage(R.string.bmsSn)
-                setupFieldForSmartBmsPage(R.string.bmsFw)
                 setupFieldForSmartBmsPage(R.string.bmsFw)
                 setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
-                setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
-                setupFieldForSmartBmsPage(R.string.bmsActualCap)
                 setupFieldForSmartBmsPage(R.string.bmsActualCap)
                 setupFieldForSmartBmsPage(R.string.bmsCycles)
-                setupFieldForSmartBmsPage(R.string.bmsCycles)
-                setupFieldForSmartBmsPage(R.string.bmsChrgCount)
                 setupFieldForSmartBmsPage(R.string.bmsChrgCount)
                 setupFieldForSmartBmsPage(R.string.bmsMfgDate)
-                setupFieldForSmartBmsPage(R.string.bmsMfgDate)
-                setupFieldForSmartBmsPage(R.string.bmsStatus)
                 setupFieldForSmartBmsPage(R.string.bmsStatus)
                 setupFieldForSmartBmsPage(R.string.bmsRemCap)
-                setupFieldForSmartBmsPage(R.string.bmsRemCap)
-                setupFieldForSmartBmsPage(R.string.bmsRemPerc)
                 setupFieldForSmartBmsPage(R.string.bmsRemPerc)
                 setupFieldForSmartBmsPage(R.string.bmsCurrent)
-                setupFieldForSmartBmsPage(R.string.bmsCurrent)
-                setupFieldForSmartBmsPage(R.string.bmsVoltage)
                 setupFieldForSmartBmsPage(R.string.bmsVoltage)
                 setupFieldForSmartBmsPage(R.string.bmsTemp1)
-                setupFieldForSmartBmsPage(R.string.bmsTemp1)
-                setupFieldForSmartBmsPage(R.string.bmsTemp2)
                 setupFieldForSmartBmsPage(R.string.bmsTemp2)
                 setupFieldForSmartBmsPage(R.string.bmsHealth)
-                setupFieldForSmartBmsPage(R.string.bmsHealth)
-                setupFieldForSmartBmsPage(R.string.bmsCell1)
                 setupFieldForSmartBmsPage(R.string.bmsCell1)
                 setupFieldForSmartBmsPage(R.string.bmsCell2)
-                setupFieldForSmartBmsPage(R.string.bmsCell2)
-                setupFieldForSmartBmsPage(R.string.bmsCell3)
                 setupFieldForSmartBmsPage(R.string.bmsCell3)
                 setupFieldForSmartBmsPage(R.string.bmsCell4)
-                setupFieldForSmartBmsPage(R.string.bmsCell4)
-                setupFieldForSmartBmsPage(R.string.bmsCell5)
                 setupFieldForSmartBmsPage(R.string.bmsCell5)
                 setupFieldForSmartBmsPage(R.string.bmsCell6)
-                setupFieldForSmartBmsPage(R.string.bmsCell6)
-                setupFieldForSmartBmsPage(R.string.bmsCell7)
                 setupFieldForSmartBmsPage(R.string.bmsCell7)
                 setupFieldForSmartBmsPage(R.string.bmsCell8)
-                setupFieldForSmartBmsPage(R.string.bmsCell8)
-                setupFieldForSmartBmsPage(R.string.bmsCell9)
                 setupFieldForSmartBmsPage(R.string.bmsCell9)
                 setupFieldForSmartBmsPage(R.string.bmsCell10)
-                setupFieldForSmartBmsPage(R.string.bmsCell10)
-                setupFieldForSmartBmsPage(R.string.bmsCell11)
                 setupFieldForSmartBmsPage(R.string.bmsCell11)
                 setupFieldForSmartBmsPage(R.string.bmsCell12)
-                setupFieldForSmartBmsPage(R.string.bmsCell12)
-                setupFieldForSmartBmsPage(R.string.bmsCell13)
                 setupFieldForSmartBmsPage(R.string.bmsCell13)
                 setupFieldForSmartBmsPage(R.string.bmsCell14)
-                setupFieldForSmartBmsPage(R.string.bmsCell14)
                 setupFieldForSmartBmsPage(R.string.bmsCell15)
-                setupFieldForSmartBmsPage(R.string.bmsCell15)
-                setupFieldForSmartBmsPage(R.string.bmsCell16)
                 setupFieldForSmartBmsPage(R.string.bmsCell16)
             }
             else -> {}
