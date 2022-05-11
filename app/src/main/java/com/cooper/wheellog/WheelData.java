@@ -1405,34 +1405,52 @@ public class WheelData {
         String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
         try {
             JSONArray arr = new JSONArray(text);
-            adaptersLoop:
-            for (int i = 0; i < arr.length(); i++) {
+            for (int i = 0; i < arr.length() && !detected_wheel; i++) {
                 JSONObject services = arr.getJSONObject(i);
                 if (services.length() - 1 != mBluetoothLeService.getSupportedGattServices().size()) {
+                    Timber.i("Services len not corresponds, go to the next");
                     continue;
                 }
                 adapterName = services.getString("adapter");
+                Timber.i("Searching for %s", adapterName);
                 Iterator<String> iterator = services.keys();
                 // skip adapter key
                 iterator.next();
-                adapterServicesLoop:
+                boolean go_next_adapter = false;
                 while (iterator.hasNext()) {
                     String keyName = iterator.next();
+                    Timber.i("Key name %s", keyName);
                     UUID s_uuid = UUID.fromString(keyName);
                     BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
                     if (service == null) {
+                        Timber.i("No such service");
+                        go_next_adapter = true;
                         break;
                     }
+
                     JSONArray service_uuid = services.getJSONArray(keyName);
+                    if (service_uuid.length() != service.getCharacteristics().size()) {
+                        Timber.i("Characteristics len not corresponds, go to the next");
+                        go_next_adapter = true;
+                        break;
+                    }
                     for (int j = 0; j < service_uuid.length(); j++) {
                         UUID c_uuid = UUID.fromString(service_uuid.getString(j));
+                        Timber.i("UUid %s", service_uuid.getString(j));
                         BluetoothGattCharacteristic characteristic = service.getCharacteristic(c_uuid);
                         if (characteristic == null) {
-                            break adapterServicesLoop;
-                        }
+                            Timber.i("UUid not found");
+                            go_next_adapter = true;
+                            break;
+                        } else {Timber.i("UUid found");}
                     }
+                    if (go_next_adapter) {
+                        break;
+                    }
+                }
+                if (!go_next_adapter) {
+                    Timber.i("Wheel Detected as %s", adapterName);
                     detected_wheel = true;
-                    break adaptersLoop;
                 }
             }
         } catch (JSONException e) {
