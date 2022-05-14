@@ -365,10 +365,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             }
             R.layout.main_view_smart_bms -> {
                 data.bmsView = true
-                /// ADD
-                //updateFieldForSmartBmsPage()
-                //updateSmartBmsPage()
-                ///END
                 updateFieldForSmartBmsPage(R.string.bmsSn, data.bms1.serialNumber, data.bms2.serialNumber)
                 updateFieldForSmartBmsPage(R.string.bmsFw, data.bms1.versionNumber, data.bms2.versionNumber)
                 updateFieldForSmartBmsPage(R.string.bmsFactoryCap, String.format(Locale.US, "%d mAh", data.bms1.factoryCap), String.format(Locale.US, "%d mAh", data.bms2.factoryCap))

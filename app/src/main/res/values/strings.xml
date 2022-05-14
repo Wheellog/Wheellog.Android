@@ -497,6 +497,9 @@
     <string name="bmsTempMos">Temp Mos</string>
     <string name="bmsTempMosEnv">Temp Mos Env</string>
     <string name="bmsHealth">Health</string>
+    <string name="minCell">Min Cell</string>
+    <string name="maxCell">Max Cell</string>
+    <string name="cellDiff">Cell diff</string>
     <string name="bmsCell1">Cell 1</string>
     <string name="bmsCell2">Cell 2</string>
     <string name="bmsCell3">Cell 3</string>
