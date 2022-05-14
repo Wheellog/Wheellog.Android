@@ -17,7 +17,7 @@
             android:animateLayoutChanges="true"
             app:orientation="horizontal">
 
-           
+
         </androidx.gridlayout.widget.GridLayout>
 
     </ScrollView>
