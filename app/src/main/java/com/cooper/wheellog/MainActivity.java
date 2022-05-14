@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 pagerAdapter.configureSecondDisplay();
-                pagerAdapter.configureSmartBmsDisplay();
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
@@ -170,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
                     pagerAdapter.configureSecondDisplay();
-                    pagerAdapter.configureSmartBmsDisplay();
                     pagerAdapter.updateScreen(true);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
@@ -181,11 +179,14 @@ public class MainActivity extends AppCompatActivity {
                     showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
                     break;
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
+                    break;
+                case Constants.ACTION_WHEEL_MODEL_CHANGED:
+                    pagerAdapter.configureSmartBmsDisplay();
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
                             && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
                         pagerAdapter.addPage(R.layout.main_view_smart_bms, 2);
                     } else if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG
-                        && StringUtil.inArray(WheelData.getInstance().getModel(), new String[]{"KS-S20", "KS-S22"})) { //
+                        && StringUtil.inArray(WheelData.getInstance().getModel(), new String[]{"KS-S20", "KS-S22"})) {
                         pagerAdapter.addPage(R.layout.main_view_smart_bms, 2);
                     } else {
                         pagerAdapter.removePage(R.layout.main_view_smart_bms);
@@ -884,6 +885,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_MODEL_CHANGED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
