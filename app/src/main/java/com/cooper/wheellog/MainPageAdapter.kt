@@ -13,21 +13,19 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.StringUtil.Companion.inArray
 import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.*
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
 
@@ -39,73 +37,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private var pagesView = LinkedHashMap<Int, View?>()
 
     private var listOfTrips: RecyclerView? = null
-
-    private var tvBms1Sn: TextView? = null
-    private var tvBms2Sn: TextView? = null
-    private var tvBms1Fw: TextView? = null
-    private var tvBms2Fw: TextView? = null
-    private var tvBms1FactoryCap: TextView? = null
-    private var tvBms2FactoryCap: TextView? = null
-    private var tvBms1ActualCap: TextView? = null
-    private var tvBms2ActualCap: TextView? = null
-    private var tvBms1Cycles: TextView? = null
-    private var tvBms2Cycles: TextView? = null
-    private var tvBms1ChrgCount: TextView? = null
-    private var tvBms2ChrgCount: TextView? = null
-    private var tvBms1MfgDate: TextView? = null
-    private var tvBms2MfgDate: TextView? = null
-    private var tvBms1Status: TextView? = null
-    private var tvBms2Status: TextView? = null
-    private var tvBms1RemCap: TextView? = null
-    private var tvBms2RemCap: TextView? = null
-    private var tvBms1RemPerc: TextView? = null
-    private var tvBms2RemPerc: TextView? = null
-    private var tvBms1Current: TextView? = null
-    private var tvBms2Current: TextView? = null
-    private var tvBms1Voltage: TextView? = null
-    private var tvBms2Voltage: TextView? = null
-    private var tvBms1Temp1: TextView? = null
-    private var tvBms2Temp1: TextView? = null
-    private var tvBms1Temp2: TextView? = null
-    private var tvBms2Temp2: TextView? = null
-    private var tvBms1Health: TextView? = null
-    private var tvBms2Health: TextView? = null
-    private var tvBms1Cell1: TextView? = null
-    private var tvBms2Cell1: TextView? = null
-    private var tvBms1Cell2: TextView? = null
-    private var tvBms2Cell2: TextView? = null
-    private var tvBms1Cell3: TextView? = null
-    private var tvBms2Cell3: TextView? = null
-    private var tvBms1Cell4: TextView? = null
-    private var tvBms2Cell4: TextView? = null
-    private var tvBms1Cell5: TextView? = null
-    private var tvBms2Cell5: TextView? = null
-    private var tvBms1Cell6: TextView? = null
-    private var tvBms2Cell6: TextView? = null
-    private var tvBms1Cell7: TextView? = null
-    private var tvBms2Cell7: TextView? = null
-    private var tvBms1Cell8: TextView? = null
-    private var tvBms2Cell8: TextView? = null
-    private var tvBms1Cell9: TextView? = null
-    private var tvBms2Cell9: TextView? = null
-    private var tvBms1Cell10: TextView? = null
-    private var tvBms2Cell10: TextView? = null
-    private var tvBms1Cell11: TextView? = null
-    private var tvBms2Cell11: TextView? = null
-    private var tvBms1Cell12: TextView? = null
-    private var tvBms2Cell12: TextView? = null
-    private var tvBms1Cell13: TextView? = null
-    private var tvBms2Cell13: TextView? = null
-    private var tvBms1Cell14: TextView? = null
-    private var tvBms2Cell14: TextView? = null
-    private var tvTitleBms1Cell15: TextView? = null
-    private var tvBms1Cell15: TextView? = null
-    private var tvTitleBms2Cell15: TextView? = null
-    private var tvBms2Cell15: TextView? = null
-    private var tvTitleBms1Cell16: TextView? = null
-    private var tvBms1Cell16: TextView? = null
-    private var tvTitleBms2Cell16: TextView? = null
-    private var tvBms2Cell16: TextView? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -119,9 +50,13 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    fun addPage(page: Int) {
+    fun addPage(page: Int, index: Int = 0) {
         if (!pages.contains(page)) {
-            pages.add(page)
+            if (index == 0) {
+                pages.add(page)
+            } else {
+                pages.add(index, page)
+            }
             pagesView[page] = null
             notifyItemInserted(page)
         }
@@ -199,72 +134,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 listOfTrips?.adapter = TripAdapter(activity, FileUtil.fillTrips(activity))
             }
             R.layout.main_view_smart_bms -> {
-                tvBms1Sn = view.findViewById(R.id.tvBms1Sn)
-                tvBms2Sn = view.findViewById(R.id.tvBms2Sn)
-                tvBms1Fw = view.findViewById(R.id.tvBms1Fw)
-                tvBms2Fw = view.findViewById(R.id.tvBms2Fw)
-                tvBms1FactoryCap = view.findViewById(R.id.tvBms1FactoryCap)
-                tvBms2FactoryCap = view.findViewById(R.id.tvBms2FactoryCap)
-                tvBms1ActualCap = view.findViewById(R.id.tvBms1ActualCap)
-                tvBms2ActualCap = view.findViewById(R.id.tvBms2ActualCap)
-                tvBms1Cycles = view.findViewById(R.id.tvBms1Cycles)
-                tvBms2Cycles = view.findViewById(R.id.tvBms2Cycles)
-                tvBms1ChrgCount = view.findViewById(R.id.tvBms1ChrgCount)
-                tvBms2ChrgCount = view.findViewById(R.id.tvBms2ChrgCount)
-                tvBms1MfgDate = view.findViewById(R.id.tvBms1MfgDate)
-                tvBms2MfgDate = view.findViewById(R.id.tvBms2MfgDate)
-                tvBms1Status = view.findViewById(R.id.tvBms1Status)
-                tvBms2Status = view.findViewById(R.id.tvBms2Status)
-                tvBms1RemCap = view.findViewById(R.id.tvBms1RemCap)
-                tvBms2RemCap = view.findViewById(R.id.tvBms2RemCap)
-                tvBms1RemPerc = view.findViewById(R.id.tvBms1RemPerc)
-                tvBms2RemPerc = view.findViewById(R.id.tvBms2RemPerc)
-                tvBms1Current = view.findViewById(R.id.tvBms1Current)
-                tvBms2Current = view.findViewById(R.id.tvBms2Current)
-                tvBms1Voltage = view.findViewById(R.id.tvBms1Voltage)
-                tvBms2Voltage = view.findViewById(R.id.tvBms2Voltage)
-                tvBms1Temp1 = view.findViewById(R.id.tvBms1Temp1)
-                tvBms2Temp1 = view.findViewById(R.id.tvBms2Temp1)
-                tvBms1Temp2 = view.findViewById(R.id.tvBms1Temp2)
-                tvBms2Temp2 = view.findViewById(R.id.tvBms2Temp2)
-                tvBms1Health = view.findViewById(R.id.tvBms1Health)
-                tvBms2Health = view.findViewById(R.id.tvBms2Health)
-                tvBms1Cell1 = view.findViewById(R.id.tvBms1Cell1)
-                tvBms2Cell1 = view.findViewById(R.id.tvBms2Cell1)
-                tvBms1Cell2 = view.findViewById(R.id.tvBms1Cell2)
-                tvBms2Cell2 = view.findViewById(R.id.tvBms2Cell2)
-                tvBms1Cell3 = view.findViewById(R.id.tvBms1Cell3)
-                tvBms2Cell3 = view.findViewById(R.id.tvBms2Cell3)
-                tvBms1Cell4 = view.findViewById(R.id.tvBms1Cell4)
-                tvBms2Cell4 = view.findViewById(R.id.tvBms2Cell4)
-                tvBms1Cell5 = view.findViewById(R.id.tvBms1Cell5)
-                tvBms2Cell5 = view.findViewById(R.id.tvBms2Cell5)
-                tvBms1Cell6 = view.findViewById(R.id.tvBms1Cell6)
-                tvBms2Cell6 = view.findViewById(R.id.tvBms2Cell6)
-                tvBms1Cell7 = view.findViewById(R.id.tvBms1Cell7)
-                tvBms2Cell7 = view.findViewById(R.id.tvBms2Cell7)
-                tvBms1Cell8 = view.findViewById(R.id.tvBms1Cell8)
-                tvBms2Cell8 = view.findViewById(R.id.tvBms2Cell8)
-                tvBms1Cell9 = view.findViewById(R.id.tvBms1Cell9)
-                tvBms2Cell9 = view.findViewById(R.id.tvBms2Cell9)
-                tvBms1Cell10 = view.findViewById(R.id.tvBms1Cell10)
-                tvBms2Cell10 = view.findViewById(R.id.tvBms2Cell10)
-                tvBms1Cell11 = view.findViewById(R.id.tvBms1Cell11)
-                tvBms2Cell11 = view.findViewById(R.id.tvBms2Cell11)
-                tvBms1Cell12 = view.findViewById(R.id.tvBms1Cell12)
-                tvBms2Cell12 = view.findViewById(R.id.tvBms2Cell12)
-                tvBms1Cell13 = view.findViewById(R.id.tvBms1Cell13)
-                tvBms2Cell13 = view.findViewById(R.id.tvBms2Cell13)
-                tvBms1Cell14 = view.findViewById(R.id.tvBms1Cell14)
-                tvBms2Cell14 = view.findViewById(R.id.tvBms2Cell14)
-                tvTitleBms1Cell15 = view.findViewById(R.id.tvTitleBms1Cell15)
-                tvBms1Cell15 = view.findViewById(R.id.tvBms1Cell15)
-                tvTitleBms2Cell15 = view.findViewById(R.id.tvTitleBms2Cell15)
-                tvBms2Cell15 = view.findViewById(R.id.tvBms2Cell15)
-                tvTitleBms1Cell16 = view.findViewById(R.id.tvTitleBms1Cell16)
-                tvBms1Cell16 = view.findViewById(R.id.tvBms1Cell16)
-                tvTitleBms2Cell16 = view.findViewById(R.id.tvTitleBms2Cell16)
-                tvBms2Cell16 = view.findViewById(R.id.tvBms2Cell16)
+                createSmartBmsPage()
             }
         }
     }
@@ -428,130 +298,73 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             }
             R.layout.main_view_smart_bms -> {
                 data.bmsView = true
-                tvBms1Sn?.text = data.bms1.serialNumber
-                tvBms1Fw?.text = data.bms1.versionNumber
-                tvBms1FactoryCap?.text = String.format(Locale.US, "%d mAh", data.bms1.factoryCap)
-                tvBms1ActualCap?.text = String.format(Locale.US, "%d mAh", data.bms1.actualCap)
-                tvBms1Cycles?.text = String.format(Locale.US, "%d", data.bms1.fullCycles)
-                tvBms1ChrgCount?.text = String.format(Locale.US, "%d", data.bms1.chargeCount)
-                tvBms1MfgDate?.text = data.bms1.mfgDateStr
-                tvBms1Status?.text = String.format(Locale.US, "%d", data.bms1.status)
-                tvBms1RemCap?.text = String.format(Locale.US, "%d mAh", data.bms1.remCap)
-                tvBms1RemPerc?.text = String.format(Locale.US, "%d %%", data.bms1.remPerc)
-                tvBms1Current?.text = String.format(Locale.US, "%.2f A", data.bms1.current)
-                tvBms1Voltage?.text = String.format(Locale.US, "%.2f V", data.bms1.voltage)
-                tvBms1Temp1?.text = String.format(Locale.US, "%d°C", data.bms1.temp1)
-                tvBms1Temp2?.text = String.format(Locale.US, "%d°C", data.bms1.temp2)
-                tvBms1Health?.text = String.format(Locale.US, "%d %%", data.bms1.health)
-                var balanceMap = data.bms1.balanceMap
-                var bal = if (balanceMap and 0x01 == 1) "[B]" else ""
-                tvBms1Cell1?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[0], bal)
-                bal = if (balanceMap shr 1 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell2?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[1], bal)
-                bal = if (balanceMap shr 2 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell3?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[2], bal)
-                bal = if (balanceMap shr 3 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell4?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[3], bal)
-                bal = if (balanceMap shr 4 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell5?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[4], bal)
-                bal = if (balanceMap shr 5 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell6?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[5], bal)
-                bal = if (balanceMap shr 6 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell7?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[6], bal)
-                bal = if (balanceMap shr 7 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell8?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[7], bal)
-                bal = if (balanceMap shr 8 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell9?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[8], bal)
-                bal = if (balanceMap shr 9 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell10?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[9], bal)
-                bal = if (balanceMap shr 10 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell11?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[10], bal)
-                bal = if (balanceMap shr 11 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell12?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[11], bal)
-                bal = if (balanceMap shr 12 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell13?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[12], bal)
-                bal = if (balanceMap shr 13 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell14?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[13], bal)
-                if (data.bms1.cells[14] == 0.0) {
-                    tvBms1Cell15?.visibility = View.GONE
-                    tvTitleBms1Cell15?.visibility = View.GONE
-                } else {
-                    tvBms1Cell15?.visibility = View.VISIBLE
-                    tvTitleBms1Cell15?.visibility = View.VISIBLE
+                updateFieldForSmartBmsPage(R.string.bmsSn, data.bms1.serialNumber, data.bms2.serialNumber)
+                updateFieldForSmartBmsPage(R.string.bmsFw, data.bms1.versionNumber, data.bms2.versionNumber)
+                updateFieldForSmartBmsPage(R.string.bmsFactoryCap, String.format(Locale.US, "%d mAh", data.bms1.factoryCap), String.format(Locale.US, "%d mAh", data.bms2.factoryCap))
+                updateFieldForSmartBmsPage(R.string.bmsActualCap, String.format(Locale.US, "%d mAh", data.bms1.actualCap), String.format(Locale.US, "%d mAh", data.bms2.actualCap))
+                updateFieldForSmartBmsPage(R.string.bmsCycles, String.format(Locale.US, "%d", data.bms1.fullCycles), String.format(Locale.US, "%d", data.bms2.fullCycles))
+                updateFieldForSmartBmsPage(R.string.bmsChrgCount, String.format(Locale.US, "%d", data.bms1.chargeCount), String.format(Locale.US, "%d", data.bms2.chargeCount))
+                updateFieldForSmartBmsPage(R.string.bmsMfgDate, data.bms1.mfgDateStr, data.bms2.mfgDateStr)
+                updateFieldForSmartBmsPage(R.string.bmsStatus, String.format(Locale.US, "%d", data.bms1.status), String.format(Locale.US, "%d", data.bms2.status))
+                updateFieldForSmartBmsPage(R.string.bmsRemCap, String.format(Locale.US, "%d mAh", data.bms1.remCap), String.format(Locale.US, "%d mAh", data.bms2.remCap))
+                updateFieldForSmartBmsPage(R.string.bmsRemPerc, String.format(Locale.US, "%d %%", data.bms1.remPerc), String.format(Locale.US, "%d %%", data.bms2.remPerc))
+                updateFieldForSmartBmsPage(R.string.bmsCurrent, String.format(Locale.US, "%.2f A", data.bms1.current), String.format(Locale.US, "%.2f A", data.bms2.current))
+                updateFieldForSmartBmsPage(R.string.bmsVoltage, String.format(Locale.US, "%.2f V", data.bms1.voltage), String.format(Locale.US, "%.2f V", data.bms2.voltage))
+                updateFieldForSmartBmsPage(R.string.bmsTemp1, String.format(Locale.US, "%d°C", data.bms1.temp1), String.format(Locale.US, "%d°C", data.bms2.temp1))
+                updateFieldForSmartBmsPage(R.string.bmsTemp2, String.format(Locale.US, "%d°C", data.bms1.temp2), String.format(Locale.US, "%d°C", data.bms2.temp2))
+                updateFieldForSmartBmsPage(R.string.bmsTemp3, String.format(Locale.US, "%d°C", data.bms1.temp3), String.format(Locale.US, "%d°C", data.bms2.temp3))
+                updateFieldForSmartBmsPage(R.string.bmsTemp4, String.format(Locale.US, "%d°C", data.bms1.temp4), String.format(Locale.US, "%d°C", data.bms2.temp4))
+                updateFieldForSmartBmsPage(R.string.bmsTemp5, String.format(Locale.US, "%d°C", data.bms1.temp5), String.format(Locale.US, "%d°C", data.bms2.temp5))
+                updateFieldForSmartBmsPage(R.string.bmsTemp6, String.format(Locale.US, "%d°C", data.bms1.temp6), String.format(Locale.US, "%d°C", data.bms2.temp6))
+                updateFieldForSmartBmsPage(R.string.bmsTempMos, String.format(Locale.US, "%d°C", data.bms1.tempMos), String.format(Locale.US, "%d°C", data.bms2.tempMos))
+                updateFieldForSmartBmsPage(R.string.bmsTempMosEnv, String.format(Locale.US, "%d°C", data.bms1.tempMosEnv), String.format(Locale.US, "%d°C", data.bms2.tempMosEnv))
+                updateFieldForSmartBmsPage(R.string.bmsHealth, String.format(Locale.US, "%d %%", data.bms1.health), String.format(Locale.US, "%d %%", data.bms2.health))
+                updateFieldForSmartBmsPage(R.string.bmsMaxCell, String.format(Locale.US, "%.3f V", data.bms1.maxCell), String.format(Locale.US, "%.3f V", data.bms2.maxCell))
+                updateFieldForSmartBmsPage(R.string.bmsMinCell, String.format(Locale.US, "%.3f V", data.bms1.minCell), String.format(Locale.US, "%.3f V", data.bms2.minCell))
+                updateFieldForSmartBmsPage(R.string.bmsCellDiff, String.format(Locale.US, "%.3f V", data.bms1.cellDiff), String.format(Locale.US, "%.3f V", data.bms2.cellDiff))
+                var cells = ArrayList<Int>()
+                cells.add(R.string.bmsCell1)
+                cells.add(R.string.bmsCell2)
+                cells.add(R.string.bmsCell3)
+                cells.add(R.string.bmsCell4)
+                cells.add(R.string.bmsCell5)
+                cells.add(R.string.bmsCell6)
+                cells.add(R.string.bmsCell7)
+                cells.add(R.string.bmsCell8)
+                cells.add(R.string.bmsCell9)
+                cells.add(R.string.bmsCell10)
+                cells.add(R.string.bmsCell11)
+                cells.add(R.string.bmsCell12)
+                cells.add(R.string.bmsCell13)
+                cells.add(R.string.bmsCell14)
+                cells.add(R.string.bmsCell15)
+                cells.add(R.string.bmsCell16)
+                cells.add(R.string.bmsCell17)
+                cells.add(R.string.bmsCell18)
+                cells.add(R.string.bmsCell19)
+                cells.add(R.string.bmsCell20)
+                cells.add(R.string.bmsCell21)
+                cells.add(R.string.bmsCell22)
+                cells.add(R.string.bmsCell23)
+                cells.add(R.string.bmsCell24)
+                cells.add(R.string.bmsCell25)
+                cells.add(R.string.bmsCell26)
+                cells.add(R.string.bmsCell27)
+                cells.add(R.string.bmsCell28)
+                cells.add(R.string.bmsCell29)
+                cells.add(R.string.bmsCell30)
+                cells.add(R.string.bmsCell31)
+                cells.add(R.string.bmsCell32)
+                var balanceMap1 = data.bms1.balanceMap
+                var balanceMap2 = data.bms2.balanceMap
+                var index = 0
+                while (index < cells.size) {
+                    var bal1 = if (balanceMap1 shr index and 0x01 == 1) "[B]" else ""
+                    var bal2 = if (balanceMap2 shr index and 0x01 == 1) "[B]" else ""
+                    updateFieldForSmartBmsPage(cells[index], String.format(Locale.US, "%.3f V %s", data.bms1.cells[index], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[index], bal2))
+                    index += 1
                 }
-                if (data.bms1.cells[15] == 0.0) {
-                    tvBms1Cell16?.visibility = View.GONE
-                    tvTitleBms1Cell16?.visibility = View.GONE
-                } else {
-                    tvBms1Cell16?.visibility = View.VISIBLE
-                    tvTitleBms1Cell16?.visibility = View.VISIBLE
-                }
-                bal = if (balanceMap shr 14 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell15?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[14], bal)
-                bal = if (balanceMap shr 15 and 0x01 == 1) "[B]" else ""
-                tvBms1Cell16?.text = String.format(Locale.US, "%.3f V %s", data.bms1.cells[15], bal)
-                tvBms2Sn?.text = data.bms2.serialNumber
-                tvBms2Fw?.text = data.bms2.versionNumber
-                tvBms2FactoryCap?.text = String.format(Locale.US, "%d mAh", data.bms2.factoryCap)
-                tvBms2ActualCap?.text = String.format(Locale.US, "%d mAh", data.bms2.actualCap)
-                tvBms2Cycles?.text = String.format(Locale.US, "%d", data.bms2.fullCycles)
-                tvBms2ChrgCount?.text = String.format(Locale.US, "%d", data.bms2.chargeCount)
-                tvBms2MfgDate?.text = data.bms2.mfgDateStr
-                tvBms2Status?.text = String.format(Locale.US, "%d", data.bms2.status)
-                tvBms2RemCap?.text = String.format(Locale.US, "%d mAh", data.bms2.remCap)
-                tvBms2RemPerc?.text = String.format(Locale.US, "%d %%", data.bms2.remPerc)
-                tvBms2Current?.text = String.format(Locale.US, "%.2f A", data.bms2.current)
-                tvBms2Voltage?.text = String.format(Locale.US, "%.2f V", data.bms2.voltage)
-                tvBms2Temp1?.text = String.format(Locale.US, "%d°C", data.bms2.temp1)
-                tvBms2Temp2?.text = String.format(Locale.US, "%d°C", data.bms2.temp2)
-                tvBms2Health?.text = String.format(Locale.US, "%d %%", data.bms2.health)
-                balanceMap = data.bms2.balanceMap
-                bal = if (balanceMap and 0x01 == 1) "[B]" else ""
-                tvBms2Cell1?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[0], bal)
-                bal = if (balanceMap shr 1 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell2?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[1], bal)
-                bal = if (balanceMap shr 2 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell3?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[2], bal)
-                bal = if (balanceMap shr 3 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell4?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[3], bal)
-                bal = if (balanceMap shr 4 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell5?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[4], bal)
-                bal = if (balanceMap shr 5 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell6?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[5], bal)
-                bal = if (balanceMap shr 6 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell7?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[6], bal)
-                bal = if (balanceMap shr 7 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell8?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[7], bal)
-                bal = if (balanceMap shr 8 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell9?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[8], bal)
-                bal = if (balanceMap shr 9 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell10?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[9], bal)
-                bal = if (balanceMap shr 10 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell11?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[10], bal)
-                bal = if (balanceMap shr 11 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell12?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[11], bal)
-                bal = if (balanceMap shr 12 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell13?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[12], bal)
-                bal = if (balanceMap shr 13 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell14?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[13], bal)
-                if (data.bms2.cells[14] == 0.0) {
-                    tvBms2Cell15?.visibility = View.GONE
-                    tvTitleBms2Cell15?.visibility = View.GONE
-                } else {
-                    tvBms2Cell15?.visibility = View.VISIBLE
-                    tvTitleBms2Cell15?.visibility = View.VISIBLE
-                }
-                if (data.bms2.cells[15] == 0.0) {
-                    tvBms2Cell16?.visibility = View.GONE
-                    tvTitleBms2Cell16?.visibility = View.GONE
-                } else {
-                    tvBms2Cell16?.visibility = View.VISIBLE
-                    tvTitleBms2Cell16?.visibility = View.VISIBLE
-                }
-                bal = if (balanceMap shr 14 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell15?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[14], bal)
-                bal = if (balanceMap shr 15 and 0x01 == 1) "[B]" else ""
-                tvBms2Cell16?.text = String.format(Locale.US, "%.3f V %s", data.bms2.cells[15], bal)
+                updateSmartBmsPage()
             }
         }
     }
@@ -790,6 +603,210 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
         createSecondPage()
     }
+
+    //region SmartBMS page
+    private val smartBms1PageValues = LinkedHashMap<Int, String>()
+    private val smartBms2PageValues = LinkedHashMap<Int, String>()
+
+
+    private fun setupFieldForSmartBmsPage(resId: Int) {
+        smartBms1PageValues[resId] = ""
+        smartBms2PageValues[resId] = ""
+    }
+
+    private fun updateFieldForSmartBmsPage(resId: Int, value1: String, value2: String) {
+        if (smartBms1PageValues.containsKey(resId)) {
+            smartBms1PageValues[resId] = value1
+            smartBms2PageValues[resId] = value2
+        }
+    }
+
+    private fun createSmartBmsPage() {
+        val layout = pagesView[R.layout.main_view_smart_bms]?.findViewById<GridLayout>(R.id.page_smart_bms_grid) ?: return
+        layout.removeAllViews()
+        val font = WheelLog.ThemeManager.getTypeface(activity)
+        val bat1Text = (activity.layoutInflater.inflate(
+                R.layout.textview_smart_bms_battery_template, layout, false
+        ) as TextView).apply {
+            text = activity.getString(R.string.bmsBattery1Title)
+            typeface = font
+        }
+        val bat2Text = (activity.layoutInflater.inflate(
+                R.layout.textview_smart_bms_battery_template, layout, false
+        ) as TextView).apply {
+            text = activity.getString(R.string.bmsBattery2Title)
+            typeface = font
+        }
+        layout.addView(bat1Text)
+        layout.addView(bat2Text)
+
+        var views1 = ArrayList<View>()
+        var views2 = ArrayList<View>()
+        for ((key1, value1) in smartBms1PageValues) {
+
+            val headerText1 = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_title_template, layout, false
+            ) as TextView).apply {
+                text = activity.getString(key1)
+                typeface = font
+            }
+            val valueText1 = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_value_template, layout, false
+            ) as TextView).apply {
+                text = value1
+                typeface = font
+            }
+            views1.add(headerText1)
+            views1.add(valueText1)
+        }
+        for ((key2, value2) in smartBms2PageValues) {
+            val headerText2 = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_title_template, layout, false
+            ) as TextView).apply {
+                text = activity.getString(key2)
+                typeface = font
+            }
+            val valueText2 = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_value_template, layout, false
+            ) as TextView).apply {
+                text = value2
+                typeface = font
+            }
+            views2.add(headerText2)
+            views2.add(valueText2)
+        }
+        var index = 0
+        while (index < views1.size) {
+            layout.addView(views1[index])
+            layout.addView(views1[index+1])
+            layout.addView(views2[index])
+            layout.addView(views2[index+1])
+            index += 2
+        }
+    }
+
+    private fun updateSmartBmsPage() {
+        val layout = pagesView[R.layout.main_view_smart_bms]?.findViewById<GridLayout>(R.id.page_smart_bms_grid) ?: return
+        val count = layout.childCount
+        if (smartBms1PageValues.size * 4 != count-2) {
+            return
+        }
+        var index = 3
+        for (value in smartBms1PageValues.values) {
+            val valueText = layout.getChildAt(index) as TextView
+            valueText.text = value
+            index += 4
+        }
+        index = 5
+        for (value in smartBms2PageValues.values) {
+            val valueText = layout.getChildAt(index) as TextView
+            valueText.text = value
+            index += 4
+        }
+    }
+    //endregion
+
+    fun configureSmartBmsDisplay() {
+        smartBms1PageValues.clear()
+        smartBms2PageValues.clear()
+        when (WheelData.getInstance().wheelType) {
+            WHEEL_TYPE.KINGSONG -> {
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                    setupFieldForSmartBmsPage(R.string.bmsSn)
+                    setupFieldForSmartBmsPage(R.string.bmsFw)
+                    setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
+                    setupFieldForSmartBmsPage(R.string.bmsCycles)
+                    //setupFieldForSmartBmsPage(R.string.bmsStatus) // not parsed yet
+                    setupFieldForSmartBmsPage(R.string.bmsRemCap)
+                    setupFieldForSmartBmsPage(R.string.bmsRemPerc)
+                    setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                    setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp3)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp4)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp5)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    setupFieldForSmartBmsPage(R.string.bmsTempMos)
+                    setupFieldForSmartBmsPage(R.string.bmsTempMosEnv)
+                    setupFieldForSmartBmsPage(R.string.bmsMaxCell)
+                    setupFieldForSmartBmsPage(R.string.bmsMinCell)
+                    setupFieldForSmartBmsPage(R.string.bmsCellDiff)
+                    setupFieldForSmartBmsPage(R.string.bmsCell1)
+                    setupFieldForSmartBmsPage(R.string.bmsCell2)
+                    setupFieldForSmartBmsPage(R.string.bmsCell3)
+                    setupFieldForSmartBmsPage(R.string.bmsCell4)
+                    setupFieldForSmartBmsPage(R.string.bmsCell5)
+                    setupFieldForSmartBmsPage(R.string.bmsCell6)
+                    setupFieldForSmartBmsPage(R.string.bmsCell7)
+                    setupFieldForSmartBmsPage(R.string.bmsCell8)
+                    setupFieldForSmartBmsPage(R.string.bmsCell9)
+                    setupFieldForSmartBmsPage(R.string.bmsCell10)
+                    setupFieldForSmartBmsPage(R.string.bmsCell11)
+                    setupFieldForSmartBmsPage(R.string.bmsCell12)
+                    setupFieldForSmartBmsPage(R.string.bmsCell13)
+                    setupFieldForSmartBmsPage(R.string.bmsCell14)
+                    setupFieldForSmartBmsPage(R.string.bmsCell15)
+                    setupFieldForSmartBmsPage(R.string.bmsCell16)
+                    setupFieldForSmartBmsPage(R.string.bmsCell17)
+                    setupFieldForSmartBmsPage(R.string.bmsCell18)
+                    setupFieldForSmartBmsPage(R.string.bmsCell19)
+                    setupFieldForSmartBmsPage(R.string.bmsCell20)
+                    setupFieldForSmartBmsPage(R.string.bmsCell21)
+                    setupFieldForSmartBmsPage(R.string.bmsCell22)
+                    setupFieldForSmartBmsPage(R.string.bmsCell23)
+                    setupFieldForSmartBmsPage(R.string.bmsCell24)
+                    setupFieldForSmartBmsPage(R.string.bmsCell25)
+                    setupFieldForSmartBmsPage(R.string.bmsCell26)
+                    setupFieldForSmartBmsPage(R.string.bmsCell27)
+                    setupFieldForSmartBmsPage(R.string.bmsCell28)
+                    setupFieldForSmartBmsPage(R.string.bmsCell29)
+                    setupFieldForSmartBmsPage(R.string.bmsCell30)
+                } else return
+            }
+            WHEEL_TYPE.NINEBOT_Z -> {
+                setupFieldForSmartBmsPage(R.string.bmsSn)
+                setupFieldForSmartBmsPage(R.string.bmsFw)
+                setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
+                setupFieldForSmartBmsPage(R.string.bmsActualCap)
+                setupFieldForSmartBmsPage(R.string.bmsCycles)
+                setupFieldForSmartBmsPage(R.string.bmsChrgCount)
+                setupFieldForSmartBmsPage(R.string.bmsMfgDate)
+                setupFieldForSmartBmsPage(R.string.bmsStatus)
+                setupFieldForSmartBmsPage(R.string.bmsRemCap)
+                setupFieldForSmartBmsPage(R.string.bmsRemPerc)
+                setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                setupFieldForSmartBmsPage(R.string.bmsHealth)
+                setupFieldForSmartBmsPage(R.string.bmsMaxCell)
+                setupFieldForSmartBmsPage(R.string.bmsMinCell)
+                setupFieldForSmartBmsPage(R.string.bmsCellDiff)
+                setupFieldForSmartBmsPage(R.string.bmsCell1)
+                setupFieldForSmartBmsPage(R.string.bmsCell2)
+                setupFieldForSmartBmsPage(R.string.bmsCell3)
+                setupFieldForSmartBmsPage(R.string.bmsCell4)
+                setupFieldForSmartBmsPage(R.string.bmsCell5)
+                setupFieldForSmartBmsPage(R.string.bmsCell6)
+                setupFieldForSmartBmsPage(R.string.bmsCell7)
+                setupFieldForSmartBmsPage(R.string.bmsCell8)
+                setupFieldForSmartBmsPage(R.string.bmsCell9)
+                setupFieldForSmartBmsPage(R.string.bmsCell10)
+                setupFieldForSmartBmsPage(R.string.bmsCell11)
+                setupFieldForSmartBmsPage(R.string.bmsCell12)
+                setupFieldForSmartBmsPage(R.string.bmsCell13)
+                setupFieldForSmartBmsPage(R.string.bmsCell14)
+                setupFieldForSmartBmsPage(R.string.bmsCell15)
+                setupFieldForSmartBmsPage(R.string.bmsCell16)
+            }
+            else -> {
+                return
+            }
+        }
+        createSmartBmsPage()
+    }
+
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (WheelLog.AppConfig.getResId(key)) {

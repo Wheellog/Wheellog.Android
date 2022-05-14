@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         switch (connectionState) {
             case BluetoothLeService.STATE_CONNECTED:
                 pagerAdapter.configureSecondDisplay();
+                pagerAdapter.configureSmartBmsDisplay();
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
@@ -169,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
                     pagerAdapter.configureSecondDisplay();
+                    pagerAdapter.configureSmartBmsDisplay();
                     pagerAdapter.updateScreen(true);
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
                             && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
-                        pagerAdapter.addPage(R.layout.main_view_smart_bms);
+                        pagerAdapter.addPage(R.layout.main_view_smart_bms, 2);
                     } else {
                         pagerAdapter.removePage(R.layout.main_view_smart_bms);
                     }
