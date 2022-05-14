@@ -184,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
                     if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
                             && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
                         pagerAdapter.addPage(R.layout.main_view_smart_bms, 2);
+                    } else if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.KINGSONG
+                        && StringUtil.inArray(WheelData.getInstance().getModel(), new String[]{"KS-S20", "KS-S22"})) { //
+                        pagerAdapter.addPage(R.layout.main_view_smart_bms, 2);
                     } else {
                         pagerAdapter.removePage(R.layout.main_view_smart_bms);
                     }
