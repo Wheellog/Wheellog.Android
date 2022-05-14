@@ -52,9 +52,13 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    fun addPage(page: Int) {
+    fun addPage(page: Int, index: Int = 0) {
         if (!pages.contains(page)) {
-            pages.add(page)
+            if (index == 0) {
+                pages.add(page)
+            } else {
+                pages.add(index, page)
+            }
             pagesView[page] = null
             notifyItemInserted(page)
         }
