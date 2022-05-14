@@ -13,21 +13,19 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.StringUtil.Companion.inArray
 import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.*
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
 
@@ -688,8 +686,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private fun updateFieldForSmartBmsPage(resId: Int, value1: String, value2: String) {
         if (smartBms1PageValues.containsKey(resId)) {
             smartBms1PageValues[resId] = value1
-        }
-        if (smartBms2PageValues.containsKey(resId)) {
             smartBms2PageValues[resId] = value2
         }
     }
@@ -784,7 +780,58 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBms2PageValues.clear()
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
-                setupFieldForSmartBmsPage(R.string.speed)
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                    setupFieldForSmartBmsPage(R.string.bmsSn)
+                    setupFieldForSmartBmsPage(R.string.bmsFw)
+                    setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
+                    setupFieldForSmartBmsPage(R.string.bmsCycles)
+                    //setupFieldForSmartBmsPage(R.string.bmsStatus) // not parsed yet
+                    setupFieldForSmartBmsPage(R.string.bmsRemCap)
+                    setupFieldForSmartBmsPage(R.string.bmsRemPerc)
+                    setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                    setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp3)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp4)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp5)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    setupFieldForSmartBmsPage(R.string.bmsTempMos)
+                    setupFieldForSmartBmsPage(R.string.bmsTempMosEnv)
+                    setupFieldForSmartBmsPage(R.string.bmsMaxCell)
+                    setupFieldForSmartBmsPage(R.string.bmsMinCell)
+                    setupFieldForSmartBmsPage(R.string.bmsCellDiff)
+                    setupFieldForSmartBmsPage(R.string.bmsCell1)
+                    setupFieldForSmartBmsPage(R.string.bmsCell2)
+                    setupFieldForSmartBmsPage(R.string.bmsCell3)
+                    setupFieldForSmartBmsPage(R.string.bmsCell4)
+                    setupFieldForSmartBmsPage(R.string.bmsCell5)
+                    setupFieldForSmartBmsPage(R.string.bmsCell6)
+                    setupFieldForSmartBmsPage(R.string.bmsCell7)
+                    setupFieldForSmartBmsPage(R.string.bmsCell8)
+                    setupFieldForSmartBmsPage(R.string.bmsCell9)
+                    setupFieldForSmartBmsPage(R.string.bmsCell10)
+                    setupFieldForSmartBmsPage(R.string.bmsCell11)
+                    setupFieldForSmartBmsPage(R.string.bmsCell12)
+                    setupFieldForSmartBmsPage(R.string.bmsCell13)
+                    setupFieldForSmartBmsPage(R.string.bmsCell14)
+                    setupFieldForSmartBmsPage(R.string.bmsCell15)
+                    setupFieldForSmartBmsPage(R.string.bmsCell16)
+                    setupFieldForSmartBmsPage(R.string.bmsCell17)
+                    setupFieldForSmartBmsPage(R.string.bmsCell18)
+                    setupFieldForSmartBmsPage(R.string.bmsCell19)
+                    setupFieldForSmartBmsPage(R.string.bmsCell20)
+                    setupFieldForSmartBmsPage(R.string.bmsCell21)
+                    setupFieldForSmartBmsPage(R.string.bmsCell22)
+                    setupFieldForSmartBmsPage(R.string.bmsCell23)
+                    setupFieldForSmartBmsPage(R.string.bmsCell24)
+                    setupFieldForSmartBmsPage(R.string.bmsCell25)
+                    setupFieldForSmartBmsPage(R.string.bmsCell26)
+                    setupFieldForSmartBmsPage(R.string.bmsCell27)
+                    setupFieldForSmartBmsPage(R.string.bmsCell28)
+                    setupFieldForSmartBmsPage(R.string.bmsCell29)
+                    setupFieldForSmartBmsPage(R.string.bmsCell30)
+                } else return
             }
             WHEEL_TYPE.NINEBOT_Z -> {
                 setupFieldForSmartBmsPage(R.string.bmsSn)
@@ -822,7 +869,9 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSmartBmsPage(R.string.bmsCell15)
                 setupFieldForSmartBmsPage(R.string.bmsCell16)
             }
-            else -> {}
+            else -> {
+                return
+            }
         }
         createSmartBmsPage()
     }
