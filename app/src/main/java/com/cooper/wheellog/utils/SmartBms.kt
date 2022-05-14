@@ -23,9 +23,9 @@ class SmartBms {
     var tempMosEnv: Int = 0
     var balanceMap: Int = 0
     var health: Int = 0
-    var minCell: Double = 0
-    var maxCell: Double = 0
-    var cellDiff: Double = 0
+    var minCell: Double = 0.0
+    var maxCell: Double = 0.0
+    var cellDiff: Double = 0.0
     lateinit var cells: Array<Double>
 
     init {

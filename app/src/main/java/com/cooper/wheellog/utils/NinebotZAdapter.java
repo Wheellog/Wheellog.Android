@@ -1173,6 +1173,19 @@ public class NinebotZAdapter extends BaseAdapter {
             bms.getCells()[13] = cell14 / 1000.0;
             bms.getCells()[14] = cell15 / 1000.0;
             bms.getCells()[15] = cell16 / 1000.0;
+            bms.setMinCell(bms.getCells()[0]);
+            for (int i =0; i < 16; i++) {
+                double cell = bms.getCells()[i];
+                if (cell > 0.0) {
+                    if (bms.getMaxCell() < cell) {
+                        bms.setMaxCell(cell);
+                    }
+                    if (bms.getMinCell() > cell) {
+                        bms.setMinCell(cell);
+                    }
+                }
+            }
+            bms.setCellDiff(bms.getMaxCell()-bms.getMinCell());
         }
 
         public byte[] getData() {
