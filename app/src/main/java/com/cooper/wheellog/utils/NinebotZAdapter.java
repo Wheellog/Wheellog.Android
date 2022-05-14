@@ -1104,7 +1104,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int mounth = (mfgDate >> 5) & 0x0f;
             int day = mfgDate & 0x1f;
             String mfgDateStr = String.format("%02d.%02d.20%02d", day, mounth, year);
-            NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+            SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
             bms.setSerialNumber(serialNumber);
             bms.setVersionNumber(versionNumber);
             bms.setFactoryCap(factoryCap);
@@ -1125,7 +1125,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int temp2 = data[11] - 20;
             int balanceMap = MathsUtil.shortFromBytesLE(data, 12);
             int health = MathsUtil.shortFromBytesLE(data, 22);
-            NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+            SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
             bms.setStatus(bmsStatus);
             bms.setRemCap(remCap);
             bms.setRemPerc(remPerc);
@@ -1156,7 +1156,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int cell15 = MathsUtil.shortFromBytesLE(data, 28);
             int cell16 = MathsUtil.shortFromBytesLE(data, 30);
 
-            NinebotBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+            SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
             bms.getCells()[0] = cell1 / 1000.0;
             bms.getCells()[1] = cell2 / 1000.0;
             bms.getCells()[2] = cell3 / 1000.0;

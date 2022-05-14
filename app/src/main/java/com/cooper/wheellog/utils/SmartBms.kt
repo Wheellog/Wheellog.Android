@@ -1,6 +1,6 @@
 package com.cooper.wheellog.utils
 
-class NinebotBms {
+class SmartBms {
     lateinit var serialNumber: String
     lateinit var versionNumber: String
     var factoryCap: Int = 0
@@ -40,6 +40,6 @@ class NinebotBms {
         temp2 = 0
         balanceMap = 0
         health = 0
-        cells = Array(16) { 0.0 }
+        cells = Array(32) { 0.0 }
     }
 }

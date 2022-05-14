@@ -501,6 +501,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 bal1 = if (balanceMap1 shr 15 and 0x01 == 1) "[B]" else ""
                 bal2 = if (balanceMap2 shr 15 and 0x01 == 1) "[B]" else ""
                 updateFieldForSmartBmsPage(R.string.bmsCell16, String.format(Locale.US, "%.3f V %s", data.bms1.cells[15], bal1), String.format(Locale.US, "%.3f V %s", data.bms2.cells[15], bal2))
+                updateSmartBmsPage()
                 /*
                 if (data.bms1.cells[14] == 0.0) {
                     tvBms1Cell15?.visibility = View.GONE
@@ -783,8 +784,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBms2PageValues[resId] = ""
     }
 
-
-    // THINK HOW TO MAKE SAME KEYS DIFFERENT!!!<<<<<
     private fun updateFieldForSmartBmsPage(resId: Int, value1: String, value2: String) {
         if (smartBms1PageValues.containsKey(resId)) {
             smartBms1PageValues[resId] = value1
@@ -813,23 +812,48 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         layout.addView(bat1Text)
         layout.addView(bat2Text)
 
-        for ((key, value) in smartBms1PageValues) {
-            val headerText = (activity.layoutInflater.inflate(
+        var views1 = ArrayList<View>()
+        var views2 = ArrayList<View>()
+        for ((key1, value1) in smartBms1PageValues) {
+
+            val headerText1 = (activity.layoutInflater.inflate(
                     R.layout.textview_smart_bms_title_template, layout, false
             ) as TextView).apply {
-                text = activity.getString(key)
+                text = activity.getString(key1)
                 typeface = font
             }
-            val valueText = (activity.layoutInflater.inflate(
+            val valueText1 = (activity.layoutInflater.inflate(
                     R.layout.textview_smart_bms_value_template, layout, false
             ) as TextView).apply {
-                text = value
+                text = value1
                 typeface = font
             }
-            layout.addView(headerText)
-            layout.addView(valueText)
-            layout.addView(headerText)
-            layout.addView(valueText)
+            views1.add(headerText1)
+            views1.add(valueText1)
+        }
+        for ((key2, value2) in smartBms2PageValues) {
+            val headerText2 = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_title_template, layout, false
+            ) as TextView).apply {
+                text = activity.getString(key2)
+                typeface = font
+            }
+            val valueText2 = (activity.layoutInflater.inflate(
+                    R.layout.textview_smart_bms_value_template, layout, false
+            ) as TextView).apply {
+                text = value2
+                typeface = font
+            }
+            views2.add(headerText2)
+            views2.add(valueText2)
+        }
+        var index = 0
+        while (index < views1.size) {
+            layout.addView(views1[index])
+            layout.addView(views1[index+1])
+            layout.addView(views2[index])
+            layout.addView(views2[index+1])
+            index += 2
         }
     }
 
