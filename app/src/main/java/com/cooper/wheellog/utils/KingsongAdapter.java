@@ -184,6 +184,13 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.setFactoryCap(MathsUtil.getInt2R(data, 8)*10);
                     bms.setFullCycles(MathsUtil.getInt2R(data, 10));
                     bms.setRemPerc(MathsUtil.getInt2R(data, 12)/10);
+                    if (bms.getSerialNumber().equals("")) {
+                        if (bmsnum == 1) {
+                            requestBms1Serial();
+                        } else {
+                            requestBms2Serial();
+                        }
+                    }
                 } else if ((data[17] & 255) == 0x01) {
                     bms.setTemp1((MathsUtil.getInt2R(data, 2)-2730)/10.0);
                     bms.setTemp2((MathsUtil.getInt2R(data, 4)-2730)/10.0);
@@ -244,8 +251,32 @@ public class KingsongAdapter extends BaseAdapter {
                         }
                     }
                     bms.setCellDiff(bms.getMaxCell()-bms.getMinCell());
+                    if (bms.getVersionNumber().equals("")) {
+                        if (bmsnum == 1) {
+                            requestBms1Firmware();
+                        } else {
+                            requestBms2Firmware();
+                        }
+                    }
                 }
+            } else if ((data[16] & 255) == 0xe1 || (data[16] & 255) == 0xe2) { // e1 - 1st BMS, e2 - 2nd BMS.
+                int bmsnum = (data[16] & 255) - 0xE0;
+                SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+                byte[] sndata = new byte[18];
+                System.arraycopy(data, 2, sndata, 0, 14);
+                System.arraycopy(data, 17, sndata, 14, 3);
+                sndata[17] = (byte) 0;
+                bms.setSerialNumber(new String(sndata));
+            } else if ((data[16] & 255) == 0xe5 || (data[16] & 255) == 0xe6) { // e5 - 1st BMS, e6 - 2nd BMS.
+                int bmsnum = (data[16] & 255) - 0xE4;
+                SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+                byte[] sndata = new byte[19];
+                System.arraycopy(data, 2, sndata, 0, 14);
+                System.arraycopy(data, 17, sndata, 14, 3);
+                sndata[18] = (byte) 0;
+                bms.setVersionNumber(new String(sndata));
             }
+
         }
         return false;
     }
@@ -394,6 +425,42 @@ public class KingsongAdapter extends BaseAdapter {
     public void requestSerialData() {
         byte[] data = getEmptyRequest();
         data[16] = 0x63;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void requestBms1Serial() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe1;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void requestBms2Serial() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe2;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void requestBms1Firmware() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe5;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void requestBms2Firmware() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe6;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
         WheelData.getInstance().bluetoothCmd(data);
     }
 
