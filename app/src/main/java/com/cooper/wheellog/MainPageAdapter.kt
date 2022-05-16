@@ -52,7 +52,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
 
     fun addPage(page: Int, index: Int = 0) {
         if (!pages.contains(page)) {
-            if (index == 0) {
+            if (index == 0 || index >= pages.size) {
                 pages.add(page)
             } else {
                 pages.add(index, page)
@@ -704,7 +704,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             index += 4
         }
     }
-    //endregion
 
     fun configureSmartBmsDisplay() {
         smartBms1PageValues.clear()
@@ -806,7 +805,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         }
         createSmartBmsPage()
     }
-
+    //endregion
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (WheelLog.AppConfig.getResId(key)) {
