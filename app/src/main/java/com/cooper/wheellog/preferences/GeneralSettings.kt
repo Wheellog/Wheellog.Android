@@ -161,7 +161,7 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
                 title = getString(R.string.rotation_voltage_title)
                 summary = getString(R.string.rotation_voltage_description)
                 min = 0
-                max = 1200
+                max = 2000
                 decimalPlaces = 1
                 unit = getString(R.string.volt)
                 increment = 1
