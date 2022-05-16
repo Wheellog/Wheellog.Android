@@ -711,6 +711,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
                 if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                    addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)
                     setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
@@ -761,45 +762,55 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsCell28)
                     setupFieldForSmartBmsPage(R.string.bmsCell29)
                     setupFieldForSmartBmsPage(R.string.bmsCell30)
-                } else return
+                } else {
+                    removePage(R.layout.main_view_smart_bms)
+                    return
+                }
             }
             WHEEL_TYPE.NINEBOT_Z -> {
-                setupFieldForSmartBmsPage(R.string.bmsSn)
-                setupFieldForSmartBmsPage(R.string.bmsFw)
-                setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
-                setupFieldForSmartBmsPage(R.string.bmsActualCap)
-                setupFieldForSmartBmsPage(R.string.bmsCycles)
-                setupFieldForSmartBmsPage(R.string.bmsChrgCount)
-                setupFieldForSmartBmsPage(R.string.bmsMfgDate)
-                setupFieldForSmartBmsPage(R.string.bmsStatus)
-                setupFieldForSmartBmsPage(R.string.bmsRemCap)
-                setupFieldForSmartBmsPage(R.string.bmsRemPerc)
-                setupFieldForSmartBmsPage(R.string.bmsCurrent)
-                setupFieldForSmartBmsPage(R.string.bmsVoltage)
-                setupFieldForSmartBmsPage(R.string.bmsTemp1)
-                setupFieldForSmartBmsPage(R.string.bmsTemp2)
-                setupFieldForSmartBmsPage(R.string.bmsHealth)
-                setupFieldForSmartBmsPage(R.string.bmsMaxCell)
-                setupFieldForSmartBmsPage(R.string.bmsMinCell)
-                setupFieldForSmartBmsPage(R.string.bmsCellDiff)
-                setupFieldForSmartBmsPage(R.string.bmsCell1)
-                setupFieldForSmartBmsPage(R.string.bmsCell2)
-                setupFieldForSmartBmsPage(R.string.bmsCell3)
-                setupFieldForSmartBmsPage(R.string.bmsCell4)
-                setupFieldForSmartBmsPage(R.string.bmsCell5)
-                setupFieldForSmartBmsPage(R.string.bmsCell6)
-                setupFieldForSmartBmsPage(R.string.bmsCell7)
-                setupFieldForSmartBmsPage(R.string.bmsCell8)
-                setupFieldForSmartBmsPage(R.string.bmsCell9)
-                setupFieldForSmartBmsPage(R.string.bmsCell10)
-                setupFieldForSmartBmsPage(R.string.bmsCell11)
-                setupFieldForSmartBmsPage(R.string.bmsCell12)
-                setupFieldForSmartBmsPage(R.string.bmsCell13)
-                setupFieldForSmartBmsPage(R.string.bmsCell14)
-                setupFieldForSmartBmsPage(R.string.bmsCell15)
-                setupFieldForSmartBmsPage(R.string.bmsCell16)
+                if (WheelData.getInstance().protoVer == "") { //hide page for S2
+                    addPage(R.layout.main_view_smart_bms, 2)
+                    setupFieldForSmartBmsPage(R.string.bmsSn)
+                    setupFieldForSmartBmsPage(R.string.bmsFw)
+                    setupFieldForSmartBmsPage(R.string.bmsFactoryCap)
+                    setupFieldForSmartBmsPage(R.string.bmsActualCap)
+                    setupFieldForSmartBmsPage(R.string.bmsCycles)
+                    setupFieldForSmartBmsPage(R.string.bmsChrgCount)
+                    setupFieldForSmartBmsPage(R.string.bmsMfgDate)
+                    setupFieldForSmartBmsPage(R.string.bmsStatus)
+                    setupFieldForSmartBmsPage(R.string.bmsRemCap)
+                    setupFieldForSmartBmsPage(R.string.bmsRemPerc)
+                    setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                    setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                    setupFieldForSmartBmsPage(R.string.bmsHealth)
+                    setupFieldForSmartBmsPage(R.string.bmsMaxCell)
+                    setupFieldForSmartBmsPage(R.string.bmsMinCell)
+                    setupFieldForSmartBmsPage(R.string.bmsCellDiff)
+                    setupFieldForSmartBmsPage(R.string.bmsCell1)
+                    setupFieldForSmartBmsPage(R.string.bmsCell2)
+                    setupFieldForSmartBmsPage(R.string.bmsCell3)
+                    setupFieldForSmartBmsPage(R.string.bmsCell4)
+                    setupFieldForSmartBmsPage(R.string.bmsCell5)
+                    setupFieldForSmartBmsPage(R.string.bmsCell6)
+                    setupFieldForSmartBmsPage(R.string.bmsCell7)
+                    setupFieldForSmartBmsPage(R.string.bmsCell8)
+                    setupFieldForSmartBmsPage(R.string.bmsCell9)
+                    setupFieldForSmartBmsPage(R.string.bmsCell10)
+                    setupFieldForSmartBmsPage(R.string.bmsCell11)
+                    setupFieldForSmartBmsPage(R.string.bmsCell12)
+                    setupFieldForSmartBmsPage(R.string.bmsCell13)
+                    setupFieldForSmartBmsPage(R.string.bmsCell14)
+                    setupFieldForSmartBmsPage(R.string.bmsCell15)
+                    setupFieldForSmartBmsPage(R.string.bmsCell16)
+                } else {
+                    removePage(R.layout.main_view_smart_bms)
+                    return
+                }
             }
             else -> {
+                removePage(R.layout.main_view_smart_bms)
                 return
             }
         }

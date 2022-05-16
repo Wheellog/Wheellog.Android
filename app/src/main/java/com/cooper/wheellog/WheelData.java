@@ -649,9 +649,8 @@ public class WheelData {
         boolean isChanged = model != mModel;
         mModel = model;
         if (isChanged) {
-            Context mContext = getBluetoothLeService().getApplicationContext();
             Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
-            mContext.sendBroadcast(intent);
+            getBluetoothLeService().getApplicationContext().sendBroadcast(intent);
         }
 
     }

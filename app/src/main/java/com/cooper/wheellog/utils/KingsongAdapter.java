@@ -159,7 +159,7 @@ public class KingsongAdapter extends BaseAdapter {
                 mSpeedLimit = MathsUtil.getInt2R(data, 2) / 100.0;
                 wd.setSpeedLimit(mSpeedLimit);
                 return false;
-            } else if ((data[16] & 255) == 0xA4 || (data[16] & 255) == 0xB5) { //0xa4 || 0xb5 max speed and alerts
+            } else if ((data[16] & 255) == 0xA4 || (data[16] & 255) == 0xB5) { //max speed and alerts
                 mWheelMaxSpeed = data[10] & 255;
                 WheelLog.AppConfig.setWheelMaxSpeed(mWheelMaxSpeed);
                 mKSAlarm3Speed = (data[8] & 255);
@@ -177,7 +177,8 @@ public class KingsongAdapter extends BaseAdapter {
             } else if ((data[16] & 255) == 0xF1 || (data[16] & 255) == 0xF2) { // F1 - 1st BMS, F2 - 2nd BMS. F3 and F4 are also present but empty
                 int bmsnum = (data[16] & 255) - 0xF0;
                 SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
-                if ((data[17] & 255) == 0x00) {
+                int pNum = (data[17] & 255);
+                if (pNum == 0x00) {
                     bms.setVoltage(MathsUtil.getInt2R(data, 2)/100.0);
                     bms.setCurrent(MathsUtil.getInt2R(data, 4)/100.0);
                     bms.setRemCap(MathsUtil.getInt2R(data, 6)*10);
@@ -191,7 +192,7 @@ public class KingsongAdapter extends BaseAdapter {
                             requestBms2Serial();
                         }
                     }
-                } else if ((data[17] & 255) == 0x01) {
+                } else if (pNum == 0x01) {
                     bms.setTemp1((MathsUtil.getInt2R(data, 2)-2730)/10.0);
                     bms.setTemp2((MathsUtil.getInt2R(data, 4)-2730)/10.0);
                     bms.setTemp3((MathsUtil.getInt2R(data, 6)-2730)/10.0);
@@ -199,7 +200,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.setTemp5((MathsUtil.getInt2R(data, 10)-2730)/10.0);
                     bms.setTemp6((MathsUtil.getInt2R(data, 12)-2730)/10.0);
                     bms.setTempMos((MathsUtil.getInt2R(data, 14)-2730)/10.0);
-                } else if ((data[17] & 255) == 0x02) {
+                } else if (pNum == 0x02) {
                     bms.getCells()[0] = MathsUtil.getInt2R(data, 2)/1000.0;
                     bms.getCells()[1] = MathsUtil.getInt2R(data, 4)/1000.0;
                     bms.getCells()[2] = MathsUtil.getInt2R(data, 6)/1000.0;
@@ -207,7 +208,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.getCells()[4] = MathsUtil.getInt2R(data, 10)/1000.0;
                     bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
                     bms.getCells()[6] = MathsUtil.getInt2R(data, 14)/1000.0;
-                } else if ((data[17] & 255) == 0x03) {
+                } else if (pNum == 0x03) {
                     bms.getCells()[7] = MathsUtil.getInt2R(data, 2)/1000.0;
                     bms.getCells()[8] = MathsUtil.getInt2R(data, 4)/1000.0;
                     bms.getCells()[9] = MathsUtil.getInt2R(data, 6)/1000.0;
@@ -215,7 +216,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.getCells()[11] = MathsUtil.getInt2R(data, 10)/1000.0;
                     bms.getCells()[12] = MathsUtil.getInt2R(data, 12)/1000.0;
                     bms.getCells()[13] = MathsUtil.getInt2R(data, 14)/1000.0;
-                } else if ((data[17] & 255) == 0x04) {
+                } else if (pNum == 0x04) {
                     bms.getCells()[14] = MathsUtil.getInt2R(data, 2)/1000.0;
                     bms.getCells()[15] = MathsUtil.getInt2R(data, 4)/1000.0;
                     bms.getCells()[16] = MathsUtil.getInt2R(data, 6)/1000.0;
@@ -223,7 +224,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.getCells()[18] = MathsUtil.getInt2R(data, 10)/1000.0;
                     bms.getCells()[19] = MathsUtil.getInt2R(data, 12)/1000.0;
                     bms.getCells()[20] = MathsUtil.getInt2R(data, 14)/1000.0;
-                } else if ((data[17] & 255) == 0x05) {
+                } else if (pNum == 0x05) {
                     bms.getCells()[21] = MathsUtil.getInt2R(data, 2)/1000.0;
                     bms.getCells()[22] = MathsUtil.getInt2R(data, 4)/1000.0;
                     bms.getCells()[23] = MathsUtil.getInt2R(data, 6)/1000.0;
@@ -231,7 +232,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.getCells()[25] = MathsUtil.getInt2R(data, 10)/1000.0;
                     bms.getCells()[26] = MathsUtil.getInt2R(data, 12)/1000.0;
                     bms.getCells()[27] = MathsUtil.getInt2R(data, 14)/1000.0;
-                } else if ((data[17] & 255) == 0x06) {
+                } else if (pNum == 0x06) {
                     bms.getCells()[28] = MathsUtil.getInt2R(data, 2)/1000.0;
                     bms.getCells()[29] = MathsUtil.getInt2R(data, 4)/1000.0;
                     //bms.getCells()[30] = MathsUtil.getInt2R(data, 6)/1000.0;
@@ -239,7 +240,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.setTempMosEnv((MathsUtil.getInt2R(data, 10)-2730)/10.0);
                     //bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
                     bms.setMinCell(bms.getCells()[29]);
-                    for (int i =0; i < 30; i++) {
+                    for (int i = 0; i < 30; i++) {
                         double cell = bms.getCells()[i];
                         if (cell > 0.0) {
                             if (bms.getMaxCell() < cell) {
@@ -250,7 +251,7 @@ public class KingsongAdapter extends BaseAdapter {
                             }
                         }
                     }
-                    bms.setCellDiff(bms.getMaxCell()-bms.getMinCell());
+                    bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
                     if (bms.getVersionNumber().equals("")) {
                         if (bmsnum == 1) {
                             requestBms1Firmware();
