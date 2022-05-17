@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -18,6 +19,7 @@ class NinebotZAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data

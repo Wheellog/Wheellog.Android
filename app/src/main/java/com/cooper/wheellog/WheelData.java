@@ -646,7 +646,13 @@ public class WheelData {
     }
 
     public void setModel(String model) {
+        boolean isChanged = model != mModel;
         mModel = model;
+        if (isChanged) {
+            Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
+            getBluetoothLeService().getApplicationContext().sendBroadcast(intent);
+        }
+
     }
 
     public String getModeStr() {
