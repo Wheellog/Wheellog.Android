@@ -148,7 +148,7 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
                 title = getString(R.string.rotation_speed_title)
                 summary = getString(R.string.rotation_speed_description)
                 min = 0
-                max = 2000
+                max = 1500
                 decimalPlaces = 1
                 unit = speedUnit
                 multiplier = speedMultipier
@@ -161,7 +161,7 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
                 title = getString(R.string.rotation_voltage_title)
                 summary = getString(R.string.rotation_voltage_description)
                 min = 0
-                max = 2000
+                max = 1500
                 decimalPlaces = 1
                 unit = getString(R.string.volt)
                 increment = 1
