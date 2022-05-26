@@ -1035,6 +1035,7 @@ public class WheelData {
             }
         }
         mBatteryLowest = Math.min(mBatteryLowest, battery);
+        battery = MathsUtil.clamp(battery, 0, 100); // 0 - 100
 
         if (mBatteryStart == -1) {
             mBatteryStart = battery;
