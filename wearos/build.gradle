@@ -22,9 +22,6 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
 
     buildTypes {
         release {
@@ -46,6 +43,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+    lint {
+        abortOnError false
     }
 }
 

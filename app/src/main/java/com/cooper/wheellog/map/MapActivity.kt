@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
+import com.cooper.wheellog.BuildConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.utils.LogHeaderEnum
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
@@ -42,8 +43,20 @@ class MapActivity : AppCompatActivity() {
         val context = applicationContext
 
         // load/initialize the osmdroid configuration, this can be done
-        Configuration.getInstance()
-            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        Configuration.getInstance().apply {
+            load(context, PreferenceManager.getDefaultSharedPreferences(context))
+            userAgentValue = BuildConfig.APPLICATION_ID
+
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
+            {
+                osmdroidBasePath = File(context.filesDir, "osmdroid").apply {
+                    mkdirs()
+                }
+                osmdroidTileCache = File(osmdroidBasePath, "titles").apply {
+                    mkdirs()
+                }
+            }
+        }
 
         setContentView(R.layout.activity_map)
 
