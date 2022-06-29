@@ -10,9 +10,6 @@ android {
     compileSdkVersion 30
     buildToolsVersion '30.0.3'
 
-    lintOptions {
-        abortOnError false
-    }
 
     signingConfigs {
         debug {
@@ -62,14 +59,18 @@ android {
         }
     }
     packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE*'
-        exclude 'META-INF/NOTICE*'
-        exclude 'META-INF/ASL2.0'
-        exclude("META-INF/*.kotlin_module")
+        jniLibs {
+            excludes += ['META-INF/LICENSE*', 'META-INF/NOTICE*']
+        }
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/ASL2.0', 'META-INF/*.kotlin_module']
+        }
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+    lint {
+        abortOnError false
     }
 }
 
@@ -87,7 +88,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.permissions-dispatcher:permissionsdispatcher:4.8.0'
-    implementation 'org.osmdroid:osmdroid-android:6.1.11'
+    implementation 'org.osmdroid:osmdroid-android:6.1.13'
     implementation project(path: ':shared')
     annotationProcessor 'com.github.permissions-dispatcher:permissionsdispatcher-processor:4.8.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
