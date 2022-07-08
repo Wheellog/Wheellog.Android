@@ -12,7 +12,8 @@ class SmartDouble: Comparable<SmartDouble> {
     var min: Double = Double.MAX_VALUE
 
     override fun toString(): String {
-        return value.toString()
+//        return value.toString()
+        return String.format("%.1f", value)
     }
 
     override fun compareTo(other: SmartDouble): Int {
