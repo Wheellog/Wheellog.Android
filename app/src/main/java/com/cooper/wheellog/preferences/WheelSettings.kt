@@ -579,7 +579,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.max_speed_title)
             summary = getString(R.string.tilt_back_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -591,7 +591,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.alert3_title)
             summary = getString(R.string.alarm3_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -603,7 +603,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.alert2_title)
             summary = getString(R.string.alarm2_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -615,7 +615,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.alert1_title)
             summary = getString(R.string.alarm1_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
