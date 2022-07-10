@@ -6,6 +6,8 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Stack;
 
 import timber.log.Timber;
 
@@ -13,6 +15,24 @@ public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     gotwayUnpacker unpacker = new gotwayUnpacker();
     private static final double RATIO_GW = 0.875;
+
+    private NormInt normSpeed = new NormInt();
+    private NormInt normTemp = new NormInt();
+    private NormInt normVoltage = new NormInt();
+
+    public GotwayAdapter() {
+        normSpeed.setMin(-3000);        // -300 km/h min
+        normSpeed.setMax(3000);         // 300 km/h max
+        normSpeed.setMaxDiff(400);      // 40 km/h diff
+
+        normTemp.setMin(-27300);        // -273 ℃ min
+        normTemp.setMax(15000);         // 150 ℃ max
+        normTemp.setMaxDiff(3000);      // 30 ℃ diff
+
+        normVoltage.setMin(0);          // 0 V min
+        normVoltage.setMax(50000);      // 500 V max
+        normVoltage.setMaxDiff(3000);   // 30 V diff
+    }
 
     @Override
     public boolean decode(byte[] data) {
@@ -73,6 +93,14 @@ public class GotwayAdapter extends BaseAdapter {
                         speed = (int) Math.round(speed * RATIO_GW);
                     }
                     voltage = (int) Math.round(getScaledVoltage(voltage));
+
+                    if (!normSpeed.push(speed) ||
+                        !normTemp.push(temperature) ||
+                        !normVoltage.push(voltage))
+                    {
+                        Timber.i("Skip broken package.");
+                        return false;
+                    }
 
                     wd.setSpeed(speed);
                     wd.setTopSpeed(speed);

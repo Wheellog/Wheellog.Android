@@ -151,4 +151,56 @@ class GotwayAdapterTest {
         verify { data.bluetoothCmd("f".toByteArray()) }
         verify { data.bluetoothCmd("s".toByteArray()) }
     }
+
+    @Test
+    fun `decode with anomaly data`() {
+        // Arrange.
+        val voltage = 6000.toShort()
+        val speed = 0.toShort()
+        val temperature = 99.toShort()
+        val distance = 3231.toShort()
+        val phaseCurrent = (-8322).toShort()
+        val byteArray = header +
+                MathsUtil.getBytes(voltage) +
+                MathsUtil.getBytes(speed) +
+                byteArrayOf(0, 0) +
+                MathsUtil.getBytes(distance) +
+                MathsUtil.getBytes(phaseCurrent) +
+                MathsUtil.getBytes(temperature) +
+                byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
+        val byteArrayAnomaly = header +
+                MathsUtil.getBytes(12800.toShort()) +
+                MathsUtil.getBytes(5000.toShort()) +
+                byteArrayOf(0, 0) +
+                MathsUtil.getBytes(distance) +
+                MathsUtil.getBytes(phaseCurrent) +
+                MathsUtil.getBytes(temperature) +
+                byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
+
+        // Act.
+        adapter.decode(byteArray)
+        adapter.decode(byteArray)
+        adapter.decode(byteArray)
+        adapter.decode(byteArray)
+        var result = adapter.decode(byteArray)
+        var result2 = adapter.decode(byteArrayAnomaly)
+        var result3 = adapter.decode(byteArrayAnomaly)
+        var result4 = adapter.decode(byteArray)
+        var result5 = adapter.decode(byteArrayAnomaly)
+
+        // Assert.
+        assertThat(result).isTrue()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isTrue()
+        assertThat(result5).isFalse()
+
+        val speedInKm = round(speed * 3.6 / 10).toInt()
+        assertThat(data.speed).isEqualTo(speedInKm)
+        assertThat(data.temperature).isEqualTo(36)
+        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent / 100.0)
+        assertThat(data.voltageDouble).isEqualTo(voltage / 100.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
+        assertThat(data.batteryLevel).isEqualTo(54)
+    }
 }
