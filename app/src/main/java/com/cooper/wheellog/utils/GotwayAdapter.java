@@ -21,8 +21,8 @@ public class GotwayAdapter extends BaseAdapter {
     private NormInt normVoltage = new NormInt();
 
     public GotwayAdapter() {
-        normSpeed.setMin(-3000);        // -300 km/h min
-        normSpeed.setMax(3000);         // 300 km/h max
+        normSpeed.setMin(-11000);       // ~ -300 km/h min (speedInKm modification = * 3.6)
+        normSpeed.setMax(11000);        // ~ 300 km/h max (speedInKm modification = * 3.6)
         normSpeed.setMaxDiff(400);      // 40 km/h diff
 
         normTemp.setMin(-27300);        // -273 ℃ min
