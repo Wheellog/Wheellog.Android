@@ -92,10 +92,10 @@ class MainRecyclerAdapter(var pages: WearPages, private var wd: WearData): Recyc
                         max.set("${wd.power.max}")
                     }
                     WearPage.PWM -> {
-                        value.set("${wd.pwm.value}")
+                        value.set(String.format("%.1f", wd.pwm.value))
                         minTitle.set("")
                         min.set("")
-                        max.set("${wd.pwm.max}")
+                        max.set(String.format("%.1f", wd.pwm.max))
                     }
                     WearPage.Temperature -> {
                         value.set("${wd.temperature.value}℃")
