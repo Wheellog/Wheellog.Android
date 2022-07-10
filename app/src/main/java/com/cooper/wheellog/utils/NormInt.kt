@@ -2,9 +2,11 @@ package com.cooper.wheellog.utils
 
 class NormInt {
     private var values: MutableList<Int> = mutableListOf()
+    private var averageIgnoreCounter: Int = 0
 
     var length: Int = 5
-    var maxDiff: Int = 30
+    var averageDiff: Int = 30
+    var averageDiffIgnore: Int = 10
     var min: Int = Int.MIN_VALUE
     var max: Int = Int.MAX_VALUE
 
@@ -17,7 +19,13 @@ class NormInt {
             return true
         }
         val average = values.average()
-        if (value > average + maxDiff || value < average - maxDiff) {
+        if (value > average + averageDiff || value < average - averageDiff) {
+            averageIgnoreCounter++
+            if (averageIgnoreCounter > averageDiffIgnore) {
+                values.clear()
+                values.add(value)
+                return true
+            }
             return false
         }
         values.removeAt(0)

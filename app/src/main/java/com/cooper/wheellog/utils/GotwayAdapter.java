@@ -6,8 +6,6 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
-import java.util.List;
-import java.util.Stack;
 
 import timber.log.Timber;
 
@@ -21,17 +19,17 @@ public class GotwayAdapter extends BaseAdapter {
     private NormInt normVoltage = new NormInt();
 
     public GotwayAdapter() {
-        normSpeed.setMin(-11000);       // ~ -300 km/h min (speedInKm modification = * 3.6)
-        normSpeed.setMax(11000);        // ~ 300 km/h max (speedInKm modification = * 3.6)
-        normSpeed.setMaxDiff(400);      // 40 km/h diff
+        normSpeed.setMin(-11000);           // ~ -300 km/h min (speedInKm modification = * 3.6)
+        normSpeed.setMax(11000);            // ~ 300 km/h max (speedInKm modification = * 3.6)
+        normSpeed.setAverageDiff(400);      // 40 km/h diff on last average 5 packets
 
-        normTemp.setMin(-27300);        // -273 ℃ min
-        normTemp.setMax(15000);         // 150 ℃ max
-        normTemp.setMaxDiff(3000);      // 30 ℃ diff
+        normTemp.setMin(-27300);            // -273 ℃ min
+        normTemp.setMax(15000);             // 150 ℃ max
+        normTemp.setAverageDiff(3000);      // 30 ℃ diff
 
-        normVoltage.setMin(0);          // 0 V min
-        normVoltage.setMax(50000);      // 500 V max
-        normVoltage.setMaxDiff(3000);   // 30 V diff
+        normVoltage.setMin(0);              // 0 V min
+        normVoltage.setMax(50000);          // 500 V max
+        normVoltage.setAverageDiff(3000);   // 30 V diff
     }
 
     @Override
