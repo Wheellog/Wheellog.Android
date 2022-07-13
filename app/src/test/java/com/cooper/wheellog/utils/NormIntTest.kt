@@ -25,7 +25,7 @@ class NormIntTest {
         results.add(norm.push(10))  // average = (1 + 2 + 3 + 4 + 5) / 5  = 3
         results.add(norm.push(5))   // average = (2 + 3 + 4 + 5 + 10) / 5 = 4.8
         results.add(norm.push(-2))  // average = (3 + 4 + 5 + 10 + 5) / 5 = 5.4
-        results.add(norm.push(0))   // average = (4 + 5 + 10 + 5 + 0) / 5 = 5
+        results.add(norm.push(0))   // average = (4 + 5 + 10 + 5 - 2) / 5 = 5
 
         // Assert.
         assertThat(results.all { it }).isEqualTo(true)

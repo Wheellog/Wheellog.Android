@@ -19,17 +19,17 @@ public class GotwayAdapter extends BaseAdapter {
     private NormInt normVoltage = new NormInt();
 
     public GotwayAdapter() {
-        normSpeed.setMin(-11000);           // ~ -300 km/h min (speedInKm modification = * 3.6)
-        normSpeed.setMax(11000);            // ~ 300 km/h max (speedInKm modification = * 3.6)
-        normSpeed.setAverageDiff(400);      // 40 km/h diff on last average 5 packets
+        normSpeed.setMin(-300 * 36);        // ~ -300 km/h min (speedInKm modification = * 0.36)
+        normSpeed.setMax(300 * 36);         // ~ 300 km/h max (speedInKm modification = * 0.36)
+        normSpeed.setAverageDiff(40_0);     // 40 km/h diff on last average 5 packets
 
-        normTemp.setMin(-27300);            // -273 ℃ min
-        normTemp.setMax(15000);             // 150 ℃ max
-        normTemp.setAverageDiff(3000);      // 30 ℃ diff
+        normTemp.setMin(-273_00);           // -273 ℃ min
+        normTemp.setMax(150_00);            // 150 ℃ max
+        normTemp.setAverageDiff(30_00);     // 30 ℃ diff
 
         normVoltage.setMin(0);              // 0 V min
-        normVoltage.setMax(50000);          // 500 V max
-        normVoltage.setAverageDiff(3000);   // 30 V diff
+        normVoltage.setMax(500_00);         // 500 V max
+        normVoltage.setAverageDiff(50_00);  // 50 V diff
     }
 
     @Override
