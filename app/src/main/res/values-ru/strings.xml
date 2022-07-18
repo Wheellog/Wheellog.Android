@@ -435,4 +435,5 @@
     <string name="garmin_connectiq_use_beta_description">Использовать бета-версию компаньона вместо стабильной</string>
     <string name="hw_pwm_title">Использовать аппаратный PWM</string>
     <string name="hw_pwm_description">Современные прошивки Veteran передают PWM в протоколе, включите чтобы активировать</string>
+    <string name="setup_pwm_dialog_title">Установка PWM</string>
 </resources>

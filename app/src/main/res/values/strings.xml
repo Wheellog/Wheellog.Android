@@ -655,4 +655,5 @@
     <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
     <string name="continue_this_day_log_alert_title">Finish the trip?</string>
     <string name="continue_this_day_log_alert_description">The trip will not continue the next time the log is enabled.</string>
+    <string name="setup_pwm_dialog_title">Setup PWM</string>
 </resources>

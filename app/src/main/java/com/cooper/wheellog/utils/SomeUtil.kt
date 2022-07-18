@@ -1,20 +1,18 @@
 package com.cooper.wheellog.utils
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
-import android.content.ActivityNotFoundException
-import android.provider.Settings
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.provider.Settings
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -22,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.cooper.wheellog.*
 import java.io.IOException
+
 
 class SomeUtil {
     companion object {
@@ -142,6 +141,60 @@ class SomeUtil {
                 return true
             }
             return false
+        }
+
+        fun checkPWMsettedAndShowAlert(context: Context) {
+            // TODO: Добавить провеку на колеса
+            val inflater: LayoutInflater = LayoutInflater.from(context)
+            val dialogView: View = inflater.inflate(R.layout.update_pwm_settings, null)
+            val svLayout : LinearLayout = dialogView.findViewById(R.id.set_speed_voltage_layout)
+            val dropDownBox: Spinner = dialogView.findViewById(R.id.spinner_templates)
+            var selectedOption: Int = 1;
+            dialogView.findViewById<RadioGroup>(R.id.selected_pwm_variant)
+                .setOnCheckedChangeListener { _, checkedId ->
+                    svLayout.visibility =
+                        if (checkedId == R.id.radioButton1) View.VISIBLE else View.GONE
+                    dropDownBox.visibility =
+                        if (checkedId == R.id.radioButton3) View.VISIBLE else View.GONE
+                    when (checkedId) {
+                        R.id.radioButton1 -> selectedOption = 1
+                        R.id.radioButton2 -> selectedOption = 2
+                        R.id.radioButton3 -> selectedOption = 3
+                    }
+                }
+            val speedValue: TextView = dialogView.findViewById(R.id.speed_value)
+            val seekbarSpeed: SeekBar = dialogView.findViewById(R.id.seekBar_speed)
+            seekbarSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    speedValue.text = String.format("%03d km/h", progress)
+                }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            })
+
+            val voltageValue: TextView = dialogView.findViewById(R.id.voltage_value)
+            val seekbarVoltage: SeekBar = dialogView.findViewById(R.id.seekBar_voltage)
+            seekbarVoltage.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    voltageValue.text = String.format("%03d V", progress)
+                }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            })
+            AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                .setCancelable(false)
+                .setTitle(R.string.setup_pwm_dialog_title)
+                .setView(dialogView)
+                .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                    // TODO записывать настройки
+                    // или автоматически замерять раскрутку
+                    // или выбирать из шаблона
+                }
+                .show()
         }
 
         private fun isIntentResolved(context: Context, intent: Intent): Boolean {

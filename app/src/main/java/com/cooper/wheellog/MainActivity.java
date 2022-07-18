@@ -518,6 +518,8 @@ public class MainActivity extends AppCompatActivity {
         if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
             SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
         }
+
+        SomeUtil.Companion.checkPWMsettedAndShowAlert(this);
     }
 
     @Override

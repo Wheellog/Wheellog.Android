@@ -44,6 +44,8 @@
         <item name="buttonBarPositiveButtonStyle">@style/OriginalTheme.ButtonStylePositive</item>
         <item name="android:checkboxStyle">@style/OriginalTheme.CheckBoxStyle</item>
         <item name="editTextStyle">@style/OriginalTheme.EditTextStyle</item>
+        <item name="radioButtonStyle">@style/OriginalTheme.CheckBoxStyle</item>
+        <item name="spinnerStyle">@style/Widget.AppCompat.Spinner.DropDown.ActionBar</item>
     </style>
 
     <style name="OriginalTheme.ButtonStyle" parent="@style/Widget.MaterialComponents.Button">
