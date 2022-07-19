@@ -29,22 +29,23 @@
     </style>
 
     <style name="OriginalTheme.Dialog.Alert" parent="ThemeOverlay.AppCompat.Dialog">
-        <item name="android:textColor">@color/wheelview_textblocks</item>
-        <item name="android:textColorAlertDialogListItem">@color/wheelview_textblocks</item>
-        <item name="editTextColor">@color/wheelview_textblocks</item>
-        <item name="android:textColorPrimary">@color/wheelview_textblocks</item>
-        <item name="android:windowBackground">@color/primary_text</item>
-        <item name="android:colorBackground">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:textColorAlertDialogListItem">@color/primary_dark</item>
+        <item name="editTextColor">@color/primary_dark</item>
+        <item name="android:textColorPrimary">@color/primary_dark</item>
+        <item name="android:windowBackground">@color/alert_bg</item>
+        <item name="android:colorBackground">@color/alert_bg</item>
+        <item name="background">@color/alert_bg</item>
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
-        <item name="colorControlNormal">@color/icons</item>
+        <item name="colorControlNormal">@color/primary_dark</item>
         <item name="colorControlActivated">@color/accent</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="buttonBarNegativeButtonStyle">@style/OriginalTheme.ButtonStyle</item>
-        <item name="buttonBarNeutralButtonStyle">@style/OriginalTheme.ButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/OriginalTheme.ButtonStyle.Alert</item>
+        <item name="buttonBarNeutralButtonStyle">@style/OriginalTheme.ButtonStyle.Alert</item>
         <item name="buttonBarPositiveButtonStyle">@style/OriginalTheme.ButtonStylePositive</item>
-        <item name="android:checkboxStyle">@style/OriginalTheme.CheckBoxStyle</item>
-        <item name="editTextStyle">@style/OriginalTheme.EditTextStyle</item>
-        <item name="radioButtonStyle">@style/OriginalTheme.CheckBoxStyle</item>
+        <item name="android:checkboxStyle">@style/OriginalTheme.CheckBoxStyle.Alert</item>
+        <item name="editTextStyle">@style/OriginalTheme.EditTextStyle.Alert</item>
+        <item name="radioButtonStyle">@style/OriginalTheme.CheckBoxStyle.Alert</item>
         <item name="spinnerStyle">@style/Widget.AppCompat.Spinner.DropDown.ActionBar</item>
     </style>
 
@@ -52,6 +53,10 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/wheelview_textblocks</item>
+    </style>
+
+    <style name="OriginalTheme.ButtonStyle.Alert" parent="@style/OriginalTheme.ButtonStyle">
+        <item name="android:textColor">@color/primary_dark</item>
     </style>
 
     <style name="OriginalTheme.ButtonStylePositive" parent="@style/OriginalTheme.ButtonStyle">
@@ -62,10 +67,17 @@
         <item name="android:textColor">@color/wheelview_textblocks</item>
     </style>
 
+    <style name="OriginalTheme.CheckBoxStyle.Alert" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/primary_dark</item>
+    </style>
+
     <style name="OriginalTheme.EditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:textColor">@color/wheelview_textblocks</item>
     </style>
 
+    <style name="OriginalTheme.EditTextStyle.Alert" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/primary_dark</item>
+    </style>
 
     <style name="OriginalTheme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:minWidth">0dp</item>
@@ -126,5 +138,11 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
         <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@android:color/darker_gray</item>
     </style>
 </resources>

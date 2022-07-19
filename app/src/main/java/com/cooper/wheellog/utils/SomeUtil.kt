@@ -149,7 +149,8 @@ class SomeUtil {
             val dialogView: View = inflater.inflate(R.layout.update_pwm_settings, null)
             val svLayout : LinearLayout = dialogView.findViewById(R.id.set_speed_voltage_layout)
             val dropDownBox: Spinner = dialogView.findViewById(R.id.spinner_templates)
-            var selectedOption: Int = 1;
+            dropDownBox.visibility = View.GONE
+            var selectedOption: Int = 1
             dialogView.findViewById<RadioGroup>(R.id.selected_pwm_variant)
                 .setOnCheckedChangeListener { _, checkedId ->
                     svLayout.visibility =
@@ -185,6 +186,9 @@ class SomeUtil {
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                 }
             })
+            // TODO данные загружать из настроек
+            seekbarSpeed.progress = 50
+            seekbarVoltage.progress = 100
             AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
                 .setCancelable(false)
                 .setTitle(R.string.setup_pwm_dialog_title)

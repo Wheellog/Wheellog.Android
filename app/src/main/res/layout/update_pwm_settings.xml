@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:padding="24dp"
     android:theme="@style/OriginalTheme.Dialog.Alert">
 
     <RadioGroup
@@ -17,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="1. Setup maximum speed and voltage:" />
+            android:text="1. Setup max speed and voltage:" />
 
         <LinearLayout
             android:id="@+id/set_speed_voltage_layout"
@@ -51,7 +52,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:max="100"
-                    android:progress="50"
+                    android:progress="100"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/speed_value"
                     app:layout_constraintStart_toEndOf="@+id/text_speed"
@@ -64,7 +65,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="001 km/h"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -97,7 +97,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:max="200"
-                    android:progress="50"
+                    android:progress="200"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/voltage_value"
                     app:layout_constraintStart_toEndOf="@+id/text_voltage"
@@ -110,7 +110,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="001 V"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -119,19 +118,23 @@
 
         </LinearLayout>
 
+        <View style="@style/Divider"/>
+
         <RadioButton
             android:id="@+id/radioButton2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="2. Auto. You need to spin wheel on air an set max data." />
+            android:text="2. Auto. You need to spin wheel on air." />
+
+        <View style="@style/Divider"/>
 
         <RadioButton
             android:id="@+id/radioButton3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="3. Select from templates below:" />
+            android:text="3. Select from template:" />
     </RadioGroup>
 
     <Spinner
