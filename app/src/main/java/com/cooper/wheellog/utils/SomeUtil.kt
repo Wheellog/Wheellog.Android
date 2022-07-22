@@ -144,7 +144,9 @@ class SomeUtil {
         }
 
         fun checkPWMsettedAndShowAlert(context: Context) {
-            // TODO: Добавить провеку на колеса
+            if (WheelData.getInstance().isHardwarePWM) {
+                return
+            }
             val inflater: LayoutInflater = LayoutInflater.from(context)
             val dialogView: View = inflater.inflate(R.layout.update_pwm_settings, null)
             val svLayout : LinearLayout = dialogView.findViewById(R.id.set_speed_voltage_layout)

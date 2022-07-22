@@ -23,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import io.github.g00fy2.versioncompare.Version;
 import timber.log.Timber;
 
 public class WheelData {
@@ -265,6 +267,25 @@ public class WheelData {
 
     public static WheelData getInstance() {
         return mInstance;
+    }
+
+    public boolean isHardwarePWM()
+    {
+        var wd = getInstance();
+        if (wd == null) {
+            return false;
+        }
+        switch (wd.getWheelType())
+        {
+            case KINGSONG:
+                return true;
+            case INMOTION_V2:
+                return new Version("1.2").isAtLeast(wd.getVersion()); // 1.2+
+            case VETERAN:
+                return new Version("2.0").isAtLeast(wd.getVersion()); // 2+
+            default:
+                return false;
+        }
     }
 
     public int getSpeed() {
@@ -612,7 +633,7 @@ public class WheelData {
     }
 
     public String getVersion() {
-        return mVersion == "" ? "Unknown" : mVersion;
+        return Objects.equals(mVersion, "") ? "Unknown" : mVersion;
     }
 
     public void setVersion(String value) {
