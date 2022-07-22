@@ -6,10 +6,10 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.provider.Settings
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -18,7 +18,10 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import com.cooper.wheellog.*
+import com.cooper.wheellog.MainActivity
+import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import java.io.IOException
 
 
@@ -144,20 +147,29 @@ class SomeUtil {
         }
 
         fun checkPWMsettedAndShowAlert(context: Context) {
-            if (WheelData.getInstance().isHardwarePWM) {
+            if (WheelData.getInstance().isHardwarePWM || WheelLog.AppConfig.rotationIsSet) {
                 return
             }
+
             val inflater: LayoutInflater = LayoutInflater.from(context)
             val dialogView: View = inflater.inflate(R.layout.update_pwm_settings, null)
             val svLayout : LinearLayout = dialogView.findViewById(R.id.set_speed_voltage_layout)
-            val dropDownBox: Spinner = dialogView.findViewById(R.id.spinner_templates)
-            dropDownBox.visibility = View.GONE
-            var selectedOption: Int = 1
+            val templatesBox: Spinner = dialogView.findViewById(R.id.spinner_templates)
+            templatesBox.visibility = View.GONE
+            val templates = mutableMapOf(
+                "Gotway 1" to Pair(10, 20), // first - speed, second - voltage
+                "Gotway 2" to Pair(20, 30),
+                "Gotway 3" to Pair(30, 40),
+                "Не гот" to Pair(10, 10),
+            )
+            templatesBox.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
+                templates.toList().map { it.first })
+            var selectedOption = 1
             dialogView.findViewById<RadioGroup>(R.id.selected_pwm_variant)
                 .setOnCheckedChangeListener { _, checkedId ->
                     svLayout.visibility =
                         if (checkedId == R.id.radioButton1) View.VISIBLE else View.GONE
-                    dropDownBox.visibility =
+                    templatesBox.visibility =
                         if (checkedId == R.id.radioButton3) View.VISIBLE else View.GONE
                     when (checkedId) {
                         R.id.radioButton1 -> selectedOption = 1
@@ -169,7 +181,7 @@ class SomeUtil {
             val seekbarSpeed: SeekBar = dialogView.findViewById(R.id.seekBar_speed)
             seekbarSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                    speedValue.text = String.format("%03d km/h", progress)
+                    speedValue.text = String.format("%02d %s", progress, context.getString(R.string.kmh))
                 }
                 override fun onStartTrackingTouch(p0: SeekBar?) {
                 }
@@ -181,13 +193,14 @@ class SomeUtil {
             val seekbarVoltage: SeekBar = dialogView.findViewById(R.id.seekBar_voltage)
             seekbarVoltage.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                    voltageValue.text = String.format("%03d V", progress)
+                    voltageValue.text = String.format("%03d %s", progress, context.getString(R.string.volt))
                 }
                 override fun onStartTrackingTouch(p0: SeekBar?) {
                 }
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                 }
             })
+
             // TODO данные загружать из настроек
             seekbarSpeed.progress = 50
             seekbarVoltage.progress = 100
@@ -196,10 +209,28 @@ class SomeUtil {
                 .setTitle(R.string.setup_pwm_dialog_title)
                 .setView(dialogView)
                 .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                    // TODO записывать настройки
-                    // или автоматически замерять раскрутку
-                    // или выбирать из шаблона
+                    when (selectedOption) {
+                        1 -> {
+                            WheelLog.AppConfig.apply {
+                                rotationSpeed = seekbarSpeed.progress
+                                rotationVoltage = seekbarVoltage.progress
+                            }
+                            WheelLog.AppConfig.rotationIsSet = true
+                        }
+                        2 -> TODO("доделать как-то Авто")
+                        3 -> {
+                            val temp = templates.getOrDefault(templatesBox.selectedItem, null)
+                            if (temp != null) {
+                                WheelLog.AppConfig.apply {
+                                    rotationSpeed = temp.first
+                                    rotationVoltage = temp.second
+                                }
+                                WheelLog.AppConfig.rotationIsSet = true
+                            }
+                        }
+                    }
                 }
+                .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
                 .show()
         }
 

@@ -313,6 +313,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.rotation_voltage, 840)
         set(value) = setSpecific(R.string.rotation_voltage, value)
 
+    var rotationIsSet
+        get() = getSpecific(R.string.rotation_set, false)
+        set(value) = setSpecific(R.string.rotation_set, value)
+
     var powerFactor
         get() = getSpecific(R.string.power_factor, 90)
         set(value) = setSpecific(R.string.power_factor, value)

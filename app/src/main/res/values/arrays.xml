@@ -143,10 +143,4 @@
         <item>@string/user_distance</item>
     </string-array>
 
-    <string-array name="templates_for_pwm">
-        <item>gotway 1</item>
-        <item>gotway 2</item>
-        <item>бигуди 3</item>
-    </string-array>
-
 </resources>

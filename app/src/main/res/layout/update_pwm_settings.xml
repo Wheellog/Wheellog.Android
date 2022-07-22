@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="1. Setup max speed and voltage:" />
+            android:text="@string/setup_pwm_setup_max_speed_and_voltage" />
 
         <LinearLayout
             android:id="@+id/set_speed_voltage_layout"
@@ -51,8 +51,8 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    android:max="100"
-                    android:progress="100"
+                    android:max="99"
+                    android:progress="99"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/speed_value"
                     app:layout_constraintStart_toEndOf="@+id/text_speed"
@@ -118,30 +118,31 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider"/>
+        <View style="@style/Divider" />
 
         <RadioButton
             android:id="@+id/radioButton2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:enabled="false"
             android:minHeight="48dp"
-            android:text="2. Auto. You need to spin wheel on air." />
+            android:text="@string/setup_pwm_auto" />
 
-        <View style="@style/Divider"/>
+        <View style="@style/Divider" />
 
         <RadioButton
             android:id="@+id/radioButton3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="3. Select from template:" />
+            android:text="@string/setup_pwm_select_from_template" />
     </RadioGroup>
 
     <Spinner
         android:id="@+id/spinner_templates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/templates_for_pwm"
+        android:background="@color/primary_dark"
         android:minHeight="48dp" />
 
 </LinearLayout>
