@@ -2,10 +2,12 @@ package com.cooper.wheellog;
 
 import android.Manifest;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -22,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextClock;
 import android.widget.Toast;
 
@@ -45,6 +48,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import me.relex.circleindicator.CircleIndicator3;
 import permissions.dispatcher.NeedsPermission;
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private int mConnectionState = BluetoothLeService.STATE_DISCONNECTED;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss", Locale.US);
+    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss ", Locale.US);
     private WearOs wearOs;
     //endregion
 
@@ -131,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
                         ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
+                    if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                        WheelLog.VolumeKeyController.setActive(true);
+                    }
                 }
                 hideSnackBar();
                 break;
@@ -138,13 +145,15 @@ public class MainActivity extends AppCompatActivity {
                 if (mConnectionState == BluetoothLeService.STATE_CONNECTING) {
                     showSnackBar(R.string.bluetooth_direct_connect_failed);
                 } else if (getBluetoothLeService() != null && getBluetoothLeService().getDisconnectTime() != null) {
-                    showSnackBar(
-                            getString(R.string.connection_lost_at,
-                                    timeFormatter.format(getBluetoothLeService().getDisconnectTime())),
-                            Snackbar.LENGTH_INDEFINITE);
+                    var text = timeFormatter.format(getBluetoothLeService().getDisconnectTime()) +
+                            getString(R.string.connection_lost_at);
+                    showSnackBar(text, Snackbar.LENGTH_INDEFINITE);
                 }
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
+                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                    WheelLog.VolumeKeyController.setActive(false);
+                }
                 break;
         }
         mConnectionState = connectionState;
@@ -172,12 +181,9 @@ public class MainActivity extends AppCompatActivity {
                     showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
                     break;
                 case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
-                    if (WheelData.getInstance().getWheelType() == WHEEL_TYPE.NINEBOT_Z
-                            && WheelData.getInstance().getProtoVer().equals("")) { // Hide bms for ninebot S2
-                        pagerAdapter.addPage(R.layout.main_view_smart_bms);
-                    } else {
-                        pagerAdapter.removePage(R.layout.main_view_smart_bms);
-                    }
+                    break;
+                case Constants.ACTION_WHEEL_MODEL_CHANGED:
+                    pagerAdapter.configureSmartBmsDisplay();
                     break;
                 case Constants.ACTION_ALARM_TRIGGERED:
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
@@ -255,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (wearOs != null) {
-                        wearOs.updateData();
+                        wearOs.sendUpdateData();
                     }
                     if (WheelLog.AppConfig.getMibandMode() != MiBandEnum.Alarm) {
                         WheelLog.Notifications.update();
@@ -275,8 +281,9 @@ public class MainActivity extends AppCompatActivity {
                     boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
                     if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
                         String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                        var fileName = filepath.substring(filepath.lastIndexOf("\\") + 1);
                         if (running) {
-                            showSnackBar(getResources().getString(R.string.started_logging, filepath), 5000);
+                            showSnackBar(getResources().getString(R.string.started_logging) + " " + fileName, 5000);
                         }
                     }
                     setMenuIconStates();
@@ -340,16 +347,16 @@ public class MainActivity extends AppCompatActivity {
 
         switch (WheelLog.AppConfig.getMibandMode()) {
             case Alarm:
-                miBand.setIcon(R.drawable.ic_mi_alarm);
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm));
                 break;
             case Min:
-                miBand.setIcon(R.drawable.ic_mi_min);
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin));
                 break;
             case Medium:
-                miBand.setIcon(R.drawable.ic_mi_med);
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed));
                 break;
             case Max:
-                miBand.setIcon(R.drawable.ic_mi_max);
+                miBand.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax));
                 break;
         }
 
@@ -362,22 +369,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (PebbleService.isInstanceCreated()) {
-            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange));
+            miWatch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOn));
         } else {
-            miWatch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_white));
+            miWatch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOff));
         }
 
         if (LoggingService.isInstanceCreated()) {
             miLogging.setTitle(R.string.stop_data_service);
-            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange));
+            miLogging.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOn));
         } else {
             miLogging.setTitle(R.string.start_data_service);
-            miLogging.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_white));
+            miLogging.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOff));
         }
 
         switch (mConnectionState) {
             case BluetoothLeService.STATE_CONNECTED:
-                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange));
+                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOn));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 miSearch.setEnabled(false);
                 miSearch.getIcon().setAlpha(64);
@@ -385,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(255);
                 break;
             case BluetoothLeService.STATE_CONNECTING:
-                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.anim_wheel_icon));
+                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch));
                 miWheel.setTitle(R.string.disconnect_from_wheel);
                 ((AnimationDrawable) miWheel.getIcon()).start();
                 miSearch.setEnabled(false);
@@ -394,7 +401,7 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.getIcon().setAlpha(64);
                 break;
             case BluetoothLeService.STATE_DISCONNECTED:
-                miWheel.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_white));
+                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff));
                 miWheel.setTitle(R.string.connect_to_wheel);
                 miSearch.setEnabled(true);
                 miSearch.getIcon().setAlpha(255);
@@ -511,10 +518,10 @@ public class MainActivity extends AppCompatActivity {
 
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter());
         WheelLog.Notifications.update();
-        if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-            WheelLog.VolumeKeyController.setActive(true);
-        }
 
+        if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
+            SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
+        }
     }
 
     @Override
@@ -592,8 +599,8 @@ public class MainActivity extends AppCompatActivity {
         // Themes
         if (WheelLog.AppConfig.getAppTheme() == R.style.AJDMTheme) {
             MenuItem miSettings = mMenu.findItem(R.id.miSettings);
-            miSettings.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_settings_24));
-            miSearch.setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_bluetooth_searching_white));
+            miSettings.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuSettings));
+            miSearch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuBluetooth));
         }
         return true;
     }
@@ -608,7 +615,46 @@ public class MainActivity extends AppCompatActivity {
                 toggleConnectToWheel();
                 return true;
             case R.id.miLogging:
-                toggleLogging();
+                if (LoggingService.isInstanceCreated() && WheelLog.AppConfig.getContinueThisDayLog()) {
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setTitle(R.string.continue_this_day_log_alert_title)
+                            .setMessage(R.string.continue_this_day_log_alert_description)
+                            .setPositiveButton(android.R.string.yes, (dialog1, which) -> {
+                                WheelLog.AppConfig.setContinueThisDayLogMacException(WheelLog.AppConfig.getLastMac());
+                                toggleLogging();
+                            })
+                            .setNegativeButton(android.R.string.no, (dialog1, which) -> toggleLogging())
+                            .create();
+                    dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        private static final int AUTO_DISMISS_MILLIS = 5000;
+                        @Override
+                        public void onShow(final DialogInterface dialog) {
+                            final Button defaultButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                            final CharSequence negativeButtonText = defaultButton.getText();
+                            new CountDownTimer(AUTO_DISMISS_MILLIS, 100) {
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    defaultButton.setText(String.format(
+                                            Locale.getDefault(), "%s (%d)",
+                                            negativeButtonText,
+                                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) + 1
+                                    ));
+                                }
+                                @Override
+                                public void onFinish() {
+                                    if (((AlertDialog) dialog).isShowing()) {
+                                        WheelLog.AppConfig.setContinueThisDayLogMacException(WheelLog.AppConfig.getLastMac());
+                                        toggleLogging();
+                                        dialog.dismiss();
+                                    }
+                                }
+                            }.start();
+                        }
+                    });
+                    dialog.show();
+                } else {
+                    toggleLogging();
+                }
                 return true;
             case R.id.miWatch:
                 toggleWatch();
@@ -835,6 +881,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
+        intentFilter.addAction(Constants.ACTION_WHEEL_MODEL_CHANGED);
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);

@@ -19,10 +19,6 @@ The following manufacturers are supported:
 ### 🛠️ Pull requests
 A pull request is a way to suggest changes in this repository. We accept pull requests in the `master` branch.
 
-### 🌏 Translations
-This application is internationalized and available in multiple languages. The source content in this repository is written in English. We integrate with an external localization platform called [POEditor](https://poeditor.com/join/project?hash=KwdOGFTjt9).
-We currently accept contributions for translated content directly in this or in [POEditor platform](https://poeditor.com/join/project?hash=KwdOGFTjt9).
-
 ## Google Play
 
  [![google-play-badge](https://user-images.githubusercontent.com/27482193/106334502-d781e800-629b-11eb-8b9b-cb47a32682da.png)](https://play.google.com/store/apps/details?id=com.cooper.wheellog)
@@ -43,7 +39,9 @@ Minimum requirements:
 
 Let's start
 - Download, install and open [Android studio](https://developer.android.com/studio/)
-- In main menu `File -> New -> Project From Version Control` ![image](https://user-images.githubusercontent.com/27482193/115096600-8abebc80-9f2e-11eb-9ba5-3a70dba14e17.png)
+- In main menu `File -> New -> Project From Version Control` 
+
+![image](https://user-images.githubusercontent.com/27482193/115096600-8abebc80-9f2e-11eb-9ba5-3a70dba14e17.png)
 - Insert URL `https://github.com/Wheellog/Wheellog.Android.git` and click on `Clone`
 - Install SDK and connect android device
 - Click `Run` button - Enjoy!

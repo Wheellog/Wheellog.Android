@@ -13,9 +13,11 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import java.util.*
 
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
+    private var kostilTimer: Timer? = null
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
         private set
@@ -41,9 +43,14 @@ class NotificationUtil(private val context: Context) {
 
     private fun build(): Notification {
         val notificationIntent = Intent(context, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
         val buttonSettings = WheelLog.AppConfig.notificationButtons
+        val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= 23) {
+            PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getActivity(context, 0, notificationIntent, 0)
+        }
+
 
         notificationView.setViewVisibility(R.id.ib_actions_layout,
                 if (buttonSettings.any()) View.VISIBLE
@@ -70,7 +77,7 @@ class NotificationUtil(private val context: Context) {
         val distance = wd.distanceDouble
         val speed = wd.speedDouble
         val title = context.getString(notificationMessageId)
-        val title_ride = WheelData.getInstance().getRideTimeString()
+        val title_ride = WheelData.getInstance().rideTimeString
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
         if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
@@ -90,10 +97,10 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
                 when (WheelLog.AppConfig.mibandMode) {
-                    MiBandEnum.Alarm -> R.drawable.ic_mi_alarm
-                    MiBandEnum.Min -> R.drawable.ic_mi_min
-                    MiBandEnum.Medium -> R.drawable.ic_mi_med
-                    MiBandEnum.Max -> R.drawable.ic_mi_max
+                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
+                    MiBandEnum.Min -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
+                    MiBandEnum.Medium -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
+                    MiBandEnum.Max -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
@@ -106,20 +113,20 @@ class NotificationUtil(private val context: Context) {
         }
         notificationView.setImageViewResource(R.id.ib_connection,
                 when (connectionState) {
-                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_light_orange)
-                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_orange)
-                    else -> WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_wheel_grey)
+                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
+                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
+                    else -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
-                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_orange)
-                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_logging_grey))
+                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOn)
+                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOff))
         notificationView.setImageViewResource(R.id.ib_watch,
-                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_orange)
-                else WheelLog.ThemeManager.getDrawableId(R.drawable.ic_action_watch_grey))
-        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_horn_32_gray))
-        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getDrawableId(R.drawable.ic_sun_32_gray))
+                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOn)
+                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOff))
+        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationHorn))
+        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLight))
 
-        builder.setSmallIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_stat_wheel))
+        builder.setSmallIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationIcon))
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
@@ -153,9 +160,28 @@ class NotificationUtil(private val context: Context) {
         }
     }
 
+    // Fix Me
+    // https://github.com/Wheellog/Wheellog.Android/pull/249
+    fun updateKostilTimer() {
+        if (WheelLog.AppConfig.mibandFixRs && kostilTimer == null) {
+            kostilTimer = Timer()
+            kostilTimer?.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && WheelData.getInstance().speedDouble > 0) {
+                        update()
+                    }
+                }
+            }, 5000, 1000)
+        } else {
+            kostilTimer?.cancel()
+            kostilTimer = null
+        }
+    }
+
     init {
         createNotificationChannel()
         builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+        updateKostilTimer()
 // for test
 //        Timer().scheduleAtFixedRate(object : TimerTask() {
 //            override fun run() {

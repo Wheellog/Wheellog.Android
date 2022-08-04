@@ -69,6 +69,6 @@
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:contentDescription="@string/icon_light"
-        app:srcCompat="@drawable/ic_mi_alarm" />
+        app:srcCompat="@drawable/ajdm_ic_mi_alarm" />
 
 </LinearLayout>

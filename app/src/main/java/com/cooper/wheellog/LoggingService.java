@@ -20,6 +20,7 @@ import com.cooper.wheellog.data.TripData;
 import com.cooper.wheellog.data.TripDatabase;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
+import com.cooper.wheellog.utils.ParserLogToWheelData;
 import com.cooper.wheellog.utils.PermissionsUtil;
 
 import java.io.IOException;
@@ -80,6 +81,11 @@ public class LoggingService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        if (WheelData.getInstance() == null) {
+            stopSelf();
+            return START_NOT_STICKY; // kill itself without restart
+        }
+
         instance = this;
         fileUtil = new FileUtil(getApplicationContext());
 
@@ -111,13 +117,33 @@ public class LoggingService extends Service
 
         sdf = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US);
 
-        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
+        boolean writeToLastLog = false;
+        String mac = WheelData.getInstance().getMac();
+        if (WheelLog.AppConfig.getContinueThisDayLog() &&
+                !WheelLog.AppConfig.getContinueThisDayLogMacException().equals(mac)) {
+            FileUtil lastFileUtil = FileUtil.getLastLog(getApplicationContext());
+            if (lastFileUtil != null &&
+                    lastFileUtil.getFile().getPath().contains(mac.replace(':', '_'))) {
+                fileUtil = lastFileUtil;
+                // parse prev log for filling wheeldata values
+                ParserLogToWheelData parser = new ParserLogToWheelData();
+                parser.parseFile(fileUtil);
 
-        String filename = sdFormatter.format(new Date()) + ".csv";
+                fileUtil.prepareStream();
+                writeToLastLog = true;
+            }
+        }
 
-        if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
-            stopSelf();
-            return START_STICKY;
+        if (!writeToLastLog) {
+            SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
+
+            String filename = sdFormatter.format(new Date()) + ".csv";
+
+            if (!fileUtil.prepareFile(filename, WheelData.getInstance().getMac())) {
+                stopSelf();
+                return START_STICKY;
+            }
+            WheelLog.AppConfig.setContinueThisDayLogMacException("");
         }
 
         String locationHeaderString = "";
@@ -160,7 +186,10 @@ public class LoggingService extends Service
                 mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
             }
         }
-        fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
+
+        if (!writeToLastLog) {
+            fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
+        }
 
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());

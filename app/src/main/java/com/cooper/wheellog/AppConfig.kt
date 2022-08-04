@@ -2,12 +2,14 @@ package com.cooper.wheellog
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.location.Location
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.utils.MiBandEnum
 import com.cooper.wheellog.utils.ThemeEnum
+import com.wheellog.shared.Constants
+import com.wheellog.shared.WearPage
+import com.wheellog.shared.WearPages
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -59,6 +61,10 @@ class AppConfig(var context: Context) {
     var useMph: Boolean
         get() = getValue(R.string.use_mph, false)
         set(value) = setValue(R.string.use_mph, value)
+
+    var useFahrenheit: Boolean
+        get() = getValue(R.string.use_fahrenheit, false)
+        set(value) = setValue(R.string.use_fahrenheit, value)
 
    private var viewBlocksString: String?
         get() = getValue(R.string.view_blocks_string, null)
@@ -147,6 +153,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_reconnect, false)
         set(value) = setValue(R.string.use_reconnect, value)
 
+    var detectBatteryOptimization: Boolean
+        get() = getValue(R.string.use_detect_battery_optimization, true)
+        set(value) = setValue(R.string.use_detect_battery_optimization, value)
+
     var privatePolicyAccepted: Boolean
         get() = getValue(R.string.private_policy_accepted, false)
         set(value) = setValue(R.string.private_policy_accepted, value)
@@ -188,6 +198,14 @@ class AppConfig(var context: Context) {
     var startAutoLoggingWhenIsMoving: Boolean
         get() = getValue(R.string.auto_log_when_moving, false)
         set(value) = setValue(R.string.auto_log_when_moving, value)
+
+    var continueThisDayLog: Boolean
+        get() = getValue(R.string.continue_this_day_log, false)
+        set(value) = setValue(R.string.continue_this_day_log, value)
+
+    var continueThisDayLogMacException: String
+        get() = getValue(R.string.continue_this_day_log_exception, "")
+        set(value) = setValue(R.string.continue_this_day_log_exception, value)
     //endregion    
     
     //region watch
@@ -199,9 +217,23 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.garmin_connectiq_enable, false)
         set(value) = setValue(R.string.garmin_connectiq_enable, value)
 
+    var useGarminBetaCompanion: Boolean
+        get() = getValue(R.string.garmin_connectiq_use_beta, false)
+        set(value) = setValue(R.string.garmin_connectiq_use_beta, value)
+
     var mibandOnMainscreen: Boolean
         get() = getValue(R.string.miband_on_mainscreen_enable, false)
         set(value) = setValue(R.string.miband_on_mainscreen_enable, value)
+
+    var mibandFixRs: Boolean
+        get() = getValue(R.string.miband_fixrs_enable, false)
+        set(value) = setValue(R.string.miband_fixrs_enable, value)
+
+    var wearOsPages: WearPages
+        get() = WearPage.deserialize(
+            getValue(Constants.wearPages,
+                WearPage.serialize(WearPage.Main and WearPage.Voltage)))
+        set(value) = setValue(Constants.wearPages, WearPage.serialize(value))
     //endregion
 
     var lastMac: String
@@ -236,6 +268,10 @@ class AppConfig(var context: Context) {
     var disablePhoneBeep: Boolean
         get() = getSpecific(R.string.disable_phone_beep, false)
         set(value) = setSpecific(R.string.disable_phone_beep, value)
+
+    var useWheelBeepForAlarm: Boolean
+        get() = getSpecific(R.string.use_wheel_beep_for_alarm, false)
+        set(value) = setSpecific(R.string.use_wheel_beep_for_alarm, value)
 
     var alteredAlarms: Boolean
         get() = getSpecific(R.string.altered_alarms, false)
@@ -319,6 +355,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.drl_enabled, false)
         set(value) = setSpecific(R.string.drl_enabled, value)
 
+    var taillightEnabled: Boolean
+        get() = getSpecific(R.string.taillight_enabled, false)
+        set(value) = setSpecific(R.string.taillight_enabled, value)
+
     var handleButtonDisabled: Boolean
         get() = getSpecific(R.string.handle_button_disabled, false)
         set(value) = setSpecific(R.string.handle_button_disabled, value)
@@ -372,7 +412,62 @@ class AppConfig(var context: Context) {
         set(value) = setSpecific(R.string.light_brightness, value)
 
     //endregion
-    
+
+    //region ninebotZ
+    var wheelAlarm1Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm1_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm1_enabled, value)
+
+    var wheelAlarm2Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm2_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm2_enabled, value)
+
+    var wheelAlarm3Enabled: Boolean
+        get() = getSpecific(R.string.wheel_alarm3_enabled, false)
+        set(value) = setSpecific(R.string.wheel_alarm3_enabled, value)
+
+    var wheelAlarm1Speed: Int
+        get() = getSpecific(R.string.wheel_alarm1, 0)
+        set(value) = setSpecific(R.string.wheel_alarm1, value)
+
+    var wheelAlarm2Speed: Int
+        get() = getSpecific(R.string.wheel_alarm2, 0)
+        set(value) = setSpecific(R.string.wheel_alarm2, value)
+
+    var wheelAlarm3Speed: Int
+        get() = getSpecific(R.string.wheel_alarm3, 0)
+        set(value) = setSpecific(R.string.wheel_alarm3, value)
+
+    var wheelLimitedModeEnabled: Boolean
+        get() = getSpecific(R.string.wheel_limited_mode_enabled, false)
+        set(value) = setSpecific(R.string.wheel_limited_mode_enabled, value)
+
+    var wheelLimitedModeSpeed: Int
+        get() = getSpecific(R.string.wheel_limited_speed, 10)
+        set(value) = setSpecific(R.string.wheel_limited_speed, value)
+
+    var ledColor1: Int
+        get() = getSpecific(R.string.nb_led_color1, 0)
+        set(value) = setSpecific(R.string.nb_led_color1, value)
+
+    var ledColor2: Int
+        get() = getSpecific(R.string.nb_led_color2, 0)
+        set(value) = setSpecific(R.string.nb_led_color2, value)
+
+    var ledColor3: Int
+        get() = getSpecific(R.string.nb_led_color3, 0)
+        set(value) = setSpecific(R.string.nb_led_color3, value)
+
+    var ledColor4: Int
+        get() = getSpecific(R.string.nb_led_color4, 0)
+        set(value) = setSpecific(R.string.nb_led_color4, value)
+
+    var brakeAssistantEnabled: Boolean
+        get() = getSpecific(R.string.brake_assistant_enabled, false)
+        set(value) = setSpecific(R.string.brake_assistant_enabled, value)
+
+    //end region
+
     //region kingsong
     var lightMode: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.light_mode, "0")
@@ -427,6 +522,10 @@ class AppConfig(var context: Context) {
     var gotwayNegative: String // ListPreference only works with string parameter
         get() = getSpecific(R.string.gotway_negative, "0")
         set(value) = setSpecific(R.string.gotway_negative, value)
+
+    var hwPwm: Boolean
+        get() = getSpecific(R.string.hw_pwm, false)
+        set(value) = setSpecific(R.string.hw_pwm, value)
 
     var connectBeep: Boolean
         get() = getSpecific(R.string.connect_beep, true)

@@ -140,6 +140,7 @@ public class SeekBarPreference extends Preference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder view) {
         super.onBindViewHolder(view);
+        view.setDividerAllowedAbove(false);
 
         mSeekBarValueTextView = (TextView) view.findViewById(R.id.seekbar_value);
         mSeekBarValueTextView.setOnClickListener(v ->

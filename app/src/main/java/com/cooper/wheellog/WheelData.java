@@ -42,11 +42,9 @@ public class WheelData {
     private final ArrayList<String> xAxis = new ArrayList<>();
     private final ArrayList<Float> currentAxis = new ArrayList<>();
     private final ArrayList<Float> speedAxis = new ArrayList<>();
-
     // BMS
-    private final NinebotBms mNinebotBms1 = new NinebotBms();
-    private final NinebotBms mNinebotBms2 = new NinebotBms();
-
+    private final SmartBms mSmartBms1 = new SmartBms();
+    private final SmartBms mSmartBms2 = new SmartBms();
     //all
     private int mSpeed;
     private double mTorque;
@@ -57,7 +55,7 @@ public class WheelData {
     private double mCurrentLimit;
     private long mTotalDistance;
     private int mCurrent;
-    private Integer mPower = null;
+    private int mPower = 0;
     private int mPhaseCurrent;
     private int mTemperature;
     private int mMaxTemp;
@@ -139,10 +137,6 @@ public class WheelData {
             case NINEBOT:
                 return NinebotAdapter.getInstance();
             case NINEBOT_Z:
-                // Костыль форева
-                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
-                    return NinebotAdapter.getInstance();
-                }
                 return NinebotZAdapter.getInstance();
             case INMOTION:
                 return InMotionAdapter.getInstance();
@@ -169,6 +163,12 @@ public class WheelData {
     }
 
     void playBeep(ALARM_TYPE type) {
+
+        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && mBluetoothLeService != null) {
+            SomeUtil.playBeep(mBluetoothLeService.getBaseContext(), true, false);
+            return;
+        }
+
         if (audioTrack != null) {
             audioTrack.flush();
             audioTrack.stop();
@@ -347,6 +347,12 @@ public class WheelData {
         }
     }
 
+    public void updateTailLight(boolean tailLight) {
+        if (getAdapter() != null) {
+            getAdapter().setTailLightState(tailLight);
+        }
+    }
+
     public void wheelBeep() {
         if (getAdapter() != null) {
             getAdapter().wheelBeep();
@@ -394,6 +400,42 @@ public class WheelData {
     public void updateHandleButton(boolean enabledButton) {
         if (getAdapter() != null) {
             getAdapter().setHandleButtonState(enabledButton);
+        }
+    }
+
+    public void updateBrakeAssistant(boolean brakeAssist) {
+        if (getAdapter() != null) {
+            getAdapter().setBrakeAssist(brakeAssist);
+        }
+    }
+
+    public void setLedColor(int value, int ledNum) {
+        if (getAdapter() != null) {
+            getAdapter().setLedColor(value, ledNum);
+        }
+    }
+
+    public void updateAlarmEnabled(boolean value, int num) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarmEnabled(value, num);
+        }
+    }
+
+    public void updateAlarmSpeed(int value, int num) {
+        if (getAdapter() != null) {
+            getAdapter().setAlarmSpeed(value, num);
+        }
+    }
+
+    public void updateLimitedModeEnabled(boolean value) {
+        if (getAdapter() != null) {
+            getAdapter().setLimitedModeEnabled(value);
+        }
+    }
+
+    public void updateLimitedSpeed(int value) {
+        if (getAdapter() != null) {
+            getAdapter().setLimitedSpeed(value);
         }
     }
 
@@ -497,11 +539,11 @@ public class WheelData {
         return mTemperature2 / 100;
     }
 
-    public double getMaxCurrent() {
+    public double getMaxCurrentDouble() {
         return mMaxCurrent / 100;
     }
 
-    public double getMaxPower() {
+    public double getMaxPowerDouble() {
         return mMaxPower / 100;
     }
 
@@ -514,7 +556,7 @@ public class WheelData {
     }
 
     public int getOutput() {
-        return mOutput;
+        return mOutput/100;
     }
 
     public void setOutput(int value) {
@@ -604,7 +646,13 @@ public class WheelData {
     }
 
     public void setModel(String model) {
+        boolean isChanged = model != mModel;
         mModel = model;
+        if (isChanged) {
+            Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
+            getBluetoothLeService().getApplicationContext().sendBroadcast(intent);
+        }
+
     }
 
     public String getModeStr() {
@@ -754,7 +802,6 @@ public class WheelData {
 
     public void setVoltage(int voltage) {
         mVoltage = voltage;
-        mMaxPower = Math.max(mMaxPower, mCurrent * mVoltage / 100.0);
     }
 
     double getVoltageSagDouble() {
@@ -762,21 +809,29 @@ public class WheelData {
     }
 
     public double getPowerDouble() {
-        return (mPower != null ? mPower : (mCurrent * mVoltage) / 10000.0);
+        return mPower / 100.0;
     }
 
-    public void setPower(int power) {
-        mPower = power;
+    private void setMaxPower(int power) {
         mMaxPower = Math.max(mMaxPower, power);
+    }
+
+    public void setPower(int value) {
+        mPower = value;
+        setMaxPower(value);
     }
 
     public double getCurrentDouble() {
         return mCurrent / 100.0;
     }
 
+    private void setMaxCurrent(int value) {
+        mMaxCurrent = Math.max(mMaxCurrent, value);
+    }
+
     public void setCurrent(int value) {
         mCurrent = value;
-        mMaxCurrent = Math.max(mMaxCurrent, value);
+        setMaxCurrent(value);
     }
 
     public int getCurrent() {
@@ -789,6 +844,10 @@ public class WheelData {
 
     public void setPhaseCurrent(int value) {
         mPhaseCurrent = value;
+    }
+
+    public int getPhaseCurrent() {
+        return mPhaseCurrent;
     }
 
     public double getCalculatedPwm() {
@@ -885,12 +944,12 @@ public class WheelData {
         return mTotalDistance;
     }
 
-    public NinebotBms getBms1() {
-        return mNinebotBms1;
+    public SmartBms getBms1() {
+        return mSmartBms1;
     }
 
-    public NinebotBms getBms2() {
-        return mNinebotBms2;
+    public SmartBms getBms2() {
+        return mSmartBms2;
     }
 
     public void setBmsView(boolean bmsView) {
@@ -903,8 +962,8 @@ public class WheelData {
     }
 
     public void resetBmsData() {
-        mNinebotBms1.reset();
-        mNinebotBms2.reset();
+        mSmartBms1.reset();
+        mSmartBms2.reset();
     }
 
     ArrayList<String> getXAxis() {
@@ -950,19 +1009,23 @@ public class WheelData {
             mVoltageSag = voltSag;
     }
 
-    private void setMaxPwm(double currentPwm) {
+    public int getVoltageSag() {
+        return mVoltageSag;
+    }
+
+    public void setMaxPwm(double currentPwm) {
         if ((currentPwm > mMaxPwm) && (currentPwm > 0))
             mMaxPwm = currentPwm;
 
     }
 
-    private void setMaxTemp(int temp) {
+    public void setMaxTemp(int temp) {
         if ((temp > mMaxTemp) && (temp > 0))
             mMaxTemp = temp;
 
     }
 
-    public void setBatteryPercent(int battery) {
+    public void setBatteryLevel(int battery) {
         if (WheelLog.AppConfig.getFixedPercents()) {
             double maxVoltage = getMaxVoltageForWheel();
             double minVoltage = getVoltageTiltbackForWheel();
@@ -1182,8 +1245,8 @@ public class WheelData {
         setTopSpeed(mSpeed);
         setVoltageSag(mVoltage);
         setMaxTemp(mTemperature);
-        if (mWheelType == WHEEL_TYPE.KINGSONG) {
-            mCalculatedPwm = (double) mOutput / 100.0;
+        if ((mWheelType == WHEEL_TYPE.KINGSONG) || (mWheelType == WHEEL_TYPE.INMOTION_V2) || WheelLog.AppConfig.getHwPwm()) {
+            mCalculatedPwm = (double) mOutput / 10000.0;
         } else {
             double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
             double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;
@@ -1192,7 +1255,10 @@ public class WheelData {
         }
         setMaxPwm(mCalculatedPwm);
         if (mWheelType == WHEEL_TYPE.GOTWAY || mWheelType == WHEEL_TYPE.VETERAN) {
-            mCurrent = (int) Math.round(mCalculatedPwm * mPhaseCurrent);
+            setCurrent((int) Math.round(mCalculatedPwm * mPhaseCurrent));
+        }
+        if (mWheelType != WHEEL_TYPE.INMOTION_V2) {
+            setPower((int) Math.round(getCurrentDouble() * mVoltage));
         }
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
@@ -1214,6 +1280,7 @@ public class WheelData {
             checkAlarmStatus(mContext);
 
         timestamp_last = timestamp_raw;
+        intent.putExtra("Speed", mSpeed);
         mContext.sendBroadcast(intent);
 
         CheckMuteMusic();
@@ -1248,6 +1315,20 @@ public class WheelData {
         }
     }
 
+    public void incrementRidingTime() {
+        mRidingTime++;
+    }
+
+    /*
+        Only for restore from log
+     */
+    public void setStartParameters(long rideStartTime, long startTotalDistance) {
+        mRidingTime = 0;
+        mLastRideTime = 0;
+        this.rideStartTime = rideStartTime;
+        this.mStartTotalDistance = startTotalDistance;
+    }
+
     public void updateRideTime() {
         int currentTime = (int) (Calendar.getInstance().getTimeInMillis() - rideStartTime) / 1000;
         setCurrentTime(currentTime);
@@ -1256,18 +1337,7 @@ public class WheelData {
     void full_reset() {
         if (mWheelType == WHEEL_TYPE.INMOTION) InMotionAdapter.stopTimer();
         if (mWheelType == WHEEL_TYPE.INMOTION_V2) InmotionAdapterV2.stopTimer();
-        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) {
-            if (protoVer.compareTo("S2") == 0) {
-                Timber.i("Ninebot S2 stop!");
-                NinebotAdapter.stopTimer();
-            } else if (protoVer.compareTo("Mini") == 0) {
-                Timber.i("Ninebot Mini stop!");
-                NinebotAdapter.stopTimer();
-            } else {
-                Timber.i("Ninebot Z stop!");
-                NinebotZAdapter.stopTimer();
-            }
-        }
+        if (mWheelType == WHEEL_TYPE.NINEBOT_Z) NinebotZAdapter.stopTimer();
         if (mWheelType == WHEEL_TYPE.NINEBOT) NinebotAdapter.stopTimer();
         mWheelType = WHEEL_TYPE.Unknown;
         //mWheelType = WHEEL_TYPE.GOTWAY; //test
@@ -1289,7 +1359,7 @@ public class WheelData {
         mCurrentLimit = 0;
         mTotalDistance = 0;
         mCurrent = 0;
-        mPower = null;
+        mPower = 0;
         mTemperature = 0;
         mTemperature2 = 0;
         mCpuLoad = 0;
@@ -1333,42 +1403,60 @@ public class WheelData {
         protoVer = "";
         if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
             protoVer = "S2";
-        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf", "5600"})) {
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf"}) || (advData.startsWith("5600"))) {
             protoVer = "Mini";
         }
-
+        Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
         String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
         try {
             JSONArray arr = new JSONArray(text);
-            adaptersLoop:
-            for (int i = 0; i < arr.length(); i++) {
+            for (int i = 0; i < arr.length() && !detected_wheel; i++) {
                 JSONObject services = arr.getJSONObject(i);
                 if (services.length() - 1 != mBluetoothLeService.getSupportedGattServices().size()) {
+                    Timber.i("Services len not corresponds, go to the next");
                     continue;
                 }
                 adapterName = services.getString("adapter");
+                Timber.i("Searching for %s", adapterName);
                 Iterator<String> iterator = services.keys();
                 // skip adapter key
                 iterator.next();
-                adapterServicesLoop:
+                boolean go_next_adapter = false;
                 while (iterator.hasNext()) {
                     String keyName = iterator.next();
+                    Timber.i("Key name %s", keyName);
                     UUID s_uuid = UUID.fromString(keyName);
                     BluetoothGattService service = mBluetoothLeService.getGattService(s_uuid);
                     if (service == null) {
+                        Timber.i("No such service");
+                        go_next_adapter = true;
                         break;
                     }
+
                     JSONArray service_uuid = services.getJSONArray(keyName);
+                    if (service_uuid.length() != service.getCharacteristics().size()) {
+                        Timber.i("Characteristics len not corresponds, go to the next");
+                        go_next_adapter = true;
+                        break;
+                    }
                     for (int j = 0; j < service_uuid.length(); j++) {
                         UUID c_uuid = UUID.fromString(service_uuid.getString(j));
+                        Timber.i("UUid %s", service_uuid.getString(j));
                         BluetoothGattCharacteristic characteristic = service.getCharacteristic(c_uuid);
                         if (characteristic == null) {
-                            break adapterServicesLoop;
-                        }
+                            Timber.i("UUid not found");
+                            go_next_adapter = true;
+                            break;
+                        } else {Timber.i("UUid found");}
                     }
+                    if (go_next_adapter) {
+                        break;
+                    }
+                }
+                if (!go_next_adapter) {
+                    Timber.i("Wheel Detected as %s", adapterName);
                     detected_wheel = true;
-                    break adaptersLoop;
                 }
             }
         } catch (JSONException e) {
@@ -1443,7 +1531,13 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
-                setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                if (protoVer.compareTo("") == 0) {
+                    Timber.i("really Z");
+                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                } else {
+                    Timber.i("no, switch to NB");
+                    setWheelType(WHEEL_TYPE.NINEBOT);
+                }
                 BluetoothGattService targetService = mBluetoothLeService.getGattService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
                 Timber.i("service UUID");
                 BluetoothGattCharacteristic notifyCharacteristic = targetService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_READ_CHARACTER_UUID));
@@ -1464,10 +1558,12 @@ public class WheelData {
                 Timber.i("write notify");
                 if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
                     NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
+                    Timber.i("starting ninebot adapter, proto: %s", protoVer);
                 } else {
                     NinebotZAdapter.getInstance().startKeepAliveTimer();
+                    Timber.i("starting ninebot Z adapter");
                 }
-                Timber.i("starting ninebot adapter");
+
                 return true;
             } else if (WHEEL_TYPE.NINEBOT.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot");

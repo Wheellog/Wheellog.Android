@@ -18,17 +18,12 @@
 	<string name="disconnect">Sconnetti</string>
 	<string name="connect_to_wheel">Connetti alla ruota</string>
 	<string name="disconnect_from_wheel">Sconnetti dalla ruota</string>
-	<string name="wheel_disconnected">Ruota scollegata</string>
-	<string name="wheel_connecting">Collegando alla ruota…</string>
-	<string name="wheel_searching">Cercando una ruota…</string>
-	<string name="wheel_connected">Ruota collegata</string>
-	<string name="waiting_for_device">Attendo il dispositivo</string>
+    <string name="waiting_for_device">Attendo il dispositivo</string>
 	<string name="start_pebble_service">Avvia Pebble Dash</string>
 	<string name="stop_pebble_service">Ferma Pebble Dash</string>
 	<string name="start_data_service">Avvia Logging</string>
 	<string name="stop_data_service">Stop Logging</string>
-	<string name="started_logging">Avviato logging su %1$s</string>
-	<string name="wheel_type_recognized">Riconosciuto protocollo ruota %1$s</string>
+	<string name="started_logging">Avviato logging su</string>
 	<string name="search_for_wheel">Ricerca una ruota</string>
 	<string name="scanning">Scansione…</string>
 	<string name="devices">Dispositivi</string>
@@ -64,7 +59,7 @@
 	<string name="icon_watch">Icona Orologio</string>
 	<string name="icon_logging">Icona Logging</string>
 	<string name="icon_connection">Icona Connessione</string>
-	<string name="connection_lost_at">Connessione persa alle %1s</string>
+	<string name="connection_lost_at">Connessione persa alle</string>
 	<string name="enable_auto_upload_title">Abilita Auto Upload?</string>
 	<string name="enable_auto_upload_descriprion">L\'invio automatico utilizza i dati mobili quando non sei connesso tramite WiFi. Questo può aumentare i costi se non hai un piano dati..</string>
 	<string name="logging_error_no_storage_permission">Mancano permessi per scrivere sullo storage esterno. Logging cancellato.</string>
@@ -91,7 +86,7 @@
 	<string name="kmh">km/h</string>
 	<string name="mph">mph</string>
 	<string name="km">km</string>
-	<string name="milli">mi</string>
+	<string name="miles">mi</string>
 	<string name="horn_mode_title">Modalità trombetta</string>
 	<string name="horn_mode_description">Eseguito quando il pulsante select è premuto su Pebble</string>
 	<string name="tilt_back_description">Velocità tiltback</string>
@@ -186,7 +181,6 @@
 	<string name="speaker_volume_description">Cambia volume altoparlante interno</string>
 	<string name="pedal_horizont_title">Pedane</string>
 	<string name="pedal_horizont_description">Regolazione inclinazione pedane</string>
-	<string name="ninebotz_settings_title">Impostazioni ruota per Ninebot Z non ancora disponibili</string>
-	<string name="volt">V</string>
+    <string name="volt">V</string>
 	<string name="watt">W</string>
 </resources>

@@ -1,12 +1,26 @@
 package com.cooper.wheellog.utils
 
 import android.content.Context
+import com.cooper.wheellog.WheelLog
+import java.util.*
 
 class StringUtil {
     companion object {
         @JvmStatic
         fun inArray(value: String, array: Array<String>): Boolean {
             return value in array
+        }
+
+        /**
+         * Converts supplied Int value to a temperature string.
+         */
+        @JvmStatic
+        fun Int.toTempString(): String {
+            return if (WheelLog.AppConfig.useFahrenheit) {
+                String.format(Locale.US, "%02d℉", MathsUtil.celsiusToFahrenheit(this.toDouble()).toInt())
+            } else {
+                String.format(Locale.US, "%02d℃", this)
+            }
         }
 
         @JvmStatic

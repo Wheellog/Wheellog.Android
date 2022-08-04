@@ -27,7 +27,6 @@
         android:title="@string/use_gps_title" />
 
     <SwitchPreference
-        android:icon="@drawable/ic_baseline_cloud_upload_24"
         android:key="@string/auto_upload_ec"
         android:summary="@string/auto_upload_log_ec_description"
         android:title="@string/auto_upload_log_ec_title"
@@ -38,5 +37,10 @@
         android:key="@string/use_raw_data"
         android:summary="@string/use_raw_description"
         android:title="@string/use_raw_title" />
+
+    <SwitchPreference
+        android:key="@string/continue_this_day_log"
+        android:summary="@string/continue_this_day_log_description"
+        android:title="@string/continue_this_day_log_title" />
 
 </PreferenceScreen>

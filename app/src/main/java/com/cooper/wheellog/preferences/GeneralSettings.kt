@@ -12,7 +12,7 @@ import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.MathsUtil
 
-class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
+class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
 
     override fun fill(mac: String) {
         ps.removeAll()
@@ -32,6 +32,12 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = mac + getString(R.string.disable_phone_beep)
             title = getString(R.string.disable_phone_beep_title)
             summary = getString(R.string.disable_phone_beep_description)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.use_wheel_beep_for_alarm)
+            title = getString(R.string.use_wheel_beep_for_alarm_title)
+            summary = getString(R.string.use_wheel_beep_for_alarm_description)
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
@@ -142,7 +148,7 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.rotation_speed_title)
                 summary = getString(R.string.rotation_speed_description)
                 min = 0
-                max = 2000
+                max = 1500
                 decimalPlaces = 1
                 unit = speedUnit
                 multiplier = speedMultipier
@@ -155,7 +161,7 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 title = getString(R.string.rotation_voltage_title)
                 summary = getString(R.string.rotation_voltage_description)
                 min = 0
-                max = 1200
+                max = 1500
                 decimalPlaces = 1
                 unit = getString(R.string.volt)
                 increment = 1
@@ -279,7 +285,7 @@ class AlarmSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
     fun switchAlarmsIsVisible(fragment: PreferencesFragment) {
         val alarmsEnabled = WheelLog.AppConfig.alarmsEnabled
         val alteredAlarms = WheelLog.AppConfig.alteredAlarms
-        val ksAlteredAlarms = WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG
+        val ksAlteredAlarms = (WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG) && (WheelData.getInstance().model.compareTo("KS-18A") != 0)
         val categoryPreferencesNormal = arrayOf(
                 getString(R.string.speed_alarm1),
                 getString(R.string.speed_alarm2),

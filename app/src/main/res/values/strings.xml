@@ -6,11 +6,13 @@
     <string name="watch_preferences" translatable="false">watch_preferences</string>
     <string name="wheel_settings" translatable="false">wheel_settings</string>
     <string name="trip_settings" translatable="false">trip_settings</string>
+    <string name="donate" translatable="false">donate</string>
 
     // ALARM PREFERENCES
     <string name="alarms_enabled" translatable="false">alarms_enabled</string>
     <string name="disable_phone_vibrate" translatable="false">disable_phone_vibrate</string>
     <string name="disable_phone_beep" translatable="false">disable_phone_beep</string>
+    <string name="use_wheel_beep_for_alarm" translatable="false">use_wheel_beep_for_alarm</string>
     <string name="speed_alarm1" translatable="false">speed_alarm1</string>
     <string name="speed_alarm2" translatable="false">speed_alarm2</string>
     <string name="speed_alarm3" translatable="false">speed_alarm3</string>
@@ -36,6 +38,7 @@
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
     // WHEEL SETTINGS
+    <string name="no_settings" translatable="false">no_settings</string>
     <string name="light_enabled" translatable="false">light_enabled</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
@@ -46,13 +49,28 @@
     <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
     <string name="light_mode" translatable="false">light_mode</string>
+    <string name="wheel_alarm1_enabled" translatable="false">wheel_alarm1_enabled</string>
+    <string name="wheel_alarm2_enabled" translatable="false">wheel_alarm2_enabled</string>
+    <string name="wheel_alarm3_enabled" translatable="false">wheel_alarm3_enabled</string>
+    <string name="wheel_alarm1" translatable="false">wheel_alarm1</string>
+    <string name="wheel_alarm2" translatable="false">wheel_alarm2</string>
+    <string name="wheel_alarm3" translatable="false">wheel_alarm3</string>
+    <string name="taillight_enabled" translatable="false">taillight_enabled</string>
+    <string name="wheel_limited_mode_enabled" translatable="false">wheel_limited_mode_enabled</string>
+    <string name="wheel_limited_speed" translatable="false">wheel_limited_speed</string>
+    <string name="brake_assistant_enabled" translatable="false">brake_assistant_enabled</string>
+    <string name="nb_led_color1" translatable="false">nb_led_color1</string>
+    <string name="nb_led_color2" translatable="false">nb_led_color2</string>
+    <string name="nb_led_color3" translatable="false">nb_led_color3</string>
+    <string name="nb_led_color4" translatable="false">nb_led_color4</string>
+
     <string name="strobe_mode" translatable="false">strobe_mode</string>
     <string name="led_mode" translatable="false">led_mode</string>
     <string name="alarm_mode" translatable="false">alarm_mode</string>
     <string name="gotway_84v" translatable="false">gotway_84v</string>
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
     <string name="gotway_negative" translatable="false">gotway_negative</string>
-    <string name="no_settings" translatable="false">no_settings</string>
+    <string name="hw_pwm" translatable="false">hw_pwm</string>
     <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
     <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
     <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
@@ -70,6 +88,8 @@
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
     <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
+    <string name="continue_this_day_log" translatable="false">continue_this_day_log</string>
+    <string name="continue_this_day_log_exception" translatable="false">continue_this_day_log_exception</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
@@ -81,6 +101,7 @@
 
     // APP PREFERENCES
     <string name="use_mph" translatable="false">use_mph</string>
+    <string name="use_fahrenheit" translatable="false">use_fahrenheit</string>
     <string name="use_eng" translatable="false">use_eng</string>
     <string name="app_theme" translatable="false">app_theme</string>
     <string name="day_night_theme" translatable="false">day_night_theme</string>
@@ -104,12 +125,14 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>
     <string name="garmin_connectiq_enable" translatable="false">garmin_connectiq_enable</string>
+    <string name="garmin_connectiq_use_beta" translatable="false">garmin_connectiq_use_beta</string>
 
     // TRIP PREFERENCES
     <string name="reset_top_speed" translatable="false">reset_top_speed</string>
@@ -122,7 +145,7 @@
     <string name="mph">mph</string>
     <string name="km">km</string>
     <string name="sec">sec</string>
-    <string name="milli">mi</string>
+    <string name="miles">mi</string>
 
     // Garmin ConnectIQ dialogs
     <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
@@ -147,10 +170,6 @@
     <string name="disconnect">Disconnect</string>
     <string name="connect_to_wheel">Connect to Wheel</string>
     <string name="disconnect_from_wheel">Disconnect from Wheel</string>
-    <string name="wheel_disconnected">Wheel Disconnected</string>
-    <string name="wheel_connecting">Connecting to Wheel…</string>
-    <string name="wheel_searching">Searching for Wheel…</string>
-    <string name="wheel_connected">Wheel Connected</string>
     <string name="waiting_for_device">Waiting for device</string>
     <string name="start_pebble_service">Start Pebble Dash</string>
     <string name="show_settings">Show settings menu</string>
@@ -158,8 +177,7 @@
     <string name="stop_pebble_service">Stop Pebble Dash</string>
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>
-    <string name="started_logging">Started logging to %1$s</string>
-    <string name="wheel_type_recognized">Detected wheel protocol %1$s</string>
+    <string name="started_logging">Started logging to</string>
     <string name="search_for_wheel">Search for Wheel</string>
     <string name="scanning">Scanning…</string>
     <string name="devices">Devices</string>
@@ -215,7 +233,7 @@
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
     <string name="icon_beep">Horn Icon</string>
-    <string name="connection_lost_at">Connection lost at %1s</string>
+    <string name="connection_lost_at">Connection lost</string>
     <string name="enable_auto_upload_title">Enable Auto Upload?</string>
     <string name="enable_auto_upload_descriprion">Automatic uploading while not connected to WiFi will use your mobile data.  This may result in charges from your network provider if you do not have a data plan.</string>
     <string name="logging_error_no_storage_permission">No permission to write to external storage. Logging cancelled.</string>
@@ -230,6 +248,8 @@
     <string name="alarm_text_pwm">PWM alarm triggered</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
+    <string name="garmin_connectiq_use_beta_title">Beta Garmin companion</string>
+    <string name="garmin_connectiq_use_beta_description">Use beta Garmin companion instead of a stable one</string>
     <string name="horn_mode_title">Horn Mode</string>
     <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
     <string name="tilt_back_description">Tiltback speed</string>
@@ -240,6 +260,14 @@
     <string name="alarm3_description">4 beeps alarm</string>
     <string name="alarm2_description">3 beeps alarm</string>
     <string name="alarm1_description">2 beeps alarm</string>
+    <string name="led_mode_nb_description">Choose led mode</string>
+    <string name="led_type1">Flash</string>
+    <string name="led_type2">Two colors alternating</string>
+    <string name="led_type3">Full-color flash</string>
+    <string name="led_type4">Dynamic breathing</string>
+    <string name="led_type5">Flowing</string>
+    <string name="led_type6">Full color wave</string>
+    <string name="led_type7">Alter color breathing</string>
     <string name="pedals_mode_title">Pedals Mode</string>
     <string name="led_mode_title">Leds mode</string>
     <string name="strobe_mode_title">Strobe Mode</string>
@@ -276,8 +304,11 @@
     <string name="newton">N*m</string>
     <string name="max_speed_dial_title">Top limit of outer dial</string>
     <string name="max_speed_dial_description">The maximum number shown on the outer dial (speed or current)</string>
+    <string name="measurement_systems_category_title">Measurement systems</string>
     <string name="use_mph_title">Use MPH</string>
     <string name="use_mph_description">Show speed in miles rather than kilometers</string>
+    <string name="use_fahrenheit_title">Use Fahrenheit</string>
+    <string name="use_fahrenheit_description">Show temperature in Fahrenheit rather than Celsius</string>
     <string name="view_blocks_string" translatable="false">view_blocks_string</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>
@@ -315,6 +346,8 @@
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>
+    <string name="use_wheel_beep_for_alarm_title">Use Wheel built-in Beep for Alarm</string>
+    <string name="use_wheel_beep_for_alarm_description">Alarm will send to an internal beeper instead audio</string>
     <string name="altered_alarms_title">Altered alarms</string>
     <string name="altered_alarms_description">Use altered alarms model based on voltage and capabilities of wheel</string>
     <string name="altered_alarms_pref_title">Altered alarms options</string>
@@ -391,12 +424,14 @@
     <string name="battary_voltage_description">67V/84V/100V</string>
     <string name="gotway_negative_title">Negative current and speed mode</string>
     <string name="gotway_negative_description">When you riding straight if speed and currents negative - try change to opposite setting, or choose absolute</string>
+    <string name="hw_pwm_title">Use hardware PWM instead of software</string>
+    <string name="hw_pwm_description">Modern versions of Veteran firmware support PWM transmission in protocol, switch to activate</string>
     <string name="absolute">Absolute (only positive)</string>
     <string name="reverse">Reverse</string>
     <string name="straight">Straight</string>
-    <string name="off_level_1_alarm">35 km/h + 80% PWM</string>
+    <string name="off_level_1_alarm">35 (45) km/h + 80% PWM</string>
     <string name="off_level_2_alarm">80% PWM only</string>
-    <string name="on_level_alarm">30 + 35 km/h + 80% PWM</string>
+    <string name="on_level_alarm">30 + 35 (45) km/h + 80% PWM</string>
     <string name="metre">m</string>
     <string name="on_headlight_title">Switch on the light</string>
     <string name="on_headlight_description">Activate headlight</string>
@@ -404,6 +439,30 @@
     <string name="leds_settings_description">Activate leds on the sides</string>
     <string name="disable_handle_button_title">Disable handle button</string>
     <string name="disable_handle_button_description">Wheel will not disable when you press the button on the handle</string>
+    <string name="disable_handle_button_nb_description">Wheel will not disable when you hold the handle</string>wheel_alarm1_enabled_title
+    <string name="wheel_alarm1_enabled_title">First alarm</string>
+    <string name="wheel_alarm2_enabled_title">Second alarm</string>
+    <string name="wheel_alarm3_enabled_title">Third alarm</string>
+    <string name="wheel_alarm1_enabled_description">Enable first alarm</string>
+    <string name="wheel_alarm2_enabled_description">Enable second alarm</string>
+    <string name="wheel_alarm3_enabled_description">Enable third alarm</string>
+    <string name="wheel_alarm1_title">First alarm</string>
+    <string name="wheel_alarm2_title">Second alarm</string>
+    <string name="wheel_alarm3_title">Third alarm</string>
+    <string name="wheel_alarm1_description">First alarm speed</string>
+    <string name="wheel_alarm2_description">Second alarm speed</string>
+    <string name="wheel_alarm3_description">Third alarm speed</string>
+    <string name="wheel_limited_mode_title">Limited mode</string>
+    <string name="wheel_limited_mode_description">Limit maximum speed</string>wheel_limited_speed_title
+    <string name="wheel_limited_speed_title">Speed</string>
+    <string name="wheel_limited_speed_description">Speed to limit</string>
+    <string name="brake_assistant_title">Brake assistant</string>
+    <string name="nb_led_color1_title">Led color 1</string>
+    <string name="nb_led_color2_title">Led color 2</string>
+    <string name="nb_led_color3_title">Led color 3</string>
+    <string name="nb_led_color4_title">Led color 4</string>
+    <string name="nb_led_color_description">Choose led color</string>
+    <string name="brake_assistant_description">Wheel will tilt back by 3 degrees while braking</string>
     <string name="speaker_volume_title">Speaker volume</string>
     <string name="speaker_volume_description">Change built-in speaker volume</string>
     <string name="pedal_horizont_title">Pedals</string>
@@ -412,7 +471,7 @@
     <string name="ride_mode_description">Enable - Classic/Offroad, Disable - Comfort/Commuting</string>
     <string name="pedal_sensivity_title">Pedals sensivity</string>
     <string name="pedal_sensivity_description">Bigger number - more sensitive</string>
-    <string name="ninebotz_settings_title">Wheel settings for Ninebot Z not available yet</string>
+    <string name="pedal_sensivity_nb_description">Lower number - more sensitive</string>
     <string name="volt">V</string>
     <string name="watt">W</string>
     <string name="bmsBattery1Title">Battery 1</string>
@@ -431,7 +490,16 @@
     <string name="bmsVoltage">Voltage</string>
     <string name="bmsTemp1">Temp 1</string>
     <string name="bmsTemp2">Temp 2</string>
+    <string name="bmsTemp3">Temp 3</string>
+    <string name="bmsTemp4">Temp 4</string>
+    <string name="bmsTemp5">Temp 5</string>
+    <string name="bmsTemp6">Temp 6</string>
+    <string name="bmsTempMos">Temp Mos</string>
+    <string name="bmsTempMosEnv">Temp Mos Env</string>
     <string name="bmsHealth">Health</string>
+    <string name="bmsMinCell">Min Cell</string>
+    <string name="bmsMaxCell">Max Cell</string>
+    <string name="bmsCellDiff">Cell diff</string>
     <string name="bmsCell1">Cell 1</string>
     <string name="bmsCell2">Cell 2</string>
     <string name="bmsCell3">Cell 3</string>
@@ -448,6 +516,22 @@
     <string name="bmsCell14">Cell 14</string>
     <string name="bmsCell15">Cell 15</string>
     <string name="bmsCell16">Cell 16</string>
+    <string name="bmsCell17">Cell 17</string>
+    <string name="bmsCell18">Cell 18</string>
+    <string name="bmsCell19">Cell 19</string>
+    <string name="bmsCell20">Cell 20</string>
+    <string name="bmsCell21">Cell 21</string>
+    <string name="bmsCell22">Cell 22</string>
+    <string name="bmsCell23">Cell 23</string>
+    <string name="bmsCell24">Cell 24</string>
+    <string name="bmsCell25">Cell 25</string>
+    <string name="bmsCell26">Cell 26</string>
+    <string name="bmsCell27">Cell 27</string>
+    <string name="bmsCell28">Cell 28</string>
+    <string name="bmsCell29">Cell 29</string>
+    <string name="bmsCell30">Cell 30</string>
+    <string name="bmsCell31">Cell 31</string>
+    <string name="bmsCell32">Cell 32</string>
     <string name="password">Password</string>
     <string name="email">E-mail</string>
     <string name="show_page_events" translatable="false">show_page_events</string>
@@ -463,6 +547,7 @@
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
+    <string name="donate_title">Donate</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>
@@ -472,6 +557,7 @@
     <string name="wheel_calibration_message_inmo">Please set wheel in parking position before start, continue?</string>
     <string name="wheel_calibration_message_begode">Please set wheel in center position before start, then reboot wheel, continue?</string>
     <string name="wheel_calibration_message_kingsong">Please set wheel in center position before start, then reboot wheel, continue?</string>
+    <string name="wheel_calibration_message_nb">Please set wheel in center position before start, EUC will be locked, continue?</string>
     <string name="ec_choose_transport">[ec] Choose an transport</string>
     <string name="private_policy_title">Private policy</string>
     <string name="private_policy_agree">I read and agree</string>
@@ -480,8 +566,11 @@
     <string name="share">Share</string>
     <string name="manual_upload_to_ec">Upload to electro.club</string>
     <string name="show_page_trips_title">Trips page</string>
-    <string name="drl_settings_title">Enable DRL</string>
-    <string name="drl_settings_description">Enable front O-ring and backlight</string>
+    <string name="drl_settings_title">Enable DRL</string>taillight_settings_title
+    <string name="taillight_settings_title">Tail light</string>
+    <string name="drl_settings_description_inmo">Enable front O-ring and backlight</string>
+    <string name="drl_settings_description_nb">Enable front O-ring</string>
+    <string name="taillight_settings_description">Enable or disable tail light</string>
     <string name="light_brightness_title">Light brightness</string>
     <string name="light_brightness_description">Brightness of headlight</string>
     <string name="fan_title">Enable fan</string>
@@ -534,6 +623,11 @@
     <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>
     <string name="miband_on_mainscreen_enable" translatable="false">miband_on_mainscreen_enable</string>
     <string name="miband_on_mainscreen_description">Show Mi Band button on main screen instead watch button</string>
+    <string name="miband_fixrs_title">Mi Band fix for Begode RS/EX</string>
+    <string name="miband_fixrs_enable" translatable="false">miband_fixrs_enable</string>
+    <string name="miband_fixrs_description">Use this only if have no data updates on Mi Band</string>
+    <string name="wearos_pages_title" >WearOs Pages</string>
+    <string name="wearos_pages_description">Pages on WearOs</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
@@ -543,7 +637,7 @@
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
     <string name="remaining_distance">Remaining distance</string>
     <string name="battery_per_km">Battery per km</string>
-    <string name="trip_menu_view_map">View map (beta)</string>
+    <string name="trip_menu_view_map">View map</string>
     <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
     <string name="trip_menu_share">Share</string>
     <string name="trip_menu_delete_file">Delete file</string>
@@ -552,4 +646,13 @@
     <string name="auto_watch" translatable="false">auto_watch</string>
     <string name="auto_watch_title">Auto watch</string>
     <string name="auto_watch_description">Start watch service automatically when a wheel is connected</string>
+    <string name="use_detect_battery_optimization_title">Detection of battery optimization</string>
+    <string name="detected_battery_optimization_title">Battery optimization</string>
+    <string name="detected_battery_optimization">Optimization of the phone\'s battery has been detected, this may lead to unexpected closing of the application. To fix this, go to the battery settings and disable optimization for WheelLog. Battery optimization - All apps - WheelLog - Don\'t optimize.</string>
+    <string name="detected_battery_optimization_app_button">Go to app info</string>
+    <string name="detected_battery_optimization_settings_button">Go to battery settings</string>
+    <string name="continue_this_day_log_title">Continue the log of this day</string>
+    <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
+    <string name="continue_this_day_log_alert_title">Finish the trip?</string>
+    <string name="continue_this_day_log_alert_description">The trip will not continue the next time the log is enabled.</string>
 </resources>

@@ -3,19 +3,12 @@ package com.cooper.wheellog.preferences
 import android.content.Context
 import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceScreen
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
-import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.InMotionAdapter
-import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.VeteranAdapter
-
+import com.cooper.wheellog.utils.*
 
 class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
     private var mac: String = ""
@@ -23,12 +16,232 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
     private var speedUnit: String = ""
 
     private fun ninebotZ() {
-        Preference(context).apply {
-            key = mac + getString(R.string.no_settings)
-            isEnabled = false
-            summary = getString(R.string.ninebotz_settings_title)
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.light_enabled)
+            title = getString(R.string.on_headlight_title)
+            summary = getString(R.string.on_headlight_description)
+            isChecked = WheelLog.AppConfig.lightEnabled
             ps.addPreference(this)
         }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.drl_enabled)
+            title = getString(R.string.drl_settings_title)
+            summary = getString(R.string.drl_settings_description_nb)
+            isChecked = WheelLog.AppConfig.drlEnabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.taillight_enabled)
+            title = getString(R.string.taillight_settings_title)
+            summary = getString(R.string.taillight_settings_description)
+            isChecked = WheelLog.AppConfig.taillightEnabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.handle_button_disabled)
+            title = getString(R.string.disable_handle_button_title)
+            summary = getString(R.string.disable_handle_button_nb_description)
+            isChecked = WheelLog.AppConfig.handleButtonDisabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm1_enabled)
+            title = getString(R.string.wheel_alarm1_enabled_title)
+            summary = getString(R.string.wheel_alarm1_enabled_description)
+            isChecked = WheelLog.AppConfig.wheelAlarm1Enabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm1)
+            title = getString(R.string.wheel_alarm1_title)
+            summary = getString(R.string.wheel_alarm1_description)
+            min = 0
+            max = NinebotZAdapter.getInstance().wheelAlarmMax
+            setDefaultValue(WheelLog.AppConfig.wheelAlarm1Speed)
+            unit = getString(R.string.kmh)
+            increment = 1
+            setDefaultValue(30)
+            isVisible = WheelLog.AppConfig.wheelAlarm1Enabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm2_enabled)
+            title = getString(R.string.wheel_alarm2_enabled_title)
+            summary = getString(R.string.wheel_alarm2_enabled_description)
+            isChecked = WheelLog.AppConfig.wheelAlarm2Enabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm2)
+            title = getString(R.string.wheel_alarm2_title)
+            summary = getString(R.string.wheel_alarm2_description)
+            min = 0
+            max = NinebotZAdapter.getInstance().wheelAlarmMax
+            unit = getString(R.string.kmh)
+            setDefaultValue(WheelLog.AppConfig.wheelAlarm2Speed)
+            increment = 1
+            setDefaultValue(35)
+            isVisible = WheelLog.AppConfig.wheelAlarm2Enabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm3_enabled)
+            title = getString(R.string.wheel_alarm3_enabled_title)
+            summary = getString(R.string.wheel_alarm3_enabled_description)
+            isChecked = WheelLog.AppConfig.wheelAlarm3Enabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_alarm3)
+            title = getString(R.string.wheel_alarm3_title)
+            summary = getString(R.string.wheel_alarm3_description)
+            min = 0
+            max = NinebotZAdapter.getInstance().wheelAlarmMax
+            unit = getString(R.string.kmh)
+            increment = 1
+            setDefaultValue(40)
+            isVisible = WheelLog.AppConfig.wheelAlarm3Enabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.wheel_limited_mode_enabled)
+            title = getString(R.string.wheel_limited_mode_title)
+            summary = getString(R.string.wheel_limited_mode_description)
+            isChecked = WheelLog.AppConfig.wheelLimitedModeEnabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.wheel_limited_speed)
+            title = getString(R.string.wheel_limited_speed_title)
+            summary = getString(R.string.wheel_limited_speed_description)
+            min = 0
+            max = 655
+            unit = getString(R.string.kmh)
+            decimalPlaces = 1
+            increment = 1
+            setDefaultValue(NinebotZAdapter.getInstance().wheelLimitedSpeed)
+            isVisible = WheelLog.AppConfig.wheelLimitedModeEnabled
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.brake_assistant_enabled)
+            title = getString(R.string.brake_assistant_title)
+            summary = getString(R.string.brake_assistant_description)
+            isChecked = WheelLog.AppConfig.brakeAssistantEnabled
+            ps.addPreference(this)
+        }
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.pedal_sensivity)
+            title = getString(R.string.pedal_sensivity_title)
+            summary = getString(R.string.pedal_sensivity_nb_description)
+            min = 0
+            max = 4
+            increment = 1
+            setDefaultValue(NinebotZAdapter.getInstance().pedalSensivity)
+            ps.addPreference(this)
+        }
+
+        ListPreference(context).apply {
+            key = mac + getString(R.string.led_mode)
+            title = getString(R.string.led_mode_title)
+            summary = WheelData.getInstance().adapter?.getLedModeString()
+            setEntries(R.array.led_mode_nb)
+            setEntryValues(R.array.led_mode_nb_values)
+            setDefaultValue(NinebotZAdapter.getInstance().ledMode)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color1)
+            title = getString(R.string.nb_led_color1_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 256
+            unit = ""
+            increment = 1
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(1)
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor1)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color2)
+            title = getString(R.string.nb_led_color2_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 256
+            unit = ""
+            increment = 1
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(2)
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor2)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color3)
+            title = getString(R.string.nb_led_color3_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 256
+            unit = ""
+            increment = 1
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(3)
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor3)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.nb_led_color4)
+            title = getString(R.string.nb_led_color4_title)
+            summary = getString(R.string.nb_led_color_description)
+            min = 0
+            max = 256
+            unit = ""
+            increment = 1
+            isVisible = NinebotZAdapter.getInstance().getLedIsAvailable(4)
+            setDefaultValue(NinebotZAdapter.getInstance().ledColor4)
+            ps.addPreference(this)
+        }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.speaker_volume)
+            title = getString(R.string.speaker_volume_title)
+            summary = getString(R.string.speaker_volume_description)
+            min = 0
+            max = 127
+            unit = ""
+            increment = 1
+            setDefaultValue(NinebotZAdapter.getInstance().speakerVolume)
+            ps.addPreference(this)
+        }
+
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.lock_mode)
+            title = getString(R.string.lock_mode_title)
+            summary = getString(R.string.lock_mode_description)
+            isChecked = WheelLog.AppConfig.lockMode
+            ps.addPreference(this)
+        }
+        if (WheelData.getInstance().speed < 1) {
+            Preference(context).apply {
+                setIcon(R.drawable.ic_baseline_calibration_24)
+                title = getString(R.string.wheel_calibration)
+                onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    AlertDialog.Builder(context)
+                            .setTitle(getString(R.string.wheel_calibration))
+                            .setMessage(getString(R.string.wheel_calibration_message_nb))
+                            .setPositiveButton(android.R.string.yes) { _: DialogInterface?, _: Int ->
+                                WheelData.getInstance().wheelCalibration()
+                            }
+                            .setNegativeButton(android.R.string.no, null)
+                            .setIcon(R.drawable.ic_baseline_calibration_24)
+                            .show()
+                    true
+                }
+                ps.addPreference(this)
+            }
+        }
+
     }
 
     private fun inmotion() {
@@ -113,7 +326,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
 
         if (WheelData.getInstance().speed < 1) {
             Preference(context).apply {
-                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
+                setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsPowerOff))
                 title = getString(R.string.power_off)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -123,14 +336,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().powerOff()
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
+                            .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsPowerOff))
                             .show()
                     true
                 }
                 ps.addPreference(this)
             }
             Preference(context).apply {
-                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                 title = getString(R.string.wheel_calibration)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -140,7 +353,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().wheelCalibration()
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                            .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                             .show()
                     true
                 }
@@ -160,7 +373,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         SwitchPreference(context).apply {
             key = mac + getString(R.string.drl_enabled)
             title = getString(R.string.drl_settings_title)
-            summary = getString(R.string.drl_settings_description)
+            summary = getString(R.string.drl_settings_description_inmo)
             isChecked = WheelLog.AppConfig.drlEnabled
             ps.addPreference(this)
         }
@@ -219,7 +432,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.max_speed_title)
             summary = getString(R.string.tilt_back_description)
             min = 3
-            max = 60
+            max = InmotionAdapterV2.getInstance().maxSpeed
             unit = speedUnit
             multiplier = speedMultipier
             increment = 1
@@ -288,7 +501,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
 
         if (WheelData.getInstance().speed < 1) {
             Preference(context).apply {
-                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
+                setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsPowerOff))
                 title = getString(R.string.power_off)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -298,14 +511,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().powerOff()
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
+                            .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsPowerOff))
                             .show()
                     true
                 }
                 ps.addPreference(this)
             }
             Preference(context).apply {
-                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                 title = getString(R.string.wheel_calibration)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -315,7 +528,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().wheelCalibration()
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                            .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                             .show()
                     true
                 }
@@ -366,7 +579,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.max_speed_title)
             summary = getString(R.string.tilt_back_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -378,7 +591,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.alert3_title)
             summary = getString(R.string.alarm3_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -390,7 +603,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.alert2_title)
             summary = getString(R.string.alarm2_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -402,7 +615,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             title = getString(R.string.alert1_title)
             summary = getString(R.string.alarm1_description)
             increment = 1
-            max = 50
+            max = 70
             min = 0
             unit = speedUnit
             multiplier = speedMultipier
@@ -417,7 +630,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         }
         if (WheelData.getInstance().speed < 1) {
             Preference(context).apply {
-                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                 title = getString(R.string.wheel_calibration)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -427,14 +640,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().wheelCalibration()
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                            .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                             .show()
                     true
                 }
                 ps.addPreference(this)
             }
             Preference(context).apply {
-                setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
+                setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsPowerOff))
                 title = getString(R.string.power_off)
                 onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     AlertDialog.Builder(context)
@@ -444,7 +657,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                                 WheelData.getInstance().powerOff()
                             }
                             .setNegativeButton(android.R.string.cancel, null)
-                            .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_power_off_24))
+                            .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsPowerOff))
                             .show()
                     true
                 }
@@ -494,7 +707,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         Preference(context).apply {
-            setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+            setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
             title = getString(R.string.wheel_calibration)
             onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 AlertDialog.Builder(context)
@@ -504,7 +717,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                             WheelData.getInstance().wheelCalibration()
                         }
                         .setNegativeButton(android.R.string.cancel, null)
-                        .setIcon(WheelLog.ThemeManager.getDrawableId(R.drawable.ic_baseline_calibration_24))
+                        .setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
                         .show()
                 true
             }
@@ -544,6 +757,13 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
     }
 
     private fun veteran() {
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.light_enabled)
+            title = getString(R.string.on_headlight_title)
+            summary = getString(R.string.on_headlight_description)
+            isChecked = WheelLog.AppConfig.lightEnabled
+            ps.addPreference(this)
+        }
         ListPreference(context).apply {
             key = mac + getString(R.string.pedals_mode)
             title = getString(R.string.pedals_mode_title)
@@ -582,6 +802,14 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setEntries(R.array.gotway_negative)
             setEntryValues(R.array.gotway_negative_values)
             setDefaultValue(WheelLog.AppConfig.gotwayNegative)
+            ps.addPreference(this)
+        }
+
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.hw_pwm)
+            title = getString(R.string.hw_pwm_title)
+            summary = getString(R.string.hw_pwm_description)
+            setDefaultValue(false)
             ps.addPreference(this)
         }
     }
@@ -649,4 +877,5 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             forAllWheel()
         }
     }
+
 }

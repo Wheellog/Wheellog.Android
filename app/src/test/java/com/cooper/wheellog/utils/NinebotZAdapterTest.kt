@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -18,6 +19,7 @@ class NinebotZAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
+        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
@@ -70,6 +72,31 @@ class NinebotZAdapterTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
+    }
+
+    @Test
+    fun `decode z10 life data`() { // to think about
+        // Arrange.
+        val byteArray1 = "5aa520143e04b000000000489800004e009c0a7a".hexToByteArray()
+        val byteArray2 = "059b97280023016d0472011a1892119c0a7a052a".hexToByteArray()
+        val byteArray3 = "f8".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+        assertThat(data.speedDouble).isEqualTo(27.16)
+        assertThat(data.voltageDouble).isEqualTo(61.7)
+        assertThat(data.currentDouble).isEqualTo(44.98)
+        assertThat(data.temperature).isEqualTo(37)
+        assertThat(data.totalDistance).isEqualTo(2660251)
+        assertThat(data.powerDouble).isEqualTo(2775.26)
+        assertThat(data.batteryLevel).isEqualTo(78)
     }
 
     @Test
@@ -234,5 +261,186 @@ class NinebotZAdapterTest {
         assertThat(data.bms2.cells[13]).isEqualTo(4.149)
         assertThat(data.bms2.cells[14]).isEqualTo(0.0)
         assertThat(data.bms2.cells[15]).isEqualTo(0.0)
+    }
+
+    @Test
+    fun `setDrl command`() {
+        // Arrange.
+        val expectedTrue  = "5aa5023e1403d30100d4fe".hexToByteArray()
+        val expectedFalse = "5aa5023e1403d30000d5fe".hexToByteArray()
+
+        // Act.
+        adapter.setDrl(true)
+        val actualTrue = adapter.settingCommand
+        adapter.setDrl(false)
+        val actualFalse = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualTrue).isNotEqualTo(actualFalse)
+        assertThat(actualTrue).isEqualTo(expectedTrue)
+        assertThat(actualFalse).isEqualTo(expectedFalse)
+    }
+
+    @Test
+    fun `setLightState command`() {
+        // Arrange.
+        val expectedTrue  = "5aa5023e1403d30400d1fe".hexToByteArray()
+        val expectedFalse = "5aa5023e1403d30000d5fe".hexToByteArray()
+
+        // Act.
+        adapter.setLightState(true)
+        val actualTrue = adapter.settingCommand
+        adapter.setLightState(false)
+        val actualFalse = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualTrue).isNotEqualTo(actualFalse)
+        assertThat(actualTrue).isEqualTo(expectedTrue)
+        assertThat(actualFalse).isEqualTo(expectedFalse)
+    }
+
+    @Test
+    fun `setTailLightState command`() {
+        // Arrange.
+        val expectedTrue  = "5aa5023e1403d30200d3fe".hexToByteArray()
+        val expectedFalse = "5aa5023e1403d30000d5fe".hexToByteArray()
+
+        // Act.
+        adapter.setTailLightState(true)
+        val actualTrue = adapter.settingCommand
+        adapter.setTailLightState(false)
+        val actualFalse = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualTrue).isNotEqualTo(actualFalse)
+        assertThat(actualTrue).isEqualTo(expectedTrue)
+        assertThat(actualFalse).isEqualTo(expectedFalse)
+    }
+
+    @Test
+    fun `setHandleButtonState command`() {
+        // Arrange.
+        val expectedTrue  = "5aa5023e1403d30000d5fe".hexToByteArray()
+        val expectedFalse = "5aa5023e1403d30800cdfe".hexToByteArray()
+
+        // Act.
+        adapter.setHandleButtonState(true)
+        val actualTrue = adapter.settingCommand
+        adapter.setHandleButtonState(false)
+        val actualFalse = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualTrue).isNotEqualTo(actualFalse)
+        assertThat(actualTrue).isEqualTo(expectedTrue)
+        assertThat(actualFalse).isEqualTo(expectedFalse)
+    }
+
+    @Test
+    fun `setBrakeAssist command`() {
+        // Arrange.
+        val expectedTrue  = "5aa5023e1403d30000d5fe".hexToByteArray()
+        val expectedFalse = "5aa5023e1403d31000c5fe".hexToByteArray()
+
+        // Act.
+        adapter.setBrakeAssist(true)
+        val actualTrue = adapter.settingCommand
+        adapter.setBrakeAssist(false)
+        val actualFalse = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actualTrue).isNotEqualTo(actualFalse)
+        assertThat(actualTrue).isEqualTo(expectedTrue)
+        assertThat(actualFalse).isEqualTo(expectedFalse)
+    }
+
+    @Test
+    fun `setLedColor command`() {
+        // Arrange.
+        val expected1_0        = "5aa5043e1403c8f0000000eefd".hexToByteArray()
+        val expected2_256      = "5aa5043e1403ca00000000dcfe".hexToByteArray()
+        val expected3_30       = "5aa5043e1403ccf01e0000ccfd".hexToByteArray()
+        val expected4_100500   = "5aa5043e1403ce00000000d8fe".hexToByteArray()
+        val expected5_minus100 = "5aa5043e1403d0f09c00004afd".hexToByteArray()
+
+        // Act.
+        adapter.setLedColor(0, 1)
+        val actual1_0 = adapter.settingCommand
+        adapter.setLedColor(256, 2)
+        val actual2_256 = adapter.settingCommand
+        adapter.setLedColor(30, 3)
+        val actual3_30 = adapter.settingCommand
+        adapter.setLedColor(100500, 4)
+        val actual4_100500 = adapter.settingCommand
+        adapter.setLedColor(-100, 5)
+        val actual5_minus100 = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual1_0).isEqualTo(expected1_0)
+        assertThat(actual2_256).isEqualTo(expected2_256)
+        assertThat(actual3_30).isEqualTo(expected3_30)
+        assertThat(actual4_100500).isEqualTo(expected4_100500)
+        assertThat(actual5_minus100).isEqualTo(expected5_minus100)
+    }
+
+    @Test
+    fun `setAlarmEnabled command`() {
+        // Arrange.
+        val expected1_true  = "5aa5023e14037c01002bff".hexToByteArray()
+        val expected1_false = "5aa5023e14037c00002cff".hexToByteArray()
+        val expected2_true  = "5aa5023e14037c02002aff".hexToByteArray()
+        val expected2_false = "5aa5023e14037c00002cff".hexToByteArray()
+        val expected3_true  = "5aa5023e14037c040028ff".hexToByteArray()
+        val expected3_false = "5aa5023e14037c00002cff".hexToByteArray()
+
+        // Act.
+        adapter.setAlarmEnabled(true, 1)
+        val actual1_true = adapter.settingCommand
+        adapter.setAlarmEnabled(false, 1)
+        val actual1_false = adapter.settingCommand
+        adapter.setAlarmEnabled(true, 2)
+        val actual2_true = adapter.settingCommand
+        adapter.setAlarmEnabled(false, 2)
+        val actual2_false = adapter.settingCommand
+        adapter.setAlarmEnabled(true, 3)
+        val actual3_true = adapter.settingCommand
+        adapter.setAlarmEnabled(false, 3)
+        val actual3_false = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual1_true).isEqualTo(expected1_true)
+        assertThat(actual1_false).isEqualTo(expected1_false)
+        assertThat(actual2_true).isEqualTo(expected2_true)
+        assertThat(actual2_false).isEqualTo(expected2_false)
+        assertThat(actual3_true).isEqualTo(expected3_true)
+        assertThat(actual3_false).isEqualTo(expected3_false)
+    }
+
+    @Test
+    fun `setAlarmSpeed command`() {
+        // Arrange.
+        val expected0   = "5aa5023e14037de80340fe".hexToByteArray()
+        val expected55  = "5aa5023e14037e7c1599fe".hexToByteArray()
+        val expected100 = "5aa5023e14037f1027f2fe".hexToByteArray()
+
+        // Act.
+        adapter.setAlarmSpeed(10, 1)
+        val actual0 = adapter.settingCommand
+        adapter.setAlarmSpeed(55, 2)
+        val actual55 = adapter.settingCommand
+        adapter.setAlarmSpeed(100, 3)
+        val actual100 = adapter.settingCommand
+
+        // Assert.
+        assertThat(adapter.settingCommandReady).isEqualTo(true)
+        assertThat(actual0).isEqualTo(expected0)
+        assertThat(actual55).isEqualTo(expected55)
+        assertThat(actual100).isEqualTo(expected100)
     }
 }

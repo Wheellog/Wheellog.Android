@@ -5,18 +5,6 @@
         <item>@string/mode_learn</item>
     </string-array>
 
-    <string-array name="horn_modes">
-        <item>@string/disabled</item>
-        <item>@string/on_board_horn_ks</item>
-        <item>@string/bluetooth_audio_horn</item>
-    </string-array>
-
-    <string-array name="horn_mode_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-	
 	<string-array name="pedals_mode">
         <item>@string/hard</item>
         <item>@string/medium</item>
@@ -74,22 +62,48 @@
         <item>@string/off</item>
         <item>@string/on</item>
     </string-array>
-	
+
+    <string-array name="led_mode_nb">
+        <item>@string/off</item>
+        <item>@string/led_type1</item>
+        <item>@string/led_type2</item>
+        <item>@string/led_type3</item>
+        <item>@string/led_type4</item>
+        <item>@string/led_type5</item>
+        <item>@string/led_type6</item>
+        <item>@string/led_type7</item>
+    </string-array>
+
+    <string-array name="led_mode_nb_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
 	<string-array name="led_mode_values">
         <item>1</item>
         <item>0</item>        
     </string-array>
 
     <string-array name="gotway_voltage">
-        <item>67 V</item>
-        <item>84 V</item>
-        <item>100 V</item>
+        <item>67.2 V</item>
+        <item>84.0 V</item>
+        <item>100.8 V</item>
+        <item>116.8 V</item>
+        <item>134.4 V</item>
     </string-array>
 
     <string-array name="gotway_voltage_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
     <string-array name="gotway_negative">
@@ -126,6 +140,7 @@
         <item>@string/wheel_distance</item>
         <item>@string/remaining_distance</item>
         <item>@string/battery_per_km</item>
+        <item>@string/user_distance</item>
     </string-array>
 
 </resources>

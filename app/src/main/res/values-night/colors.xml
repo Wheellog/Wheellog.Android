@@ -25,5 +25,6 @@
     <color name="wheelview_arc_dim">#222222</color>
     <color name="alert_bg">#222222</color>
     <color name="settings_bg">#000000</color>
+    <color name="splash_status_bar">#000000</color>
 
 </resources>
