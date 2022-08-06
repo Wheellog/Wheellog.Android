@@ -126,6 +126,8 @@ public class GotwayAdapter extends BaseAdapter {
                     WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
                     WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
                     WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
+                    WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                    WheelLog.AppConfig.setGwInMiles(inMiles == 1);
 
                     String alertLine = "";
                     if ((alert & 0x01) == 1) alertLine += "HighPower ";
