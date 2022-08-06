@@ -1,298 +1,263 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog
 
-import android.app.Notification;
-import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Handler;
-import android.os.IBinder;
+import android.app.ActivityManager
+import android.app.Notification
+import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Handler
+import android.os.IBinder
+import com.cooper.wheellog.utils.ACTION_ALARM_TRIGGERED
+import com.cooper.wheellog.utils.ACTION_BLUETOOTH_CONNECTION_STATE
+import com.cooper.wheellog.utils.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED
+import com.cooper.wheellog.utils.ACTION_PEBBLE_APP_READY
+import com.cooper.wheellog.utils.ACTION_PEBBLE_APP_SCREEN
+import com.cooper.wheellog.utils.ACTION_PEBBLE_SERVICE_TOGGLED
+import com.cooper.wheellog.utils.ACTION_WHEEL_DATA_AVAILABLE
+import com.cooper.wheellog.utils.ALARM_TYPE
+import com.cooper.wheellog.utils.INTENT_EXTRA_ALARM_TYPE
+import com.cooper.wheellog.utils.INTENT_EXTRA_IS_RUNNING
+import com.cooper.wheellog.utils.INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN
+import com.cooper.wheellog.utils.MAIN_NOTIFICATION_ID
+import com.cooper.wheellog.utils.PEBBLE_APP_SCREEN
+import com.getpebble.android.kit.PebbleKit
+import com.getpebble.android.kit.PebbleKit.PebbleAckReceiver
+import com.getpebble.android.kit.PebbleKit.PebbleNackReceiver
+import com.getpebble.android.kit.util.PebbleDictionary
+import timber.log.Timber
+import java.util.Calendar
+import java.util.UUID
 
-import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
-import com.getpebble.android.kit.PebbleKit;
-import com.getpebble.android.kit.util.PebbleDictionary;
+class PebbleService : Service() {
+    private val mNotification: Notification? = null
+    private val mHandler = Handler()
+    private var last_message_send_time: Long = 0
 
-import java.util.Calendar;
-import java.util.UUID;
+    private val outgoingDictionary = PebbleDictionary()
+    private var lastSpeed = 0
+    private var lastBattery = 0
+    private var lastTemperature = 0
+    private var lastFanStatus = 0
+    private var lastRideTime = 0
+    private var lastDistance = 0
+    private var lastTopSpeed = 0
+    private var lastVoltage = 0
+    private var lastCurrent = 0
+    private var lastPWM = 0
+    private var lastConnectionState = false
+    private var vibe_alarm = -1
+    private var refreshAll = true
+    private var displayedScreen = PEBBLE_APP_SCREEN.GUI
+    private var ready = false
+    private var message_pending = false
+    private var data_available = false
 
-import timber.log.Timber;
+    companion object {
+        private val APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d")
+        private const val MESSAGE_TIMEOUT = 500 // milliseconds
+        const val KEY_SPEED = 0
+        const val KEY_BATTERY = 1
+        const val KEY_TEMPERATURE = 2
+        const val KEY_FAN_STATE = 3
+        const val KEY_BT_STATE = 4
+        const val KEY_VIBE_ALERT = 5
+        const val KEY_USE_MPH = 6
+        const val KEY_MAX_SPEED = 7
+        const val KEY_RIDE_TIME = 8
+        const val KEY_DISTANCE = 9
+        const val KEY_TOP_SPEED = 10
+        const val KEY_READY = 11
+        const val KEY_VOLTAGE = 12
+        const val KEY_CURRENT = 13
+        const val KEY_PWM = 20
 
-import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.DETAILS;
-import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.GUI;
+        fun isServiceRunning(context: Context): Boolean {
+            val manager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+            for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+                if (PebbleService::class.java.name == service.service.className) {
+                    return true
+                }
+            }
+            return false
+        }
 
-public class PebbleService extends Service {
-
-    private static final UUID APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
-    private static final int MESSAGE_TIMEOUT = 500; // milliseconds
-
-    static final int KEY_SPEED = 0;
-    static final int KEY_BATTERY = 1;
-    static final int KEY_TEMPERATURE = 2;
-    static final int KEY_FAN_STATE = 3;
-    static final int KEY_BT_STATE = 4;
-    static final int KEY_VIBE_ALERT = 5;
-    static final int KEY_USE_MPH = 6;
-    static final int KEY_MAX_SPEED = 7;
-    static final int KEY_RIDE_TIME = 8;
-    static final int KEY_DISTANCE = 9;
-    static final int KEY_TOP_SPEED = 10;
-    static final int KEY_READY = 11;
-    static final int KEY_VOLTAGE  = 12;
-    static final int KEY_CURRENT = 13;
-    static final int KEY_PWM = 20;
-    private Notification mNotification;
-    private final Handler mHandler = new Handler();
-    private static PebbleService instance = null;
-    private long last_message_send_time;
-    PebbleDictionary outgoingDictionary = new PebbleDictionary();
-
-    int lastSpeed = 0;
-    int lastBattery = 0;
-    int lastTemperature = 0;
-    int lastFanStatus = 0;
-    int lastRideTime = 0;
-    int lastDistance = 0;
-    int lastTopSpeed = 0;
-    int lastVoltage = 0;
-    int lastCurrent = 0;
-    int lastPWM = 0;
-
-    boolean lastConnectionState = false;
-    int vibe_alarm = -1;
-    boolean refreshAll = true;
-    PEBBLE_APP_SCREEN displayedScreen = GUI;
-    boolean ready = false;
-
-    boolean message_pending = false;
-    boolean data_available = false;
-
-    public static boolean isInstanceCreated() {
-        return instance != null;
     }
 
-    private final Runnable mSendPebbleData = new Runnable() {
-        @Override
-        public void run() {
-
-            if (!ready) {
-                outgoingDictionary.addInt32(KEY_READY, 0);
-                ready = true;
-            }
-
-            if (refreshAll) {
-                outgoingDictionary.addInt32(KEY_USE_MPH, WheelLog.AppConfig.getUseMph() ? 1 : 0);
-                outgoingDictionary.addInt32(KEY_MAX_SPEED, WheelLog.AppConfig.getMaxSpeed());
-            }
-
-            WheelData data = WheelData.getInstance();
-            if (data == null) {
-                return;
-            }
-
-            switch (displayedScreen) {
-                case GUI:
-                    if (refreshAll || lastSpeed != data.getSpeed())
-                    {
-                        lastSpeed = data.getSpeed();
-                        outgoingDictionary.addInt32(KEY_SPEED, lastSpeed);
-                    }
-
-                    if (refreshAll || lastBattery != data.getBatteryLevel())
-                    {
-                        lastBattery = data.getBatteryLevel();
-                        outgoingDictionary.addInt32(KEY_BATTERY, lastBattery);
-                    }
-
-                    if (refreshAll || lastTemperature != data.getTemperature())
-                    {
-                        lastTemperature = data.getTemperature();
-                        outgoingDictionary.addInt32(KEY_TEMPERATURE, lastTemperature);
-                    }
-
-                    if (refreshAll || lastFanStatus != data.getFanStatus())
-                    {
-                        lastFanStatus = data.getFanStatus();
-                        outgoingDictionary.addInt32(KEY_FAN_STATE, lastFanStatus);
-                    }
-
-                    if (refreshAll || lastConnectionState != data.isConnected())
-                    {
-                        lastConnectionState = data.isConnected();
-                        outgoingDictionary.addInt32(KEY_BT_STATE, lastConnectionState ? 1 : 0);
-                    }
-
-                    if (refreshAll || lastVoltage != data.getVoltage())
-                    {
-                        lastVoltage = data.getVoltage();
-                        outgoingDictionary.addInt32(KEY_VOLTAGE, lastVoltage);
-                    }
-
-                    if (refreshAll || lastCurrent != data.getCurrent())
-                    {
-                        lastCurrent = data.getCurrent();
-                        outgoingDictionary.addInt32(KEY_CURRENT, lastCurrent);
-                    }
-
-                    if (refreshAll || lastPWM != (int) data.getCalculatedPwm())
-                    {
-                        lastPWM = (int) data.getCalculatedPwm();
-                        outgoingDictionary.addInt32(KEY_PWM, lastCurrent);
-                    }
-                    break;
-                case DETAILS:
-                    if (refreshAll || lastRideTime != data.getRideTime())
-                    {
-                        lastRideTime = data.getRideTime();
-                        outgoingDictionary.addInt32(KEY_RIDE_TIME, lastRideTime);
-                    }
-
-                    if (refreshAll || lastDistance != data.getDistance())
-                    {
-                        lastDistance = data.getDistance();
-                        outgoingDictionary.addInt32(KEY_DISTANCE, lastDistance/100);
-                    }
-
-                    if (refreshAll || lastTopSpeed != data.getTopSpeed())
-                    {
-                        lastTopSpeed = data.getTopSpeed();
-                        outgoingDictionary.addInt32(KEY_TOP_SPEED, lastTopSpeed/10);
-                    }
-                    break;
-            }
-
-            if (vibe_alarm >= 0) {
-                outgoingDictionary.addInt32(KEY_VIBE_ALERT, vibe_alarm);
-                vibe_alarm = -1;
-            }
-
-            if (outgoingDictionary.size() > 0) {
-                message_pending = true;
-                PebbleKit.sendDataToPebble(getApplicationContext(), APP_UUID, outgoingDictionary);
-            }
-            last_message_send_time = Calendar.getInstance().getTimeInMillis();
-            data_available = false;
-            refreshAll = false;
+    private val mSendPebbleData = Runnable {
+        if (!ready) {
+            outgoingDictionary.addInt32(KEY_READY, 0)
+            ready = true
         }
-    };
+        if (refreshAll) {
+            outgoingDictionary.addInt32(KEY_USE_MPH, if (WheelLog.AppConfig.useMph) 1 else 0)
+            outgoingDictionary.addInt32(KEY_MAX_SPEED, WheelLog.AppConfig.maxSpeed)
+        }
+        val data = WheelData.getInstance() ?: return@Runnable
+        when (displayedScreen) {
+            PEBBLE_APP_SCREEN.GUI -> {
+                if (refreshAll || lastSpeed != data.speed) {
+                    lastSpeed = data.speed
+                    outgoingDictionary.addInt32(KEY_SPEED, lastSpeed)
+                }
+                if (refreshAll || lastBattery != data.batteryLevel) {
+                    lastBattery = data.batteryLevel
+                    outgoingDictionary.addInt32(KEY_BATTERY, lastBattery)
+                }
+                if (refreshAll || lastTemperature != data.temperature) {
+                    lastTemperature = data.temperature
+                    outgoingDictionary.addInt32(KEY_TEMPERATURE, lastTemperature)
+                }
+                if (refreshAll || lastFanStatus != data.fanStatus) {
+                    lastFanStatus = data.fanStatus
+                    outgoingDictionary.addInt32(KEY_FAN_STATE, lastFanStatus)
+                }
+                if (refreshAll || lastConnectionState != data.isConnected) {
+                    lastConnectionState = data.isConnected
+                    outgoingDictionary.addInt32(KEY_BT_STATE, if (lastConnectionState) 1 else 0)
+                }
+                if (refreshAll || lastVoltage != data.voltage) {
+                    lastVoltage = data.voltage
+                    outgoingDictionary.addInt32(KEY_VOLTAGE, lastVoltage)
+                }
+                if (refreshAll || lastCurrent != data.current) {
+                    lastCurrent = data.current
+                    outgoingDictionary.addInt32(KEY_CURRENT, lastCurrent)
+                }
+                if (refreshAll || lastPWM != data.calculatedPwm.toInt()) {
+                    lastPWM = data.calculatedPwm.toInt()
+                    outgoingDictionary.addInt32(KEY_PWM, lastCurrent)
+                }
+            }
+            PEBBLE_APP_SCREEN.DETAILS -> {
+                if (refreshAll || lastRideTime != data.rideTime) {
+                    lastRideTime = data.rideTime
+                    outgoingDictionary.addInt32(KEY_RIDE_TIME, lastRideTime)
+                }
+                if (refreshAll || lastDistance != data.distance) {
+                    lastDistance = data.distance
+                    outgoingDictionary.addInt32(KEY_DISTANCE, lastDistance / 100)
+                }
+                if (refreshAll || lastTopSpeed != data.topSpeed) {
+                    lastTopSpeed = data.topSpeed
+                    outgoingDictionary.addInt32(KEY_TOP_SPEED, lastTopSpeed / 10)
+                }
+            }
+        }
+        if (vibe_alarm >= 0) {
+            outgoingDictionary.addInt32(KEY_VIBE_ALERT, vibe_alarm)
+            vibe_alarm = -1
+        }
+        if (outgoingDictionary.size() > 0) {
+            message_pending = true
+            PebbleKit.sendDataToPebble(applicationContext, APP_UUID, outgoingDictionary)
+        }
+        last_message_send_time = Calendar.getInstance().timeInMillis
+        data_available = false
+        refreshAll = false
+    }
 
-    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
+    override fun onBind(intent: Intent): IBinder? {
+        return null
+    }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        /*mNotification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+                .setSmallIcon(R.drawable.ic_stat_wheel)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .build();*/
 
-            switch (intent.getAction()) {
-                case Constants.ACTION_ALARM_TRIGGERED:
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE))
-                        // crutch to legacy pebble app, which does't know alarms other than 0 (speed) and 1 (current)
-                        vibe_alarm = 0;
-                        switch ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)) {
-                            case CURRENT:
-                            case TEMPERATURE:
-                                vibe_alarm = 1;
-                                break;
-                        }
-                    break;
-                case Constants.ACTION_PEBBLE_APP_READY:
-                    displayedScreen = GUI;
-                    refreshAll = true;
-                    break;
-                case Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED:
-                    refreshAll = true;
-                    break;
-                case Constants.ACTION_PEBBLE_APP_SCREEN:
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN)) {
-                        int screen = intent.getIntExtra(Constants.INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, 0);
+        PebbleKit.registerReceivedAckHandler(this, ackReceiver)
+        PebbleKit.registerReceivedNackHandler(this, nackReceiver)
+        PebbleKit.startAppOnPebble(this, APP_UUID)
 
-                        if (screen == 0)
-                            displayedScreen = GUI;
-                        else if (screen == 1)
-                            displayedScreen = DETAILS;
+        val intentFilter = IntentFilter().apply {
+            addAction(ACTION_BLUETOOTH_CONNECTION_STATE)
+            addAction(ACTION_WHEEL_DATA_AVAILABLE)
+            addAction(ACTION_ALARM_TRIGGERED)
+            addAction(ACTION_PEBBLE_APP_READY)
+            addAction(ACTION_PEBBLE_APP_SCREEN)
+            addAction(ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED)
+        }
 
-                        refreshAll = true;
+        registerReceiver(mBroadcastReceiver, intentFilter)
+        val serviceStartedIntent: Intent = Intent(ACTION_PEBBLE_SERVICE_TOGGLED)
+            .putExtra(INTENT_EXTRA_IS_RUNNING, true)
+        sendBroadcast(serviceStartedIntent)
+        mHandler.post(mSendPebbleData)
+        startForeground(MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
+
+        Timber.d("PebbleConnectivity Started")
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(mBroadcastReceiver)
+        unregisterReceiver(ackReceiver)
+        unregisterReceiver(nackReceiver)
+
+        mHandler.removeCallbacksAndMessages(null)
+        PebbleKit.closeAppOnPebble(this, APP_UUID)
+        val serviceStartedIntent = Intent(ACTION_PEBBLE_SERVICE_TOGGLED)
+        serviceStartedIntent.putExtra(INTENT_EXTRA_IS_RUNNING, false)
+        sendBroadcast(serviceStartedIntent)
+
+        stopForeground(false)
+        Timber.i("PebbleConnectivity Stopped")
+    }
+
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                ACTION_ALARM_TRIGGERED -> {
+                    if (intent.hasExtra(INTENT_EXTRA_ALARM_TYPE)) // crutch to legacy pebble app, which does't know alarms other than 0 (speed) and 1 (current)
+                        vibe_alarm = 0
+                    when (intent.getSerializableExtra(INTENT_EXTRA_ALARM_TYPE) as ALARM_TYPE?) {
+                        ALARM_TYPE.CURRENT, ALARM_TYPE.TEMPERATURE -> vibe_alarm = 1
                     }
-                    break;
+                }
+                ACTION_PEBBLE_APP_READY -> {
+                    displayedScreen = PEBBLE_APP_SCREEN.GUI
+                    refreshAll = true
+                }
+                ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED -> {
+                    refreshAll = true
+                }
+                ACTION_PEBBLE_APP_SCREEN -> {
+                    if (intent.hasExtra(INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN)) {
+                        val screen = intent.getIntExtra(INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, 0)
+                        if (screen == 0) displayedScreen = PEBBLE_APP_SCREEN.GUI else if (screen == 1) displayedScreen =
+                            PEBBLE_APP_SCREEN.DETAILS
+                        refreshAll = true
+                    }
+                }
             }
 
             // There's something new to send, start the check
             if (message_pending &&
-                    last_message_send_time + MESSAGE_TIMEOUT >= Calendar.getInstance().getTimeInMillis())
-                data_available = true;
-            else
-                mHandler.post(mSendPebbleData);
+                last_message_send_time + MESSAGE_TIMEOUT >= Calendar.getInstance().timeInMillis
+            ) {
+                data_available = true
+            } else {
+                mHandler.post(mSendPebbleData)
+            }
         }
-    };
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        instance = this;
-        /*mNotification = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .setSmallIcon(R.drawable.ic_stat_wheel)
-                .setPriority(NotificationCompat.PRIORITY_MIN)
-                .build();
-*/
-        PebbleKit.registerReceivedAckHandler(this, ackReceiver);
-        PebbleKit.registerReceivedNackHandler(this, nackReceiver);
-
-        PebbleKit.startAppOnPebble(this, APP_UUID);
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_APP_READY);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_APP_SCREEN);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED);
-        registerReceiver(mBroadcastReceiver, intentFilter);
-
-        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
-                .putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
-        sendBroadcast(serviceStartedIntent);
-        mHandler.post(mSendPebbleData);
-
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
-        Timber.d("PebbleConnectivity Started");
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        unregisterReceiver(mBroadcastReceiver);
-        unregisterReceiver(ackReceiver);
-        unregisterReceiver(nackReceiver);
-        mHandler.removeCallbacksAndMessages(null);
-
-        instance = null;
-        PebbleKit.closeAppOnPebble(this, APP_UUID);
-
-        Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        serviceStartedIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-        sendBroadcast(serviceStartedIntent);
-        stopForeground(false);
-        Timber.i("PebbleConnectivity Stopped");
-    }
-
-    private final PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {
-        @Override
-        public void receiveAck(Context context, int transactionId) {
-            outgoingDictionary = new PebbleDictionary();
-
-            if (data_available)
-                mHandler.post(mSendPebbleData);
-            else
-                message_pending = false;}
-    };
-
-    private final PebbleKit.PebbleNackReceiver nackReceiver = new PebbleKit.PebbleNackReceiver(APP_UUID) {
-        @Override
-        public void receiveNack(Context context, int transactionId) {
-            mHandler.post(mSendPebbleData);
+    private val ackReceiver = object : PebbleAckReceiver(APP_UUID) {
+        override fun receiveAck(context: Context, transactionId: Int) {
+            if (data_available) {
+                mHandler.post(mSendPebbleData)
+            } else {
+                message_pending = false
+            }
         }
-    };
+    }
+
+    private val nackReceiver = object : PebbleNackReceiver(APP_UUID) {
+        override fun receiveNack(context: Context, transactionId: Int) {
+            mHandler.post(mSendPebbleData)
+        }
+    }
 }

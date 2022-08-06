@@ -37,10 +37,18 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cooper.wheellog.companion.WearOs;
 
-import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
-import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.cooper.wheellog.utils.*;
+import static com.cooper.wheellog.utils.ConstantsKt.*;
+
+import com.cooper.wheellog.utils.ALARM_TYPE;
+import com.cooper.wheellog.utils.InMotionAdapter;
+import com.cooper.wheellog.utils.InmotionAdapterV2;
+import com.cooper.wheellog.utils.KingsongAdapter;
+import com.cooper.wheellog.utils.MiBandEnum;
+import com.cooper.wheellog.utils.NinebotAdapter;
+import com.cooper.wheellog.utils.NinebotZAdapter;
+import com.cooper.wheellog.utils.SomeUtil;
+import com.cooper.wheellog.utils.ThemeIconEnum;
+import com.cooper.wheellog.utils.WHEEL_TYPE;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
@@ -131,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mDeviceAddress != null && !mDeviceAddress.isEmpty()) {
                     WheelLog.AppConfig.setLastMac(mDeviceAddress);
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
+                        ElectroClub.INSTANCE.getAndSelectGarageByMacOrShowChooseDialog(WheelLog.AppConfig.getLastMac(), this, s -> null);
                     }
                     if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
                         WheelLog.VolumeKeyController.setActive(true);
@@ -166,26 +174,26 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case Constants.ACTION_WHEEL_TYPE_CHANGED:
+                case ACTION_WHEEL_TYPE_CHANGED:
                     Timber.i("Wheel type switched");
                     pagerAdapter.configureSecondDisplay();
                     pagerAdapter.updateScreen(true);
                     break;
-                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
-                    pagerAdapter.updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
+                case ACTION_WHEEL_DATA_AVAILABLE:
+                    pagerAdapter.updateScreen(intent.hasExtra(INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
-                case Constants.ACTION_WHEEL_NEWS_AVAILABLE:
+                case ACTION_WHEEL_NEWS_AVAILABLE:
                     Timber.i("Received news");
-                    showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500);
+                    showSnackBar(intent.getStringExtra(INTENT_EXTRA_NEWS), 1500);
                     break;
-                case Constants.ACTION_WHEEL_TYPE_RECOGNIZED:
+                case ACTION_WHEEL_TYPE_RECOGNIZED:
                     break;
-                case Constants.ACTION_WHEEL_MODEL_CHANGED:
+                case ACTION_WHEEL_MODEL_CHANGED:
                     pagerAdapter.configureSmartBmsDisplay();
                     break;
-                case Constants.ACTION_ALARM_TRIGGERED:
-                    int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
-                    double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
+                case ACTION_ALARM_TRIGGERED:
+                    int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(INTENT_EXTRA_ALARM_TYPE)).getValue();
+                    double alarmValue = intent.getDoubleExtra(INTENT_EXTRA_ALARM_VALUE, 0d);
                     if (alarmType < 4) {
                         showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1f",alarmValue), 3000);
                     }
@@ -210,8 +218,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
-                    int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
+                case ACTION_BLUETOOTH_CONNECTION_STATE:
+                    int connectionState = intent.getIntExtra(INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
                     Timber.i("Bluetooth state = %d", connectionState);
                     setConnectionState(connectionState);
                     WheelData.getInstance().setConnected(connectionState == BluetoothLeService.STATE_CONNECTED);
@@ -244,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                             WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
                             break;
                         case BluetoothLeService.STATE_CONNECTING:
-                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
+                            if (intent.hasExtra(INTENT_EXTRA_BLE_AUTO_CONNECT)) {
                                 WheelLog.Notifications.setNotificationMessageId(R.string.searching);
                             } else {
                                 WheelLog.Notifications.setNotificationMessageId(R.string.connecting);
@@ -253,11 +261,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                     WheelLog.Notifications.update();
                     break;
-                case Constants.ACTION_PREFERENCE_RESET:
+                case ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
                     pagerAdapter.getWheelView().resetBatteryLowest();
                     break;
-                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                case ACTION_WHEEL_DATA_AVAILABLE:
                     if (wearOs != null) {
                         wearOs.sendUpdateData();
                     }
@@ -271,14 +279,14 @@ public class MainActivity extends AppCompatActivity {
                         toggleLoggingService();
                     }
                     break;
-                case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
+                case ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
                     WheelLog.Notifications.update();
                     break;
-                case Constants.ACTION_LOGGING_SERVICE_TOGGLED:
-                    boolean running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
-                        String filepath = intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION);
+                case ACTION_LOGGING_SERVICE_TOGGLED:
+                    boolean running = intent.getBooleanExtra(INTENT_EXTRA_IS_RUNNING, false);
+                    if (intent.hasExtra(INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                        String filepath = intent.getStringExtra(INTENT_EXTRA_LOGGING_FILE_LOCATION);
                         var fileName = filepath.substring(filepath.lastIndexOf("\\") + 1);
                         if (running) {
                             showSnackBar(getResources().getString(R.string.started_logging) + " " + fileName, 5000);
@@ -287,27 +295,27 @@ public class MainActivity extends AppCompatActivity {
                     setMenuIconStates();
                     WheelLog.Notifications.update();
                     break;
-                case Constants.NOTIFICATION_BUTTON_CONNECTION:
+                case NOTIFICATION_BUTTON_CONNECTION:
                     toggleConnectToWheel();
                     WheelLog.Notifications.update();
                     break;
-                case Constants.NOTIFICATION_BUTTON_LOGGING:
+                case NOTIFICATION_BUTTON_LOGGING:
                     toggleLogging();
                     WheelLog.Notifications.update();
                     break;
-                case Constants.NOTIFICATION_BUTTON_WATCH:
+                case NOTIFICATION_BUTTON_WATCH:
                     toggleWatch();
                     WheelLog.Notifications.update();
                     break;
-                case Constants.NOTIFICATION_BUTTON_BEEP:
+                case NOTIFICATION_BUTTON_BEEP:
                     SomeUtil.playBeep(getApplicationContext());
                     break;
-                case Constants.NOTIFICATION_BUTTON_LIGHT:
+                case NOTIFICATION_BUTTON_LIGHT:
                     if (WheelData.getInstance().getAdapter() != null) {
                         WheelData.getInstance().getAdapter().switchFlashlight();
                     }
                     break;
-                case Constants.NOTIFICATION_BUTTON_MIBAND:
+                case NOTIFICATION_BUTTON_MIBAND:
                     toggleSwitchMiBand();
                     break;
             }
@@ -366,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
             miWatch.setVisible(true);
         }
 
-        if (PebbleService.isInstanceCreated()) {
+        if (PebbleService.Companion.isServiceRunning(this)) {
             miWatch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOn));
         } else {
             miWatch.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOff));
@@ -464,13 +472,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
-        ElectroClub.getInstance().setErrorListener((method, error) -> {
+        ElectroClub.INSTANCE.setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
             Timber.i(message);
             MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));
             return null;
         });
-        ElectroClub.getInstance().setSuccessListener((method, success) -> {
+        ElectroClub.INSTANCE.setSuccessListener((method, success) -> {
             if (method.equals(ElectroClub.GET_GARAGE_METHOD)) {
                 return null;
             }
@@ -516,7 +524,7 @@ public class MainActivity extends AppCompatActivity {
         WheelLog.Notifications.update();
 
         if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
-            SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
+            SomeUtil.INSTANCE.checkBatteryOptimizationsAndShowAlert(this);
         }
     }
 
@@ -746,13 +754,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopPebbleService() {
-        if (PebbleService.isInstanceCreated())
+        if (PebbleService.Companion.isServiceRunning(this))
             togglePebbleService();
     }
 
     private void togglePebbleService() {
         Intent pebbleServiceIntent = new Intent(getApplicationContext(), PebbleService.class);
-        if (PebbleService.isInstanceCreated())
+        if (PebbleService.Companion.isServiceRunning(this))
             stopService(pebbleServiceIntent);
         else
             ContextCompat.startForegroundService(this, pebbleServiceIntent);
@@ -845,7 +853,7 @@ public class MainActivity extends AppCompatActivity {
                     getBluetoothLeService().close();
                     toggleConnectToWheel();
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
-                        ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(
+                        ElectroClub.INSTANCE.getAndSelectGarageByMacOrShowChooseDialog(
                                 mDeviceAddress,
                                 this,
                                 success -> null);
@@ -872,30 +880,30 @@ public class MainActivity extends AppCompatActivity {
 
     private IntentFilter makeIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED);
-        intentFilter.addAction(Constants.ACTION_WHEEL_MODEL_CHANGED);
-        intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
-        intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
-        intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+        intentFilter.addAction(ACTION_WHEEL_DATA_AVAILABLE);
+        intentFilter.addAction(ACTION_LOGGING_SERVICE_TOGGLED);
+        intentFilter.addAction(ACTION_PEBBLE_SERVICE_TOGGLED);
+        intentFilter.addAction(ACTION_WHEEL_TYPE_RECOGNIZED);
+        intentFilter.addAction(ACTION_WHEEL_MODEL_CHANGED);
+        intentFilter.addAction(ACTION_ALARM_TRIGGERED);
+        intentFilter.addAction(ACTION_WHEEL_TYPE_CHANGED);
+        intentFilter.addAction(ACTION_WHEEL_NEWS_AVAILABLE);
         return intentFilter;
     }
 
     private IntentFilter makeCoreIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED);
-        intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_BEEP);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LIGHT);
-        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_MIBAND);
+        intentFilter.addAction(ACTION_BLUETOOTH_CONNECTION_STATE);
+        intentFilter.addAction(ACTION_WHEEL_DATA_AVAILABLE);
+        intentFilter.addAction(ACTION_LOGGING_SERVICE_TOGGLED);
+        intentFilter.addAction(ACTION_PEBBLE_SERVICE_TOGGLED);
+        intentFilter.addAction(ACTION_PREFERENCE_RESET);
+        intentFilter.addAction(NOTIFICATION_BUTTON_CONNECTION);
+        intentFilter.addAction(NOTIFICATION_BUTTON_WATCH);
+        intentFilter.addAction(NOTIFICATION_BUTTON_LOGGING);
+        intentFilter.addAction(NOTIFICATION_BUTTON_BEEP);
+        intentFilter.addAction(NOTIFICATION_BUTTON_LIGHT);
+        intentFilter.addAction(NOTIFICATION_BUTTON_MIBAND);
         return intentFilter;
     }
 }

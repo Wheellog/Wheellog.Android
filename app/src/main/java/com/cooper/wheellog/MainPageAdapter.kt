@@ -9,12 +9,12 @@ import androidx.gridlayout.widget.GridLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
+import com.cooper.wheellog.utils.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
-import com.cooper.wheellog.utils.StringUtil.Companion.inArray
-import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.utils.StringUtil.inArray
+import com.cooper.wheellog.utils.StringUtil.toTempString
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
@@ -25,9 +25,12 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.*
-import java.util.*
+import java.util.Locale
 
-class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
+class MainPageAdapter(
+    private var pages: MutableList<Int>,
+    val activity: MainActivity
+) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
 
     private var xAxisLabels = ArrayList<String>()
 

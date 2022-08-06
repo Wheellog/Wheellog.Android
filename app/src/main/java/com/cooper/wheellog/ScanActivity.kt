@@ -20,13 +20,17 @@ import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.cooper.wheellog.utils.StringUtil
-import com.cooper.wheellog.utils.StringUtil.Companion.toHexStringRaw
 import com.google.android.material.textfield.TextInputLayout
 import timber.log.Timber
 
 class ScanActivity: AppCompatActivity() {
-    private var mDeviceListAdapter: DeviceListAdapter? = null
-    private var mBluetoothAdapter: BluetoothAdapter? = null
+
+    private val mDeviceListAdapter by lazy { DeviceListAdapter(this) }
+
+    // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
+    // BluetoothAdapter through BluetoothManager.
+    private val mBluetoothAdapter by lazy { (getSystemService(BLUETOOTH_SERVICE) as BluetoothManager).adapter }
+
     private var mScanning = false
     private val mHandler = Handler(Looper.getMainLooper())
     private var pb: ProgressBar? = null
@@ -42,9 +46,10 @@ class ScanActivity: AppCompatActivity() {
         val lv = convertView.findViewById<ListView>(android.R.id.list)
         pb = convertView.findViewById(R.id.scanProgress)
         scanTitle = convertView.findViewById(R.id.scan_title)
-        lv.onItemClickListener = onItemClickListener
-        mDeviceListAdapter = DeviceListAdapter(this)
-        lv.adapter = mDeviceListAdapter
+        lv.apply {
+            onItemClickListener = onItemClickListener
+            adapter = mDeviceListAdapter
+        }
         macLayout = convertView.findViewById(R.id.last_mac_layout)
         val lastMacInput = convertView.findViewById<TextInputLayout>(R.id.last_mac_text)!!.editText
         lastMacInput!!.setText(WheelLog.AppConfig.lastMac)
@@ -88,11 +93,6 @@ class ScanActivity: AppCompatActivity() {
             val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(myIntent)
         }
-
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
-        mBluetoothAdapter = bluetoothManager.adapter
     }
 
     private fun close () {
@@ -108,10 +108,10 @@ class ScanActivity: AppCompatActivity() {
     private val onItemClickListener = OnItemClickListener { _, _, i, _ ->
         if (mScanning) scanLeDevice(false)
         mHandler.removeCallbacksAndMessages(null)
-        val device = mDeviceListAdapter!!.getDevice(i)
+        val device = mDeviceListAdapter.getDevice(i)
         val deviceAddress = device.address
         val deviceName = device.name
-        val advData = mDeviceListAdapter!!.getAdvData(i)
+        val advData = mDeviceListAdapter.getAdvData(i)
         Timber.i("Device selected MAC = %s", deviceAddress)
         Timber.i("Device selected Name = %s", deviceName)
         Timber.i("Device selected Data = %s", advData)
@@ -130,8 +130,8 @@ class ScanActivity: AppCompatActivity() {
     private val mLeScanCallback = LeScanCallback { device, _, scanRecord ->
         val manufacturerData = findManufacturerData(scanRecord) // 4e421300000000ec
         runOnUiThread {
-            mDeviceListAdapter!!.addDevice(device, manufacturerData)
-            mDeviceListAdapter!!.notifyDataSetChanged()
+            mDeviceListAdapter.addDevice(device, manufacturerData)
+            mDeviceListAdapter.notifyDataSetChanged()
         }
     }
 
@@ -150,7 +150,7 @@ class ScanActivity: AppCompatActivity() {
             // Advance
             index += length
             if (type == -1) {
-                result = toHexStringRaw(data)
+                result = StringUtil.toHexStringRaw(data)
             }
         }
         Timber.i("Found data: %s", result)
@@ -162,13 +162,13 @@ class ScanActivity: AppCompatActivity() {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed({ scanLeDevice(false) }, scanPeriod)
             mScanning = true
-            mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+            mBluetoothAdapter.startLeScan(mLeScanCallback)
             pb!!.visibility = View.VISIBLE
             scanTitle!!.setText(R.string.scanning)
             macLayout.visibility = View.GONE
         } else {
             mScanning = false
-            mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+            mBluetoothAdapter.stopLeScan(mLeScanCallback)
             pb!!.visibility = View.GONE
             scanTitle!!.setText(R.string.devices)
             macLayout.visibility = View.VISIBLE

@@ -15,8 +15,13 @@ import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
 import java.util.*
 
-class NotificationUtil(private val context: Context) {
-    private val builder: NotificationCompat.Builder
+class NotificationUtil(
+    private val context: Context
+) {
+
+    private val manager by lazy { NotificationManagerCompat.from(context) }
+    private val builder by lazy { NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID_NOTIFICATION) }
+
     private var kostilTimer: Timer? = null
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
@@ -29,16 +34,15 @@ class NotificationUtil(private val context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
-        val channel = NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION,
-                context.getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_LOW).apply {
-            description = context.getString(R.string.notification_channel_description)
-        }
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID_NOTIFICATION,
+            context.getString(R.string.notification_channel_name),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply { description = context.getString(R.string.notification_channel_description) }
+
         // Register the channel with the system; you can't change the importance
         // or other notification behaviors after this
-        with(NotificationManagerCompat.from(context)) {
-            createNotificationChannel(channel)
-        }
+        manager.createNotificationChannel(channel)
     }
 
     private fun build(): Notification {
@@ -53,25 +57,26 @@ class NotificationUtil(private val context: Context) {
 
 
         notificationView.setViewVisibility(R.id.ib_actions_layout,
-                if (buttonSettings.any()) View.VISIBLE
-                else View.GONE)
+            if (buttonSettings.any()) View.VISIBLE
+            else View.GONE)
 
-        arrayOf(Triple(R.id.ib_connection, R.string.icon_connection, Constants.NOTIFICATION_BUTTON_CONNECTION),
-                Triple(R.id.ib_logging, R.string.icon_logging, Constants.NOTIFICATION_BUTTON_LOGGING),
-                Triple(R.id.ib_watch, R.string.icon_watch, Constants.NOTIFICATION_BUTTON_WATCH),
-                Triple(R.id.ib_beep, R.string.icon_beep, Constants.NOTIFICATION_BUTTON_BEEP),
-                Triple(R.id.ib_light, R.string.icon_light, Constants.NOTIFICATION_BUTTON_LIGHT),
-                Triple(R.id.ib_mi_band, R.string.icon_miband, Constants.NOTIFICATION_BUTTON_MIBAND)
+        arrayOf(Triple(R.id.ib_connection, R.string.icon_connection, NOTIFICATION_BUTTON_CONNECTION),
+            Triple(R.id.ib_logging, R.string.icon_logging, NOTIFICATION_BUTTON_LOGGING),
+            Triple(R.id.ib_watch, R.string.icon_watch, NOTIFICATION_BUTTON_WATCH),
+            Triple(R.id.ib_beep, R.string.icon_beep, NOTIFICATION_BUTTON_BEEP),
+            Triple(R.id.ib_light, R.string.icon_light, NOTIFICATION_BUTTON_LIGHT),
+            Triple(R.id.ib_mi_band, R.string.icon_miband, NOTIFICATION_BUTTON_MIBAND)
         ).forEach {
-            notificationView.setViewVisibility(it.first,
-                    if (buttonSettings.contains(context.getString(it.second))) View.VISIBLE
-                    else View.GONE)
+            notificationView.setViewVisibility(
+                it.first,
+                if (buttonSettings.contains(context.getString(it.second))) View.VISIBLE
+                else View.GONE)
             notificationView.setOnClickPendingIntent(it.first,
-                    PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
+                PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
         }
         val wd = WheelData.getInstance()
         val connectionState = wd.bluetoothLeService?.connectionState
-                ?: BluetoothLeService.STATE_DISCONNECTED
+            ?: BluetoothLeService.STATE_DISCONNECTED
         val batteryLevel = wd.batteryLevel
         val temperature = wd.temperature
         val distance = wd.distanceDouble
@@ -96,12 +101,12 @@ class NotificationUtil(private val context: Context) {
         }
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
-                when (WheelLog.AppConfig.mibandMode) {
-                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
-                    MiBandEnum.Min -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
-                    MiBandEnum.Medium -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
-                    MiBandEnum.Max -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
-                })
+            when (WheelLog.AppConfig.mibandMode) {
+                MiBandEnum.Alarm -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
+                MiBandEnum.Min -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
+                MiBandEnum.Medium -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
+                MiBandEnum.Max -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
+            })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
             notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
@@ -112,36 +117,39 @@ class NotificationUtil(private val context: Context) {
             notificationView.setTextColor(R.id.ib_actions_text, textColor)
         }
         notificationView.setImageViewResource(R.id.ib_connection,
-                when (connectionState) {
-                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
-                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
-                    else -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
-                })
+            when (connectionState) {
+                BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
+                BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
+                else -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
+            })
         notificationView.setImageViewResource(R.id.ib_logging,
-                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOn)
-                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOff))
+            if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOn)
+            else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOff))
         notificationView.setImageViewResource(R.id.ib_watch,
-                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOn)
-                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOff))
+            if (PebbleService.isServiceRunning(context)) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOn)
+            else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOff))
         notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationHorn))
         notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLight))
 
-        builder.setSmallIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationIcon))
-                .setContentIntent(pendingIntent)
-                .setContent(notificationView)
-                .setCustomBigContentView(notificationView)
-                .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .priority = NotificationCompat.PRIORITY_LOW
+        builder
+            .setSmallIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationIcon))
+            .setContentIntent(pendingIntent)
+            .setContent(notificationView)
+            .setCustomBigContentView(notificationView)
+            .setChannelId(NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+            .priority = NotificationCompat.PRIORITY_LOW
 
         builder.setContentTitle(
-                if (connectionState == BluetoothLeService.STATE_CONNECTED && distance + temperature + batteryLevel + speed > 0)
-                    title_ride
-                else
-                    title)
+            if (connectionState == BluetoothLeService.STATE_CONNECTED && distance + temperature + batteryLevel + speed > 0)
+                title_ride
+            else
+                title
+        )
 
         when (WheelLog.AppConfig.mibandMode) {
             MiBandEnum.Alarm -> {
-                builder.setContentTitle(context.getString(R.string.titlealarm))
+                builder
+                    .setContentTitle(context.getString(R.string.titlealarm))
                     .setContentText(alarmText)
                 alarmText = ""
             }
@@ -155,9 +163,7 @@ class NotificationUtil(private val context: Context) {
 
     fun update() {
         notification = build()
-        with(NotificationManagerCompat.from(context)) {
-            notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
-        }
+        notification?.let { manager.notify(MAIN_NOTIFICATION_ID, it) }
     }
 
     // Fix Me
@@ -180,7 +186,6 @@ class NotificationUtil(private val context: Context) {
 
     init {
         createNotificationChannel()
-        builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
         updateKostilTimer()
 // for test
 //        Timer().scheduleAtFixedRate(object : TimerTask() {

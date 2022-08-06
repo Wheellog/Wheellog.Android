@@ -26,11 +26,12 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
-import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
+import com.cooper.wheellog.utils.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED
+import com.cooper.wheellog.utils.ACTION_PREFERENCE_RESET
+import com.cooper.wheellog.utils.WHEEL_TYPE
 import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
+import com.cooper.wheellog.utils.SomeUtil.getDrawableEx
 import com.cooper.wheellog.utils.ThemeIconEnum
 import timber.log.Timber
 
@@ -73,10 +74,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         if (result.resultCode == Activity.RESULT_OK) {
             WheelLog.AppConfig.autoUploadEc = true
             refreshVolatileSettings()
-            ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
+            ElectroClub.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
             WheelLog.AppConfig.autoUploadEc = true
         } else {
-            ElectroClub.instance.logout()
+            ElectroClub.logout()
         }
         refreshVolatileSettings()
     }
@@ -188,11 +189,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                                 if (WheelLog.AppConfig.ecToken == null) {
                                     loginActivityResult.launch(Intent(activity, LoginActivity::class.java))
                                 } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
+                                    ElectroClub.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
                                 }
                             }
                             .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
-                                ElectroClub.instance.logout()
+                                ElectroClub.logout()
                                 refreshVolatileSettings()
                             }
                             .setCancelable(false)
@@ -201,11 +202,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 } else {
                     // logout after uncheck
                     if (!WheelLog.AppConfig.autoUploadEc) {
-                        ElectroClub.instance.logout()
+                        ElectroClub.logout()
                     }
                 }
             }
-            R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
+            R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
             R.string.use_eng, R.string.app_theme -> {
                 WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
                 AlertDialog.Builder(requireContext())
@@ -474,7 +475,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 resetLowestBatteryButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     WheelData.getInstance().resetVoltageSag()
-                    activity?.sendBroadcast(Intent(Constants.ACTION_PREFERENCE_RESET))
+                    activity?.sendBroadcast(Intent(ACTION_PREFERENCE_RESET))
                     true
                 }
                 resetUserDistanceButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {

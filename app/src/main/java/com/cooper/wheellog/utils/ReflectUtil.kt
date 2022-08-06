@@ -1,18 +1,17 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils
 
-import java.lang.reflect.Field;
+import java.lang.Exception
 
-public class ReflectUtil {
-
-    public static boolean SetPrivateField(Object object, String propertyName, Object value) {
-        try {
-            Field wdField = object.getClass().getDeclaredField(propertyName);
-            wdField.setAccessible(true);
-            wdField.set(object, value);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+object ReflectUtil {
+    fun setPrivateField(`object`: Any, propertyName: String?, value: Any?): Boolean {
+        return try {
+            val wdField = `object`.javaClass.getDeclaredField(propertyName)
+            wdField.isAccessible = true
+            wdField[`object`] = value
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 }

@@ -15,8 +15,8 @@ import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
 import com.cooper.wheellog.utils.SomeUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
-import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.utils.StringUtil.toTempString
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
@@ -1044,9 +1044,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 val wdField = WheelData::class.java.getDeclaredField("mInstance")
                 wdField.isAccessible = true
                 wdField[null] = wd
-                ReflectUtil.SetPrivateField(wd, "mCalculatedPwm", 0.05)
-                ReflectUtil.SetPrivateField(wd, "mMaxPwm", 0.97)
-                ReflectUtil.SetPrivateField(wd, "mConnectionState", true)
+                ReflectUtil.setPrivateField(wd, "mCalculatedPwm", 0.05)
+                ReflectUtil.setPrivateField(wd, "mMaxPwm", 0.97)
+                ReflectUtil.setPrivateField(wd, "mConnectionState", true)
             } catch (ignored: Exception) {
             }
         } else {

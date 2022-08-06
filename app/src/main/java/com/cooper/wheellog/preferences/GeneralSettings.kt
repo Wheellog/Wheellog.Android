@@ -9,8 +9,8 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
-import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.MathsUtil
+import com.cooper.wheellog.utils.WHEEL_TYPE
 
 class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(context, ps) {
 
@@ -285,7 +285,7 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
     fun switchAlarmsIsVisible(fragment: PreferencesFragment) {
         val alarmsEnabled = WheelLog.AppConfig.alarmsEnabled
         val alteredAlarms = WheelLog.AppConfig.alteredAlarms
-        val ksAlteredAlarms = (WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG) && (WheelData.getInstance().model.compareTo("KS-18A") != 0)
+        val ksAlteredAlarms = (WheelData.getInstance().wheelType == WHEEL_TYPE.KINGSONG) && (WheelData.getInstance().model.compareTo("KS-18A") != 0)
         val categoryPreferencesNormal = arrayOf(
                 getString(R.string.speed_alarm1),
                 getString(R.string.speed_alarm2),

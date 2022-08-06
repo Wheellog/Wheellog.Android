@@ -34,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
                 .show()
 
         ok.setOnClickListener {
-            ElectroClub.instance.login(
+            ElectroClub.login(
                     email.editText?.text.toString(),
                     password.editText?.text.toString()
             ) {

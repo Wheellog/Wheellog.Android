@@ -1,48 +1,49 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
+import android.content.Context
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Build.VERSION_CODES
+import android.os.Build
+import java.util.Locale
 
-import java.util.Locale;
+object LocaleManager {
+    const val LANGUAGE_ENGLISH = "en"
 
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.os.Build.VERSION_CODES.N;
-
-public class LocaleManager {
-    public static final  String LANGUAGE_ENGLISH = "en";
-
-    public static Context setLocale(Context c) {
-        Context a;
-        a = c;
-        if (WheelLog.AppConfig.getUseEng()) {
-            a = updateResources(c, LANGUAGE_ENGLISH);
+    @JvmStatic
+    fun setLocale(context: Context): Context {
+        var context = context
+        if (WheelLog.AppConfig.useEng) {
+            context = updateResources(context, LANGUAGE_ENGLISH)
         }
-        return a;
+        return context
     }
 
-    private static Context updateResources(Context context, String language) {
-        Locale locale = new Locale(language);
-        Locale.setDefault(locale);
-        Resources res = context.getResources();
-        Configuration config = new Configuration(res.getConfiguration());
-        if (isAtLeastVersion(JELLY_BEAN_MR1)) {
-            config.setLocale(locale);
-            context = context.createConfigurationContext(config);
+    private fun updateResources(context: Context, language: String): Context {
+        var context = context
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        val res = context.resources
+        val config = Configuration(res.configuration)
+        if (isAtLeastVersion(VERSION_CODES.JELLY_BEAN_MR1)) {
+            config.setLocale(locale)
+            context = context.createConfigurationContext(config)
         } else {
-            config.locale = locale;
-            res.updateConfiguration(config, res.getDisplayMetrics());
+            config.locale = locale
+            res.updateConfiguration(config, res.displayMetrics)
         }
-        return context;
+        return context
     }
 
-    public static Locale getLocale(Resources res) {
-        Configuration config = res.getConfiguration();
-        return isAtLeastVersion(N) ? config.getLocales().get(0) : config.locale;
+    fun getLocale(res: Resources): Locale {
+        val config = res.configuration
+        return if (isAtLeastVersion(VERSION_CODES.N))
+            config.locales[0]
+        else
+            config.locale
     }
 
-    private static boolean isAtLeastVersion(int version) {
-        return Build.VERSION.SDK_INT >= version;
+    private fun isAtLeastVersion(version: Int): Boolean {
+        return Build.VERSION.SDK_INT >= version
     }
 }

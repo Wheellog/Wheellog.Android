@@ -1,40 +1,40 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog
 
-import timber.log.Timber;
-import android.content.Context;
+import android.content.Context
+import timber.log.Timber.DebugTree
+import com.cooper.wheellog.utils.FileUtil
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-import java.util.Date;
-import java.util.Locale;
-import java.text.SimpleDateFormat;
-import com.cooper.wheellog.utils.FileUtil;
-
-public class FileLoggingTree extends Timber.DebugTree {
+class FileLoggingTree(context: Context) : DebugTree() {
 
     //private static final String TAG = FileLoggingTree.class.getSimpleName();
+    private val fileUtil: FileUtil
+    private val fileName: String
+    private val logFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
 
-    private final FileUtil fileUtil;
-    private final String fileName;
-    private final SimpleDateFormat logFormat = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+    init {
+        fileUtil = FileUtil(context)
+        fileUtil.setIgnoreTimber(true)
 
-    public FileLoggingTree(Context context) {
-        fileUtil = new FileUtil(context);
-        fileUtil.setIgnoreTimber(true);
-        SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        String fileNameTimeStamp = fileNameFormat.format(new Date());
-        fileName = fileNameTimeStamp + ".html";
+        val fileNameFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val fileNameTimeStamp = fileNameFormat.format(Date())
+        fileName = "$fileNameTimeStamp.html"
+
         if (fileUtil.prepareFile(fileName)) {
-            fileUtil.writeLine("<style>p { background:lightgray; padding: 2; margin:2 } b { background:lightblue; padding: 2; margin-left: 10 }</style>");
+            fileUtil.writeLine("<style>p { background:lightgray; padding: 2; margin:2 } b { background:lightblue; padding: 2; margin-left: 10 }</style>")
         }
     }
 
-    @Override
-    protected void log(int priority, String tag, String message, Throwable t) {
+    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         try {
             if (fileUtil.prepareFile(fileName)) {
-                fileUtil.writeLine(String.format("<p><b>%s</b>%s</p>", logFormat.format(new Date()), message));
+                fileUtil.writeLine(String.format("<p><b>%s</b>%s</p>", logFormat.format(Date()), message))
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (e: Exception) {
+            e.printStackTrace()
             //Log.e(TAG, "Error while logging into file : " + e);
         }
     }

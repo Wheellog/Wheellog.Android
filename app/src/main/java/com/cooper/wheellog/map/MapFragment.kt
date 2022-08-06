@@ -12,8 +12,8 @@ import androidx.fragment.app.activityViewModels
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
-import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.utils.SomeUtil.getDrawableEx
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView

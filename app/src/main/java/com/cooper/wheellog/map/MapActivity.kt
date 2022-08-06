@@ -11,7 +11,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.cooper.wheellog.BuildConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.utils.LogHeaderEnum
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet

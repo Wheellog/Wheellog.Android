@@ -14,6 +14,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import timber.log.Timber;
 
+import static com.cooper.wheellog.utils.ConstantsKt.*;
+
 public class InmotionAdapterV2 extends BaseAdapter {
     private static InmotionAdapterV2 INSTANCE;
     private Timer keepAliveTimer;
@@ -694,8 +696,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
-                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                Intent intent = new Intent(ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(INTENT_EXTRA_NEWS, inmoError);
                 sContext.sendBroadcast(intent);
             }
 //            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Rem Km: %.3f, Bat: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
@@ -793,8 +795,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
-                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                Intent intent = new Intent(ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(INTENT_EXTRA_NEWS, inmoError);
                 sContext.sendBroadcast(intent);
             }
             return true;
@@ -884,8 +886,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setAlert(inmoError);
             if ((inmoError != "") && (sContext != null)) {
                 Timber.i("News to send: %s, sending Intent", inmoError);
-                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                Intent intent = new Intent(ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(INTENT_EXTRA_NEWS, inmoError);
                 sContext.sendBroadcast(intent);
             }
             return true;

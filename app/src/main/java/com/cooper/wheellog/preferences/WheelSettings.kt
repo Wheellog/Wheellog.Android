@@ -861,19 +861,19 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         }
         this.mac = mac
         when (WheelData.getInstance().wheelType) {
-            Constants.WHEEL_TYPE.NINEBOT_Z -> ninebotZ()
-            Constants.WHEEL_TYPE.INMOTION -> inmotion()
-            Constants.WHEEL_TYPE.INMOTION_V2 -> inmotionV2()
-            Constants.WHEEL_TYPE.KINGSONG -> kingsong()
-            Constants.WHEEL_TYPE.GOTWAY -> begode()
-            Constants.WHEEL_TYPE.VETERAN -> veteran()
+            WHEEL_TYPE.NINEBOT_Z -> ninebotZ()
+            WHEEL_TYPE.INMOTION -> inmotion()
+            WHEEL_TYPE.INMOTION_V2 -> inmotionV2()
+            WHEEL_TYPE.KINGSONG -> kingsong()
+            WHEEL_TYPE.GOTWAY -> begode()
+            WHEEL_TYPE.VETERAN -> veteran()
             else -> ps.addPreference(Preference(context).apply {
                 key = getString(R.string.no_settings)
                 isEnabled = false
                 summary = getString(R.string.unknown_device)
             })
         }
-        if (WheelData.getInstance().wheelType != Constants.WHEEL_TYPE.Unknown) {
+        if (WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown) {
             forAllWheel()
         }
     }

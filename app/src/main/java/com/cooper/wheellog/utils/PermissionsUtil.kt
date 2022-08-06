@@ -1,22 +1,24 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
+import android.Manifest
+import android.content.Context
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
 
-import androidx.core.content.ContextCompat;
+object PermissionsUtil {
 
-public class PermissionsUtil {
-
-    public static boolean checkExternalFilePermission(Context context){
-        int read_result = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
-        int write_result = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    @JvmStatic
+    fun checkExternalFilePermission(context: Context?): Boolean {
+        val read_result = ContextCompat.checkSelfPermission(context!!, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val write_result = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         return read_result == PackageManager.PERMISSION_GRANTED &&
-                write_result == PackageManager.PERMISSION_GRANTED;
+            write_result == PackageManager.PERMISSION_GRANTED
     }
 
-    public static boolean checkLocationPermission(Context context){
-        int result = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
-        return result == PackageManager.PERMISSION_GRANTED;
+    @JvmStatic
+    fun checkLocationPermission(context: Context?): Boolean {
+        val result = ContextCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION)
+        return result == PackageManager.PERMISSION_GRANTED
     }
+
 }

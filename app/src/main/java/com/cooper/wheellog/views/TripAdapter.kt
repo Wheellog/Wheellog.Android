@@ -94,7 +94,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     FileInputStream(File(tripModel.mediaId))
                 } else {
                     // Android 10+
-                    WheelLog.cResolver().openInputStream(tripModel.uri)
+                    WheelLog.contentResolver().openInputStream(tripModel.uri)
                 }
             if (inputStream == null) {
                 Timber.i("Failed to create inputStream for %s", tripModel.title)
@@ -102,7 +102,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             } else {
                 val data = ByteStreams.toByteArray(inputStream)
                 inputStream.close()
-                ElectroClub.instance.uploadTrack(data, tripModel.title, false) { success ->
+                ElectroClub.uploadTrack(data, tripModel.title, false) { success ->
                     MainScope().launch {
                         uploadInProgress(false)
                     }
@@ -139,7 +139,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                             }
                         }
                     } else {
-                        WheelLog.cResolver().delete(tripModel.uri, null, null)
+                        WheelLog.contentResolver().delete(tripModel.uri, null, null)
                     }
                     adapter.removeAt(adapterPosition)
                 }

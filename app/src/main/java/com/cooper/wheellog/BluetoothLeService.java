@@ -24,6 +24,8 @@ import java.util.*;
 
 import timber.log.Timber;
 
+import static com.cooper.wheellog.utils.ConstantsKt.*;
+
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
  * given Bluetooth LE device.
@@ -162,7 +164,7 @@ public class BluetoothLeService extends Service {
                 boolean recognisedWheel = WheelData.getInstance().detectWheel(mBluetoothDeviceAddress);
                 WheelData.getInstance().setConnected(recognisedWheel);
                 if (recognisedWheel) {
-                    sendBroadcast(new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED));
+                    sendBroadcast(new Intent(ACTION_WHEEL_TYPE_RECOGNIZED));
                     mConnectionState = STATE_CONNECTED;
                     broadcastConnectionUpdate(mConnectionState);
                 } else {
@@ -219,7 +221,7 @@ public class BluetoothLeService extends Service {
         byte[] value = characteristic.getValue();
         switch (wd.getWheelType()) {
             case KINGSONG:
-                if (characteristic.getUuid().toString().equals(Constants.KINGSONG_READ_CHARACTER_UUID)) {
+                if (characteristic.getUuid().toString().equals(KINGSONG_READ_CHARACTER_UUID)) {
                     wd.decodeResponse(value, getApplicationContext());
                     if (WheelData.getInstance().getName().isEmpty()) {
                         KingsongAdapter.getInstance().requestNameData();
@@ -234,25 +236,25 @@ public class BluetoothLeService extends Service {
                 WheelData.getInstance().decodeResponse(value, getApplicationContext());
                 break;
             case INMOTION:
-                if (characteristic.getUuid().toString().equals(Constants.INMOTION_READ_CHARACTER_UUID)) {
+                if (characteristic.getUuid().toString().equals(INMOTION_READ_CHARACTER_UUID)) {
                     wd.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case INMOTION_V2:
-                if (characteristic.getUuid().toString().equals(Constants.INMOTION_V2_READ_CHARACTER_UUID)) {
+                if (characteristic.getUuid().toString().equals(INMOTION_V2_READ_CHARACTER_UUID)) {
                     wd.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case NINEBOT_Z:
                 Timber.i("Ninebot Z reading");
-                if (characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) {
+                if (characteristic.getUuid().toString().equals(NINEBOT_Z_READ_CHARACTER_UUID)) {
                     wd.decodeResponse(value, getApplicationContext());
                 }
                 break;
             case NINEBOT:
                 Timber.i("Ninebot reading");
-                if (characteristic.getUuid().toString().equals(Constants.NINEBOT_READ_CHARACTER_UUID) ||
-                        characteristic.getUuid().toString().equals(Constants.NINEBOT_Z_READ_CHARACTER_UUID)) { // in case of S2 or Mini
+                if (characteristic.getUuid().toString().equals(NINEBOT_READ_CHARACTER_UUID) ||
+                        characteristic.getUuid().toString().equals(NINEBOT_Z_READ_CHARACTER_UUID)) { // in case of S2 or Mini
                     Timber.i("Ninebot read cont");
                     wd.decodeResponse(value, getApplicationContext());
                 }
@@ -277,10 +279,10 @@ public class BluetoothLeService extends Service {
                 break;
         }
 
-        final Intent intent = new Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
-        intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState);
+        final Intent intent = new Intent(ACTION_BLUETOOTH_CONNECTION_STATE);
+        intent.putExtra(INTENT_EXTRA_CONNECTION_STATE, connectionState);
         if (auto_connect) {
-            intent.putExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT, true);
+            intent.putExtra(INTENT_EXTRA_BLE_AUTO_CONNECT, true);
         }
         sendBroadcast(intent);
     }
@@ -294,7 +296,7 @@ public class BluetoothLeService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
+        startForeground(MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         if (WheelLog.AppConfig.getUseReconnect()) {
             startReconnectTimer();
         }
@@ -450,12 +452,12 @@ public class BluetoothLeService extends Service {
         try {
             switch (WheelData.getInstance().getWheelType()) {
                 case KINGSONG:
-                    BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.KINGSONG_SERVICE_UUID));
+                    BluetoothGattService ks_service = this.mBluetoothGatt.getService(UUID.fromString(KINGSONG_SERVICE_UUID));
                     if (ks_service == null) {
                         Timber.i("writeBluetoothGattCharacteristic service == null");
                         return false;
                     }
-                    BluetoothGattCharacteristic ks_characteristic = ks_service.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID));
+                    BluetoothGattCharacteristic ks_characteristic = ks_service.getCharacteristic(UUID.fromString(KINGSONG_READ_CHARACTER_UUID));
                     if (ks_characteristic == null) {
                         Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                         return false;
@@ -467,12 +469,12 @@ public class BluetoothLeService extends Service {
                 case GOTWAY:
                 case GOTWAY_VIRTUAL:
                 case VETERAN:
-                    BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.GOTWAY_SERVICE_UUID));
+                    BluetoothGattService gw_service = this.mBluetoothGatt.getService(UUID.fromString(GOTWAY_SERVICE_UUID));
                     if (gw_service == null) {
                         Timber.i("writeBluetoothGattCharacteristic service == null");
                         return false;
                     }
-                    BluetoothGattCharacteristic characteristic = gw_service.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID));
+                    BluetoothGattCharacteristic characteristic = gw_service.getCharacteristic(UUID.fromString(GOTWAY_READ_CHARACTER_UUID));
                     if (characteristic == null) {
                         Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                         return false;
@@ -482,12 +484,12 @@ public class BluetoothLeService extends Service {
                     return this.mBluetoothGatt.writeCharacteristic(characteristic);
                 case NINEBOT:
                     if (WheelData.getInstance().getProtoVer().compareTo("") == 0) {
-                        BluetoothGattService nb_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_SERVICE_UUID));
+                        BluetoothGattService nb_service = this.mBluetoothGatt.getService(UUID.fromString(NINEBOT_SERVICE_UUID));
                         if (nb_service == null) {
                             Timber.i("writeBluetoothGattCharacteristic service == null");
                             return false;
                         }
-                        BluetoothGattCharacteristic nb_characteristic = nb_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID));
+                        BluetoothGattCharacteristic nb_characteristic = nb_service.getCharacteristic(UUID.fromString(NINEBOT_WRITE_CHARACTER_UUID));
                         if (nb_characteristic == null) {
                             Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                             return false;
@@ -498,12 +500,12 @@ public class BluetoothLeService extends Service {
                     } // if S2 or Mini, then pass to Ninebot_Z case
                     Timber.i("Passing to NZ");
                 case NINEBOT_Z:
-                    BluetoothGattService nz_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID));
+                    BluetoothGattService nz_service = this.mBluetoothGatt.getService(UUID.fromString(NINEBOT_Z_SERVICE_UUID));
                     if (nz_service == null) {
                         Timber.i("writeBluetoothGattCharacteristic service == null");
                         return false;
                     }
-                    BluetoothGattCharacteristic nz_characteristic = nz_service.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID));
+                    BluetoothGattCharacteristic nz_characteristic = nz_service.getCharacteristic(UUID.fromString(NINEBOT_Z_WRITE_CHARACTER_UUID));
                     if (nz_characteristic == null) {
                         Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                         return false;
@@ -512,12 +514,12 @@ public class BluetoothLeService extends Service {
                     Timber.i("writeBluetoothGattCharacteristic writeType = %d", nz_characteristic.getWriteType());
                     return this.mBluetoothGatt.writeCharacteristic(nz_characteristic);
                 case INMOTION:
-                    BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID));
+                    BluetoothGattService im_service = this.mBluetoothGatt.getService(UUID.fromString(INMOTION_WRITE_SERVICE_UUID));
                     if (im_service == null) {
                         Timber.i("writeBluetoothGattCharacteristic service == null");
                         return false;
                     }
-                    BluetoothGattCharacteristic im_characteristic = im_service.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID));
+                    BluetoothGattCharacteristic im_characteristic = im_service.getCharacteristic(UUID.fromString(INMOTION_WRITE_CHARACTER_UUID));
                     if (im_characteristic == null) {
                         Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                         return false;
@@ -545,12 +547,12 @@ public class BluetoothLeService extends Service {
                     Timber.i("writeBluetoothGattCharacteristic writeType = %d", im_characteristic.getWriteType());
                     return true;
                 case INMOTION_V2:
-                    BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(Constants.INMOTION_V2_SERVICE_UUID));
+                    BluetoothGattService inv2_service = this.mBluetoothGatt.getService(UUID.fromString(INMOTION_V2_SERVICE_UUID));
                     if (inv2_service == null) {
                         Timber.i("writeBluetoothGattCharacteristic service == null");
                         return false;
                     }
-                    BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID));
+                    BluetoothGattCharacteristic inv2_characteristic = inv2_service.getCharacteristic(UUID.fromString(INMOTION_V2_WRITE_CHARACTER_UUID));
                     if (inv2_characteristic == null) {
                         Timber.i("writeBluetoothGattCharacteristic characteristic == null");
                         return false;

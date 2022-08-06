@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.ParserLogToWheelData;
 import com.cooper.wheellog.utils.PermissionsUtil;
@@ -27,6 +26,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import timber.log.Timber;
+
+import static com.cooper.wheellog.utils.ConstantsKt.*;
 
 public class LoggingService extends Service
 {
@@ -53,9 +54,9 @@ public class LoggingService extends Service
             String action = intent.getAction();
             assert action != null;
             switch (action) {
-                case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
+                case ACTION_BLUETOOTH_CONNECTION_STATE:
                     if (mLocationManager != null && logLocationData) {
-                        int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
+                        int connectionState = intent.getIntExtra(INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
                         if (connectionState == BluetoothLeService.STATE_CONNECTED) {
                             mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
                         } else {
@@ -63,7 +64,7 @@ public class LoggingService extends Service
                         }
                     }
                     break;
-                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                case ACTION_WHEEL_DATA_AVAILABLE:
                     updateFile();
                     break;
             }
@@ -88,8 +89,8 @@ public class LoggingService extends Service
         fileUtil = new FileUtil(getApplicationContext());
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
+        intentFilter.addAction(ACTION_WHEEL_DATA_AVAILABLE);
+        intentFilter.addAction(ACTION_BLUETOOTH_CONNECTION_STATE);
         registerReceiver(mBluetoothUpdateReceiver, intentFilter);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -189,9 +190,9 @@ public class LoggingService extends Service
             fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert");
         }
 
-        Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
+        Intent serviceIntent = new Intent(ACTION_LOGGING_SERVICE_TOGGLED);
+        serviceIntent.putExtra(INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtil.getAbsolutePath());
+        serviceIntent.putExtra(INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
         Timber.i("DataLogger Started");
 
@@ -226,7 +227,7 @@ public class LoggingService extends Service
             try {
                 Timber.wtf("Uploading %s to electro.club", fileUtil.fileName);
                 byte[] data = fileUtil.readBytes();
-                ElectroClub.getInstance().uploadTrack(data, fileUtil.fileName, true, success -> {
+                ElectroClub.INSTANCE.uploadTrack(data, fileUtil.fileName, true, success -> {
                     if (!success) {
                         Timber.wtf("Upload failed...");
                     }
@@ -246,11 +247,11 @@ public class LoggingService extends Service
     }
 
     private void reallyDestroy(String path) {
-        Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
+        Intent serviceIntent = new Intent(ACTION_LOGGING_SERVICE_TOGGLED);
         if (!isNullOrEmpty(path)) {
-            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
+            serviceIntent.putExtra(INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
         }
-        serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false);
+        serviceIntent.putExtra(INTENT_EXTRA_IS_RUNNING, false);
         sendBroadcast(serviceIntent);
 
         try {

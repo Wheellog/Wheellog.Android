@@ -33,6 +33,8 @@ import java.util.Objects;
 
 import timber.log.Timber;
 
+import static com.cooper.wheellog.utils.ConstantsKt.*;
+
 public class FileUtil {
     private final Context context;
     private File file;
@@ -95,7 +97,7 @@ public class FileUtil {
                 contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName);
                 contentValues.put(MediaStore.Downloads.TITLE, fileName);
                 contentValues.put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName));
-                String path = Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME;
+                String path = Environment.DIRECTORY_DOWNLOADS + File.separator + LOG_FOLDER_NAME;
                 if (folder != null && !folder.equals("")) {
                     path += File.separator + folder.replace(':', '_');
                 }
@@ -113,12 +115,12 @@ public class FileUtil {
         } else {
             // api 28 or less
             // Get the directory for the user's public pictures directory.
-            String path = Constants.LOG_FOLDER_NAME;
+            String path = LOG_FOLDER_NAME;
             if (folder != null && !folder.equals("")) {
                 path += File.separator + folder.replace(':', '_');;
             }
             File dir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), path);
+                Environment.DIRECTORY_DOWNLOADS), path);
 
             if (!dir.mkdirs() && !ignoreTimber)
                 Timber.i("Directory not created");
@@ -193,7 +195,7 @@ public class FileUtil {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
         {
             File dir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
+                Environment.DIRECTORY_DOWNLOADS), LOG_FOLDER_NAME);
             File[] filesArray = dir.listFiles();
             if (filesArray == null) {
                 return null;
@@ -224,18 +226,18 @@ public class FileUtil {
         // Android 10+
         Uri uri = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
         String[] projection = {
-                MediaStore.Downloads.MIME_TYPE,
-                MediaStore.Downloads.DISPLAY_NAME,
-                MediaStore.Downloads.TITLE,
-                MediaStore.Downloads.SIZE,
-                MediaStore.Downloads._ID
+            MediaStore.Downloads.MIME_TYPE,
+            MediaStore.Downloads.DISPLAY_NAME,
+            MediaStore.Downloads.TITLE,
+            MediaStore.Downloads.SIZE,
+            MediaStore.Downloads._ID
         };
         String where = String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE);
         Cursor cursor = context.getContentResolver().query(uri,
-                projection,
-                where + " AND " + MediaStore.Downloads.DISPLAY_NAME + " LIKE ?",
-                new String[] { fileStartsWith + "%" },
-                MediaStore.Downloads.DATE_MODIFIED + " DESC");
+            projection,
+            where + " AND " + MediaStore.Downloads.DISPLAY_NAME + " LIKE ?",
+            new String[] { fileStartsWith + "%" },
+            MediaStore.Downloads.DATE_MODIFIED + " DESC");
         if (cursor != null && cursor.moveToFirst()) {
             String title = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME));
             String mediaId = cursor.getString(cursor.getColumnIndex(MediaStore.Downloads._ID));
@@ -256,7 +258,7 @@ public class FileUtil {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
         {
             File dir = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), Constants.LOG_FOLDER_NAME);
+                Environment.DIRECTORY_DOWNLOADS), LOG_FOLDER_NAME);
             File[] filesArray = dir.listFiles();
             if (filesArray == null) {
                 return tripModels;

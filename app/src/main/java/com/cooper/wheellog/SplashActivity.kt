@@ -7,10 +7,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 
 
-class SplashActivity: Activity() {
+class SplashActivity: AppCompatActivity() {
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,9 +29,7 @@ class SplashActivity: Activity() {
             null
         }
 
-        val job = Job()
-        val scope = CoroutineScope(job)
-        scope.launch {
+        lifecycleScope.launch {
             startActivity(intent, options)
             delay(5000)
             finish()

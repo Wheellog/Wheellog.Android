@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
-import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
+import com.cooper.wheellog.utils.MAIN_NOTIFICATION_ID
+import com.cooper.wheellog.utils.SomeUtil.playBeep
 import com.garmin.android.connectiq.ConnectIQ.*
 import com.garmin.android.connectiq.IQApp
 import com.garmin.android.connectiq.IQDevice
@@ -45,7 +45,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             IQApp(STABLE_APP_ID)
         }
         mConnectIQ.initialize(this, false, this)
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
+        startForeground(MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         return START_STICKY
     }
 

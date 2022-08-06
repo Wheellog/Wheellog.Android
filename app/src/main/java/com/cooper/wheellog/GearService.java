@@ -15,8 +15,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import timber.log.Timber;
 
-import com.cooper.wheellog.utils.Constants;
 import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.accessory.SA;
 import com.samsung.android.sdk.accessory.SAAgent;
@@ -30,8 +30,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import static com.cooper.wheellog.utils.ConstantsKt.MAIN_NOTIFICATION_ID;
 import static java.lang.String.format;
-
 
 public class GearService extends SAAgent {
     GearBinder mBinder = new GearBinder();
@@ -55,63 +55,63 @@ public class GearService extends SAAgent {
         Log.d(TAG, "Service instantiated");
     }
 
-LocationListener locationListener = new LocationListener() {
+    LocationListener locationListener = new LocationListener() {
 
-    long mTime;
-    float   mBearing, mSpeed;
-    double mLatitude, mLongitude, mAltitude;
-    boolean bHasAltitude, bHasBearing, bHasSpeed;
-    boolean bGpsEnabled = true;
+        long mTime;
+        float mBearing, mSpeed;
+        double mLatitude, mLongitude, mAltitude;
+        boolean bHasAltitude, bHasBearing, bHasSpeed;
+        boolean bGpsEnabled = true;
 
-    @Override
-    public  String toString() {
-        //In general this isn't how I would encode something in JSON, but the amount
-        //of data is small enough such that I've decided to use String.Format to
-        //produce what's needed.
-        return format(Locale.ROOT,"\"gpsEnabled\" :%b,"+
-                        "\"hasSpeed\":%b, \"gpsSpeed\":%1.2f, \"hasBearing\":%b, \"bearing\":%1.4f,"+
-                        "\"latitude\":%f, \"longitude\":%f,\"hasAltitude\":%b, \"altitude\":%1.3f",
-                bGpsEnabled,
-                bHasSpeed, mSpeed,
-                bHasBearing, mBearing,
-                mLatitude, mLongitude,
-                bHasAltitude, mAltitude
-        );
-    }
-    @Override
-    public void onLocationChanged(Location location) {
-        if(bHasSpeed = location.hasSpeed())
-            mSpeed = location.getSpeed();
-        if(bHasAltitude = location.hasAltitude())
-            mAltitude = location.getAltitude();
-        if(location.hasSpeed())
-            mSpeed = location.getSpeed();
-        if(bHasBearing = location.hasBearing())
-            mBearing = location.getBearing();
-        mLatitude = location.getLatitude();
-        mLongitude = location.getLongitude();
-        mTime = location.getTime();
-//        transmitMessage(); Me lo he llevado a la rutina que se ejecuta de forma temporizada
-    }
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-    }
+        @Override
+        public  String toString() {
+            //In general this isn't how I would encode something in JSON, but the amount
+            //of data is small enough such that I've decided to use String.Format to
+            //produce what's needed.
+            return format(Locale.ROOT,"\"gpsEnabled\" :%b,"+
+                            "\"hasSpeed\":%b, \"gpsSpeed\":%1.2f, \"hasBearing\":%b, \"bearing\":%1.4f,"+
+                            "\"latitude\":%f, \"longitude\":%f,\"hasAltitude\":%b, \"altitude\":%1.3f",
+                    bGpsEnabled,
+                    bHasSpeed, mSpeed,
+                    bHasBearing, mBearing,
+                    mLatitude, mLongitude,
+                    bHasAltitude, mAltitude
+            );
+        }
+        @Override
+        public void onLocationChanged(Location location) {
+            if (bHasSpeed == location.hasSpeed())
+                mSpeed = location.getSpeed();
+            if (bHasAltitude == location.hasAltitude())
+                mAltitude = location.getAltitude();
+            if (location.hasSpeed())
+                mSpeed = location.getSpeed();
+            if (bHasBearing == location.hasBearing())
+                mBearing = location.getBearing();
+            mLatitude = location.getLatitude();
+            mLongitude = location.getLongitude();
+            mTime = location.getTime();
+    //        transmitMessage(); Me lo he llevado a la rutina que se ejecuta de forma temporizada
+        }
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+        }
 
-    @Override
-    public void onProviderEnabled(String s) {
-        bGpsEnabled = true;
-    }
+        @Override
+        public void onProviderEnabled(String s) {
+            bGpsEnabled = true;
+        }
 
-    @Override
-    public void onProviderDisabled(String s) {
-        bGpsEnabled = false;
-    }
-};
+        @Override
+        public void onProviderDisabled(String s) {
+            bGpsEnabled = false;
+        }
+    };
 
     public void transmitMessage(String sendingString) {
         byte[] sendingMessage = sendingString.getBytes();
 
-        Log.i(TAG, sendingString);
+        Timber.tag(TAG).i(sendingString);
 
         for (GearSAPServiceProviderConnection connection : mConnectionBag) {
             try {
@@ -152,11 +152,11 @@ LocationListener locationListener = new LocationListener() {
                 } else {
                     message = "{";
                 }
-                if(locationListener!=null) {
-                    if (WheelData.getInstance()!=null) {
-                    message = message + "," + getLocationMessage();
-                    } else{
-                    message = getLocationMessage();
+                if (locationListener != null) {
+                    if (WheelData.getInstance() != null) {
+                        message = message + "," + getLocationMessage();
+                    } else {
+                        message = getLocationMessage();
                     }
                 }
                 message = message + "}";
@@ -180,7 +180,7 @@ LocationListener locationListener = new LocationListener() {
     }
 
     public String getLocationMessage() {
-        if(locationListener==null) {
+        if (locationListener == null) {
             return "";
         }
         return locationListener.toString();
@@ -188,11 +188,11 @@ LocationListener locationListener = new LocationListener() {
 
 
     void startSendingData() {
-        if(!mIsListening) {
+        if (!mIsListening) {
             int permissionCheck = ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION);
 
-            if(permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 mIsListening = true;
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
             }
@@ -201,7 +201,7 @@ LocationListener locationListener = new LocationListener() {
     }
 
     void stopSendingData() {
-        if(mIsListening) {
+        if (mIsListening) {
             mLocationManager.removeUpdates(locationListener);
             mIsListening = false;
             keepAliveTimer.cancel();
@@ -210,7 +210,7 @@ LocationListener locationListener = new LocationListener() {
     }
 
     void reevaluateNeedToSend() {
-        if(mConnectionBag.size()==0)
+        if (mConnectionBag.size() == 0)
             stopSendingData();
         else
             startSendingData();
@@ -224,27 +224,27 @@ LocationListener locationListener = new LocationListener() {
 //    protected void onServiceConnectionResponse(SASocket currentConnection, int result) {
     protected void onServiceConnectionResponse(SAPeerAgent agent, SASocket currentConnection, int result) {
         super.onServiceConnectionResponse(agent, currentConnection, result);
-        if(result == CONNECTION_SUCCESS) {
-            if(currentConnection != null){
+        if (result == CONNECTION_SUCCESS) {
+            if (currentConnection != null) {
                 GearSAPServiceProviderConnection connection = (GearSAPServiceProviderConnection) currentConnection;
                 connection.setParent(this);
                 addConnection(connection);
                 Toast.makeText(getBaseContext(), "GEAR CONNECTION ESTABLISHED", Toast.LENGTH_LONG).show();
                 reevaluateNeedToSend(); //We start sending when watch connects
             } else {
-                Log.e(TAG, "Connection object is null.");
+                Timber.tag(TAG).e("Connection object is null.");
             }
         } else if (result == CONNECTION_ALREADY_EXIST) {
-            Log.e(TAG, "CONNECTION_ALREADY_EXISTS");
+            Timber.tag(TAG).e("CONNECTION_ALREADY_EXISTS");
         } else {
-            Log.e(TAG, "connection error result" + result);
+            Timber.tag(TAG).e("connection error result: " + result);
         }
     }
 
     @Override
     protected void onServiceConnectionRequested(SAPeerAgent agent) {
         acceptServiceConnectionRequest(agent);
-        Log.i(TAG, "Accepting connection"); //The watch initiates always the connection
+        Timber.tag(TAG).i("Accepting connection"); //The watch initiates always the connection
     }
 
     @Override
@@ -256,12 +256,10 @@ LocationListener locationListener = new LocationListener() {
         SA accessory = new SA();
         try {
             accessory.initialize(this); //Y expect this to do nothing for non-Samsung devices
-        }
-        catch (SsdkUnsupportedException exc) {
-            Log.e(TAG, "Unsupported SDK");
-        }
-        catch(Exception exc) {
-            Log.e(TAG, "initialization failed");
+        } catch (SsdkUnsupportedException exc) {
+            Timber.tag(TAG).e("Unsupported SDK");
+        } catch(Exception exc) {
+            Timber.tag(TAG).e("initialization failed");
             exc.printStackTrace();
             stopSelf();
         }
@@ -272,14 +270,14 @@ LocationListener locationListener = new LocationListener() {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         Toast.makeText(getBaseContext(), "Gear Service started", Toast.LENGTH_LONG).show();
-        Log.i(TAG, "started");
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
+        Timber.tag(TAG).i("started");
+        startForeground(MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind");
+        Timber.tag(TAG).i("onBind");
         return mBinder;
     }
 

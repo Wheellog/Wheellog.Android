@@ -13,17 +13,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+object ElectroClub {
 
-class ElectroClub {
-
-    companion object {
-        @JvmStatic val instance: ElectroClub = ElectroClub()
-
-        const val LOGIN_METHOD = "login"
-        const val UPLOAD_METHOD = "uploadTrack"
-        const val GET_GARAGE_METHOD = "getUserGarage"
-        const val GET_GARAGE_METHOD_FILTRED = "garage"
-    }
+    const val LOGIN_METHOD = "login"
+    const val UPLOAD_METHOD = "uploadTrack"
+    const val GET_GARAGE_METHOD = "getUserGarage"
+    const val GET_GARAGE_METHOD_FILTRED = "garage"
 
     private val url = "https://electro.club/api/v1"
     private val accessToken = BuildConfig.ec_accessToken
@@ -102,8 +97,7 @@ class ElectroClub {
     }
 
     fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean, success: (Boolean) -> Unit) {
-        if (WheelLog.AppConfig.ecToken == null)
-        {
+        if (WheelLog.AppConfig.ecToken == null) {
             lastError = "Missing parameters"
             errorListener?.invoke(UPLOAD_METHOD, lastError)
             success(false)
@@ -201,8 +195,7 @@ class ElectroClub {
     }
 
     private fun getGarage(success: (Array<Transport>) -> Unit) {
-        if (WheelLog.AppConfig.ecToken == null || WheelLog.AppConfig.ecUserId == null)
-        {
+        if (WheelLog.AppConfig.ecToken == null || WheelLog.AppConfig.ecUserId == null) {
             lastError = "Missing parameters"
             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
             return

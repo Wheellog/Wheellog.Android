@@ -12,6 +12,7 @@ import timber.log.Timber;
 import android.content.Intent;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
+import static com.cooper.wheellog.utils.ConstantsKt.*;
 
 public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;
@@ -92,8 +93,8 @@ public class InMotionAdapter extends BaseAdapter {
 
                 if (news != null) {
                     Timber.i("News to send: %s, sending Intent", news);
-                    Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                    intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
+                    Intent intent = new Intent(ACTION_WHEEL_NEWS_AVAILABLE);
+                    intent.putExtra(INTENT_EXTRA_NEWS, news);
                     mContext.sendBroadcast(intent);
                 }
             }

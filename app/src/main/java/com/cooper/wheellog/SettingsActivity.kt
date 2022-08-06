@@ -10,7 +10,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var fragment: PreferencesFragment
 
-    override fun attachBaseContext(base: Context?) {
+    override fun attachBaseContext(base: Context) {
         super.attachBaseContext(LocaleManager.setLocale(base))
     }
 

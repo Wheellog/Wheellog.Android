@@ -1,95 +1,89 @@
-package com.cooper.wheellog;
+package com.cooper.wheellog
 
-import android.bluetooth.BluetoothDevice;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity
+import android.bluetooth.BluetoothDevice
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
+import android.view.ViewGroup
+import android.widget.BaseAdapter
 
 // Adapter for holding devices found through scanning.
-public class DeviceListAdapter extends BaseAdapter {
-    private final ArrayList<BluetoothDevice> mLeDevices;
-    private final ArrayList<String> mLeAdvDatas;
-    private final LayoutInflater mInflator;
+class DeviceListAdapter(appCompatActivity: AppCompatActivity) : BaseAdapter() {
+    private val mLeDevices = mutableListOf<BluetoothDevice>()
+    private val mLeAdvDatas = mutableListOf<String>()
+    private val mInflator: LayoutInflater
 
-    static class ViewHolder {
-        TextView deviceName;
-        TextView deviceAddress;
+    internal class ViewHolder {
+        var deviceName: TextView? = null
+        var deviceAddress: TextView? = null
     }
 
-    public DeviceListAdapter(AppCompatActivity appCompatActivity) {
-        super();
-        mLeDevices = new ArrayList<>();
-        mLeAdvDatas = new ArrayList<>();
-        mInflator = appCompatActivity.getLayoutInflater();
+    init {
+        mInflator = appCompatActivity.layoutInflater
     }
 
-    public void addDevice(BluetoothDevice device, String advData) {
-        if (!WheelLog.AppConfig.getShowUnknownDevices()) {
-            String deviceName = device.getName();
-            if (deviceName == null || deviceName.length() == 0)
-                return;
+    fun addDevice(device: BluetoothDevice, advData: String) {
+        if (!WheelLog.AppConfig.showUnknownDevices) {
+            if (device.name.isNullOrEmpty()) {
+                return
+            }
         }
-
-        if(!mLeDevices.contains(device)) {
-            mLeDevices.add(device);
-            mLeAdvDatas.add(advData);
+        if (!mLeDevices.contains(device)) {
+            mLeDevices.add(device)
+            mLeAdvDatas.add(advData)
         }
     }
 
-    public BluetoothDevice getDevice(int position) {
-        return mLeDevices.get(position);
+    fun getDevice(position: Int): BluetoothDevice {
+        return mLeDevices[position]
     }
 
-    public String getAdvData(int position) {
-        return mLeAdvDatas.get(position);
-    }
-//    public void clear() {
-//        mLeDevices.clear();
-//    }
-
-    @Override
-    public int getCount() {
-        return mLeDevices.size();
+    fun getAdvData(position: Int): String {
+        return mLeAdvDatas[position]
     }
 
-    @Override
-    public Object getItem(int i) {
-        return mLeDevices.get(i);
+    // public void clear() {
+    //    mLeDevices.clear();
+    // }
+    override fun getCount(): Int {
+        return mLeDevices.size
     }
 
-    @Override
-    public long getItemId(int i) {
-        return i;
+    override fun getItem(i: Int): Any {
+        return mLeDevices[i]
     }
 
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder viewHolder;
+    override fun getItemId(i: Int): Long {
+        return i.toLong()
+    }
+
+    override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
+        var view = view
+        val viewHolder: ViewHolder
         // General ListView optimization code.
         if (view == null) {
-            view = mInflator.inflate(R.layout.scan_list_item, null);
-            viewHolder = new ViewHolder();
-            viewHolder.deviceAddress = view.findViewById(R.id.device_address);
-            viewHolder.deviceName = view.findViewById(R.id.device_name);
-            view.setTag(viewHolder);
+            view = mInflator.inflate(R.layout.scan_list_item, null)
+
+            viewHolder = ViewHolder().apply {
+                deviceAddress = view.findViewById(R.id.device_address)
+                deviceName = view.findViewById(R.id.device_name)
+            }
+
+            view.tag = viewHolder
         } else {
-            viewHolder = (ViewHolder) view.getTag();
+            viewHolder = view.tag as ViewHolder
+        }
+        val device = mLeDevices[i]
+        val deviceName = device.name
+
+        if (!deviceName.isNullOrEmpty()) {
+            viewHolder.deviceName!!.text = deviceName
+        } else {
+            viewHolder.deviceName!!.setText(R.string.unknown_device)
         }
 
-        BluetoothDevice device = mLeDevices.get(i);
-        final String deviceName = device.getName();
-        if (deviceName != null && deviceName.length() > 0)
-            viewHolder.deviceName.setText(deviceName);
-        else
-            viewHolder.deviceName.setText(R.string.unknown_device);
-        viewHolder.deviceAddress.setText(device.getAddress());
-
-        return view;
+        viewHolder.deviceAddress!!.text = device.address
+        return requireNotNull(view)
     }
 }

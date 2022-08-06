@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 class PrivacyPolicyActivity : AppCompatActivity() {
     private lateinit var dialog: AlertDialog
 
-    override fun attachBaseContext(base: Context?) {
+    override fun attachBaseContext(base: Context) {
         super.attachBaseContext(LocaleManager.setLocale(base))
     }
 
