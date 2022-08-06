@@ -3,10 +3,11 @@ package com.cooper.wheellog.data
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import org.json.JSONObject
-import java.sql.*
 
-@Entity(tableName = "trip_database", indices = [Index(value = ["fileName"], unique = true)])
+@Entity(
+    tableName = "trip_database",
+    indices = [Index(value = ["fileName"], unique = true)]
+)
 data class TripData(
         @PrimaryKey(autoGenerate = true)
         val id: Int = 0,
