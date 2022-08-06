@@ -157,11 +157,40 @@ class SomeUtil {
             val templatesBox: Spinner = dialogView.findViewById(R.id.spinner_templates)
             templatesBox.visibility = View.GONE
             val templates = mutableMapOf(
-                "Gotway 1" to Pair(10, 20), // first - speed, second - voltage
-                "Gotway 2" to Pair(20, 30),
-                "Gotway 3" to Pair(30, 40),
-                "Не гот" to Pair(10, 10),
-            )
+                    "Begode MTen 67v" to Pair(44.0, 67.2), // first - speed, second - voltage
+                    "Begode MTen 84v" to Pair(56.0, 84.0),
+                    "Begode MCM5 67v" to Pair(44.0, 67.2),
+                    "Begode MCM5v2 67v" to Pair(51.2, 67.2),
+                    "Begode MCM5 84v" to Pair(56.0, 84.0),
+                    "Begode MCM5v2 84v" to Pair(64.0, 84.0),
+                    "Begode Tesla/T3 84v" to Pair(66.5, 84.0),
+                    "Begode Nikola 84v" to Pair(70.6, 84.0),
+                    "Begode Nikola 100v" to Pair(85.5, 100.8),
+                    "Begode MSX 84v" to Pair(79.0, 84.0),
+                    "Begode MSX 100v" to Pair(95.0, 100.8),
+                    "Begode MSP HS (C30)" to Pair(100.5, 100.8),
+                    "Begode MSP HT (C38)" to Pair(79.0, 100.8),
+                    "Begode EX (C40)" to Pair(79.0, 100.8),
+                    "Begode EX.N (C30)" to Pair(107.1, 100.8),
+                    "Begode RS HS (C30)" to Pair(105.0, 100.8),
+                    "Begode RS HT (C38)" to Pair(79.0, 100.8),
+                    "Begode Hero HS (C30)" to Pair(105.0, 100.8),
+                    "Begode Hero HT (C38)" to Pair(79.0, 100.8),
+                    "Begode Master (C38)" to Pair(113.0, 134.4),
+                    "Begode Monster 84v" to Pair(74.4, 100.8),
+                    "Begode Monster 100v" to Pair(93.0, 100.8),
+
+                    "Veteran Sherman" to Pair(102.0, 100.8),
+
+                    "Ninebot Z6" to Pair(61.5, 57.7),
+                    "Ninebot Z8/Z10" to Pair(81.5, 57.7),
+
+                    "Inmotion V5F" to Pair(37.0, 84.0),
+                    "Inmotion V8" to Pair(45.0, 84.0),
+                    "Inmotion V8F/V8S" to Pair(58.0, 84.0),
+                    "Inmotion V10/V10F" to Pair(55.0, 84.0),
+
+                    )
             templatesBox.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
                 templates.toList().map { it.first })
             var selectedOption = 1
