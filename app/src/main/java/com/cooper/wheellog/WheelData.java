@@ -1031,7 +1031,7 @@ public class WheelData {
             double minVoltage = getVoltageTiltbackForWheel();
             double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
             if (voltagePercentStep != 0) {
-                battery = (int) ((getVoltageDouble() - minVoltage) / voltagePercentStep);
+                battery = MathsUtil.clamp((int) ((getVoltageDouble() - minVoltage) / voltagePercentStep), 0, 100);
             }
         }
         mBatteryLowest = Math.min(mBatteryLowest, battery);

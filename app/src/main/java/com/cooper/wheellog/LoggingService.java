@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.cooper.wheellog.data.TripData;
+import com.cooper.wheellog.data.TripDatabase;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.ParserLogToWheelData;
@@ -194,6 +196,13 @@ public class LoggingService extends Service
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);
         sendBroadcast(serviceIntent);
         Timber.i("DataLogger Started");
+
+//        TripData tripData = new TripData(
+//                filename,
+//                WheelLog.AppConfig.getLastMac(),
+//                WheelLog.AppConfig.getProfileName(),
+//                (int)(new Date().getTime() / 1000));
+//        TripDatabase.Companion.getDataBase(getBaseContext()).tripDao().insert(tripData);
 
         return START_STICKY;
     }
