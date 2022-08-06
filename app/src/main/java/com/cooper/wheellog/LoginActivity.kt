@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 
-
 class LoginActivity : AppCompatActivity() {
     private lateinit var dialog: AlertDialog
 
@@ -35,11 +34,11 @@ class LoginActivity : AppCompatActivity() {
 
         ok.setOnClickListener {
             ElectroClub.login(
-                    email.editText?.text.toString(),
-                    password.editText?.text.toString()
-            ) {
+                email.editText?.text.toString(),
+                password.editText?.text.toString()
+            ) { success ->
                 this.runOnUiThread {
-                    if (it) {
+                    if (success) {
                         setResult(RESULT_OK, Intent())
                         finish()
                     } else {
