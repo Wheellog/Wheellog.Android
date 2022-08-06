@@ -35,11 +35,11 @@ class LoginActivity : AppCompatActivity() {
 
         ok.setOnClickListener {
             ElectroClub.instance.login(
-                    email.editText?.text.toString(),
-                    password.editText?.text.toString()
-            ) {
+                email.editText?.text.toString(),
+                password.editText?.text.toString()
+            ) { success ->
                 this.runOnUiThread {
-                    if (it) {
+                    if (success) {
                         setResult(RESULT_OK, Intent())
                         finish()
                     } else {

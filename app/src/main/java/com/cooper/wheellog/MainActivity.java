@@ -37,6 +37,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cooper.wheellog.companion.WearOs;
 
+import com.cooper.wheellog.data.TripDao;
+import com.cooper.wheellog.data.TripDatabase;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -464,13 +466,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         WheelData.initiate();
 
-        ElectroClub.getInstance().setErrorListener((method, error) -> {
+        ElectroClub electroClub = ElectroClub.getInstance();
+        electroClub.setDao(TripDatabase.Companion.getDataBase(this).tripDao());
+        electroClub.setErrorListener((method, error) -> {
             String message = "[ec] " + method + " error: " + error;
             Timber.i(message);
             MainActivity.this.runOnUiThread(() -> showSnackBar(message, 4000));
             return null;
         });
-        ElectroClub.getInstance().setSuccessListener((method, success) -> {
+        electroClub.setSuccessListener((method, success) -> {
             if (method.equals(ElectroClub.GET_GARAGE_METHOD)) {
                 return null;
             }
@@ -562,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
         }
         WheelLog.ThemeManager.changeAppIcon(MainActivity.this);
         super.onDestroy();
-        new CountDownTimer(60000 /* 1 min */, 1000) {
+        new CountDownTimer(2 * 60 * 1000 /* 2 min */, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (!LoggingService.isInstanceCreated()) {
@@ -738,7 +742,8 @@ public class MainActivity extends AppCompatActivity {
         if (LoggingService.isInstanceCreated()) {
             stopService(dataLoggerServiceIntent);
             if (!onDestroyProcess) {
-                new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips(), 200);
+                new Handler().postDelayed(() -> pagerAdapter.updatePageOfTrips()
+                        , 200);
             }
         }
         else if (mConnectionState == BluetoothLeService.STATE_CONNECTED)
