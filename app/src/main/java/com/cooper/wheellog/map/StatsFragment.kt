@@ -1,9 +1,7 @@
 package com.cooper.wheellog.map
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.cooper.wheellog.R
@@ -16,30 +14,27 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import java.text.SimpleDateFormat
 import java.util.*
 
-class StatsFragment: Fragment() {
+class StatsFragment: Fragment(R.layout.chart_fragment) {
+
     private val timeFormatter = SimpleDateFormat("HH:mm:ss ", Locale.US)
+
     private lateinit var chart1: LineChart
     private lateinit var chart2: LineChart
-    private val viewModel: MapViewModel by activityViewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.chart_fragment, container, false)
-    }
+    private val viewModel: MapViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         chart1 = view.findViewById(R.id.chart1)
         chart2 = view.findViewById(R.id.chart2)
         initChart(chart1)
         initChart(chart2)
-        viewModel.selectedItem.observe(viewLifecycleOwner, { tripData ->
+
+        viewModel.selectedItem.observe(viewLifecycleOwner) { tripData ->
             if (tripData != null) {
-                tripDataRecived(chart1, tripData.stats1!!)
-                tripDataRecived(chart2, tripData.stats2!!)
+                tripDataReceived(chart1, tripData.stats1)
+                tripDataReceived(chart2, tripData.stats2)
             }
-        })
+        }
     }
 
     private val chartAxisValueFormatter: ValueFormatter = object : ValueFormatter() {
@@ -73,7 +68,7 @@ class StatsFragment: Fragment() {
         }
     }
 
-    private fun tripDataRecived(chart: LineChart, stats: List<LineDataSet>) {
+    private fun tripDataReceived(chart: LineChart, stats: List<LineDataSet>) {
         chart.apply {
             data = LineData().apply {
                 stats.forEach {

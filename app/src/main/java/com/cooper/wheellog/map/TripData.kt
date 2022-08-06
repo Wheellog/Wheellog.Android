@@ -2,10 +2,11 @@ package com.cooper.wheellog.map
 
 import com.github.mikephil.charting.data.LineDataSet
 
-data class TripData(val title: String)
-{
-    var geoLine: List<LogGeoPoint>? = null
-    var stats1: List<LineDataSet>? = null
-    var stats2: List<LineDataSet>? = null
+data class TripData(
+    val title: String,
+    val geoLine: List<LogGeoPoint> = emptyList(),
+    val stats1: List<LineDataSet> = emptyList(),
+    val stats2: List<LineDataSet> = emptyList()
+) {
     var errorMessage: String = ""
 }

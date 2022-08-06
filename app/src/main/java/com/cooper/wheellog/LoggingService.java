@@ -239,22 +239,22 @@ public class LoggingService extends Service
                     if (!success) {
                         Timber.wtf("Upload failed...");
                     }
-                    RealyDestroy(null);
+                    reallyDestroy(null);
                     return null;
                 });
             } catch (IOException e) {
                 e.printStackTrace();
                 Timber.wtf("Error upload log to electro.club: %s", e.toString());
-                RealyDestroy(path);
+                reallyDestroy(path);
             }
         }
 
         if (!isBusy) {
-            RealyDestroy(path);
+            reallyDestroy(path);
         }
     }
 
-    private void RealyDestroy(String path) {
+    private void reallyDestroy(String path) {
         Intent serviceIntent = new Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED);
         if (!isNullOrEmpty(path)) {
             serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, path);
@@ -340,7 +340,7 @@ public class LoggingService extends Service
     // Define a listener that responds to location updates
     LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
-            // Called when a new location is found by the network location provider.
+            // Called when a new location is found by the specified location provider.
             mLocation = location;
         }
 
@@ -353,23 +353,23 @@ public class LoggingService extends Service
 
     @SuppressWarnings("MissingPermission")
     private Location getLastBestLocation() {
-
         Location locationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Location locationNet = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         long GPSLocationTime = 0;
-        if (null != locationGPS) { GPSLocationTime = locationGPS.getTime(); }
-
         long NetLocationTime = 0;
 
-        if (null != locationNet) {
+        if (locationGPS != null) {
+            GPSLocationTime = locationGPS.getTime();
+        }
+
+        if (locationNet != null) {
             NetLocationTime = locationNet.getTime();
         }
 
-        if ( 0 < GPSLocationTime - NetLocationTime ) {
+        if (GPSLocationTime - NetLocationTime > 0) {
             return locationGPS;
-        }
-        else {
+        } else {
             return locationNet;
         }
     }

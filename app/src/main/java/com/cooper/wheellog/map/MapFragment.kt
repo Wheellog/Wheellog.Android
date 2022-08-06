@@ -57,8 +57,8 @@ class MapFragment : Fragment() {
             map.overlayManager.tilesOverlay.setColorFilter(TilesOverlay.INVERT_COLORS)
         }
 
-        viewModel.selectedItem.observe(viewLifecycleOwner, { tripData ->
-            if (tripData.geoLine == null) {
+        viewModel.selectedItem.observe(viewLifecycleOwner) { tripData ->
+            if (tripData.geoLine.isEmpty()) {
                 // show error
                 AlertDialog.Builder(requireContext())
                     .setTitle("Failed to open map.")
@@ -68,7 +68,7 @@ class MapFragment : Fragment() {
             } else {
                 drawMap(tripData)
             }
-        })
+        }
     }
 
     private fun drawMap(tripData: TripData) {
@@ -103,11 +103,12 @@ class MapFragment : Fragment() {
 
         map.apply {
             isVisible = true
-            tripData.geoLine!!.forEach {
+            tripData.geoLine.forEach {
                 polyLine.addPoint(it)
             }
             overlays.add(polyLine)
-            val startPoint = tripData.geoLine!!.first()
+            val startPoint = tripData.geoLine.firstOrNull()
+
             Marker(this).apply {
                 title = "Start!\n%s".format(startPoint.toString())
                 position = startPoint
@@ -115,7 +116,8 @@ class MapFragment : Fragment() {
                 icon = getDrawableEx(R.drawable.ic_start_marker)
                 overlays.add(this)
             }
-            val finishPoint = tripData.geoLine!!.last()
+
+            val finishPoint = tripData.geoLine.lastOrNull()
             Marker(this).apply {
                 title = "Finish!\n%s".format(finishPoint.toString())
                 position = finishPoint
@@ -124,8 +126,8 @@ class MapFragment : Fragment() {
                 overlays.add(this)
             }
             try {
-                if (tripData.geoLine!!.size > 100) {
-                    val maxSpeedPoint = tripData.geoLine!!.maxByOrNull { it.speed }
+                if (tripData.geoLine.size > 100) {
+                    val maxSpeedPoint = tripData.geoLine.maxByOrNull { it.speed }
                     if (maxSpeedPoint != null && maxSpeedPoint.speed > 20) {
                         Marker(this).apply {
                             title = "Max speed!\n%s".format(maxSpeedPoint.toString())
