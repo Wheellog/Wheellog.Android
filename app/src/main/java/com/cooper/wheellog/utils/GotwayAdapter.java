@@ -17,6 +17,7 @@ public class GotwayAdapter extends BaseAdapter {
     private String model = "";
     private String imu = "";
     private String fw = "";
+    private int attempt = 0;
 
     @Override
     public boolean decode(byte[] data) {
@@ -25,7 +26,16 @@ public class GotwayAdapter extends BaseAdapter {
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
         boolean newDataFound = false;
-
+        String dataS = new String(data, 0, data.length-1).trim();
+        if (dataS.startsWith("NAME")) {
+            model = new String(data, 5, data.length-6).trim();
+            wd.setModel(model);
+        } else if (dataS.startsWith("GW")) {
+            fw = new String(data, 2, data.length-3).trim();
+            wd.setVersion(fw);
+        } else if (dataS.startsWith("MPU")) {
+            imu = new String(data, 1, 7).trim();
+        }
         for (byte c : data) {
             if (unpacker.addChar(c)) {
 
@@ -135,15 +145,21 @@ public class GotwayAdapter extends BaseAdapter {
                         mContext.sendBroadcast(intent);
                     }
                 }
-                if (model.equals("")) {
-                    sendCommand("N");
-                    model = "11";
-                } else if (fw.equals("")) {
-                    sendCommand("V");
-                    fw = "11";
-                } else if (imu.equals("")) {
-                    sendCommand("k");
-                    imu = "11";
+                if (attempt < 10) {
+                    if (model.equals("")) {
+                        sendCommand("N");
+                    } else if (fw.equals("")) {
+                        sendCommand("V");
+                    }
+                    attempt += 1;
+                } else {
+                    if (model.equals("")) {
+                        model = "Begode";
+                        wd.setVersion(model);
+                    } else if (fw.equals("")) {
+                        fw = "-";
+                        wd.setVersion(fw);
+                    }
                 }
             }
         }
@@ -228,7 +244,7 @@ public class GotwayAdapter extends BaseAdapter {
         final byte[] param = new byte[1];
         param[0] = (byte) ((ledMode % 10) + 0x30);
         new Handler().postDelayed(() -> sendCommand("W", "M"), 100);
-        new Handler().postDelayed(() -> sendCommand(param, "b", 100), 300);
+        new Handler().postDelayed(() -> sendCommand(param, "b".getBytes(), 100), 300);
     }
 
     @Override
@@ -236,7 +252,7 @@ public class GotwayAdapter extends BaseAdapter {
         final byte[] param = new byte[1];
         param[0] = (byte) ((beeperVolume % 10) + 0x30);
         new Handler().postDelayed(() -> sendCommand("W", "B"), 100);
-        new Handler().postDelayed(() -> sendCommand(param, "b", 100), 300);
+        new Handler().postDelayed(() -> sendCommand(param, "b".getBytes(), 100), 300);
     }
 
     @Override

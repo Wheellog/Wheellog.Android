@@ -518,6 +518,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.voltage_sag)
                 setupFieldForSecondPage(R.string.current)
                 setupFieldForSecondPage(R.string.power)
+                setupFieldForSecondPage(R.string.model)
+                setupFieldForSecondPage(R.string.version)
                 setupFieldForSecondPage(R.string.charging_status)
                 setupFieldForSecondPage(R.string.charging)
             }
