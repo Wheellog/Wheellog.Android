@@ -149,9 +149,9 @@ public class GotwayAdapter extends BaseAdapter {
                 }
                 if (attempt < 10) {
                     if (model.equals("")) {
-                        sendCommand("N");
+                        sendCommand("N", "", 0);
                     } else if (fw.equals("")) {
-                        sendCommand("V");
+                        sendCommand("V", "", 0);
                     }
                     attempt += 1;
                 } else {
@@ -183,7 +183,9 @@ public class GotwayAdapter extends BaseAdapter {
 
     private void sendCommand(byte[] s, byte[] delayed, int timer) {
         WheelData.getInstance().bluetoothCmd(s);
-        new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
+        if (timer > 0) {
+            new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
+        }
     }
 
     @Override
