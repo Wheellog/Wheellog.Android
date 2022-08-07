@@ -153,8 +153,11 @@ class SomeUtil {
 
             val inflater: LayoutInflater = LayoutInflater.from(context)
             val binding = UpdatePwmSettingsBinding.inflate(inflater, null, false)
-            binding.modelName.text = WheelData.getInstance().model
-            val svLayout : LinearLayout = binding.setSpeedVoltageLayout
+            binding.modelName.text =
+                if (WheelData.getInstance().model.isNullOrEmpty())
+                    "Unknown model"
+                else WheelData.getInstance().model
+            val svLayout: LinearLayout = binding.setSpeedVoltageLayout
             val templatesBox: Spinner = binding.spinnerTemplates
             val templates = when (WheelData.getInstance().wheelType) {
                 Constants.WHEEL_TYPE.GOTWAY ->
@@ -210,41 +213,45 @@ class SomeUtil {
             binding.selectedPwmVariant
                 .setOnCheckedChangeListener { _, checkedId ->
                     svLayout.visibility =
-                        if (checkedId == R.id.radioButton1) View.VISIBLE else View.GONE
+                        if (checkedId == binding.radioButton1.id) View.VISIBLE else View.GONE
                     templatesBox.visibility =
-                        if (checkedId == R.id.radioButton3) View.VISIBLE else View.GONE
+                        if (checkedId == binding.radioButton3.id) View.VISIBLE else View.GONE
                     when (checkedId) {
                         R.id.radioButton1 -> selectedOption = 1
                         R.id.radioButton2 -> selectedOption = 2
                         R.id.radioButton3 -> selectedOption = 3
                     }
                 }
-            val speedValue: TextView = binding.speedValue
-            val seekbarSpeed: SeekBar = binding.seekBarSpeed
-            seekbarSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            binding.seekBarSpeed.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                    speedValue.text = String.format("%02d %s", progress, context.getString(R.string.kmh))
+                    binding.speedValue.text =
+                        String.format("%02d %s", progress, context.getString(R.string.kmh))
                 }
+
                 override fun onStartTrackingTouch(p0: SeekBar?) {
                 }
+
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                 }
             })
 
-            val voltageValue: TextView = binding.voltageValue
-            val seekbarVoltage: SeekBar = binding.seekBarVoltage
-            seekbarVoltage.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            binding.seekBarVoltage.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                    voltageValue.text = String.format("%03d %s", progress, context.getString(R.string.volt))
+                    binding.voltageValue.text =
+                        String.format("%03d %s", progress, context.getString(R.string.volt))
                 }
+
                 override fun onStartTrackingTouch(p0: SeekBar?) {
                 }
+
                 override fun onStopTrackingTouch(p0: SeekBar?) {
                 }
             })
 
-            seekbarSpeed.progress = 50
-            seekbarVoltage.progress = 100
+            binding.seekBarSpeed.progress = 50
+            binding.seekBarVoltage.progress = 100
             AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
                 .setCancelable(false)
                 .setTitle(R.string.setup_pwm_dialog_title)
@@ -253,8 +260,8 @@ class SomeUtil {
                     when (selectedOption) {
                         1 -> {
                             WheelLog.AppConfig.apply {
-                                rotationSpeed = seekbarSpeed.progress
-                                rotationVoltage = seekbarVoltage.progress
+                                rotationSpeed = binding.seekBarSpeed.progress
+                                rotationVoltage = binding.seekBarVoltage.progress
                             }
                             WheelLog.AppConfig.rotationIsSet = true
                         }
