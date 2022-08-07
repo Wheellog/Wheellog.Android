@@ -161,7 +161,7 @@ class GotwayAdapterTest {
     @Test
     fun `update pedals mode`() {
         // Arrange.
-        
+
         // Act.
         adapter.updatePedalsMode(0)
         adapter.updatePedalsMode(1)
