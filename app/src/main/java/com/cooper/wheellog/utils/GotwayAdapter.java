@@ -122,7 +122,7 @@ public class GotwayAdapter extends BaseAdapter {
                     int ledMode = buff[13] & 0xFF;
                     int lightMode = buff[15] & 0xFF;
                     WheelLog.AppConfig.setPedalsMode(String.valueOf(2-pedalsMode));
-                    //WheelLog.AppConfig.setAlarmMode(String.valueOf(2-speedAlarms)); //FixMe
+                    WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
                     WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
                     WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
                     WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
@@ -263,9 +263,9 @@ public class GotwayAdapter extends BaseAdapter {
     public void updateAlarmMode(int alarmMode) {
         String command = "";
         switch (alarmMode) {
-            case 0: command = "u"; break; // alarm 2 (1) // 30 + 35 (45) km/h + 80% PWM
-            case 1: command = "i"; break; // alarm off (2) // 80% PWM only
-            case 2: command = "o"; break; //alarm 1 (0) // 35 (45) km/h + 80% PWM
+            case 0: command = "o"; break; // alertTwo (1) // 30 + 35 (45) km/h + 80% PWM
+            case 1: command = "u"; break; // AlertOff (2) // 80% PWM only
+            case 2: command = "i"; break; //alertOne (0) // 35 (45) km/h + 80% PWM
         }
         sendCommand(command);
     }

@@ -735,7 +735,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = mac + getString(R.string.beeper_volume)
             title = getString(R.string.beeper_volume_title)
             summary = getString(R.string.beeper_volume_description)
-            min = 0
+            min = 1
             max = 9
             increment = 1
             setDefaultValue(WheelLog.AppConfig.beeperVolume)
