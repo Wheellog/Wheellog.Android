@@ -28,6 +28,8 @@ class GotwayAdapterTest {
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
         every { WheelLog.AppConfig.gotwayNegative } returns "1"
+        mockkConstructor(android.os.Handler::class)
+        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
 
     }
 
@@ -138,9 +140,6 @@ class GotwayAdapterTest {
     @Test
     fun `decode name ver data`() {
         // Arrange.
-        mockkConstructor(android.os.Handler::class)
-        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-
         val byteArray1 = "475732303032303000".hexToByteArray()
         val byteArray2 = "4e414d453a45584e0d0a".hexToByteArray()
         val byteArray3 = "204d505536353030b3f5cabcbbafb3c9b9a620".hexToByteArray()
@@ -162,9 +161,7 @@ class GotwayAdapterTest {
     @Test
     fun `update pedals mode`() {
         // Arrange.
-        mockkConstructor(android.os.Handler::class)
-        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-
+        
         // Act.
         adapter.updatePedalsMode(0)
         adapter.updatePedalsMode(1)
