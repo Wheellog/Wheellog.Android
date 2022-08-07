@@ -519,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
             SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
         }
 
-        SomeUtil.Companion.checkPWMsettedAndShowAlert(this);
+        SomeUtil.Companion.checkPWMIsSetAndShowAlert(this);
     }
 
     @Override

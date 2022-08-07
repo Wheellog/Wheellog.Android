@@ -22,8 +22,8 @@ import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import java.io.IOException
-
 
 class SomeUtil {
     companion object {
@@ -146,15 +146,16 @@ class SomeUtil {
             return false
         }
 
-        fun checkPWMsettedAndShowAlert(context: Context) {
+        fun checkPWMIsSetAndShowAlert(context: Context) {
             if (WheelData.getInstance().isHardwarePWM || WheelLog.AppConfig.rotationIsSet) {
                 return
             }
 
             val inflater: LayoutInflater = LayoutInflater.from(context)
-            val dialogView: View = inflater.inflate(R.layout.update_pwm_settings, null)
-            val svLayout : LinearLayout = dialogView.findViewById(R.id.set_speed_voltage_layout)
-            val templatesBox: Spinner = dialogView.findViewById(R.id.spinner_templates)
+            val binding = UpdatePwmSettingsBinding.inflate(inflater, null, false)
+            binding.modelName.text = WheelData.getInstance().model
+            val svLayout : LinearLayout = binding.setSpeedVoltageLayout
+            val templatesBox: Spinner = binding.spinnerTemplates
             val templates = when (WheelData.getInstance().wheelType) {
                 Constants.WHEEL_TYPE.GOTWAY ->
                     mutableMapOf(
@@ -197,14 +198,16 @@ class SomeUtil {
                         "Inmotion V8F/V8S" to Pair(5800, 8400),
                         "Inmotion V10/V10F" to Pair(5500, 8400)
                     )
-                else ->
+                else -> {
+                    binding.radioButton3.isEnabled = false
                     mutableMapOf()
+                }
             }
             templatesBox.visibility = View.GONE
             templatesBox.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
                 templates.toList().map { it.first })
             var selectedOption = 1
-            dialogView.findViewById<RadioGroup>(R.id.selected_pwm_variant)
+            binding.selectedPwmVariant
                 .setOnCheckedChangeListener { _, checkedId ->
                     svLayout.visibility =
                         if (checkedId == R.id.radioButton1) View.VISIBLE else View.GONE
@@ -216,8 +219,8 @@ class SomeUtil {
                         R.id.radioButton3 -> selectedOption = 3
                     }
                 }
-            val speedValue: TextView = dialogView.findViewById(R.id.speed_value)
-            val seekbarSpeed: SeekBar = dialogView.findViewById(R.id.seekBar_speed)
+            val speedValue: TextView = binding.speedValue
+            val seekbarSpeed: SeekBar = binding.seekBarSpeed
             seekbarSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     speedValue.text = String.format("%02d %s", progress, context.getString(R.string.kmh))
@@ -228,8 +231,8 @@ class SomeUtil {
                 }
             })
 
-            val voltageValue: TextView = dialogView.findViewById(R.id.voltage_value)
-            val seekbarVoltage: SeekBar = dialogView.findViewById(R.id.seekBar_voltage)
+            val voltageValue: TextView = binding.voltageValue
+            val seekbarVoltage: SeekBar = binding.seekBarVoltage
             seekbarVoltage.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
                 override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                     voltageValue.text = String.format("%03d %s", progress, context.getString(R.string.volt))
@@ -240,13 +243,12 @@ class SomeUtil {
                 }
             })
 
-            // TODO данные загружать из настроек
             seekbarSpeed.progress = 50
             seekbarVoltage.progress = 100
             AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
                 .setCancelable(false)
                 .setTitle(R.string.setup_pwm_dialog_title)
-                .setView(dialogView)
+                .setView(binding.root)
                 .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                     when (selectedOption) {
                         1 -> {

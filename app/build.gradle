@@ -49,6 +49,11 @@ android {
         def ec_token = System.getProperty("ec_accessToken") ?: props.getProperty('ec_accessToken') ?: ""
         buildType.buildConfigField 'String', 'ec_accessToken', "\"" + ec_token + "\""
     }
+    buildFeatures {
+        viewBinding true
+        //noinspection DataBindingWithoutKapt
+        dataBinding true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
