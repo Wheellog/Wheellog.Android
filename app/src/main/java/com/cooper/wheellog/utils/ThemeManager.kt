@@ -12,8 +12,8 @@ import com.cooper.wheellog.WheelLog
 
 class ThemeManager {
 
-    private val original = HashMap<ThemeIconEnum, @DrawableRes Int>()
-    private val ajdm = HashMap<ThemeIconEnum, @DrawableRes Int>()
+    private val original = HashMap<ThemeIconEnum, Int>()
+    private val ajdm = HashMap<ThemeIconEnum, Int>()
 
     var theme = WheelLog.AppConfig.appTheme
 

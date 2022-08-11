@@ -63,28 +63,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             // Access is denied
             WheelLog.AppConfig.useCustomBeep = false
             refreshVolatileSettings()
-
         }
     }
 
     private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
-            if (!map.all { it.value == true }) {
-                // Any access is denied
-                WheelLog.AppConfig.useGps = false
-                refreshVolatileSettings()
-            }
-        }
-
-    private val loginActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            WheelLog.AppConfig.autoUploadEc = true
+        if (!map.all { it.value == true }) {
+            // Any access is denied
+            WheelLog.AppConfig.useGps = false
             refreshVolatileSettings()
-            ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
-            WheelLog.AppConfig.autoUploadEc = true
-        } else {
-            ElectroClub.instance.logout()
         }
-        refreshVolatileSettings()
     }
 
     val mediaRequestResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

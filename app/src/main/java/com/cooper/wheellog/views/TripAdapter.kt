@@ -160,7 +160,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             if (uploadViewVisible == View.VISIBLE) {
                 GlobalScope.launch {
                     // async find
-                    val trip = TripDatabase.getDataBase(context).tripDao().getTripByFileName(tripModel.fileName)
+                    val trip = TripDatabase.getDataBase(context).tripDao().getTripByFileName(tripModel.fileName).value
                     withContext(Dispatchers.Main) {
                         uploadViewEnabled(trip != null && trip.ecId > 0)
                     }

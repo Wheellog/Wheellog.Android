@@ -278,7 +278,7 @@ public class WheelData {
         switch (wd.getWheelType())
         {
             case KINGSONG:
-            // case Unknown: // comment it for test
+            case Unknown: // comment it for test
                 return true;
             case INMOTION_V2:
                 return new Version("1.2").isAtLeast(wd.getVersion()); // 1.2+

@@ -19,9 +19,9 @@ import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.cooper.wheellog.databinding.ActivityScanBinding
 import com.cooper.wheellog.utils.StringUtil
 import com.cooper.wheellog.utils.StringUtil.Companion.toHexStringRaw
-import com.google.android.material.textfield.TextInputLayout
 import timber.log.Timber
 
 class ScanActivity: AppCompatActivity() {
@@ -38,40 +38,32 @@ class ScanActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val convertView = layoutInflater.inflate(R.layout.activity_scan, null)
-        val lv = convertView.findViewById<ListView>(android.R.id.list)
-        pb = convertView.findViewById(R.id.scanProgress)
-        scanTitle = convertView.findViewById(R.id.scan_title)
-        lv.onItemClickListener = onItemClickListener
+        val binding = ActivityScanBinding.inflate(layoutInflater, null, false)
+        pb = binding.scanProgress
+        scanTitle = binding.scanTitle
         mDeviceListAdapter = DeviceListAdapter(this)
-        lv.adapter = mDeviceListAdapter
-        macLayout = convertView.findViewById(R.id.last_mac_layout)
-        val lastMacInput = convertView.findViewById<TextInputLayout>(R.id.last_mac_text)!!.editText
-        lastMacInput!!.setText(WheelLog.AppConfig.lastMac)
-        convertView.findViewById<Button>(R.id.last_mac_ok).apply {
-            setOnClickListener {
-                val deviceAddress = lastMacInput.text.toString()
-                if (!StringUtil.isCorrectMac(deviceAddress)) {
-                    return@setOnClickListener
-                }
-                if (mScanning) {
-                    scanLeDevice(false)
-                }
-                mHandler.removeCallbacksAndMessages(null)
-                val intent = Intent()
-                intent.putExtra("MAC", deviceAddress)
-                WheelLog.AppConfig.lastMac = deviceAddress
-                setResult(RESULT_OK, intent)
-                WheelLog.AppConfig.passwordForWheel = ""
-                close()
+        binding.list.onItemClickListener = onItemClickListener
+        binding.list.adapter = mDeviceListAdapter
+        macLayout = binding.lastMacText
+        binding.lastMacText.editText!!.setText(WheelLog.AppConfig.lastMac)
+        binding.lastMacText.setEndIconOnClickListener {
+            val deviceAddress = binding.lastMacText.editText?.text.toString()
+            if (!StringUtil.isCorrectMac(deviceAddress)) {
+                return@setEndIconOnClickListener
             }
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                // foreground is not supported. Use text
-                text = resources.getText(android.R.string.ok)
+            if (mScanning) {
+                scanLeDevice(false)
             }
+            mHandler.removeCallbacksAndMessages(null)
+            val intent = Intent()
+            intent.putExtra("MAC", deviceAddress)
+            WheelLog.AppConfig.lastMac = deviceAddress
+            setResult(RESULT_OK, intent)
+            WheelLog.AppConfig.passwordForWheel = ""
+            close()
         }
         alertDialog = AlertDialog.Builder(this, R.style.OriginalTheme_Dialog_Alert)
-                .setView(convertView)
+                .setView(binding.root)
                 .setCancelable(false)
                 .setOnKeyListener { dialogInterface: DialogInterface, keycode: Int, keyEvent: KeyEvent ->
                     if (keycode == KeyEvent.KEYCODE_BACK && keyEvent.action == KeyEvent.ACTION_UP &&

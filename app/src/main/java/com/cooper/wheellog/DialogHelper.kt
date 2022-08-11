@@ -1,0 +1,239 @@
+package com.cooper.wheellog
+
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
+import android.text.Html
+import android.text.method.LinkMovementMethod
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import com.cooper.wheellog.databinding.PrivacyPolicyBinding
+import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
+import com.cooper.wheellog.utils.Constants
+
+object DialogHelper {
+    /**
+     * return false if in App's Battery settings "Not optimized" and true if "Optimizing battery use"
+     */
+    private fun isBatteryOptimizations(context: Context): Boolean {
+        val powerManager =
+            context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val name = context.applicationContext.packageName
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return !powerManager.isIgnoringBatteryOptimizations(name)
+        }
+        return false
+    }
+
+    fun checkBatteryOptimizationsAndShowAlert(context: Context) {
+        if (!WheelLog.AppConfig.detectBatteryOptimization ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+            !isBatteryOptimizations(context)
+        ) {
+            return
+        }
+        AlertDialog.Builder(context)
+            .setTitle(R.string.detected_battery_optimization_title)
+            .setMessage(R.string.detected_battery_optimization)
+            .setCancelable(false)
+            .setPositiveButton(R.string.detected_battery_optimization_app_button) { _: DialogInterface?, _: Int ->
+                try {
+                    //Open the specific App Info page:
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.data = Uri.parse("package:${context.packageName}")
+                    context.startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    //Open the generic Apps page:
+                    val intent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
+                    context.startActivity(intent)
+                }
+            }
+            .setNegativeButton(R.string.detected_battery_optimization_settings_button) { _: DialogInterface?, _: Int ->
+                context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            }
+            .setNeutralButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
+            .show()
+    }
+
+    fun checkPWMIsSetAndShowAlert(context: Context) {
+        if (WheelData.getInstance().isHardwarePWM || WheelLog.AppConfig.rotationIsSet) {
+            return
+        }
+
+        val inflater: LayoutInflater = LayoutInflater.from(context)
+        val binding = UpdatePwmSettingsBinding.inflate(inflater, null, false)
+        binding.modelName.text =
+            if (WheelData.getInstance().model.isNullOrEmpty())
+                "Unknown model"
+            else WheelData.getInstance().model
+        val svLayout: LinearLayout = binding.setSpeedVoltageLayout
+        val templatesBox: Spinner = binding.spinnerTemplates
+        val templates = when (WheelData.getInstance().wheelType) {
+            Constants.WHEEL_TYPE.GOTWAY ->
+                mutableMapOf(
+                    "Begode MTen 67v" to Pair(4400, 6720), // first - speed, second - voltage
+                    "Begode MTen 84v" to Pair(5600, 8400),
+                    "Begode MCM5 67v" to Pair(4400, 6720),
+                    "Begode MCM5v2 67v" to Pair(5120, 6720),
+                    "Begode MCM5 84v" to Pair(5600, 8400),
+                    "Begode MCM5v2 84v" to Pair(6400, 8400),
+                    "Begode Tesla/T3 84v" to Pair(6650, 8400),
+                    "Begode Nikola 84v" to Pair(7060, 8400),
+                    "Begode Nikola 100v" to Pair(8550, 10080),
+                    "Begode MSX 84v" to Pair(7900, 8400),
+                    "Begode MSX 100v" to Pair(9500, 10080),
+                    "Begode MSP HS (C30)" to Pair(10050, 10080),
+                    "Begode MSP HT (C38)" to Pair(7900, 10080),
+                    "Begode EX (C40)" to Pair(7900, 10080),
+                    "Begode EX.N (C30)" to Pair(10710, 10080),
+                    "Begode RS HS (C30)" to Pair(10500, 10080),
+                    "Begode RS HT (C38)" to Pair(7900, 10080),
+                    "Begode Hero HS (C30)" to Pair(10500, 10080),
+                    "Begode Hero HT (C38)" to Pair(7900, 10080),
+                    "Begode Master (C38)" to Pair(11300, 13440),
+                    "Begode Monster 84v" to Pair(7440, 10080),
+                    "Begode Monster 100v" to Pair(9300, 10080)
+                )
+            Constants.WHEEL_TYPE.VETERAN ->
+                mutableMapOf(
+                    "Veteran Sherman" to Pair(10200, 10080)
+                )
+            Constants.WHEEL_TYPE.NINEBOT_Z ->
+                mutableMapOf(
+                    "Ninebot Z6" to Pair(6150, 5770),
+                    "Ninebot Z8/Z10" to Pair(8150, 5770)
+                )
+            Constants.WHEEL_TYPE.INMOTION ->
+                mutableMapOf(
+                    "Inmotion V5F" to Pair(3700, 8400),
+                    "Inmotion V8" to Pair(4500, 8400),
+                    "Inmotion V8F/V8S" to Pair(5800, 8400),
+                    "Inmotion V10/V10F" to Pair(5500, 8400)
+                )
+            else -> {
+                binding.radioButton3.isEnabled = false
+                mutableMapOf()
+            }
+        }
+        templatesBox.visibility = View.GONE
+        templatesBox.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
+            templates.toList().map { it.first })
+        var selectedOption = 1
+        binding.selectedPwmVariant
+            .setOnCheckedChangeListener { _, checkedId ->
+                svLayout.visibility =
+                    if (checkedId == binding.radioButton1.id) View.VISIBLE else View.GONE
+                templatesBox.visibility =
+                    if (checkedId == binding.radioButton3.id) View.VISIBLE else View.GONE
+                when (checkedId) {
+                    R.id.radioButton1 -> selectedOption = 1
+                    R.id.radioButton2 -> selectedOption = 2
+                    R.id.radioButton3 -> selectedOption = 3
+                }
+            }
+        binding.seekBarSpeed.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.speedValue.text =
+                    String.format("%02d %s", progress, context.getString(R.string.kmh))
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+        })
+
+        binding.seekBarVoltage.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                binding.voltageValue.text =
+                    String.format("%03d %s", progress, context.getString(R.string.volt))
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+        })
+
+        binding.seekBarSpeed.progress = 50
+        binding.seekBarVoltage.progress = 100
+        AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setTitle(R.string.setup_pwm_dialog_title)
+            .setView(binding.root)
+            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                when (selectedOption) {
+                    1 -> {
+                        WheelLog.AppConfig.apply {
+                            rotationSpeed = binding.seekBarSpeed.progress
+                            rotationVoltage = binding.seekBarVoltage.progress
+                        }
+                        WheelLog.AppConfig.rotationIsSet = true
+                    }
+                    2 -> TODO("доделать как-то Авто")
+                    3 -> {
+                        val temp = templates.getOrDefault(templatesBox.selectedItem, null)
+                        if (temp != null) {
+                            WheelLog.AppConfig.apply {
+                                rotationSpeed = temp.first
+                                rotationVoltage = temp.second
+                            }
+                            WheelLog.AppConfig.rotationIsSet = true
+                        }
+                    }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
+            .show()
+    }
+
+    fun checkAndShowPrivatePolicyDialog(mainActivity: MainActivity) {
+        if (WheelLog.AppConfig.privatePolicyAccepted) {
+            return
+        }
+
+        val inflater: LayoutInflater = LayoutInflater.from(mainActivity)
+        val binding = PrivacyPolicyBinding.inflate(inflater, null, false)
+        val agree = binding.agreeWithPolicy
+        val policyText = binding.policyLinks
+        policyText.movementMethod = LinkMovementMethod.getInstance()
+        policyText.text = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            Html.fromHtml(mainActivity.resources.getString(R.string.private_policy), Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            Html.fromHtml(mainActivity.resources.getString(R.string.private_policy))
+        }
+        val dialog = AlertDialog.Builder(mainActivity)
+            .setView(binding.root)
+            .setCancelable(false)
+            .show()
+
+        agree.setOnCheckedChangeListener { _: CompoundButton, checked: Boolean ->
+            if (checked) {
+                binding.okButton.visibility = View.VISIBLE
+                binding.btnCancel.visibility = View.GONE
+            } else {
+                binding.okButton.visibility = View.GONE
+                binding.btnCancel.visibility = View.VISIBLE
+            }
+        }
+        binding.okButton.setOnClickListener {
+            WheelLog.AppConfig.privatePolicyAccepted = true
+            dialog.dismiss()
+        }
+        binding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+            mainActivity.finish()
+        }
+    }
+}
