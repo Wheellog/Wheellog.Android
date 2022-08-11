@@ -96,9 +96,6 @@
             android:name=".ScanActivity"
             android:theme="@style/OriginalTheme.Transparent" />
         <activity
-            android:name=".LoginActivity"
-            android:theme="@style/OriginalTheme.Transparent" />
-        <activity
             android:name=".PrivacyPolicyActivity"
             android:theme="@style/OriginalTheme.Transparent" />
 
