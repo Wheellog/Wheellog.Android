@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.cooper.wheellog.BuildConfig
@@ -25,9 +26,11 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class MapActivity : AppCompatActivity() {
-    private lateinit var adapter: MapActivityAdapter
+
+    private val mapAdapter by lazy { MapActivityAdapter(this) }
     private lateinit var viewPager: ViewPager2
     private lateinit var tabs: TabLayout
+
     // TODO: localize me
     private val tabNames: Array<String> = arrayOf(
         "Map",
@@ -61,20 +64,22 @@ class MapActivity : AppCompatActivity() {
         setContentView(R.layout.activity_map)
 
         viewPager = findViewById(R.id.pager)
-        viewPager.offscreenPageLimit = 10
-        viewPager.isUserInputEnabled = false
-        adapter = MapActivityAdapter(this)
-        viewPager.adapter = adapter
+        viewPager.apply {
+            offscreenPageLimit = 10
+            isUserInputEnabled = false
+            adapter = mapAdapter
+        }
+
         tabs = findViewById(R.id.tabs)
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = tabNames[position]
         }.attach()
 
-        if (intent.extras == null) {
-            this.finish()
-            return
-        }
-        val extras = intent.extras!!
+        val extras = intent.extras
+            ?: kotlin.run {
+                this.finish()
+                return
+            }
 
         // async
         backgroundScope.launch {
@@ -124,7 +129,7 @@ class MapActivity : AppCompatActivity() {
             inputStream.close()
             // TODO: localize me
             Timber.wtf("%s file does not contain geolocation data.", extras.get("title"))
-            return tripData.apply { errorMessage = "File does not contain GPS data." }
+            return tripData.apply { errorMessage = "File does not contain GPS data. Check if location logging is enabled in the app settings" }
         }
 
         // for statistics
@@ -240,10 +245,11 @@ class MapActivity : AppCompatActivity() {
                 axisDependency = YAxis.AxisDependency.LEFT
                 lineWidth = 2f
             })
-        return tripData.apply {
-            this.geoLine = geoLine
-            stats1 = chart1DataSets
+
+        return tripData.copy(
+            geoLine = geoLine,
+            stats1 = chart1DataSets,
             stats2 = chart2DataSets
-        }
+        )
     }
 }
