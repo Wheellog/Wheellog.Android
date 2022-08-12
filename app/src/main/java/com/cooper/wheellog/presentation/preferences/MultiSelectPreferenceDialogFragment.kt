@@ -1,5 +1,6 @@
 package com.cooper.wheellog.presentation.preferences
 
+import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
@@ -11,7 +12,9 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceDialogFragmentCompat
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import java.util.*
@@ -41,6 +44,15 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
 
     private fun getListPreference(): MultiSelectPreference? {
         return preference as MultiSelectPreference?
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        if (dialog is AlertDialog) {
+            dialog.show()
+            dialog.setBlackIcon()
+        }
+        return dialog
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

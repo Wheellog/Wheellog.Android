@@ -26,6 +26,7 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.preference.*
 import com.cooper.wheellog.*
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
 import com.cooper.wheellog.databinding.ActivityLoginBinding
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
@@ -37,7 +38,6 @@ import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import com.cooper.wheellog.utils.ThemeIconEnum
-import com.google.android.material.textfield.TextInputLayout
 import timber.log.Timber
 
 class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -155,6 +155,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .setCancelable(false)
                     .setIcon(R.drawable.ic_baseline_gps_24)
                     .show()
+                    .setBlackIcon()
         }
     }
 
@@ -266,11 +267,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.use_eng, R.string.app_theme -> {
                 WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
                 AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.use_eng_alert_title)
-                        .setMessage(R.string.use_eng_alert_description)
-                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show()
+                    .setTitle(R.string.use_eng_alert_title)
+                    .setMessage(R.string.use_eng_alert_description)
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show()
+                    .setBlackIcon()
             }
             R.string.day_night_theme -> {
                 findPreference<ListPreference>(getString(R.string.day_night_theme))?.summary =
@@ -280,11 +282,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             else -> getString(R.string.day_night_theme_as_system)
                         }
                 AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.use_eng_alert_title)
-                        .setMessage(R.string.use_eng_alert_description)
-                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show()
+                    .setTitle(R.string.use_eng_alert_title)
+                    .setMessage(R.string.use_eng_alert_description)
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show()
+                    .setBlackIcon()
             }
             R.string.light_enabled -> wd.updateLight(WheelLog.AppConfig.lightEnabled)
             R.string.led_enabled -> wd.updateLed(WheelLog.AppConfig.ledEnabled)
@@ -451,11 +454,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     val versionName = BuildConfig.VERSION_NAME
                     val buildTime = BuildConfig.BUILD_TIME
                     AlertDialog.Builder(requireActivity())
-                            .setTitle(R.string.about_app_title)
-                            .setMessage(String.format("Version %s \n build at %s github.com/Wheellog/Wheellog.Android \n Thanks to all contributors", versionName, buildTime))
-                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                            .setIcon(android.R.drawable.ic_dialog_info)
-                            .show()
+                        .setTitle(R.string.about_app_title)
+                        .setMessage(String.format("Version %s \n build at %s github.com/Wheellog/Wheellog.Android \n Thanks to all contributors", versionName, buildTime))
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show()
+                        .setBlackIcon()
                     true
                 }
                 donateButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -471,6 +475,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         }
                         .setIcon(R.drawable.ic_donate_24)
                         .show()
+                        .setBlackIcon()
                     true
                 }
                 // Themes

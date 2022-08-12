@@ -231,7 +231,7 @@ class ElectroClub {
             // UI with list select garage if mac isn't found
             activity.runOnUiThread {
                 var selectedTransport: Transport? = null
-                AlertDialog.Builder(activity, R.style.OriginalTheme_Dialog_Alert)
+                AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.ec_choose_transport))
                         .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
                             if (which != -1) {

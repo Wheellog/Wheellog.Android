@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
@@ -235,5 +236,11 @@ object DialogHelper {
             dialog.dismiss()
             mainActivity.finish()
         }
+    }
+
+    fun AlertDialog.setBlackIcon(): AlertDialog {
+        this.findViewById<ImageView>(android.R.id.icon)
+            ?.setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.SRC_IN)
+        return this
     }
 }
