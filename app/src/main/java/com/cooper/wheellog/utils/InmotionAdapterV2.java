@@ -124,6 +124,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
     public void setProto(int value){ // for tests
         protoVer = value;
     }
+    public void getProto(){ // for pwm dialog
+        return protoVer;
+    }
 
     public Model getModel(){
         return mModel;

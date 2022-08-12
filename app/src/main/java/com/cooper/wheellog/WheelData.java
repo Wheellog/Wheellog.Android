@@ -29,7 +29,6 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import io.github.g00fy2.versioncompare.Version;
 import timber.log.Timber;
 
 public class WheelData {
@@ -281,9 +280,9 @@ public class WheelData {
             case Unknown: // comment it for test
                 return true;
             case INMOTION_V2:
-                return new Version("1.2").isAtLeast(wd.getVersion()); // 1.2+
+                return InmotionAdapterV2.getInstance().getProto() >= 2;
             case VETERAN:
-                return new Version("2.0").isAtLeast(wd.getVersion()); // 2+
+                return VeteranAdapter.getInstance().getVer() >= 2; // 2+
             default:
                 return false;
         }
