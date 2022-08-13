@@ -95,6 +95,11 @@ public class VeteranAdapter extends BaseAdapter {
         return newDataFound;
     }
 
+    @Override
+    public boolean isReady() {
+        return WheelData.getInstance().getVoltage() != 0 && mVer != 0;
+    }
+
     public void resetTrip() {
         WheelData.getInstance().bluetoothCmd("CLEARMETER".getBytes());
     }
