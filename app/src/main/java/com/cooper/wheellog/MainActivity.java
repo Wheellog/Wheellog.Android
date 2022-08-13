@@ -199,6 +199,9 @@ public class MainActivity extends AppCompatActivity {
                         showSnackBar(getResources().getString(R.string.alarm_text_pwm)+String.format(": %.1f",alarmValue), 3000);
                     }
                     break;
+                case Constants.ACTION_WHEEL_IS_READY:
+                    DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(context);
+                    break;
             }
         }
     };
@@ -309,9 +312,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.NOTIFICATION_BUTTON_MIBAND:
                     toggleSwitchMiBand();
-                    break;
-                case Constants.ACTION_WHEEL_IS_READY:
-                    DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(context);
                     break;
             }
         }
@@ -877,6 +877,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+        intentFilter.addAction(Constants.ACTION_WHEEL_IS_READY);
         return intentFilter;
     }
 
