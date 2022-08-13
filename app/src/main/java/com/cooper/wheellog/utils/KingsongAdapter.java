@@ -3,6 +3,8 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.util.Locale;
+import java.util.Objects;
+
 import timber.log.Timber;
 
 public class KingsongAdapter extends BaseAdapter {
@@ -280,6 +282,12 @@ public class KingsongAdapter extends BaseAdapter {
 
         }
         return false;
+    }
+
+    @Override
+    public boolean isReady() {
+        return !Objects.equals(WheelData.getInstance().getModel(), "Unknown")
+                && WheelData.getInstance().getVoltage() != 0;
     }
 
     @Override

@@ -330,6 +330,13 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean isReady() {
+        return !Objects.equals(WheelData.getInstance().getSerial(), "")
+                && !Objects.equals(WheelData.getInstance().getVersion(), "")
+                && WheelData.getInstance().getVoltage() != 0;
+    }
+
+    @Override
     public void setDrl(final boolean drl) {
         // ToDo check if it is the same as old value
         driveFlags = (driveFlags & 0xFFFE) | (drl ? 1 : 0); // need to have driveflags before

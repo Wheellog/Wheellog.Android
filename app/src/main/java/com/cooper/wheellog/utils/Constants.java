@@ -17,6 +17,10 @@ public class Constants {
     public static final String ACTION_PEBBLE_APP_SCREEN = "com.cooper.wheellog.pebbleAppScreen";
     public static final String ACTION_WHEEL_TYPE_RECOGNIZED = "com.cooper.wheellog.wheelTypeRecognized";
     public static final String ACTION_WHEEL_MODEL_CHANGED = "com.cooper.wheellog.wheelModelChanged";
+    /**
+     * The wheel has been successfully connected and all the necessary data for operation has already been received
+     */
+    public static final String ACTION_WHEEL_IS_READY = "com.cooper.wheellog.wheelIsReady";
 
     public static final String NOTIFICATION_BUTTON_CONNECTION = "com.cooper.wheellog.notificationConnectionButton";
     public static final String NOTIFICATION_BUTTON_LOGGING = "com.cooper.wheellog.notificationLoggingButton";

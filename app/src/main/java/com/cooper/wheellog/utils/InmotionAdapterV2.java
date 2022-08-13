@@ -108,6 +108,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
     }
 
+    @Override
+    public boolean isReady() {
+        return mModel != Model.UNKNOWN && protoVer != 0;
+    }
+
     public int getMaxSpeed() {
         switch (mModel) {
             case V11:

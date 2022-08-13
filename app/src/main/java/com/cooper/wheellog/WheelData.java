@@ -67,6 +67,7 @@ public class WheelData {
     private int mOutput;
     private double mAngle;
     private double mRoll;
+    private boolean mWheelIsReady = false;
 
     private int mBattery;
     private int mBatteryStart = -1;
@@ -270,11 +271,7 @@ public class WheelData {
 
     public boolean isHardwarePWM()
     {
-        var wd = getInstance();
-        if (wd == null) {
-            return false;
-        }
-        switch (wd.getWheelType())
+        switch (getWheelType())
         {
             case KINGSONG:
             case Unknown: // comment it for test
@@ -286,6 +283,10 @@ public class WheelData {
             default:
                 return false;
         }
+    }
+
+    public boolean isWheelIsReady() {
+        return mWheelIsReady;
     }
 
     public int getSpeed() {
@@ -1304,6 +1305,12 @@ public class WheelData {
         intent.putExtra("Speed", mSpeed);
         mContext.sendBroadcast(intent);
 
+        if (!mWheelIsReady && getAdapter().isReady()) {
+            mWheelIsReady = true;
+            var isReadyIntent = new Intent(Constants.ACTION_WHEEL_IS_READY);
+            mContext.sendBroadcast(isReadyIntent);
+        }
+
         CheckMuteMusic();
     }
 
@@ -1413,7 +1420,7 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
         protoVer = "";
-
+        mWheelIsReady = false;
     }
 
     boolean detectWheel(String deviceAddress) {

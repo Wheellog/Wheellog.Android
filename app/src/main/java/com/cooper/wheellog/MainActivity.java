@@ -228,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
                             if (WheelLog.AppConfig.getAutoWatch() && wearOs == null) {
                                 toggleWatch();
                             }
-                            DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(context);
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
                             break;
                         case BluetoothLeService.STATE_DISCONNECTED:
@@ -310,6 +309,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.NOTIFICATION_BUTTON_MIBAND:
                     toggleSwitchMiBand();
+                    break;
+                case Constants.ACTION_WHEEL_IS_READY:
+                    DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(context);
                     break;
             }
         }
