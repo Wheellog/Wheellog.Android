@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doAfterTextChanged
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import com.cooper.wheellog.utils.Constants
@@ -146,8 +147,9 @@ object DialogHelper {
         binding.seekBarSpeed.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                binding.speedValue.text =
-                    String.format("%02d %s", progress, context.getString(R.string.kmh))
+                if (fromUser) {
+                    binding.speedValue.editText?.setText(String.format("%.1f", progress / 10f))
+                }
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -156,12 +158,25 @@ object DialogHelper {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+
+        binding.speedValue.editText?.doAfterTextChanged {
+            val s = it.toString()
+            if (s.isNotEmpty()) {
+                val value = (s.toDouble() * 10).toInt()
+                if (value > binding.seekBarSpeed.max) {
+                    binding.speedValue.editText?.setText(String.format("%.1f", binding.seekBarSpeed.max / 10f))
+                } else {
+                    binding.seekBarSpeed.progress = value
+                }
+            }
+        }
 
         binding.seekBarVoltage.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                binding.voltageValue.text =
-                    String.format("%03d %s", progress, context.getString(R.string.volt))
+                if (fromUser) {
+                    binding.voltageValue.editText?.setText(String.format("%.1f", progress / 10f))
+                }
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -171,9 +186,24 @@ object DialogHelper {
             }
         })
 
-        val defaultFromTemplate = templates.getOrDefault(binding.modelName.text, Pair(50, 100))
-        binding.seekBarSpeed.progress = defaultFromTemplate.first
-        binding.seekBarVoltage.progress = defaultFromTemplate.second
+        binding.voltageValue.editText?.doAfterTextChanged {
+            val s = it.toString()
+            if (s.isNotEmpty()) {
+                val value = (s.toDouble() * 10).toInt()
+                if (value > binding.seekBarVoltage.max) {
+                    binding.voltageValue.editText?.setText(String.format("%.1f", binding.seekBarVoltage.max / 10f))
+                } else {
+                    binding.seekBarVoltage.progress = value
+                }
+            }
+        }
+
+        val model = binding.modelName.text.split(" ").last()
+        val defaultFromTemplate =
+            templates.filter { it.key.split(" ", "/").contains(model) }.values.firstOrNull()
+                ?: Pair(500, 1000)
+        binding.speedValue.editText?.setText(String.format("%.1f", defaultFromTemplate.first / 10f))
+        binding.voltageValue.editText?.setText(String.format("%.1f", defaultFromTemplate.second / 10f))
 
         AlertDialog.Builder(context)
             .setCancelable(false)
