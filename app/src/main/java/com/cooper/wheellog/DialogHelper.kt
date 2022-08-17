@@ -80,44 +80,44 @@ object DialogHelper {
         val templates = when (WheelData.getInstance().wheelType) {
             Constants.WHEEL_TYPE.GOTWAY ->
                 mutableMapOf(
-                    "Begode MTen 67v" to Pair(4400, 6720), // first - speed, second - voltage
-                    "Begode MTen 84v" to Pair(5600, 8400),
-                    "Begode MCM5 67v" to Pair(4400, 6720),
-                    "Begode MCM5v2 67v" to Pair(5120, 6720),
-                    "Begode MCM5 84v" to Pair(5600, 8400),
-                    "Begode MCM5v2 84v" to Pair(6400, 8400),
-                    "Begode Tesla/T3 84v" to Pair(6650, 8400),
-                    "Begode Nikola 84v" to Pair(7060, 8400),
-                    "Begode Nikola 100v" to Pair(8550, 10080),
-                    "Begode MSX 84v" to Pair(7900, 8400),
-                    "Begode MSX 100v" to Pair(9500, 10080),
-                    "Begode MSP HS (C30)" to Pair(10050, 10080),
-                    "Begode MSP HT (C38)" to Pair(7900, 10080),
-                    "Begode EX (C40)" to Pair(7900, 10080),
-                    "Begode EX.N (C30)" to Pair(10710, 10080),
-                    "Begode RS HS (C30)" to Pair(10500, 10080),
-                    "Begode RS HT (C38)" to Pair(7900, 10080),
-                    "Begode Hero HS (C30)" to Pair(10500, 10080),
-                    "Begode Hero HT (C38)" to Pair(7900, 10080),
-                    "Begode Master (C38)" to Pair(11300, 13440),
-                    "Begode Monster 84v" to Pair(7440, 10080),
-                    "Begode Monster 100v" to Pair(9300, 10080)
+                        "Begode MTen 67v" to Pair(440, 672), // first - speed, second - voltage
+                        "Begode MTen 84v" to Pair(560, 840),
+                        "Begode MCM5 67v" to Pair(440, 672),
+                        "Begode MCM5v2 67v" to Pair(512, 672),
+                        "Begode MCM5 84v" to Pair(560, 840),
+                        "Begode MCM5v2 84v" to Pair(640, 840),
+                        "Begode Tesla/T3 84v" to Pair(665, 840),
+                        "Begode Nikola 84v" to Pair(706, 840),
+                        "Begode Nikola 100v" to Pair(855, 1008),
+                        "Begode MSX 84v" to Pair(790, 840),
+                        "Begode MSX 100v" to Pair(950, 1008),
+                        "Begode MSP HS (C30)" to Pair(1005, 1008),
+                        "Begode MSP HT (C38)" to Pair(790, 1008),
+                        "Begode EX (C40)" to Pair(790, 1008),
+                        "Begode EX.N (C30)" to Pair(1071, 1008),
+                        "Begode RS HS (C30)" to Pair(1050, 1008),
+                        "Begode RS HT (C38)" to Pair(790, 1008),
+                        "Begode Hero HS (C30)" to Pair(1050, 1008),
+                        "Begode Hero HT (C38)" to Pair(790, 1008),
+                        "Begode Master (C38)" to Pair(1130, 1344),
+                        "Begode Monster 84v" to Pair(744, 1008),
+                        "Begode Monster 100v" to Pair(930, 1008)
                 )
             Constants.WHEEL_TYPE.VETERAN ->
                 mutableMapOf(
-                    "Veteran Sherman" to Pair(10200, 10080)
+                        "Veteran Sherman" to Pair(1020, 1008)
                 )
             Constants.WHEEL_TYPE.NINEBOT_Z ->
                 mutableMapOf(
-                    "Ninebot Z6" to Pair(6150, 5770),
-                    "Ninebot Z8/Z10" to Pair(8150, 5770)
+                        "Ninebot Z6" to Pair(615, 577),
+                        "Ninebot Z8/Z10" to Pair(815, 577)
                 )
             Constants.WHEEL_TYPE.INMOTION ->
                 mutableMapOf(
-                    "Inmotion V5F" to Pair(3700, 8400),
-                    "Inmotion V8" to Pair(4500, 8400),
-                    "Inmotion V8F/V8S" to Pair(5800, 8400),
-                    "Inmotion V10/V10F" to Pair(5500, 8400)
+                        "Inmotion V5F" to Pair(370, 840),
+                        "Inmotion V8" to Pair(450, 840),
+                        "Inmotion V8F/V8S" to Pair(580, 840),
+                        "Inmotion V10/V10F" to Pair(550, 840)
                 )
             else -> {
                 binding.radioButton3.isEnabled = false
