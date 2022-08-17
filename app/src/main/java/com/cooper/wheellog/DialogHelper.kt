@@ -127,6 +127,9 @@ object DialogHelper {
         templatesBox.visibility = View.GONE
         templatesBox.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
             templates.toList().map { it.first })
+
+
+
         var selectedOption = 1
         binding.selectedPwmVariant
             .setOnCheckedChangeListener { _, checkedId ->
@@ -168,8 +171,10 @@ object DialogHelper {
             }
         })
 
-        binding.seekBarSpeed.progress = 50
-        binding.seekBarVoltage.progress = 100
+        val defaultFromTemplate = templates.getOrDefault(binding.modelName.text, Pair(50, 100))
+        binding.seekBarSpeed.progress = defaultFromTemplate.first
+        binding.seekBarVoltage.progress = defaultFromTemplate.second
+
         AlertDialog.Builder(context)
             .setCancelable(false)
             .setTitle(R.string.setup_pwm_dialog_title)
