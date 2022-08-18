@@ -119,6 +119,9 @@ public class VeteranAdapter extends BaseAdapter {
         }
     }
     public int getVer() {
+        if (mVer >=2) {
+            WheelLog.AppConfig.setHwPwm(true);
+        }
         return mVer;
     }
 
