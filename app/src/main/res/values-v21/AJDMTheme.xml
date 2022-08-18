@@ -9,6 +9,7 @@
         <item name="actionButtonStyle">@style/AJDMTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/ajdm_background</item>
         <item name="android:colorBackground">@color/ajdm_background</item>
+        <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
         <item name="android:navigationBarColor">@color/ajdm_primary</item>
         <item name="android:statusBarColor">@color/ajdm_primary</item>
     </style>
