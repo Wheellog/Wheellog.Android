@@ -134,6 +134,10 @@ object DialogHelper {
                         "Inmotion V8F/V8S" to Pair(580, 840),
                         "Inmotion V10/V10F" to Pair(550, 840)
                 )
+            Constants.WHEEL_TYPE.INMOTION_V2 ->
+                mutableMapOf(
+                        "Inmotion V11" to Pair(800, 840)
+                )
             else -> {
                 binding.radioButton3.isEnabled = false
                 mutableMapOf()
