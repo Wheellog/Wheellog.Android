@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:
-                    DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(context);
+                    DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(MainActivity.this);
                     break;
             }
         }

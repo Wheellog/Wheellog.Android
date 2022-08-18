@@ -119,7 +119,8 @@ object DialogHelper {
                 )
             Constants.WHEEL_TYPE.VETERAN ->
                 mutableMapOf(
-                        "Veteran Sherman" to Pair(1020, 1008)
+                        "Veteran Sherman" to Pair(1020, 1008),
+                        "Veteran Abrams" to Pair(980, 1000)
                 )
             Constants.WHEEL_TYPE.NINEBOT_Z ->
                 mutableMapOf(
