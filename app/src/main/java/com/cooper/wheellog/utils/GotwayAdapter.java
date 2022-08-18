@@ -28,7 +28,7 @@ public class GotwayAdapter extends BaseAdapter {
         boolean newDataFound = false;
         String dataS = new String(data, 0, data.length-1).trim();
         if (dataS.startsWith("NAME")) {
-            model = new String(data, 5, data.length-6).trim();
+            model = dataS.substring(5);
             wd.setModel(model);
         } else if (dataS.startsWith("GW")) {
             fw = new String(data, 2, data.length-3).trim();
