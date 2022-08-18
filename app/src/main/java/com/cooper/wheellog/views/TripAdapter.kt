@@ -1,7 +1,7 @@
 package com.cooper.wheellog.views
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.*
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.data.TripDatabase
 import com.cooper.wheellog.map.MapActivity
 import com.cooper.wheellog.utils.ThemeIconEnum
@@ -20,7 +21,6 @@ import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.*
-
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -125,7 +125,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         }
 
         private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {
-            AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+            AlertDialog.Builder(context)
                 .setTitle(R.string.trip_menu_delete_file)
                 .setMessage(context.getString(R.string.trip_menu_delete_file_confirmation) + " " + tripModel.fileName)
                 .setCancelable(false)
@@ -146,6 +146,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .show()
+                .setBlackIcon()
         }
 
         @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
@@ -160,7 +161,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             if (uploadViewVisible == View.VISIBLE) {
                 GlobalScope.launch {
                     // async find
-                    val trip = TripDatabase.getDataBase(context).tripDao().getTripByFileName(tripModel.fileName)
+                    val trip = TripDatabase.getDataBase(context).tripDao().getTripByFileName(tripModel.fileName).value
                     withContext(Dispatchers.Main) {
                         uploadViewEnabled(trip != null && trip.ecId > 0)
                     }

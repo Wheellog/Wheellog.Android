@@ -123,4 +123,8 @@ public abstract class BaseAdapter {
     public int getCellSForWheel() {
         return 0;
     }
+
+    public boolean isReady() {
+        return false;
+    }
 }

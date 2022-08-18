@@ -13,7 +13,6 @@
         <item name="colorControlActivated">@color/accent</item>
         <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
         <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
-        <item name="alertDialogStyle">@style/OriginalTheme.Dialog.Alert</item>
         <item name="popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
         <item name="android:popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
     </style>
@@ -28,28 +27,40 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="OriginalTheme.Dialog.Alert" parent="ThemeOverlay.AppCompat.Dialog">
-        <item name="android:textColor">@color/wheelview_textblocks</item>
-        <item name="android:textColorAlertDialogListItem">@color/wheelview_textblocks</item>
-        <item name="editTextColor">@color/wheelview_textblocks</item>
-        <item name="android:textColorPrimary">@color/wheelview_textblocks</item>
-        <item name="android:windowBackground">@color/primary_text</item>
-        <item name="android:colorBackground">@color/primary_text</item>
-        <item name="buttonStyle">@style/OriginalTheme.ButtonStyle</item>
-        <item name="colorControlNormal">@color/icons</item>
+    <style name="OriginalTheme.Dialog.Alert" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:windowBackground">@color/alert_bg</item>
+        <item name="textColorAlertDialogListItem">@color/primary_dark</item>
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:textColorAlertDialogListItem">@color/primary_dark</item>
+        <item name="editTextColor">@color/primary_dark</item>
+        <item name="android:textColorPrimary">@color/primary_dark</item>
+        <item name="android:textColorSecondary">@color/primary_dark</item>
+        <item name="colorControlNormal">@color/primary_dark</item>
         <item name="colorControlActivated">@color/accent</item>
+        <item name="colorControlHighlight">@color/wheelview_text</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="buttonBarNegativeButtonStyle">@style/OriginalTheme.ButtonStyle</item>
-        <item name="buttonBarNeutralButtonStyle">@style/OriginalTheme.ButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/OriginalTheme.ButtonStyle.Alert</item>
+        <item name="buttonBarNeutralButtonStyle">@style/OriginalTheme.ButtonStyle.Alert</item>
         <item name="buttonBarPositiveButtonStyle">@style/OriginalTheme.ButtonStylePositive</item>
-        <item name="android:checkboxStyle">@style/OriginalTheme.CheckBoxStyle</item>
-        <item name="editTextStyle">@style/OriginalTheme.EditTextStyle</item>
+        <item name="android:checkboxStyle">@style/OriginalTheme.CheckBoxStyle.Alert</item>
+        <item name="checkboxStyle">@style/OriginalTheme.CheckBoxStyle.Alert</item>
+        <item name="radioButtonStyle">@style/OriginalTheme.CheckBoxStyle.Alert</item>
+        <item name="spinnerStyle">@style/Widget.AppCompat.Spinner.DropDown.ActionBar</item>
+        <item name="popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
+        <item name="android:popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
     </style>
 
     <style name="OriginalTheme.ButtonStyle" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/wheelview_textblocks</item>
+        <item name="android:textColor">@color/alert_button_text</item>
+        <item name="backgroundTint">@color/alert_button_bg</item>
+        <item name="backgroundTintMode">add</item>
+        <item name="fontWeight">700</item>
+    </style>
+
+    <style name="OriginalTheme.ButtonStyle.Alert" parent="@style/OriginalTheme.ButtonStyle">
+        <item name="android:textColor">@color/primary_dark</item>
     </style>
 
     <style name="OriginalTheme.ButtonStylePositive" parent="@style/OriginalTheme.ButtonStyle">
@@ -60,16 +71,32 @@
         <item name="android:textColor">@color/wheelview_textblocks</item>
     </style>
 
+    <style name="OriginalTheme.CheckBoxStyle.Alert" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/primary_dark</item>
+        <item name="android:tint">@color/primary_dark</item>
+        <item name="colorControlNormal">@color/primary_dark</item>
+        <item name="android:textColorSecondary">@color/primary_dark</item>
+    </style>
+
     <style name="OriginalTheme.EditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:textColor">@color/wheelview_textblocks</item>
     </style>
 
+    <style name="OriginalTheme.EditTextStyle.Alert" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/primary_dark</item>
+    </style>
 
     <style name="OriginalTheme.Toolbar.ActionButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
+    </style>
+
+    <style name="MultiSelectPref" parent="@android:style/TextAppearance.Medium">
+        <item name="android:gravity">left</item>
+        <item name="layout_columnWeight">1</item>
+        <item name="android:textColor">@color/primary_dark</item>
     </style>
 
     <style name="Stats" parent="@android:style/TextAppearance.Medium">
@@ -114,6 +141,9 @@
         <item name="actionButtonStyle">@style/OriginalTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/background</item>
         <item name="android:colorBackground">@color/settings_bg</item>
+        <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
+        <item name="popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
+        <item name="android:popupMenuStyle">@style/OriginalTheme.PopupMenuStyle</item>
     </style>
 
     <style name="OriginalTheme.PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
@@ -124,5 +154,11 @@
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
         <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@android:color/darker_gray</item>
     </style>
 </resources>

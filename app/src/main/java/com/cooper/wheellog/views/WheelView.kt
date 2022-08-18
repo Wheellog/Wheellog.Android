@@ -1,7 +1,7 @@
 package com.cooper.wheellog.views
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.graphics.*
 import android.os.Handler
@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
@@ -1012,8 +1013,8 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                         redrawTextBoxes()
                     }
                     .setCancelable(true)
-                    .create()
                     .show()
+                    .setBlackIcon()
                 // Toast.makeText(context, "long press: " + e.x + " " + e.y + " | " + i, Toast.LENGTH_SHORT).show()
             }
         })

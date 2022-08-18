@@ -105,6 +105,13 @@ public class NinebotAdapter extends BaseAdapter {
         return true;
     }
 
+    @Override
+    public boolean isReady() {
+        return !Objects.equals(WheelData.getInstance().getSerial(), "")
+            && !Objects.equals(WheelData.getInstance().getVersion(), "")
+            && WheelData.getInstance().getVoltage() != 0;
+    }
+
     public static class Status {
         private final int speed;
         private final int voltage;

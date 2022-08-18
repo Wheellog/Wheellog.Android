@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.*
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -236,6 +237,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                             .setNegativeButton(android.R.string.no, null)
                             .setIcon(R.drawable.ic_baseline_calibration_24)
                             .show()
+                            .setBlackIcon()
                     true
                 }
                 ps.addPreference(this)

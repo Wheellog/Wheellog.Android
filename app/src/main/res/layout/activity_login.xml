@@ -1,43 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/OriginalTheme.Dialog.Alert"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:theme="@style/OriginalTheme.Dialog.Alert">
-
-    <TextView
-        android:id="@+id/alertTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="40dp"
-        android:background="@android:color/transparent"
-        android:gravity="center"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+    android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/editTextTextEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/alertTitle"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="40dp"
-        android:textColorHint="@color/wheelview_text"
-        app:passwordToggleTint="@color/icons">
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@drawable/ic_baseline_email_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:textColorHint="@color/wheelview_textblocks" />
+            android:textColor="@color/primary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -47,42 +32,19 @@
         android:layout_below="@id/editTextTextEmailAddress"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="40dp"
-        android:textColorHint="@color/wheelview_text"
-        app:passwordToggleEnabled="true"
-        app:passwordToggleTint="@color/icons"
-        app:startIconTint="@color/icons">
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        app:endIconMode="password_toggle"
+        android:digits="abcdefghijklmnopqrstuvwxyz.@0123456789"
+        app:startIconDrawable="@drawable/ic_baseline_lock_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColor="@color/primary" />
     </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/ok_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextTextPassword"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="14dp"
-        android:layout_marginEnd="40dp"
-        android:ellipsize="none"
-        android:text="@android:string/ok"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btn_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ok_button"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:layout_toStartOf="@+id/ok_button"
-        android:text="@android:string/cancel" />
 
 </RelativeLayout>

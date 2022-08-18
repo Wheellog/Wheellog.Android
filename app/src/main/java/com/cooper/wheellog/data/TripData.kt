@@ -31,9 +31,4 @@ data class TripData(
         var maxPower: Float = 0f,
         
         var additionalJson: String? = null
-) {
-        constructor(fileName: String, mac: String, profileName: String, start: Int)
-                : this(fileName = fileName, mac = mac, profileName = profileName, start = start, additionalJson = null) {
-
-        }
-}
+)

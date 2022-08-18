@@ -107,6 +107,11 @@ public class GotwayAdapter extends BaseAdapter {
         return newDataFound;
     }
 
+    @Override
+    public boolean isReady() {
+        return WheelData.getInstance().getVoltage() != 0;
+    }
+
     private void sendCommand(String s) {
         sendCommand(s, "b", 100);
     }

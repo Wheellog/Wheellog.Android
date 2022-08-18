@@ -194,14 +194,14 @@ class ElectroClub {
         }
     }
 
-    private suspend fun insertEmptyEntryInDb(fileName: String, profileName: String) {
+    private fun insertEmptyEntryInDb(fileName: String, profileName: String) {
         dao?.getTripByFileName(fileName)
             ?: dao?.insert(TripData(fileName = fileName, profileName = profileName))
     }
 
-    suspend fun updateEntryInDb(track: JSONObject, fileName: String): TripData {
+    fun updateEntryInDb(track: JSONObject, fileName: String): TripData {
         // gets or create trip with fileName field
-        val trip = dao?.getTripByFileName(fileName)
+        val trip = dao?.getTripByFileName(fileName)?.value
                 ?: TripData(fileName = fileName)
         trip.apply {
             ecId = track.getInt("id")
@@ -231,7 +231,7 @@ class ElectroClub {
             // UI with list select garage if mac isn't found
             activity.runOnUiThread {
                 var selectedTransport: Transport? = null
-                AlertDialog.Builder(activity, R.style.OriginalTheme_Dialog_Alert)
+                AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.ec_choose_transport))
                         .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
                             if (which != -1) {

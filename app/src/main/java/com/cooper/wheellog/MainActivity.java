@@ -37,7 +37,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.cooper.wheellog.companion.WearOs;
 
-import com.cooper.wheellog.data.TripDao;
 import com.cooper.wheellog.data.TripDatabase;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
@@ -88,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
-    protected static final int ResultPrivatePolicy = 666;
 
     private static Boolean onDestroyProcess = false;
 
@@ -200,6 +198,9 @@ public class MainActivity extends AppCompatActivity {
                     if (alarmType == 6) {
                         showSnackBar(getResources().getString(R.string.alarm_text_pwm)+String.format(": %.1f",alarmValue), 3000);
                     }
+                    break;
+                case Constants.ACTION_WHEEL_IS_READY:
+                    DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(MainActivity.this);
                     break;
             }
         }
@@ -495,9 +496,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        if (!WheelLog.AppConfig.getPrivatePolicyAccepted()) {
-            startActivityForResult(new Intent(MainActivity.this, PrivacyPolicyActivity.class), ResultPrivatePolicy);
-        }
+        DialogHelper.INSTANCE.checkAndShowPrivatePolicyDialog(this);
 
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
@@ -519,9 +518,9 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter());
         WheelLog.Notifications.update();
 
-        if (WheelLog.AppConfig.getDetectBatteryOptimization()) {
-            SomeUtil.Companion.checkBatteryOptimizationsAndShowAlert(this);
-        }
+        DialogHelper.INSTANCE.checkBatteryOptimizationsAndShowAlert(this);
+        // for test without wheel go to isHardwarePWM and comment Unknown case
+        // DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(this);
     }
 
     @Override
@@ -865,13 +864,6 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
                 break;
-            case ResultPrivatePolicy:
-                if (resultCode == RESULT_OK) {
-                    WheelLog.AppConfig.setPrivatePolicyAccepted(true);
-                } else {
-                    finish();
-                }
-                break;
         }
     }
 
@@ -885,6 +877,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED);
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED);
         intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+        intentFilter.addAction(Constants.ACTION_WHEEL_IS_READY);
         return intentFilter;
     }
 

@@ -7,6 +7,7 @@
         <item name="android:divider">@color/ajdm_divider</item>
         <item name="actionButtonStyle">@style/AJDMTheme.Toolbar.ActionButton</item>
         <item name="android:windowBackground">@drawable/ajdm_background</item>
+        <item name="alertDialogTheme">@style/OriginalTheme.Dialog.Alert</item>
         <item name="android:colorBackground">@color/ajdm_background</item>
     </style>
 

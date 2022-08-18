@@ -1,6 +1,8 @@
 package com.cooper.wheellog.presentation.preferences
 
+import android.app.Dialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -10,8 +12,11 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceDialogFragmentCompat
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
+import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -39,6 +44,15 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
 
     private fun getListPreference(): MultiSelectPreference? {
         return preference as MultiSelectPreference?
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        if (dialog is AlertDialog) {
+            dialog.show()
+            dialog.setBlackIcon()
+        }
+        return dialog
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,12 +110,28 @@ class MultiSelectPreferenceDialogFragment: PreferenceDialogFragmentCompat(), Com
         return scrollView
     }
 
+    private val colorStateList: ColorStateList by lazy {
+        ColorStateList(
+            arrayOf(
+                intArrayOf(-android.R.attr.state_checked),
+                intArrayOf(android.R.attr.state_checked)
+            ),
+            intArrayOf(
+                requireContext().getColorEx(R.color.primary_dark),
+                requireContext().getColorEx(R.color.accent)
+            )
+        )
+    }
+
     private fun addCheckbox(context: Context, text: CharSequence, isChecked: Boolean = false) {
         CheckBox(context).apply {
             this.text = text
             this.isChecked = isChecked
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                setTextAppearance(R.style.Stats)
+                setTextAppearance(R.style.OriginalTheme_CheckBoxStyle_Alert)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                buttonTintList = colorStateList
             }
             val paddingDP = (5 * context.resources.displayMetrics.density).roundToInt()
             setPadding(0, paddingDP, 0, paddingDP)

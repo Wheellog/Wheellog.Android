@@ -112,7 +112,6 @@
     <string name="logging_error_all_location_providers_disabled">"Android에서 위치 정보가 비활성화되었습니다. 위치 정보가 기록되지 않을 것입니다."</string>
 
     <!-- Fuzzy -->
-    <string name="raw_distance">"순수 거리"</string>
     <string name="alarm_text_speed">"속도 경고 발생됨"</string>
     <string name="alarm_text_current">"전류 경고 발생됨"</string>
     <string name="alarm_text_temperature">"온도 경고 발생됨"</string>
@@ -180,9 +179,6 @@
 
     <!-- Fuzzy -->
     <string name="newton">"N*m"</string>
-    <string name="max_speed_dial_title"></string>
-    <string name="dial_measurements"></string>
-    <string name="max_speed_dial_description"></string>
     <string name="use_mph_title">"MPH 사용"</string>
     <string name="use_mph_description">"킬로미터가 아니라 마일로 속도를 표기합니다"</string>
     <string name="view_blocks_title">"정보 블록"</string>
@@ -337,7 +333,6 @@
     <string name="speaker_volume_description">"내장 스피커 음량 변경"</string>
     <string name="pedal_horizont_title">"발판"</string>
     <string name="pedal_horizont_description">"발판 수평 조절"</string>
-    <string name="ninebotz_settings_title">"Ninebot Z 설정은 아직 지원하지 않습니다"</string>
     <string name="volt">"V"</string>
     <string name="watt">"W"</string>
     <string name="bmsBattery1Title">"배터리 1"</string>

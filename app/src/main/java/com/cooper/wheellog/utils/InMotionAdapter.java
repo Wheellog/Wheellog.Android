@@ -101,6 +101,11 @@ public class InMotionAdapter extends BaseAdapter {
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return model != Model.UNKNOWN && !Objects.equals(WheelData.getInstance().getSerial(), "");
+    }
+
     enum Mode {
         rookie(0),
         general(1),

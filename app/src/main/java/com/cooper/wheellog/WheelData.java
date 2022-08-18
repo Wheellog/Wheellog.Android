@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -66,6 +67,7 @@ public class WheelData {
     private int mOutput;
     private double mAngle;
     private double mRoll;
+    private boolean mWheelIsReady = false;
 
     private int mBattery;
     private int mBatteryStart = -1;
@@ -265,6 +267,26 @@ public class WheelData {
 
     public static WheelData getInstance() {
         return mInstance;
+    }
+
+    public boolean isHardwarePWM()
+    {
+        switch (getWheelType())
+        {
+            case KINGSONG:
+            case Unknown:
+                return true;
+            case INMOTION_V2:
+                return InmotionAdapterV2.getInstance().getProto() >= 2;
+            case VETERAN:
+                return VeteranAdapter.getInstance().getVer() >= 2; // 2+
+            default:
+                return false;
+        }
+    }
+
+    public boolean isWheelIsReady() {
+        return mWheelIsReady;
     }
 
     public int getSpeed() {
@@ -612,7 +634,7 @@ public class WheelData {
     }
 
     public String getVersion() {
-        return mVersion == "" ? "Unknown" : mVersion;
+        return Objects.equals(mVersion, "") ? "Unknown" : mVersion;
     }
 
     public void setVersion(String value) {
@@ -1283,6 +1305,12 @@ public class WheelData {
         intent.putExtra("Speed", mSpeed);
         mContext.sendBroadcast(intent);
 
+        if (!mWheelIsReady && getAdapter().isReady()) {
+            mWheelIsReady = true;
+            var isReadyIntent = new Intent(Constants.ACTION_WHEEL_IS_READY);
+            mContext.sendBroadcast(isReadyIntent);
+        }
+
         CheckMuteMusic();
     }
 
@@ -1392,7 +1420,7 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
         protoVer = "";
-
+        mWheelIsReady = false;
     }
 
     boolean detectWheel(String deviceAddress) {

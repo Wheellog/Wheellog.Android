@@ -28,6 +28,7 @@
     <string name="altered_alarms" translatable="false">altered_alarms</string>
     <string name="rotation_speed" translatable="false">rotation_speed</string>
     <string name="rotation_voltage" translatable="false">rotation_voltage</string>
+    <string name="rotation_set" translatable="false">rotation_set</string>
     <string name="power_factor" translatable="false">power_factor</string>
     <string name="alarm_factor1" translatable="false">alarm_factor1</string>
     <string name="alarm_factor2" translatable="false">alarm_factor2</string>
@@ -655,4 +656,9 @@
     <string name="continue_this_day_log_description">The trip log is added until the next day comes.</string>
     <string name="continue_this_day_log_alert_title">Finish the trip?</string>
     <string name="continue_this_day_log_alert_description">The trip will not continue the next time the log is enabled.</string>
+    <string name="setup_pwm_dialog_title">Setup PWM</string>
+    <string name="setup_pwm_dialog_description">To correctly calculate and display the PWM, configure the wheel spin data. We need the maximum speed, and the voltage at which it was measured.</string>
+    <string name="setup_pwm_setup_max_speed_and_voltage">1. Manual setup max speed and voltage:</string>
+    <string name="setup_pwm_auto">2. Auto. You need to spin wheel on air.</string>
+    <string name="setup_pwm_select_from_template">3. Select from template:</string>
 </resources>

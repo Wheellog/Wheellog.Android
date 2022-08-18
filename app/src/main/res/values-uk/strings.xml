@@ -133,7 +133,6 @@
     <string name="speaker_volume_description">Регулює гучність вбудованих колонок</string>
     <string name="pedal_horizont_title">Рівень нахилу педалей</string>
     <string name="pedal_horizont_description">Зміна кута нахилу педалей</string>
-    <string name="ninebotz_settings_title">Нажаль налаштування для вашого колеса недоступне</string>
     <string name="volt">В</string>
     <string name="watt">Вт</string>
     <string name="enable_auto_upload_title">Увімкнути аплоад?</string>
@@ -363,7 +362,6 @@
     <string name="fan_quiet_description">Вентилятор увімкнеться лише під час поїздки, але яскравість фар зменшиться до 40% у режимі очікування</string>
     <string name="light_brightness_description">Яскравість головної фари</string>
     <string name="light_brightness_title">Яскравість світла</string>
-    <string name="drl_settings_description">Увімкнути підсвітку</string>
     <string name="beep_by_wheel_description">Використовувати вбудований гудок</string>
     <string name="beep_by_wheel_title">Використовувати інший гудок</string>
     <string name="custom_beep_title">Вибрати аудіо</string>

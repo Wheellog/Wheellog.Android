@@ -11,8 +11,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.util.Patterns
 import android.view.KeyEvent
+import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.CycleInterpolator
+import android.view.animation.TranslateAnimation
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -22,7 +26,9 @@ import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.preference.*
 import com.cooper.wheellog.*
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
+import com.cooper.wheellog.databinding.ActivityLoginBinding
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
@@ -57,28 +63,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             // Access is denied
             WheelLog.AppConfig.useCustomBeep = false
             refreshVolatileSettings()
-
         }
     }
 
     private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
-            if (!map.all { it.value == true }) {
-                // Any access is denied
-                WheelLog.AppConfig.useGps = false
-                refreshVolatileSettings()
-            }
-        }
-
-    private val loginActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            WheelLog.AppConfig.autoUploadEc = true
+        if (!map.all { it.value == true }) {
+            // Any access is denied
+            WheelLog.AppConfig.useGps = false
             refreshVolatileSettings()
-            ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
-            WheelLog.AppConfig.autoUploadEc = true
-        } else {
-            ElectroClub.instance.logout()
         }
-        refreshVolatileSettings()
     }
 
     val mediaRequestResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -162,7 +155,100 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .setCancelable(false)
                     .setIcon(R.drawable.ic_baseline_gps_24)
                     .show()
+                    .setBlackIcon()
         }
+    }
+
+    private fun electroClubDialog() {
+        // TODO check user token
+        if (!WheelLog.AppConfig.autoUploadEc) {
+            // logout after uncheck
+            ElectroClub.instance.logout()
+            return
+        }
+
+        fun shakeError(): TranslateAnimation {
+            val shake = TranslateAnimation(0F, 15F, 0F, 10F)
+            shake.duration = 500
+            shake.interpolator = CycleInterpolator(7F)
+            return shake
+        }
+
+        fun showLoginDialog() {
+            val binding = ActivityLoginBinding.inflate(LayoutInflater.from(context), null, false)
+            val loginDialog = AlertDialog.Builder(requireContext())
+                    .setCancelable(false)
+                    .setTitle("electro.club")
+                    .setView(binding.root)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .create()
+            loginDialog.setOnShowListener {
+                loginDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    val email = binding.editTextTextEmailAddress.editText?.text.toString()
+                    if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
+                    {
+                        binding.editTextTextEmailAddress.error = "Invalid email.";
+                        return@setOnClickListener
+                    }
+                    binding.editTextTextEmailAddress.error = null
+                    // click OK -> send request
+                    ElectroClub.instance.login(
+                        email,
+                        binding.editTextTextPassword.editText?.text.toString()
+                    ) {
+                        activity?.runOnUiThread {
+                            if (it) { // response - success login
+                                loginDialog.dismiss()
+                                ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
+                                    WheelData.getInstance().mac,
+                                    activity as Activity
+                                ) { }
+                                WheelLog.AppConfig.autoUploadEc = true
+                                refreshVolatileSettings()
+                            } else { // response - failed
+                                ElectroClub.instance.logout()
+                                binding.editTextTextPassword.apply {
+                                    startAnimation(shakeError())
+                                    error = ElectroClub.instance.lastError
+                                    errorIconDrawable = null
+                                }
+
+                            }
+                        }
+                    }
+                }
+                loginDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
+                    loginDialog.dismiss()
+                    ElectroClub.instance.logout()
+                    refreshVolatileSettings()
+                }
+            }
+            loginDialog.show()
+        }
+
+        WheelLog.AppConfig.autoUploadEc = false
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.enable_auto_upload_title))
+            .setMessage(getString(R.string.enable_auto_upload_descriprion))
+            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                mDataWarningDisplayed = true
+
+                if (WheelLog.AppConfig.ecToken != null) {
+                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
+                        WheelData.getInstance().mac,
+                        activity as Activity
+                    ) { }
+                } else {
+                    showLoginDialog()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
+                ElectroClub.instance.logout()
+                refreshVolatileSettings()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -176,44 +262,17 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled, R.string.altered_alarms -> generalSettings.switchAlarmsIsVisible(this)
-            R.string.auto_upload_ec -> {
-                // TODO check user token
-                if (WheelLog.AppConfig.autoUploadEc) {
-                    WheelLog.AppConfig.autoUploadEc = false
-                    AlertDialog.Builder(requireContext())
-                            .setTitle(getString(R.string.enable_auto_upload_title))
-                            .setMessage(getString(R.string.enable_auto_upload_descriprion))
-                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                                mDataWarningDisplayed = true
-                                if (WheelLog.AppConfig.ecToken == null) {
-                                    loginActivityResult.launch(Intent(activity, LoginActivity::class.java))
-                                } else {
-                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(WheelData.getInstance().mac, activity as Activity) { }
-                                }
-                            }
-                            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
-                                ElectroClub.instance.logout()
-                                refreshVolatileSettings()
-                            }
-                            .setCancelable(false)
-                            .setIcon(android.R.drawable.ic_dialog_info)
-                            .show()
-                } else {
-                    // logout after uncheck
-                    if (!WheelLog.AppConfig.autoUploadEc) {
-                        ElectroClub.instance.logout()
-                    }
-                }
-            }
+            R.string.auto_upload_ec -> electroClubDialog()
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
             R.string.use_eng, R.string.app_theme -> {
                 WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
                 AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.use_eng_alert_title)
-                        .setMessage(R.string.use_eng_alert_description)
-                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show()
+                    .setTitle(R.string.use_eng_alert_title)
+                    .setMessage(R.string.use_eng_alert_description)
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show()
+                    .setBlackIcon()
             }
             R.string.day_night_theme -> {
                 findPreference<ListPreference>(getString(R.string.day_night_theme))?.summary =
@@ -223,11 +282,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                             else -> getString(R.string.day_night_theme_as_system)
                         }
                 AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.use_eng_alert_title)
-                        .setMessage(R.string.use_eng_alert_description)
-                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                        .setIcon(android.R.drawable.ic_dialog_info)
-                        .show()
+                    .setTitle(R.string.use_eng_alert_title)
+                    .setMessage(R.string.use_eng_alert_description)
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show()
+                    .setBlackIcon()
             }
             R.string.light_enabled -> wd.updateLight(WheelLog.AppConfig.lightEnabled)
             R.string.led_enabled -> wd.updateLed(WheelLog.AppConfig.ledEnabled)
@@ -394,11 +454,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     val versionName = BuildConfig.VERSION_NAME
                     val buildTime = BuildConfig.BUILD_TIME
                     AlertDialog.Builder(requireActivity())
-                            .setTitle(R.string.about_app_title)
-                            .setMessage(String.format("Version %s \n build at %s github.com/Wheellog/Wheellog.Android \n Thanks to all contributors", versionName, buildTime))
-                            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                            .setIcon(android.R.drawable.ic_dialog_info)
-                            .show()
+                        .setTitle(R.string.about_app_title)
+                        .setMessage(String.format("Version %s \n build at %s github.com/Wheellog/Wheellog.Android \n Thanks to all contributors", versionName, buildTime))
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show()
+                        .setBlackIcon()
                     true
                 }
                 donateButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -414,6 +475,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         }
                         .setIcon(R.drawable.ic_donate_24)
                         .show()
+                        .setBlackIcon()
                     true
                 }
                 // Themes

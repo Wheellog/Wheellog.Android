@@ -1,26 +1,23 @@
 package com.cooper.wheellog.utils
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
-import android.content.ActivityNotFoundException
-import android.provider.Settings
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
-import android.os.PowerManager
 import android.view.View
+import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import com.cooper.wheellog.*
+import com.cooper.wheellog.MainActivity
+import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import java.io.IOException
 
 class SomeUtil {
@@ -101,47 +98,6 @@ class SomeUtil {
                 // default beep
                 playSound(context, R.raw.beep)
             }
-        }
-
-        /**
-         * return false if in App's Battery settings "Not optimized" and true if "Optimizing battery use"
-         */
-        private fun isBatteryOptimizations(context: Context): Boolean {
-            val powerManager =
-                context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-            val name = context.applicationContext.packageName
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return !powerManager.isIgnoringBatteryOptimizations(name)
-            }
-            return false
-        }
-
-        fun checkBatteryOptimizationsAndShowAlert(context: Context): Boolean {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isBatteryOptimizations(context)) {
-                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
-                    .setTitle(R.string.detected_battery_optimization_title)
-                    .setMessage(R.string.detected_battery_optimization)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.detected_battery_optimization_app_button) { _: DialogInterface?, _: Int ->
-                        try {
-                            //Open the specific App Info page:
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.data = Uri.parse("package:${context.packageName}")
-                            context.startActivity(intent)
-                        } catch (e: ActivityNotFoundException) {
-                            //Open the generic Apps page:
-                            val intent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
-                            context.startActivity(intent)
-                        }
-                    }
-                    .setNegativeButton(R.string.detected_battery_optimization_settings_button) { _: DialogInterface?, _: Int ->
-                        context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                    }
-                    .setNeutralButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
-                    .show()
-                return true
-            }
-            return false
         }
 
         private fun isIntentResolved(context: Context, intent: Intent): Boolean {

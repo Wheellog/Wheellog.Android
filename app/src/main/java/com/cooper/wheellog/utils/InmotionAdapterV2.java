@@ -108,6 +108,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
     }
 
+    @Override
+    public boolean isReady() {
+        return mModel != Model.UNKNOWN && protoVer != 0;
+    }
+
     public int getMaxSpeed() {
         switch (mModel) {
             case V11:
@@ -123,6 +128,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
     }
     public void setProto(int value){ // for tests
         protoVer = value;
+    }
+    public int getProto(){ // for pwm dialog
+        return protoVer;
     }
 
     public Model getModel(){

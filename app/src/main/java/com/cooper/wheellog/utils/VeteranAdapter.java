@@ -12,6 +12,7 @@ public class VeteranAdapter extends BaseAdapter {
     veteranUnpacker unpacker = new veteranUnpacker();
     private static final int WAITING_TIME = 100;
     private long time_old = 0;
+    private int mVer = 0;
 
     @Override
     public boolean decode(byte[] data) {
@@ -39,6 +40,7 @@ public class VeteranAdapter extends BaseAdapter {
                 int speedAlert = MathsUtil.shortFromBytesBE(buff, 24) * 10;
                 int speedTiltback = MathsUtil.shortFromBytesBE(buff,26) * 10;
                 int ver = MathsUtil.shortFromBytesBE(buff,28);
+                mVer = ver/1000;
                 String version = String.format(Locale.US, "%03d.%01d.%02d", ver/1000, (ver%1000)/100, (ver%100));
                 int pedalsMode = MathsUtil.shortFromBytesBE(buff, 30);
                 int reserved1 = MathsUtil.shortFromBytesBE(buff,32);
@@ -93,6 +95,11 @@ public class VeteranAdapter extends BaseAdapter {
         return newDataFound;
     }
 
+    @Override
+    public boolean isReady() {
+        return WheelData.getInstance().getVoltage() != 0 && mVer != 0;
+    }
+
     public void resetTrip() {
         WheelData.getInstance().bluetoothCmd("CLEARMETER".getBytes());
     }
@@ -110,6 +117,12 @@ public class VeteranAdapter extends BaseAdapter {
                 WheelData.getInstance().bluetoothCmd("SETs".getBytes());
                 break;
         }
+    }
+    public int getVer() {
+        if (mVer >=2) {
+            WheelLog.AppConfig.setHwPwm(true);
+        }
+        return mVer;
     }
 
     @Override

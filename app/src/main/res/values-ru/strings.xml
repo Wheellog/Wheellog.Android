@@ -435,4 +435,9 @@
     <string name="garmin_connectiq_use_beta_description">Использовать бета-версию компаньона вместо стабильной</string>
     <string name="hw_pwm_title">Использовать аппаратный PWM</string>
     <string name="hw_pwm_description">Современные прошивки Veteran передают PWM в протоколе, включите чтобы активировать</string>
+    <string name="setup_pwm_dialog_title">Установка PWM</string>
+    <string name="setup_pwm_dialog_description">Для корректного рассчёта и отображения PWM, выполните настройку данных по раскрутке колеса. Нужна максимальная скорость раскрутки, и напряжение при котором она замерялась.</string>
+    <string name="setup_pwm_setup_max_speed_and_voltage">1. Вручную установить максимальную скорость и вольтаж:</string>
+    <string name="setup_pwm_auto">2. Авто. После выбора нужно раскрутить колесо в воздухе.</string>
+    <string name="setup_pwm_select_from_template">3. Выбрать из шаблона:</string>
 </resources>
