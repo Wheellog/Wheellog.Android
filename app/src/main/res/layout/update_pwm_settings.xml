@@ -8,6 +8,11 @@
     android:theme="@style/OriginalTheme.Dialog.Alert">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/setup_pwm_dialog_description" />
+
+    <TextView
         android:id="@+id/modelName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

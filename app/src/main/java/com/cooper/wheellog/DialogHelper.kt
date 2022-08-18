@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.text.Editable
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -32,6 +33,18 @@ object DialogHelper {
             return !powerManager.isIgnoringBatteryOptimizations(name)
         }
         return false
+    }
+
+    private fun syncSeekBar(editText: EditText?, seekBar: SeekBar) {
+        val s = (editText?.text ?: "").toString().replace(',', '.')
+        if (s.isNotEmpty()) {
+            val value = (s.toDouble() * 10).toInt()
+            if (value > seekBar.max) {
+                editText?.setText(String.format("%.1f", seekBar.max / 10f))
+            } else {
+                seekBar.progress = value
+            }
+        }
     }
 
     fun checkBatteryOptimizationsAndShowAlert(context: Context) {
@@ -160,15 +173,7 @@ object DialogHelper {
         })
 
         binding.speedValue.editText?.doAfterTextChanged {
-            val s = it.toString()
-            if (s.isNotEmpty()) {
-                val value = (s.toDouble() * 10).toInt()
-                if (value > binding.seekBarSpeed.max) {
-                    binding.speedValue.editText?.setText(String.format("%.1f", binding.seekBarSpeed.max / 10f))
-                } else {
-                    binding.seekBarSpeed.progress = value
-                }
-            }
+            syncSeekBar(binding.speedValue.editText, binding.seekBarSpeed)
         }
 
         binding.seekBarVoltage.setOnSeekBarChangeListener(object :
@@ -187,15 +192,7 @@ object DialogHelper {
         })
 
         binding.voltageValue.editText?.doAfterTextChanged {
-            val s = it.toString()
-            if (s.isNotEmpty()) {
-                val value = (s.toDouble() * 10).toInt()
-                if (value > binding.seekBarVoltage.max) {
-                    binding.voltageValue.editText?.setText(String.format("%.1f", binding.seekBarVoltage.max / 10f))
-                } else {
-                    binding.seekBarVoltage.progress = value
-                }
-            }
+            syncSeekBar(binding.voltageValue.editText, binding.seekBarVoltage)
         }
 
         val model = binding.modelName.text.split(" ").last()

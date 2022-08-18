@@ -274,7 +274,7 @@ public class WheelData {
         switch (getWheelType())
         {
             case KINGSONG:
-            case Unknown: // comment it for test
+            case Unknown:
                 return true;
             case INMOTION_V2:
                 return InmotionAdapterV2.getInstance().getProto() >= 2;
