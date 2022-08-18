@@ -26,15 +26,17 @@ public class GotwayAdapter extends BaseAdapter {
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
         boolean newDataFound = false;
-        String dataS = new String(data, 0, data.length-1).trim();
-        if (dataS.startsWith("NAME")) {
-            model = dataS.substring(5);
-            wd.setModel(model);
-        } else if (dataS.startsWith("GW")) {
-            fw = dataS.substring(2);
-            wd.setVersion(fw);
-        } else if (dataS.startsWith("MPU")) {
-            imu = dataS.substring(1, 7).trim();
+        if (model.length() == 0) || (fw.length() == 0) { // IMU sent at the begining, so there is no sense to check it, we can't request it
+            String dataS = new String(data, 0, data.length - 1).trim();
+            if (dataS.startsWith("NAME")) {
+                model = dataS.substring(5).trim();
+                wd.setModel(model);
+            } else if (dataS.startsWith("GW")) {
+                fw = dataS.substring(2).trim();
+                wd.setVersion(fw);
+            } else if (dataS.startsWith("MPU")) {
+                imu = dataS.substring(1, 7).trim();
+            }
         }
         for (byte c : data) {
             if (unpacker.addChar(c)) {
