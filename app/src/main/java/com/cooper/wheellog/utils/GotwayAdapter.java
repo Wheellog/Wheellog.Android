@@ -31,7 +31,7 @@ public class GotwayAdapter extends BaseAdapter {
             model = dataS.substring(5);
             wd.setModel(model);
         } else if (dataS.startsWith("GW")) {
-            fw = new String(data, 2, data.length-3).trim();
+            fw = dataS.substring(2);
             wd.setVersion(fw);
         } else if (dataS.startsWith("MPU")) {
             imu = new String(data, 1, 7).trim();
