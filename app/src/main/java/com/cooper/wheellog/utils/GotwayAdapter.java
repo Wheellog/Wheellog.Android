@@ -34,7 +34,7 @@ public class GotwayAdapter extends BaseAdapter {
             fw = dataS.substring(2);
             wd.setVersion(fw);
         } else if (dataS.startsWith("MPU")) {
-            imu = new String(data, 1, 7).trim();
+            imu = dataS.substring(1, 7).trim();
         }
         for (byte c : data) {
             if (unpacker.addChar(c)) {
