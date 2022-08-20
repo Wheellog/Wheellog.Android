@@ -464,8 +464,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
                 donateButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     val kvm = mapOf(
-                        "Paypal" to "https://paypal.me/wheellog",
-                        "Patreon" to "https://patreon.com/paymicro",
+                        "Crypto" to "https://paymicro.github.io/donate",
                         "Credit card (only from russian bank)" to "https://tinkoff.ru/sl/6iw4b0ugfpC")
                     AlertDialog.Builder(requireActivity())
                         .setTitle(R.string.donate_title)
