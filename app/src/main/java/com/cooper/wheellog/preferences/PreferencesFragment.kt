@@ -296,6 +296,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.brake_assistant_enabled -> wd.updateBrakeAssistant(WheelLog.AppConfig.brakeAssistantEnabled)
             R.string.wheel_max_speed -> wd.updateMaxSpeed(WheelLog.AppConfig.wheelMaxSpeed)
             R.string.speaker_volume -> wd.updateSpeakerVolume(WheelLog.AppConfig.speakerVolume)
+            R.string.beeper_volume -> wd.adapter?.updateBeeperVolume(WheelLog.AppConfig.beeperVolume)
             R.string.pedals_adjustment -> wd.updatePedals(WheelLog.AppConfig.pedalsAdjustment)
             R.string.pedal_sensivity -> wd.updatePedalSensivity(WheelLog.AppConfig.pedalSensivity)
             R.string.ride_mode -> wd.updateRideMode(WheelLog.AppConfig.rideMode)
@@ -310,6 +311,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.light_brightness -> wd.updateLightBrightness(WheelLog.AppConfig.lightBrightness)
             R.string.pedals_mode -> wd.updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
             R.string.light_mode -> wd.adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
+            R.string.roll_angle -> wd.adapter?.setRollAngleMode(Integer.parseInt(WheelLog.AppConfig.rollAngle))
+            R.string.gw_in_miles -> wd.adapter?.setMilesMode(WheelLog.AppConfig.gwInMiles)
             R.string.alarm_mode -> wd.updateAlarmMode(Integer.parseInt(WheelLog.AppConfig.alarmMode))
             R.string.strobe_mode -> wd.updateStrobe(Integer.parseInt(WheelLog.AppConfig.strobeMode))
             R.string.led_mode -> {

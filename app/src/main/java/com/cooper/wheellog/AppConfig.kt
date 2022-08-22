@@ -371,6 +371,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.speaker_volume, 0)
         set(value) = setSpecific(R.string.speaker_volume, value)
 
+    var beeperVolume: Int
+        get() = getSpecific(R.string.beeper_volume, 0)
+        set(value) = setSpecific(R.string.beeper_volume, value)
+
     var pedalsAdjustment: Int
         get() = getSpecific(R.string.pedals_adjustment, 0)
         set(value) = setSpecific(R.string.pedals_adjustment, value)
@@ -489,6 +493,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.pedals_mode, "0")
         set(value) = setSpecific(R.string.pedals_mode, value)
 
+    var rollAngle: String // ListPreference only works with string parameters and writes them as string
+        get() = getSpecific(R.string.roll_angle, "0")
+        set(value) = setSpecific(R.string.roll_angle, value)
+
     var wheelMaxSpeed: Int
         get() = getSpecific(R.string.wheel_max_speed, 0)
         set(value) = setSpecific(R.string.wheel_max_speed, value)
@@ -518,6 +526,10 @@ class AppConfig(var context: Context) {
     var useRatio: Boolean
         get() = getSpecific(R.string.use_ratio, false)
         set(value) = setSpecific(R.string.use_ratio, value)
+
+    var gwInMiles: Boolean
+        get() = getSpecific(R.string.gw_in_miles, false)
+        set(value) = setSpecific(R.string.gw_in_miles, value)
 
     var gotwayVoltage: String // ListPreference only works with string parameters
         get() = getSpecific(R.string.gotway_voltage, "1")

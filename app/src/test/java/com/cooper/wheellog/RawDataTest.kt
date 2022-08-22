@@ -34,6 +34,8 @@ class RawDataTest {
     fun `GW - decode with normal data`() {
         // Arrange.
         every { WheelLog.AppConfig.gotwayNegative } returns "1"
+        mockkConstructor(android.os.Handler::class)
+        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter = GotwayAdapter()
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         val inputStream: InputStream = File("src/test/resources/rawDecodeTest.csv").inputStream()

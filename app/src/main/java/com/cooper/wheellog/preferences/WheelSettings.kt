@@ -696,6 +696,30 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setDefaultValue(WheelLog.AppConfig.pedalsMode)
             ps.addPreference(this)
         }
+        ListPreference(context).apply {
+            key = mac + getString(R.string.roll_angle)
+            title = getString(R.string.roll_angle_title)
+            summary = getString(R.string.roll_angle_description)
+            setEntries(R.array.roll_angle_mode)
+            setEntryValues(R.array.roll_angle_values)
+            setDefaultValue(WheelLog.AppConfig.rollAngle)
+            ps.addPreference(this)
+        }
+        ListPreference(context).apply {
+            key = mac + getString(R.string.led_mode)
+            title = getString(R.string.led_mode_title)
+            summary = getString(R.string.led_mode_nb_description)
+            setEntries(R.array.gw_led_mode)
+            setEntryValues(R.array.gw_led_mode_values)
+            setDefaultValue(WheelLog.AppConfig.ledMode)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
+            key = mac + getString(R.string.gw_in_miles)
+            title = getString(R.string.gw_in_miles_title)
+            summary = getString(R.string.gw_in_miles_description)
+            ps.addPreference(this)
+        }
         SeekBarPreference(context).apply {
             key = mac + getString(R.string.wheel_max_speed)
             title = getString(R.string.max_speed_title)
@@ -708,6 +732,18 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             setDefaultValue(WheelLog.AppConfig.wheelMaxSpeed)
             ps.addPreference(this)
         }
+
+        SeekBarPreference(context).apply {
+            key = mac + getString(R.string.beeper_volume)
+            title = getString(R.string.beeper_volume_title)
+            summary = getString(R.string.beeper_volume_description)
+            min = 1
+            max = 9
+            increment = 1
+            setDefaultValue(WheelLog.AppConfig.beeperVolume)
+            ps.addPreference(this)
+        }
+
         Preference(context).apply {
             setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsCalibration))
             title = getString(R.string.wheel_calibration)

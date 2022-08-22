@@ -45,10 +45,12 @@
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
     <string name="speaker_volume" translatable="false">speaker_volume</string>
+    <string name="beeper_volume" translatable="false">beeper_volume</string>
     <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
     <string name="pedal_sensivity" translatable="false">pedal_sensivity</string>
     <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
+    <string name="roll_angle" translatable="false">roll_angle</string>
     <string name="light_mode" translatable="false">light_mode</string>
     <string name="wheel_alarm1_enabled" translatable="false">wheel_alarm1_enabled</string>
     <string name="wheel_alarm2_enabled" translatable="false">wheel_alarm2_enabled</string>
@@ -120,6 +122,7 @@
     <string name="connect_beep" translatable="false">connect_beep</string>
     <string name="max_speed" translatable="false">max_speed</string>
     <string name="use_ratio" translatable="false">use_ratio</string>
+    <string name="gw_in_miles" translatable="false">gw_in_miles</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
     <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
     <string name="beep_by_wheel" translatable="false">beep_by_wheel</string>
@@ -270,6 +273,7 @@
     <string name="led_type6">Full color wave</string>
     <string name="led_type7">Alter color breathing</string>
     <string name="pedals_mode_title">Pedals Mode</string>
+    <string name="roll_angle_title">Roll angle cut off</string>
     <string name="led_mode_title">Leds mode</string>
     <string name="strobe_mode_title">Strobe Mode</string>
     <string name="light_mode_title">Light Mode</string>
@@ -286,6 +290,18 @@
     <string name="hard">Hard</string>
     <string name="medium">Medium</string>
     <string name="soft">Soft</string>
+    <string name="low">Low</string>
+    <string name="high">High</string>
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
     <string name="on_board_horn_ks">On-board (KingSong)</string>
     <string name="bluetooth_audio_horn">via bluetooth audio</string>
     <string name="speed_settings_title">Application Settings</string>
@@ -402,6 +418,7 @@
     <string name="use_raw_title">Write Raw data</string>
     <string name="on_off_strobe">Off/On/Strobe</string>
     <string name="soft_medium_hard">Soft/Medium/Hard</string>
+    <string name="roll_angle_description">Low/Medium/High</string>
     <string name="alarm_settings_description">Alarm settings</string>
     <string name="alarm_mode_title">Alarm Mode</string>
     <string name="calibration_title">Calibration</string>
@@ -419,10 +436,12 @@
     <string name="speakervolume_fail">Speaker control fail</string>
     <string name="is_gotway_mcm_title">My Wheel is a Gotway MCM</string>
     <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
+    <string name="gw_in_miles_title">Switch controller in Miles</string>
+    <string name="gw_in_miles_description">on - Miles, off - Km</string>
     <string name="ks18l_scaler_title">Wrong 18L distanse</string>
     <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
     <string name="battery_voltage_title">Battery voltage</string>
-    <string name="battary_voltage_description">67V/84V/100V</string>
+    <string name="battary_voltage_description">67V/84V/100V/116V/134V</string>
     <string name="gotway_negative_title">Negative current and speed mode</string>
     <string name="gotway_negative_description">When you riding straight if speed and currents negative - try change to opposite setting, or choose absolute</string>
     <string name="hw_pwm_title">Use hardware PWM instead of software</string>
@@ -466,6 +485,8 @@
     <string name="brake_assistant_description">Wheel will tilt back by 3 degrees while braking</string>
     <string name="speaker_volume_title">Speaker volume</string>
     <string name="speaker_volume_description">Change built-in speaker volume</string>
+    <string name="beeper_volume_title">Beeper volume</string>
+    <string name="beeper_volume_description">Change built-in beeper volume</string>
     <string name="pedal_horizont_title">Pedals</string>
     <string name="pedal_horizont_description">Horizontal pedals adjustment</string>
     <string name="ride_mode_title">Ride mode</string>

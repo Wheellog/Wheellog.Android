@@ -18,6 +18,15 @@ public abstract class BaseAdapter {
     public void setLightMode(int lightMode) {
     }
 
+    public void setRollAngleMode(int rollAngleMode) {
+    }
+
+    public void updateBeeperVolume(int beeperVolume) {
+    }
+
+    public void setMilesMode(boolean milesMode) {
+    }
+
     public void setLightState(boolean on) {
     }
 

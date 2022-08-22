@@ -35,19 +35,58 @@
         <item>@string/off_level_1_alarm</item>
         <item>@string/off_level_2_alarm</item>
     </string-array>
-	
+
 	<string-array name="alarm_mode_values">
-        <item>2</item>
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>	
 	
 	<string-array name="light_mode_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-    </string-array>	
-	
+    </string-array>
+
+    <string-array name="roll_angle_mode">
+        <item>@string/low</item>
+        <item>@string/medium</item>
+        <item>@string/high</item>
+    </string-array>
+
+    <string-array name="roll_angle_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="gw_led_mode">
+        <item>@string/zero</item>
+        <item>@string/one</item>
+        <item>@string/two</item>
+        <item>@string/three</item>
+        <item>@string/four</item>
+        <item>@string/five</item>
+        <item>@string/six</item>
+        <item>@string/seven</item>
+        <item>@string/eight</item>
+        <item>@string/nine</item>
+
+    </string-array>
+
+    <string-array name="gw_led_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
+
 	<string-array name="strobe_mode_ks">
         <item>@string/off</item>
         <item>@string/on</item>

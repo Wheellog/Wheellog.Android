@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils;
 
+import android.content.Intent;
 import android.os.Handler;
 
 import com.cooper.wheellog.WheelData;
@@ -13,6 +14,10 @@ public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     gotwayUnpacker unpacker = new gotwayUnpacker();
     private static final double RATIO_GW = 0.875;
+    private String model = "";
+    private String imu = "";
+    private String fw = "";
+    private int attempt = 0;
 
     @Override
     public boolean decode(byte[] data) {
@@ -21,7 +26,18 @@ public class GotwayAdapter extends BaseAdapter {
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
         boolean newDataFound = false;
-
+        if ((model.length() == 0) || (fw.length() == 0)) { // IMU sent at the begining, so there is no sense to check it, we can't request it
+            String dataS = new String(data, 0, data.length - 1).trim();
+            if (dataS.startsWith("NAME")) {
+                model = dataS.substring(5).trim();
+                wd.setModel(model);
+            } else if (dataS.startsWith("GW")) {
+                fw = dataS.substring(2).trim();
+                wd.setVersion(fw);
+            } else if (dataS.startsWith("MPU")) {
+                imu = dataS.substring(1, 7).trim();
+            }
+        }
         for (byte c : data) {
             if (unpacker.addChar(c)) {
 
@@ -35,9 +51,10 @@ public class GotwayAdapter extends BaseAdapter {
 
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
-                    long distance = MathsUtil.getInt4(buff, 6);
+                    int distance = MathsUtil.shortFromBytesBE(buff, 8);
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
-                    int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);
+                    int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
+                    //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
 
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
@@ -95,11 +112,58 @@ public class GotwayAdapter extends BaseAdapter {
                     } else {
                         wd.setTotalDistance(totalDistance);
                     }
-
-                    int pedalsMode = (buff[6] >> 4) & 0x0F;
-                    int speedAlarms = buff[6] & 0x0F;
+                    int settings = MathsUtil.shortFromBytesBE(buff, 6);
+                    int pedalsMode = (settings >> 13) & 0x03;
+                    int speedAlarms = (settings >> 10) & 0x03;
+                    int rollAngle = (settings >> 7) & 0x03;
+                    int inMiles = settings & 0x01;
+                    int powerOffTime = MathsUtil.shortFromBytesBE(buff, 8);
+                    int tiltBackSpeed = MathsUtil.shortFromBytesBE(buff, 10);
+                    if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
+                    int alert = buff[12] & 0xFF;
                     int ledMode = buff[13] & 0xFF;
+                    int lightMode = buff[15] & 0xFF;
+                    WheelLog.AppConfig.setPedalsMode(String.valueOf(2-pedalsMode));
+                    WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
+                    WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
+                    WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+                    WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
+                    WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                    WheelLog.AppConfig.setGwInMiles(inMiles == 1);
 
+                    String alertLine = "";
+                    if ((alert & 0x01) == 1) alertLine += "HighPower ";
+                    if (((alert>>1) & 0x01) == 1) alertLine += "Speed2 ";
+                    if (((alert>>2) & 0x01) == 1) alertLine += "Speed1 ";
+                    if (((alert>>3) & 0x01) == 1) alertLine += "LowVoltage ";
+                    if (((alert>>4) & 0x01) == 1) alertLine += "OverVoltage ";
+                    if (((alert>>5) & 0x01) == 1) alertLine += "OverTemperature ";
+                    if (((alert>>6) & 0x01) == 1) alertLine += "errHallSensors ";
+                    if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
+                    wd.setAlert(alertLine);
+
+                    if ((alertLine != "") && (mContext != null)) {
+                        Timber.i("News to send: %s, sending Intent", alertLine);
+                        Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                        intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
+                        mContext.sendBroadcast(intent);
+                    }
+                }
+                if (attempt < 10) {
+                    if (model.equals("")) {
+                        sendCommand("N", "", 0);
+                    } else if (fw.equals("")) {
+                        sendCommand("V", "", 0);
+                    }
+                    attempt += 1;
+                } else {
+                    if (model.equals("")) {
+                        model = "Begode";
+                        wd.setVersion(model);
+                    } else if (fw.equals("")) {
+                        fw = "-";
+                        wd.setVersion(fw);
+                    }
                 }
             }
         }
@@ -126,7 +190,9 @@ public class GotwayAdapter extends BaseAdapter {
 
     private void sendCommand(byte[] s, byte[] delayed, int timer) {
         WheelData.getInstance().bluetoothCmd(s);
-        new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
+        if (timer > 0) {
+            new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
+        }
     }
 
     @Override
@@ -163,12 +229,50 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     @Override
+    public void setMilesMode(boolean milesMode) {
+        String command = "";
+        if (milesMode) {
+            command = "m";
+        } else {
+            command = "g";
+        }
+        sendCommand(command);
+    }
+
+    @Override
+    public void setRollAngleMode(int rollAngle) {
+        String command = "";
+        switch (rollAngle) {
+            case 0: command = ">"; break;
+            case 1: command = "="; break;
+            case 2: command = "<"; break;
+        }
+        sendCommand(command);
+    }
+
+    @Override
+    public void updateLedMode(int ledMode) {
+        final byte[] param = new byte[1];
+        param[0] = (byte) ((ledMode % 10) + 0x30);
+        new Handler().postDelayed(() -> sendCommand("W", "M"), 100);
+        new Handler().postDelayed(() -> sendCommand(param, "b".getBytes(), 100), 300);
+    }
+
+    @Override
+    public void updateBeeperVolume(int beeperVolume) {
+        final byte[] param = new byte[1];
+        param[0] = (byte) ((beeperVolume % 10) + 0x30);
+        new Handler().postDelayed(() -> sendCommand("W", "B"), 100);
+        new Handler().postDelayed(() -> sendCommand(param, "b".getBytes(), 100), 300);
+    }
+
+    @Override
     public void updateAlarmMode(int alarmMode) {
         String command = "";
         switch (alarmMode) {
-            case 0: command = "u"; break;
-            case 1: command = "i"; break;
-            case 2: command = "o"; break;
+            case 0: command = "o"; break; // alertTwo (1) // 30 + 35 (45) km/h + 80% PWM
+            case 1: command = "u"; break; // AlertOff (2) // 80% PWM only
+            case 2: command = "i"; break; //alertOne (0) // 35 (45) km/h + 80% PWM
         }
         sendCommand(command);
     }
