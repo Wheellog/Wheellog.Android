@@ -82,7 +82,10 @@ object DialogHelper {
         if (!wd.isWheelIsReady || wd.isHardwarePWM || WheelLog.AppConfig.rotationIsSet) {
             return
         }
-
+        if (WheelLog.AppConfig.rotationSpeed != 500 && WheelLog.AppConfig.rotationVoltage != 840) {
+            WheelLog.AppConfig.rotationIsSet = true
+            return
+        }
         val inflater: LayoutInflater = LayoutInflater.from(context)
         val binding = UpdatePwmSettingsBinding.inflate(inflater, null, false)
         binding.modelName.text =
