@@ -11,8 +11,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 98
-        versionName "1.0.6b"
+        versionCode 103
+        versionName "1.0.7"
         multiDexEnabled true
     }
 
