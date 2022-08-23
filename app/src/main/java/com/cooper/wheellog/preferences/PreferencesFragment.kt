@@ -10,14 +10,12 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.InputType
 import android.util.Patterns
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.CycleInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
@@ -511,19 +509,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 tb.title = getText(R.string.wheel_settings_title)
                 val profileNameButton: Preference? = findPreference(getString(R.string.profile_name))
                 profileNameButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    val builder = AlertDialog.Builder(requireActivity())
-                    builder.setTitle(getText(R.string.profile_name_title))
-                    val profileName = WheelLog.AppConfig.profileName
-                    val input = EditText(activity)
-                    input.inputType = InputType.TYPE_CLASS_TEXT
-                    input.setText(profileName)
-                    builder.setView(input)
-                    builder.setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                        val newProfileName = input.text.toString()
-                        WheelLog.AppConfig.profileName = newProfileName
-                    }
-                    builder.setNegativeButton(android.R.string.cancel) { dialog: DialogInterface, _: Int -> dialog.cancel() }
-                    builder.show()
+                    DialogHelper.showEditProfileName(requireActivity())
                     true
                 }
             }
