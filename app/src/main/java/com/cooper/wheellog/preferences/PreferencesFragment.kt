@@ -165,6 +165,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             return
         }
 
+        if (WheelLog.AppConfig.ecUserId != null && WheelLog.AppConfig.ecToken != null) {
+            // Success login - No need to show dialog
+            return
+        }
+
         fun shakeError(): TranslateAnimation {
             val shake = TranslateAnimation(0F, 15F, 0F, 10F)
             shake.duration = 500
