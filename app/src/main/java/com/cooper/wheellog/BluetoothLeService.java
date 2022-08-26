@@ -1,5 +1,6 @@
 package com.cooper.wheellog;
 
+import android.Manifest;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,10 +13,13 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
 
 import com.cooper.wheellog.utils.*;
 
@@ -293,6 +297,10 @@ public class BluetoothLeService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+
         mgr = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
         if (WheelLog.AppConfig.getUseReconnect()) {

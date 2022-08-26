@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -187,16 +188,16 @@ public class MainActivity extends AppCompatActivity {
                     int alarmType = ((ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)).getValue();
                     double alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0d);
                     if (alarmType < 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_speed)+String.format(": %.1f",alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_speed) + String.format(": %.1f", alarmValue), 3000);
                     }
                     if (alarmType == 4) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_current)+String.format(": %.1f",alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_current) + String.format(": %.1f", alarmValue), 3000);
                     }
                     if (alarmType == 5) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_temperature)+String.format(": %.1f",alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_temperature) + String.format(": %.1f", alarmValue), 3000);
                     }
                     if (alarmType == 6) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_pwm)+String.format(": %.1f",alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue), 3000);
                     }
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:
@@ -510,6 +511,16 @@ public class MainActivity extends AppCompatActivity {
             // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
             // fire an intent to display a dialog asking the user to grant permission to enable it.
             if (!mBluetoothAdapter.isEnabled())
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT);
         } else {
             startBluetoothService();
@@ -818,7 +829,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    @NeedsPermission({ Manifest.permission.ACCESS_FINE_LOCATION })
     void startScanActivity() {
         startActivityForResult(new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST);
     }

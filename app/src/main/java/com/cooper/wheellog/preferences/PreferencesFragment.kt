@@ -621,7 +621,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
 
         // Hide inaccessible settings for VoltageTiltbackUnsupported wheels
-        if (WheelData.getInstance().isVoltageTiltbackUnsupported) {
+        if (WheelData.getInstance()?.isVoltageTiltbackUnsupported == true) {
             val preferences = arrayOf(
                     getString(R.string.fixed_percents),
                     getString(R.string.cell_voltage_tiltback),

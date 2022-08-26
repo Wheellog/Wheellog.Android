@@ -45,12 +45,8 @@ class NotificationUtil(private val context: Context) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
         val buttonSettings = WheelLog.AppConfig.notificationButtons
-        val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= 23) {
-            PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
-        } else {
-            PendingIntent.getActivity(context, 0, notificationIntent, 0)
-        }
-
+        val intentFlag = if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, intentFlag)
 
         notificationView.setViewVisibility(R.id.ib_actions_layout,
                 if (buttonSettings.any()) View.VISIBLE
@@ -67,7 +63,7 @@ class NotificationUtil(private val context: Context) {
                     if (buttonSettings.contains(context.getString(it.second))) View.VISIBLE
                     else View.GONE)
             notificationView.setOnClickPendingIntent(it.first,
-                    PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
+                    PendingIntent.getBroadcast(context, 0, Intent(it.third), intentFlag))
         }
         val wd = WheelData.getInstance()
         val connectionState = wd.bluetoothLeService?.connectionState

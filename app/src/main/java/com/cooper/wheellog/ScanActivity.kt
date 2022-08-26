@@ -1,24 +1,27 @@
 package com.cooper.wheellog
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.LeScanCallback
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
-import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.databinding.ActivityScanBinding
 import com.cooper.wheellog.utils.StringUtil
 import com.cooper.wheellog.utils.StringUtil.Companion.toHexStringRaw
@@ -37,6 +40,11 @@ class ScanActivity: AppCompatActivity() {
     private lateinit var macLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+
         super.onCreate(savedInstanceState)
         val binding = ActivityScanBinding.inflate(layoutInflater, null, false)
         pb = binding.scanProgress
@@ -49,6 +57,8 @@ class ScanActivity: AppCompatActivity() {
         binding.lastMacText.setEndIconOnClickListener {
             val deviceAddress = binding.lastMacText.editText?.text.toString()
             if (!StringUtil.isCorrectMac(deviceAddress)) {
+                binding.lastMacText.error = "incorrect MAC"
+                binding.lastMacText.errorIconDrawable = null
                 return@setEndIconOnClickListener
             }
             if (mScanning) {
@@ -97,8 +107,11 @@ class ScanActivity: AppCompatActivity() {
         scanLeDevice(true)
     }
 
+    @SuppressLint("MissingPermission")
     private val onItemClickListener = OnItemClickListener { _, _, i, _ ->
         if (mScanning) scanLeDevice(false)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+            != PackageManager.PERMISSION_GRANTED) return@OnItemClickListener
         mHandler.removeCallbacksAndMessages(null)
         val device = mDeviceListAdapter!!.getDevice(i)
         val deviceAddress = device.address
@@ -154,6 +167,8 @@ class ScanActivity: AppCompatActivity() {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed({ scanLeDevice(false) }, scanPeriod)
             mScanning = true
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN)
+                != PackageManager.PERMISSION_GRANTED) return
             mBluetoothAdapter!!.startLeScan(mLeScanCallback)
             pb!!.visibility = View.VISIBLE
             scanTitle!!.setText(R.string.scanning)
@@ -169,17 +184,11 @@ class ScanActivity: AppCompatActivity() {
 
     private fun isLocationEnabled(context: Context): Boolean {
         var locationMode = 0
-        val locationProviders: String
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
-                locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
-            } catch (e: SettingNotFoundException) {
-                e.printStackTrace()
-            }
-            locationMode != Settings.Secure.LOCATION_MODE_OFF
-        } else {
-            locationProviders = Settings.Secure.getString(context.contentResolver, Settings.Secure.LOCATION_PROVIDERS_ALLOWED)
-            !TextUtils.isEmpty(locationProviders)
+        try {
+            locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
+        } catch (e: SettingNotFoundException) {
+            e.printStackTrace()
         }
+        return locationMode != Settings.Secure.LOCATION_MODE_OFF
     }
 }
