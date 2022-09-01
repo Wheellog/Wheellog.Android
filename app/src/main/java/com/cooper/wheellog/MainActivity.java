@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.Notifications.update();
                     break;
                 case Constants.NOTIFICATION_BUTTON_BEEP:
-                    SomeUtil.playBeep(getApplicationContext());
+                    SomeUtil.playBeep();
                     break;
                 case Constants.NOTIFICATION_BUTTON_LIGHT:
                     if (WheelData.getInstance().getAdapter() != null) {

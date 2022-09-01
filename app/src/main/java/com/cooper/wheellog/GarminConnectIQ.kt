@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
+import com.cooper.wheellog.utils.Alarms
+import com.cooper.wheellog.utils.AudioUtil
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
 import com.garmin.android.connectiq.ConnectIQ.*
@@ -243,7 +245,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     }
 
     private fun playHorn() {
-        playBeep(applicationContext, WheelLog.AppConfig.hornMode == 1, false)
+        playBeep(WheelLog.AppConfig.hornMode == 1, false)
     }
 
     override fun serve(session: IHTTPSession): Response {
@@ -292,7 +294,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                         return newFixedLengthResponse(Response.Status.OK, "application/json", message.toString()) // Send data
                     }
                     "/data/alarms" -> {
-                        val message = "${wd.alarm}"
+                        val message = "${Alarms.alarm}"
                         newFixedLengthResponse(Response.Status.OK, "application/json", message) // Send data
                     }
                     else -> {

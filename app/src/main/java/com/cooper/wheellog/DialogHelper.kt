@@ -16,9 +16,9 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doAfterTextChanged
+import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
-import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.utils.Constants
 
 object DialogHelper {
@@ -54,6 +54,12 @@ object DialogHelper {
         ) {
             return
         }
+
+//        repeat(100_0) {
+//            //WheelData.getInstance().playBeep(Constants.ALARM_TYPE.CURRENT)
+//            playAlarmAsync(Constants.ALARM_TYPE.CURRENT)
+//        }
+
         AlertDialog.Builder(context)
             .setTitle(R.string.detected_battery_optimization_title)
             .setMessage(R.string.detected_battery_optimization)

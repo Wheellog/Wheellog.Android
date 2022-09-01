@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Alarms
 import com.cooper.wheellog.utils.SomeUtil
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
@@ -53,7 +54,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
                     else
                         context.getString(R.string.kmh))
             putBoolean(Constants.wearOsCurrentOnDialData, WheelLog.AppConfig.currentOnDial)
-            putInt(Constants.wearOsAlarmData, wd.alarm)
+            putInt(Constants.wearOsAlarmData, Alarms.alarm)
             putLong(Constants.wearOsTimestampData, wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             putString(Constants.wearOsTimeStringData, sdf.format(Date(wd.lastLifeData)))
@@ -83,7 +84,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
                     sendUpdatePages()
                     sendPingJob.cancel()
                 }
-                Constants.wearOsHornMessage -> SomeUtil.playBeep(context)
+                Constants.wearOsHornMessage -> SomeUtil.playBeep()
                 Constants.wearOsLightMessage -> WheelData.getInstance().adapter?.switchFlashlight()
                 else -> Timber.wtf("Unknown message from wear")
             }

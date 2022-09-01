@@ -74,7 +74,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
                 context.sendBroadcast(pebbleScreenIntent);
             } else if (data.contains(PEBBLE_KEY_PLAY_HORN)) {
                 int horn_mode = WheelLog.AppConfig.getHornMode();
-                SomeUtil.playBeep(context, horn_mode == 1, false);
+                SomeUtil.playBeep(horn_mode == 1, false);
             }
         }
     }

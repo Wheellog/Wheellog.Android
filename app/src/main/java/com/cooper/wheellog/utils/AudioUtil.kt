@@ -1,0 +1,92 @@
+package com.cooper.wheellog.utils
+
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioTrack
+import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Constants.ALARM_TYPE
+import kotlinx.coroutines.*
+import timber.log.Timber
+import kotlin.math.sin
+
+object AudioUtil {
+    private const val duration = 1 // duration of sound
+    private const val sampleRate = 44100 //22050; // Hz (maximum frequency is 7902.13Hz (B8))
+    private const val numSamples = duration * sampleRate
+
+    private const val freq = 440
+    private val buffer = ShortArray(numSamples)
+
+    private val audioTrack by lazy {
+        prepareTone()
+
+        AudioTrack(
+            AudioManager.STREAM_MUSIC,
+            sampleRate, AudioFormat.CHANNEL_OUT_MONO,
+            AudioFormat.ENCODING_PCM_16BIT, buffer.size,
+            AudioTrack.MODE_STATIC
+        )
+    }
+
+    private fun prepareTone() {
+        for (i in 0 until numSamples) {
+            val originalWave = sin(2 * Math.PI * freq * i / sampleRate)
+            val harmonic1 = 0.5 * sin(2 * Math.PI * 2 * freq * i / sampleRate)
+            val harmonic2 = 0.25 * sin(2 * Math.PI * 4 * freq * i / sampleRate)
+            val secondWave = sin(2 * Math.PI * freq * 1.34f * i / sampleRate)
+            val thirdWave = sin(2 * Math.PI * freq * 2.0f * i / sampleRate)
+            val fourthWave = sin(2 * Math.PI * freq * 2.68f * i / sampleRate)
+            if (i <= numSamples * 3 / 10) {
+                buffer[i] =
+                    ((originalWave + harmonic1 + harmonic2) * Short.MAX_VALUE).toInt()
+                        .toShort() //+ harmonic1 + harmonic2
+            } else if (i < numSamples * 3 / 5) {
+                buffer[i] = ((originalWave + secondWave) * Short.MAX_VALUE).toInt().toShort()
+            } else {
+                buffer[i] = ((thirdWave + fourthWave) * Short.MAX_VALUE).toInt().toShort()
+            }
+        }
+    }
+
+    var toneDuration = 0
+
+    fun playAlarmAsync(alarmType: ALARM_TYPE) = runBlocking {
+        playAlarm(alarmType)
+    }
+
+    private suspend fun playAlarm(alarmType: ALARM_TYPE) {
+        if (WheelLog.AppConfig.useWheelBeepForAlarm && WheelData.getInstance() != null) {
+            SomeUtil.playBeep(onlyByWheel = true, onlyDefault = false)
+            return
+        }
+
+        withContext(Dispatchers.Default) {
+            try {
+                audioTrack.apply {
+                    if (playState == AudioTrack.PLAYSTATE_PLAYING) {
+                        stop()
+                    }
+
+                    when (alarmType) {
+                        ALARM_TYPE.CURRENT ->
+                            write(buffer, sampleRate * 3 / 10, 2 * sampleRate / 20)
+                        // 100 ms for current
+                        ALARM_TYPE.SPEED1, ALARM_TYPE.SPEED2, ALARM_TYPE.SPEED3 ->
+                            write(buffer, sampleRate / 20, toneDuration * sampleRate / 1000)
+                        // 50, 100, 150 ms depends on number of speed alarm
+                        else ->
+                            write(buffer, sampleRate * 3 / 10, 6 * sampleRate / 10)
+                        // 600 ms temperature
+                    }
+                }
+
+                if (audioTrack.state == AudioTrack.STATE_INITIALIZED) {
+                    audioTrack.play()
+                }
+            } catch (ex: Exception) {
+                Timber.i(ex)
+            }
+        }
+    }
+}
