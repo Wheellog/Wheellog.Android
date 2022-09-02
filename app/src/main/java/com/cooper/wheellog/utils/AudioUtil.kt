@@ -79,10 +79,8 @@ object AudioUtil {
                             write(buffer, sampleRate * 3 / 10, 6 * sampleRate / 10)
                         // 600 ms temperature
                     }
-                }
 
-                if (audioTrack.state == AudioTrack.STATE_INITIALIZED) {
-                    audioTrack.play()
+                    play()
                 }
             } catch (ex: Exception) {
                 Timber.i(ex)

@@ -154,7 +154,7 @@ public class WheelData {
 
         mInstance.full_reset();
         mInstance.startRidingTimerControl();
-        // mInstance.startAlarmTest(); // test
+        mInstance.startAlarmTest(); // test
     }
 
     public void startRidingTimerControl() {
@@ -175,11 +175,14 @@ public class WheelData {
             public void run() {
                 mCalculatedPwm = WheelLog.AppConfig.getMaxSpeed()/100d;
                 mBattery = 70;
-                mSpeed = WheelLog.AppConfig.getMaxSpeed() * 100;
+                // mSpeed = WheelLog.AppConfig.getMaxSpeed() * 100;
                 mCurrent = 10000;
                 mTemperature = 6000;
                 //Timber.i("pwm = %0.2f", mCalculatedPwm);
                 Context mContext = getBluetoothLeService().getApplicationContext();
+
+                WheelLog.AppConfig.setAlarmTemperature(10);
+
                 Alarms.INSTANCE.checkAlarmStatus(mCalculatedPwm, mContext);
             }
         };

@@ -55,11 +55,6 @@ object DialogHelper {
             return
         }
 
-//        repeat(100_0) {
-//            //WheelData.getInstance().playBeep(Constants.ALARM_TYPE.CURRENT)
-//            playAlarmAsync(Constants.ALARM_TYPE.CURRENT)
-//        }
-
         AlertDialog.Builder(context)
             .setTitle(R.string.detected_battery_optimization_title)
             .setMessage(R.string.detected_battery_optimization)

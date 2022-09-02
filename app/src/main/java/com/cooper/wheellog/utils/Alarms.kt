@@ -182,51 +182,55 @@ object Alarms {
     }
 
     private fun raiseAlarm(alarmType: ALARM_TYPE, value: Double, mContext: Context) {
-        val v = mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        var pattern = longArrayOf(0)
         val intent = Intent(Constants.ACTION_ALARM_TRIGGERED)
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType)
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_VALUE, value)
-        pattern =
-            when (alarmType) {
-                ALARM_TYPE.SPEED1, ALARM_TYPE.SPEED2, ALARM_TYPE.SPEED3, ALARM_TYPE.PWM -> longArrayOf(
-                    0,
-                    100,
-                    100
-                )
-                ALARM_TYPE.CURRENT -> longArrayOf(0, 50, 50, 50, 50)
-                ALARM_TYPE.TEMPERATURE -> longArrayOf(0, 500, 500)
+        val pattern: LongArray = when (alarmType) {
+            ALARM_TYPE.SPEED1,
+            ALARM_TYPE.SPEED2,
+            ALARM_TYPE.SPEED3,
+            ALARM_TYPE.PWM -> longArrayOf(0, 100, 100)
+            ALARM_TYPE.CURRENT -> longArrayOf(0, 50, 50, 50, 50)
+            ALARM_TYPE.TEMPERATURE -> longArrayOf(0, 500, 500)
+        }
+        if (!WheelLog.AppConfig.disablePhoneVibrate) {
+            val v = mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (v.hasVibrator()) {
+                v.vibrate(pattern, -1)
             }
-        if (v.hasVibrator() && !WheelLog.AppConfig.disablePhoneVibrate) v.vibrate(pattern, -1)
+        }
         if (!WheelLog.AppConfig.disablePhoneBeep) {
-            if (alarmType.value > 3 && alarmType.value != 6) {
-                playAlarmAsync(ALARM_TYPE.PWM)
-            } else {
-                startSpeedAlarmCount()
+            when (alarmType) {
+                ALARM_TYPE.CURRENT, ALARM_TYPE.TEMPERATURE -> playAlarmAsync(alarmType)
+                else -> startSpeedAlarmCount()
             }
         }
         mContext.sendBroadcast(intent)
         if (WheelLog.AppConfig.mibandMode === MiBandEnum.Alarm) {
-            var mi_text = ""
-            mi_text =
-                when (alarmType) {
-                    ALARM_TYPE.SPEED1, ALARM_TYPE.SPEED2, ALARM_TYPE.SPEED3, ALARM_TYPE.PWM -> String.format(
+            val miText: String = when (alarmType) {
+                ALARM_TYPE.SPEED1,
+                ALARM_TYPE.SPEED2,
+                ALARM_TYPE.SPEED3,
+                ALARM_TYPE.PWM ->
+                    String.format(
                         Locale.US,
                         mContext.getString(R.string.alarm_text_speed_v),
                         WheelData.getInstance().speedDouble
                     )
-                    ALARM_TYPE.CURRENT -> String.format(
+                ALARM_TYPE.CURRENT ->
+                    String.format(
                         Locale.US,
                         mContext.getString(R.string.alarm_text_current_v),
                         WheelData.getInstance().currentDouble
                     )
-                    ALARM_TYPE.TEMPERATURE -> String.format(
+                ALARM_TYPE.TEMPERATURE ->
+                    String.format(
                         Locale.US,
                         mContext.getString(R.string.alarm_text_temperature_v),
                         WheelData.getInstance().temperature
                     )
-                }
-            WheelLog.Notifications.alarmText = mi_text
+            }
+            WheelLog.Notifications.alarmText = miText
             WheelLog.Notifications.update()
         }
     }
