@@ -18,6 +18,7 @@ public class GotwayAdapter extends BaseAdapter {
     private String imu = "";
     private String fw = "";
     private int attempt = 0;
+    private int lock_Changes = 0;
 
     @Override
     public boolean decode(byte[] data) {
@@ -123,13 +124,17 @@ public class GotwayAdapter extends BaseAdapter {
                     int alert = buff[12] & 0xFF;
                     int ledMode = buff[13] & 0xFF;
                     int lightMode = buff[15] & 0xFF;
-                    WheelLog.AppConfig.setPedalsMode(String.valueOf(2-pedalsMode));
-                    WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
-                    WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
-                    WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
-                    WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
-                    WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
-                    WheelLog.AppConfig.setGwInMiles(inMiles == 1);
+                    if (lock_Changes == 0) {
+                        WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
+                        WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
+                        WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
+                        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+                        WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
+                        WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                        WheelLog.AppConfig.setGwInMiles(inMiles == 1);
+                    } else {
+                        lock_Changes -= 1;
+                    }
 
                     String alertLine = "";
                     if ((alert & 0x01) == 1) alertLine += "HighPower ";
@@ -190,6 +195,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     private void sendCommand(byte[] s, byte[] delayed, int timer) {
         WheelData.getInstance().bluetoothCmd(s);
+
         if (timer > 0) {
             new Handler().postDelayed(() -> WheelData.getInstance().bluetoothCmd(delayed), timer);
         }
@@ -203,6 +209,7 @@ public class GotwayAdapter extends BaseAdapter {
             case 1: command = "f"; break;
             case 2: command = "s"; break;
         }
+        lock_Changes = 2;
         sendCommand(command);
 
     }
@@ -219,6 +226,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void setLightMode(int lightMode) {
+        lock_Changes = 2;
         String command = "";
         switch (lightMode) {
             case 0: command = "E"; break;
@@ -231,6 +239,7 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void setMilesMode(boolean milesMode) {
         String command = "";
+        lock_Changes = 2;
         if (milesMode) {
             command = "m";
         } else {
@@ -242,6 +251,7 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void setRollAngleMode(int rollAngle) {
         String command = "";
+        lock_Changes = 2;
         switch (rollAngle) {
             case 0: command = ">"; break;
             case 1: command = "="; break;
@@ -253,6 +263,7 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void updateLedMode(int ledMode) {
         final byte[] param = new byte[1];
+        lock_Changes = 5;
         param[0] = (byte) ((ledMode % 10) + 0x30);
         new Handler().postDelayed(() -> sendCommand("W", "M"), 100);
         new Handler().postDelayed(() -> sendCommand(param, "b".getBytes(), 100), 300);
@@ -274,6 +285,7 @@ public class GotwayAdapter extends BaseAdapter {
             case 1: command = "u"; break; // AlertOff (2) // 80% PWM only
             case 2: command = "i"; break; //alertOne (0) // 35 (45) km/h + 80% PWM
         }
+        lock_Changes = 2;
         sendCommand(command);
     }
 
@@ -302,6 +314,7 @@ public class GotwayAdapter extends BaseAdapter {
     public void updateMaxSpeed(final int maxSpeed) {
         final byte[] hhh = new byte[1];
         final byte[] lll = new byte[1];
+        lock_Changes = 5;
         if (maxSpeed != 0) {
             hhh[0] = (byte) ((maxSpeed / 10) + 0x30);
             lll[0] = (byte) ((maxSpeed % 10) + 0x30);
