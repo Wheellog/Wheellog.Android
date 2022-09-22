@@ -127,11 +127,13 @@ public class GotwayAdapter extends BaseAdapter {
                     if (lock_Changes == 0) {
                         WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
                         WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
-                        WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
                         WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
                         WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
-                        WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
-                        WheelLog.AppConfig.setGwInMiles(inMiles == 1);
+                        if (model.length() != 0) {
+                            WheelLog.AppConfig.setGwInMiles(inMiles == 1);
+                            WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
+                            WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                        }
                     } else {
                         lock_Changes -= 1;
                     }
