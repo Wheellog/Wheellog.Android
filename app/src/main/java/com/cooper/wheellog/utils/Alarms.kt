@@ -2,6 +2,8 @@ package com.cooper.wheellog.utils
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.os.VibrationEffect
 import android.os.Vibrator
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
@@ -15,96 +17,101 @@ import kotlin.math.roundToInt
 
 object Alarms {
 
-    private var mSpeedAlarmExecuting = false
-    private var mCurrentAlarmExecuting = false
-    private var mTemperatureAlarmExecuting = false
-    private var speedAlarmTimer: Timer? = null
-    private var speedAlarmWatchdogTimer: Timer? = null
-    private var mLastPlayWarningSpeedTime = System.currentTimeMillis()
+    private var speedAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 200 }
+    private var currentAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
+    private var temperatureAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 570 }
+    private var lastPlayWarningSpeedTime = System.currentTimeMillis()
+    private var alarmTimer: Timer? = null
+    private const val checkPeriod: Long = 200
+
+    private var timerTask: TimerTask = object : TimerTask() {
+        override fun run() {
+            val wd = WheelData.getInstance() ?: return
+            val mContext: Context = wd.bluetoothLeService?.applicationContext ?: return
+            checkAlarm(wd.calculatedPwm, mContext)
+        }
+    }
+
+    var isStarted: Boolean = false
+        private set
 
     var alarm: Int
         get() {
             var alarm = 0
-            if (mSpeedAlarmExecuting) {
+            if (speedAlarmExecuting.value) {
                 alarm = alarm or 0x01
             }
-            if (mTemperatureAlarmExecuting) {
+            if (temperatureAlarmExecuting.value) {
                 alarm = alarm or 0x04
             }
-            if (mCurrentAlarmExecuting) {
+            if (currentAlarmExecuting.value) {
                 alarm = alarm or 0x02
             }
             return alarm
         }
         private set(_) {}
 
-    fun checkAlarmStatus(pwm: Double, mContext: Context) {
+    fun start() {
+        stop()
+        alarmTimer = Timer().apply {
+            scheduleAtFixedRate(timerTask, 0, checkPeriod)
+        }
+        isStarted = true
+    }
+
+    fun stop() {
+        isStarted = false
+        alarmTimer?.cancel()
+        alarmTimer = null
+    }
+
+    private fun checkAlarm(pwm: Double, mContext: Context) {
         if (WheelLog.AppConfig.alteredAlarms) {
-            alertedAlarm(pwm, mContext)
+            alertedAlarms(pwm, mContext)
         } else {
             oldAlarms(mContext)
         }
-        val alarmCurrent = WheelLog.AppConfig.alarmCurrent * 100
-        if (alarmCurrent > 0 && WheelData.getInstance().current >= alarmCurrent && !mCurrentAlarmExecuting) {
-            startCurrentAlarmCount()
-            raiseAlarm(
-                ALARM_TYPE.CURRENT,
-                WheelData.getInstance().currentDouble,
-                mContext)
-        }
-        val alarmTemperature = WheelLog.AppConfig.alarmTemperature
-        if (alarmTemperature > 0 && WheelData.getInstance().temperature >= alarmTemperature && !mTemperatureAlarmExecuting) {
-            startTempAlarmCount()
-            raiseAlarm(
-                ALARM_TYPE.TEMPERATURE,
-                WheelData.getInstance().temperature.toDouble(),
-                mContext
-            )
-        }
+        currentAlarms(mContext)
+        temperatureAlarms(mContext)
     }
 
-    private fun alertedAlarm(pwm: Double, mContext: Context) {
+    private fun alertedAlarms(pwm: Double, mContext: Context) {
         if (pwm > WheelLog.AppConfig.alarmFactor1 / 100.0) {
             AudioUtil.toneDuration =
                 (200 * (pwm - WheelLog.AppConfig.alarmFactor1 / 100.0) / (WheelLog.AppConfig.alarmFactor2 / 100.0 - WheelLog.AppConfig.alarmFactor1 / 100.0)).roundToInt()
             AudioUtil.toneDuration = MathsUtil.clamp(AudioUtil.toneDuration, 20, 200)
-            raiseAlarm(ALARM_TYPE.PWM, pwm * 100.0, mContext)
+            raiseAlarm(ALARM_TYPE.PWM, pwm, mContext)
         } else {
             // check if speed alarm executing and stop it
-            mSpeedAlarmExecuting = false
-            if (speedAlarmTimer != null) {
-                speedAlarmTimer?.cancel()
-                speedAlarmTimer = null
-            }
-            // prealarm
+            speedAlarmExecuting.value = false
+            // pre alarm
             val warningPwm = WheelLog.AppConfig.warningPwm / 100.0
             val warningSpeedPeriod = WheelLog.AppConfig.warningSpeedPeriod * 1000
-            if (warningPwm != 0.0 && warningSpeedPeriod != 0 && pwm >= warningPwm && System.currentTimeMillis() - mLastPlayWarningSpeedTime > warningSpeedPeriod) {
-                mLastPlayWarningSpeedTime = System.currentTimeMillis()
+            if (warningPwm != 0.0 && warningSpeedPeriod != 0 && pwm >= warningPwm && System.currentTimeMillis() - lastPlayWarningSpeedTime > warningSpeedPeriod) {
+                lastPlayWarningSpeedTime = System.currentTimeMillis()
                 playSound(mContext, R.raw.warning_pwm)
             } else {
                 val warningSpeed = WheelLog.AppConfig.warningSpeed
-                if (warningSpeed != 0 && warningSpeedPeriod != 0 && WheelData.getInstance().speedDouble >= warningSpeed && System.currentTimeMillis() - mLastPlayWarningSpeedTime > warningSpeedPeriod) {
-                    mLastPlayWarningSpeedTime = System.currentTimeMillis()
+                if (warningSpeed != 0 && warningSpeedPeriod != 0 && WheelData.getInstance().speedDouble >= warningSpeed && System.currentTimeMillis() - lastPlayWarningSpeedTime > warningSpeedPeriod) {
+                    lastPlayWarningSpeedTime = System.currentTimeMillis()
                     playSound(mContext, R.raw.sound_warning_speed)
                 }
             }
         }
     }
 
-    private fun oldAlarms(mContext: Context)
-    {
-        if (alarmSpeedCheck(WheelLog.AppConfig.alarm1Speed, WheelLog.AppConfig.alarm1Battery)) {
+    private fun oldAlarms(mContext: Context) {
+        if (checkOldAlarmSpeed(WheelLog.AppConfig.alarm1Speed, WheelLog.AppConfig.alarm1Battery)) {
             AudioUtil.toneDuration = 50
             raiseAlarm(ALARM_TYPE.SPEED1, WheelData.getInstance().speedDouble, mContext)
-        } else if (alarmSpeedCheck(
+        } else if (checkOldAlarmSpeed(
                 WheelLog.AppConfig.alarm2Speed,
                 WheelLog.AppConfig.alarm2Battery
             )
         ) {
             AudioUtil.toneDuration = 100
             raiseAlarm(ALARM_TYPE.SPEED2, WheelData.getInstance().speedDouble, mContext)
-        } else if (alarmSpeedCheck(
+        } else if (checkOldAlarmSpeed(
                 WheelLog.AppConfig.alarm3Speed,
                 WheelLog.AppConfig.alarm3Battery
             )
@@ -113,72 +120,45 @@ object Alarms {
             raiseAlarm(ALARM_TYPE.SPEED3, WheelData.getInstance().speedDouble, mContext)
         } else {
             // check if speed alarm executing and stop it
-            mSpeedAlarmExecuting = false
-            if (speedAlarmTimer != null) {
-                speedAlarmTimer?.cancel()
-                speedAlarmTimer = null
-            }
+            speedAlarmExecuting.value = false
         }
     }
 
-    private fun alarmSpeedCheck(alarmSpeed: Int, alarmBattery: Int): Boolean {
+    private fun checkOldAlarmSpeed(alarmSpeed: Int, alarmBattery: Int): Boolean {
         return alarmSpeed > 0
             && alarmBattery > 0
             && WheelData.getInstance().batteryLevel <= alarmBattery
             && WheelData.getInstance().speedDouble >= alarmSpeed
     }
 
-    private fun startSpeedAlarmCount() {
-        if (!mSpeedAlarmExecuting) {
-            mSpeedAlarmExecuting = true
-            val playBeepAgain: TimerTask = object : TimerTask() {
-                override fun run() {
-                    playAlarmAsync(ALARM_TYPE.PWM)
-                    Timber.i("Scheduled alarm")
-                }
-            }
-            speedAlarmTimer = Timer().apply {
-                scheduleAtFixedRate(playBeepAgain, 0, 200)
-            }
+    private fun temperatureAlarms(mContext: Context) {
+        if (temperatureAlarmExecuting.value) {
+            return
         }
-        speedAlarmWatchdogTimer?.cancel()
-        speedAlarmWatchdogTimer = null
-        val alarmWatchdog: TimerTask = object : TimerTask() {
-            override fun run() {
-                if (speedAlarmTimer != null) {
-                    speedAlarmTimer?.cancel()
-                    speedAlarmTimer = null
-                }
-                Timber.i("Alarm canceled by watchdog")
-            }
-        }
-        speedAlarmWatchdogTimer = Timer().apply {
-            schedule(alarmWatchdog, 5000)
+        val alarmTemperature = WheelLog.AppConfig.alarmTemperature
+        if (alarmTemperature > 0 && WheelData.getInstance().temperature >= alarmTemperature) {
+            raiseAlarm(
+                ALARM_TYPE.TEMPERATURE,
+                WheelData.getInstance().temperature.toDouble(),
+                mContext
+            )
+            temperatureAlarmExecuting.value = true
         }
     }
 
-    private fun startTempAlarmCount() {
-        mTemperatureAlarmExecuting = true
-        val stopTempAlarmExecuting: TimerTask = object : TimerTask() {
-            override fun run() {
-                mTemperatureAlarmExecuting = false
-                Timber.i("Stop Temp <<<<<<<<<")
-            }
+    private fun currentAlarms(mContext: Context) {
+        if (currentAlarmExecuting.value) {
+            return
         }
-        val timerTemp = Timer()
-        timerTemp.schedule(stopTempAlarmExecuting, 570)
-    }
-
-    private fun startCurrentAlarmCount() {
-        mCurrentAlarmExecuting = true
-        val stopCurrentAlarmExecuring: TimerTask = object : TimerTask() {
-            override fun run() {
-                mCurrentAlarmExecuting = false
-                Timber.i("Stop Curr <<<<<<<<<")
-            }
+        val alarmCurrent = WheelLog.AppConfig.alarmCurrent * 100
+        if (alarmCurrent > 0 && WheelData.getInstance().current >= alarmCurrent) {
+            raiseAlarm(
+                ALARM_TYPE.CURRENT,
+                WheelData.getInstance().currentDouble,
+                mContext
+            )
+            currentAlarmExecuting.value = true
         }
-        val timerCurrent = Timer()
-        timerCurrent.schedule(stopCurrentAlarmExecuring, 170)
     }
 
     private fun raiseAlarm(alarmType: ALARM_TYPE, value: Double, mContext: Context) {
@@ -194,15 +174,18 @@ object Alarms {
             ALARM_TYPE.TEMPERATURE -> longArrayOf(0, 500, 500)
         }
         if (!WheelLog.AppConfig.disablePhoneVibrate) {
-            val v = mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            if (v.hasVibrator()) {
-                v.vibrate(pattern, -1)
-            }
+            vibrate(mContext, pattern)
         }
         if (!WheelLog.AppConfig.disablePhoneBeep) {
             when (alarmType) {
-                ALARM_TYPE.CURRENT, ALARM_TYPE.TEMPERATURE -> playAlarmAsync(alarmType)
-                else -> startSpeedAlarmCount()
+                ALARM_TYPE.CURRENT, ALARM_TYPE.TEMPERATURE -> {
+                    playAlarmAsync(alarmType)
+                }
+                else -> {
+                    playAlarmAsync(ALARM_TYPE.PWM)
+                    speedAlarmExecuting.value = true
+                    Timber.i("Scheduled alarm")
+                }
             }
         }
         mContext.sendBroadcast(intent)
@@ -232,6 +215,28 @@ object Alarms {
             }
             WheelLog.Notifications.alarmText = miText
             WheelLog.Notifications.update()
+        }
+    }
+
+    private fun vibrate(mContext: Context, pattern: LongArray) {
+        val vib =
+// TODO: uncomment after target sdk 31+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            val vibratorManager =
+//                mContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+//            vibratorManager.defaultVibrator
+//        } else  {
+            @Suppress("DEPRECATION")
+            mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+//        }
+        if (vib.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val vibrationEffect = VibrationEffect.createWaveform(pattern, -1)
+                vib.vibrate(vibrationEffect)
+            } else {
+                @Suppress("DEPRECATION")
+                vib.vibrate(pattern, -1)
+            }
         }
     }
 }

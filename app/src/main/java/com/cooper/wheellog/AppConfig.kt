@@ -13,7 +13,7 @@ import com.wheellog.shared.WearPages
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private var specificPrefix: String = "default"
+    private var specificPrefix: String = ""
     private val separator = ";"
 
     init {

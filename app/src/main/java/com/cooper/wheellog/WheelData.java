@@ -154,7 +154,7 @@ public class WheelData {
 
         mInstance.full_reset();
         mInstance.startRidingTimerControl();
-        mInstance.startAlarmTest(); // test
+        // mInstance.startAlarmTest(); // test
     }
 
     public void startRidingTimerControl() {
@@ -170,24 +170,21 @@ public class WheelData {
 
     ///// test purpose, please let it be
     public void startAlarmTest() {
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                mCalculatedPwm = WheelLog.AppConfig.getMaxSpeed()/100d;
-                mBattery = 70;
-                // mSpeed = WheelLog.AppConfig.getMaxSpeed() * 100;
-                mCurrent = 10000;
-                mTemperature = 6000;
-                //Timber.i("pwm = %0.2f", mCalculatedPwm);
-                Context mContext = getBluetoothLeService().getApplicationContext();
+        Alarms.INSTANCE.start();
 
-                WheelLog.AppConfig.setAlarmTemperature(10);
+        mCalculatedPwm = 70 / 100.0;
+        mSpeed = 50_00;
+        mBattery = 10;
+        mCurrent = 100_00;
+        mTemperature = 60_00;
 
-                Alarms.INSTANCE.checkAlarmStatus(mCalculatedPwm, mContext);
-            }
-        };
-        ridingTimerControl = new Timer();
-        ridingTimerControl.scheduleAtFixedRate(timerTask, 5000, 200);
+//        WheelLog.AppConfig.setAlarmTemperature(10);
+//        WheelLog.AppConfig.setAlarmCurrent(10);
+
+//        WheelLog.AppConfig.setAlarm1Speed(1);
+//        WheelLog.AppConfig.setAlarm1Battery(70);
+        WheelLog.AppConfig.setAlarmFactor1(60_00);
+        WheelLog.AppConfig.setAlteredAlarms(true);
     }
     /////
 
@@ -1025,9 +1022,6 @@ public class WheelData {
                 xAxis.remove(0);
             }
         }
-
-        if (WheelLog.AppConfig.getAlarmsEnabled())
-            Alarms.INSTANCE.checkAlarmStatus(mCalculatedPwm, mContext);
 
         timestamp_last = timestamp_raw;
         intent.putExtra("Speed", mSpeed);

@@ -30,12 +30,9 @@ import com.cooper.wheellog.databinding.ActivityLoginBinding
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreference
 import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogFragment.Companion.newInstance
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
-import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
-import com.cooper.wheellog.utils.KingsongAdapter
-import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
-import com.cooper.wheellog.utils.ThemeIconEnum
 import timber.log.Timber
 
 class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -264,7 +261,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         when (WheelLog.AppConfig.getResId(resName)) {
             R.string.auto_log, R.string.use_raw_data, R.string.log_location_data, R.string.use_gps -> checkAndRequestPermissions()
             R.string.connection_sound -> switchConnectionSoundIsVisible()
-            R.string.alarms_enabled, R.string.altered_alarms -> generalSettings.switchAlarmsIsVisible(this)
+            R.string.alarms_enabled -> {
+                generalSettings.switchAlarmsIsVisible(this)
+                if (WheelLog.AppConfig.alarmsEnabled) {
+                    Alarms.start()
+                } else {
+                    Alarms.stop()
+                }
+            }
+            R.string.altered_alarms -> generalSettings.switchAlarmsIsVisible(this)
             R.string.auto_upload_ec -> electroClubDialog()
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
             R.string.use_eng, R.string.app_theme -> {
