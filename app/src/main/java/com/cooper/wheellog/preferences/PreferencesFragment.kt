@@ -104,7 +104,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         generalSettings.switchAlarmsIsVisible(this)
     }
 
-    override fun onDisplayPreferenceDialog(preference: Preference?) {
+    override fun onDisplayPreferenceDialog(preference: Preference) {
         if (preference is MultiSelectPreference) {
             if (parentFragmentManager.findFragmentByTag(dialogTag) != null) {
                 return
@@ -580,7 +580,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     override fun onResume() {
         super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
         setupScreen()
 
         // override Back key
@@ -602,7 +602,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     override fun onPause() {
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
         super.onPause()
     }
 

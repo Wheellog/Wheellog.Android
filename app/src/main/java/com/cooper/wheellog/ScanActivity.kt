@@ -3,8 +3,7 @@ package com.cooper.wheellog
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothAdapter.LeScanCallback
-import android.bluetooth.BluetoothManager
+import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -17,34 +16,65 @@ import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
 import android.view.KeyEvent
 import android.view.View
-import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.databinding.ActivityScanBinding
 import com.cooper.wheellog.utils.StringUtil
 import com.cooper.wheellog.utils.StringUtil.Companion.toHexStringRaw
+import com.welie.blessed.BluetoothCentralManager
+import com.welie.blessed.BluetoothCentralManagerCallback
+import com.welie.blessed.BluetoothPeripheral
 import timber.log.Timber
+
 
 class ScanActivity: AppCompatActivity() {
     private var mDeviceListAdapter: DeviceListAdapter? = null
-    private var mBluetoothAdapter: BluetoothAdapter? = null
-    private var mScanning = false
-    private val mHandler = Handler(Looper.getMainLooper())
+    private val central: BluetoothCentralManager by lazy {
+        BluetoothCentralManager(
+            this,
+            bluetoothCentralManagerCallback,
+            Handler(Looper.getMainLooper()))
+    }
     private var pb: ProgressBar? = null
     private var scanTitle: TextView? = null
     // Stops scanning after 10 seconds.
+    private val scanPeriodHandler = Handler(Looper.getMainLooper())
     private val scanPeriod: Long = 10_000
     private lateinit var alertDialog: AlertDialog
     private lateinit var macLayout: LinearLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
+    private var permissionCounter = 0
 
+    private val PERMISSIONS_LOCATION = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT
+    )
+
+    private fun checkPermissions(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val permission2 = ActivityCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_COARSE_LOCATION)
+            if (permission2 != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_LOCATION,
+                    1
+                )
+                permissionCounter++
+                return false
+            }
+        }
+        return true
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityScanBinding.inflate(layoutInflater, null, false)
         pb = binding.scanProgress
@@ -61,10 +91,9 @@ class ScanActivity: AppCompatActivity() {
                 binding.lastMacText.errorIconDrawable = null
                 return@setEndIconOnClickListener
             }
-            if (mScanning) {
+            if (central.isScanning) {
                 scanLeDevice(false)
             }
-            mHandler.removeCallbacksAndMessages(null)
             val intent = Intent()
             intent.putExtra("MAC", deviceAddress)
             WheelLog.AppConfig.lastMac = deviceAddress
@@ -78,8 +107,9 @@ class ScanActivity: AppCompatActivity() {
                 .setOnKeyListener { dialogInterface: DialogInterface, keycode: Int, keyEvent: KeyEvent ->
                     if (keycode == KeyEvent.KEYCODE_BACK && keyEvent.action == KeyEvent.ACTION_UP &&
                             !keyEvent.isCanceled) {
-                        if (mScanning) scanLeDevice(false)
-                        mHandler.removeCallbacksAndMessages(null)
+                        if (central.isScanning) {
+                            scanLeDevice(false)
+                        }
                         dialogInterface.cancel()
                         close()
                     }
@@ -90,29 +120,66 @@ class ScanActivity: AppCompatActivity() {
             val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(myIntent)
         }
-
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
-        mBluetoothAdapter = bluetoothManager.adapter
     }
 
+    private val bluetoothCentralManagerCallback: BluetoothCentralManagerCallback =
+        object : BluetoothCentralManagerCallback() {
+            override fun onDiscoveredPeripheral(
+                peripheral: BluetoothPeripheral,
+                scanResult: ScanResult
+            ) {
+                super.onDiscoveredPeripheral(peripheral, scanResult)
+                val scanRecord = scanResult.scanRecord?.bytes ?: byteArrayOf()
+                if (scanResult.scanRecord != null) {
+                    val manufacturerData = findManufacturerData(scanRecord) // 4e421300000000ec
+                    runOnUiThread {
+                        mDeviceListAdapter!!.addDevice(scanResult.device, manufacturerData)
+                        mDeviceListAdapter!!.notifyDataSetChanged()
+                    }
+                }
+            }
+        }
+
     private fun close () {
+        central.stopScan()
         alertDialog.dismiss()
         finish()
     }
 
     override fun onResume() {
         super.onResume()
-        scanLeDevice(true)
+        if (central.isBluetoothEnabled) {
+            if (!checkPermissions()) {
+                if (permissionCounter > 3) {
+                    central.close()
+                    alertDialog.dismiss()
+                    finish()
+                }
+                return
+            }
+            scanLeDevice(true)
+        } else {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            ActivityCompat.startActivityForResult(this, enableBtIntent, 2, null)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.all {r -> r == PackageManager.PERMISSION_GRANTED}) {
+            scanLeDevice(true)
+        }
     }
 
     @SuppressLint("MissingPermission")
     private val onItemClickListener = OnItemClickListener { _, _, i, _ ->
-        if (mScanning) scanLeDevice(false)
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
-            != PackageManager.PERMISSION_GRANTED) return@OnItemClickListener
-        mHandler.removeCallbacksAndMessages(null)
+        if (central.isScanning) {
+            central.stopScan()
+        }
         val device = mDeviceListAdapter!!.getDevice(i)
         val deviceAddress = device.address
         val deviceName = device.name
@@ -129,15 +196,6 @@ class ScanActivity: AppCompatActivity() {
         // Set password for inmotion
         WheelLog.AppConfig.passwordForWheel = ""
         close()
-    }
-
-    // Device scan callback.
-    private val mLeScanCallback = LeScanCallback { device, _, scanRecord ->
-        val manufacturerData = findManufacturerData(scanRecord) // 4e421300000000ec
-        runOnUiThread {
-            mDeviceListAdapter!!.addDevice(device, manufacturerData)
-            mDeviceListAdapter!!.notifyDataSetChanged()
-        }
     }
 
     private fun findManufacturerData(scanRecord: ByteArray): String {
@@ -165,17 +223,15 @@ class ScanActivity: AppCompatActivity() {
     private fun scanLeDevice(enable: Boolean) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed({ scanLeDevice(false) }, scanPeriod)
-            mScanning = true
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN)
-                != PackageManager.PERMISSION_GRANTED) return
-            mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+            scanPeriodHandler.postDelayed({ scanLeDevice(false) }, scanPeriod)
+            central.stopScan()
+            central.scanForPeripherals()
             pb!!.visibility = View.VISIBLE
             scanTitle!!.setText(R.string.scanning)
             macLayout.visibility = View.GONE
         } else {
-            mScanning = false
-            mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+            scanPeriodHandler.removeCallbacksAndMessages(null)
+            central.stopScan()
             pb!!.visibility = View.GONE
             scanTitle!!.setText(R.string.devices)
             macLayout.visibility = View.VISIBLE
