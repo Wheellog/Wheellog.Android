@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.cooper.wheellog">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
         <package android:name="com.garmin.android.apps.connectmobile" />
@@ -19,6 +18,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -104,7 +104,7 @@
             android:theme="@style/OriginalTheme.Dialog.Alert" />
 
         <service android:name=".PebbleService" />
-        <service android:name=".BluetoothLeService" />
+        <service android:name=".BluetoothService" />
         <service android:name=".LoggingService" />
         <service android:name="com.cooper.wheellog.GearService" /> <!-- Services needed for Samsung Gear watches -->
         <service android:name="com.cooper.wheellog.GarminConnectIQ" /> <!-- Services needed for Garmin ConnectIQ devices -->

@@ -360,9 +360,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(wd.isConnected && WheelLog.AppConfig.useBeepOnVolumeUp)
             R.string.use_reconnect -> {
                 if (WheelLog.AppConfig.useReconnect)
-                    wd.bluetoothLeService?.startReconnectTimer()
+                    wd.bluetoothService?.startReconnectTimer()
                 else
-                    wd.bluetoothLeService?.stopReconnectTimer()
+                    wd.bluetoothService?.stopReconnectTimer()
             }
             R.string.alarm_factor2 -> {
                 if (WheelLog.AppConfig.alarmFactor2 <= WheelLog.AppConfig.alarmFactor1) {

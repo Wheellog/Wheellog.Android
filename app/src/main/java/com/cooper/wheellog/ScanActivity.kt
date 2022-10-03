@@ -1,6 +1,5 @@
 package com.cooper.wheellog
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanResult
@@ -8,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -24,11 +24,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.databinding.ActivityScanBinding
+import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.StringUtil
 import com.cooper.wheellog.utils.StringUtil.Companion.toHexStringRaw
 import com.welie.blessed.BluetoothCentralManager
 import com.welie.blessed.BluetoothCentralManagerCallback
 import com.welie.blessed.BluetoothPeripheral
+import com.welie.blessed.Transport
 import timber.log.Timber
 
 
@@ -38,7 +40,8 @@ class ScanActivity: AppCompatActivity() {
         BluetoothCentralManager(
             this,
             bluetoothCentralManagerCallback,
-            Handler(Looper.getMainLooper()))
+            Handler(Looper.getMainLooper())
+        ).apply { transport = Transport.LE }
     }
     private var pb: ProgressBar? = null
     private var scanTitle: TextView? = null
@@ -47,32 +50,6 @@ class ScanActivity: AppCompatActivity() {
     private val scanPeriod: Long = 10_000
     private lateinit var alertDialog: AlertDialog
     private lateinit var macLayout: LinearLayout
-
-    private var permissionCounter = 0
-
-    private val PERMISSIONS_LOCATION = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
-        Manifest.permission.BLUETOOTH_SCAN,
-        Manifest.permission.BLUETOOTH_CONNECT
-    )
-
-    private fun checkPermissions(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val permission2 = ActivityCompat.checkSelfPermission(this,  Manifest.permission.ACCESS_COARSE_LOCATION)
-            if (permission2 != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    PERMISSIONS_LOCATION,
-                    1
-                )
-                permissionCounter++
-                return false
-            }
-        }
-        return true
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,8 +126,8 @@ class ScanActivity: AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (central.isBluetoothEnabled) {
-            if (!checkPermissions()) {
-                if (permissionCounter > 3) {
+            if (!PermissionsUtil.checkBlePermissions(this)) {
+                if (PermissionsUtil.isMaxBleReq) {
                     central.close()
                     alertDialog.dismiss()
                     finish()
@@ -239,12 +216,18 @@ class ScanActivity: AppCompatActivity() {
     }
 
     private fun isLocationEnabled(context: Context): Boolean {
-        var locationMode = 0
-        try {
-            locationMode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
-        } catch (e: SettingNotFoundException) {
-            e.printStackTrace()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // This is new method provided in API 28
+            val lm = context.getSystemService(LOCATION_SERVICE) as LocationManager
+            lm.isLocationEnabled
+        } else {
+            // This is Deprecated in API 28
+            val locationMode = try {
+                Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
+            } catch (e: SettingNotFoundException) {
+                e.printStackTrace()
+            }
+            locationMode != Settings.Secure.LOCATION_MODE_OFF
         }
-        return locationMode != Settings.Secure.LOCATION_MODE_OFF
     }
 }

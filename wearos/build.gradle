@@ -47,6 +47,7 @@ android {
     lint {
         abortOnError false
     }
+    namespace 'com.cooper.wheellog'
 }
 
 dependencies {
