@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             if (componentName.getClassName().equals(BluetoothService.class.getName())) {
                 WheelData.getInstance().setBluetoothService(null);
                 WheelData.getInstance().setConnected(false);
-                Timber.e("BluetoothLeService disconnected");
+                Timber.e("BluetoothService disconnected");
             }
         }
     };
