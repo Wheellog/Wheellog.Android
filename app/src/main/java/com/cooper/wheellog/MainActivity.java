@@ -543,6 +543,10 @@ public class MainActivity extends AppCompatActivity {
             pagerAdapter.configureSecondDisplay();
         }
 
+        if (PermissionsUtil.INSTANCE.checkNotificationsPermissions(this)) {
+            WheelLog.Notifications.update();
+        }
+
         registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter());
         pagerAdapter.updateScreen(true);
     }

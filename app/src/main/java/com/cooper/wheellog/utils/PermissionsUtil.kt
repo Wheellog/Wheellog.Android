@@ -21,6 +21,9 @@ object PermissionsUtil {
         Manifest.permission.BLUETOOTH_CONNECT
     )
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
+
     private const val maxPermissionReq = 3
     private val permissionCounter = HashMap<String, Int>()
     val isMaxBleReq: Boolean
@@ -40,6 +43,19 @@ object PermissionsUtil {
             for (permission in requestedPermission) {
                 permissionCounter[permission] = (permissionCounter[permission] ?: 0) + 1
             }
+            return false
+        }
+        return true
+    }
+
+    fun checkNotificationsPermissions(activity: Activity): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return true
+        }
+        val result = ActivityCompat.checkSelfPermission(activity.applicationContext, permissionNotification) == PackageManager.PERMISSION_GRANTED
+        val requestCode = 77;
+        if (!result) {
+            ActivityCompat.requestPermissions(activity, arrayOf(permissionNotification), requestCode)
             return false
         }
         return true
