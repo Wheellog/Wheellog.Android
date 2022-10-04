@@ -50,6 +50,7 @@ import com.welie.blessed.ConnectionState;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import me.relex.circleindicator.CircleIndicator3;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
     private ConnectionState mConnectionState = ConnectionState.DISCONNECTED;
+    private boolean isWheelSearch = false;
     private boolean doubleBackToExitPressedOnce = false;
     private Snackbar snackbar;
     private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss ", Locale.US);
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void setConnectionState(ConnectionState connectionState) {
+    private void setConnectionState(ConnectionState connectionState, boolean wheelSearch) {
         switch (connectionState) {
             case CONNECTED:
                 pagerAdapter.configureSecondDisplay();
@@ -138,22 +140,24 @@ public class MainActivity extends AppCompatActivity {
                 }
                 hideSnackBar();
                 break;
-            case CONNECTING:
-                if (mConnectionState == ConnectionState.CONNECTING) {
-                    showSnackBar(R.string.bluetooth_direct_connect_failed);
-                } else if (getBluetoothService() != null && getBluetoothService().getDisconnectTime() != null) {
-                    var text = timeFormatter.format(getBluetoothService().getDisconnectTime()) +
-                            getString(R.string.connection_lost_at);
-                    showSnackBar(text, Snackbar.LENGTH_INDEFINITE);
-                }
-                break;
             case DISCONNECTED:
-                if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
-                    WheelLog.VolumeKeyController.setActive(false);
+                if (wheelSearch) {
+                    if (mConnectionState == ConnectionState.DISCONNECTED) {
+                        showSnackBar(R.string.bluetooth_direct_connect_failed);
+                    } else if (getBluetoothService() != null && getBluetoothService().getDisconnectTime() != null) {
+                        var text = timeFormatter.format(getBluetoothService().getDisconnectTime()) +
+                                getString(R.string.connection_lost_at);
+                        showSnackBar(text, Snackbar.LENGTH_INDEFINITE);
+                    }
+                } else {
+                    if (WheelLog.AppConfig.getUseBeepOnVolumeUp()) {
+                        WheelLog.VolumeKeyController.setActive(false);
+                    }
                 }
                 break;
         }
-        mConnectionState = connectionState;
+        this.mConnectionState = connectionState;
+        this.isWheelSearch = wheelSearch;
         setMenuIconStates();
     }
 
@@ -214,8 +218,9 @@ public class MainActivity extends AppCompatActivity {
             switch (intent.getAction()) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     var connectionState = ConnectionState.fromValue(intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, ConnectionState.DISCONNECTED.value));
-                    Timber.i("Bluetooth state = %s", connectionState);
-                    setConnectionState(connectionState);
+                    var isWheelSearch = intent.getBooleanExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, false);
+                    Timber.i("Bluetooth state = %s, wheel search is %s", connectionState, isWheelSearch);
+                    setConnectionState(connectionState, isWheelSearch);
                     WheelData.getInstance().setConnected(connectionState == ConnectionState.CONNECTED);
                     switch (connectionState) {
                         case CONNECTED:
@@ -232,24 +237,25 @@ public class MainActivity extends AppCompatActivity {
                             }
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
                             break;
-                        case DISCONNECTED:
-                            switch (WheelData.getInstance().getWheelType()) {
-                                case INMOTION:
-                                    InMotionAdapter.newInstance();
-                                case INMOTION_V2:
-                                    InmotionAdapterV2.newInstance();
-                                case NINEBOT_Z:
-                                    NinebotZAdapter.newInstance();
-                                case NINEBOT:
-                                    NinebotAdapter.newInstance();
-                            }
-                            WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
-                            break;
-                        case CONNECTING:
-                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
-                                WheelLog.Notifications.setNotificationMessageId(R.string.searching);
+                         case DISCONNECTED:
+                            if (isWheelSearch) {
+                                if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
+                                    WheelLog.Notifications.setNotificationMessageId(R.string.searching);
+                                } else {
+                                    WheelLog.Notifications.setNotificationMessageId(R.string.connecting);
+                                }
                             } else {
-                                WheelLog.Notifications.setNotificationMessageId(R.string.connecting);
+                                switch (WheelData.getInstance().getWheelType()) {
+                                    case INMOTION:
+                                        InMotionAdapter.newInstance();
+                                    case INMOTION_V2:
+                                        InmotionAdapterV2.newInstance();
+                                    case NINEBOT_Z:
+                                        NinebotZAdapter.newInstance();
+                                    case NINEBOT:
+                                        NinebotAdapter.newInstance();
+                                }
+                                WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
                             }
                             break;
                     }
@@ -257,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_PREFERENCE_RESET:
                     Timber.i("Reset battery lowest");
-                    pagerAdapter.getWheelView().resetBatteryLowest();
+                    Objects.requireNonNull(pagerAdapter.getWheelView()).resetBatteryLowest();
                     break;
                 case Constants.ACTION_WHEEL_DATA_AVAILABLE:
                     if (wearOs != null) {
@@ -391,20 +397,19 @@ public class MainActivity extends AppCompatActivity {
                 miLogging.setEnabled(true);
                 miLogging.getIcon().setAlpha(255);
                 break;
-            case CONNECTING:
-                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch));
-                miWheel.setTitle(R.string.disconnect_from_wheel);
-                ((AnimationDrawable) miWheel.getIcon()).start();
-                miSearch.setEnabled(false);
-                miSearch.getIcon().setAlpha(64);
-                miLogging.setEnabled(false);
-                miLogging.getIcon().setAlpha(64);
-                break;
             case DISCONNECTED:
-                miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff));
-                miWheel.setTitle(R.string.connect_to_wheel);
-                miSearch.setEnabled(true);
-                miSearch.getIcon().setAlpha(255);
+                if (isWheelSearch) {
+                    miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch));
+                    miWheel.setTitle(R.string.disconnect_from_wheel);
+                    ((AnimationDrawable) miWheel.getIcon()).start();
+                    miSearch.setEnabled(false);
+                    miSearch.getIcon().setAlpha(64);
+                } else {
+                    miWheel.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff));
+                    miWheel.setTitle(R.string.connect_to_wheel);
+                    miSearch.setEnabled(true);
+                    miSearch.getIcon().setAlpha(255);
+                }
                 miLogging.setEnabled(false);
                 miLogging.getIcon().setAlpha(64);
                 break;
@@ -527,8 +532,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (getBluetoothService() != null && mConnectionState != getBluetoothService().getConnectionState()) {
-            setConnectionState(getBluetoothService().getConnectionState());
+        if (getBluetoothService() != null
+                && mConnectionState != getBluetoothService().getConnectionState()
+                && isWheelSearch != getBluetoothService().isWheelSearch()) {
+            setConnectionState(getBluetoothService().getConnectionState(),
+                    getBluetoothService().isWheelSearch());
         }
 
         if (WheelData.getInstance().getWheelType() != WHEEL_TYPE.Unknown) {

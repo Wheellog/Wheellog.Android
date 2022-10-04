@@ -112,12 +112,13 @@ class BluetoothService: Service() {
                     }
                     if (!autoConnect) {
                         autoConnect = true
+                        isWheelSearch = true
                         central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
                     }
-                    broadcastConnectionUpdate(ConnectionState.CONNECTING, true)
+                    broadcastConnectionUpdate(true)
                 } else {
                     Timber.i("Disconnected")
-                    broadcastConnectionUpdate(connectionState)
+                    broadcastConnectionUpdate()
                 }
             }
         }
@@ -132,7 +133,10 @@ class BluetoothService: Service() {
                 status: GattStatus
             ) {
                 super.onConnectionUpdated(peripheral, interval, latency, timeout, status)
-                broadcastConnectionUpdate(connectionState)
+                if (connectionState == ConnectionState.CONNECTED || connectionState == ConnectionState.CONNECTING) {
+                    isWheelSearch = false
+                }
+                broadcastConnectionUpdate()
             }
 
             override fun onServicesDiscovered(peripheral: BluetoothPeripheral) {
@@ -142,7 +146,6 @@ class BluetoothService: Service() {
                 WheelData.getInstance().isConnected = recognisedWheel
                 if (recognisedWheel) {
                     sendBroadcast(Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED))
-                    broadcastConnectionUpdate(connectionState)
                 } else {
                     disconnect()
                 }
@@ -237,9 +240,10 @@ class BluetoothService: Service() {
         }
     }
 
-    private fun broadcastConnectionUpdate(connectionState: ConnectionState, autoConnect: Boolean = false) {
+    private fun broadcastConnectionUpdate(autoConnect: Boolean = false) {
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.value)
+        intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, isWheelSearch)
         if (autoConnect) {
             intent.putExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT, true)
         }
@@ -250,7 +254,7 @@ class BluetoothService: Service() {
         get() = wheelConnection?.state ?: ConnectionState.DISCONNECTED
         private set
 
-    var pseudoState = ConnectionState.DISCONNECTED
+    var isWheelSearch = false
         private set
 
     fun startReconnectTimer() {
@@ -309,8 +313,9 @@ class BluetoothService: Service() {
         central.transport = Transport.LE
         if (wheelConnection?.address == wheelAddress) {
             Timber.i("Trying to use an existing wheelConnection for connection.")
-            broadcastConnectionUpdate(ConnectionState.CONNECTING)
+            isWheelSearch = true
             central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
+            broadcastConnectionUpdate()
             return true
         }
         wheelConnection = central.getPeripheral(wheelAddress)
@@ -319,19 +324,28 @@ class BluetoothService: Service() {
             return false
         }
 
+        isWheelSearch = true
         central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
         Timber.i("Trying to create a new connection.")
-        broadcastConnectionUpdate(connectionState)
+        broadcastConnectionUpdate()
         return true
     }
 
     fun disconnect() {
         disconnectRequested = true
-        if (!central.isBluetoothEnabled || connectionState != ConnectionState.CONNECTED) {
+        if (!central.isBluetoothEnabled || (connectionState != ConnectionState.CONNECTED && !isWheelSearch)) {
             Timber.i("not connected.")
             return
         }
+
+        // call private method central.stopAutoconnectScan()
+        val stopAutoScanMethod = central::class.java.getDeclaredMethod("stopAutoconnectScan")
+        stopAutoScanMethod.isAccessible = true
+        stopAutoScanMethod.invoke(central)
+
+        isWheelSearch = false
         wheelConnection?.cancelConnection()
+        broadcastConnectionUpdate()
     }
 
     fun close() {
@@ -342,7 +356,12 @@ class BluetoothService: Service() {
 
     fun toggleConnectToWheel() {
         when (connectionState) {
-            ConnectionState.DISCONNECTED -> connect()
+            ConnectionState.DISCONNECTED ->
+                if (isWheelSearch) {
+                    disconnect()
+                } else {
+                    connect()
+                }
             ConnectionState.CONNECTED -> disconnect()
             else -> {}
         }
