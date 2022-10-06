@@ -820,9 +820,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startBluetoothService() {
-        if (PermissionsUtil.INSTANCE.checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+        if (PermissionsUtil.INSTANCE.checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)
+                && getBluetoothService() == null) {
             Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothService.class);
             bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE);
+            Timber.i("bluetoothService is starting.");
         }
     }
     //endregion
@@ -830,6 +832,8 @@ public class MainActivity extends AppCompatActivity {
     private void toggleConnectToWheel() {
         if (getBluetoothService() != null) {
             getBluetoothService().toggleConnectToWheel();
+        } else {
+            startBluetoothService();
         }
     }
 
@@ -843,6 +847,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        if (requestCode == RESULT_REQUEST_PERMISSIONS_BT) {
+            startBluetoothService();
+        }
     }
 
     @Override
@@ -869,6 +876,8 @@ public class MainActivity extends AppCompatActivity {
                                 this,
                                 success -> null);
                     }
+                } else {
+                    Timber.i("Scan device is failed.");
                 }
                 break;
             case RESULT_REQUEST_ENABLE_BT:

@@ -61,7 +61,6 @@ class BluetoothService: Service() {
                         stopBeepTimer()
                     }
                     wl?.release()
-                    wl = null
                     wl = mgr!!.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag).apply {
                         acquire(5 * 60 * 1000L /*5 minutes*/)
                     }
@@ -287,6 +286,7 @@ class BluetoothService: Service() {
         if (WheelLog.AppConfig.useReconnect) {
             startReconnectTimer()
         }
+        Timber.i("BluetoothService is started.")
         return mBinder
     }
 
@@ -300,6 +300,7 @@ class BluetoothService: Service() {
         central.close()
         stopReconnectTimer()
         close()
+        Timber.i("BluetoothService is destroyed.")
     }
 
     fun connect(): Boolean {
