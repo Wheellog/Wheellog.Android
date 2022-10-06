@@ -171,7 +171,7 @@ class BluetoothService: Service() {
             ) {
                 super.onCharacteristicUpdate(peripheral, value, characteristic, status)
                 Timber.i("onCharacteristicChanged called %s", characteristic.uuid.toString())
-                if (status != GattStatus.SUCCESS) {
+                if (status == GattStatus.SUCCESS) {
                     readData(characteristic, value)
                 }
             }
