@@ -868,7 +868,6 @@ public class MainActivity extends AppCompatActivity {
                     WheelData.getInstance().setBtName(mDeviceName);
                     pagerAdapter.updateScreen(true);
                     setMenuIconStates();
-                    getBluetoothService().close();
                     toggleConnectToWheel();
                     if (WheelLog.AppConfig.getAutoUploadEc() && WheelLog.AppConfig.getEcToken() != null) {
                         ElectroClub.getInstance().getAndSelectGarageByMacOrShowChooseDialog(

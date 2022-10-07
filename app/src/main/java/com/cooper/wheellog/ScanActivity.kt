@@ -14,8 +14,10 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -92,7 +94,12 @@ class ScanActivity: AppCompatActivity() {
                     }
                     false
                 }
-                .show()
+                .create()
+        window.attributes = alertDialog.window?.attributes?.apply {
+            gravity = Gravity.TOP
+            flags = flags and WindowManager.LayoutParams.FLAG_DIM_BEHIND.inv()
+        }
+        alertDialog.show()
         if (!isLocationEnabled(this)) {
             val myIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(myIntent)

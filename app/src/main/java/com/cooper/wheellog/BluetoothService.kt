@@ -297,7 +297,6 @@ class BluetoothService: Service() {
         }
         stopBeepTimer()
         central.connectedPeripherals.forEach { p -> p.cancelConnection() }
-        central.close()
         stopReconnectTimer()
         close()
         Timber.i("BluetoothService is destroyed.")
