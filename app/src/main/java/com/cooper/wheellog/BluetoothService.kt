@@ -292,13 +292,15 @@ class BluetoothService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (fileUtilRawData != null) {
-            fileUtilRawData!!.close()
-        }
+        fileUtilRawData?.close()
         stopBeepTimer()
-        central.connectedPeripherals.forEach { p -> p.cancelConnection() }
         stopReconnectTimer()
-        close()
+        WheelLog.Notifications.close()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        }
+        central.connectedPeripherals.forEach { it.cancelConnection() }
+        central.close()
         Timber.i("BluetoothService is destroyed.")
     }
 
@@ -346,12 +348,6 @@ class BluetoothService: Service() {
         isWheelSearch = false
         wheelConnection?.cancelConnection()
         broadcastConnectionUpdate()
-    }
-
-    fun close() {
-        central.close()
-        wheelConnection?.cancelConnection()
-        wheelConnection = null
     }
 
     fun toggleConnectToWheel() {

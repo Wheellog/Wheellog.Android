@@ -157,6 +157,16 @@ class NotificationUtil(private val context: Context) {
         }
     }
 
+    fun close() {
+        kostilTimer?.cancel()
+        kostilTimer = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            with(NotificationManagerCompat.from(context)) {
+                cancel(Constants.MAIN_NOTIFICATION_ID)
+            }
+        }
+    }
+
     // Fix Me
     // https://github.com/Wheellog/Wheellog.Android/pull/249
     fun updateKostilTimer() {
