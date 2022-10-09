@@ -26,9 +26,9 @@ class BluetoothService: Service() {
     private var timerTicks = 0
 
     private val mBinder: IBinder = LocalBinder()
-    var mgr: PowerManager? = null
-    var wl: WakeLock? = null
-    var fileUtilRawData: FileUtil? = null
+    private var fileUtilRawData: FileUtil? = null
+    private var mgr: PowerManager? = null
+    private var wl: WakeLock? = null
 
     var wheelAddress: String = ""
         set(value) {
@@ -39,7 +39,7 @@ class BluetoothService: Service() {
 
     private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
     private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
-    private val wakeLogTag = "WhellLog:WakeLockTag"
+    private val wakeLogTag = "WheelLog:WakeLockTag"
     private val central: BluetoothCentralManager by lazy {
         BluetoothCentralManager(
             this,
@@ -208,7 +208,7 @@ class BluetoothService: Service() {
         }
         val wd = WheelData.getInstance()
         when (wd.wheelType) {
-            WHEEL_TYPE.KINGSONG -> if (characteristic.uuid.toString() == Constants.KINGSONG_READ_CHARACTER_UUID) {
+            WHEEL_TYPE.KINGSONG -> if (characteristic.uuid == Constants.KINGSONG_READ_CHARACTER_UUID) {
                 wd.decodeResponse(value, applicationContext)
                 if (WheelData.getInstance().name.isEmpty()) {
                     KingsongAdapter.getInstance().requestNameData()
@@ -218,19 +218,21 @@ class BluetoothService: Service() {
             }
             WHEEL_TYPE.GOTWAY, WHEEL_TYPE.GOTWAY_VIRTUAL, WHEEL_TYPE.VETERAN ->
                 wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.INMOTION -> if (characteristic.uuid.toString() == Constants.INMOTION_READ_CHARACTER_UUID)
+            WHEEL_TYPE.INMOTION -> if (characteristic.uuid == Constants.INMOTION_READ_CHARACTER_UUID)
                 wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.INMOTION_V2 -> if (characteristic.uuid.toString() == Constants.INMOTION_V2_READ_CHARACTER_UUID)
+            WHEEL_TYPE.INMOTION_V2 -> if (characteristic.uuid == Constants.INMOTION_V2_READ_CHARACTER_UUID)
                 wd.decodeResponse(value, applicationContext)
             WHEEL_TYPE.NINEBOT_Z -> {
                 Timber.i("Ninebot Z reading")
-                if (characteristic.uuid.toString() == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
+                if (characteristic.uuid == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
                     wd.decodeResponse(value, applicationContext)
                 }
             }
             WHEEL_TYPE.NINEBOT -> {
                 Timber.i("Ninebot reading")
-                if (characteristic.uuid.toString() == Constants.NINEBOT_READ_CHARACTER_UUID || characteristic.uuid.toString() == Constants.NINEBOT_Z_READ_CHARACTER_UUID) { // in case of S2 or Mini
+                if (characteristic.uuid == Constants.NINEBOT_READ_CHARACTER_UUID
+                    || characteristic.uuid == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
+                    // in case of S2 or Mini
                     Timber.i("Ninebot read cont")
                     wd.decodeResponse(value, applicationContext)
                 }
@@ -340,13 +342,11 @@ class BluetoothService: Service() {
             return
         }
 
-        // call private method central.stopAutoconnectScan()
-        val stopAutoScanMethod = central::class.java.getDeclaredMethod("stopAutoconnectScan")
-        stopAutoScanMethod.isAccessible = true
-        stopAutoScanMethod.invoke(central)
+        if (wheelConnection != null) {
+            central.cancelConnection(wheelConnection!!)
+        }
 
         isWheelSearch = false
-        wheelConnection?.cancelConnection()
         broadcastConnectionUpdate()
     }
 
@@ -386,6 +386,23 @@ class BluetoothService: Service() {
         Timber.i("Set characteristic %b", success)
     }
 
+    private fun getServiceCharacteristic(
+        serviceUUID: UUID,
+        characteristicUUID: UUID
+    ): BluetoothGattCharacteristic? {
+        val service = wheelConnection!!.getService(serviceUUID)
+        if (service == null) {
+            Timber.i("writeBluetoothGattCharacteristic service == null")
+            return null
+        }
+        val characteristic = service.getCharacteristic(characteristicUUID)
+        if (characteristic == null) {
+            Timber.i("writeBluetoothGattCharacteristic characteristic == null")
+            return null
+        }
+        return characteristic
+    }
+
     @Synchronized
     fun writeWheelCharacteristic(cmd: ByteArray?): Boolean {
         if (wheelConnection == null || cmd == null || wheelConnection!!.state != ConnectionState.CONNECTED) {
@@ -399,109 +416,56 @@ class BluetoothService: Service() {
         try {
             when (WheelData.getInstance().wheelType) {
                 WHEEL_TYPE.KINGSONG -> {
-                    val ksService = wheelConnection!!.getService(
-                        UUID.fromString(Constants.KINGSONG_SERVICE_UUID)
-                    )
-                    if (ksService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val ksCharacteristic =
-                        ksService.getCharacteristic(UUID.fromString(Constants.KINGSONG_READ_CHARACTER_UUID))
-                    if (ksCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    return wheelConnection!!.writeCharacteristic(ksCharacteristic, cmd, WriteType.WITHOUT_RESPONSE)
+                    val characteristic = getServiceCharacteristic(
+                        Constants.KINGSONG_SERVICE_UUID,
+                        Constants.KINGSONG_READ_CHARACTER_UUID
+                    ) ?: return false
+                    return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
                 }
                 WHEEL_TYPE.GOTWAY, WHEEL_TYPE.GOTWAY_VIRTUAL, WHEEL_TYPE.VETERAN -> {
-                    val gwService = wheelConnection!!.getService(
-                        UUID.fromString(Constants.GOTWAY_SERVICE_UUID)
-                    )
-                    if (gwService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val gwCharacteristic =
-                        gwService.getCharacteristic(UUID.fromString(Constants.GOTWAY_READ_CHARACTER_UUID))
-                    if (gwCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    return wheelConnection!!.writeCharacteristic(gwCharacteristic, cmd, WriteType.WITHOUT_RESPONSE)
+                    val characteristic = getServiceCharacteristic(
+                        Constants.GOTWAY_SERVICE_UUID,
+                        Constants.GOTWAY_READ_CHARACTER_UUID
+                    ) ?: return false
+                    return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
                 }
                 WHEEL_TYPE.NINEBOT -> {
                     if (WheelData.getInstance().protoVer.compareTo("") == 0) {
-                        val nbService = wheelConnection!!.getService(
-                            UUID.fromString(Constants.NINEBOT_SERVICE_UUID)
-                        )
-                        if (nbService == null) {
-                            Timber.i("writeBluetoothGattCharacteristic service == null")
-                            return false
-                        }
-                        val nbCharacteristic =
-                            nbService.getCharacteristic(UUID.fromString(Constants.NINEBOT_WRITE_CHARACTER_UUID))
-                        if (nbCharacteristic == null) {
-                            Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                            return false
-                        }
-                        return wheelConnection!!.writeCharacteristic(nbCharacteristic, cmd, WriteType.WITHOUT_RESPONSE)
-                    } // if S2 or Mini, then pass to Ninebot_Z case
+                        val characteristic = getServiceCharacteristic(
+                            Constants.NINEBOT_SERVICE_UUID,
+                            Constants.NINEBOT_WRITE_CHARACTER_UUID
+                        ) ?: return false
+                        return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
+                    }
+                    // if S2 or Mini, then pass to Ninebot_Z case
                     Timber.i("Passing to NZ")
-                    val nzService = wheelConnection!!.getService(
-                        UUID.fromString(Constants.NINEBOT_Z_SERVICE_UUID)
-                    )
-                    if (nzService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val nzCharacteristic =
-                        nzService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID))
-                    if (nzCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    return wheelConnection!!.writeCharacteristic(nzCharacteristic, cmd, WriteType.WITHOUT_RESPONSE)
+                    val characteristic = getServiceCharacteristic(
+                        Constants.NINEBOT_Z_SERVICE_UUID,
+                        Constants.NINEBOT_Z_WRITE_CHARACTER_UUID
+                    ) ?: return false
+                    return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
                 }
                 WHEEL_TYPE.NINEBOT_Z -> {
-                    val nzService = wheelConnection!!.getService(
-                        UUID.fromString(
-                            Constants.NINEBOT_Z_SERVICE_UUID
-                        )
-                    )
-                    if (nzService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val nzCharacteristic =
-                        nzService.getCharacteristic(UUID.fromString(Constants.NINEBOT_Z_WRITE_CHARACTER_UUID))
-                    if (nzCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    return wheelConnection!!.writeCharacteristic(nzCharacteristic, cmd, WriteType.WITHOUT_RESPONSE)
+                    val characteristic = getServiceCharacteristic(
+                        Constants.NINEBOT_Z_SERVICE_UUID,
+                        Constants.NINEBOT_Z_WRITE_CHARACTER_UUID
+                    ) ?: return false
+                    return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
                 }
                 WHEEL_TYPE.INMOTION -> {
-                    val imService = wheelConnection!!.getService(
-                        UUID.fromString(Constants.INMOTION_WRITE_SERVICE_UUID)
-                    )
-                    if (imService == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val imCharacteristic =
-                        imService.getCharacteristic(UUID.fromString(Constants.INMOTION_WRITE_CHARACTER_UUID))
-                    if (imCharacteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
+                    val characteristic = getServiceCharacteristic(
+                        Constants.INMOTION_WRITE_SERVICE_UUID,
+                        Constants.INMOTION_WRITE_CHARACTER_UUID
+                    ) ?: return false
                     val buf = ByteArray(20)
                     val i2 = cmd.size / 20
                     val i3 = cmd.size - i2 * 20
                     var i4 = 0
                     while (i4 < i2) {
                         System.arraycopy(cmd, i4 * 20, buf, 0, 20)
-                        if (!wheelConnection!!.writeCharacteristic(imCharacteristic, buf, WriteType.WITHOUT_RESPONSE)) return false
+                        if (!wheelConnection!!.writeCharacteristic(characteristic, buf, WriteType.WITHOUT_RESPONSE)) {
+                            return false
+                        }
                         try {
                             Thread.sleep(20)
                         } catch (e: InterruptedException) {
@@ -511,27 +475,18 @@ class BluetoothService: Service() {
                     }
                     if (i3 > 0) {
                         System.arraycopy(cmd, i2 * 20, buf, 0, i3)
-                        if (!wheelConnection!!.writeCharacteristic(imCharacteristic, buf, WriteType.WITHOUT_RESPONSE)) return false
+                        if (!wheelConnection!!.writeCharacteristic(characteristic, buf, WriteType.WITHOUT_RESPONSE)) {
+                            return false
+                        }
                     }
                     return true
                 }
                 WHEEL_TYPE.INMOTION_V2 -> {
-                    val inv2Service = wheelConnection!!.getService(
-                        UUID.fromString(
-                            Constants.INMOTION_V2_SERVICE_UUID
-                        )
-                    )
-                    if (inv2Service == null) {
-                        Timber.i("writeBluetoothGattCharacteristic service == null")
-                        return false
-                    }
-                    val inv2Characteristic =
-                        inv2Service.getCharacteristic(UUID.fromString(Constants.INMOTION_V2_WRITE_CHARACTER_UUID))
-                    if (inv2Characteristic == null) {
-                        Timber.i("writeBluetoothGattCharacteristic characteristic == null")
-                        return false
-                    }
-                    return wheelConnection!!.writeCharacteristic(inv2Characteristic, cmd, WriteType.WITHOUT_RESPONSE)
+                    val characteristic = getServiceCharacteristic(
+                        Constants.INMOTION_V2_SERVICE_UUID,
+                        Constants.INMOTION_V2_WRITE_CHARACTER_UUID
+                    ) ?: return false
+                    return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
                 }
                 else -> {}
             }
