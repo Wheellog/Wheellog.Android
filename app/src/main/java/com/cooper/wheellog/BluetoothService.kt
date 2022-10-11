@@ -351,15 +351,17 @@ class BluetoothService: Service() {
     }
 
     fun toggleConnectToWheel() {
+        Timber.i("toggleConnectToWheel. Current state: ${connectionState.name}")
         when (connectionState) {
+            ConnectionState.DISCONNECTING -> Timber.i("Already disconnecting")
             ConnectionState.DISCONNECTED ->
                 if (isWheelSearch) {
                     disconnect()
                 } else {
                     connect()
                 }
+            ConnectionState.CONNECTING,
             ConnectionState.CONNECTED -> disconnect()
-            else -> {}
         }
     }
 
