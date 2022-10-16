@@ -129,7 +129,7 @@
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
     <string name="private_policy_accepted" translatable="false">private_policy_accepted_v2</string>
-    <string name="yandex_metriсa_accepted" translatable="false">yandex_metrika</string>
+    <string name="yandex_metriсa_accepted" translatable="false">yandex_metriсa_accepted</string>
     <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
