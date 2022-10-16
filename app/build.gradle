@@ -55,8 +55,8 @@ android {
         }
         def ec_token = System.getProperty("ec_accessToken") ?: props.getProperty('ec_accessToken') ?: ""
         buildType.buildConfigField 'String', 'ec_accessToken', "\"" + ec_token + "\""
-        def metrika_api = System.getProperty("metrika_api") ?: props.getProperty('metrika_api') ?: ""
-        buildType.buildConfigField 'String', 'metrika_api', "\"" + metrika_api + "\""
+        def metrica_api = System.getProperty("metrica_api") ?: props.getProperty('metrica_api') ?: ""
+        buildType.buildConfigField 'String', 'metrica_api', "\"" + metrica_api + "\""
     }
     buildFeatures {
         viewBinding true
