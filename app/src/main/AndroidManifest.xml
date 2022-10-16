@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.cooper.wheellog">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
         <package android:name="com.garmin.android.apps.connectmobile" />
@@ -11,9 +10,15 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -75,7 +80,8 @@
             android:icon="@mipmap/ic_launcher"
             android:name=".OriginalIconAlias"
             android:enabled="true"
-            android:targetActivity=".SplashActivity">
+            android:targetActivity=".SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -86,7 +92,8 @@
             android:icon="@drawable/ajdm_notification_icon"
             android:name=".AjdmIconAlias"
             android:enabled="false"
-            android:targetActivity=".SplashActivity">
+            android:targetActivity=".SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -97,7 +104,7 @@
             android:theme="@style/OriginalTheme.Dialog.Alert" />
 
         <service android:name=".PebbleService" />
-        <service android:name=".BluetoothLeService" />
+        <service android:name=".BluetoothService" />
         <service android:name=".LoggingService" />
         <service android:name="com.cooper.wheellog.GearService" /> <!-- Services needed for Samsung Gear watches -->
         <service android:name="com.cooper.wheellog.GarminConnectIQ" /> <!-- Services needed for Garmin ConnectIQ devices -->
@@ -112,12 +119,14 @@
             </intent-filter>
         </receiver>
         <!-- Receivers needed for Samsung Gear watches -->
-        <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
+        <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.SERVICE_CONNECTION_REQUESTED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver">
+        <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.REGISTER_AGENT" />
             </intent-filter>

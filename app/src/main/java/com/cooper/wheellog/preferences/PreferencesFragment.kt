@@ -104,7 +104,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         generalSettings.switchAlarmsIsVisible(this)
     }
 
-    override fun onDisplayPreferenceDialog(preference: Preference?) {
+    override fun onDisplayPreferenceDialog(preference: Preference) {
         if (preference is MultiSelectPreference) {
             if (parentFragmentManager.findFragmentByTag(dialogTag) != null) {
                 return
@@ -365,9 +365,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.beep_on_volume_up -> WheelLog.VolumeKeyController.setActive(wd.isConnected && WheelLog.AppConfig.useBeepOnVolumeUp)
             R.string.use_reconnect -> {
                 if (WheelLog.AppConfig.useReconnect)
-                    wd.bluetoothLeService?.startReconnectTimer()
+                    wd.bluetoothService?.startReconnectTimer()
                 else
-                    wd.bluetoothLeService?.stopReconnectTimer()
+                    wd.bluetoothService?.stopReconnectTimer()
             }
             R.string.alarm_factor2 -> {
                 if (WheelLog.AppConfig.alarmFactor2 <= WheelLog.AppConfig.alarmFactor1) {
@@ -585,7 +585,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
 
     override fun onResume() {
         super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
         setupScreen()
 
         // override Back key
@@ -607,7 +607,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     override fun onPause() {
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
         super.onPause()
     }
 
@@ -626,7 +626,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         }
 
         // Hide inaccessible settings for VoltageTiltbackUnsupported wheels
-        if (WheelData.getInstance().isVoltageTiltbackUnsupported) {
+        if (WheelData.getInstance()?.isVoltageTiltbackUnsupported == true) {
             val preferences = arrayOf(
                     getString(R.string.fixed_percents),
                     getString(R.string.cell_voltage_tiltback),
