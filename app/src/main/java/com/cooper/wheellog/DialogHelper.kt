@@ -20,6 +20,7 @@ import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import com.cooper.wheellog.utils.Constants
+import com.yandex.metrica.YandexMetrica
 
 object DialogHelper {
     /**
@@ -60,6 +61,25 @@ object DialogHelper {
             data = Uri.parse("package:" + context.packageName)
         }
         context.startActivity(intent)
+    }
+
+    fun metricaAlert(context: Context) {
+        if (WheelLog.AppConfig.yandexMetrica == true) {
+            return
+        }
+
+        AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setTitle(R.string.send_yandex_metriсa_title)
+            .setMessage(R.string.send_yandex_metriсa)
+            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                WheelLog.AppConfig.yandexMetrica = true
+                YandexMetrica.setStatisticsSending(context, true)
+            }
+            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
+                WheelLog.AppConfig.yandexMetrica = false
+            }
+            .show()
     }
 
     fun checkPWMIsSetAndShowAlert(context: Context) {
@@ -226,7 +246,7 @@ object DialogHelper {
     }
 
     fun checkAndShowPrivatePolicyDialog(mainActivity: MainActivity) {
-        if (WheelLog.AppConfig.privatePolicyAccepted) {
+        if (WheelLog.AppConfig.privatePolicyAccepted && WheelLog.AppConfig.yandexMetrica != null) {
             return
         }
 
@@ -256,6 +276,11 @@ object DialogHelper {
         }
         binding.okButton.setOnClickListener {
             WheelLog.AppConfig.privatePolicyAccepted = true
+            WheelLog.AppConfig.yandexMetrica = binding.agreeWithMetrica.isChecked
+            YandexMetrica.setStatisticsSending(
+                mainActivity.applicationContext,
+                binding.agreeWithMetrica.isChecked
+            )
             dialog.dismiss()
         }
         binding.btnCancel.setOnClickListener {
