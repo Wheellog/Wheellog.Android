@@ -267,10 +267,10 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
-            key = getString(R.string.yandex_metriсa)
+            key = getString(R.string.yandex_metriсa_accepted)
             title = getString(R.string.send_yandex_metriсa_title)
             summary = getString(R.string.send_yandex_metriсa)
-            setDefaultValue(WheelLog.AppConfig.yandexMetrica == true)
+            setDefaultValue(WheelLog.AppConfig.yandexMetricaAccepted)
             ps.addPreference(this)
         }
     }

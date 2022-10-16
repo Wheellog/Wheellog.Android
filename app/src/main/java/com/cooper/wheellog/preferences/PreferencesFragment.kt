@@ -376,9 +376,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.miband_fixrs_enable -> WheelLog.Notifications.updateKostilTimer()
-            R.string.yandex_metriсa -> YandexMetrica.setStatisticsSending(
+            R.string.yandex_metriсa_accepted -> YandexMetrica.setStatisticsSending(
                 requireContext().applicationContext,
-                WheelLog.AppConfig.yandexMetrica == true
+                WheelLog.AppConfig.yandexMetricaAccepted
             )
         }
         correctState(key)

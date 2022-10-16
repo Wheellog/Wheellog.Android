@@ -24,7 +24,7 @@ class WheelLog : Application() {
             val config = YandexMetricaConfig
                 .newConfigBuilder(BuildConfig.metrika_api)
                 .withLocationTracking(false)
-                .withStatisticsSending(true)
+                .withStatisticsSending(AppConfig.yandexMetricaAccepted)
                 .build()
             YandexMetrica.activate(applicationContext, config)
         }

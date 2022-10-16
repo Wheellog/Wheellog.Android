@@ -63,25 +63,6 @@ object DialogHelper {
         context.startActivity(intent)
     }
 
-    fun metricaAlert(context: Context) {
-        if (WheelLog.AppConfig.yandexMetrica == true) {
-            return
-        }
-
-        AlertDialog.Builder(context)
-            .setCancelable(false)
-            .setTitle(R.string.send_yandex_metriсa_title)
-            .setMessage(R.string.send_yandex_metriсa)
-            .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                WheelLog.AppConfig.yandexMetrica = true
-                YandexMetrica.setStatisticsSending(context, true)
-            }
-            .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int ->
-                WheelLog.AppConfig.yandexMetrica = false
-            }
-            .show()
-    }
-
     fun checkPWMIsSetAndShowAlert(context: Context) {
         val wd = WheelData.getInstance()
         if (!wd.isWheelIsReady || wd.isHardwarePWM || WheelLog.AppConfig.rotationIsSet) {
@@ -246,7 +227,7 @@ object DialogHelper {
     }
 
     fun checkAndShowPrivatePolicyDialog(mainActivity: MainActivity) {
-        if (WheelLog.AppConfig.privatePolicyAccepted && WheelLog.AppConfig.yandexMetrica != null) {
+        if (WheelLog.AppConfig.privatePolicyAccepted) {
             return
         }
 
@@ -276,7 +257,7 @@ object DialogHelper {
         }
         binding.okButton.setOnClickListener {
             WheelLog.AppConfig.privatePolicyAccepted = true
-            WheelLog.AppConfig.yandexMetrica = binding.agreeWithMetrica.isChecked
+            WheelLog.AppConfig.yandexMetricaAccepted = binding.agreeWithMetrica.isChecked
             YandexMetrica.setStatisticsSending(
                 mainActivity.applicationContext,
                 binding.agreeWithMetrica.isChecked
