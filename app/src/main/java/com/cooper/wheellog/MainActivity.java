@@ -236,6 +236,11 @@ public class MainActivity extends AppCompatActivity {
                                 toggleWatch();
                             }
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
+                            if (WheelLog.AppConfig.getAlarmsEnabled() && !Alarms.INSTANCE.isStarted()) {
+                                Alarms.INSTANCE.start();
+                            } else {
+                                Alarms.INSTANCE.stop();
+                            }
                             break;
                          case DISCONNECTED:
                             if (isWheelSearch) {
@@ -256,6 +261,9 @@ public class MainActivity extends AppCompatActivity {
                                         NinebotAdapter.newInstance();
                                 }
                                 WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
+                            }
+                            if (Alarms.INSTANCE.isStarted()) {
+                                Alarms.INSTANCE.stop();
                             }
                             break;
                     }
