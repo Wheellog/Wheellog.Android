@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -27,7 +28,7 @@ object Alarms {
     private var timerTask: TimerTask = object : TimerTask() {
         override fun run() {
             val wd = WheelData.getInstance() ?: return
-            val mContext: Context = wd.bluetoothLeService?.applicationContext ?: return
+            val mContext: Context = wd.bluetoothService?.applicationContext ?: return
             checkAlarm(wd.calculatedPwm, mContext)
         }
     }
@@ -219,16 +220,14 @@ object Alarms {
     }
 
     private fun vibrate(mContext: Context, pattern: LongArray) {
-        val vib =
-// TODO: uncomment after target sdk 31+
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            val vibratorManager =
-//                mContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-//            vibratorManager.defaultVibrator
-//        } else  {
+        val vib = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                mContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else  {
             @Suppress("DEPRECATION")
             mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-//        }
+        }
         if (vib.hasVibrator()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val vibrationEffect = VibrationEffect.createWaveform(pattern, -1)
