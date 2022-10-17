@@ -159,7 +159,10 @@ public class BluetoothLeService extends Service {
             Timber.i("onServicesDiscovered called");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Timber.i("onServicesDiscovered called, status == BluetoothGatt.GATT_SUCCESS");
-                boolean recognisedWheel = WheelData.getInstance().detectWheel(mBluetoothDeviceAddress);
+                boolean recognisedWheel = WheelData.getInstance().detectWheel(mBluetoothDeviceAddress, R.raw.bluetooth_services);
+                if (!recognisedWheel) {
+                    recognisedWheel = WheelData.getInstance().detectWheel(mBluetoothDeviceAddress, R.raw.bluetooth_proxy_services);
+                }
                 WheelData.getInstance().setConnected(recognisedWheel);
                 if (recognisedWheel) {
                     sendBroadcast(new Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED));

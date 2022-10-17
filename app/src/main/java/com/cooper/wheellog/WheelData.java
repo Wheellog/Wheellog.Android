@@ -1423,7 +1423,7 @@ public class WheelData {
         mWheelIsReady = false;
     }
 
-    boolean detectWheel(String deviceAddress) {
+    boolean detectWheel(String deviceAddress, int servicesResId) {
         Context mContext = getBluetoothLeService().getApplicationContext();
         WheelLog.AppConfig.setLastMac(deviceAddress);
         String advData = WheelLog.AppConfig.getAdvDataForWheel();
@@ -1436,7 +1436,7 @@ public class WheelData {
         }
         Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
-        String text = StringUtil.Companion.getRawTextResource(mContext, R.raw.bluetooth_services);
+        String text = StringUtil.Companion.getRawTextResource(mContext, servicesResId);
         try {
             JSONArray arr = new JSONArray(text);
             for (int i = 0; i < arr.length() && !detected_wheel; i++) {
