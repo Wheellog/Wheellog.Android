@@ -19,7 +19,8 @@
         android:background="@android:color/transparent"
         android:gravity="center"
         android:text="@string/private_policy_title"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:layout_marginBottom="15dp" />
 
     <TextView
         android:id="@+id/policy_links"
@@ -34,6 +35,21 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:text="@string/private_policy_agree" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="@string/send_yandex_metriсa"
+        android:textSize="14sp" />
+
+    <CheckBox
+        android:id="@+id/agree_with_metrica"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:checked="true"
+        android:text="@string/send_yandex_metriсa_title" />
 
     <Button
         android:id="@+id/ok_button"

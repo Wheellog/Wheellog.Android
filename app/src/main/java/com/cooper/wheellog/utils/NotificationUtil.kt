@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
+import com.welie.blessed.ConnectionState
 import java.util.*
 
 class NotificationUtil(private val context: Context) {
@@ -45,12 +46,8 @@ class NotificationUtil(private val context: Context) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
         val buttonSettings = WheelLog.AppConfig.notificationButtons
-        val pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= 23) {
-            PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
-        } else {
-            PendingIntent.getActivity(context, 0, notificationIntent, 0)
-        }
-
+        val intentFlag = if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, intentFlag)
 
         notificationView.setViewVisibility(R.id.ib_actions_layout,
                 if (buttonSettings.any()) View.VISIBLE
@@ -67,11 +64,11 @@ class NotificationUtil(private val context: Context) {
                     if (buttonSettings.contains(context.getString(it.second))) View.VISIBLE
                     else View.GONE)
             notificationView.setOnClickPendingIntent(it.first,
-                    PendingIntent.getBroadcast(context, 0, Intent(it.third), 0))
+                    PendingIntent.getBroadcast(context, 0, Intent(it.third), intentFlag))
         }
         val wd = WheelData.getInstance()
-        val connectionState = wd.bluetoothLeService?.connectionState
-                ?: BluetoothLeService.STATE_DISCONNECTED
+        val connectionState = wd.bluetoothService?.connectionState
+                ?: ConnectionState.DISCONNECTED
         val batteryLevel = wd.batteryLevel
         val temperature = wd.temperature
         val distance = wd.distanceDouble
@@ -80,7 +77,7 @@ class NotificationUtil(private val context: Context) {
         val title_ride = WheelData.getInstance().rideTimeString
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
-        if (connectionState == BluetoothLeService.STATE_CONNECTED || distance + temperature + batteryLevel + speed > 0) {
+        if (connectionState == ConnectionState.CONNECTED || distance + temperature + batteryLevel + speed > 0) {
             if (WheelLog.AppConfig.mibandMode == MiBandEnum.Alarm) {
                 notificationView.setTextViewText(R.id.text_message, context.getString(R.string.alarmmiband))
             } else {
@@ -113,8 +110,8 @@ class NotificationUtil(private val context: Context) {
         }
         notificationView.setImageViewResource(R.id.ib_connection,
                 when (connectionState) {
-                    BluetoothLeService.STATE_CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
-                    BluetoothLeService.STATE_CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
+                    ConnectionState.CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
+                    ConnectionState.CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
                     else -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
@@ -134,7 +131,7 @@ class NotificationUtil(private val context: Context) {
                 .priority = NotificationCompat.PRIORITY_LOW
 
         builder.setContentTitle(
-                if (connectionState == BluetoothLeService.STATE_CONNECTED && distance + temperature + batteryLevel + speed > 0)
+                if (connectionState == ConnectionState.CONNECTED && distance + temperature + batteryLevel + speed > 0)
                     title_ride
                 else
                     title)
@@ -157,6 +154,16 @@ class NotificationUtil(private val context: Context) {
         notification = build()
         with(NotificationManagerCompat.from(context)) {
             notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
+        }
+    }
+
+    fun close() {
+        kostilTimer?.cancel()
+        kostilTimer = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            with(NotificationManagerCompat.from(context)) {
+                cancel(Constants.MAIN_NOTIFICATION_ID)
+            }
         }
     }
 

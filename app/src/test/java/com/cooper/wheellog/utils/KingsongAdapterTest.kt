@@ -22,7 +22,7 @@ class KingsongAdapterTest {
     @Before
     fun setUp() {
         data = spyk(WheelData())
-        every { data.bluetoothLeService.applicationContext } returns mockkClass(Context::class, relaxed = true)
+        every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.KINGSONG
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)

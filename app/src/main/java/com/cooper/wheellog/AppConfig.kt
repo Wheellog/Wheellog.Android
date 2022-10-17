@@ -160,6 +160,10 @@ class AppConfig(var context: Context) {
     var privatePolicyAccepted: Boolean
         get() = getValue(R.string.private_policy_accepted, false)
         set(value) = setValue(R.string.private_policy_accepted, value)
+
+    var yandexMetricaAccepted: Boolean
+        get() = getValue(R.string.yandex_metriсa_accepted, false)
+        set(value) = setValue(R.string.yandex_metriсa_accepted, value)
     //endregion
 
     //region logs

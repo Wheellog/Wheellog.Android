@@ -22,6 +22,7 @@ import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
 import com.cooper.wheellog.utils.ParserLogToWheelData;
 import com.cooper.wheellog.utils.PermissionsUtil;
+import com.welie.blessed.ConnectionState;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -57,8 +58,8 @@ public class LoggingService extends Service
             switch (action) {
                 case Constants.ACTION_BLUETOOTH_CONNECTION_STATE:
                     if (mLocationManager != null && logLocationData) {
-                        int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, BluetoothLeService.STATE_DISCONNECTED);
-                        if (connectionState == BluetoothLeService.STATE_CONNECTED) {
+                        int connectionState = intent.getIntExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, ConnectionState.DISCONNECTING.value);
+                        if (connectionState == ConnectionState.CONNECTED.value) {
                             mLocationManager.requestLocationUpdates(mLocationProvider, 250, 0, locationListener);
                         } else {
                             mLocationManager.removeUpdates(locationListener);

@@ -31,33 +31,33 @@ public class Constants {
 
     public static final String NOTIFICATION_CHANNEL_ID_NOTIFICATION = "com.cooper.wheellog.Channel_Notification";
 
-    public static final String KINGSONG_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
-    public static final String KINGSONG_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
-    public static final String KINGSONG_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    public static final UUID KINGSONG_DESCRIPTER_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+    public static final UUID KINGSONG_READ_CHARACTER_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
+    public static final UUID KINGSONG_SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
 
-    public static final String GOTWAY_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
-    public static final String GOTWAY_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    public static final UUID GOTWAY_READ_CHARACTER_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
+    public static final UUID GOTWAY_SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
 
-    public static final String INMOTION_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
-    public static final String INMOTION_READ_CHARACTER_UUID = "0000ffe4-0000-1000-8000-00805f9b34fb";
-    public static final String INMOTION_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
-    public static final String INMOTION_WRITE_CHARACTER_UUID = "0000ffe9-0000-1000-8000-00805f9b34fb";
-    public static final String INMOTION_WRITE_SERVICE_UUID = "0000ffe5-0000-1000-8000-00805f9b34fb";
+    public static final UUID INMOTION_DESCRIPTER_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+    public static final UUID INMOTION_READ_CHARACTER_UUID = UUID.fromString("0000ffe4-0000-1000-8000-00805f9b34fb");
+    public static final UUID INMOTION_SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
+    public static final UUID INMOTION_WRITE_CHARACTER_UUID = UUID.fromString("0000ffe9-0000-1000-8000-00805f9b34fb");
+    public static final UUID INMOTION_WRITE_SERVICE_UUID = UUID.fromString("0000ffe5-0000-1000-8000-00805f9b34fb");
 
-    public static final String NINEBOT_Z_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String NINEBOT_Z_WRITE_CHARACTER_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String NINEBOT_Z_READ_CHARACTER_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String NINEBOT_Z_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
+    public static final UUID NINEBOT_Z_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+    public static final UUID NINEBOT_Z_WRITE_CHARACTER_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+    public static final UUID NINEBOT_Z_READ_CHARACTER_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
+    public static final UUID NINEBOT_Z_DESCRIPTER_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    public static final String INMOTION_V2_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String INMOTION_V2_WRITE_CHARACTER_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String INMOTION_V2_READ_CHARACTER_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-    public static final String INMOTION_V2_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
+    public static final UUID INMOTION_V2_SERVICE_UUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+    public static final UUID INMOTION_V2_WRITE_CHARACTER_UUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+    public static final UUID INMOTION_V2_READ_CHARACTER_UUID = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
+    public static final UUID INMOTION_V2_DESCRIPTER_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    public static final String NINEBOT_SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
-    public static final String NINEBOT_WRITE_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
-    public static final String NINEBOT_READ_CHARACTER_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
-    public static final String NINEBOT_DESCRIPTER_UUID = "00002902-0000-1000-8000-00805f9b34fb";
+    public static final UUID NINEBOT_SERVICE_UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb");
+    public static final UUID NINEBOT_WRITE_CHARACTER_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
+    public static final UUID NINEBOT_READ_CHARACTER_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
+    public static final UUID NINEBOT_DESCRIPTER_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
 
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
@@ -75,9 +75,9 @@ public class Constants {
     public static final String INTENT_EXTRA_IS_RUNNING = "is_running";
     public static final String INTENT_EXTRA_GRAPH_UPDATE_AVILABLE = "graph_update_available";
     public static final String INTENT_EXTRA_CONNECTION_STATE = "connection_state";
+    public static final String INTENT_EXTRA_WHEEL_SEARCH = "wheel_search";
     public static final String INTENT_EXTRA_ALARM_TYPE = "alarm_type";
     public static final String INTENT_EXTRA_ALARM_VALUE = "alarm_value";
-    public static final String INTENT_EXTRA_WHEEL_SETTINGS = "wheel_settings";
     public static final String INTENT_EXTRA_NEWS = "wheel_news";
 
     public static final double MAX_CELL_VOLTAGE = 4.2;

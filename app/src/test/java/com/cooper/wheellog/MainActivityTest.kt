@@ -42,13 +42,13 @@ class MainActivityTest {
     fun `click on wheel menu`() {
         // Arrange.
         val shadowActivity = Shadows.shadowOf(activity)
-        WheelData.getInstance().bluetoothLeService = mockkClass(BluetoothLeService::class, relaxed = true)
+        WheelData.getInstance().bluetoothService = mockkClass(BluetoothService::class, relaxed = true)
 
         // Act.
         shadowActivity.clickMenuItem(R.id.miWheel)
 
         // Assert.
-        verify (exactly = 1) { WheelData.getInstance().bluetoothLeService.toggleConnectToWheel() }
+        verify (exactly = 1) { WheelData.getInstance().bluetoothService.toggleConnectToWheel() }
     }
 
     @Test
