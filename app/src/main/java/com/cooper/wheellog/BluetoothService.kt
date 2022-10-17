@@ -141,9 +141,17 @@ class BluetoothService: Service() {
             override fun onServicesDiscovered(peripheral: BluetoothPeripheral) {
                 super.onServicesDiscovered(peripheral)
                 Timber.i("onServicesDiscovered called")
-                var recognisedWheel = WheelData.getInstance().detectWheel(wheelAddress, R.raw.bluetooth_services)
+                var recognisedWheel = WheelData.getInstance().detectWheel(
+                        wheelAddress,
+                        applicationContext,
+                        R.raw.bluetooth_services
+                    )
                 if (!recognisedWheel) {
-                    recognisedWheel = WheelData.getInstance().detectWheel(wheelAddress, R.raw.bluetooth_proxy_services)
+                    recognisedWheel = WheelData.getInstance().detectWheel(
+                        wheelAddress,
+                        applicationContext,
+                        R.raw.bluetooth_proxy_services
+                    )
                 }
                 WheelData.getInstance().isConnected = recognisedWheel
                 if (recognisedWheel) {
