@@ -36,6 +36,7 @@ import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
 import com.cooper.wheellog.utils.ThemeIconEnum
+import com.yandex.metrica.YandexMetrica
 import timber.log.Timber
 
 class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -375,6 +376,10 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 }
             }
             R.string.miband_fixrs_enable -> WheelLog.Notifications.updateKostilTimer()
+            R.string.yandex_metriсa_accepted -> YandexMetrica.setStatisticsSending(
+                requireContext().applicationContext,
+                WheelLog.AppConfig.yandexMetricaAccepted
+            )
         }
         correctState(key)
     }

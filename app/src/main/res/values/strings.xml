@@ -128,7 +128,8 @@
     <string name="beep_by_wheel" translatable="false">beep_by_wheel</string>
     <string name="custom_beep" translatable="false">custom_beep</string>
     <string name="beep_file" translatable="false">beep_file</string>
-    <string name="private_policy_accepted" translatable="false">private_policy_accepted</string>
+    <string name="private_policy_accepted" translatable="false">private_policy_accepted_v2</string>
+    <string name="yandex_metriсa_accepted" translatable="false">yandex_metriсa_accepted</string>
     <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
@@ -682,4 +683,6 @@
     <string name="setup_pwm_setup_max_speed_and_voltage">1. Manual setup max speed and voltage:</string>
     <string name="setup_pwm_auto">2. Auto. You need to spin wheel on air.</string>
     <string name="setup_pwm_select_from_template">3. Select from template:</string>
+    <string name="send_yandex_metriсa_title">Send usage statistics</string>
+    <string name="send_yandex_metriсa">This application uses the AppMetrica analytics service provided by Yandex. Geolocation is not sent. The information collected in this way will be used to resolve errors and cannot identify you.</string>
 </resources>
