@@ -1,6 +1,6 @@
 package com.cooper.wheellog
 
-import android.content.ActivityNotFoundException
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -20,6 +20,7 @@ import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import com.cooper.wheellog.utils.Constants
+import com.yandex.metrica.YandexMetrica
 
 object DialogHelper {
     /**
@@ -47,6 +48,7 @@ object DialogHelper {
         }
     }
 
+    @SuppressLint("BatteryLife")
     fun checkBatteryOptimizationsAndShowAlert(context: Context) {
         if (!WheelLog.AppConfig.detectBatteryOptimization ||
             Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
@@ -54,28 +56,11 @@ object DialogHelper {
         ) {
             return
         }
-
-        AlertDialog.Builder(context)
-            .setTitle(R.string.detected_battery_optimization_title)
-            .setMessage(R.string.detected_battery_optimization)
-            .setCancelable(false)
-            .setPositiveButton(R.string.detected_battery_optimization_app_button) { _: DialogInterface?, _: Int ->
-                try {
-                    //Open the specific App Info page:
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    intent.data = Uri.parse("package:${context.packageName}")
-                    context.startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    //Open the generic Apps page:
-                    val intent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
-                    context.startActivity(intent)
-                }
-            }
-            .setNegativeButton(R.string.detected_battery_optimization_settings_button) { _: DialogInterface?, _: Int ->
-                context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-            }
-            .setNeutralButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
-            .show()
+        val intent = Intent().apply {
+            action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            data = Uri.parse("package:" + context.packageName)
+        }
+        context.startActivity(intent)
     }
 
     fun checkPWMIsSetAndShowAlert(context: Context) {
@@ -272,6 +257,11 @@ object DialogHelper {
         }
         binding.okButton.setOnClickListener {
             WheelLog.AppConfig.privatePolicyAccepted = true
+            WheelLog.AppConfig.yandexMetricaAccepted = binding.agreeWithMetrica.isChecked
+            YandexMetrica.setStatisticsSending(
+                mainActivity.applicationContext,
+                binding.agreeWithMetrica.isChecked
+            )
             dialog.dismiss()
         }
         binding.btnCancel.setOnClickListener {

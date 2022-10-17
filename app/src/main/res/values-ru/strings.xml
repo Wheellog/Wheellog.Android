@@ -440,4 +440,6 @@
     <string name="setup_pwm_setup_max_speed_and_voltage">1. Вручную установить максимальную скорость и вольтаж:</string>
     <string name="setup_pwm_auto">2. Авто. После выбора нужно раскрутить колесо в воздухе.</string>
     <string name="setup_pwm_select_from_template">3. Выбрать из шаблона:</string>
+    <string name="send_yandex_metriсa_title">Отправлять статистику использования</string>
+    <string name="send_yandex_metriсa">Это приложение использует сервис аналитики AppMetrica, предоставляемый компанией Яндекс. Геолокация не отправляется. Информация будет использоваться для решения ошибок и не может идентифицировать вас.</string>
 </resources>
