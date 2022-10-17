@@ -265,11 +265,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.connection_sound -> switchConnectionSoundIsVisible()
             R.string.alarms_enabled -> {
                 generalSettings.switchAlarmsIsVisible(this)
-                if (WheelLog.AppConfig.alarmsEnabled) {
-                    Alarms.start()
-                } else {
-                    Alarms.stop()
-                }
             }
             R.string.altered_alarms -> generalSettings.switchAlarmsIsVisible(this)
             R.string.auto_upload_ec -> electroClubDialog()

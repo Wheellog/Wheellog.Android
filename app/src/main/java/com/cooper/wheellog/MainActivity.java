@@ -236,11 +236,6 @@ public class MainActivity extends AppCompatActivity {
                                 toggleWatch();
                             }
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
-                            if (WheelLog.AppConfig.getAlarmsEnabled() && !Alarms.INSTANCE.isStarted()) {
-                                Alarms.INSTANCE.start();
-                            } else {
-                                Alarms.INSTANCE.stop();
-                            }
                             break;
                          case DISCONNECTED:
                             if (isWheelSearch) {
@@ -262,9 +257,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 WheelLog.Notifications.setNotificationMessageId(R.string.disconnected);
                             }
-                            if (Alarms.INSTANCE.isStarted()) {
-                                Alarms.INSTANCE.stop();
-                            }
                             break;
                     }
                     WheelLog.Notifications.update();
@@ -285,6 +277,11 @@ public class MainActivity extends AppCompatActivity {
                             WheelLog.AppConfig.getAutoLog() &&
                             WheelData.getInstance().getSpeedDouble() > 3.5) {
                         toggleLoggingService();
+                    }
+                    if (WheelLog.AppConfig.getAlarmsEnabled()) {
+                        Alarms.INSTANCE.checkAlarm(
+                                WheelData.getInstance().getCalculatedPwm() / 100,
+                                getApplicationContext());
                     }
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:

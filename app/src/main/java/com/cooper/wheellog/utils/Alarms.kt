@@ -9,9 +9,10 @@ import android.os.VibratorManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
-import com.cooper.wheellog.utils.AudioUtil.playAlarmAsync
+import com.cooper.wheellog.utils.AudioUtil.playAlarm
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
 import com.cooper.wheellog.utils.SomeUtil.Companion.playSound
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.util.*
 import kotlin.math.roundToInt
@@ -22,13 +23,6 @@ object Alarms {
     private var currentAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
     private var temperatureAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 570 }
     private var lastPlayWarningSpeedTime = System.currentTimeMillis()
-    private var alarmTimer: Timer? = null
-    private const val checkPeriod: Long = 200
-
-    private lateinit var timerTask: TimerTask
-
-    var isStarted: Boolean = false
-        private set
 
     var alarm: Int
         get() {
@@ -46,37 +40,9 @@ object Alarms {
         }
         private set(_) {}
 
-    private fun newTimerTask(): TimerTask {
-        return object : TimerTask() {
-            override fun run() {
-                val wd = WheelData.getInstance() ?: return
-                val mContext: Context = wd.bluetoothService?.applicationContext ?: return
-                checkAlarm(wd.calculatedPwm, mContext)
-            }
-        }
-    }
+    private var alarmJob: Job? = null
 
-    @Synchronized
-    fun start() {
-        stop()
-        timerTask = newTimerTask()
-        alarmTimer = Timer().apply {
-            scheduleAtFixedRate(timerTask, 0, checkPeriod)
-        }
-        isStarted = true
-    }
-
-    @Synchronized
-    fun stop() {
-        if (isStarted) {
-            isStarted = false
-            timerTask.cancel()
-            alarmTimer?.cancel()
-            alarmTimer = null
-        }
-    }
-
-    private fun checkAlarm(pwm: Double, mContext: Context) {
+    fun checkAlarm(pwm: Double, mContext: Context) {
         if (WheelLog.AppConfig.alteredAlarms) {
             alertedAlarms(pwm, mContext)
         } else {
@@ -188,14 +154,12 @@ object Alarms {
             vibrate(mContext, pattern)
         }
         if (!WheelLog.AppConfig.disablePhoneBeep) {
-            when (alarmType) {
-                ALARM_TYPE.CURRENT, ALARM_TYPE.TEMPERATURE -> {
-                    playAlarmAsync(alarmType)
-                }
-                else -> {
-                    playAlarmAsync(ALARM_TYPE.PWM)
-                    speedAlarmExecuting.value = true
-                    Timber.i("Scheduled alarm")
+            CoroutineScope(Job()).launch {
+                if (alarmJob == null || alarmJob!!.isCompleted) {
+                    alarmJob = launch {
+                        playAlarm(alarmType)
+                        Timber.i("Scheduled alarm. $alarmType")
+                    }
                 }
             }
         }

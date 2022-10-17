@@ -51,40 +51,44 @@ object AudioUtil {
 
     var toneDuration = 0
 
-    fun playAlarmAsync(alarmType: ALARM_TYPE) = runBlocking {
-        playAlarm(alarmType)
-    }
-
-    private suspend fun playAlarm(alarmType: ALARM_TYPE) {
+    suspend fun playAlarm(alarmType: ALARM_TYPE) {
         if (WheelLog.AppConfig.useWheelBeepForAlarm && WheelData.getInstance() != null) {
             SomeUtil.playBeep(onlyByWheel = true, onlyDefault = false)
             return
         }
-
-        withContext(Dispatchers.Default) {
-            try {
+        try {
+            withContext(Dispatchers.IO) {
                 audioTrack.apply {
                     if (playState == AudioTrack.PLAYSTATE_PLAYING) {
                         stop()
+                        reloadStaticData()
                     }
 
                     when (alarmType) {
-                        ALARM_TYPE.CURRENT ->
+                        ALARM_TYPE.CURRENT -> {
                             write(buffer, sampleRate * 3 / 10, 2 * sampleRate / 20)
+                            delay(200)
+                        }
                         // 100 ms for current
-                        ALARM_TYPE.SPEED1, ALARM_TYPE.SPEED2, ALARM_TYPE.SPEED3 ->
+                        ALARM_TYPE.SPEED1,
+                        ALARM_TYPE.SPEED2,
+                        ALARM_TYPE.SPEED3,
+                        ALARM_TYPE.PWM -> {
                             write(buffer, sampleRate / 20, toneDuration * sampleRate / 1000)
+                            delay(toneDuration.toLong())
+                        }
                         // 50, 100, 150 ms depends on number of speed alarm
-                        else ->
+                        else -> {
                             write(buffer, sampleRate * 3 / 10, 6 * sampleRate / 10)
+                            delay(300)
+                        }
                         // 600 ms temperature
                     }
-
                     play()
                 }
-            } catch (ex: Exception) {
-                Timber.i(ex)
             }
+        } catch (ex: Exception) {
+            Timber.i(ex)
         }
     }
 }
