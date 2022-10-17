@@ -1423,8 +1423,7 @@ public class WheelData {
         mWheelIsReady = false;
     }
 
-    boolean detectWheel(String deviceAddress, int servicesResId) {
-        Context mContext = getBluetoothService().getApplicationContext();
+    boolean detectWheel(String deviceAddress, Context mContext, int servicesResId) {
         WheelLog.AppConfig.setLastMac(deviceAddress);
         String advData = WheelLog.AppConfig.getAdvDataForWheel();
         String adapterName = "";
