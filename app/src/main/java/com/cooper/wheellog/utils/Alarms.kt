@@ -25,13 +25,7 @@ object Alarms {
     private var alarmTimer: Timer? = null
     private const val checkPeriod: Long = 200
 
-    private var timerTask: TimerTask = object : TimerTask() {
-        override fun run() {
-            val wd = WheelData.getInstance() ?: return
-            val mContext: Context = wd.bluetoothService?.applicationContext ?: return
-            checkAlarm(wd.calculatedPwm, mContext)
-        }
-    }
+    private lateinit var timerTask: TimerTask
 
     var isStarted: Boolean = false
         private set
@@ -52,18 +46,34 @@ object Alarms {
         }
         private set(_) {}
 
+    private fun newTimerTask(): TimerTask {
+        return object : TimerTask() {
+            override fun run() {
+                val wd = WheelData.getInstance() ?: return
+                val mContext: Context = wd.bluetoothService?.applicationContext ?: return
+                checkAlarm(wd.calculatedPwm, mContext)
+            }
+        }
+    }
+
+    @Synchronized
     fun start() {
         stop()
+        timerTask = newTimerTask()
         alarmTimer = Timer().apply {
             scheduleAtFixedRate(timerTask, 0, checkPeriod)
         }
         isStarted = true
     }
 
+    @Synchronized
     fun stop() {
-        isStarted = false
-        alarmTimer?.cancel()
-        alarmTimer = null
+        if (isStarted) {
+            isStarted = false
+            timerTask.cancel()
+            alarmTimer?.cancel()
+            alarmTimer = null
+        }
     }
 
     private fun checkAlarm(pwm: Double, mContext: Context) {
