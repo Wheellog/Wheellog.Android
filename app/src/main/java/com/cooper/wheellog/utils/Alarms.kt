@@ -19,12 +19,28 @@ import kotlin.math.roundToInt
 
 object Alarms {
 
-    private var speedAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 200 }
+    private var speedAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
     private var currentAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
     private var temperatureAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 570 }
     private var lastPlayWarningSpeedTime = System.currentTimeMillis()
+    private var alarmTimer: Timer? = null
+    private const val checkPeriod: Long = 200
+    private lateinit var timerTask: TimerTask
+    private var isStarted: Boolean = false
 
-    var alarm: Int
+    private fun newTimerTask(): TimerTask {
+        return object : TimerTask() {
+            override fun run() {
+                val wd = WheelData.getInstance() ?: return
+                val mContext: Context = wd.bluetoothService?.applicationContext ?: return
+                if (!reCheckAlarm(wd.calculatedPwm, mContext)) {
+                    stop()
+                }
+            }
+        }
+    }
+
+    val alarm: Int
         get() {
             var alarm = 0
             if (speedAlarmExecuting.value) {
@@ -38,26 +54,55 @@ object Alarms {
             }
             return alarm
         }
-        private set(_) {}
 
-    private var alarmJob: Job? = null
+    @Synchronized
+    fun start() {
+        stop()
+        isStarted = true
+        timerTask = newTimerTask()
+        alarmTimer = Timer().apply {
+            scheduleAtFixedRate(timerTask, 0, checkPeriod)
+        }
+    }
 
-    fun checkAlarm(pwm: Double, mContext: Context) {
-        if (WheelLog.AppConfig.alteredAlarms) {
+    @Synchronized
+    fun stop() {
+        if (isStarted) {
+            isStarted = false
+            timerTask.cancel()
+            alarmTimer?.cancel()
+            alarmTimer = null
+        }
+    }
+
+    fun checkAlarm(pwm: Double, mContext: Context): Boolean {
+        if (isStarted) {
+            return true
+        }
+        return reCheckAlarm(pwm, mContext)
+    }
+
+    private fun reCheckAlarm(pwm: Double, mContext: Context): Boolean {
+        val executed = if (WheelLog.AppConfig.alteredAlarms) {
             alertedAlarms(pwm, mContext)
         } else {
             oldAlarms(mContext)
         }
-        currentAlarms(mContext)
-        temperatureAlarms(mContext)
+                || currentAlarms(mContext)
+                || temperatureAlarms(mContext)
+        if (executed && !isStarted) {
+            start()
+        }
+        return executed
     }
 
-    private fun alertedAlarms(pwm: Double, mContext: Context) {
+    private fun alertedAlarms(pwm: Double, mContext: Context): Boolean {
         if (pwm > WheelLog.AppConfig.alarmFactor1 / 100.0) {
             AudioUtil.toneDuration =
                 (200 * (pwm - WheelLog.AppConfig.alarmFactor1 / 100.0) / (WheelLog.AppConfig.alarmFactor2 / 100.0 - WheelLog.AppConfig.alarmFactor1 / 100.0)).roundToInt()
             AudioUtil.toneDuration = MathsUtil.clamp(AudioUtil.toneDuration, 20, 200)
             raiseAlarm(ALARM_TYPE.PWM, pwm, mContext)
+            return true
         } else {
             // check if speed alarm executing and stop it
             speedAlarmExecuting.value = false
@@ -75,12 +120,14 @@ object Alarms {
                 }
             }
         }
+        return false
     }
 
-    private fun oldAlarms(mContext: Context) {
+    private fun oldAlarms(mContext: Context): Boolean {
         if (checkOldAlarmSpeed(WheelLog.AppConfig.alarm1Speed, WheelLog.AppConfig.alarm1Battery)) {
             AudioUtil.toneDuration = 50
             raiseAlarm(ALARM_TYPE.SPEED1, WheelData.getInstance().speedDouble, mContext)
+            return true
         } else if (checkOldAlarmSpeed(
                 WheelLog.AppConfig.alarm2Speed,
                 WheelLog.AppConfig.alarm2Battery
@@ -88,6 +135,7 @@ object Alarms {
         ) {
             AudioUtil.toneDuration = 100
             raiseAlarm(ALARM_TYPE.SPEED2, WheelData.getInstance().speedDouble, mContext)
+            return true
         } else if (checkOldAlarmSpeed(
                 WheelLog.AppConfig.alarm3Speed,
                 WheelLog.AppConfig.alarm3Battery
@@ -95,10 +143,12 @@ object Alarms {
         ) {
             AudioUtil.toneDuration = 180
             raiseAlarm(ALARM_TYPE.SPEED3, WheelData.getInstance().speedDouble, mContext)
+            return true
         } else {
             // check if speed alarm executing and stop it
             speedAlarmExecuting.value = false
         }
+        return false
     }
 
     private fun checkOldAlarmSpeed(alarmSpeed: Int, alarmBattery: Int): Boolean {
@@ -108,9 +158,9 @@ object Alarms {
             && WheelData.getInstance().speedDouble >= alarmSpeed
     }
 
-    private fun temperatureAlarms(mContext: Context) {
+    private fun temperatureAlarms(mContext: Context): Boolean {
         if (temperatureAlarmExecuting.value) {
-            return
+            return true
         }
         val alarmTemperature = WheelLog.AppConfig.alarmTemperature
         if (alarmTemperature > 0 && WheelData.getInstance().temperature >= alarmTemperature) {
@@ -121,11 +171,12 @@ object Alarms {
             )
             temperatureAlarmExecuting.value = true
         }
+        return temperatureAlarmExecuting.value
     }
 
-    private fun currentAlarms(mContext: Context) {
+    private fun currentAlarms(mContext: Context): Boolean {
         if (currentAlarmExecuting.value) {
-            return
+            return true
         }
         val alarmCurrent = WheelLog.AppConfig.alarmCurrent * 100
         if (alarmCurrent > 0 && WheelData.getInstance().current >= alarmCurrent) {
@@ -136,6 +187,7 @@ object Alarms {
             )
             currentAlarmExecuting.value = true
         }
+        return currentAlarmExecuting.value
     }
 
     private fun raiseAlarm(alarmType: ALARM_TYPE, value: Double, mContext: Context) {
@@ -155,12 +207,8 @@ object Alarms {
         }
         if (!WheelLog.AppConfig.disablePhoneBeep) {
             CoroutineScope(Job()).launch {
-                if (alarmJob == null || alarmJob!!.isCompleted) {
-                    alarmJob = launch {
-                        playAlarm(alarmType)
-                        Timber.i("Scheduled alarm. $alarmType")
-                    }
-                }
+                Timber.i("Scheduled alarm. $alarmType")
+                playAlarm(alarmType)
             }
         }
         mContext.sendBroadcast(intent)

@@ -63,11 +63,9 @@ object AudioUtil {
                         stop()
                         reloadStaticData()
                     }
-
                     when (alarmType) {
                         ALARM_TYPE.CURRENT -> {
                             write(buffer, sampleRate * 3 / 10, 2 * sampleRate / 20)
-                            delay(200)
                         }
                         // 100 ms for current
                         ALARM_TYPE.SPEED1,
@@ -75,12 +73,10 @@ object AudioUtil {
                         ALARM_TYPE.SPEED3,
                         ALARM_TYPE.PWM -> {
                             write(buffer, sampleRate / 20, toneDuration * sampleRate / 1000)
-                            delay(toneDuration.toLong())
                         }
                         // 50, 100, 150 ms depends on number of speed alarm
                         else -> {
                             write(buffer, sampleRate * 3 / 10, 6 * sampleRate / 10)
-                            delay(300)
                         }
                         // 600 ms temperature
                     }
