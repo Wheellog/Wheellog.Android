@@ -68,10 +68,10 @@ object Alarms {
     @Synchronized
     fun stop() {
         if (isStarted) {
-            isStarted = false
             timerTask.cancel()
             alarmTimer?.cancel()
             alarmTimer = null
+            isStarted = false
         }
     }
 

@@ -1,8 +1,10 @@
 package com.cooper.wheellog.utils
 
+import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
+import android.os.Build
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
@@ -21,12 +23,35 @@ object AudioUtil {
     private val audioTrack by lazy {
         prepareTone()
 
-        AudioTrack(
-            AudioManager.STREAM_MUSIC,
-            sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.ENCODING_PCM_16BIT, buffer.size,
-            AudioTrack.MODE_STATIC
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AudioTrack.Builder()
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                .setAudioFormat(
+                    AudioFormat.Builder()
+                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(sampleRate)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                        .build()
+                )
+                .setTransferMode(AudioTrack.MODE_STATIC)
+                .setBufferSizeInBytes(buffer.size)
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            AudioTrack(
+                AudioManager.STREAM_MUSIC,
+                sampleRate,
+                AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                buffer.size,
+                AudioTrack.MODE_STATIC
+            )
+        }
     }
 
     private fun prepareTone() {
@@ -61,7 +86,6 @@ object AudioUtil {
                 audioTrack.apply {
                     if (playState == AudioTrack.PLAYSTATE_PLAYING) {
                         stop()
-                        reloadStaticData()
                     }
                     when (alarmType) {
                         ALARM_TYPE.CURRENT -> {
