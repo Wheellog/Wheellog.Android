@@ -6,6 +6,8 @@ import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
 import com.cooper.wheellog.utils.Constants
+import androidx.core.math.MathUtils
+import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
 import com.garmin.android.connectiq.ConnectIQ.*
 import com.garmin.android.connectiq.IQApp
@@ -246,6 +248,46 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
         playBeep(applicationContext, WheelLog.AppConfig.hornMode == 1, false)
     }
 
+    private val speedStr
+        get() = run {
+            val speed = if (!WheelLog.AppConfig.useMph) {
+                WheelData.getInstance().speedDouble
+            } else {
+                MathsUtil.kmToMiles(WheelData.getInstance().speedDouble)
+            }
+            if (speed.toString().length > 3) {
+                ((speed * 10).toInt().toFloat() / 10).toString()
+            } else speed.toString()
+        }
+
+    private val topSpeed
+        get() = if (!WheelLog.AppConfig.useMph) {
+            WheelData.getInstance().topSpeed
+        } else {
+            MathsUtil.kmToMiles(WheelData.getInstance().topSpeed.toDouble()).toInt()
+        }
+
+    private val temperature
+        get() = if (!WheelLog.AppConfig.useMph) {
+            WheelData.getInstance().temperature
+        } else {
+            MathsUtil.celsiusToFahrenheit(WheelData.getInstance().temperature.toDouble()).toInt()
+        }
+
+    private val avgSpeed
+        get() = if (!WheelLog.AppConfig.useMph) {
+            WheelData.getInstance().averageSpeedDouble.toInt()
+        } else {
+            MathsUtil.kmToMiles(WheelData.getInstance().averageSpeedDouble).toInt()
+        }
+
+    private val avgRidingSpeed
+        get() = if (!WheelLog.AppConfig.useMph) {
+            WheelData.getInstance().averageRidingSpeedDouble.toInt()
+        } else {
+            MathsUtil.kmToMiles(WheelData.getInstance().averageRidingSpeedDouble).toInt()
+        }
+
     override fun serve(session: IHTTPSession): Response {
         val wd = WheelData.getInstance()
         val ac = WheelLog.AppConfig
@@ -255,14 +297,12 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                 when (session.uri) {
                     "/data/main" -> {
                         val message = JSONObject()
-                        message.put("speed", if (wd.speedDouble.toString().length > 3) {
-                            ((wd.speedDouble * 10).toInt().toFloat() / 10).toString()
-                        } else wd.speedDouble.toString())
-                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
+                        message.put("speed", speedStr)
+                        message.put("topSpeed", ((topSpeed / 10).toFloat() / 10).toString())
                         message.put("speedLimit", ac.maxSpeed)
                         message.put("useMph", ac.useMph)
                         message.put("battery", wd.batteryLevel)
-                        message.put("temp", wd.temperature)
+                        message.put("temp", temperature)
                         message.put("pwm", String.format("%02.0f", wd.calculatedPwm))
                         message.put("maxPwm", String.format("%02.0f", wd.maxPwm))
                         message.put("connectedToWheel", wd.isConnected)
@@ -273,9 +313,9 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
                     "/data/details" -> {
                         val message = JSONObject()
                         message.put("useMph", ac.useMph)
-                        message.put("avgRidingSpeed", wd.averageSpeedDouble.toInt())
-                        message.put("avgSpeed", wd.averageRidingSpeedDouble.toInt())
-                        message.put("topSpeed", ((wd.topSpeed / 10).toFloat() / 10).toString())
+                        message.put("avgRidingSpeed", avgRidingSpeed)
+                        message.put("avgSpeed", avgSpeed)
+                        message.put("topSpeed", ((topSpeed / 10).toFloat() / 10).toString())
                         message.put("voltage", wd.voltageDouble.toString())
                         message.put("maxVoltage", wd.maxVoltageForWheel.toString())
                         message.put("battery", wd.batteryLevel)
