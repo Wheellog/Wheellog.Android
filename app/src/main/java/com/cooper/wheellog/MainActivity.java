@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                         showSnackBar(getResources().getString(R.string.alarm_text_temperature) + String.format(": %.1f", alarmValue), 3000);
                     }
                     if (alarmType == 6) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue*100), 3000);
                     }
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:

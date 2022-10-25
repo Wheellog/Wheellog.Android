@@ -86,6 +86,8 @@ object AudioUtil {
                 audioTrack.apply {
                     if (playState == AudioTrack.PLAYSTATE_PLAYING) {
                         stop()
+                        val emptyBuffer = ShortArray(numSamples)
+                        write(emptyBuffer, 0, buffer.size)
                     }
                     when (alarmType) {
                         ALARM_TYPE.CURRENT -> {
