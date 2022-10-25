@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.WheelManager
 import com.cooper.wheellog.utils.SomeUtil
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
@@ -54,9 +55,9 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
                         context.getString(R.string.kmh))
             putBoolean(Constants.wearOsCurrentOnDialData, WheelLog.AppConfig.currentOnDial)
             putInt(Constants.wearOsAlarmData, wd.alarm)
-            putLong(Constants.wearOsTimestampData, wd.lastLifeData)
+            putLong(Constants.wearOsTimestampData, WheelManager.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
-            putString(Constants.wearOsTimeStringData, sdf.format(Date(wd.lastLifeData)))
+            putString(Constants.wearOsTimeStringData, sdf.format(Date(WheelManager.lastLifeData)))
         }
         val request = dataRequest.asPutDataRequest()
         request.setUrgent()

@@ -26,7 +26,7 @@ class BluetoothService: Service() {
     private var timerTicks = 0
 
     private val mBinder: IBinder = LocalBinder()
-    private var fileUtilRawData: FileUtil? = null
+    var fileUtilRawData: FileUtil? = null
     private var mgr: PowerManager? = null
     private var wl: WakeLock? = null
 
@@ -37,8 +37,6 @@ class BluetoothService: Service() {
             }
         }
 
-    private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-    private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private val wakeLogTag = "WheelLog:WakeLockTag"
     private val central: BluetoothCentralManager by lazy {
         BluetoothCentralManager(
@@ -141,15 +139,15 @@ class BluetoothService: Service() {
             override fun onServicesDiscovered(peripheral: BluetoothPeripheral) {
                 super.onServicesDiscovered(peripheral)
                 Timber.i("onServicesDiscovered called")
-                var recognisedWheel = WheelData.getInstance().detectWheel(
+                var recognisedWheel = WheelManager.detectWheel(
                         wheelAddress,
-                        applicationContext,
+                    this@BluetoothService,
                         R.raw.bluetooth_services
                     )
                 if (!recognisedWheel) {
-                    recognisedWheel = WheelData.getInstance().detectWheel(
+                    recognisedWheel = WheelManager.detectWheel(
                         wheelAddress,
-                        applicationContext,
+                        this@BluetoothService,
                         R.raw.bluetooth_proxy_services
                     )
                 }
@@ -169,7 +167,7 @@ class BluetoothService: Service() {
             ) {
                 super.onCharacteristicWrite(peripheral, value, characteristic, status)
                 if (status != GattStatus.SUCCESS) {
-                    readData(characteristic, value)
+                    WheelManager.readData(characteristic, this@BluetoothService, value)
                 }
             }
 
@@ -182,7 +180,7 @@ class BluetoothService: Service() {
                 super.onCharacteristicUpdate(peripheral, value, characteristic, status)
                 Timber.i("onCharacteristicChanged called %s", characteristic.uuid.toString())
                 if (status == GattStatus.SUCCESS) {
-                    readData(characteristic, value)
+                    WheelManager.readData(characteristic, this@BluetoothService, value)
                 }
             }
 
@@ -196,61 +194,6 @@ class BluetoothService: Service() {
                 Timber.i("onDescriptorWrite %d", status)
             }
         }
-
-    private fun readData(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-        // RAW data
-        if (WheelLog.AppConfig.enableRawData) {
-            if (fileUtilRawData == null) {
-                fileUtilRawData = FileUtil(applicationContext)
-            }
-            if (fileUtilRawData!!.isNull) {
-                val fileNameForRawData = "RAW_" + sdf.format(Date()) + ".csv"
-                fileUtilRawData!!.prepareFile(fileNameForRawData, WheelData.getInstance().mac)
-            }
-            fileUtilRawData!!.writeLine(
-                String.format(
-                    Locale.US, "%s,%s",
-                    sdf2.format(System.currentTimeMillis()),
-                    toHexStringRaw(value)
-                )
-            )
-        } else if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
-            fileUtilRawData!!.close()
-        }
-        val wd = WheelData.getInstance()
-        when (wd.wheelType) {
-            WHEEL_TYPE.KINGSONG -> if (characteristic.uuid == Constants.KINGSONG_READ_CHARACTER_UUID) {
-                wd.decodeResponse(value, applicationContext)
-                if (WheelData.getInstance().name.isEmpty()) {
-                    KingsongAdapter.getInstance().requestNameData()
-                } else if (WheelData.getInstance().serial.isEmpty()) {
-                    KingsongAdapter.getInstance().requestSerialData()
-                }
-            }
-            WHEEL_TYPE.GOTWAY, WHEEL_TYPE.GOTWAY_VIRTUAL, WHEEL_TYPE.VETERAN ->
-                wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.INMOTION -> if (characteristic.uuid == Constants.INMOTION_READ_CHARACTER_UUID)
-                wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.INMOTION_V2 -> if (characteristic.uuid == Constants.INMOTION_V2_READ_CHARACTER_UUID)
-                wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.NINEBOT_Z -> {
-                Timber.i("Ninebot Z reading")
-                if (characteristic.uuid == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
-                    wd.decodeResponse(value, applicationContext)
-                }
-            }
-            WHEEL_TYPE.NINEBOT -> {
-                Timber.i("Ninebot reading")
-                if (characteristic.uuid == Constants.NINEBOT_READ_CHARACTER_UUID
-                    || characteristic.uuid == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
-                    // in case of S2 or Mini
-                    Timber.i("Ninebot read cont")
-                    wd.decodeResponse(value, applicationContext)
-                }
-            }
-            else -> {}
-        }
-    }
 
     private fun broadcastConnectionUpdate(autoConnect: Boolean = false) {
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
@@ -273,14 +216,13 @@ class BluetoothService: Service() {
         if (reconnectTimer != null) {
             stopReconnectTimer()
         }
-        val wd = WheelData.getInstance()
         val magicPeriod = 15000
         reconnectTimer = Timer().apply {
             scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
                     if (connectionState == ConnectionState.CONNECTED
-                        && wd.lastLifeData > 0
-                        && (System.currentTimeMillis() - wd.lastLifeData) / 1000 > magicPeriod) {
+                        && WheelManager.lastLifeData > 0
+                        && (System.currentTimeMillis() - WheelManager.lastLifeData) / 1000 > magicPeriod) {
                         toggleReconnectToWheel()
                     }
                 }
