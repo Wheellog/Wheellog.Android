@@ -54,13 +54,17 @@ class SomeUtil {
         }
 
         @JvmStatic
-        fun playBeep(context: Context) {
-            playBeep(context, onlyByWheel = false, onlyDefault = false)
+        fun playBeep() {
+            playBeep(onlyByWheel = false, onlyDefault = false)
         }
 
         @Suppress("DEPRECATION")
         @JvmStatic
-        fun playBeep(context: Context, onlyByWheel: Boolean, onlyDefault: Boolean) {
+        fun playBeep(onlyByWheel: Boolean, onlyDefault: Boolean) {
+            if (WheelData.getInstance() == null) {
+                return
+            }
+
             if (WheelLog.AppConfig.beepByWheel || onlyByWheel) {
                 WheelData.getInstance().wheelBeep()
                 return
@@ -81,6 +85,7 @@ class SomeUtil {
 //        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 //        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 //        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+            val context = WheelData.getInstance().bluetoothService?.applicationContext ?: return
             val beepFile = WheelLog.AppConfig.beepFile
             // selected file
             if (!onlyDefault && WheelLog.AppConfig.useCustomBeep && beepFile !== Uri.EMPTY) {
@@ -92,7 +97,7 @@ class SomeUtil {
                     mp.setOnCompletionListener { obj: MediaPlayer -> obj.release() }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    playBeep(context, onlyByWheel = false, onlyDefault = true)
+                    playBeep(onlyByWheel = false, onlyDefault = true)
                 }
             } else {
                 // default beep

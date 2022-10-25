@@ -982,7 +982,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 if (WheelLog.AppConfig.useBeepOnSingleTap) {
-                    SomeUtil.playBeep(context)
+                    SomeUtil.playBeep()
                     return true
                 }
                 return super.onSingleTapConfirmed(e)

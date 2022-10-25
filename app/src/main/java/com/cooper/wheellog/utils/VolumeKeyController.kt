@@ -33,7 +33,7 @@ class VolumeKeyController(private val mContext: Context) {
                     // Up = 1, Down = -1, Release = 0
                     // Replace with your action, if you don't want to adjust system volume
                     if (direction == 0) {
-                        SomeUtil.playBeep(mContext)
+                        SomeUtil.playBeep()
                     }
                     //audio.adjustStreamVolume(streamType, direction, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE)
                     //setCurrentVolume(audio.getStreamVolume(streamType))

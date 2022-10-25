@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.cooper.wheellog.utils.Alarms;
 import com.cooper.wheellog.utils.Constants;
 import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.accessory.SA;
@@ -145,7 +146,7 @@ LocationListener locationListener = new LocationListener() {
                             WheelData.getInstance().getTemperature2(),
                             WheelData.getInstance().getAngle(),
                             WheelData.getInstance().getRoll(),
-                            WheelData.getInstance().getAlarm()
+                            Alarms.INSTANCE.getAlarm()
 //                        WheelData.getInstance().getModeStr(),
 //                        WheelData.getInstance().getAlert()
                     );
