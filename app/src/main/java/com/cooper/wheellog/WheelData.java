@@ -9,6 +9,7 @@ import android.media.AudioManager;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
+import com.yandex.metrica.YandexMetrica;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1163,6 +1164,10 @@ public class WheelData {
         Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
         String text = StringUtil.Companion.getRawTextResource(mContext, servicesResId);
+        if (mBluetoothService == null) {
+            Timber.wtf("[error] BluetoothService is null. The wheel could not be detected.");
+            return false;
+        }
         var wheelServices = mBluetoothService.getWheelServices();
         if (wheelServices == null) {
             return false;

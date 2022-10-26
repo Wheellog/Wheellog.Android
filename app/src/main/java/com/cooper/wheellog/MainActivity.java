@@ -237,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
                             break;
-                         case DISCONNECTED:
+                        case DISCONNECTING:
+                        case DISCONNECTED:
                             if (isWheelSearch) {
                                 if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
                                     WheelLog.Notifications.setNotificationMessageId(R.string.searching);
