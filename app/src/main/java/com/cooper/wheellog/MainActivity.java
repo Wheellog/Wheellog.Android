@@ -46,6 +46,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.*;
 import com.google.android.material.snackbar.Snackbar;
 import com.welie.blessed.ConnectionState;
+import com.yandex.metrica.YandexMetrica;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,11 +55,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import me.relex.circleindicator.CircleIndicator3;
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
-@RuntimePermissions
 public class MainActivity extends AppCompatActivity {
     public static AudioManager audioManager = null;
 
@@ -93,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
     protected static final int RESULT_REQUEST_PERMISSIONS_BT = 40;
+    protected static final int RESULT_REQUEST_PERMISSIONS_IO = 50;
 
     private static Boolean onDestroyProcess = false;
 
@@ -341,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             toggleLoggingService();
         } else {
-            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithPermissionCheck(this);
+            PermissionsUtil.INSTANCE.checkExternalFilePermission(this, RESULT_REQUEST_PERMISSIONS_IO);
         }
     }
 
@@ -520,9 +519,11 @@ public class MainActivity extends AppCompatActivity {
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
         } else if (!mBluetoothAdapter.isEnabled()) {
-            // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
-            // fire an intent to display a dialog asking the user to grant permission to enable it.
-            ActivityCompat.startActivityForResult(this, new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT, null);
+            if (PermissionsUtil.INSTANCE.checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+                // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
+                // fire an intent to display a dialog asking the user to grant permission to enable it.
+                ActivityCompat.startActivityForResult(this, new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT, null);
+            }
         } else {
             startBluetoothService();
         }
@@ -627,7 +628,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miSearch:
-                MainActivityPermissionsDispatcher.startScanActivityWithPermissionCheck(this);
+                startScanActivity();
                 return true;
             case R.id.miWheel:
                 toggleConnectToWheel();
@@ -749,12 +750,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingServiceLegacy() {
         toggleLoggingService();
     }
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
         if (LoggingService.isInstanceCreated()) {
@@ -830,7 +829,9 @@ public class MainActivity extends AppCompatActivity {
                 && getBluetoothService() == null) {
             Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothService.class);
             bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE);
-            Timber.i("bluetoothService is starting.");
+            YandexMetrica.reportEvent("BluetoothService is starting.");
+        } else if (PermissionsUtil.INSTANCE.isMaxBleReq()) {
+            showSnackBar(R.string.bluetooth_required);
         }
     }
     //endregion
@@ -843,18 +844,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @NeedsPermission({ Manifest.permission.ACCESS_FINE_LOCATION })
     void startScanActivity() {
-        ActivityCompat.startActivityForResult(this, new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST, null);
+        if (PermissionsUtil.INSTANCE.checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+            ActivityCompat.startActivityForResult(this, new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST, null);
+        } else if (PermissionsUtil.INSTANCE.isMaxBleReq()) {
+            showSnackBar(R.string.bluetooth_required);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // NOTE: delegate the permission handling to generated method
-        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
         if (requestCode == RESULT_REQUEST_PERMISSIONS_BT) {
             startBluetoothService();
+        } else if (requestCode == RESULT_REQUEST_PERMISSIONS_IO) {
+            toggleLoggingService();
         }
     }
 

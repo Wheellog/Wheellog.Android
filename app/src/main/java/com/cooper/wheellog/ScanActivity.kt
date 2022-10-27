@@ -135,17 +135,25 @@ class ScanActivity: AppCompatActivity() {
         if (central.isBluetoothEnabled) {
             if (!PermissionsUtil.checkBlePermissions(this)) {
                 if (PermissionsUtil.isMaxBleReq) {
-                    central.close()
-                    alertDialog.dismiss()
-                    finish()
+                    killMe()
                 }
                 return
             }
             scanLeDevice(true)
         } else {
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            ActivityCompat.startActivityForResult(this, enableBtIntent, 2, null)
+            if (PermissionsUtil.checkBlePermissions(this)) {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                ActivityCompat.startActivityForResult(this, enableBtIntent, 2, null)
+            } else {
+                killMe()
+            }
         }
+    }
+
+    private fun killMe() {
+        central.close()
+        alertDialog.dismiss()
+        finish()
     }
 
     override fun onRequestPermissionsResult(
