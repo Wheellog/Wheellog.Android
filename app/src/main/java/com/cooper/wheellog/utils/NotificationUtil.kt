@@ -174,7 +174,13 @@ class NotificationUtil(private val context: Context) {
             kostilTimer = Timer()
             kostilTimer?.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && WheelData.getInstance().speedDouble > 0) {
+                    val wd = WheelData.getInstance()
+                    if (wd == null) {
+                        kostilTimer?.cancel()
+                        kostilTimer = null
+                        return
+                    }
+                    if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && wd.speedDouble > 0) {
                         update()
                     }
                 }
