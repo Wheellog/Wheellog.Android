@@ -618,6 +618,9 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun switchSpecificSettingsIsVisible() {
+        if (WheelData.getInstance() == null) {
+            return
+        }
         val isVisible = WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown
         val specificPreferences = arrayOf(
                 getString(R.string.trip_settings),
