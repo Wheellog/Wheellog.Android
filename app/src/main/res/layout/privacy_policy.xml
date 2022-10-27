@@ -57,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
                 android:checked="true"
+                android:minHeight="48dp"
                 android:text="@string/send_yandex_metriсa_title" />
 
             <Button
