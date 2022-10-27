@@ -231,6 +231,7 @@ public class GotwayAdapter extends BaseAdapter {
         lock_Changes = 2;
         String command = "";
         switch (lightMode) {
+            default:
             case 0: command = "E"; break;
             case 1: command = "Q"; break;
             case 2: command = "T"; break;
