@@ -81,20 +81,20 @@ class BluetoothService: Service() {
                 super.onDisconnectedPeripheral(peripheral, status)
                 Timber.i("Disconnected from wheel.")
                 mDisconnectTime = Calendar.getInstance().time
-                val connectionSound = WheelLog.AppConfig.connectionSound
-                val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
-                if (connectionSound) {
-                    playSound(applicationContext, R.raw.sound_disconnect)
-                    if (wl != null) {
-                        wl!!.release()
-                        wl = null
-                    }
-                    if (noConnectionSound > 0) {
-                        startBeepTimer()
-                    }
-                }
                 if (!disconnectRequested && wheelAddress.isNotEmpty()) {
                     Timber.i("Trying to reconnect")
+                    val connectionSound = WheelLog.AppConfig.connectionSound
+                    val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
+                    if (connectionSound) {
+                        playSound(applicationContext, R.raw.sound_disconnect)
+                        if (wl != null) {
+                            wl!!.release()
+                            wl = null
+                        }
+                        if (noConnectionSound > 0) {
+                            startBeepTimer()
+                        }
+                    }
                     when (WheelData.getInstance().wheelType) {
                         WHEEL_TYPE.INMOTION -> {
                             InMotionAdapter.stopTimer()
