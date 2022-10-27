@@ -21,7 +21,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 107
-        versionName "3.0.3"
+        versionName "3.0.4b"
         buildConfigField 'String', 'BUILD_TIME', "\"" + new Date().format('HH:mm dd.MM.yyyy') + "\""
         buildConfigField 'String', 'BUILD_DATE', "\"" + new Date().format('dd.MM.yyyy') + "\""
         vectorDrawables.useSupportLibrary = true
