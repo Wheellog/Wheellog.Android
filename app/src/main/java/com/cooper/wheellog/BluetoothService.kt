@@ -63,7 +63,9 @@ class BluetoothService: Service() {
                     if (noConnectionSound > 0) {
                         stopBeepTimer()
                     }
-                    wl?.release()
+                    if (wl?.isHeld == true) {
+                        wl?.release()
+                    }
                     wl = mgr!!.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag).apply {
                         acquire(5 * 60 * 1000L /*5 minutes*/)
                     }
@@ -87,10 +89,10 @@ class BluetoothService: Service() {
                     val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
                     if (connectionSound) {
                         playSound(applicationContext, R.raw.sound_disconnect)
-                        if (wl != null) {
-                            wl!!.release()
-                            wl = null
+                        if (wl?.isHeld == true) {
+                            wl?.release()
                         }
+                        wl = null
                         if (noConnectionSound > 0) {
                             startBeepTimer()
                         }
@@ -542,7 +544,9 @@ class BluetoothService: Service() {
     }
 
     private fun stopBeepTimer() {
-        wl?.release()
+        if (wl?.isHeld == true) {
+            wl?.release()
+        }
         wl = null
         beepTimer?.cancel()
         beepTimer = null
