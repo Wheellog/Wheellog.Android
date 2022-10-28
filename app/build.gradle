@@ -69,6 +69,9 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        unitTests.all {
+            jvmArgs '-Xmx2g'
+        }
     }
     packagingOptions {
         jniLibs {

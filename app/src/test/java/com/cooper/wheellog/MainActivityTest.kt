@@ -11,7 +11,9 @@ import org.junit.Ignore
 import org.robolectric.Robolectric
 import org.robolectric.Shadows
 import org.robolectric.android.controller.ActivityController
+import org.robolectric.annotation.Config
 
+@Config(sdk = [30, 33])
 @RunWith(RobolectricTestRunner::class)
 class MainActivityTest {
 
@@ -52,23 +54,14 @@ class MainActivityTest {
     }
 
     @Test
-    fun `click on search menu without permissions - request permission`() {
-        // Arrange.
-        val shadowActivity = Shadows.shadowOf(activity)
-
-        // Act.
-        shadowActivity.clickMenuItem(R.id.miSearch)
-
-        // Assert.
-        val intent = shadowActivity.nextStartedActivity
-        assertThat("android.content.pm.action.REQUEST_PERMISSIONS").isEqualTo(intent.action)
-    }
-
-    @Test
     fun `click on search menu with permission - launch ScanActivity`() {
         // Arrange.
         val shadowActivity = Shadows.shadowOf(activity)
         shadowActivity.grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        shadowActivity.grantPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+        shadowActivity.grantPermissions(Manifest.permission.BLUETOOTH_SCAN)
+        shadowActivity.grantPermissions(Manifest.permission.BLUETOOTH_CONNECT)
+        shadowActivity.grantPermissions(Manifest.permission.BLUETOOTH_ADMIN)
 
         // Act.
         shadowActivity.clickMenuItem(R.id.miSearch)

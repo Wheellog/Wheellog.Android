@@ -93,10 +93,10 @@ object PermissionsUtil {
         val result = permissions.any()
         permissions.removeAll { (permissionCounter[it] ?: 0) > maxPermissionReq }
         if (permissions.any()) {
-            ActivityCompat.requestPermissions(activity, permissions.toTypedArray(), requestCode)
             for (permission in permissions) {
                 permissionCounter[permission] = (permissionCounter[permission] ?: 0) + 1
             }
+            ActivityCompat.requestPermissions(activity, permissions.toTypedArray(), requestCode)
         }
         return result
     }
