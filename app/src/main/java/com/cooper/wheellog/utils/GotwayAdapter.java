@@ -123,7 +123,7 @@ public class GotwayAdapter extends BaseAdapter {
                     if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
                     int alert = buff[12] & 0xFF;
                     int ledMode = buff[13] & 0xFF;
-                    int lightMode = buff[15] & 0xFF;
+                    int lightMode = buff[15] & 0x03;
                     if (lock_Changes == 0) {
                         WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
                         WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
@@ -231,6 +231,7 @@ public class GotwayAdapter extends BaseAdapter {
         lock_Changes = 2;
         String command = "";
         switch (lightMode) {
+            default:
             case 0: command = "E"; break;
             case 1: command = "Q"; break;
             case 2: command = "T"; break;
