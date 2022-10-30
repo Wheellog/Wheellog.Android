@@ -21,13 +21,15 @@ class GotwayAdapterTest {
 
     @Before
     fun setUp() {
+        mockkObject(WheelLog)
+        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
+        val config = mockkClass(AppConfig::class, relaxed = true)
+        every { config.gotwayNegative } returns "1"
+        WheelLog.AppConfig = config
         data = spyk(WheelData())
-        every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
-        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        every { WheelLog.AppConfig.gotwayNegative } returns "1"
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
 

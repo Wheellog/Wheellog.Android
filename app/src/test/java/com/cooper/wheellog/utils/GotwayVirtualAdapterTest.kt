@@ -19,8 +19,9 @@ class GotwayVirtualAdapterTest {
 
     @Before
     fun setUp() {
+        mockkObject(WheelLog)
+        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
         data = spyk(WheelData())
-        every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY_VIRTUAL
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)

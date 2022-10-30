@@ -18,8 +18,9 @@ class NinebotZAdapterTest {
 
     @Before
     fun setUp() {
+        mockkObject(WheelLog)
+        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
         data = spyk(WheelData())
-        every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
