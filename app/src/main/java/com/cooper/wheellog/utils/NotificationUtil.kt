@@ -19,6 +19,7 @@ import java.util.*
 class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
     private var kostilTimer: Timer? = null
+    private var customText = ""
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
         private set
@@ -32,7 +33,7 @@ class NotificationUtil(private val context: Context) {
         }
         val channel = NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION,
                 context.getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_LOW).apply {
+                NotificationManager.IMPORTANCE_MIN).apply {
             description = context.getString(R.string.notification_channel_description)
         }
         // Register the channel with the system; you can't change the importance
@@ -73,8 +74,8 @@ class NotificationUtil(private val context: Context) {
         val temperature = wd.temperature
         val distance = wd.distanceDouble
         val speed = wd.speedDouble
-        val title = context.getString(notificationMessageId)
-        val title_ride = WheelData.getInstance().rideTimeString
+        val title = customText.ifEmpty { context.getString(notificationMessageId) }
+        val titleRide = WheelData.getInstance().rideTimeString
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
         if (connectionState == ConnectionState.CONNECTED || distance + temperature + batteryLevel + speed > 0) {
@@ -86,7 +87,7 @@ class NotificationUtil(private val context: Context) {
                     else -> R.string.notification_text
                 }
                 notificationView.setTextViewText(R.id.text_message, context.getString(template, speed, batteryLevel, temperature, distance))
-                notificationView.setTextViewText(R.id.text_title, "$title - $title_ride")
+                notificationView.setTextViewText(R.id.text_title, "$title - $titleRide")
             }
         } else {
             notificationView.setTextViewText(R.id.text_title, title)
@@ -128,11 +129,12 @@ class NotificationUtil(private val context: Context) {
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)
                 .setChannelId(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
-                .priority = NotificationCompat.PRIORITY_LOW
+                .setOngoing(true)
+                .priority = NotificationCompat.PRIORITY_MIN
 
         builder.setContentTitle(
                 if (connectionState == ConnectionState.CONNECTED && distance + temperature + batteryLevel + speed > 0)
-                    title_ride
+                    titleRide
                 else
                     title)
 
@@ -157,34 +159,42 @@ class NotificationUtil(private val context: Context) {
         }
     }
 
+    fun setCustomTitle(text: String) {
+        customText = text
+        update()
+    }
+
     fun close() {
+        with(NotificationManagerCompat.from(context)) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                deleteNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
+            }
+            cancel(Constants.MAIN_NOTIFICATION_ID)
+            cancelAll()
+        }
         kostilTimer?.cancel()
         kostilTimer = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            with(NotificationManagerCompat.from(context)) {
-                cancel(Constants.MAIN_NOTIFICATION_ID)
-            }
-        }
     }
 
     // Fix Me
     // https://github.com/Wheellog/Wheellog.Android/pull/249
     fun updateKostilTimer() {
         if (WheelLog.AppConfig.mibandFixRs && kostilTimer == null) {
-            kostilTimer = Timer()
-            kostilTimer?.scheduleAtFixedRate(object : TimerTask() {
-                override fun run() {
-                    val wd = WheelData.getInstance()
-                    if (wd == null) {
-                        kostilTimer?.cancel()
-                        kostilTimer = null
-                        return
+            kostilTimer = Timer().apply {
+                scheduleAtFixedRate(object : TimerTask() {
+                    override fun run() {
+                        val wd = WheelData.getInstance()
+                        if (wd == null) {
+                            kostilTimer?.cancel()
+                            kostilTimer = null
+                            return
+                        }
+                        if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && wd.speedDouble > 0) {
+                            update()
+                        }
                     }
-                    if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && wd.speedDouble > 0) {
-                        update()
-                    }
-                }
-            }, 5000, 1000)
+                }, 5000, 1000)
+            }
         } else {
             kostilTimer?.cancel()
             kostilTimer = null

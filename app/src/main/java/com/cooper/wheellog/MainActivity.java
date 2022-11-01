@@ -1,6 +1,7 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -594,10 +595,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                WheelLog.Notifications.close();
                 Timber.uproot(eventsLoggingTree);
                 eventsLoggingTree.close();
                 eventsLoggingTree = null;
                 unregisterReceiver(mCoreBroadcastReceiver);
+                // Kill YandexMetrika process.
+                var am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                var runningProcesses = am.getRunningAppProcesses();
+                for (var process : runningProcesses) {
+                    if (android.os.Process.myPid() != process.pid) {
+                        android.os.Process.killProcess(process.pid);
+                    }
+                }
+                // Kill self process.
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
 

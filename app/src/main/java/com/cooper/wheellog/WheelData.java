@@ -276,7 +276,9 @@ public class WheelData {
     }
 
     public void setBtName(String btName) {
-        mBtName = btName;
+        if (btName != null) {
+            mBtName = btName;
+        }
     }
 
     public String getBtName() {
