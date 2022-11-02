@@ -14,15 +14,16 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.MinimapOverlay
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.ScaleBarOverlay
 import org.osmdroid.views.overlay.TilesOverlay
 import org.osmdroid.views.overlay.compass.CompassOverlay
-import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import timber.log.Timber
 
 class MapFragment : Fragment() {
@@ -39,13 +40,24 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         map = view.findViewById(R.id.mapView)
         map.apply {
+            setTileSource(TileSourceFactory.MAPNIK)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
-            minZoomLevel = 10.0
+            minZoomLevel = 8.0
             maxZoomLevel = 20.0
             setMultiTouchControls(true)
-            overlays.add(RotationGestureOverlay(map)) // enable rotation
+            val compassProvider = CompassOrientationProvider()
+            overlays.add(RotationOverlay(map, compassProvider)) // enable rotation
             overlays.add(ScaleBarOverlay(map)) // scale bar in top-left corner
-            overlays.add(CompassOverlay(context, map).apply { enableCompass() })
+            overlays.add(CompassOverlay(context, compassProvider, map).apply {
+                enableCompass()
+            })
+//            overlays.add(MyLocationNewOverlay(GpsMyLocationProvider(context), map).apply {
+//                enableFollowLocation()
+//                enableMyLocation()
+//            })
+            overlays.add(MinimapOverlay(context, map.tileRequestCompleteHandler).apply {
+                zoomDifference = 3
+            })
             controller.apply {
                 setZoom(10.0)
                 setCenter(GeoPoint(WheelLog.AppConfig.lastLocationLaltitude, WheelLog.AppConfig.lastLocationLongitude))
