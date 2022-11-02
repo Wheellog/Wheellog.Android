@@ -69,6 +69,9 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        unitTests.all {
+            jvmArgs '-Xmx2g'
+        }
     }
     packagingOptions {
         jniLibs {
@@ -114,10 +117,7 @@ dependencies {
     implementation 'me.relex:circleindicator:2.1.6'
     implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'com.github.permissions-dispatcher:permissionsdispatcher:4.9.2'
     implementation 'org.osmdroid:osmdroid-android:6.1.14'
-    annotationProcessor 'com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.2'
-    kapt 'com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.2'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

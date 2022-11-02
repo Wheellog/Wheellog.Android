@@ -3,11 +3,11 @@ package com.cooper.wheellog.utils
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 object PermissionsUtil {
     private val permissionsLocation = arrayOf(
@@ -21,6 +21,11 @@ object PermissionsUtil {
         Manifest.permission.BLUETOOTH_CONNECT
     )
 
+    private val permissionsIO = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    )
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val permissionNotification = Manifest.permission.POST_NOTIFICATIONS
 
@@ -29,36 +34,35 @@ object PermissionsUtil {
     val isMaxBleReq: Boolean
         get() = permissionCounter.any { p -> p.value > maxPermissionReq }
 
+    /**
+     * returns - all ble permissions is granted
+     */
     fun checkBlePermissions(activity: Activity, requestCode: Int = 1): Boolean {
-        val requestedPermission = mutableListOf<String>()
-        requestedPermission.addAll(permissionsLocation)
+        val requestedPermission = permissionsLocation.toMutableList()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestedPermission.addAll(permissionsBle31)
         }
-        requestedPermission.removeAll {
-            ActivityCompat.checkSelfPermission(activity.applicationContext, it) == PackageManager.PERMISSION_GRANTED
-        }
-        if (requestedPermission.any()) {
-            ActivityCompat.requestPermissions(activity, requestedPermission.toTypedArray(), requestCode)
-            for (permission in requestedPermission) {
-                permissionCounter[permission] = (permissionCounter[permission] ?: 0) + 1
-            }
-            return false
-        }
-        return true
+        return !reqPermissions(activity, requestedPermission, requestCode)
     }
 
+    /**
+     * returns - permission for notification is granted
+     */
     fun checkNotificationsPermissions(activity: Activity): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return true
         }
-        val result = ActivityCompat.checkSelfPermission(activity.applicationContext, permissionNotification) == PackageManager.PERMISSION_GRANTED
-        val requestCode = 77;
-        if (!result) {
-            ActivityCompat.requestPermissions(activity, arrayOf(permissionNotification), requestCode)
+        return !reqPermissions(activity, mutableListOf(permissionNotification), 77)
+    }
+
+    /**
+     * returns - all permissions for IO is granted. Only for Android 9 or lower.
+     */
+    fun checkExternalFilePermission(activity: Activity, requestCode: Int): Boolean {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             return false
         }
-        return true
+        return !reqPermissions(activity, permissionsIO.toMutableList(), requestCode)
     }
 
     @JvmStatic
@@ -72,5 +76,28 @@ object PermissionsUtil {
     fun checkLocationPermission(context: Context): Boolean {
         val result = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
         return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    /**
+     * return true if any permission in list is not granted
+     */
+    private fun reqPermissions(
+        activity: Activity,
+        permissions: MutableList<String>,
+        requestCode: Int
+    ): Boolean {
+        permissions.removeAll {
+            ActivityCompat.checkSelfPermission(activity.applicationContext, it) ==
+                    PackageManager.PERMISSION_GRANTED
+        }
+        val result = permissions.any()
+        permissions.removeAll { (permissionCounter[it] ?: 0) > maxPermissionReq }
+        if (permissions.any()) {
+            for (permission in permissions) {
+                permissionCounter[permission] = (permissionCounter[permission] ?: 0) + 1
+            }
+            ActivityCompat.requestPermissions(activity, permissions.toTypedArray(), requestCode)
+        }
+        return result
     }
 }
