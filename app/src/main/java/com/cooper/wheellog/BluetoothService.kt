@@ -320,7 +320,7 @@ class BluetoothService: Service() {
         if (wheelConnection?.address == wheelAddress) {
             Timber.i("Trying to use an existing wheelConnection for connection.")
             isWheelSearch = true
-            central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
+            central.connectPeripheral(wheelConnection!!, wheelCallback)
             broadcastConnectionUpdate()
             return true
         }
