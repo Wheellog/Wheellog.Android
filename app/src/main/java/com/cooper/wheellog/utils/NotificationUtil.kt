@@ -67,7 +67,7 @@ class NotificationUtil(private val context: Context) {
             notificationView.setOnClickPendingIntent(it.first,
                     PendingIntent.getBroadcast(context, 0, Intent(it.third), intentFlag))
         }
-        val wd = WheelData.getInstance()
+        val wd = WheelData.getInstance() ?: return builder.build()
         val connectionState = wd.bluetoothService?.connectionState
                 ?: ConnectionState.DISCONNECTED
         val batteryLevel = wd.batteryLevel

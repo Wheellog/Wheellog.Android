@@ -10,21 +10,17 @@ import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.io.File
-import java.io.InputStream
-import java.text.SimpleDateFormat
-import java.util.*
 
 class InmotionAdapterV2Test {
 
     private var adapter: InmotionAdapterV2 = InmotionAdapterV2()
     private lateinit var data: WheelData
-    private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
 
     @Before
     fun setUp() {
+        mockkObject(WheelLog)
+        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
         data = spyk(WheelData())
-        every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data

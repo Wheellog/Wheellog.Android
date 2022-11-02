@@ -56,6 +56,10 @@ class WheelLog : Application() {
         lateinit var Notifications: NotificationUtil
         lateinit var VolumeKeyController: VolumeKeyController
         lateinit var ThemeManager: ThemeManager
+
+        val appContext: Context?
+            get() = me?.applicationContext
+
         fun cResolver(): ContentResolver {
             return me!!.contentResolver
         }

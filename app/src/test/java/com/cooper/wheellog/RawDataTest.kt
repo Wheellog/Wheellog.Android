@@ -14,13 +14,16 @@ import java.text.SimpleDateFormat
 
 class RawDataTest {
     private lateinit var data: WheelData
+    private lateinit var config: AppConfig
     private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
 
     @Before
     fun setUp() {
+        mockkObject(WheelLog)
+        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
+        config = mockkClass(AppConfig::class, relaxed = true)
+        WheelLog.AppConfig = config
         data = spyk(WheelData())
-        every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
-        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -33,7 +36,7 @@ class RawDataTest {
     @Test
     fun `GW - decode with normal data`() {
         // Arrange.
-        every { WheelLog.AppConfig.gotwayNegative } returns "1"
+        every { config.gotwayNegative } returns "1"
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter = GotwayAdapter()

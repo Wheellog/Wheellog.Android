@@ -174,7 +174,7 @@ public class WheelData {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Context mContext = getBluetoothService().getApplicationContext();
+                Context mContext = WheelLog.Companion.getAppContext();
                 Alarms.INSTANCE.checkAlarm(mCalculatedPwm, mContext);
             }
         }, 1000, 200000);
@@ -577,7 +577,7 @@ public class WheelData {
         boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
         if (isChanged) {
-            Context mContext = getBluetoothService().getApplicationContext();
+            Context mContext = WheelLog.Companion.getAppContext();
             Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
             mContext.sendBroadcast(intent);
         }
@@ -604,7 +604,7 @@ public class WheelData {
         mModel = model;
         if (isChanged) {
             Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
-            getBluetoothService().getApplicationContext().sendBroadcast(intent);
+            WheelLog.Companion.getAppContext().sendBroadcast(intent);
         }
 
     }

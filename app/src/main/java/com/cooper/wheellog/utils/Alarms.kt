@@ -32,7 +32,7 @@ object Alarms {
         return object : TimerTask() {
             override fun run() {
                 val wd = WheelData.getInstance() ?: return
-                val mContext: Context = wd.bluetoothService?.applicationContext ?: return
+                val mContext: Context = WheelLog.appContext ?: return
                 if (!reCheckAlarm(wd.calculatedPwm / 100, mContext)) {
                     stop()
                 }

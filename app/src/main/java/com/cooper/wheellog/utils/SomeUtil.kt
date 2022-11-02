@@ -85,7 +85,7 @@ class SomeUtil {
 //        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 //        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 //        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-            val context = WheelData.getInstance().bluetoothService?.applicationContext ?: return
+            val context = WheelLog.appContext ?: return
             val beepFile = WheelLog.AppConfig.beepFile
             // selected file
             if (!onlyDefault && WheelLog.AppConfig.useCustomBeep && beepFile !== Uri.EMPTY) {
