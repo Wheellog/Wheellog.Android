@@ -38,10 +38,10 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Test
-      run: ./gradlew test
+      run: ./gradlew test --no-daemon
 
     - name: Assemble
-      run: ./gradlew assembleDebug -Dec_accessToken="${{ secrets.EC_TOKEN }}" -Dmetrica_api="${{ secrets.METRICA_API }}"
+      run: ./gradlew assembleDebug --no-daemon -Dec_accessToken="${{ secrets.EC_TOKEN }}" -Dmetrica_api="${{ secrets.METRICA_API }}"
       
     - name: Cleanup Gradle Cache
       run: |
