@@ -55,38 +55,38 @@ public class InMotionAdapter extends BaseAdapter {
                     break;
             }
 
-            if (mContext != null) {
+            if (getContext() != null) {
                 String news = null;
                 switch (idValue) {
                     case Calibration:
                         news = result.data[0] == 1
-                                ? mContext.getString(R.string.calibration_success)
-                                : mContext.getString(R.string.calibration_fail);
+                                ? getContext().getString(R.string.calibration_success)
+                                : getContext().getString(R.string.calibration_fail);
                         break;
                     case RideMode:
                         news = result.data[0] == 1
-                                ? mContext.getString(R.string.ridemode_success)
-                                : mContext.getString(R.string.ridemode_fail);
+                                ? getContext().getString(R.string.ridemode_success)
+                                : getContext().getString(R.string.ridemode_fail);
                         break;
                     case RemoteControl:
                         news = result.data[0] == 1
-                                ? mContext.getString(R.string.remotecontrol_success)
-                                : mContext.getString(R.string.remotecontrol_fail);
+                                ? getContext().getString(R.string.remotecontrol_success)
+                                : getContext().getString(R.string.remotecontrol_fail);
                         break;
                     case Light:
                         news = result.data[0] == 1
-                                ? mContext.getString(R.string.light_success)
-                                : mContext.getString(R.string.light_fail);
+                                ? getContext().getString(R.string.light_success)
+                                : getContext().getString(R.string.light_fail);
                         break;
                     case HandleButton:
                         news = result.data[0] == 1
-                                ? mContext.getString(R.string.handlebutton_success)
-                                : mContext.getString(R.string.handlebutton_fail);
+                                ? getContext().getString(R.string.handlebutton_success)
+                                : getContext().getString(R.string.handlebutton_fail);
                         break;
                     case SpeakerVolume:
                         news = result.data[0] == 1
-                                ? mContext.getString(R.string.speakervolume_success)
-                                : mContext.getString(R.string.speakervolume_fail);
+                                ? getContext().getString(R.string.speakervolume_success)
+                                : getContext().getString(R.string.speakervolume_fail);
                         break;
                 }
 
@@ -94,7 +94,7 @@ public class InMotionAdapter extends BaseAdapter {
                     Timber.i("News to send: %s, sending Intent", news);
                     Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
                     intent.putExtra(Constants.INTENT_EXTRA_NEWS, news);
-                    mContext.sendBroadcast(intent);
+                    getContext().sendBroadcast(intent);
                 }
             }
         }
@@ -1322,7 +1322,7 @@ public class InMotionAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCellSForWheel() {
+    public int getCellsForWheel() {
         return 20;
     }
 

@@ -211,20 +211,20 @@ public class NinebotZAdapter extends BaseAdapter {
     @Override
     public String getLedModeString() {
         switch (WheelLog.AppConfig.getLedMode()) {
-            case "0": return mContext.getString(R.string.off);
-            case "1": return mContext.getString(R.string.led_type1);
-            case "2": return mContext.getString(R.string.led_type2);
-            case "3": return mContext.getString(R.string.led_type3);
-            case "4": return mContext.getString(R.string.led_type4);
-            case "5": return mContext.getString(R.string.led_type5);
-            case "6": return mContext.getString(R.string.led_type6);
-            case "7": return mContext.getString(R.string.led_type7);
-            default: return mContext.getString(R.string.led_mode_nb_description);
+            case "0": return getContext().getString(R.string.off);
+            case "1": return getContext().getString(R.string.led_type1);
+            case "2": return getContext().getString(R.string.led_type2);
+            case "3": return getContext().getString(R.string.led_type3);
+            case "4": return getContext().getString(R.string.led_type4);
+            case "5": return getContext().getString(R.string.led_type5);
+            case "6": return getContext().getString(R.string.led_type6);
+            case "7": return getContext().getString(R.string.led_type7);
+            default: return getContext().getString(R.string.led_mode_nb_description);
         }
     }
 
     @Override
-    public Boolean getLedIsAvailable(int ledNum) {
+    public boolean getLedIsAvailable(int ledNum) {
         switch (WheelLog.AppConfig.getLedMode()) {
             case "1":
             case "4":

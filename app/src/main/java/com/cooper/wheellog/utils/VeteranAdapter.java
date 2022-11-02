@@ -144,7 +144,7 @@ public class VeteranAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCellSForWheel() {
+    public int getCellsForWheel() {
         return 24;
     }
 

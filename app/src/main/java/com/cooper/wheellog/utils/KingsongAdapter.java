@@ -340,7 +340,7 @@ public class KingsongAdapter extends BaseAdapter {
 
 
     @Override
-    public int getCellSForWheel() {
+    public int getCellsForWheel() {
         int cells = 16;
         if (is84vWheel()) {cells = 20; }
         else if (is126vWheel()) {cells = 30; }
