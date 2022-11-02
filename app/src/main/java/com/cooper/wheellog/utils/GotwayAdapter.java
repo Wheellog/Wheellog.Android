@@ -149,11 +149,11 @@ public class GotwayAdapter extends BaseAdapter {
                     if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
                     wd.setAlert(alertLine);
 
-                    if ((alertLine != "") && (mContext != null)) {
+                    if ((alertLine != "") && (getContext() != null)) {
                         Timber.i("News to send: %s, sending Intent", alertLine);
                         Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
                         intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
-                        mContext.sendBroadcast(intent);
+                        getContext().sendBroadcast(intent);
                     }
                 }
                 if (attempt < 10) {
@@ -298,7 +298,7 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCellSForWheel() {
+    public int getCellsForWheel() {
         switch (WheelLog.AppConfig.getGotwayVoltage()) {
             case "0":
                 return 16;

@@ -9,7 +9,6 @@ import android.media.AudioManager;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
-import com.yandex.metrica.YandexMetrica;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -622,7 +621,7 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-        return Constants.MAX_CELL_VOLTAGE * adapter.getCellSForWheel();
+        return Constants.MAX_CELL_VOLTAGE * adapter.getCellsForWheel();
     }
 
     double getVoltageTiltbackForWheel() {
@@ -630,7 +629,7 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-        return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellSForWheel();
+        return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellsForWheel();
     }
 
     public boolean isVoltageTiltbackUnsupported() {
@@ -991,7 +990,7 @@ public class WheelData {
         if (protoVer != "") {
             Timber.i("Decode, proto: %s", protoVer);
         }
-        boolean new_data = getAdapter().setContext(mContext).decode(data);
+        boolean new_data = getAdapter().decode(data);
 
         if (!new_data)
             return;
