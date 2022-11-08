@@ -173,7 +173,8 @@ class MapActivity : AppCompatActivity() {
                 entriesTemperature.add(Entry(time, temperature.toFloat()))
                 entriesPWM.add(Entry(time, pwm.toFloat()))
                 // map
-                if (latitudeNew != latitude && longitudeNew != longitude) {
+                if (latitudeNew != latitude && longitudeNew != longitude
+                    && latitudeNew != 0.0 && longitudeNew != 0.0) {
                     latitude = latitudeNew
                     longitude = longitudeNew
                     val altitude = row[header[LogHeaderEnum.GPS_ALT]!!].toDoubleOrNull() ?: 0.0
