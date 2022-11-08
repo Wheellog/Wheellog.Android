@@ -280,6 +280,21 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
                 addPreference(this)
             }
         }
+        PreferenceCategory(context).apply {
+            title = getString(R.string.battery_alarm_title)
+            ps.addPreference(this)
+            SeekBarPreference(context).apply {
+                key = mac + getString(R.string.alarm_battery)
+                title = getString(R.string.battery_title)
+                summary = getString(R.string.alarm_battery_description)
+                min = 0
+                max = 100
+                unit = "%"
+                increment = 1
+                setDefaultValue(WheelLog.AppConfig.alarmBattery)
+                addPreference(this)
+            }
+        }
     }
 
     fun switchAlarmsIsVisible(fragment: PreferencesFragment) {

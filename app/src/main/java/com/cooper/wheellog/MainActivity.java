@@ -201,6 +201,9 @@ public class MainActivity extends AppCompatActivity {
                     if (alarmType == 6) {
                         showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue*100), 3000);
                     }
+                    if (alarmType == 7) {
+                        showSnackBar(getResources().getString(R.string.alarm_text_battery) + String.format(": %.0f", alarmValue), 3000);
+                    }
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:
                     DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(MainActivity.this);
