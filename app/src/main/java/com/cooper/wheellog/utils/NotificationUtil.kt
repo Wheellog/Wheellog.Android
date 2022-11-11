@@ -20,6 +20,7 @@ class NotificationUtil(private val context: Context) {
     private val builder: NotificationCompat.Builder
     private var kostilTimer: Timer? = null
     private var customText = ""
+    private var buildIsSucceed = false
     var notificationMessageId = R.string.disconnected
     var notification: Notification? = null
         private set
@@ -44,6 +45,7 @@ class NotificationUtil(private val context: Context) {
     }
 
     private fun build(): Notification {
+        buildIsSucceed = false
         val notificationIntent = Intent(context, MainActivity::class.java)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
         val buttonSettings = WheelLog.AppConfig.notificationButtons
@@ -149,13 +151,16 @@ class NotificationUtil(private val context: Context) {
             MiBandEnum.Max -> builder.setContentText(context.getString(R.string.notification_text_max, speed, wd.topSpeedDouble, wd.averageSpeedDouble, wd.batteryLevel, wd.voltageDouble, wd.powerDouble, wd.temperature, wd.distanceDouble))
         }
 
+        buildIsSucceed = true
         return builder.build()
     }
 
     fun update() {
         notification = build()
-        with(NotificationManagerCompat.from(context)) {
-            notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
+        if (buildIsSucceed) {
+            with(NotificationManagerCompat.from(context)) {
+                notify(Constants.MAIN_NOTIFICATION_ID, notification!!)
+            }
         }
     }
 
@@ -169,7 +174,6 @@ class NotificationUtil(private val context: Context) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 deleteNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
             }
-            cancel(Constants.MAIN_NOTIFICATION_ID)
             cancelAll()
         }
         kostilTimer?.cancel()
