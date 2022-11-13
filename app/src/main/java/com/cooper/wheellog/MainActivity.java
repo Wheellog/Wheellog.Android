@@ -475,7 +475,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
-        WheelData.initiate();
 
         ElectroClub electroClub = ElectroClub.getInstance();
         electroClub.setDao(TripDatabase.Companion.getDataBase(this).tripDao());
