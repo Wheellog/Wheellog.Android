@@ -264,7 +264,7 @@ object Alarms {
                 ALARM_TYPE.BATTERY ->
                     String.format(
                             Locale.US,
-                            mContext.getString(R.string.alarm_text_temperature_v), // fixme
+                            mContext.getString(R.string.alarm_text_battery_v),
                             WheelData.getInstance().batteryLevel
                     )
             }
