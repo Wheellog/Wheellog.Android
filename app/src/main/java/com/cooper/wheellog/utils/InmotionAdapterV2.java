@@ -61,11 +61,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
                             return result.parseTotalStats();
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
                             if (getInstance().getModel() == Model.V12) {
-                                return result.parseRealTimeInfoV12(mContext);
+                                return result.parseRealTimeInfoV12(getContext());
                             } else if (protoVer < 2) {
-                                return result.parseRealTimeInfoV11(mContext);
+                                return result.parseRealTimeInfoV11(getContext());
                             } else {
-                                return result.parseRealTimeInfoV11_1_4(mContext);
+                                return result.parseRealTimeInfoV11_1_4(getContext());
                             }
                         } else {
                             Timber.i("Get unknown command: %02X", result.command);
@@ -1315,7 +1315,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     }
 
     @Override
-    public int getCellSForWheel() {
+    public int getCellsForWheel() {
         return 20;
     }
 

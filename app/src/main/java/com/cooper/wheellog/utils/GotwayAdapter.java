@@ -123,7 +123,7 @@ public class GotwayAdapter extends BaseAdapter {
                     if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
                     int alert = buff[12] & 0xFF;
                     int ledMode = buff[13] & 0xFF;
-                    int lightMode = buff[15] & 0xFF;
+                    int lightMode = buff[15] & 0x03;
                     if (lock_Changes == 0) {
                         WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
                         WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
@@ -149,11 +149,11 @@ public class GotwayAdapter extends BaseAdapter {
                     if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
                     wd.setAlert(alertLine);
 
-                    if ((alertLine != "") && (mContext != null)) {
+                    if ((alertLine != "") && (getContext() != null)) {
                         Timber.i("News to send: %s, sending Intent", alertLine);
                         Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
                         intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
-                        mContext.sendBroadcast(intent);
+                        getContext().sendBroadcast(intent);
                     }
                 }
                 if (attempt < 10) {
@@ -231,6 +231,7 @@ public class GotwayAdapter extends BaseAdapter {
         lock_Changes = 2;
         String command = "";
         switch (lightMode) {
+            default:
             case 0: command = "E"; break;
             case 1: command = "Q"; break;
             case 2: command = "T"; break;
@@ -297,7 +298,7 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCellSForWheel() {
+    public int getCellsForWheel() {
         switch (WheelLog.AppConfig.getGotwayVoltage()) {
             case "0":
                 return 16;

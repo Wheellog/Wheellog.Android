@@ -20,6 +20,7 @@ import com.cooper.wheellog.data.TripData;
 import com.cooper.wheellog.data.TripDatabase;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.ParserLogToWheelData;
 import com.cooper.wheellog.utils.PermissionsUtil;
 import com.welie.blessed.ConnectionState;
@@ -229,6 +230,7 @@ public class LoggingService extends Service
         }
 
         Timber.wtf("DataLogger Stopping...");
+        WheelLog.Notifications.setCustomTitle("Uploading tack...");
 
         // electro.club upload
         if (fileUtil != null && !fileUtil.fileName.equals("") && WheelLog.AppConfig.getAutoUploadEc()) {
@@ -239,6 +241,7 @@ public class LoggingService extends Service
                 ElectroClub.getInstance().uploadTrack(data, fileUtil.fileName, true, success -> {
                     if (!success) {
                         Timber.wtf("Upload failed...");
+                        WheelLog.Notifications.setCustomTitle("Upload failed.");
                     }
                     reallyDestroy(null);
                     return null;

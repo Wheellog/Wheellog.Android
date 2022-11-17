@@ -16,6 +16,7 @@ import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.utils.StringUtil.Companion.inArray
 import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import com.cooper.wheellog.views.TripAdapter
+import com.cooper.wheellog.views.TripModel
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -132,6 +133,9 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 listOfTrips = view.findViewById(R.id.list_trips)
                 listOfTrips?.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
                 listOfTrips?.adapter = TripAdapter(activity, FileUtil.fillTrips(activity))
+                // for Tests
+                // val models = arrayListOf(TripModel("title", "desc", "asd"))
+                // listOfTrips?.adapter = TripAdapter(activity, models)
             }
             R.layout.main_view_smart_bms -> {
                 createSmartBmsPage()

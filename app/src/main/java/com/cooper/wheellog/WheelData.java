@@ -5,13 +5,9 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioTrack;
-import android.os.Vibrator;
 
 import com.cooper.wheellog.utils.*;
-import com.cooper.wheellog.utils.Constants.ALARM_TYPE;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 
 import org.json.JSONArray;
@@ -72,8 +68,6 @@ public class WheelData {
     private int mBattery;
     private int mBatteryStart = -1;
     private int mBatteryLowest = 101;
-    private double mAverageBattery;
-    //    private double mAverageBatteryCount;
     private int mVoltage;
     private long mDistance;
     private long mUserDistance;
@@ -99,28 +93,16 @@ public class WheelData {
     private long rideStartTime;
     private long mStartTotalDistance;
 
-    private long mLastPlayWarningSpeedTime = System.currentTimeMillis();
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
 
-    private boolean mSpeedAlarmExecuting = false;
-    private boolean mCurrentAlarmExecuting = false;
-    private boolean mTemperatureAlarmExecuting = false;
     private boolean mBmsView = false;
     private String protoVer = "";
 
-    private final int duration = 1; // duration of sound
-    private final int sampleRate = 44100;//22050; // Hz (maximum frequency is 7902.13Hz (B8))
-    private final int numSamples = duration * sampleRate;
-    //    private double samples[] = new double[numSamples];
-    private final short[] buffer = new short[numSamples];
-    private final int sfreq = 440;
-    private int toneDuration = 0;
-    private Timer speedAlarmTimer;
-    private Timer speedAlarmWatchdogTimer;
-
-    AudioTrack audioTrack;
+    private long timestamp_raw;
+    private long timestamp_last;
+    private long mLastLifeData = -1;
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
@@ -160,38 +142,6 @@ public class WheelData {
         mBluetoothService = value;
     }
 
-    void playBeep(ALARM_TYPE type) {
-
-        if (WheelLog.AppConfig.getUseWheelBeepForAlarm() && mBluetoothService != null) {
-            SomeUtil.playBeep(mBluetoothService.getBaseContext(), true, false);
-            return;
-        }
-
-        if (audioTrack != null) {
-            audioTrack.flush();
-            audioTrack.stop();
-            audioTrack.release();
-
-        }
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, buffer.length,
-                AudioTrack.MODE_STATIC);
-        if ((type.getValue() < 4) || (type.getValue() == 6)) {
-            audioTrack.write(buffer, sampleRate / 20, (toneDuration * sampleRate) / 1000); //50, 100, 150 ms depends on number of speed alarm
-
-        } else if (type == ALARM_TYPE.CURRENT) {
-            audioTrack.write(buffer, sampleRate * 3 / 10, (2 * sampleRate) / 20); //100 ms for current
-
-        } else {
-            audioTrack.write(buffer, sampleRate * 3 / 10, (6 * sampleRate) / 10); //600 ms temperature
-        }
-
-        //Timber.i("Beep: %d",(type.getValue()-1)*10*sampleRate / 50);
-        audioTrack.play();
-
-    }
-
     static void initiate() {
         if (mInstance == null)
             mInstance = new WheelData();
@@ -203,32 +153,9 @@ public class WheelData {
         }
 
         mInstance.full_reset();
-        mInstance.prepareTone(mInstance.sfreq);
         mInstance.startRidingTimerControl();
-        //mInstance.startAlarmTest(); // test
+        // mInstance.startAlarmTest(); // test
     }
-
-    private void prepareTone(int freq) {
-
-        for (int i = 0; i < numSamples; ++i) {
-            double originalWave = Math.sin(2 * Math.PI * freq * i / sampleRate);
-            double harmonic1 = 0.5 * Math.sin(2 * Math.PI * 2 * freq * i / sampleRate);
-            double harmonic2 = 0.25 * Math.sin(2 * Math.PI * 4 * freq * i / sampleRate);
-            double secondWave = Math.sin(2 * Math.PI * freq * 1.34F * i / sampleRate);
-            double thirdWave = Math.sin(2 * Math.PI * freq * 2.0F * i / sampleRate);
-            double fourthWave = Math.sin(2 * Math.PI * freq * 2.68F * i / sampleRate);
-            if (i <= (numSamples * 3) / 10) {
-                buffer[i] = (short) ((originalWave + harmonic1 + harmonic2) * (Short.MAX_VALUE)); //+ harmonic1 + harmonic2
-            } else if (i < (numSamples * 3) / 5) {
-                buffer[i] = (short) ((originalWave + secondWave) * (Short.MAX_VALUE));
-            } else {
-                buffer[i] = (short) ((thirdWave + fourthWave) * (Short.MAX_VALUE));
-            }
-
-        }
-
-    }
-
 
     public void startRidingTimerControl() {
         TimerTask timerTask = new TimerTask() {
@@ -243,21 +170,27 @@ public class WheelData {
 
     ///// test purpose, please let it be
     public void startAlarmTest() {
-        TimerTask timerTask = new TimerTask() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                mCalculatedPwm = WheelLog.AppConfig.getMaxSpeed()/100d;
-                mAverageBattery = 70;
-                mSpeed = WheelLog.AppConfig.getMaxSpeed() * 100;
-                mCurrent = 10000;
-                mTemperature = 6000;
-                //Timber.i("pwm = %0.2f", mCalculatedPwm);
-                Context mContext = getBluetoothService().getApplicationContext();
-                checkAlarmStatus(mContext);
+                Context mContext = WheelLog.Companion.getAppContext();
+                Alarms.INSTANCE.checkAlarm(mCalculatedPwm, mContext);
             }
-        };
-        ridingTimerControl = new Timer();
-        ridingTimerControl.scheduleAtFixedRate(timerTask, 5000, 200);
+        }, 1000, 200000);
+
+//        mCalculatedPwm = 70 / 100.0;
+//        mSpeed = 50_00;
+//        mBattery = 10;
+//        mCurrent = 100_00;
+        mTemperature = 60_00;
+
+        WheelLog.AppConfig.setAlarmTemperature(10);
+//        WheelLog.AppConfig.setAlarmCurrent(10);
+
+//        WheelLog.AppConfig.setAlarm1Speed(1);
+//        WheelLog.AppConfig.setAlarm1Battery(70);
+//        WheelLog.AppConfig.setAlarmFactor1(10_00);
+        WheelLog.AppConfig.setAlteredAlarms(false);
     }
     /////
 
@@ -346,7 +279,9 @@ public class WheelData {
     }
 
     public void setBtName(String btName) {
-        mBtName = btName;
+        if (btName != null) {
+            mBtName = btName;
+        }
     }
 
     public String getBtName() {
@@ -649,7 +584,7 @@ public class WheelData {
         boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
         if (isChanged) {
-            Context mContext = getBluetoothService().getApplicationContext();
+            Context mContext = WheelLog.Companion.getAppContext();
             Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
             mContext.sendBroadcast(intent);
         }
@@ -676,7 +611,7 @@ public class WheelData {
         mModel = model;
         if (isChanged) {
             Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
-            getBluetoothService().getApplicationContext().sendBroadcast(intent);
+            WheelLog.Companion.getAppContext().sendBroadcast(intent);
         }
 
     }
@@ -694,7 +629,7 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-        return Constants.MAX_CELL_VOLTAGE * adapter.getCellSForWheel();
+        return Constants.MAX_CELL_VOLTAGE * adapter.getCellsForWheel();
     }
 
     double getVoltageTiltbackForWheel() {
@@ -702,7 +637,7 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-        return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellSForWheel();
+        return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellsForWheel();
     }
 
     public boolean isVoltageTiltbackUnsupported() {
@@ -900,21 +835,6 @@ public class WheelData {
         return (int) (mTotalDistance - mStartTotalDistance);
     }
 
-    public int getAlarm() {
-        int alarm = 0;
-        if (mSpeedAlarmExecuting) {
-            alarm = alarm | 0x01;
-        }
-        if (mTemperatureAlarmExecuting) {
-            alarm = alarm | 0x04;
-        }
-        if (mCurrentAlarmExecuting) {
-            alarm = alarm | 0x02;
-        }
-        return alarm;
-    }
-
-
     long getWheelDistance() {
         return mDistance;
     }
@@ -1070,189 +990,6 @@ public class WheelData {
             mBatteryStart = battery;
         }
         mBattery = battery;
-
-//        mAverageBatteryCount = mAverageBatteryCount < MAX_BATTERY_AVERAGE_COUNT ?
-//                mAverageBatteryCount + 1 : MAX_BATTERY_AVERAGE_COUNT;
-//
-//        mAverageBattery += (battery - mAverageBattery) / mAverageBatteryCount;
-        mAverageBattery = battery;
-    }
-
-    private void startSpeedAlarmCount() {
-        if (!mSpeedAlarmExecuting) {
-            mSpeedAlarmExecuting = true;
-            TimerTask playBeepAgain = new TimerTask() {
-                @Override
-                public void run() {
-                    playBeep(ALARM_TYPE.PWM);
-                    Timber.i("Scheduled alarm");
-                }
-            };
-            speedAlarmTimer = new Timer();
-            speedAlarmTimer.scheduleAtFixedRate(playBeepAgain, 0, 200);
-        }
-        if (speedAlarmWatchdogTimer != null) {
-            speedAlarmWatchdogTimer.cancel();
-            speedAlarmWatchdogTimer = null;
-        }
-
-        TimerTask alarmWatchdog = new TimerTask() {
-            @Override
-            public void run() {
-                if (speedAlarmTimer != null) {
-                    speedAlarmTimer.cancel();
-                    speedAlarmTimer = null;
-                }
-                Timber.i("Alarm canceled by watchdog");
-            }
-        };
-        speedAlarmWatchdogTimer = new Timer();
-        speedAlarmWatchdogTimer.schedule(alarmWatchdog, 5000);
-    }
-
-    private void startTempAlarmCount() {
-        mTemperatureAlarmExecuting = true;
-        TimerTask stopTempAlarmExecuting = new TimerTask() {
-            @Override
-            public void run() {
-                mTemperatureAlarmExecuting = false;
-                Timber.i("Stop Temp <<<<<<<<<");
-            }
-        };
-        Timer timerTemp = new Timer();
-        timerTemp.schedule(stopTempAlarmExecuting, 570);
-    }
-
-    private void startCurrentAlarmCount() {
-        mCurrentAlarmExecuting = true;
-        TimerTask stopCurrentAlarmExecuring = new TimerTask() {
-            @Override
-            public void run() {
-                mCurrentAlarmExecuting = false;
-                Timber.i("Stop Curr <<<<<<<<<");
-            }
-
-        };
-        Timer timerCurrent = new Timer();
-        timerCurrent.schedule(stopCurrentAlarmExecuring, 170);
-    }
-
-    private void checkAlarmStatus(Context mContext) {
-
-        if (WheelLog.AppConfig.getAlteredAlarms()) {
-            if (mCalculatedPwm > WheelLog.AppConfig.getAlarmFactor1() / 100d) {
-                toneDuration = (int) Math.round(200 * (mCalculatedPwm - WheelLog.AppConfig.getAlarmFactor1() / 100d) / (WheelLog.AppConfig.getAlarmFactor2() / 100d - WheelLog.AppConfig.getAlarmFactor1() / 100d));
-                toneDuration = MathsUtil.clamp(toneDuration, 20, 200);
-                raiseAlarm(ALARM_TYPE.PWM, mCalculatedPwm*100d, mContext);
-            } else {
-                // check if speed alarm executing and stop it
-                mSpeedAlarmExecuting = false;
-                if (speedAlarmTimer != null) {
-                    speedAlarmTimer.cancel();
-                    speedAlarmTimer = null;
-                }
-                // prealarm
-                double warningPwm = WheelLog.AppConfig.getWarningPwm() / 100d;
-                int warningSpeedPeriod = WheelLog.AppConfig.getWarningSpeedPeriod() * 1000;
-                if (warningPwm != 0 && warningSpeedPeriod != 0 && mCalculatedPwm >= warningPwm && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
-                    mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                    SomeUtil.playSound(mContext, R.raw.warning_pwm);
-                } else {
-                    int warningSpeed = WheelLog.AppConfig.getWarningSpeed();
-                    if (warningSpeed != 0 && warningSpeedPeriod != 0 && getSpeedDouble() >= warningSpeed && (System.currentTimeMillis() - mLastPlayWarningSpeedTime) > warningSpeedPeriod) {
-                        mLastPlayWarningSpeedTime = System.currentTimeMillis();
-                        SomeUtil.playSound(mContext, R.raw.sound_warning_speed);
-                    }
-                }
-            }
-        } else {
-            if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm1Speed(), WheelLog.AppConfig.getAlarm1Battery())) {
-                toneDuration = 50;
-                raiseAlarm(ALARM_TYPE.SPEED1, getSpeedDouble(), mContext);
-            } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm2Speed(), WheelLog.AppConfig.getAlarm2Battery())) {
-                toneDuration = 100;
-                raiseAlarm(ALARM_TYPE.SPEED2, getSpeedDouble(),mContext);
-            } else if (alarmSpeedCheck(WheelLog.AppConfig.getAlarm3Speed(), WheelLog.AppConfig.getAlarm3Battery())) {
-                toneDuration = 180;
-                raiseAlarm(ALARM_TYPE.SPEED3, getSpeedDouble(), mContext);
-            } else {
-                // check if speed alarm executing and stop it
-                mSpeedAlarmExecuting = false;
-                if (speedAlarmTimer != null) {
-                    speedAlarmTimer.cancel();
-                    speedAlarmTimer = null;
-                }
-            }
-        }
-
-        int alarmCurrent = WheelLog.AppConfig.getAlarmCurrent() * 100;
-        if ((alarmCurrent > 0) && (mCurrent >= alarmCurrent) && !mCurrentAlarmExecuting) {
-            startCurrentAlarmCount();
-            raiseAlarm(ALARM_TYPE.CURRENT, getCurrentDouble(), mContext);
-        }
-
-        int alarmTemperature = WheelLog.AppConfig.getAlarmTemperature() * 100;
-        if ((alarmTemperature > 0) && (mTemperature >= alarmTemperature) && !mTemperatureAlarmExecuting) {
-            startTempAlarmCount();
-            raiseAlarm(ALARM_TYPE.TEMPERATURE, getTemperature(), mContext);
-        }
-    }
-
-    private boolean alarmSpeedCheck(int alarmSpeed, int alarmBattery) {
-        return alarmSpeed > 0 && alarmBattery > 0 && mAverageBattery <= alarmBattery && getSpeedDouble() >= alarmSpeed;
-    }
-
-    private void raiseAlarm(ALARM_TYPE alarmType, double value, Context mContext) {
-        Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-        long[] pattern = {0};
-        Intent intent = new Intent(Constants.ACTION_ALARM_TRIGGERED);
-        intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType);
-        intent.putExtra(Constants.INTENT_EXTRA_ALARM_VALUE, value);
-        switch (alarmType) {
-            case SPEED1:
-            case SPEED2:
-            case SPEED3:
-            case PWM:
-                pattern = new long[]{0, 100, 100};
-                break;
-
-            case CURRENT:
-                pattern = new long[]{0, 50, 50, 50, 50};
-                break;
-            case TEMPERATURE:
-                pattern = new long[]{0, 500, 500};
-                break;
-        }
-        if (v.hasVibrator() && !WheelLog.AppConfig.getDisablePhoneVibrate())
-            v.vibrate(pattern, -1);
-        if (!WheelLog.AppConfig.getDisablePhoneBeep()) {
-            if ((alarmType.getValue() > 3) && (alarmType.getValue() != 6)) {
-                playBeep(alarmType);
-            } else {
-                startSpeedAlarmCount();
-            }
-        }
-        mContext.sendBroadcast(intent);
-
-        if (WheelLog.AppConfig.getMibandMode() == MiBandEnum.Alarm) {
-            String mi_text = "";
-            switch (alarmType) {
-                case SPEED1:
-                case SPEED2:
-                case SPEED3:
-                case PWM:
-                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_speed_v), WheelData.getInstance().getSpeedDouble());
-                    break;
-                case CURRENT:
-                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_current_v), WheelData.getInstance().getCurrentDouble());
-                    break;
-                case TEMPERATURE:
-                    mi_text = String.format(Locale.US, mContext.getString(R.string.alarm_text_temperature_v), WheelData.getInstance().getTemperature());
-                    break;
-            }
-            WheelLog.Notifications.setAlarmText(mi_text);
-            WheelLog.Notifications.update();
-        }
     }
 
     void decodeResponse(byte[] data, Context mContext) {
@@ -1265,7 +1002,7 @@ public class WheelData {
         if (protoVer != "") {
             Timber.i("Decode, proto: %s", protoVer);
         }
-        boolean new_data = getAdapter().setContext(mContext).decode(data);
+        boolean new_data = getAdapter().decode(data);
 
         if (!new_data)
             return;
@@ -1304,9 +1041,6 @@ public class WheelData {
                 xAxis.remove(0);
             }
         }
-
-        if (WheelLog.AppConfig.getAlarmsEnabled())
-            checkAlarmStatus(mContext);
 
         timestamp_last = timestamp_raw;
         intent.putExtra("Speed", mSpeed);
@@ -1405,7 +1139,6 @@ public class WheelData {
         mCalculatedPwm = 0.0;
         mMaxPwm = 0.0;
         mMaxTemp = 0;
-        mAverageBattery = 0;
         mVoltage = 0;
         mVoltageSag = 20000;
         mRideTime = 0;
@@ -1425,5 +1158,214 @@ public class WheelData {
         mStartTotalDistance = 0;
         protoVer = "";
         mWheelIsReady = false;
+    }
+
+    boolean detectWheel(String deviceAddress, Context mContext, int servicesResId) {
+        WheelLog.AppConfig.setLastMac(deviceAddress);
+        String advData = WheelLog.AppConfig.getAdvDataForWheel();
+        String adapterName = "";
+        protoVer = "";
+        if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
+            protoVer = "S2";
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf"}) || (advData.startsWith("5600"))) {
+            protoVer = "Mini";
+        }
+        Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
+        boolean detected_wheel = false;
+        String text = StringUtil.Companion.getRawTextResource(mContext, servicesResId);
+        var wheelServices = mBluetoothService.getWheelServices();
+        if (wheelServices == null) {
+            return false;
+        }
+        try {
+            JSONArray arr = new JSONArray(text);
+            for (int i = 0; i < arr.length() && !detected_wheel; i++) {
+                JSONObject services = arr.getJSONObject(i);
+                if (services.length() - 1 != wheelServices.size()) {
+                    Timber.i("Services len not corresponds, go to the next");
+                    continue;
+                }
+                adapterName = services.getString("adapter");
+                Timber.i("Searching for %s", adapterName);
+                Iterator<String> iterator = services.keys();
+                // skip adapter key
+                iterator.next();
+                boolean go_next_adapter = false;
+                while (iterator.hasNext()) {
+                    String keyName = iterator.next();
+                    Timber.i("Key name %s", keyName);
+                    UUID s_uuid = UUID.fromString(keyName);
+                    BluetoothGattService service = mBluetoothService.getWheelService(s_uuid);
+                    if (service == null) {
+                        Timber.i("No such service");
+                        go_next_adapter = true;
+                        break;
+                    }
+
+                    JSONArray service_uuid = services.getJSONArray(keyName);
+                    if (service_uuid.length() != service.getCharacteristics().size()) {
+                        Timber.i("Characteristics len not corresponds, go to the next");
+                        go_next_adapter = true;
+                        break;
+                    }
+                    for (int j = 0; j < service_uuid.length(); j++) {
+                        UUID c_uuid = UUID.fromString(service_uuid.getString(j));
+                        Timber.i("UUid %s", service_uuid.getString(j));
+                        BluetoothGattCharacteristic characteristic = service.getCharacteristic(c_uuid);
+                        if (characteristic == null) {
+                            Timber.i("UUid not found");
+                            go_next_adapter = true;
+                            break;
+                        } else {Timber.i("UUid found");}
+                    }
+                    if (go_next_adapter) {
+                        break;
+                    }
+                }
+                if (!go_next_adapter) {
+                    Timber.i("Wheel Detected as %s", adapterName);
+                    detected_wheel = true;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (detected_wheel) {
+            Timber.i("Protocol recognized as %s", adapterName);
+            if (WHEEL_TYPE.GOTWAY.toString().equalsIgnoreCase(adapterName) && (mBtName.equals("RW") || mName.startsWith("ROCKW"))) {
+                Timber.i("It seems to be RochWheel, force to Kingsong proto");
+                adapterName = WHEEL_TYPE.KINGSONG.toString();
+            }
+            if (WHEEL_TYPE.KINGSONG.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.KINGSONG);
+                var targetService = mBluetoothService.getWheelService(Constants.KINGSONG_SERVICE_UUID);
+                var notifyCharacteristic = targetService.getCharacteristic(Constants.KINGSONG_READ_CHARACTER_UUID);
+                mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(Constants.KINGSONG_DESCRIPTER_UUID);
+                mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+
+                return true;
+            } else if (WHEEL_TYPE.GOTWAY.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.GOTWAY_VIRTUAL);
+                var targetService = mBluetoothService.getWheelService(Constants.GOTWAY_SERVICE_UUID);
+                var notifyCharacteristic = targetService.getCharacteristic(Constants.GOTWAY_READ_CHARACTER_UUID);
+                mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
+                // Let the user know it's working by making the wheel beep
+                if (WheelLog.AppConfig.getConnectBeep())
+                    mBluetoothService.writeWheelCharacteristic("b".getBytes());
+
+                return true;
+            } else if (WHEEL_TYPE.INMOTION.toString().equalsIgnoreCase(adapterName)) {
+                setWheelType(WHEEL_TYPE.INMOTION);
+                var targetService = mBluetoothService.getWheelService(Constants.INMOTION_SERVICE_UUID);
+                var notifyCharacteristic = targetService.getCharacteristic(Constants.INMOTION_READ_CHARACTER_UUID);
+                mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
+                BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(Constants.INMOTION_DESCRIPTER_UUID);
+                mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel();
+                if (inmotionPassword.length() > 0) {
+                    InMotionAdapter.getInstance().startKeepAliveTimer(inmotionPassword);
+                    return true;
+                }
+                return false;
+
+            } else if (WHEEL_TYPE.INMOTION_V2.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Inmotion V2");
+                setWheelType(WHEEL_TYPE.INMOTION_V2);
+                var targetService = mBluetoothService.getWheelService(Constants.INMOTION_V2_SERVICE_UUID);
+                Timber.i("service UUID");
+                var notifyCharacteristic = targetService.getCharacteristic(Constants.INMOTION_V2_READ_CHARACTER_UUID);
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                var descriptor = notifyCharacteristic.getDescriptor(Constants.INMOTION_V2_DESCRIPTER_UUID);
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                } else {
+                    Timber.i("enable notify UUID");
+                    mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    Timber.i("write notify");
+                }
+                InmotionAdapterV2.getInstance().startKeepAliveTimer();
+                Timber.i("starting Inmotion V2 adapter");
+                return true;
+
+            } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Ninebot Z");
+                if (protoVer.compareTo("") == 0) {
+                    Timber.i("really Z");
+                    setWheelType(WHEEL_TYPE.NINEBOT_Z);
+                } else {
+                    Timber.i("no, switch to NB");
+                    setWheelType(WHEEL_TYPE.NINEBOT);
+                }
+                var targetService = mBluetoothService.getWheelService(Constants.NINEBOT_Z_SERVICE_UUID);
+                Timber.i("service UUID");
+                var notifyCharacteristic = targetService.getCharacteristic(Constants.NINEBOT_Z_READ_CHARACTER_UUID);
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                var descriptor = notifyCharacteristic.getDescriptor(Constants.NINEBOT_Z_DESCRIPTER_UUID);
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                } else {
+                    Timber.i("enable notify UUID");
+                    mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                }
+                Timber.i("write notify");
+                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
+                    NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
+                    Timber.i("starting ninebot adapter, proto: %s", protoVer);
+                } else {
+                    NinebotZAdapter.getInstance().startKeepAliveTimer();
+                    Timber.i("starting ninebot Z adapter");
+                }
+
+                return true;
+            } else if (WHEEL_TYPE.NINEBOT.toString().equalsIgnoreCase(adapterName)) {
+                Timber.i("Trying to start Ninebot");
+                setWheelType(WHEEL_TYPE.NINEBOT);
+                var targetService = mBluetoothService.getWheelService(Constants.NINEBOT_SERVICE_UUID);
+                Timber.i("service UUID");
+                var notifyCharacteristic = targetService.getCharacteristic(Constants.NINEBOT_READ_CHARACTER_UUID);
+                Timber.i("read UUID");
+                if (notifyCharacteristic == null) {
+                    Timber.i("it seems that RX UUID doesn't exist");
+                }
+                mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
+                Timber.i("notify UUID");
+                var descriptor = notifyCharacteristic.getDescriptor(Constants.NINEBOT_DESCRIPTER_UUID);
+                Timber.i("descr UUID");
+                if (descriptor == null) {
+                    Timber.i("it seems that descr UUID doesn't exist");
+                } else {
+                    Timber.i("enable notify UUID");
+                    mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    Timber.i("write notify");
+                }
+                NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
+                Timber.i("starting ninebot adapter");
+                return true;
+            }
+        } else {
+            WheelLog.AppConfig.setLastMac("");
+            Timber.i("Protocol recognized as Unknown");
+            for (BluetoothGattService service : wheelServices) {
+                Timber.i("Service: %s", service.getUuid().toString());
+                for (BluetoothGattCharacteristic characteristics : service.getCharacteristics()) {
+                    Timber.i("Characteristics: %s", characteristics.getUuid().toString());
+                }
+            }
+        }
+        return false;
     }
 }

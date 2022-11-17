@@ -55,9 +55,11 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     }
 
     fun removeAt(position: Int) {
-        tripModels.removeAt(position)
-        notifyItemChanged(position)
-        notifyItemRangeRemoved(position, 1)
+        if (tripModels.size > position) {
+            tripModels.removeAt(position)
+            notifyItemChanged(position)
+            notifyItemRangeRemoved(position, 1)
+        }
     }
 
     class ViewHolder internal constructor(var view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {

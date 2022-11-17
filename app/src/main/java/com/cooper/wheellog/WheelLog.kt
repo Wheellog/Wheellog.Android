@@ -19,6 +19,8 @@ class WheelLog : Application() {
             Timber.plant(Timber.DebugTree(), FileLoggingTree(applicationContext))
         }
 
+        WheelData.initiate()
+
         // YandexMetrica.
         if (BuildConfig.metrica_api.isNotEmpty()) {
             val config = YandexMetricaConfig
@@ -56,6 +58,10 @@ class WheelLog : Application() {
         lateinit var Notifications: NotificationUtil
         lateinit var VolumeKeyController: VolumeKeyController
         lateinit var ThemeManager: ThemeManager
+
+        val appContext: Context?
+            get() = me?.applicationContext
+
         fun cResolver(): ContentResolver {
             return me!!.contentResolver
         }

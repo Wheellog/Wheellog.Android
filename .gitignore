@@ -47,6 +47,7 @@ captures/
 .idea/copyright/*
 private.properties
 app/release/*
+app/debug/*
 app/schemas/*
 
 # Mac DS_Store files

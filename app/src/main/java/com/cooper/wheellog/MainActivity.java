@@ -1,6 +1,7 @@
 package com.cooper.wheellog;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -46,6 +47,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.*;
 import com.google.android.material.snackbar.Snackbar;
 import com.welie.blessed.ConnectionState;
+import com.yandex.metrica.YandexMetrica;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,11 +56,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import me.relex.circleindicator.CircleIndicator3;
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
-@RuntimePermissions
 public class MainActivity extends AppCompatActivity {
     public static AudioManager audioManager = null;
 
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     protected static final int RESULT_DEVICE_SCAN_REQUEST = 20;
     protected static final int RESULT_REQUEST_ENABLE_BT = 30;
     protected static final int RESULT_REQUEST_PERMISSIONS_BT = 40;
+    protected static final int RESULT_REQUEST_PERMISSIONS_IO = 50;
 
     private static Boolean onDestroyProcess = false;
 
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                         showSnackBar(getResources().getString(R.string.alarm_text_temperature) + String.format(": %.1f", alarmValue), 3000);
                     }
                     if (alarmType == 6) {
-                        showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue), 3000);
+                        showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue*100), 3000);
                     }
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:
@@ -237,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                             WheelLog.Notifications.setNotificationMessageId(R.string.connected);
                             break;
-                         case DISCONNECTED:
+                        case DISCONNECTING:
+                        case DISCONNECTED:
                             if (isWheelSearch) {
                                 if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
                                     WheelLog.Notifications.setNotificationMessageId(R.string.searching);
@@ -278,6 +279,11 @@ public class MainActivity extends AppCompatActivity {
                             WheelData.getInstance().getSpeedDouble() > 3.5) {
                         toggleLoggingService();
                     }
+                    if (WheelLog.AppConfig.getAlarmsEnabled()) {
+                        Alarms.INSTANCE.checkAlarm(
+                                WheelData.getInstance().getCalculatedPwm() / 100,
+                                getApplicationContext());
+                    }
                     break;
                 case Constants.ACTION_PEBBLE_SERVICE_TOGGLED:
                     setMenuIconStates();
@@ -308,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                     WheelLog.Notifications.update();
                     break;
                 case Constants.NOTIFICATION_BUTTON_BEEP:
-                    SomeUtil.playBeep(getApplicationContext());
+                    SomeUtil.playBeep();
                     break;
                 case Constants.NOTIFICATION_BUTTON_LIGHT:
                     if (WheelData.getInstance().getAdapter() != null) {
@@ -335,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             toggleLoggingService();
         } else {
-            MainActivityPermissionsDispatcher.toggleLoggingServiceLegacyWithPermissionCheck(this);
+            PermissionsUtil.INSTANCE.checkExternalFilePermission(this, RESULT_REQUEST_PERMISSIONS_IO);
         }
     }
 
@@ -469,7 +475,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         setContentView(R.layout.activity_main);
-        WheelData.initiate();
 
         ElectroClub electroClub = ElectroClub.getInstance();
         electroClub.setDao(TripDatabase.Companion.getDataBase(this).tripDao());
@@ -514,9 +519,11 @@ public class MainActivity extends AppCompatActivity {
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
         } else if (!mBluetoothAdapter.isEnabled()) {
-            // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
-            // fire an intent to display a dialog asking the user to grant permission to enable it.
-            ActivityCompat.startActivityForResult(this, new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT, null);
+            if (PermissionsUtil.INSTANCE.checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+                // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
+                // fire an intent to display a dialog asking the user to grant permission to enable it.
+                ActivityCompat.startActivityForResult(this, new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), RESULT_REQUEST_ENABLE_BT, null);
+            }
         } else {
             startBluetoothService();
         }
@@ -588,10 +595,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                WheelLog.Notifications.close();
                 Timber.uproot(eventsLoggingTree);
                 eventsLoggingTree.close();
                 eventsLoggingTree = null;
                 unregisterReceiver(mCoreBroadcastReceiver);
+                // Kill YandexMetrika process.
+                var am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                var runningProcesses = am.getRunningAppProcesses();
+                for (var process : runningProcesses) {
+                    if (android.os.Process.myPid() != process.pid) {
+                        android.os.Process.killProcess(process.pid);
+                    }
+                }
+                // Kill self process.
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
 
@@ -621,7 +638,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miSearch:
-                MainActivityPermissionsDispatcher.startScanActivityWithPermissionCheck(this);
+                startScanActivity();
                 return true;
             case R.id.miWheel:
                 toggleConnectToWheel();
@@ -743,12 +760,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingServiceLegacy() {
         toggleLoggingService();
     }
 
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void toggleLoggingService() {
         Intent dataLoggerServiceIntent = new Intent(getApplicationContext(), LoggingService.class);
         if (LoggingService.isInstanceCreated()) {
@@ -824,7 +839,9 @@ public class MainActivity extends AppCompatActivity {
                 && getBluetoothService() == null) {
             Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothService.class);
             bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE);
-            Timber.i("bluetoothService is starting.");
+            YandexMetrica.reportEvent("BluetoothService is starting.");
+        } else if (PermissionsUtil.INSTANCE.isMaxBleReq()) {
+            showSnackBar(R.string.bluetooth_required);
         }
     }
     //endregion
@@ -837,18 +854,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @NeedsPermission({ Manifest.permission.ACCESS_FINE_LOCATION })
     void startScanActivity() {
-        ActivityCompat.startActivityForResult(this, new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST, null);
+        if (PermissionsUtil.INSTANCE.checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+            ActivityCompat.startActivityForResult(this, new Intent(MainActivity.this, ScanActivity.class), RESULT_DEVICE_SCAN_REQUEST, null);
+        } else if (PermissionsUtil.INSTANCE.isMaxBleReq()) {
+            showSnackBar(R.string.bluetooth_required);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // NOTE: delegate the permission handling to generated method
-        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
         if (requestCode == RESULT_REQUEST_PERMISSIONS_BT) {
             startBluetoothService();
+        } else if (requestCode == RESULT_REQUEST_PERMISSIONS_IO) {
+            toggleLoggingService();
         }
     }
 
