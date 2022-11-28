@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -95,7 +94,6 @@ public class WheelData {
 
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
-    private long mLowSpeedMusicTime = 0;
 
     private boolean mBmsView = false;
     private String protoVer = "";
@@ -1052,26 +1050,7 @@ public class WheelData {
             mContext.sendBroadcast(isReadyIntent);
         }
 
-        CheckMuteMusic();
-    }
-
-    // TODO: move to AudioUtil
-    public void CheckMuteMusic() {
-        if (!WheelLog.AppConfig.getUseStopMusic())
-            return;
-
-        final double muteSpeedThreshold = 3.5;
-        double speed = getSpeedDouble();
-        if (speed <= muteSpeedThreshold) {
-            mLowSpeedMusicTime = 0;
-            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-        } else {
-            if (mLowSpeedMusicTime == 0)
-                mLowSpeedMusicTime = System.currentTimeMillis();
-
-            if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= 1500)
-                MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-        }
+        AudioUtil.INSTANCE.checkMuteMusic();
     }
 
     public void resetRideTime() {
@@ -1115,7 +1094,6 @@ public class WheelData {
     }
 
     void reset() {
-        mLowSpeedMusicTime = 0;
         mSpeed = 0;
         mTorque = 0;
         mMotorPower = 0;
