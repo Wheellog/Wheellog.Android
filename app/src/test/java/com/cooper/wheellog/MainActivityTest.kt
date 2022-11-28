@@ -1,18 +1,23 @@
 package com.cooper.wheellog
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.os.ParcelUuid
 import android.provider.Settings
+import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import com.google.common.truth.Truth.assertThat
-import org.junit.Ignore
 import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.Config
+
 
 @Config(sdk = [30, 33])
 @RunWith(RobolectricTestRunner::class)
@@ -49,6 +54,21 @@ class MainActivityTest {
     fun `click on wheel menu`() {
         // Arrange.
         val shadowActivity = Shadows.shadowOf(activity)
+
+        val bluetoothAdapter =
+            (activity.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+        val shadowBle = Shadows.shadowOf(bluetoothAdapter)
+        shadowBle.setState(BluetoothAdapter.STATE_ON)
+        val MOCK_MAC_ADDRESS = "00:11:22:33:AA:BB"
+        val device = bluetoothAdapter.getRemoteDevice(MOCK_MAC_ADDRESS)
+        val uuids = arrayOf(
+            ParcelUuid.fromString("00000000-1111-2222-3333-000000000011"),
+            ParcelUuid.fromString("00000000-1111-2222-3333-0000000000aa")
+        )
+
+        Shadows.shadowOf(device).setUuids(uuids)
+                
+
         WheelData.getInstance().bluetoothService = mockkClass(BluetoothService::class, relaxed = true)
 
         // Act.

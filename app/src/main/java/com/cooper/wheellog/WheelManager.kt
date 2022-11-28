@@ -3,8 +3,6 @@ package com.cooper.wheellog
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattService
-import android.content.Context
-import android.content.Intent
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Constants.*
 import com.cooper.wheellog.utils.StringUtil.Companion.getRawTextResource
@@ -14,18 +12,14 @@ import org.json.JSONException
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToInt
+
 
 object WheelManager {
     private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
     private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
-    private const val GRAPH_UPDATE_INTERVAL = 1000 // milliseconds
 
     var lastLifeData: Long = -1
         private set
-
-    private var timestampRaw: Long = 0
-    private var timestampLast: Long = 0
 
     fun detectWheel(
         deviceAddress: String,
@@ -311,69 +305,5 @@ object WheelManager {
             }
             else -> {}
         }
-    }
-
-    fun decodeResponse(data: ByteArray, mContext: Context) {
-        val wd = WheelData.getInstance() ?: return
-        timestampRaw = System.currentTimeMillis()
-        val stringBuilder = StringBuilder(data.size)
-        for (aData in data) {
-            stringBuilder.append(String.format(Locale.US, "%02X", aData))
-        }
-        Timber.i("Received: %s", stringBuilder)
-        if (wd.protoVer !== "") {
-            Timber.i("Decode, proto: %s", wd.protoVer)
-        }
-        if (!wd.adapter.setContext(mContext).decode(data)) {
-            return // no new data
-        }
-        lastLifeData = System.currentTimeMillis()
-        wd.resetRideTime()
-        wd.updateRideTime()
-        wd.topSpeed = wd.speedReal
-        wd.voltageSag = wd.voltage
-        wd.maxTemp = wd.temperature
-        var calculatedPwm = 0.0
-        if (wd.wheelType == WHEEL_TYPE.KINGSONG || wd.wheelType == WHEEL_TYPE.INMOTION_V2 || WheelLog.AppConfig.hwPwm) {
-            calculatedPwm = wd.output.toDouble() / 10000.0
-        } else {
-            val rotationSpeed = WheelLog.AppConfig.rotationSpeed / 10.0
-            val rotationVoltage = WheelLog.AppConfig.rotationVoltage / 10.0
-            val powerFactor = WheelLog.AppConfig.powerFactor / 100.0
-            calculatedPwm = wd.speedReal / (rotationSpeed / rotationVoltage * wd.voltage * powerFactor)
-        }
-
-        wd.calculatedPwm = calculatedPwm * 100
-        wd.maxPwm = calculatedPwm
-        if (wd.wheelType == WHEEL_TYPE.GOTWAY || wd.wheelType == WHEEL_TYPE.VETERAN) {
-            wd.current = (wd.calculatedPwm * wd.phaseCurrent).roundToInt()
-        }
-        else if (wd.wheelType != WHEEL_TYPE.INMOTION_V2) {
-            wd.setPower((wd.currentDouble * wd.voltage).roundToInt())
-        }
-        val intent = Intent(ACTION_WHEEL_DATA_AVAILABLE)
-        if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().timeInMillis) {
-            graph_last_update_time = Calendar.getInstance().timeInMillis
-            intent.putExtra(INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true)
-            currentAxis.add(getCurrentDouble().toFloat())
-            speedAxis.add(getSpeedDouble().toFloat())
-            xAxis.add(SimpleDateFormat("HH:mm:ss", Locale.US).format(Calendar.getInstance().time))
-            if (speedAxis.size > 3600000 / WheelData.GRAPH_UPDATE_INTERVAL) {
-                speedAxis.removeAt(0)
-                currentAxis.removeAt(0)
-                xAxis.removeAt(0)
-            }
-        }
-        if (WheelLog.AppConfig.alarmsEnabled) checkAlarmStatus(mContext)
-        timestamp_last = timestamp_raw
-        intent.putExtra("Speed", mSpeed)
-        mContext.sendBroadcast(intent)
-        if (!mWheelIsReady && getAdapter().isReady()) {
-            mWheelIsReady = true
-            val isReadyIntent = Intent(ACTION_WHEEL_IS_READY)
-            mContext.sendBroadcast(isReadyIntent)
-        }
-
-        wd.CheckMuteMusic()
     }
 }

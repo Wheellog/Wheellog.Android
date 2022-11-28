@@ -44,7 +44,7 @@ class BluetoothService: Service() {
     private val wakeLogTag = "WheelLog:WakeLockTag"
     private val central: BluetoothCentralManager by lazy {
         BluetoothCentralManager(
-            this,
+            WheelLog.appContext!!,
             bluetoothCentralManagerCallback,
             Handler(Looper.getMainLooper())
         )
@@ -186,7 +186,14 @@ class BluetoothService: Service() {
             }
         }
 
+    private var lastConnectionHash = -1
+
     private fun broadcastConnectionUpdate(autoConnect: Boolean = false) {
+        val connectionHash = connectionState.value + isWheelSearch.hashCode()
+        if (lastConnectionHash == connectionHash) {
+            return
+        }
+        lastConnectionHash = connectionHash
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.value)
         intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, isWheelSearch)
@@ -201,7 +208,12 @@ class BluetoothService: Service() {
         private set
 
     var isWheelSearch = false
-        private set
+        private set(value) {
+            if (field != value) {
+                broadcastConnectionUpdate()
+            }
+            field = value
+        }
 
     fun startReconnectTimer() {
         if (reconnectTimer != null) {
@@ -211,10 +223,9 @@ class BluetoothService: Service() {
         reconnectTimer = Timer().apply {
             scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    val wd = WheelData.getInstance()
                     if (connectionState == ConnectionState.CONNECTED
-                        && wd.lastLifeData > 0
-                        && (System.currentTimeMillis() - wd.lastLifeData) / 1000 > magicPeriod) {
+                        && WheelManager.lastLifeData > 0
+                        && (System.currentTimeMillis() - WheelManager.lastLifeData) / 1000 > magicPeriod) {
                         toggleReconnectToWheel()
                     }
                 }
@@ -259,22 +270,27 @@ class BluetoothService: Service() {
             return false
         }
         central.transport = Transport.LE
-        if (wheelConnection?.address == wheelAddress) {
+        if (wheelConnection != null) {
+            when (connectionState) {
+                ConnectionState.CONNECTED -> {
+                    Timber.i("Device is already connected.")
+                    return false
+                }
+                ConnectionState.CONNECTING -> {
+                    Timber.i("Device not found.  Unable to connect.")
+                    return false
+                }
+                else -> {}
+            }
             Timber.i("Trying to use an existing wheelConnection for connection.")
             isWheelSearch = true
-            central.connectPeripheral(wheelConnection!!, wheelCallback)
-            broadcastConnectionUpdate()
+            central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
             return true
-        }
-        if (wheelConnection?.state == ConnectionState.CONNECTING) {
-            Timber.i("Device not found.  Unable to connect.")
-            return false
         }
 
         isWheelSearch = true
         central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
         Timber.i("Trying to create a new connection.")
-        broadcastConnectionUpdate()
         return true
     }
 
@@ -291,7 +307,6 @@ class BluetoothService: Service() {
         }
 
         isWheelSearch = false
-        broadcastConnectionUpdate()
     }
 
     fun toggleConnectToWheel() {
