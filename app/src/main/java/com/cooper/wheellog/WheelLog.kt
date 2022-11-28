@@ -22,7 +22,7 @@ class WheelLog : Application() {
         WheelData.initiate()
 
         // YandexMetrica.
-        if (BuildConfig.metrica_api.isNotEmpty() || false) {
+        if (BuildConfig.metrica_api.isNotEmpty()) {
             val config = YandexMetricaConfig
                 .newConfigBuilder(BuildConfig.metrica_api)
                 .withLocationTracking(false)
