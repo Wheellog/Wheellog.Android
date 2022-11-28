@@ -839,7 +839,9 @@ public class MainActivity extends AppCompatActivity {
                 && getBluetoothService() == null) {
             Intent bluetoothServiceIntent = new Intent(getApplicationContext(), BluetoothService.class);
             bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE);
-            YandexMetrica.reportEvent("BluetoothService is starting.");
+            if (System.getProperty("metrica") != null) {
+                YandexMetrica.reportEvent("BluetoothService is starting.");
+            }
         } else if (PermissionsUtil.INSTANCE.isMaxBleReq()) {
             showSnackBar(R.string.bluetooth_required);
         }

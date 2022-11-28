@@ -20,7 +20,6 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 
-
 @Config(sdk = [30, 33])
 @RunWith(RobolectricTestRunner::class)
 class BluetoothTest {
@@ -50,7 +49,8 @@ class BluetoothTest {
         every { localBinder.getService() } returns service
         justRun { service.sendBroadcast(any()) }
         shadowApp.setComponentNameAndServiceForBindService(
-            ComponentName(appContext.packageName, BluetoothService::class.java.name), localBinder)
+            ComponentName(appContext.packageName, BluetoothService::class.java.name), localBinder
+        )
     }
 
     @Test
@@ -98,7 +98,7 @@ class BluetoothTest {
         service.toggleConnectToWheel()
 
         // Assert.
-        verify (atLeast = 1) { service.sendBroadcast(any()) }
+        verify(atLeast = 1) { service.sendBroadcast(any()) }
         assertThat(service.isWheelSearch).isEqualTo(true)
         assertThat(service.connectionState).isEqualTo(ConnectionState.DISCONNECTED)
     }

@@ -29,6 +29,7 @@ class WheelLog : Application() {
                 .withStatisticsSending(AppConfig.yandexMetricaAccepted)
                 .build()
             YandexMetrica.activate(applicationContext, config)
+            System.setProperty("metrica", "enabled")
         }
     }
 
