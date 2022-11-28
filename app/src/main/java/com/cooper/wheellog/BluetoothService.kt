@@ -131,7 +131,7 @@ class BluetoothService: Service() {
                 Timber.i("onServicesDiscovered called")
                 var recognisedWheel = WheelManager.detectWheel(
                         wheelAddress,
-                    this@BluetoothService,
+                        this@BluetoothService,
                         R.raw.bluetooth_services
                     )
                 if (!recognisedWheel) {
