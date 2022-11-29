@@ -391,6 +391,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        if (w <= 0 || h <= 0) {
+            return
+        }
         val landscape = w > h
 
         // Account for padding
