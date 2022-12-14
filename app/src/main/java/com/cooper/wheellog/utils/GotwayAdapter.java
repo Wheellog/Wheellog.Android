@@ -61,7 +61,7 @@ public class GotwayAdapter extends BaseAdapter {
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
                     //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14);
+                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14)*10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
