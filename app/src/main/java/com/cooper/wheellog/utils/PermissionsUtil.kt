@@ -12,14 +12,17 @@ import androidx.core.content.ContextCompat
 object PermissionsUtil {
     private val permissionsLocationAndBle = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.BLUETOOTH
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     @RequiresApi(Build.VERSION_CODES.S)
     private val permissionsBle31 = arrayOf(
         Manifest.permission.BLUETOOTH_SCAN,
         Manifest.permission.BLUETOOTH_CONNECT
+    )
+
+    private val permissionsBle30 = arrayOf(
+            Manifest.permission.BLUETOOTH
     )
 
     private val permissionsIO = arrayOf(
@@ -42,6 +45,8 @@ object PermissionsUtil {
         val requestedPermission = permissionsLocationAndBle.toMutableList()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestedPermission.addAll(permissionsBle31)
+        } else {
+            requestedPermission.addAll(permissionsBle30)
         }
         return !reqPermissions(activity, requestedPermission, requestCode)
     }
