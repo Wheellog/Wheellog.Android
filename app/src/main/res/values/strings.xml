@@ -453,6 +453,7 @@
     <string name="off_level_1_alarm">35 (45) km/h + 80% PWM</string>
     <string name="off_level_2_alarm">80% PWM only</string>
     <string name="on_level_alarm">30 + 35 (45) km/h + 80% PWM</string>
+    <string name="pwm_tiltback_alarm">Custom FW PWM tiltback</string>
     <string name="metre">m</string>
     <string name="on_headlight_title">Switch on the light</string>
     <string name="on_headlight_description">Activate headlight</string>
