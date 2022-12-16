@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 object PermissionsUtil {
-    private val permissionsLocationAndBle = arrayOf(
+    private val permissionsLocation = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
@@ -22,7 +22,8 @@ object PermissionsUtil {
     )
 
     private val permissionsBleLegacy = arrayOf(
-        Manifest.permission.BLUETOOTH
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_ADMIN
     )
 
     private val permissionsIO = arrayOf(
@@ -42,7 +43,7 @@ object PermissionsUtil {
      * returns - all ble permissions is granted
      */
     fun checkBlePermissions(activity: Activity, requestCode: Int = 1): Boolean {
-        val requestedPermission = permissionsLocationAndBle.toMutableList()
+        val requestedPermission = permissionsLocation.toMutableList()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestedPermission.addAll(permissionsBle31)
         } else {
