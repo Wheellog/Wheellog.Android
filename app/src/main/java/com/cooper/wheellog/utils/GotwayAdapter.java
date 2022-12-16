@@ -294,6 +294,7 @@ public class GotwayAdapter extends BaseAdapter {
             case 0: command = "o"; break; // alertTwo (1) // 30 + 35 (45) km/h + 80% PWM
             case 1: command = "u"; break; // AlertOff (2) // 80% PWM only
             case 2: command = "i"; break; //alertOne (0) // 35 (45) km/h + 80% PWM
+            case 3: command = "I"; break; //pwm tiltback for custom firmware
         }
         lock_Changes = 2;
         sendCommand(command);
