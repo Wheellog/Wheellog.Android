@@ -93,8 +93,8 @@ class MainActivityTest {
                 Manifest.permission.BLUETOOTH_ADMIN
             )
             denyPermissions(
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.BLUETOOTH
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH
             )
             clearNextStartedActivities()
         }

@@ -21,8 +21,8 @@ object PermissionsUtil {
         Manifest.permission.BLUETOOTH_CONNECT
     )
 
-    private val permissionsBle30 = arrayOf(
-            Manifest.permission.BLUETOOTH
+    private val permissionsBleLegacy = arrayOf(
+        Manifest.permission.BLUETOOTH
     )
 
     private val permissionsIO = arrayOf(
@@ -46,7 +46,7 @@ object PermissionsUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestedPermission.addAll(permissionsBle31)
         } else {
-            requestedPermission.addAll(permissionsBle30)
+            requestedPermission.addAll(permissionsBleLegacy)
         }
         return !reqPermissions(activity, requestedPermission, requestCode)
     }
