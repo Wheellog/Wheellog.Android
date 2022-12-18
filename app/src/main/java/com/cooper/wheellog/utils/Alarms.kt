@@ -22,6 +22,7 @@ object Alarms {
     private var speedAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
     private var currentAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
     private var temperatureAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 570 }
+    private var batteryAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 970 }
     private var lastPlayWarningSpeedTime = System.currentTimeMillis()
     private var alarmTimer: Timer? = null
     private const val checkPeriod: Long = 200
@@ -51,6 +52,9 @@ object Alarms {
             }
             if (currentAlarmExecuting.value) {
                 alarm = alarm or 0x02
+            }
+            if (batteryAlarmExecuting.value) {
+                alarm = alarm or 0x08
             }
             return alarm
         }
@@ -90,6 +94,7 @@ object Alarms {
         }
                 || currentAlarms(mContext)
                 || temperatureAlarms(mContext)
+                || batteryAlarms(mContext)
         if (executed && !isStarted) {
             start()
         }
@@ -190,6 +195,22 @@ object Alarms {
         return currentAlarmExecuting.value
     }
 
+    private fun batteryAlarms(mContext: Context): Boolean {
+        if (batteryAlarmExecuting.value) {
+            return true
+        }
+        val alarmBattery = WheelLog.AppConfig.alarmBattery
+        if (alarmBattery > 0 && WheelData.getInstance().batteryLevel <= alarmBattery) {
+            raiseAlarm(
+                    ALARM_TYPE.BATTERY,
+                    WheelData.getInstance().batteryLevel.toDouble(),
+                    mContext
+            )
+            batteryAlarmExecuting.value = true
+        }
+        return batteryAlarmExecuting.value
+    }
+
     private fun raiseAlarm(alarmType: ALARM_TYPE, value: Double, mContext: Context) {
         val intent = Intent(Constants.ACTION_ALARM_TRIGGERED)
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType)
@@ -201,6 +222,8 @@ object Alarms {
             ALARM_TYPE.PWM -> longArrayOf(0, 100, 100)
             ALARM_TYPE.CURRENT -> longArrayOf(0, 50, 50, 50, 50)
             ALARM_TYPE.TEMPERATURE -> longArrayOf(0, 500, 500)
+            ALARM_TYPE.BATTERY -> longArrayOf(0, 100, 500)
+
         }
         if (!WheelLog.AppConfig.disablePhoneVibrate) {
             vibrate(mContext, pattern)
@@ -208,7 +231,10 @@ object Alarms {
         if (!WheelLog.AppConfig.disablePhoneBeep) {
             CoroutineScope(Job()).launch {
                 Timber.i("Scheduled alarm. $alarmType")
-                playAlarm(alarmType)
+                if (alarmType == ALARM_TYPE.BATTERY) {
+                    playSound(mContext, R.raw.lowbat)
+                }
+                else playAlarm(alarmType)
             }
         }
         mContext.sendBroadcast(intent)
@@ -234,6 +260,12 @@ object Alarms {
                         Locale.US,
                         mContext.getString(R.string.alarm_text_temperature_v),
                         WheelData.getInstance().temperature
+                    )
+                ALARM_TYPE.BATTERY ->
+                    String.format(
+                            Locale.US,
+                            mContext.getString(R.string.alarm_text_battery_v),
+                            WheelData.getInstance().batteryLevel
                     )
             }
             WheelLog.Notifications.alarmText = miText

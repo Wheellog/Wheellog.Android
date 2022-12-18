@@ -24,6 +24,7 @@
     <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
+    <string name="alarm_battery" translatable="false">alarm_battery</string>
     <string name="alarm_temperature" translatable="false">alarm_temperature</string>
     <string name="altered_alarms" translatable="false">altered_alarms</string>
     <string name="rotation_speed" translatable="false">rotation_speed</string>
@@ -251,6 +252,7 @@
     <string name="alarm_text_current">Current alarm triggered</string>
     <string name="alarm_text_temperature">Temperature alarm triggered</string>
     <string name="alarm_text_pwm">PWM alarm triggered</string>
+    <string name="alarm_text_battery">Battery alarm triggered</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
     <string name="garmin_connectiq_use_beta_title">Beta Garmin companion</string>
@@ -403,6 +405,9 @@
     <string name="temperature_alarm_title">Temperature Alarm</string>
     <string name="temperature_title">Temperature</string>
     <string name="alarm_temperature_description">Temperature that triggers the alarm</string>
+    <string name="battery_alarm_title">Battery level Alarm</string>
+    <string name="battery_title">Battery level</string>
+    <string name="alarm_battery_description">Battery level that triggers the alarm</string>
     <string name="speed_axis">speed</string>
     <string name="current_axis">current</string>
     <string name="no_chart_data">No data available</string>
@@ -642,6 +647,7 @@
     <string name="alarm_text_speed_v">[SPEED] \n  - %1$.0f k/h</string>
     <string name="alarm_text_current_v">[CURRENT] \n  - %1$.0f A</string>
     <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
+    <string name="alarm_text_battery_v">[BAT] \n  - %1$d</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
     <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>

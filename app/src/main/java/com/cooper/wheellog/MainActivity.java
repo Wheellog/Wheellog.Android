@@ -192,14 +192,17 @@ public class MainActivity extends AppCompatActivity {
                     if (alarmType < 4) {
                         showSnackBar(getResources().getString(R.string.alarm_text_speed) + String.format(": %.1f", alarmValue), 3000);
                     }
-                    if (alarmType == 4) {
+                    if (alarmType == ALARM_TYPE.CURRENT.getValue()) {
                         showSnackBar(getResources().getString(R.string.alarm_text_current) + String.format(": %.1f", alarmValue), 3000);
                     }
-                    if (alarmType == 5) {
+                    if (alarmType == ALARM_TYPE.TEMPERATURE.getValue()) {
                         showSnackBar(getResources().getString(R.string.alarm_text_temperature) + String.format(": %.1f", alarmValue), 3000);
                     }
-                    if (alarmType == 6) {
+                    if (alarmType == ALARM_TYPE.PWM.getValue()) {
                         showSnackBar(getResources().getString(R.string.alarm_text_pwm) + String.format(": %.1f", alarmValue*100), 3000);
+                    }
+                    if (alarmType == ALARM_TYPE.BATTERY.getValue()) {
+                        showSnackBar(getResources().getString(R.string.alarm_text_battery) + String.format(": %.0f", alarmValue), 3000);
                     }
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:

@@ -114,6 +114,7 @@ public class Constants {
         CURRENT(4),
         TEMPERATURE(5),
         PWM(6),
+        BATTERY(7),
         SPEED1(1),
         SPEED2(2),
         SPEED3(3);
