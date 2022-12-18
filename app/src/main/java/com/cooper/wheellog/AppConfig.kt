@@ -73,6 +73,8 @@ class AppConfig(var context: Context) {
    var viewBlocks: Array<String>
         get() = this.viewBlocksString?.split(separator)?.toTypedArray()
             ?: arrayOf(
+                context.getString(R.string.pwm),
+                context.getString(R.string.max_pwm),
                 context.getString(R.string.voltage),
                 context.getString(R.string.average_riding_speed),
                 context.getString(R.string.riding_time),

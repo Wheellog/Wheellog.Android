@@ -211,7 +211,7 @@ object DialogHelper {
                     }
                     2 -> TODO("доделать как-то Авто")
                     3 -> {
-                        val temp = templates.getOrDefault(templatesBox.selectedItem, null)
+                        val temp = templates[templatesBox.selectedItem]
                         if (temp != null) {
                             WheelLog.AppConfig.apply {
                                 rotationSpeed = temp.first

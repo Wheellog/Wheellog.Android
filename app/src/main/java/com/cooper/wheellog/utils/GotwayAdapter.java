@@ -28,13 +28,18 @@ public class GotwayAdapter extends BaseAdapter {
         wd.resetRideTime();
         boolean newDataFound = false;
         if ((model.length() == 0) || (fw.length() == 0)) { // IMU sent at the begining, so there is no sense to check it, we can't request it
-            String dataS = new String(data, 0, data.length - 1).trim();
+            String dataS = new String(data, 0, data.length).trim();
             if (dataS.startsWith("NAME")) {
                 model = dataS.substring(5).trim();
                 wd.setModel(model);
             } else if (dataS.startsWith("GW")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
+                WheelLog.AppConfig.setHwPwm(false);
+            } else if (dataS.startsWith("CF")) {
+                fw = dataS.substring(2).trim();
+                wd.setVersion(fw);
+                WheelLog.AppConfig.setHwPwm(true);
             } else if (dataS.startsWith("MPU")) {
                 imu = dataS.substring(1, 7).trim();
             }
@@ -56,7 +61,7 @@ public class GotwayAdapter extends BaseAdapter {
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
                     //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-
+                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14)*10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
@@ -101,6 +106,7 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setVoltageSag(voltage);
                     wd.setBatteryLevel(battery);
                     wd.updateRideTime();
+                    wd.setOutput(hwPwm);
 
                     newDataFound = true;
 
@@ -129,7 +135,7 @@ public class GotwayAdapter extends BaseAdapter {
                         WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
                         WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
                         WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
-                        if (model.length() != 0) {
+                        if (!fw.equals("-")) {
                             WheelLog.AppConfig.setGwInMiles(inMiles == 1);
                             WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
                             WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
@@ -170,6 +176,7 @@ public class GotwayAdapter extends BaseAdapter {
                     } else if (fw.equals("")) {
                         fw = "-";
                         wd.setVersion(fw);
+                        WheelLog.AppConfig.setHwPwm(false);
                     }
                 }
             }
@@ -287,6 +294,7 @@ public class GotwayAdapter extends BaseAdapter {
             case 0: command = "o"; break; // alertTwo (1) // 30 + 35 (45) km/h + 80% PWM
             case 1: command = "u"; break; // AlertOff (2) // 80% PWM only
             case 2: command = "i"; break; //alertOne (0) // 35 (45) km/h + 80% PWM
+            case 3: command = "I"; break; //pwm tiltback for custom firmware
         }
         lock_Changes = 2;
         sendCommand(command);

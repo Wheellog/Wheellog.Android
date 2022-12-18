@@ -36,11 +36,25 @@
         <item>@string/off_level_2_alarm</item>
     </string-array>
 
-	<string-array name="alarm_mode_values">
+    <string-array name="alarm_mode_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-    </string-array>	
+    </string-array>
+
+    <string-array name="alarm_mode_gw_custom_fw">
+        <item>@string/on_level_alarm</item>
+        <item>@string/off_level_1_alarm</item>
+        <item>@string/off_level_2_alarm</item>
+        <item>@string/pwm_tiltback_alarm</item>
+    </string-array>
+
+    <string-array name="alarm_mode_custom_fw_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 	
 	<string-array name="light_mode_values">
         <item>0</item>
