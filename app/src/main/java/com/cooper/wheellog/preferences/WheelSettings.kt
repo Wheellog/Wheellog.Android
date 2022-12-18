@@ -682,8 +682,13 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             key = mac + getString(R.string.alarm_mode)
             title = getString(R.string.alarm_mode_title)
             summary = getString(R.string.alarm_settings_title)
-            setEntries(R.array.alarm_mode_gw)
-            setEntryValues(R.array.alarm_mode_values)
+            if (WheelLog.AppConfig.hwPwm) {
+                setEntries(R.array.alarm_mode_gw_custom_fw)
+                setEntryValues(R.array.alarm_mode_custom_fw_values)
+            } else {
+                setEntries(R.array.alarm_mode_gw)
+                setEntryValues(R.array.alarm_mode_values)
+            }
             setDefaultValue(WheelLog.AppConfig.alarmMode)
             ps.addPreference(this)
         }
