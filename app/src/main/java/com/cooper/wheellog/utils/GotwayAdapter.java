@@ -28,7 +28,7 @@ public class GotwayAdapter extends BaseAdapter {
         wd.resetRideTime();
         boolean newDataFound = false;
         if ((model.length() == 0) || (fw.length() == 0)) { // IMU sent at the begining, so there is no sense to check it, we can't request it
-            String dataS = new String(data, 0, data.length - 1).trim();
+            String dataS = new String(data, 0, data.length).trim();
             if (dataS.startsWith("NAME")) {
                 model = dataS.substring(5).trim();
                 wd.setModel(model);
