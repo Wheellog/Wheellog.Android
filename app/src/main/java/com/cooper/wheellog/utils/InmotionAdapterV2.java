@@ -48,11 +48,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
                     } else if (result.flags == Message.Flag.Default.getValue()) {
                         if (result.command == Message.Command.Settings.getValue()) {
                             requestSettings = false;
-                            if (getInstance().getModel() == Model.V12) {
-                                return false;
-                            } else {
-                                return result.parseSettings();
+                            if (getInstance().getModel() != Model.V12) {
+                                result.parseSettings();
                             }
+                            return false;
                         } else if (result.command == Message.Command.Diagnistic.getValue()) {
                             return result.parseDiagnostic();
                         } else if (result.command == Message.Command.BatteryRealTimeInfo.getValue()) {
@@ -500,36 +499,40 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return false;
         }
 
-        boolean parseSettings(){
+        void parseSettings(){
             Timber.i("Parse settings data");
+            if ((data.length < 25)) {
+                Timber.i("Data is corrupted");
+                return;
+            }
             int i = 1;
             int mSpeedLim = MathsUtil.shortFromBytesLE(data, i);
-            int mPitchAngleZero = MathsUtil.signedShortFromBytesLE(data, i+2);
-            int mDriveMode = data[i+4] & 0xF;
-            int mRideMode = data[i+4] >> 4;
+            int mPitchAngleZero = MathsUtil.signedShortFromBytesLE(data, i + 2);
+            int mDriveMode = data[i + 4] & 0xF;
+            int mRideMode = data[i + 4] >> 4;
             int mComfSens = data[i + 5];
             int mClassSens = data[i + 6];
             int mVolume = data[i + 7];
-            int mAudioId = MathsUtil.intFromBytesLE(data, i+8);
-            int mStandByTime = MathsUtil.shortFromBytesLE(data, i+12);
+            int mAudioId = MathsUtil.intFromBytesLE(data, i + 8);
+            int mStandByTime = MathsUtil.shortFromBytesLE(data, i + 12);
             int mDecorLightMode = data[i + 14];
             int mAutoLightLowThr = data[i + 15];
             int mAutoLightHighThr = data[i + 16];
             int mLightBr = data[i + 17];
             int mAudioState = data[i + 20] & 3;
-            int mDecorState = (data[i + 20]>>2) & 3;
+            int mDecorState = (data[i + 20] >> 2) & 3;
             int mLiftedState = (data[i + 20] >> 4) & 3;
             int mAutoLightState = (data[i + 20] >> 6) & 3;
             int mAutoLightBrState = data[i + 21] & 3;
-            int mLockState = (data[i + 21]>>2) & 3;
+            int mLockState = (data[i + 21] >> 2) & 3;
             int mTranspMode = (data[i + 21] >> 4) & 3;
             int mLoadDetect = (data[i + 21] >> 6) & 3;
             int mNoLoadDetect = data[i + 22] & 3;
-            int mLowBat = (data[i + 22]>>2) & 3;
+            int mLowBat = (data[i + 22] >> 2) & 3;
             int mFanQuiet = (data[i + 22] >> 4) & 3;
             int mFan = (data[i + 22] >> 6) & 3; // to test
             int mSome1 = data[i + 23] & 3; // to test
-            int mSome2 = (data[i + 23]>>2) & 3; // to test
+            int mSome2 = (data[i + 23] >> 2) & 3; // to test
             int mSome3 = (data[i + 23] >> 4) & 3; // to test
             int mSome4 = (data[i + 23] >> 6) & 3; // to test
             WheelLog.AppConfig.setPedalsAdjustment(mPitchAngleZero/10);
@@ -546,7 +549,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             WheelLog.AppConfig.setTransportMode(mTranspMode != 0);
             WheelLog.AppConfig.setFanQuietEnabled(mFanQuiet != 0);
             WheelLog.AppConfig.setGoHomeMode(mLowBat != 0);
-            return false;
+            return;
         }
 
         boolean parseTotalStats() {
@@ -594,8 +597,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (((data[i+2] >> 3) & 0x01)==1) inmoError += "err_notKnown1 ";
             if (((data[i+3]) & 0x01)==1) inmoError += "err_underVoltageState ";
             if (((data[i+3] >> 1) & 0x01)==1) inmoError += "err_overVoltageState ";
-            if (((data[i+3] >> 2) & 0x03)>0) inmoError += "err_overBusCurrentState-" + String.valueOf((data[43] >> 2) & 0x03) + " ";
-            if (((data[i+3] >> 4) & 0x03)>0) inmoError += "err_lowBatteryState-"+ String.valueOf((data[43] >> 4) & 0x03) + " ";
+            if (((data[i+3] >> 2) & 0x03)>0) inmoError += "err_overBusCurrentState-" + ((data[43] >> 2) & 0x03) + " ";
+            if (((data[i+3] >> 4) & 0x03)>0) inmoError += "err_lowBatteryState-"+ ((data[43] >> 4) & 0x03) + " ";
             if (((data[i+3] >> 6) & 0x01)==1) inmoError += "err_mosTempState ";
             if (((data[i+3] >> 7) & 0x01)==1) inmoError += "err_motorTempState ";
             if (((data[i+4]) & 0x01)==1) inmoError += "err_batteryTempState ";
