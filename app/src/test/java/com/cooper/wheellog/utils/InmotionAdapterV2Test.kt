@@ -372,6 +372,58 @@ class InmotionAdapterV2Test {
         assertThat(data.angle).isEqualTo(0.0)
         assertThat(data.roll).isEqualTo(-5.89)
     }
+
+
+
+    @Test
+    fun `decode with v13 full data 1`() {
+        // Arrange.
+        val byteArray1 = "aaaa1108820102080101010091".hexToByteArray() // wheel type
+        val byteArray2 = "aaaa111782024130333131364231383030303130343600000000008a".hexToByteArray() // s/n
+        val byteArray3 = "aaaa112f8206223a000005030008022115000002cf000802230a0002020000050224070001010200010125070001010200010172".hexToByteArray() //versions
+        val byteArray5 = "aaaa142b9000010126010000004390a7d5010251000701cdcec9d000000000080000000000000004000000070000006c".hexToByteArray() // probably statistics
+        val byteArray6 = "aaaa1419915e010000b7660000500900008c0600002d8b0000c9d000007e".hexToByteArray() // totals
+        val byteArray7 = "aaaa145984092f3807000036003735000025130f27b108111d4203b00664fee703050000000000f225e225204e28233421401f401f204e401f709400000000cdccc9d1b0d10000b0286400000000004910000000000000001800000000b3".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isTrue()
+        assertThat(data.serial).isEqualTo("A03116B180001046")
+        assertThat(data.model).isEqualTo("Inmotion V13")
+        assertThat(data.version).isEqualTo("Main:2.0.21 Drv:5.0.58 BLE:2.2.10")
+
+
+        assertThat(data.speedDouble).isEqualTo(136.23)
+        assertThat(data.temperature).isEqualTo(29)
+        assertThat(data.temperature2).isEqualTo(28)
+        assertThat(data.imuTemp).isEqualTo(33)
+        assertThat(data.cpuTemp).isEqualTo(0)
+        assertThat(data.motorPower).isEqualTo(1712.0)
+        assertThat(data.currentLimit).isEqualTo(80.00)
+        assertThat(data.speedLimit).isEqualTo(90.00)
+        assertThat(data.torque).isEqualTo(74.41)
+        assertThat(data.voltageDouble).isEqualTo(120.41)
+        assertThat(data.currentDouble).isEqualTo(18.48)
+        assertThat(data.wheelDistanceDouble).isEqualTo(4.901)
+        assertThat(data.totalDistance).isEqualTo(3500)
+        assertThat(data.batteryLevel).isEqualTo(97)
+        assertThat(data.powerDouble).isEqualTo(2225.0)
+        assertThat(data.angle).isEqualTo(0.54)
+        assertThat(data.roll).isEqualTo(-4.12)
+    }
+
 /*
     @Test
     fun `Inmotion v12 - decode long trip`() {

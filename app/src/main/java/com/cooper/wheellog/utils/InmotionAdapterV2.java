@@ -50,6 +50,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
                             requestSettings = false;
                             if (getInstance().getModel() == Model.V12) {
                                 return false;
+                            } else if (getInstance().getModel() == Model.V13) {
+                                    return false;
                             } else {
                                 return result.parseSettings();
                             }
@@ -62,6 +64,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
                             if (getInstance().getModel() == Model.V12) {
                                 return result.parseRealTimeInfoV12(getContext());
+                            } else if (getInstance().getModel() == Model.V13) {
+                                return result.parseRealTimeInfoV13(getContext());
                             } else if (protoVer < 2) {
                                 return result.parseRealTimeInfoV11(getContext());
                             } else {
@@ -81,6 +85,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     public enum Model {
         V11(6, "Inmotion V11"),
         V12(7, "Inmotion V12"),
+        V13(8, "Inmotion V13"),
         UNKNOWN(0,"Inmotion Unknown");
 
 
@@ -119,6 +124,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 return 60;
             case V12:
                 return 70;
+            case V13:
+                return 100;
         }
         return 100;
     }
@@ -409,6 +416,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 Timber.i("Parse car type");
                 // 020601010100 -v11
                 // 020701010100 -v12
+                // 020801010100 -v13
                 int mainSeries = data[1]; //02
                 int series = data[2];    // 06
                 int type = data[3];      // 01
@@ -715,7 +723,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
 
         boolean parseRealTimeInfoV11_1_4(Context sContext) {
-            Timber.i("Parse V12 realtime stats data");
+            Timber.i("Parse V11 1.4+ realtime stats data");
             WheelData wd = WheelData.getInstance();
             int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
             int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
@@ -898,6 +906,115 @@ public class InmotionAdapterV2 extends BaseAdapter {
             }
             return true;
         }
+
+        boolean parseRealTimeInfoV13(Context sContext) {
+            Timber.i("Parse V13 realtime stats data");
+            WheelData wd = WheelData.getInstance();
+            int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
+            int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
+            //int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
+            int mSomeThing2 = MathsUtil.signedShortFromBytesLE(data, 4);
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 6); //not sure
+            int mSpeed = MathsUtil.signedShortFromBytesLE(data, 8);
+            //int mSomething0 = MathsUtil.signedShortFromBytesLE(data, 10);
+            long mMileage = MathsUtil.intFromBytesRevLE(data, 10); // not sure
+            int mPwm = MathsUtil.signedShortFromBytesLE(data, 14);
+            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 16);
+            int mTorque = MathsUtil.signedShortFromBytesLE(data, 18); // not sure
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 20); // not sure
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 22); // not sure
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 24); // not sure
+
+            //int mRemainMileage = MathsUtil.shortFromBytesLE(data, 26) * 10;
+            //int mSomeThing180 = MathsUtil.shortFromBytesLE(data, 28); // always 18000
+            //int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 30);
+            //int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 32);
+
+            int mBatLevel1 = MathsUtil.shortFromBytesLE(data, 34);
+            int mBatLevel2 = MathsUtil.shortFromBytesLE(data, 36);
+            int mSomeThing200_1 = MathsUtil.shortFromBytesLE(data, 38);
+            int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 40);
+            int x5 = MathsUtil.shortFromBytesLE(data, 42);
+            int x6 = MathsUtil.shortFromBytesLE(data, 44);
+            int x7 = MathsUtil.shortFromBytesLE(data, 46);
+            int mSomeThing200_2 = MathsUtil.shortFromBytesLE(data, 48);
+            int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 50);
+            int mSomeThing380 = MathsUtil.shortFromBytesLE(data, 52);
+
+
+            int mMosTemp = (data[58] & 0xff) + 80 - 256;
+            int mMotTemp = (data[59] & 0xff) + 80 - 256;
+            int mBatTemp = (data[60] & 0xff) + 80 - 256; // 0
+            int mBoardTemp = (data[61] & 0xff) + 80 - 256;
+            int mCpuTemp = (data[62] & 0xff) + 80 - 256;
+            int mImuTemp = (data[63] & 0xff) + 80 - 256;
+            int mLampTemp = (data[64] & 0xff) + 80 - 256; // 0
+
+// don't remove
+//            int mBrightness = data[48]& 0xff;
+//            int mLightBrightness = data[49]& 0xff;
+//            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Rem Km: %.3f, Bat: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
+//                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, mXz, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/10.0, mRemainMileage/1000.0, mBatLevel/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+            wd.setVoltage(mVoltage);
+            wd.setTorque((double)mTorque/100.0);
+            wd.setMotorPower(mMotPower);
+            wd.setCpuTemp(mCpuTemp);
+            wd.setImuTemp(mImuTemp);
+            wd.setCurrent(mCurrent);
+            wd.setSpeed(mSpeed);
+            wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
+            wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
+            wd.setBatteryLevel((int)Math.round((mBatLevel1 + mBatLevel2)/200.0));
+            wd.setTemperature(mMosTemp * 100);
+            wd.setTemperature2(mMotTemp * 100);
+            wd.setOutput(mPwm);
+            //wd.setMotorTemp(mMotTemp * 100); not existed in WD
+            wd.setAngle((double)mPitchAngle/100.0);
+            wd.setRoll((double)mRollAngle/100.0);
+            wd.updateRideTime();
+            wd.setTopSpeed(mSpeed);
+            wd.setVoltageSag(mVoltage);
+            wd.setPower(mBatPower * 100);
+            wd.setWheelDistance(mMileage);
+            //// state data
+            int mPcMode = data[74] & 0x07; // lock, drive, shutdown, idle
+            int mMcMode = (data[74]>>3)&0x07;
+            int mMotState = (data[74]>>6)&0x01;
+            int chrgState = (data[74]>>7)&0x01;
+            int lowLightState = (data[75])&0x01;
+            int highLightState = (data[75] >> 1) & 0x01;
+            int liftedState = (data[75]>>2)&0x01;
+            int tailLiState = (data[75]>>3)&0x03;
+            int fwUpdateState = (data[75]>>5)&0x01;
+            String wmode = "";
+            if (mMotState == 1) {wmode = wmode + "Active";}
+            if (chrgState == 1) {wmode = wmode + " Charging";}
+            if (liftedState == 1) {wmode = wmode + " Lifted";}
+            //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
+            wd.setModeStr(wmode);
+
+            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+                if (lightSwitchCounter > 3) {
+                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    lightSwitchCounter = 0;
+                } else lightSwitchCounter += 1;
+            } else lightSwitchCounter = 0;
+
+            //// errors data
+            String inmoError = getError(76);
+            if (!inmoError.equals("")) System.out.println(String.format(Locale.US,"Err: %s", inmoError));
+            wd.setAlert(inmoError);
+            /*
+            if ((inmoError != "") && (sContext != null)) {
+                Timber.i("News to send: %s, sending Intent", inmoError);
+                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                sContext.sendBroadcast(intent);
+            }
+            */
+            return true;
+        }
+
 
 
         public static Message getCarType() {

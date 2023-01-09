@@ -91,6 +91,13 @@ public class MathsUtil {
         return 0;
     }
 
+    public static long intFromBytesRevLE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 4) {
+            return (((bytes[starting + 1] & 0xFF) << 24) | ((bytes[starting] & 0xFF) << 16) | ((bytes[starting + 3] & 0xFF) << 8) | (bytes[starting+2] & 0xFF));
+        }
+        return 0;
+    }
+
     public static int intFromBytesLE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 4) {
             return (((bytes[starting + 3] & 0xFF) << 24) | ((bytes[starting + 2] & 0xFF) << 16) | ((bytes[starting + 1] & 0xFF) << 8) | (bytes[starting] & 0xFF));
