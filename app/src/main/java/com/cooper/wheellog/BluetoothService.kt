@@ -44,6 +44,7 @@ class BluetoothService: Service() {
     private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
     private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private val wakeLogTag = "WheelLog:WakeLockTag"
+    private val targetMTU = 60
     private val central: BluetoothCentralManager by lazy {
         BluetoothCentralManager(
             this,
@@ -57,6 +58,9 @@ class BluetoothService: Service() {
 
             override fun onConnectedPeripheral(peripheral: BluetoothPeripheral) {
                 super.onConnectedPeripheral(peripheral)
+                if (peripheral.currentMtu != targetMTU) {
+                    peripheral.requestMtu(targetMTU)
+                }
                 val connectionSound = WheelLog.AppConfig.connectionSound
                 val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
                 if (connectionSound) {
@@ -185,6 +189,15 @@ class BluetoothService: Service() {
             ) {
                 super.onDescriptorWrite(peripheral, value, descriptor, status)
                 Timber.i("onDescriptorWrite %d", status)
+            }
+
+            override fun onMtuChanged(
+                peripheral: BluetoothPeripheral,
+                mtu: Int,
+                status: GattStatus
+            ) {
+                super.onMtuChanged(peripheral, mtu, status)
+                Timber.i("MTU is changed. Current: $mtu MTU. Status: $status")
             }
         }
 
