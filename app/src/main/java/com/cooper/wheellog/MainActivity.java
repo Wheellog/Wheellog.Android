@@ -1,9 +1,9 @@
 package com.cooper.wheellog;
 
-import android.Manifest;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.app.PictureInPictureParams;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Rational;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -125,6 +126,35 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        }
+        var toolbar = findViewById(R.id.toolbar);
+        if (isInPictureInPictureMode) {
+            registerReceiver(mPiPBroadcastReceiver, makeIntentFilter());
+            toolbar.setVisibility(View.GONE);
+            findViewById(R.id.indicator).setVisibility(View.GONE);
+        } else {
+            unregisterReceiver(mPiPBroadcastReceiver);
+            toolbar.setVisibility(View.VISIBLE);
+            findViewById(R.id.indicator).setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        if (WheelLog.AppConfig.getUsePipMode()) {
+            this.enterPictureInPictureMode(
+                    new PictureInPictureParams
+                            .Builder()
+                            .setAspectRatio(new Rational(2, 1))
+                            .build());
+        }
+    }
+
     private void setConnectionState(ConnectionState connectionState, boolean wheelSearch) {
         switch (connectionState) {
             case CONNECTED:
@@ -207,6 +237,26 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case Constants.ACTION_WHEEL_IS_READY:
                     DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(MainActivity.this);
+                    break;
+            }
+        }
+    };
+
+    /**
+     * Broadcast receiver for MainView UI for Picture in Picture mode.
+     * It should only work with UI elements.
+     **/
+    private final BroadcastReceiver mPiPBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case Constants.ACTION_WHEEL_TYPE_CHANGED:
+                    Timber.i("Wheel type switched");
+                    pagerAdapter.configureSecondDisplay();
+                    pagerAdapter.updateScreen(true);
+                    break;
+                case Constants.ACTION_WHEEL_DATA_AVAILABLE:
+                    pagerAdapter.updateScreen(intent.hasExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE));
                     break;
             }
         }

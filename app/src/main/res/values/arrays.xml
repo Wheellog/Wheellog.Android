@@ -194,6 +194,7 @@
         <item>@string/remaining_distance</item>
         <item>@string/battery_per_km</item>
         <item>@string/user_distance</item>
+        <item>@string/speed</item>
     </string-array>
 
 </resources>

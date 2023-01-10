@@ -130,6 +130,24 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 entries = context.resources.getTextArray(R.array.view_blocks_values)
                 addPreference(this)
             }
+            SwitchPreference(context).apply {
+                key = getString(R.string.use_pip_mode)
+                title = getString(R.string.use_pip_mode_title)
+                summary = getString(R.string.use_pip_mode_description)
+                setDefaultValue(WheelLog.AppConfig.usePipMode)
+                addPreference(this)
+            }
+            MultiSelectPreference(context).apply {
+                key = getString(R.string.view_blocks_pip_string)
+                title = getString(R.string.view_blocks_pip_title)
+                summary = getString(R.string.view_blocks_pip_description)
+                icon = getDrawable(ThemeIconEnum.SettingsBlocks)
+                dialogTitle = title
+                dialogIcon = icon
+                setValues(WheelLog.AppConfig.viewBlocksPip)
+                entries = context.resources.getTextArray(R.array.view_blocks_values)
+                addPreference(this)
+            }
             MultiSelectPreference(context).apply {
                 key = getString(R.string.notification_buttons)
                 title = getString(R.string.notification_buttons_title)
