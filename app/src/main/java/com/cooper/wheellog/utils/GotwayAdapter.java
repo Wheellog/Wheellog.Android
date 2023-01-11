@@ -65,9 +65,11 @@ public class GotwayAdapter extends BaseAdapter {
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
+                        hwPwm = Math.abs(hwPwm);
                     } else {
                         speed = speed * gotwayNegative;
                         phaseCurrent = phaseCurrent * gotwayNegative;
+                        hwPwm = hwPwm * gotwayNegative;
                     }
 
                     int battery;
