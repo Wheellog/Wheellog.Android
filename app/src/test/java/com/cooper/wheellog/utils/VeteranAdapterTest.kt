@@ -157,7 +157,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(1.823)
         assertThat(data.totalDistance).isEqualTo(2672504)
         assertThat(data.batteryLevel).isEqualTo(89)
-        assertThat(data.roll).isEqualTo(0.2)
+        assertThat(data.angle).isEqualTo(0.2)
         assertThat(data.version).isEqualTo("001.0.58")
     }
 
@@ -266,7 +266,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(19.119)
         assertThat(data.totalDistance).isEqualTo(19119)
         assertThat(data.batteryLevel).isEqualTo(98)
-        assertThat(data.roll).isEqualTo(0.05)
+        assertThat(data.angle).isEqualTo(0.05)
         assertThat(data.version).isEqualTo("002.0.02")
     }
 
@@ -290,7 +290,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(19.119)
         assertThat(data.totalDistance).isEqualTo(19119)
         assertThat(data.batteryLevel).isEqualTo(99)
-        assertThat(data.roll).isEqualTo(-0.08)
+        assertThat(data.angle).isEqualTo(-0.08)
         assertThat(data.version).isEqualTo("002.0.02")
     }
 
@@ -314,7 +314,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(2.223)
         assertThat(data.totalDistance).isEqualTo(2223)
         assertThat(data.batteryLevel).isEqualTo(100)
-        assertThat(data.roll).isEqualTo(0.09)
+        assertThat(data.angle).isEqualTo(0.09)
         assertThat(data.version).isEqualTo("002.0.03")
     }
 
@@ -338,7 +338,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(0.132)
         assertThat(data.totalDistance).isEqualTo(6050)
         assertThat(data.batteryLevel).isEqualTo(97)
-        assertThat(data.roll).isEqualTo(62.83)
+        assertThat(data.angle).isEqualTo(62.83)
         assertThat(data.version).isEqualTo("003.0.05")
     }
 
