@@ -157,6 +157,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(1.823)
         assertThat(data.totalDistance).isEqualTo(2672504)
         assertThat(data.batteryLevel).isEqualTo(89)
+        assertThat(data.angle).isEqualTo(0.2)
         assertThat(data.version).isEqualTo("001.0.58")
     }
 
@@ -265,6 +266,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(19.119)
         assertThat(data.totalDistance).isEqualTo(19119)
         assertThat(data.batteryLevel).isEqualTo(98)
+        assertThat(data.angle).isEqualTo(0.05)
         assertThat(data.version).isEqualTo("002.0.02")
     }
 
@@ -288,6 +290,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(19.119)
         assertThat(data.totalDistance).isEqualTo(19119)
         assertThat(data.batteryLevel).isEqualTo(99)
+        assertThat(data.angle).isEqualTo(-0.08)
         assertThat(data.version).isEqualTo("002.0.02")
     }
 
@@ -311,7 +314,32 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(2.223)
         assertThat(data.totalDistance).isEqualTo(2223)
         assertThat(data.batteryLevel).isEqualTo(100)
+        assertThat(data.angle).isEqualTo(0.09)
         assertThat(data.version).isEqualTo("002.0.03")
+    }
+
+    @Test
+    fun `decode veteran sherman s 1`() {
+        // Arrange.
+        val byteArray1 = "DC5A5C22266200000084000017A2000000000C38".hexToByteArray()
+        val byteArray2 = "0B03000000C600E40BBD0003188B0000006F".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(31)
+        assertThat(data.voltageDouble).isEqualTo(98.26)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.132)
+        assertThat(data.totalDistance).isEqualTo(6050)
+        assertThat(data.batteryLevel).isEqualTo(97)
+        assertThat(data.angle).isEqualTo(62.83)
+        assertThat(data.version).isEqualTo("003.0.05")
     }
 
     @Test

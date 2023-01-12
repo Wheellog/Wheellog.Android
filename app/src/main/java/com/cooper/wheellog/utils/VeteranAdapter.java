@@ -43,7 +43,7 @@ public class VeteranAdapter extends BaseAdapter {
                 mVer = ver/1000;
                 String version = String.format(Locale.US, "%03d.%01d.%02d", ver/1000, (ver%1000)/100, (ver%100));
                 int pedalsMode = MathsUtil.shortFromBytesBE(buff, 30);
-                int reserved1 = MathsUtil.shortFromBytesBE(buff,32);
+                int pitchAngle = MathsUtil.signedShortFromBytesBE(buff,32);
                 int hwPwm = MathsUtil.shortFromBytesBE(buff, 34);
 
                 int battery;
@@ -87,6 +87,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setVoltageSag(voltage);
                 wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
+                wd.setAngle(pitchAngle/100.0);
                 wd.setOutput(hwPwm);
                 wd.updateRideTime();
                 newDataFound = true;
