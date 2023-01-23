@@ -19,6 +19,7 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import java.io.IOException
+import java.io.Serializable
 
 class SomeUtil {
     companion object {
@@ -110,6 +111,13 @@ class SomeUtil {
                 intent,
                 PackageManager.MATCH_DEFAULT_ONLY
             ) != null
+        }
+
+        fun <T : Serializable?> Intent.getSerializable(key: String, m_class: Class<T>): T? {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                this.getSerializableExtra(key, m_class)
+            else
+                @Suppress("DEPRECATION") this.getSerializableExtra(key) as T
         }
 
         fun isMIUI(context: Context): Boolean {

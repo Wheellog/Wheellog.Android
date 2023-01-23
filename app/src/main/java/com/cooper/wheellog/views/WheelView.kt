@@ -263,8 +263,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 )
         )
 
-    var compactMode: Boolean = false
-
     fun setWheelModel(mWheelModel: String) {
         if (this.mWheelModel != mWheelModel) {
             this.mWheelModel = mWheelModel
@@ -278,12 +276,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             block.index = -1
         }
         var index = 0
-        val blockSettings = if (!compactMode) {
-            WheelLog.AppConfig.viewBlocks
-        } else {
-            WheelLog.AppConfig.viewBlocksPip
-        }
-        for (title in blockSettings) {
+        for (title in WheelLog.AppConfig.viewBlocks) {
             for (block in mViewBlocks) {
                 if (block.title == title) {
                     block.index = index++
@@ -480,10 +473,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         calcModelTextSize()
         mTextBoxesBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         mCanvas = Canvas(mTextBoxesBitmap!!)
-        if (compactMode) {
-            redrawTextBoxes()
-            return
-        }
         if (landscape && w.toFloat() / h > 1.4 || !landscape && h.toFloat() / w > 1.1) {
             redrawTextBoxes()
         }
@@ -530,14 +519,10 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         var cols = 2
         var rows = (countBlocks / cols.toFloat() + 0.499f).roundToInt()
         boxRects = arrayOfNulls((cols + 1) * rows)
-        if (compactMode) {
-            var boxTop = paddingTop.toFloat() * 2
-            if (countBlocks == 1) {
-                cols = 1
-                rows = 1
-            }
-            val boxH = (h - boxTop) / rows.toFloat() - boxInnerPadding
-            val boxW = (w - paddingRight) / cols.toFloat() - outerStrokeWidth
+        if (landscape) {
+            var boxTop = paddingTop.toFloat()
+            val boxH = (h - boxTop - paddingBottom) / rows.toFloat() - boxInnerPadding
+            val boxW = (w - oaDiameter - paddingRight) / cols.toFloat() - outerStrokeWidth
             var i = 0
             val boxLeft = paddingLeft.toFloat()
             val boxLeft2 = w - boxW - paddingRight
@@ -547,52 +532,38 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 boxTop += boxH + boxInnerPadding
             }
         } else {
-            if (landscape) {
-                var boxTop = paddingTop.toFloat()
-                val boxH = (h - boxTop - paddingBottom) / rows.toFloat() - boxInnerPadding
-                val boxW = (w - oaDiameter - paddingRight) / cols.toFloat() - outerStrokeWidth
-                var i = 0
-                val boxLeft = paddingLeft.toFloat()
-                val boxLeft2 = w - boxW - paddingRight
-                for (row in 0 until rows) {
-                    boxRects[i++] = RectF(boxLeft, boxTop, boxLeft + boxW, boxTop + boxH)
-                    boxRects[i++] = RectF(boxLeft2, boxTop, boxLeft2 + boxW, boxTop + boxH)
-                    boxTop += boxH + boxInnerPadding
-                }
+            var boxTop = boxTopPadding + outerArcRect.top + oaDiameter / 2 + (cos(Math.toRadians(54.0)) * (oaDiameter + outerStrokeWidth) / 2).toFloat()
+            if (countBlocks == 1) {
+                cols = 1
             } else {
-                var boxTop = boxTopPadding + outerArcRect.top + oaDiameter / 2 + (cos(Math.toRadians(54.0)) * (oaDiameter + outerStrokeWidth) / 2).toFloat()
-                if (countBlocks == 1) {
-                    cols = 1
-                } else {
-                    val hh = h - boxTop - paddingBottom - boxInnerPadding
-                    val ratio = w / hh
-                    rows = sqrt((countBlocks.toFloat() / ratio * 3).toDouble()).toInt()
-                    cols = (countBlocks / rows.toFloat() + 0.499f).roundToInt()
-                    // packing
-                    if (countBlocks != cols * rows) {
-                        while (true) {
-                            if (countBlocks / rows.toFloat() <= cols) {
-                                rows--
-                            } else {
-                                rows++
-                                break
-                            }
+                val hh = h - boxTop - paddingBottom - boxInnerPadding
+                val ratio = w / hh
+                rows = sqrt((countBlocks.toFloat() / ratio * 3).toDouble()).toInt()
+                cols = (countBlocks / rows.toFloat() + 0.499f).roundToInt()
+                // packing
+                if (countBlocks != cols * rows) {
+                    while (true) {
+                        if (countBlocks / rows.toFloat() <= cols) {
+                            rows--
+                        } else {
+                            rows++
+                            break
                         }
                     }
                 }
-                val boxH = (h - boxTop - paddingBottom) / rows.toFloat() - boxInnerPadding
-                val boxW = (w - paddingRight) / cols.toFloat() - boxInnerPadding
-                var i = 0
-                for (row in 0 until rows) {
-                    var boxLeft = paddingLeft.toFloat()
-                    var col = 0
-                    while (col < cols && i < countBlocks) {
-                        boxRects[i++] = RectF(boxLeft, boxTop, boxLeft + boxW, boxTop + boxH)
-                        boxLeft += boxW + boxInnerPadding
-                        col++
-                    }
-                    boxTop += boxH + boxInnerPadding
+            }
+            val boxH = (h - boxTop - paddingBottom) / rows.toFloat() - boxInnerPadding
+            val boxW = (w - paddingRight) / cols.toFloat() - boxInnerPadding
+            var i = 0
+            for (row in 0 until rows) {
+                var boxLeft = paddingLeft.toFloat()
+                var col = 0
+                while (col < cols && i < countBlocks) {
+                    boxRects[i++] = RectF(boxLeft, boxTop, boxLeft + boxW, boxTop + boxH)
+                    boxLeft += boxW + boxInnerPadding
+                    col++
                 }
+                boxTop += boxH + boxInnerPadding
             }
         }
         boxTextSize = calculateFontSize(boundaryOfText, boxRects[0]!!, "10000 km/h", textPaint, 2) * 1.2f
@@ -902,13 +873,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (compactMode) {
-            drawTextBlocksBitmap(canvas)
-        } else {
-            when (currentTheme) {
-                R.style.OriginalTheme -> drawOriginal(canvas)
-                R.style.AJDMTheme -> drawAJDM(canvas)
-            }
+        when (currentTheme) {
+            R.style.OriginalTheme -> drawOriginal(canvas)
+            R.style.AJDMTheme -> drawAJDM(canvas)
         }
     }
 

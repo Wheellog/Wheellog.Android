@@ -3,6 +3,7 @@ package com.cooper.wheellog
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
 import android.view.*
 import android.widget.TextView
 import androidx.gridlayout.widget.GridLayout
@@ -160,7 +161,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             R.layout.main_view_main -> {
                 data.bmsView = false
                     wheelView?.apply {
-                        compactMode = activity.isInPictureInPictureMode
                         setSpeed(data.speed)
                         setBattery(data.batteryLevel)
                         setBatteryLowest(data.batteryLowestLevel)
