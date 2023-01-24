@@ -23,6 +23,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -120,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             pager.visibility = View.GONE
             indicator.visibility = View.GONE
             pipView.setContent {
-                PiPView().SpeedWidget(speedModel)
+                PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
             }
             pipView.visibility = View.VISIBLE
         } else {
@@ -140,7 +142,7 @@ class MainActivity : AppCompatActivity() {
             speedModel.title = getString(R.string.speed)
             this.enterPictureInPictureMode(
                 PictureInPictureParams.Builder()
-                    .setAspectRatio(Rational(2, 1))
+                    .setAspectRatio(Rational(16, 9))
                     .build()
             )
         }
@@ -271,9 +273,6 @@ class MainActivity : AppCompatActivity() {
             when (intent.action) {
                 Constants.ACTION_WHEEL_TYPE_CHANGED -> {
                     Timber.i("Wheel type switched")
-                    pipView.setContent {
-                        PiPView().SpeedWidget(speedModel)
-                    }
                 }
                 Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
                     speedModel.value.value = WheelData.getInstance().speed / 10f

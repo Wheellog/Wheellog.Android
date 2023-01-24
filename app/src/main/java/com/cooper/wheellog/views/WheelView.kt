@@ -650,7 +650,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val alarm1Speed = WheelLog.AppConfig.alarm1Speed.toDouble()
         if (!WheelLog.AppConfig.alteredAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = getColorEx(R.color.accent) else textPaint.color = getColorEx(R.color.wheelview_speed_text)
         textPaint.textSize = speedTextSize
-        canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
+        canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2f, textPaint)
         textPaint.textSize = speedTextKPHSize
         textPaint.color = getColorEx(R.color.wheelview_text)
         if (WheelLog.AppConfig.useShortPwm || isInEditMode) {
@@ -661,7 +661,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 3.3f, textPaint)
         } else {
             val metric = if (WheelLog.AppConfig.useMph) resources.getString(R.string.mph) else resources.getString(R.string.kmh)
-            canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 1.1f, textPaint)
+            canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 1.7f, textPaint)
         }
 
         //####################################################

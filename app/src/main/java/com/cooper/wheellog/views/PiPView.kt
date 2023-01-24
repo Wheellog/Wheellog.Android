@@ -26,14 +26,12 @@ class PiPView {
     }
 
     @OptIn(ExperimentalUnitApi::class, ExperimentalTextApi::class)
-    @Preview(widthDp = 100, heightDp = 100, showBackground = true)
+    @Preview(widthDp = 160, heightDp = 90, showBackground = true)
     @Composable
     fun SpeedWidget(
-        model: SpeedModel = SpeedModel()
+        modifier: Modifier = Modifier,
+        model: SpeedModel = SpeedModel(),
     ) {
-        val modifier = Modifier
-            .fillMaxSize()
-
         val textMeasure = rememberTextMeasurer()
         val textStyle = TextStyle(
             color = Color.White,
@@ -64,14 +62,15 @@ class PiPView {
         )
         val valueString = animatedValue.toInt().toString()
 
-        Canvas(modifier) {
+        Canvas(modifier.padding(5.dp)) {
             val mainArcSize = if (size.width > size.height) size.height else size.width
+            val leftOffset = (size.width - mainArcSize) / 2
             val mainArcStroke = Stroke(width = mainArcSize / 7)
             val mainArcStrokeIn = Stroke(width = mainArcStroke.width * 0.8f)
             val mainArcStrokeIn2 = Stroke(width = mainArcStroke.width * 2f)
 
             val scale = mainArcSize / 100F
-            val titleStyle = textStyle.copy(fontSize = TextUnit(6F * scale, TextUnitType.Sp))
+            val titleStyle = textStyle.copy(fontSize = TextUnit(5F * scale, TextUnitType.Sp))
             val valueStyle = textStyle.copy(fontSize = TextUnit(18F * scale, TextUnitType.Sp))
 
             drawArc(
@@ -79,7 +78,7 @@ class PiPView {
                 140f,
                 220f,
                 false,
-                topLeft = Offset(mainArcStroke.width / 2, mainArcStroke.width / 2),
+                topLeft = Offset(leftOffset + mainArcStroke.width / 2, mainArcStroke.width / 2),
                 size = Size(mainArcSize - mainArcStroke.width, mainArcSize - mainArcStroke.width),
                 style = mainArcStroke
             )
@@ -89,7 +88,7 @@ class PiPView {
                 141f,
                 218f * animatedPercent,
                 false,
-                topLeft = Offset(mainArcStroke.width / 2, mainArcStroke.width / 2),
+                topLeft = Offset(leftOffset + mainArcStroke.width / 2, mainArcStroke.width / 2),
                 size = Size(
                     mainArcSize - mainArcStroke.width,
                     mainArcSize - mainArcStroke.width
@@ -102,7 +101,7 @@ class PiPView {
                 141f + 218f * animatedPercent,
                 2f,
                 false,
-                topLeft = Offset(mainArcStroke.width / 2, mainArcStroke.width / 2),
+                topLeft = Offset(leftOffset + mainArcStroke.width / 2, mainArcStroke.width / 2),
                 size = Size(
                     mainArcSize - mainArcStroke.width,
                     mainArcSize - mainArcStroke.width
@@ -118,7 +117,7 @@ class PiPView {
                 maxLines = 1,
                 style = valueStyle,
                 topLeft = Offset(
-                    (mainArcSize - valueTextSize.width) / 2F,
+                    leftOffset + (mainArcSize - valueTextSize.width) / 2F,
                     (mainArcSize - valueTextSize.height) / 2F
                 )
             )
@@ -131,7 +130,7 @@ class PiPView {
                 maxLines = 1,
                 style = titleStyle,
                 topLeft = Offset(
-                    (mainArcSize - titleTextSize.width) / 2F,
+                    leftOffset + (mainArcSize - titleTextSize.width) / 2F,
                     mainArcSize / 1.2F - titleTextSize.height / 2F
                 )
             )
