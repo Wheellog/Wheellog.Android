@@ -38,7 +38,7 @@ class MainActivityTest {
         // Act.
         // Assert.
         assertThat(WheelData.getInstance()).isNotNull()
-        assertThat(activity.mMenu.hasVisibleItems()).isEqualTo(true)
+        assertThat(activity.mMenu?.hasVisibleItems()).isEqualTo(true)
         assertThat(activity.pager.adapter).isNotNull()
         assertThat(activity.pager.adapter!!.itemCount).isEqualTo(4)
         assertThat(shadowActivity.nextStartedActivity.action).isEqualTo(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)

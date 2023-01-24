@@ -160,31 +160,31 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         when (pages[position]) {
             R.layout.main_view_main -> {
                 data.bmsView = false
-                    wheelView?.apply {
-                        setSpeed(data.speed)
-                        setBattery(data.batteryLevel)
-                        setBatteryLowest(data.batteryLowestLevel)
-                        setTemperature(data.temperature)
-                        setRideTime(data.ridingTimeString)
-                        setTopSpeed(data.topSpeedDouble)
-                        setDistance(data.distanceDouble)
-                        setTotalDistance(data.totalDistanceDouble)
-                        setVoltage(data.voltageDouble)
-                        setCurrent(data.currentDouble)
-                        setAverageSpeed(data.averageRidingSpeedDouble)
-                        setMaxPwm(data.maxPwm)
-                        setMaxTemperature(data.maxTemp)
-                        setPwm(data.calculatedPwm)
-                        updateViewBlocksVisibility()
-                        redrawTextBoxes()
-                        invalidate()
+                wheelView?.apply {
+                    setSpeed(data.speed)
+                    setBattery(data.batteryLevel)
+                    setBatteryLowest(data.batteryLowestLevel)
+                    setTemperature(data.temperature)
+                    setRideTime(data.ridingTimeString)
+                    setTopSpeed(data.topSpeedDouble)
+                    setDistance(data.distanceDouble)
+                    setTotalDistance(data.totalDistanceDouble)
+                    setVoltage(data.voltageDouble)
+                    setCurrent(data.currentDouble)
+                    setAverageSpeed(data.averageRidingSpeedDouble)
+                    setMaxPwm(data.maxPwm)
+                    setMaxTemperature(data.maxTemp)
+                    setPwm(data.calculatedPwm)
+                    updateViewBlocksVisibility()
+                    redrawTextBoxes()
+                    invalidate()
 
-                        var profileName = WheelLog.AppConfig.profileName
-                        if (profileName.trim { it <= ' ' } == "") {
-                            profileName = if (data.model == "") data.name else data.model
-                        }
-                        setWheelModel(profileName)
+                    var profileName = WheelLog.AppConfig.profileName
+                    if (profileName.trim { it <= ' ' } == "") {
+                        profileName = if (data.model == "") data.name else data.model
                     }
+                    setWheelModel(profileName)
+                }
             }
             R.layout.main_view_params_list -> {
                 if (WheelLog.AppConfig.useMph) {
