@@ -30,7 +30,7 @@ class BluetoothService: Service() {
     private var timerTicks = 0
 
     private val mBinder: IBinder = LocalBinder()
-    private var fileUtilRawData: FileUtil? = null
+    var fileUtilRawData: FileUtil? = null
     private var mgr: PowerManager? = null
     private var wl: WakeLock? = null
 
@@ -41,12 +41,10 @@ class BluetoothService: Service() {
             }
         }
 
-    private val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-    private val sdf2 = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private val wakeLogTag = "WheelLog:WakeLockTag"
     private val central: BluetoothCentralManager by lazy {
         BluetoothCentralManager(
-            this,
+            WheelLog.appContext!!,
             bluetoothCentralManagerCallback,
             Handler(Looper.getMainLooper())
         )
@@ -131,15 +129,15 @@ class BluetoothService: Service() {
             override fun onServicesDiscovered(peripheral: BluetoothPeripheral) {
                 super.onServicesDiscovered(peripheral)
                 Timber.i("onServicesDiscovered called")
-                var recognisedWheel = WheelData.getInstance().detectWheel(
+                var recognisedWheel = WheelManager.detectWheel(
                         wheelAddress,
-                        applicationContext,
+                        this@BluetoothService,
                         R.raw.bluetooth_services
                     )
                 if (!recognisedWheel) {
-                    recognisedWheel = WheelData.getInstance().detectWheel(
+                    recognisedWheel = WheelManager.detectWheel(
                         wheelAddress,
-                        applicationContext,
+                        this@BluetoothService,
                         R.raw.bluetooth_proxy_services
                     )
                 }
@@ -160,7 +158,7 @@ class BluetoothService: Service() {
             ) {
                 super.onCharacteristicWrite(peripheral, value, characteristic, status)
                 if (status != GattStatus.SUCCESS) {
-                    readData(characteristic, value)
+                    WheelManager.readData(characteristic, this@BluetoothService, value)
                 }
             }
 
@@ -173,7 +171,7 @@ class BluetoothService: Service() {
                 super.onCharacteristicUpdate(peripheral, value, characteristic, status)
                 Timber.i("onCharacteristicChanged called %s", characteristic.uuid.toString())
                 if (status == GattStatus.SUCCESS) {
-                    readData(characteristic, value)
+                    WheelManager.readData(characteristic, this@BluetoothService, value)
                 }
             }
 
@@ -188,62 +186,14 @@ class BluetoothService: Service() {
             }
         }
 
-    private fun readData(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-        // RAW data
-        if (WheelLog.AppConfig.enableRawData) {
-            if (fileUtilRawData == null) {
-                fileUtilRawData = FileUtil(applicationContext)
-            }
-            if (fileUtilRawData!!.isNull) {
-                val fileNameForRawData = "RAW_" + sdf.format(Date()) + ".csv"
-                fileUtilRawData!!.prepareFile(fileNameForRawData, WheelData.getInstance().mac)
-            }
-            fileUtilRawData!!.writeLine(
-                String.format(
-                    Locale.US, "%s,%s",
-                    sdf2.format(System.currentTimeMillis()),
-                    toHexStringRaw(value)
-                )
-            )
-        } else if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
-            fileUtilRawData!!.close()
-        }
-        val wd = WheelData.getInstance()
-        when (wd.wheelType) {
-            WHEEL_TYPE.KINGSONG -> if (characteristic.uuid == Constants.KINGSONG_READ_CHARACTER_UUID) {
-                wd.decodeResponse(value, applicationContext)
-                if (WheelData.getInstance().name.isEmpty()) {
-                    KingsongAdapter.getInstance().requestNameData()
-                } else if (WheelData.getInstance().serial.isEmpty()) {
-                    KingsongAdapter.getInstance().requestSerialData()
-                }
-            }
-            WHEEL_TYPE.GOTWAY, WHEEL_TYPE.GOTWAY_VIRTUAL, WHEEL_TYPE.VETERAN ->
-                wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.INMOTION -> if (characteristic.uuid == Constants.INMOTION_READ_CHARACTER_UUID)
-                wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.INMOTION_V2 -> if (characteristic.uuid == Constants.INMOTION_V2_READ_CHARACTER_UUID)
-                wd.decodeResponse(value, applicationContext)
-            WHEEL_TYPE.NINEBOT_Z -> {
-                Timber.i("Ninebot Z reading")
-                if (characteristic.uuid == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
-                    wd.decodeResponse(value, applicationContext)
-                }
-            }
-            WHEEL_TYPE.NINEBOT -> {
-                Timber.i("Ninebot reading")
-                if (characteristic.uuid == Constants.NINEBOT_READ_CHARACTER_UUID
-                    || characteristic.uuid == Constants.NINEBOT_Z_READ_CHARACTER_UUID) {
-                    // in case of S2 or Mini
-                    Timber.i("Ninebot read cont")
-                    wd.decodeResponse(value, applicationContext)
-                }
-            }
-            else -> {}
-        }
-    }
+    private var lastConnectionHash = -1
 
     private fun broadcastConnectionUpdate(autoConnect: Boolean = false) {
+        val connectionHash = connectionState.value + isWheelSearch.hashCode()
+        if (lastConnectionHash == connectionHash) {
+            return
+        }
+        lastConnectionHash = connectionHash
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.value)
         intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, isWheelSearch)
@@ -258,7 +208,12 @@ class BluetoothService: Service() {
         private set
 
     var isWheelSearch = false
-        private set
+        private set(value) {
+            if (field != value) {
+                broadcastConnectionUpdate()
+            }
+            field = value
+        }
 
     fun startReconnectTimer() {
         if (reconnectTimer != null) {
@@ -268,11 +223,9 @@ class BluetoothService: Service() {
         reconnectTimer = Timer().apply {
             scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    val wd = WheelData.getInstance()
                     if (connectionState == ConnectionState.CONNECTED
-                        && wd != null
-                        && wd.lastLifeData > 0
-                        && (System.currentTimeMillis() - wd.lastLifeData) / 1000 > magicPeriod) {
+                        && WheelManager.lastLifeData > 0
+                        && (System.currentTimeMillis() - WheelManager.lastLifeData) / 1000 > magicPeriod) {
                         toggleReconnectToWheel()
                     }
                 }
@@ -317,22 +270,27 @@ class BluetoothService: Service() {
             return false
         }
         central.transport = Transport.LE
-        if (wheelConnection?.address == wheelAddress) {
+        if (wheelConnection != null) {
+            when (connectionState) {
+                ConnectionState.CONNECTED -> {
+                    Timber.i("Device is already connected.")
+                    return false
+                }
+                ConnectionState.CONNECTING -> {
+                    Timber.i("Device not found.  Unable to connect.")
+                    return false
+                }
+                else -> {}
+            }
             Timber.i("Trying to use an existing wheelConnection for connection.")
             isWheelSearch = true
-            central.connectPeripheral(wheelConnection!!, wheelCallback)
-            broadcastConnectionUpdate()
+            central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
             return true
-        }
-        if (wheelConnection?.state == ConnectionState.CONNECTING) {
-            Timber.i("Device not found.  Unable to connect.")
-            return false
         }
 
         isWheelSearch = true
         central.autoConnectPeripheral(wheelConnection!!, wheelCallback)
         Timber.i("Trying to create a new connection.")
-        broadcastConnectionUpdate()
         return true
     }
 
@@ -349,7 +307,6 @@ class BluetoothService: Service() {
         }
 
         isWheelSearch = false
-        broadcastConnectionUpdate()
     }
 
     fun toggleConnectToWheel() {

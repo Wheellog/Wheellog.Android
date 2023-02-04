@@ -22,13 +22,14 @@ class WheelLog : Application() {
         WheelData.initiate()
 
         // YandexMetrica.
-        if (BuildConfig.metrica_api.isNotEmpty()) {
+        if (BuildConfig.metrica_api.isNotEmpty() && System.getProperty("is_test").isNullOrEmpty()) {
             val config = YandexMetricaConfig
                 .newConfigBuilder(BuildConfig.metrica_api)
                 .withLocationTracking(false)
                 .withStatisticsSending(AppConfig.yandexMetricaAccepted)
                 .build()
             YandexMetrica.activate(applicationContext, config)
+            System.setProperty("metrica", "enabled")
         }
     }
 

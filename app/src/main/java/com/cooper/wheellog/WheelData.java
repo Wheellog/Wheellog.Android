@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 
 import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
@@ -95,7 +94,6 @@ public class WheelData {
 
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
-    private long mLowSpeedMusicTime = 0;
 
     private boolean mBmsView = false;
     private String protoVer = "";
@@ -222,6 +220,10 @@ public class WheelData {
         return (int) Math.round(mSpeed / 10.0);
     }
 
+    public int getSpeedReal() {
+        return mSpeed;
+    }
+
     public void setSpeed(int speed) {
         mSpeed = speed;
     }
@@ -286,6 +288,10 @@ public class WheelData {
 
     public String getProtoVer() {
         return protoVer;
+    }
+
+    public void setProtoVer(String value) {
+        protoVer = value;
     }
 
     public void updateLight(boolean enabledLight) {
@@ -807,6 +813,10 @@ public class WheelData {
         return mCalculatedPwm * 100.0;
     }
 
+    public void setCalculatedPwm(double value) {
+        mCalculatedPwm = value / 100.0;
+    }
+
     public double getMaxPwm() {
         return mMaxPwm * 100.0;
     }
@@ -994,7 +1004,6 @@ public class WheelData {
 
         if (!new_data)
             return;
-        mLastLifeData = System.currentTimeMillis();
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);
@@ -1041,29 +1050,7 @@ public class WheelData {
             mContext.sendBroadcast(isReadyIntent);
         }
 
-        CheckMuteMusic();
-    }
-
-    public long getLastLifeData() {
-        return mLastLifeData;
-    }
-
-    private void CheckMuteMusic() {
-        if (!WheelLog.AppConfig.getUseStopMusic())
-            return;
-
-        final double muteSpeedThreshold = 3.5;
-        double speed = getSpeedDouble();
-        if (speed <= muteSpeedThreshold) {
-            mLowSpeedMusicTime = 0;
-            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
-        } else {
-            if (mLowSpeedMusicTime == 0)
-                mLowSpeedMusicTime = System.currentTimeMillis();
-
-            if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= 1500)
-                MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-        }
+        AudioUtil.INSTANCE.checkMuteMusic();
     }
 
     public void resetRideTime() {
@@ -1107,7 +1094,6 @@ public class WheelData {
     }
 
     void reset() {
-        mLowSpeedMusicTime = 0;
         mSpeed = 0;
         mTorque = 0;
         mMotorPower = 0;
@@ -1165,10 +1151,6 @@ public class WheelData {
         Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
         String text = StringUtil.Companion.getRawTextResource(mContext, servicesResId);
-        if (mBluetoothService == null) {
-            Timber.wtf("[error] BluetoothService is null. The wheel could not be detected.");
-            return false;
-        }
         var wheelServices = mBluetoothService.getWheelServices();
         if (wheelServices == null) {
             return false;

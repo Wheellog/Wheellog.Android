@@ -258,10 +258,12 @@ object DialogHelper {
         binding.okButton.setOnClickListener {
             WheelLog.AppConfig.privatePolicyAccepted = true
             WheelLog.AppConfig.yandexMetricaAccepted = binding.agreeWithMetrica.isChecked
-            YandexMetrica.setStatisticsSending(
-                mainActivity.applicationContext,
-                binding.agreeWithMetrica.isChecked
-            )
+            if (System.getProperty("metrica") != null) {
+                YandexMetrica.setStatisticsSending(
+                    mainActivity.applicationContext,
+                    binding.agreeWithMetrica.isChecked
+                )
+            }
             dialog.dismiss()
         }
         binding.btnCancel.setOnClickListener {

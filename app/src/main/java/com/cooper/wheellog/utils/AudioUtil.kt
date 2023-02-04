@@ -5,6 +5,7 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.Build
+import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
@@ -16,6 +17,7 @@ object AudioUtil {
     private const val duration = 1 // duration of sound
     private const val sampleRate = 44100 //22050; // Hz (maximum frequency is 7902.13Hz (B8))
     private const val numSamples = duration * sampleRate
+    private var mLowSpeedMusicTime: Long = 0
 
     private const val freq = 440
     private val buffer = ShortArray(numSamples)
@@ -111,6 +113,40 @@ object AudioUtil {
             }
         } catch (ex: Exception) {
             Timber.i(ex)
+        }
+    }
+
+    fun checkMuteMusic() {
+        if (!WheelLog.AppConfig.useStopMusic) return
+        val wd = WheelData.getInstance()
+        val muteSpeedThreshold = 3.5
+        val speed: Double = wd.speedDouble
+        if (speed <= muteSpeedThreshold) {
+            mLowSpeedMusicTime = 0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                MainActivity.audioManager.adjustStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.ADJUST_MUTE,
+                    0
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true)
+            }
+        } else {
+            if (mLowSpeedMusicTime == 0L) mLowSpeedMusicTime = System.currentTimeMillis()
+            if (System.currentTimeMillis() - mLowSpeedMusicTime >= 1500) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    MainActivity.audioManager.adjustStreamVolume(
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_UNMUTE,
+                        0
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false)
+                }
+            }
         }
     }
 }
