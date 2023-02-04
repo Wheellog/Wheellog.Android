@@ -5,12 +5,15 @@ buildscript {
     ext.compose_version = '1.4.0-alpha02'
     ext.lifecycle_version = '2.5.1'
     ext.room_version = '2.5.0'
+    ext.material_version = '1.8.0'
+    ext.appcompact_version = '1.6.0'
+    ext.core_ktx_version = '1.9.0'
     repositories {
         mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0'
+        classpath 'com.android.tools.build:gradle:7.4.1'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 

@@ -87,15 +87,6 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_pip_mode, true)
         set(value) = setValue(R.string.use_pip_mode, value)
 
-    private var viewBlocksPipString: String?
-        get() = getValue(R.string.view_blocks_pip_string, null)
-        set(value) = setValue(R.string.view_blocks_pip_string, value)
-
-    var viewBlocksPip: Array<String>
-        get() = this.viewBlocksPipString?.split(separator)?.toTypedArray()
-            ?: arrayOf(context.getString(R.string.speed))
-        set(value) { this.viewBlocksPipString = value.joinToString(separator) }
-
     private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)
         set(value) = setValue(R.string.notification_buttons, value)

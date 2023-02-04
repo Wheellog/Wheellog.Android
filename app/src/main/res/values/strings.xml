@@ -332,9 +332,6 @@
     <string name="view_blocks_string" translatable="false">view_blocks_string</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>
-    <string name="view_blocks_pip_string" translatable="false">view_blocks_pip_string</string>
-    <string name="view_blocks_pip_title">Info blocks PiP</string>
-    <string name="view_blocks_pip_description">Show info blocks in "picture in picture" mode</string>
     <string name="use_eng_alert_title">Restart required</string>
     <string name="use_eng_alert_description">Please restart the application to apply this change</string>
     <string name="use_eng_title" translatable="false">English</string>

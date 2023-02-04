@@ -1,7 +1,5 @@
 package com.wheellog.shared
 
-import android.renderscript.Sampler
-
 class SmartDouble: Comparable<SmartDouble> {
     var value: Double = 0.0
         set(value) {
