@@ -1033,6 +1033,18 @@ public class WheelData {
 
         timestamp_last = timestamp_raw;
         intent.putExtra("Speed", mSpeed);
+        intent.putExtra("Distance", mTotalDistance);
+        intent.putExtra("MAC", getMac());
+        String profileName = WheelLog.AppConfig.getProfileName();
+        if (profileName.trim() == "") {
+            if (mModel == "") {
+                profileName = mName;
+            }
+            else {
+                profileName = mModel;
+            }
+        }
+        intent.putExtra("WheelName", profileName);
         mContext.sendBroadcast(intent);
 
         if (!mWheelIsReady && getAdapter().isReady()) {
