@@ -338,7 +338,7 @@
     <string name="use_eng_description" translatable="false">Use English language instead of Android system language</string>
     <string name="use_better_percents_title">Improved percents</string>
     <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
-    <string name="custom_percents_title">Custom percents</string>.
+    <string name="custom_percents_title">Custom percents</string>
     <string name="custom_percents_description">Use custom formula, don't forget to configure the lowest voltage for cell for your wheel</string>
     <string name="cell_voltage_tiltback_title">Tiltback voltage</string>.
     <string name="cell_voltage_tiltback_description">Voltage per 1 cell, where the wheel tiltback the pedals</string>
