@@ -699,6 +699,11 @@ public class WheelData {
         }
     }
 
+    public double getAvgVoltagePerCell() {
+        double voltPerCell = mVoltage/getAdapter().getCellsForWheel();
+        return voltPerCell;
+    }
+
     public double getRemainingDistance() {
         double batteryByKm = getBatteryPerKm();
         if (batteryByKm != 0) {
