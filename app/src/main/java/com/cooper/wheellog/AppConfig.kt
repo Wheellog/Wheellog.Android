@@ -50,7 +50,7 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_better_percents, false)
         set(value) = setValue(R.string.use_better_percents, value)
 
-    var CustomPercents: Boolean
+    var customPercents: Boolean
         get() = getValue(R.string.custom_percents, false)
         set(value) = setValue(R.string.custom_percents, value)
 
