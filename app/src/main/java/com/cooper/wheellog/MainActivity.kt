@@ -1,0 +1,1003 @@
+package com.cooper.wheellog
+
+import android.app.ActivityManager
+import android.app.ActivityOptions
+import android.app.AlertDialog
+import android.app.PictureInPictureParams
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.*
+import android.content.DialogInterface.OnShowListener
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.drawable.AnimationDrawable
+import android.media.AudioManager
+import android.os.*
+import android.util.Rational
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextClock
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.*
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.cooper.wheellog.BluetoothService.LocalBinder
+import com.cooper.wheellog.DialogHelper.checkAndShowPrivatePolicyDialog
+import com.cooper.wheellog.DialogHelper.checkBatteryOptimizationsAndShowAlert
+import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
+import com.cooper.wheellog.ElectroClub.Companion.instance
+import com.cooper.wheellog.GarminConnectIQ.Companion.isInstanceCreated
+import com.cooper.wheellog.companion.WearOs
+import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
+import com.cooper.wheellog.utils.*
+import com.cooper.wheellog.utils.Alarms.checkAlarm
+import com.cooper.wheellog.utils.Constants.ALARM_TYPE
+import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
+import com.cooper.wheellog.utils.PermissionsUtil.checkBlePermissions
+import com.cooper.wheellog.utils.PermissionsUtil.checkExternalFilePermission
+import com.cooper.wheellog.utils.PermissionsUtil.checkNotificationsPermissions
+import com.cooper.wheellog.utils.PermissionsUtil.isMaxBleReq
+import com.cooper.wheellog.utils.SomeUtil.Companion.getSerializable
+import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
+import com.cooper.wheellog.views.PiPView
+import com.google.android.material.snackbar.Snackbar
+import com.welie.blessed.ConnectionState
+import com.yandex.metrica.YandexMetrica
+import me.relex.circleindicator.CircleIndicator3
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+
+class MainActivity : AppCompatActivity() {
+    private var eventsLoggingTree: EventsLoggingTree? = null
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleManager.setLocale(base))
+    }
+
+    //region private variables
+    lateinit var pager: ViewPager2
+    lateinit var pagerAdapter: MainPageAdapter
+    lateinit var pipView: ComposeView
+    var mMenu: Menu? = null
+    private var miSearch: MenuItem? = null
+    private var miWheel: MenuItem? = null
+    private var miWatch: MenuItem? = null
+    private var miBand: MenuItem? = null
+    private var miLogging: MenuItem? = null
+    private var mBluetoothAdapter: BluetoothAdapter? = null
+    private var mDeviceAddress: String = ""
+    private var mConnectionState = ConnectionState.DISCONNECTED
+    private var isWheelSearch = false
+    private var doubleBackToExitPressedOnce = false
+    private var snackbar: Snackbar? = null
+    private val timeFormatter = SimpleDateFormat("HH:mm:ss ", Locale.US)
+    private var wearOs: WearOs? = null
+    private val speedModel: PiPView.SpeedModel by lazy { PiPView.SpeedModel() }
+    private val bluetoothService: BluetoothService?
+        get() = WheelData.getInstance().bluetoothService
+    private val mBluetoothServiceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(componentName: ComponentName, service: IBinder) {
+            if (componentName.className == BluetoothService::class.java.name) {
+                val bluetoothService = (service as LocalBinder).getService()
+                WheelData.getInstance().bluetoothService = bluetoothService
+                if (bluetoothService.connectionState == ConnectionState.DISCONNECTED && mDeviceAddress.isNotEmpty()) {
+                    bluetoothService.wheelAddress = mDeviceAddress
+                    toggleConnectToWheel()
+                }
+            }
+        }
+
+        override fun onServiceDisconnected(componentName: ComponentName) {
+            if (componentName.className == BluetoothService::class.java.name) {
+                WheelData.getInstance().bluetoothService = null
+                WheelData.getInstance().isConnected = false
+                Timber.e("BluetoothService disconnected")
+            }
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: Configuration
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
+        }
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        val toolbar = findViewById<View>(R.id.toolbar)
+        val indicator = findViewById<View>(R.id.indicator)
+        if (isInPictureInPictureMode) {
+            registerReceiver(mPiPBroadcastReceiver, makeIntentFilter())
+            toolbar.visibility = View.GONE
+            pager.visibility = View.GONE
+            indicator.visibility = View.GONE
+            pipView.setContent {
+                PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
+            }
+            pipView.visibility = View.VISIBLE
+        } else {
+            unregisterReceiver(mPiPBroadcastReceiver)
+            toolbar.visibility = View.VISIBLE
+            pager.visibility = View.VISIBLE
+            indicator.visibility = View.VISIBLE
+            pipView.visibility = View.GONE
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (WheelLog.AppConfig.usePipMode
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            && !this.isInPictureInPictureMode) {
+            speedModel.title = getString(R.string.speed)
+            this.enterPictureInPictureMode(
+                PictureInPictureParams.Builder()
+                    .setAspectRatio(Rational(16, 9))
+                    .build()
+            )
+        }
+    }
+
+    private fun setConnectionState(connectionState: ConnectionState, wheelSearch: Boolean) {
+        when (connectionState) {
+            ConnectionState.CONNECTED -> {
+                pagerAdapter.configureSecondDisplay()
+                if (mDeviceAddress.isNotEmpty()) {
+                    WheelLog.AppConfig.lastMac = mDeviceAddress
+                    if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
+                        instance.getAndSelectGarageByMacOrShowChooseDialog(
+                            WheelLog.AppConfig.lastMac,
+                            this
+                        ) { }
+                    }
+                    if (WheelLog.AppConfig.useBeepOnVolumeUp) {
+                        WheelLog.VolumeKeyController.setActive(true)
+                    }
+                }
+                hideSnackBar()
+            }
+            ConnectionState.DISCONNECTED -> if (wheelSearch) {
+                if (mConnectionState == ConnectionState.DISCONNECTED) {
+                    showSnackBar(R.string.bluetooth_direct_connect_failed)
+                } else if (bluetoothService?.getDisconnectTime() != null) {
+                    val text = bluetoothService?.getDisconnectTime()
+                        ?.let { timeFormatter.format(it) } +
+                            getString(R.string.connection_lost_at)
+                    showSnackBar(text, Snackbar.LENGTH_INDEFINITE)
+                }
+            } else {
+                if (WheelLog.AppConfig.useBeepOnVolumeUp) {
+                    WheelLog.VolumeKeyController.setActive(false)
+                }
+            }
+            else -> {}
+        }
+        mConnectionState = connectionState
+        isWheelSearch = wheelSearch
+        setMenuIconStates()
+    }
+
+    /**
+     * Broadcast receiver for MainView UI. It should only work with UI elements.
+     * Intents are accepted only if MainView is active.
+     */
+    private val mMainViewBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (isPaused) {
+                return
+            }
+            when (intent.action) {
+                Constants.ACTION_WHEEL_TYPE_CHANGED -> {
+                    Timber.i("Wheel type switched")
+                    pagerAdapter.configureSecondDisplay()
+                    pagerAdapter.updateScreen(true)
+                }
+                Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
+                    pagerAdapter.updateScreen(
+                        intent.hasExtra(
+                            Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE
+                        )
+                    )
+                }
+                Constants.ACTION_WHEEL_NEWS_AVAILABLE -> {
+                    Timber.i("Received news")
+                    showSnackBar(intent.getStringExtra(Constants.INTENT_EXTRA_NEWS), 1500)
+                }
+                Constants.ACTION_WHEEL_TYPE_RECOGNIZED -> {}
+                Constants.ACTION_WHEEL_MODEL_CHANGED -> pagerAdapter.configureSmartBmsDisplay()
+                Constants.ACTION_ALARM_TRIGGERED -> {
+                    val alarmType = intent.getSerializable(Constants.INTENT_EXTRA_ALARM_TYPE, ALARM_TYPE::class.java)?.value ?: 0
+                    val alarmValue = intent.getDoubleExtra(Constants.INTENT_EXTRA_ALARM_VALUE, 0.0)
+                    if (alarmType < 4) {
+                        showSnackBar(
+                            resources.getString(R.string.alarm_text_speed) + String.format(
+                                ": %.1f",
+                                alarmValue
+                            ), 3000
+                        )
+                    }
+                    if (alarmType == ALARM_TYPE.CURRENT.value) {
+                        showSnackBar(
+                            resources.getString(R.string.alarm_text_current) + String.format(
+                                ": %.1f",
+                                alarmValue
+                            ), 3000
+                        )
+                    }
+                    if (alarmType == ALARM_TYPE.TEMPERATURE.value) {
+                        showSnackBar(
+                            resources.getString(R.string.alarm_text_temperature) + String.format(
+                                ": %.1f",
+                                alarmValue
+                            ), 3000
+                        )
+                    }
+                    if (alarmType == ALARM_TYPE.PWM.value) {
+                        showSnackBar(
+                            resources.getString(R.string.alarm_text_pwm) + String.format(
+                                ": %.1f",
+                                alarmValue * 100
+                            ), 3000
+                        )
+                    }
+                    if (alarmType == ALARM_TYPE.BATTERY.value) {
+                        showSnackBar(
+                            resources.getString(R.string.alarm_text_battery) + String.format(
+                                ": %.0f",
+                                alarmValue
+                            ), 3000
+                        )
+                    }
+                }
+                Constants.ACTION_WHEEL_IS_READY -> checkPWMIsSetAndShowAlert(this@MainActivity)
+            }
+        }
+    }
+
+    /**
+     * Broadcast receiver for MainView UI for Picture in Picture mode.
+     * It should only work with UI elements.
+     */
+    private val mPiPBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                Constants.ACTION_WHEEL_TYPE_CHANGED -> {
+                    Timber.i("Wheel type switched")
+                }
+                Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
+                    speedModel.value.value = WheelData.getInstance().speed / 10f
+                    pipView.invalidate()
+                }
+            }
+        }
+    }
+
+    /**
+     * A broadcast receiver that always works. It shouldn't have any UI work.
+     */
+    private val mCoreBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                Constants.ACTION_BLUETOOTH_CONNECTION_STATE -> {
+                    val connectionState = ConnectionState.fromValue(
+                        intent.getIntExtra(
+                            Constants.INTENT_EXTRA_CONNECTION_STATE,
+                            ConnectionState.DISCONNECTED.value
+                        )
+                    )
+                    val isWheelSearch =
+                        intent.getBooleanExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, false)
+                    Timber.i(
+                        "Bluetooth state = %s, wheel search is %s",
+                        connectionState,
+                        isWheelSearch
+                    )
+                    setConnectionState(connectionState, isWheelSearch)
+                    WheelData.getInstance().isConnected =
+                        connectionState == ConnectionState.CONNECTED
+                    when (connectionState) {
+                        ConnectionState.CONNECTED -> {
+                            if (!LoggingService.isInstanceCreated() &&
+                                WheelLog.AppConfig.autoLog &&
+                                !WheelLog.AppConfig.startAutoLoggingWhenIsMoving
+                            ) {
+                                toggleLoggingService()
+                            }
+                            if (WheelData.getInstance().wheelType == WHEEL_TYPE.KINGSONG) {
+                                KingsongAdapter.getInstance().requestNameData()
+                            }
+                            if (WheelLog.AppConfig.autoWatch && wearOs == null) {
+                                toggleWatch()
+                            }
+                            WheelLog.Notifications.notificationMessageId = R.string.connected
+                        }
+                        ConnectionState.DISCONNECTING, ConnectionState.DISCONNECTED -> if (isWheelSearch) {
+                            if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
+                                WheelLog.Notifications.notificationMessageId = R.string.searching
+                            } else {
+                                WheelLog.Notifications.notificationMessageId = R.string.connecting
+                            }
+                        } else {
+                            when (WheelData.getInstance().wheelType) {
+                                WHEEL_TYPE.INMOTION -> {
+                                    InMotionAdapter.newInstance()
+                                    InmotionAdapterV2.newInstance()
+                                    NinebotZAdapter.newInstance()
+                                    NinebotAdapter.newInstance()
+                                }
+                                WHEEL_TYPE.INMOTION_V2 -> {
+                                    InmotionAdapterV2.newInstance()
+                                    NinebotZAdapter.newInstance()
+                                    NinebotAdapter.newInstance()
+                                }
+                                WHEEL_TYPE.NINEBOT_Z -> {
+                                    NinebotZAdapter.newInstance()
+                                    NinebotAdapter.newInstance()
+                                }
+                                WHEEL_TYPE.NINEBOT -> NinebotAdapter.newInstance()
+                                else -> {}
+                            }
+                            WheelLog.Notifications.notificationMessageId = R.string.disconnected
+                        }
+                        else -> {}
+                    }
+                    WheelLog.Notifications.update()
+                }
+                Constants.ACTION_PREFERENCE_RESET -> {
+                    Timber.i("Reset battery lowest")
+                    pagerAdapter.wheelView?.resetBatteryLowest()
+                }
+                Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
+                    if (wearOs != null) {
+                        wearOs!!.sendUpdateData()
+                    }
+                    if (WheelLog.AppConfig.mibandMode !== MiBandEnum.Alarm) {
+                        WheelLog.Notifications.update()
+                    }
+                    if (!LoggingService.isInstanceCreated() &&
+                        WheelLog.AppConfig.startAutoLoggingWhenIsMoving &&
+                        WheelLog.AppConfig.autoLog && WheelData.getInstance().speedDouble > 3.5
+                    ) {
+                        toggleLoggingService()
+                    }
+                    if (WheelLog.AppConfig.alarmsEnabled) {
+                        checkAlarm(
+                            WheelData.getInstance().calculatedPwm / 100,
+                            applicationContext
+                        )
+                    }
+                }
+                Constants.ACTION_PEBBLE_SERVICE_TOGGLED -> {
+                    setMenuIconStates()
+                    WheelLog.Notifications.update()
+                }
+                Constants.ACTION_LOGGING_SERVICE_TOGGLED -> {
+                    val running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                        val filepath =
+                            intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)
+                        val fileName = filepath!!.substring(filepath.lastIndexOf("\\") + 1)
+                        if (running) {
+                            showSnackBar(
+                                resources.getString(R.string.started_logging) + " " + fileName,
+                                5000
+                            )
+                        }
+                    }
+                    setMenuIconStates()
+                    WheelLog.Notifications.update()
+                }
+                Constants.NOTIFICATION_BUTTON_CONNECTION -> {
+                    toggleConnectToWheel()
+                    WheelLog.Notifications.update()
+                }
+                Constants.NOTIFICATION_BUTTON_LOGGING -> {
+                    toggleLogging()
+                    WheelLog.Notifications.update()
+                }
+                Constants.NOTIFICATION_BUTTON_WATCH -> {
+                    toggleWatch()
+                    WheelLog.Notifications.update()
+                }
+                Constants.NOTIFICATION_BUTTON_BEEP -> playBeep()
+                Constants.NOTIFICATION_BUTTON_LIGHT -> if (WheelData.getInstance().adapter != null) {
+                    WheelData.getInstance().adapter.switchFlashlight()
+                }
+                Constants.NOTIFICATION_BUTTON_MIBAND -> toggleSwitchMiBand()
+            }
+        }
+    }
+
+    private fun toggleWatch() {
+        togglePebbleService()
+        if (WheelLog.AppConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
+        toggleWearOs()
+    }
+
+    private fun toggleLogging() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            toggleLoggingService()
+        } else {
+            checkExternalFilePermission(this, RESULT_REQUEST_PERMISSIONS_IO)
+        }
+    }
+
+    private fun setMenuIconStates() {
+        if (mMenu == null) return
+        if (mDeviceAddress.isEmpty()) {
+            miWheel!!.isEnabled = false
+            miWheel!!.icon!!.alpha = 64
+        } else {
+            miWheel!!.isEnabled = true
+            miWheel!!.icon!!.alpha = 255
+        }
+        when (WheelLog.AppConfig.mibandMode) {
+            MiBandEnum.Alarm -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm))
+            MiBandEnum.Min -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin))
+            MiBandEnum.Medium -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
+            MiBandEnum.Max -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
+        }
+        if (WheelLog.AppConfig.mibandOnMainscreen) {
+            miBand!!.isVisible = true
+            miWatch!!.isVisible = false
+        } else {
+            miBand!!.isVisible = false
+            miWatch!!.isVisible = true
+        }
+        if (PebbleService.isInstanceCreated()) {
+            miWatch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
+        } else {
+            miWatch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOff))
+        }
+        if (LoggingService.isInstanceCreated()) {
+            miLogging!!.setTitle(R.string.stop_data_service)
+            miLogging!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOn))
+        } else {
+            miLogging!!.setTitle(R.string.start_data_service)
+            miLogging!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOff))
+        }
+        when (mConnectionState) {
+            ConnectionState.CONNECTED -> {
+                miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOn))
+                miWheel!!.setTitle(R.string.disconnect_from_wheel)
+                miSearch!!.isEnabled = false
+                miSearch!!.icon!!.alpha = 64
+                miLogging!!.isEnabled = true
+                miLogging!!.icon!!.alpha = 255
+            }
+            ConnectionState.DISCONNECTED -> {
+                if (isWheelSearch) {
+                    miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch))
+                    miWheel!!.setTitle(R.string.disconnect_from_wheel)
+                    (miWheel!!.icon as AnimationDrawable?)!!.start()
+                    miSearch!!.isEnabled = false
+                    miSearch!!.icon!!.alpha = 64
+                } else {
+                    miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff))
+                    miWheel!!.setTitle(R.string.connect_to_wheel)
+                    miSearch!!.isEnabled = true
+                    miSearch!!.icon!!.alpha = 255
+                }
+                miLogging!!.isEnabled = false
+                miLogging!!.icon!!.alpha = 64
+            }
+            else -> {}
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        pagerAdapter.updateScreen(true)
+    }
+
+    private fun createPager() {
+        // add pages into main view
+        pager = findViewById(R.id.pager)
+        pager.offscreenPageLimit = 10
+        val pages = ArrayList<Int>()
+        pages.add(R.layout.main_view_main)
+        pages.add(R.layout.main_view_params_list)
+        pages.add(R.layout.main_view_graph)
+        if (WheelLog.AppConfig.pageTrips) {
+            pages.add(R.layout.main_view_trips)
+        }
+        if (WheelLog.AppConfig.pageEvents) {
+            pages.add(R.layout.main_view_events)
+        }
+        pagerAdapter = MainPageAdapter(pages, this)
+        pager.adapter = pagerAdapter
+        pager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                pagerAdapter.position = position
+                pagerAdapter.updateScreen(true)
+            }
+        })
+        eventsLoggingTree = EventsLoggingTree(applicationContext, pagerAdapter)
+        Timber.plant(eventsLoggingTree!!)
+        val indicator = findViewById<CircleIndicator3>(R.id.indicator)
+        indicator.setViewPager(pager)
+        pagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        if (onDestroyProcess) {
+            Process.killProcess(Process.myPid())
+            return
+        }
+        AppCompatDelegate.setDefaultNightMode(WheelLog.AppConfig.dayNightThemeMode)
+        setTheme(WheelLog.AppConfig.appTheme)
+        super.onCreate(savedInstanceState)
+        volumeControlStream = AudioManager.STREAM_MUSIC
+        setContentView(R.layout.activity_main)
+        val electroClub = instance
+        electroClub.dao = getDataBase(this).tripDao()
+        electroClub.errorListener = { method: String?, error: String? ->
+            val message = "[ec] $method error: $error"
+            Timber.i(message)
+            runOnUiThread { showSnackBar(message, 4000) }
+        }
+        electroClub.successListener = label@{ method: String?, success: Any? ->
+            if (method == ElectroClub.GET_GARAGE_METHOD) {
+                return@label
+            }
+            val message = "[ec] $method ok: $success"
+            Timber.i(message)
+            runOnUiThread { showSnackBar(message, 4000) }
+        }
+        createPager()
+        pipView = findViewById(R.id.pipFrame)
+
+        // clock font
+        val textClock = findViewById<TextClock>(R.id.textClock)
+        textClock.typeface = WheelLog.ThemeManager.getTypeface(applicationContext)
+        mDeviceAddress = WheelLog.AppConfig.lastMac
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        checkAndShowPrivatePolicyDialog(this)
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show()
+        }
+
+        // Checks if Bluetooth is supported on the device.
+        val bluetoothManager = this.getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+        mBluetoothAdapter = bluetoothManager.adapter
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show()
+        } else if (!mBluetoothAdapter!!.isEnabled) {
+            if (checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+                // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
+                // fire an intent to display a dialog asking the user to grant permission to enable it.
+                ActivityCompat.startActivityForResult(
+                    this,
+                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+                    RESULT_REQUEST_ENABLE_BT,
+                    null
+                )
+            }
+        } else {
+            startBluetoothService()
+        }
+        registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter())
+        WheelLog.Notifications.update()
+
+        checkBatteryOptimizationsAndShowAlert(this)
+        // for test without wheel go to isHardwarePWM and comment Unknown case
+        // DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(this);
+    }
+
+    public override fun onResume() {
+        super.onResume()
+        isPaused = false
+        if (bluetoothService != null && mConnectionState != bluetoothService!!.connectionState && isWheelSearch != bluetoothService!!.isWheelSearch) {
+            setConnectionState(
+                bluetoothService!!.connectionState,
+                bluetoothService!!.isWheelSearch
+            )
+        }
+        if (WheelData.getInstance().wheelType != WHEEL_TYPE.Unknown) {
+            pagerAdapter.configureSecondDisplay()
+        }
+        if (checkNotificationsPermissions(this)) {
+            WheelLog.Notifications.update()
+        }
+        registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter())
+        pagerAdapter.updateScreen(true)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        setMenuIconStates()
+    }
+
+    public override fun onPause() {
+        super.onPause()
+        isPaused = true
+        unregisterReceiver(mMainViewBroadcastReceiver)
+    }
+
+    override fun onDestroy() {
+        onDestroyProcess = true
+        if (wearOs != null) {
+            wearOs!!.stop()
+        }
+        stopPebbleService()
+        stopGarminConnectIQ()
+        stopLoggingService()
+        WheelData.getInstance().full_reset()
+        if (bluetoothService != null) {
+            unbindService(mBluetoothServiceConnection)
+            WheelData.getInstance().bluetoothService = null
+        }
+        WheelLog.ThemeManager.changeAppIcon(this@MainActivity)
+        super.onDestroy()
+        object : CountDownTimer((2 * 60 * 1000 /* 2 min */).toLong(), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                if (!LoggingService.isInstanceCreated()) {
+                    onFinish()
+                }
+            }
+
+            override fun onFinish() {
+                WheelLog.Notifications.close()
+                Timber.uproot(eventsLoggingTree!!)
+                eventsLoggingTree!!.close()
+                eventsLoggingTree = null
+                unregisterReceiver(mCoreBroadcastReceiver)
+                // Kill YandexMetrika process.
+                val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+                val runningProcesses = am.runningAppProcesses
+                for (process in runningProcesses) {
+                    if (Process.myPid() != process.pid) {
+                        Process.killProcess(process.pid)
+                    }
+                }
+                // Kill self process.
+                Process.killProcess(Process.myPid())
+            }
+        }.start()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Timber.wtf("[Warning] Low memory")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        mMenu = menu.apply {
+            miSearch = findItem(R.id.miSearch)
+            miWheel = findItem(R.id.miWheel)
+            miWatch = findItem(R.id.miWatch)
+            miBand = findItem(R.id.miBand)
+            miLogging = findItem(R.id.miLogging)
+        }
+
+        // Themes
+        if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+            val miSettings = mMenu!!.findItem(R.id.miSettings)
+            miSettings.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuSettings))
+            miSearch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuBluetooth))
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.miSearch -> {
+                startScanActivity()
+                true
+            }
+            R.id.miWheel -> {
+                toggleConnectToWheel()
+                true
+            }
+            R.id.miLogging -> {
+                if (LoggingService.isInstanceCreated() && WheelLog.AppConfig.continueThisDayLog) {
+                    val dialog = AlertDialog.Builder(this)
+                        .setTitle(R.string.continue_this_day_log_alert_title)
+                        .setMessage(R.string.continue_this_day_log_alert_description)
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                            WheelLog.AppConfig.continueThisDayLogMacException =
+                                WheelLog.AppConfig.lastMac
+                            toggleLogging()
+                        }
+                        .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> toggleLogging() }
+                        .create()
+                    dialog.setOnShowListener(object : OnShowListener {
+                        val AUTO_DISMISS_MILLIS = 5000
+                        override fun onShow(dialog: DialogInterface) {
+                            val defaultButton =
+                                (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+                            val negativeButtonText = defaultButton.text
+                            object : CountDownTimer(AUTO_DISMISS_MILLIS.toLong(), 100) {
+                                override fun onTick(millisUntilFinished: Long) {
+                                    defaultButton.text = String.format(
+                                        Locale.getDefault(), "%s (%d)",
+                                        negativeButtonText,
+                                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) + 1
+                                    )
+                                }
+
+                                override fun onFinish() {
+                                    if (dialog.isShowing) {
+                                        WheelLog.AppConfig.continueThisDayLogMacException =
+                                            WheelLog.AppConfig.lastMac
+                                        toggleLogging()
+                                        dialog.dismiss()
+                                    }
+                                }
+                            }.start()
+                        }
+                    })
+                    dialog.show()
+                } else {
+                    toggleLogging()
+                }
+                true
+            }
+            R.id.miWatch -> {
+                toggleWatch()
+                true
+            }
+            R.id.miBand -> {
+                toggleSwitchMiBand()
+                true
+            }
+            R.id.miSettings -> {
+                startActivity(
+                    Intent(this@MainActivity, SettingsActivity::class.java),
+                    ActivityOptions.makeSceneTransitionAnimation(
+                        this
+                    ).toBundle()
+                )
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        return when (keyCode) {
+            KeyEvent.KEYCODE_MENU -> {
+                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                true
+            }
+            KeyEvent.KEYCODE_BACK -> {
+                if (doubleBackToExitPressedOnce) {
+                    finish()
+                    return true
+                }
+                doubleBackToExitPressedOnce = true
+                showSnackBar(R.string.back_to_exit)
+                Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+                true
+            }
+            else -> super.onKeyDown(keyCode, event)
+        }
+    }
+
+    private fun showSnackBar(msg: Int) {
+        showSnackBar(getString(msg))
+    }
+
+    private fun showSnackBar(msg: String?, timeout: Int = 2000) {
+        if (!isPaused) {
+            if (snackbar == null) {
+                val mainView = findViewById<View>(R.id.main_view)
+                snackbar = Snackbar
+                    .make(mainView, "", Snackbar.LENGTH_LONG).apply {
+                        view.setBackgroundResource(R.color.primary_dark)
+                        setAction(android.R.string.ok) { }
+                    }
+            }
+            snackbar?.apply {
+                duration = timeout
+                setText(msg!!)
+                show()
+            }
+        }
+        Timber.wtf(msg)
+    }
+
+    private fun hideSnackBar() {
+        snackbar?.dismiss()
+    }
+
+    // region services
+    private fun stopLoggingService() {
+        if (LoggingService.isInstanceCreated()) {
+            toggleLoggingService()
+        }
+    }
+
+    fun toggleLoggingService() {
+        val dataLoggerServiceIntent = Intent(applicationContext, LoggingService::class.java)
+        if (LoggingService.isInstanceCreated()) {
+            stopService(dataLoggerServiceIntent)
+            if (!onDestroyProcess) {
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { pagerAdapter.updatePageOfTrips() }, 200)
+            }
+        } else if (mConnectionState == ConnectionState.CONNECTED) startService(
+            dataLoggerServiceIntent
+        )
+    }
+
+    private fun stopPebbleService() {
+        if (PebbleService.isInstanceCreated()) togglePebbleService()
+    }
+
+    private fun togglePebbleService() {
+        val pebbleServiceIntent = Intent(applicationContext, PebbleService::class.java)
+        if (PebbleService.isInstanceCreated()) stopService(pebbleServiceIntent) else ContextCompat.startForegroundService(
+            this,
+            pebbleServiceIntent
+        )
+    }
+
+    private fun toggleWearOs() {
+        wearOs = if (wearOs == null) {
+            WearOs(this)
+        } else {
+            wearOs!!.stop()
+            null
+        }
+    }
+
+    private fun stopGarminConnectIQ() {
+        if (isInstanceCreated) toggleGarminConnectIQ()
+    }
+
+    private fun toggleGarminConnectIQ() {
+        val garminConnectIQIntent = Intent(applicationContext, GarminConnectIQ::class.java)
+        if (isInstanceCreated) stopService(garminConnectIQIntent) else ContextCompat.startForegroundService(
+            this,
+            garminConnectIQIntent
+        )
+    }
+
+    private fun toggleSwitchMiBand() {
+        val buttonMiBand = WheelLog.AppConfig.mibandMode.next()
+        WheelLog.AppConfig.mibandMode = buttonMiBand
+        WheelLog.Notifications.update()
+        when (buttonMiBand) {
+            MiBandEnum.Alarm -> showSnackBar(R.string.alarmmiband)
+            MiBandEnum.Min -> showSnackBar(R.string.minmiband)
+            MiBandEnum.Medium -> showSnackBar(R.string.medmiband)
+            MiBandEnum.Max -> showSnackBar(R.string.maxmiband)
+        }
+        setMenuIconStates()
+    }
+
+    private fun startBluetoothService() {
+        if (checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)
+            && bluetoothService == null
+        ) {
+            val bluetoothServiceIntent = Intent(applicationContext, BluetoothService::class.java)
+            bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE)
+            YandexMetrica.reportEvent("BluetoothService is starting.")
+        } else if (isMaxBleReq) {
+            showSnackBar(R.string.bluetooth_required)
+        }
+    }
+
+    private fun toggleConnectToWheel() {
+        if (bluetoothService != null) {
+            bluetoothService!!.toggleConnectToWheel()
+        } else {
+            startBluetoothService()
+        }
+    }
+
+    private fun startScanActivity() {
+        if (checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
+            ActivityCompat.startActivityForResult(
+                this,
+                Intent(this@MainActivity, ScanActivity::class.java),
+                RESULT_DEVICE_SCAN_REQUEST,
+                null
+            )
+        } else if (isMaxBleReq) {
+            showSnackBar(R.string.bluetooth_required)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == RESULT_REQUEST_PERMISSIONS_BT) {
+            startBluetoothService()
+        } else if (requestCode == RESULT_REQUEST_PERMISSIONS_IO) {
+            toggleLoggingService()
+        }
+    }
+    // endregion
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Timber.i("onActivityResult")
+        when (requestCode) {
+            RESULT_DEVICE_SCAN_REQUEST -> if (resultCode == RESULT_OK && bluetoothService != null) {
+                mDeviceAddress = data?.getStringExtra("MAC") ?: ""
+                Timber.i("Device selected = %s", mDeviceAddress)
+                val mDeviceName = data?.getStringExtra("NAME")
+                Timber.i("Device selected = %s", mDeviceName)
+                bluetoothService!!.wheelAddress = mDeviceAddress
+                WheelData.getInstance().full_reset()
+                WheelData.getInstance().btName = mDeviceName
+                pagerAdapter.updateScreen(true)
+                setMenuIconStates()
+                toggleConnectToWheel()
+                if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
+                    instance.getAndSelectGarageByMacOrShowChooseDialog(
+                        mDeviceAddress,
+                        this
+                    ) { }
+                }
+            } else {
+                Timber.i("Scan device is failed.")
+            }
+            RESULT_REQUEST_ENABLE_BT -> if (mBluetoothAdapter!!.isEnabled) startBluetoothService() else {
+                Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show()
+                finish()
+            }
+        }
+    }
+
+    private fun makeIntentFilter(): IntentFilter {
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
+        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
+        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
+        intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED)
+        intentFilter.addAction(Constants.ACTION_WHEEL_MODEL_CHANGED)
+        intentFilter.addAction(Constants.ACTION_ALARM_TRIGGERED)
+        intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_CHANGED)
+        intentFilter.addAction(Constants.ACTION_WHEEL_NEWS_AVAILABLE)
+        intentFilter.addAction(Constants.ACTION_WHEEL_IS_READY)
+        return intentFilter
+    }
+
+    private fun makeCoreIntentFilter(): IntentFilter {
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
+        intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
+        intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
+        intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET)
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION)
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_WATCH)
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LOGGING)
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_BEEP)
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_LIGHT)
+        intentFilter.addAction(Constants.NOTIFICATION_BUTTON_MIBAND)
+        return intentFilter
+    }
+
+    companion object {
+        lateinit var audioManager: AudioManager
+
+        const val RESULT_DEVICE_SCAN_REQUEST = 20
+        const val RESULT_REQUEST_ENABLE_BT = 30
+        const val RESULT_REQUEST_PERMISSIONS_BT = 40
+        const val RESULT_REQUEST_PERMISSIONS_IO = 50
+        private var onDestroyProcess = false
+
+        var isPaused = true
+    }
+}

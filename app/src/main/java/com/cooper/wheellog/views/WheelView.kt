@@ -117,6 +117,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     }
                 },
                 ViewBlockInfo(resources.getString(R.string.riding_time)) { mCurrentTime },
+                ViewBlockInfo(resources.getString(R.string.speed)) {
+                    if (useMph) {
+                        String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mSpeed.toFloat() / 10))
+                    } else {
+                        String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), mSpeed.toFloat() / 10)
+                    }
+                },
                 ViewBlockInfo(resources.getString(R.string.top_speed)) {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mTopSpeed))
@@ -643,7 +650,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val alarm1Speed = WheelLog.AppConfig.alarm1Speed.toDouble()
         if (!WheelLog.AppConfig.alteredAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = getColorEx(R.color.accent) else textPaint.color = getColorEx(R.color.wheelview_speed_text)
         textPaint.textSize = speedTextSize
-        canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
+        canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2f, textPaint)
         textPaint.textSize = speedTextKPHSize
         textPaint.color = getColorEx(R.color.wheelview_text)
         if (WheelLog.AppConfig.useShortPwm || isInEditMode) {
@@ -654,7 +661,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 3.3f, textPaint)
         } else {
             val metric = if (WheelLog.AppConfig.useMph) resources.getString(R.string.mph) else resources.getString(R.string.kmh)
-            canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 1.1f, textPaint)
+            canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 1.7f, textPaint)
         }
 
         //####################################################
@@ -695,14 +702,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         canvas.drawTextOnPath(mWheelModel, modelTextPath!!, 0f, 0f, modelTextPaint)
 
         // Draw text blocks bitmap
-        canvas.drawBitmap(mTextBoxesBitmap!!, 0f, 0f, textPaint)
-        refreshDisplay = currentSpeed != targetSpeed || currentCurrent != targetCurrent || currentBattery != targetBattery || currentTemperature != targetTemperature
-        if (width * 1.2 < height) {
-            canvas.drawText(versionString, (
-                    width - paddingRight).toFloat(), (
-                    height - paddingBottom).toFloat(),
-                    versionPaint)
-        }
+        drawTextBlocksBitmap(canvas)
     }
 
     private fun drawAJDM(canvas: Canvas) {
@@ -857,13 +857,17 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         canvas.drawTextOnPath(mWheelModel, modelTextPath!!, 0f, 0f, modelTextPaint)
 
         // Draw text blocks bitmap
+        drawTextBlocksBitmap(canvas)
+    }
+
+    private fun drawTextBlocksBitmap(canvas: Canvas) {
         canvas.drawBitmap(mTextBoxesBitmap!!, 0f, 0f, textPaint)
         refreshDisplay = currentSpeed != targetSpeed || currentCurrent != targetCurrent || currentBattery != targetBattery || currentTemperature != targetTemperature
         if (width * 1.2 < height) {
             canvas.drawText(versionString, (
                     width - paddingRight).toFloat(), (
                     height - paddingBottom).toFloat(),
-                    versionPaint)
+                versionPaint)
         }
     }
 

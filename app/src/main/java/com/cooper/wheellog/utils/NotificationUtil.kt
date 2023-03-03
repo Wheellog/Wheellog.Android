@@ -213,11 +213,13 @@ class NotificationUtil(private val context: Context) {
 //        Timer().scheduleAtFixedRate(object : TimerTask() {
 //            override fun run() {
 //                val wd = WheelData.getInstance() ?: return
-//                wd.setBatteryPercent((Math.random() * 100).toInt())
+//                wd.batteryLevel = ((Math.random() * 100).toInt())
 //                wd.temperature = (Math.random() * 10000).toInt()
 //                wd.totalDistance = (Math.random() * 10000).toLong()
 //                wd.speed = (Math.random() * 5000).toInt()
 //                update()
+//                val intent = Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE)
+//                context.sendBroadcast(intent)
 //            }
 //        }, 1000, 1000)
     }

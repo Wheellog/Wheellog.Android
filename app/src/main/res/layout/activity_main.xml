@@ -10,6 +10,12 @@
     android:animateLayoutChanges="true"
     tools:context="com.cooper.wheellog.MainActivity">
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/pipFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:minHeight="?attr/actionBarSize"

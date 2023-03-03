@@ -130,6 +130,13 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 entries = context.resources.getTextArray(R.array.view_blocks_values)
                 addPreference(this)
             }
+            SwitchPreference(context).apply {
+                key = getString(R.string.use_pip_mode)
+                title = getString(R.string.use_pip_mode_title)
+                summary = getString(R.string.use_pip_mode_description)
+                setDefaultValue(WheelLog.AppConfig.usePipMode)
+                addPreference(this)
+            }
             MultiSelectPreference(context).apply {
                 key = getString(R.string.notification_buttons)
                 title = getString(R.string.notification_buttons_title)
@@ -319,13 +326,11 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
                 Timber.wtf(getString(R.string.files_not_found))
                 WheelLog.AppConfig.useCustomBeep = false
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else
             // Android 10 or less
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            fragment.mediaRequestResult.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 type = "audio/*"
                 addCategory(Intent.CATEGORY_OPENABLE)
-            }
-            fragment.mediaRequestResult.launch(intent)
-        }
+            })
     }
 }

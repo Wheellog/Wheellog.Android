@@ -3,6 +3,7 @@ package com.cooper.wheellog
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Build
 import android.view.*
 import android.widget.TextView
 import androidx.gridlayout.widget.GridLayout
@@ -177,13 +178,13 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     updateViewBlocksVisibility()
                     redrawTextBoxes()
                     invalidate()
-                }
 
-                var profileName = WheelLog.AppConfig.profileName
-                if (profileName.trim { it <= ' ' } == "") {
-                    profileName = if (data.model == "") data.name else data.model
+                    var profileName = WheelLog.AppConfig.profileName
+                    if (profileName.trim { it <= ' ' } == "") {
+                        profileName = if (data.model == "") data.name else data.model
+                    }
+                    setWheelModel(profileName)
                 }
-                wheelView?.setWheelModel(profileName)
             }
             R.layout.main_view_params_list -> {
                 if (WheelLog.AppConfig.useMph) {

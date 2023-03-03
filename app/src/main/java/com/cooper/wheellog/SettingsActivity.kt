@@ -3,7 +3,6 @@ package com.cooper.wheellog
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.PermissionChecker
 import com.cooper.wheellog.preferences.PreferencesFragment
 
 class SettingsActivity : AppCompatActivity() {

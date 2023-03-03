@@ -83,6 +83,10 @@ class AppConfig(var context: Context) {
                 context.getString(R.string.total))
         set(value) { this.viewBlocksString = value.joinToString(separator) }
 
+    var usePipMode: Boolean
+        get() = getValue(R.string.use_pip_mode, true)
+        set(value) = setValue(R.string.use_pip_mode, value)
+
     private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)
         set(value) = setValue(R.string.notification_buttons, value)
