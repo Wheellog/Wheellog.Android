@@ -63,9 +63,9 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             ps.addPreference(this)
         }
         SwitchPreference(context).apply {
-            key = getString(R.string.fixed_percents)
-            title = getString(R.string.fixed_percents_title)
-            summary = getString(R.string.fixed_percents_description)
+            key = getString(R.string.custom_percents)
+            title = getString(R.string.custom_percents_title)
+            summary = getString(R.string.custom_percents_description)
             ps.addPreference(this)
             dependency = getString(R.string.use_better_percents)
         }
@@ -80,7 +80,7 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             decimalPlaces = 2
             setDefaultValue(WheelLog.AppConfig.cellVoltageTiltback)
             ps.addPreference(this)
-            dependency = getString(R.string.fixed_percents)
+            dependency = getString(R.string.custom_percents)
         }
         PreferenceCategory(context).apply {
             title = getString(R.string.measurement_systems_category_title)

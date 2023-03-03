@@ -192,8 +192,8 @@
     <string name="unknown_device">Неизвестное устройство</string>
     <string name="use_better_percents_description">Использовать улучшенную формулу рассчета % вместо формулы производителя колеса</string>
     <string name="use_better_percents_title">Улучшенные проценты</string>
-    <string name="fixed_percents_title">Фиксированные проценты</string>
-    <string name="fixed_percents_description">Использовать фиксированную формулу рассчета % вместо формулы производителя колеса</string>
+    <string name="custom_percents_title">Пользовательские проценты</string>
+    <string name="custom_percents_description">Используйте пользовательскую формулу, не забудьте настроить минимальное напряжение для ячейки для вашего колеса.</string>
     <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
     <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство чтобы эта настройка применилась</string>

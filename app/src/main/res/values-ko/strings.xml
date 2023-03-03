@@ -193,10 +193,10 @@
     <string name="use_better_percents_description">"배터리 잔량 계산 시 휠 공급사의 공식을 사용하지 않고 더 나은 식을 사용합니다"</string>
 
     <!-- Fuzzy -->
-    <string name="fixed_percents_title">"고정된 배터리 잔량 계산"</string>
+    <string name="custom_percents_title">맞춤 퍼센트</string>
 
     <!-- Fuzzy -->
-    <string name="fixed_percents_description">"배터리 잔량 계산 시 휠 공급사의 공식을 사용하지 않고 고정된 식을 사용합니다"</string>
+    <string name="custom_percents_description">사용자 정의 공식을 사용하고 휠의 셀에 대한 최저 전압을 구성하는 것을 잊지 마십시오.</string>
     <string name="cell_voltage_tiltback_title"></string>
     <string name="cell_voltage_tiltback_description"></string>
     <string name="use_pip_mode_title">"화면 속 화면 모드 활성화"</string>

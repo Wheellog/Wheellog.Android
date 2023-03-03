@@ -314,6 +314,12 @@ public class GotwayAdapter extends BaseAdapter {
                 return 16;
             case "1":
                 return 20;
+            case "2":
+                return 24;
+            case "3":
+                return 32;
+            case "4":
+                return 32;
         }
         return 24;
     }
