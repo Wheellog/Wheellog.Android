@@ -669,7 +669,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.restore()
             canvas.save()
             /// true battery
-            val customPercents = WheelLog.AppConfig.CustomPercents
+            val customPercents = WheelLog.AppConfig.customPercents
             if (WheelLog.AppConfig.useBetterPercents || customPercents) {
                 if (width > height) canvas.rotate(144 + -3.3f * 2.25f - 180, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(144 + -2 * 2.25f - 180, innerArcRect.centerY(), innerArcRect.centerX())
                 var batteryCalculateType = "true"
@@ -837,7 +837,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.restore()
             canvas.save()
             /// true battery
-            val customPercents = WheelLog.AppConfig.CustomPercents
+            val customPercents = WheelLog.AppConfig.customPercents
             if (WheelLog.AppConfig.useBetterPercents || customPercents) {
                 if (width > height) canvas.rotate(147 + currentBattery * 2.25f - 180, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(146 + currentBattery * 2.25f - 180, innerArcRect.centerY(), innerArcRect.centerX())
                 var batteryCalculateType = "true"
