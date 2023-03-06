@@ -1433,7 +1433,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
+        if (getInstance().getModel() == Model.V12) {
+            return 24;
+        }
+        if (getInstance().getModel() == Model.V13) {
+            return 30;
+        }
         return 20;
+
     }
 
     public static synchronized void newInstance() {
