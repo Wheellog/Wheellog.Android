@@ -110,7 +110,7 @@
     <string name="app_theme" translatable="false">app_theme</string>
     <string name="day_night_theme" translatable="false">day_night_theme</string>
     <string name="use_better_percents" translatable="false">use_better_percents</string>
-    <string name="fixed_percents" translatable="false">fixed_percents</string>
+    <string name="custom_percents" translatable="false">custom_percents</string>
     <string name="cell_voltage_tiltback" translatable="false">cell_voltage_tiltback</string>
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
     <string name="current_on_dial" translatable="false">current_on_dial</string>
@@ -338,9 +338,9 @@
     <string name="use_eng_description" translatable="false">Use English language instead of Android system language</string>
     <string name="use_better_percents_title">Improved percents</string>
     <string name="use_better_percents_description">Use better formula for battery percents calculation instead of wheel vendor formula</string>
-    <string name="fixed_percents_title">Fixed percents</string>.
-    <string name="fixed_percents_description">Use fixed formula for battery percents calculation instead of wheel vendor formula</string>
-    <string name="cell_voltage_tiltback_title">Tiltback voltage</string>.
+    <string name="custom_percents_title">Custom percents</string>
+    <string name="custom_percents_description">Use custom formula, don\'t forget to configure the lowest voltage for cell for your wheel</string>
+    <string name="cell_voltage_tiltback_title">Tiltback voltage</string>
     <string name="cell_voltage_tiltback_description">Voltage per 1 cell, where the wheel tiltback the pedals</string>
     <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>

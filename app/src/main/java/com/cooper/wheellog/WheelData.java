@@ -964,7 +964,7 @@ public class WheelData {
     }
 
     public void setBatteryLevel(int battery) {
-        if (WheelLog.AppConfig.getFixedPercents()) {
+        if (WheelLog.AppConfig.getCustomPercents()) {
             double maxVoltage = getMaxVoltageForWheel();
             double minVoltage = getVoltageTiltbackForWheel();
             double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;

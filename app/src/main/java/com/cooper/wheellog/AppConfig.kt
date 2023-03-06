@@ -50,9 +50,9 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_better_percents, false)
         set(value) = setValue(R.string.use_better_percents, value)
 
-    var fixedPercents: Boolean
-        get() = getValue(R.string.fixed_percents, false)
-        set(value) = setValue(R.string.fixed_percents, value)
+    var customPercents: Boolean
+        get() = getValue(R.string.custom_percents, false)
+        set(value) = setValue(R.string.custom_percents, value)
 
     var cellVoltageTiltback: Int
         get() = getSpecific(R.string.cell_voltage_tiltback, 330)

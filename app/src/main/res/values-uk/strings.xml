@@ -236,8 +236,8 @@
     <string name="charging">Зарядка</string>
     <string name="discharging">Розрядка</string>
     <string name="profile_name_title">Змінити назву профілю</string>
-    <string name="fixed_percents_title">Фіксовані відсотки</string>
-    <string name="fixed_percents_description">Використати перерахунок батареї</string>
+    <string name="custom_percents_title">Спеціальні відсотки</string>
+    <string name="custom_percents_description">Використовуйте спеціальну формулу, не забудьте налаштувати найнижчу напругу для елемента для вашого колеса</string>
     <string name="cell_voltage_tiltback_title">Напруга підняття педалей</string>
     <string name="cell_voltage_tiltback_description">Напруга 1 банки для підняття</string>
     <string name="use_stop_music_title">Авто-вимкнення</string>
