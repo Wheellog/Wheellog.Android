@@ -55,9 +55,9 @@ class MapFragment : Fragment() {
 //                enableFollowLocation()
 //                enableMyLocation()
 //            })
-            overlays.add(MinimapOverlay(context, map.tileRequestCompleteHandler).apply {
-                zoomDifference = 3
-            })
+//            overlays.add(MinimapOverlay(context, map.tileRequestCompleteHandler).apply {
+//                zoomDifference = 3
+//            })
             controller.apply {
                 setZoom(10.0)
                 setCenter(GeoPoint(WheelLog.AppConfig.lastLocationLaltitude, WheelLog.AppConfig.lastLocationLongitude))
