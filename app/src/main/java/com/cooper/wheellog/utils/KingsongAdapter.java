@@ -328,7 +328,7 @@ public class KingsongAdapter extends BaseAdapter {
 
     private boolean is84vWheel() {
         WheelData wd = WheelData.getInstance();
-        return StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "KS-16XF", "RW", "KS-18LH", "KS-S18"})
+        return StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "KS-16XF", "RW", "KS-18LH", "KS-18LY", "KS-S18"})
                 || wd.getName().startsWith("ROCKW") // support rockwheel models
                 || wd.getBtName().compareTo("RW") == 0;
     }
