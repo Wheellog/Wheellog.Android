@@ -52,7 +52,7 @@ abstract class BaseAdapter {
     open fun updateStrobeMode(strobeMode: Int) {}
     open fun updateAlarmMode(alarmMode: Int) {}
     open val cellsForWheel: Int
-        get() = 0
+        get() = 1
     open val isReady: Boolean
         get() = false
 }

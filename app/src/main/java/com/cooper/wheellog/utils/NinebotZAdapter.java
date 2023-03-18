@@ -209,6 +209,11 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     @Override
+    public int getCellsForWheel() {
+        return 14;
+    }
+
+    @Override
     public String getLedModeString() {
         switch (WheelLog.AppConfig.getLedMode()) {
             case "0": return getContext().getString(R.string.off);

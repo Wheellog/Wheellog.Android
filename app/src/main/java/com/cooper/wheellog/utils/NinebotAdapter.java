@@ -74,6 +74,11 @@ public class NinebotAdapter extends BaseAdapter {
     }
 
     @Override
+    public int getCellsForWheel() {
+        return 15;
+    }
+
+    @Override
     public boolean decode(byte[] data) {
         Timber.i("Ninebot_decoding");
         ArrayList<NinebotAdapter.Status> statuses = charUpdated(data);

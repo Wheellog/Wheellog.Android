@@ -475,4 +475,5 @@
     <string name="wearos_pages_title">Страницы WearOS</string>
     <string name="wearos_pages_description">Выбрать страницы для WearOS</string>
     <string name="pwm_tiltback_alarm">FW mod - подъем по PWM</string>
+    <string name="avg_cell_volt">Сред. напр. ячейки</string>
 </resources>

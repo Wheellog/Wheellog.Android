@@ -193,6 +193,7 @@
         <item>@string/wheel_distance</item>
         <item>@string/remaining_distance</item>
         <item>@string/battery_per_km</item>
+        <item>@string/avg_cell_volt</item>
         <item>@string/user_distance</item>
         <item>@string/speed</item>
     </string-array>

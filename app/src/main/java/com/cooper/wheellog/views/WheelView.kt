@@ -252,6 +252,13 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     false
                 ),
                 ViewBlockInfo(
+                    resources.getString(R.string.avg_cell_volt),
+                    {
+                        String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), WheelData.getInstance().avgVoltagePerCell)
+                    },
+                    false
+                ),
+                ViewBlockInfo(
                     resources.getString(R.string.user_distance),
                     {
                         String.format(
