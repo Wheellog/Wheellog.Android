@@ -700,7 +700,7 @@ public class WheelData {
     }
 
     public double getAvgVoltagePerCell() {
-        double voltPerCell = mVoltage/getAdapter().getCellsForWheel();
+        double voltPerCell = mVoltage/(getAdapter().getCellsForWheel()*100.0);
         return voltPerCell;
     }
 
