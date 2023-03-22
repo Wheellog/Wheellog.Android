@@ -20,13 +20,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextClock
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -579,12 +579,7 @@ class MainActivity : AppCompatActivity() {
             if (checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
                 // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
                 // fire an intent to display a dialog asking the user to grant permission to enable it.
-                ActivityCompat.startActivityForResult(
-                    this,
-                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
-                    RESULT_REQUEST_ENABLE_BT,
-                    null
-                )
+                enableBleLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
             }
         } else {
             startBluetoothService()
@@ -903,12 +898,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startScanActivity() {
         if (checkBlePermissions(this, RESULT_REQUEST_PERMISSIONS_BT)) {
-            ActivityCompat.startActivityForResult(
-                this,
-                Intent(this@MainActivity, ScanActivity::class.java),
-                RESULT_DEVICE_SCAN_REQUEST,
-                null
-            )
+            scanLauncher.launch(Intent(this@MainActivity, ScanActivity::class.java))
         } else if (isMaxBleReq) {
             showSnackBar(R.string.bluetooth_required)
         }
@@ -928,34 +918,35 @@ class MainActivity : AppCompatActivity() {
     }
     // endregion
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Timber.i("onActivityResult")
-        when (requestCode) {
-            RESULT_DEVICE_SCAN_REQUEST -> if (resultCode == RESULT_OK && bluetoothService != null) {
-                mDeviceAddress = data?.getStringExtra("MAC") ?: ""
-                Timber.i("Device selected = %s", mDeviceAddress)
-                val mDeviceName = data?.getStringExtra("NAME")
-                Timber.i("Device selected = %s", mDeviceName)
-                bluetoothService!!.wheelAddress = mDeviceAddress
-                WheelData.getInstance().full_reset()
-                WheelData.getInstance().btName = mDeviceName
-                pagerAdapter.updateScreen(true)
-                setMenuIconStates()
-                toggleConnectToWheel()
-                if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
-                    instance.getAndSelectGarageByMacOrShowChooseDialog(
-                        mDeviceAddress,
-                        this
-                    ) { }
-                }
-            } else {
-                Timber.i("Scan device is failed.")
+    private val scanLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK && bluetoothService != null) {
+            mDeviceAddress = result.data?.getStringExtra("MAC") ?: ""
+            Timber.i("Device selected = %s", mDeviceAddress)
+            val mDeviceName = result.data?.getStringExtra("NAME")
+            Timber.i("Device selected = %s", mDeviceName)
+            bluetoothService!!.wheelAddress = mDeviceAddress
+            WheelData.getInstance().full_reset()
+            WheelData.getInstance().btName = mDeviceName
+            pagerAdapter.updateScreen(true)
+            setMenuIconStates()
+            toggleConnectToWheel()
+            if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
+                instance.getAndSelectGarageByMacOrShowChooseDialog(
+                    mDeviceAddress,
+                    this
+                ) { }
             }
-            RESULT_REQUEST_ENABLE_BT -> if (mBluetoothAdapter!!.isEnabled) startBluetoothService() else {
-                Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show()
-                finish()
-            }
+        } else {
+            Timber.i("Scan device is failed.")
+        }
+    }
+
+    private val enableBleLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK && mBluetoothAdapter!!.isEnabled) {
+            startBluetoothService()
+        } else {
+            Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show()
+            finish()
         }
     }
 
@@ -992,8 +983,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         lateinit var audioManager: AudioManager
 
-        const val RESULT_DEVICE_SCAN_REQUEST = 20
-        const val RESULT_REQUEST_ENABLE_BT = 30
         const val RESULT_REQUEST_PERMISSIONS_BT = 40
         const val RESULT_REQUEST_PERMISSIONS_IO = 50
         private var onDestroyProcess = false
