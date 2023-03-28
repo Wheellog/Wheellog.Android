@@ -1,6 +1,5 @@
 package com.cooper.wheellog;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,7 +41,6 @@ public class PebbleService extends Service {
     static final int KEY_VOLTAGE  = 12;
     static final int KEY_CURRENT = 13;
     static final int KEY_PWM = 20;
-    private Notification mNotification;
     private final Handler mHandler = new Handler();
     private static PebbleService instance = null;
     private long last_message_send_time;
@@ -184,7 +182,7 @@ public class PebbleService extends Service {
 
             switch (intent.getAction()) {
                 case Constants.ACTION_ALARM_TRIGGERED:
-                    if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE))
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_ALARM_TYPE)) {
                         // crutch to legacy pebble app, which does't know alarms other than 0 (speed) and 1 (current)
                         vibe_alarm = 0;
                         switch ((Constants.ALARM_TYPE) intent.getSerializableExtra(Constants.INTENT_EXTRA_ALARM_TYPE)) {
@@ -193,6 +191,7 @@ public class PebbleService extends Service {
                                 vibe_alarm = 1;
                                 break;
                         }
+                    }
                     break;
                 case Constants.ACTION_PEBBLE_APP_READY:
                     displayedScreen = GUI;
@@ -259,9 +258,13 @@ public class PebbleService extends Service {
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(mBroadcastReceiver);
-        unregisterReceiver(ackReceiver);
-        unregisterReceiver(nackReceiver);
+        try {
+            unregisterReceiver(mBroadcastReceiver);
+            unregisterReceiver(ackReceiver);
+            unregisterReceiver(nackReceiver);
+        } catch (Exception exception) {
+            // ignored
+        }
         mHandler.removeCallbacksAndMessages(null);
 
         instance = null;
