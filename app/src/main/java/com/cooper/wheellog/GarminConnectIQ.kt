@@ -6,11 +6,10 @@ import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
 import com.cooper.wheellog.utils.Alarms
-import com.cooper.wheellog.utils.AudioUtil
 import com.cooper.wheellog.utils.Constants
-import androidx.core.math.MathUtils
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
+import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.ConnectIQ.*
 import com.garmin.android.connectiq.IQApp
 import com.garmin.android.connectiq.IQDevice
@@ -26,7 +25,7 @@ import java.util.*
 class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
     private var keepAliveTimer: Timer? = null
     private var mSdkReady = false
-    private var mConnectIQ = getInstance(this, IQConnectType.WIRELESS)
+    private var mConnectIQ: ConnectIQ? = getInstance(this, IQConnectType.WIRELESS)
     private var mDevice: IQDevice? = null
     private var mApp: IQApp? = null
     private var mWebServer: GarminConnectIQWebServer? = null
@@ -39,7 +38,6 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Timber.d("onStartCommand")
-        super.onStartCommand(intent, flags, startId)
         instance = this
 
         // Setup Connect IQ
@@ -48,7 +46,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         } else {
             IQApp(STABLE_APP_ID)
         }
-        mConnectIQ.initialize(this, false, this)
+        mConnectIQ?.initialize(this, false, this)
         startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
         return START_STICKY
     }
@@ -58,15 +56,14 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         super.onDestroy()
         cancelRefreshTimer()
         try {
-            mConnectIQ.unregisterAllForEvents()
-            mConnectIQ.shutdown(this)
+            mConnectIQ?.unregisterAllForEvents()
+            mConnectIQ?.shutdown(this)
         } catch (e: InvalidStateException) {
             // This is usually because the SDK was already shut down
             // so no worries.
         }
         stopWebServer()
         unregisterWithDevice()
-        stopForeground(false)
         instance = null
     }
 
@@ -74,7 +71,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     private fun populateDeviceList() {
         Timber.d("populateDeviceList")
         try {
-            val mDevices = mConnectIQ.knownDevices
+            val mDevices = mConnectIQ?.knownDevices
             if (mDevices != null && mDevices.isNotEmpty()) {
                 mDevice = mDevices[0]
                 registerWithDevice()
@@ -96,7 +93,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         if (mDevice != null && mSdkReady) {
             // Register for device status updates
             try {
-                mConnectIQ.registerForDeviceEvents(mDevice, this)
+                mConnectIQ?.registerForDeviceEvents(mDevice, this)
             } catch (e: InvalidStateException) {
                 Timber.wtf("InvalidStateException:  We should not be here!")
             }
@@ -104,9 +101,9 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             // Register for application status updates
             try {
                 if (useBeta) {
-                    mConnectIQ.getApplicationInfo(BETA_APP_ID, mDevice, this)
+                    mConnectIQ?.getApplicationInfo(BETA_APP_ID, mDevice, this)
                 } else {
-                    mConnectIQ.getApplicationInfo(STABLE_APP_ID, mDevice, this)
+                    mConnectIQ?.getApplicationInfo(STABLE_APP_ID, mDevice, this)
                 }
             } catch (e1: InvalidStateException) {
                 Timber.d("e1: ${e1.message}")
@@ -116,7 +113,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
 
             // Register to receive messages from the device
             try {
-                mConnectIQ.registerForAppEvents(mDevice, mApp, this)
+                mConnectIQ?.registerForAppEvents(mDevice, mApp, this)
             } catch (e: InvalidStateException) {
                 Toast.makeText(this, "ConnectIQ is not in a valid state", Toast.LENGTH_LONG).show()
             }
@@ -129,9 +126,9 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             // It is a good idea to unregister everything and shut things down to
             // release resources and prevent unwanted callbacks.
             try {
-                mConnectIQ.unregisterForDeviceEvents(mDevice)
+                mConnectIQ?.unregisterForDeviceEvents(mDevice)
                 if (mApp != null) {
-                    mConnectIQ.unregisterForApplicationEvents(mDevice, mApp)
+                    mConnectIQ?.unregisterForApplicationEvents(mDevice, mApp)
                 }
             } catch (ignored: InvalidStateException) {
 
@@ -158,7 +155,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
         cancelRefreshTimer() // no point in sending data...
         Toast.makeText(this, R.string.garmin_connectiq_missing_app_message, Toast.LENGTH_LONG).show()
         try {
-            mConnectIQ.openStore("35719a02-8a5d-46bc-b474-f26c54c4e045")
+            mConnectIQ?.openStore("35719a02-8a5d-46bc-b474-f26c54c4e045")
         } catch (ignored: InvalidStateException) {
         } catch (ignored: ServiceUnavailableException) {
         }
@@ -206,7 +203,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             mWebServer = GarminConnectIQWebServer(applicationContext)
             Timber.d("port is: ${mWebServer!!.listeningPort}")
             try {
-                mConnectIQ.sendMessage(mDevice, mApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
+                mConnectIQ?.sendMessage(mDevice, mApp, mWebServer!!.listeningPort) { _: IQDevice?, _: IQApp?, status: IQMessageStatus ->
                     Timber.d("message status: ${status.name}")
                     if (status.name !== "SUCCESS") Toast.makeText(this@GarminConnectIQ, status.name, Toast.LENGTH_LONG).show()
                 }
