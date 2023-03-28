@@ -117,16 +117,25 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<View>(R.id.toolbar)
         val indicator = findViewById<View>(R.id.indicator)
         if (isInPictureInPictureMode) {
-            registerReceiver(mPiPBroadcastReceiver, makeIntentFilter())
-            toolbar.visibility = View.GONE
-            pager.visibility = View.GONE
-            indicator.visibility = View.GONE
-            pipView.setContent {
-                PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
+            try {
+                registerReceiver(mPiPBroadcastReceiver, makeIntentFilter())
+            } catch (_: Exception) {
+                // ignore
+            } finally {
+                toolbar.visibility = View.GONE
+                pager.visibility = View.GONE
+                indicator.visibility = View.GONE
+                pipView.setContent {
+                    PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
+                }
+                pipView.visibility = View.VISIBLE
             }
-            pipView.visibility = View.VISIBLE
         } else {
-            unregisterReceiver(mPiPBroadcastReceiver)
+            try {
+                unregisterReceiver(mPiPBroadcastReceiver)
+            } catch (_: Exception) {
+                // ignore
+            }
             toolbar.visibility = View.VISIBLE
             pager.visibility = View.VISIBLE
             indicator.visibility = View.VISIBLE
@@ -607,7 +616,11 @@ class MainActivity : AppCompatActivity() {
         if (checkNotificationsPermissions(this)) {
             WheelLog.Notifications.update()
         }
-        registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter())
+        try {
+            registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter())
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
         pagerAdapter.updateScreen(true)
     }
 
@@ -619,7 +632,11 @@ class MainActivity : AppCompatActivity() {
     public override fun onPause() {
         super.onPause()
         isPaused = true
-        unregisterReceiver(mMainViewBroadcastReceiver)
+        try {
+            unregisterReceiver(mMainViewBroadcastReceiver)
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     override fun onDestroy() {
@@ -649,7 +666,11 @@ class MainActivity : AppCompatActivity() {
                 Timber.uproot(eventsLoggingTree!!)
                 eventsLoggingTree!!.close()
                 eventsLoggingTree = null
-                unregisterReceiver(mCoreBroadcastReceiver)
+                try {
+                    unregisterReceiver(mCoreBroadcastReceiver)
+                } catch (_: Exception) {
+                    // ignore
+                }
                 // Kill YandexMetrika process.
                 val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
                 val runningProcesses = am.runningAppProcesses
