@@ -556,6 +556,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
 
         boolean parseTotalStats() {
+            if (data.length < 20) {
+                return false;
+            }
             Timber.i("Parse total stats data");
             WheelData wd = WheelData.getInstance();
             long mTotal = MathsUtil.intFromBytesLE(data, 0);
