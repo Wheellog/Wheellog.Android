@@ -93,11 +93,17 @@ class StatsFragment: Fragment(), OnChartValueSelectedListener {
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
         if (h != null) {
-            binding.chart1.highlightValues(arrayOf(h))
-            binding.chart2.highlightValues(arrayOf(h))
+            if (binding.chart1.data.getDataSetByIndex(h.dataSetIndex) != null) {
+                binding.chart1.highlightValues(arrayOf(h))
+            }
+            if (binding.chart2.data.getDataSetByIndex(h.dataSetIndex) != null) {
+                binding.chart2.highlightValues(arrayOf(h))
+            }
         }
     }
 
     override fun onNothingSelected() {
+        binding.chart1.highlightValues(arrayOf())
+        binding.chart2.highlightValues(arrayOf())
     }
 }
