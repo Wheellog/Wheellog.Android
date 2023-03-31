@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
     private fun togglePipView(show: Boolean) {
         if (show) {
             try {
-                registerReceiver(mPiPBroadcastReceiver, makeIntentFilter())
+                registerReceiver(mPiPBroadcastReceiver, makeIntentPipFilter())
             } catch (_: Exception) {
                 // ignore
             } finally {
@@ -619,7 +619,7 @@ class MainActivity : AppCompatActivity() {
             WheelLog.Notifications.update()
         }
         try {
-            registerReceiver(mMainViewBroadcastReceiver, makeIntentPipFilter())
+            registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter())
         } catch (e: Exception) {
             Timber.e(e)
         }
