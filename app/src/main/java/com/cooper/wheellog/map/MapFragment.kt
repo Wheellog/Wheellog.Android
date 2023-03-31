@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.databinding.MapFragmentBinding
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
@@ -27,17 +28,19 @@ import timber.log.Timber
 
 class MapFragment : Fragment() {
     lateinit var map: MapView
+    private lateinit var binding: MapFragmentBinding
     private val viewModel: MapViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.map_fragment, container, false)
+    ): View {
+        binding = MapFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        map = view.findViewById(R.id.mapView)
+        map = binding.mapView
         map.apply {
             setTileSource(TileSourceFactory.MAPNIK)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
@@ -61,11 +64,6 @@ class MapFragment : Fragment() {
                 setZoom(10.0)
                 setCenter(GeoPoint(WheelLog.AppConfig.lastLocationLaltitude, WheelLog.AppConfig.lastLocationLongitude))
             }
-        }
-
-        // set dark map tiles, if necessary
-        if (WheelLog.AppConfig.dayNightThemeMode == AppCompatDelegate.MODE_NIGHT_YES) {
-            map.overlayManager.tilesOverlay.setColorFilter(TilesOverlay.INVERT_COLORS)
         }
 
         viewModel.selectedItem.observe(viewLifecycleOwner) { tripData ->

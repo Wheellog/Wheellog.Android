@@ -10,7 +10,7 @@
         android:id="@+id/textView_Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/ajdm_wheelview_text"
+        android:textColor="@color/primary_text"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:textColor="@color/ajdm_wheelview_text"
+        android:textColor="@color/primary_text"
         app:layout_constraintEnd_toEndOf="@+id/textView_Title"
         app:layout_constraintStart_toStartOf="@+id/textView_Title"
         app:layout_constraintTop_toBottomOf="@+id/textView_Title" />
