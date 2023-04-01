@@ -1025,7 +1025,7 @@ public class WheelData {
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
             graph_last_update_time = Calendar.getInstance().getTimeInMillis();
-            intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE, true);
+            intent.putExtra(Constants.INTENT_EXTRA_GRAPH_UPDATE_AVAILABLE, true);
             currentAxis.add((float) getCurrentDouble());
             speedAxis.add((float) getSpeedDouble());
             xAxis.add(new SimpleDateFormat("HH:mm:ss", Locale.US).format(Calendar.getInstance().getTime()));

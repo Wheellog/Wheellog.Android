@@ -33,9 +33,9 @@ class NotificationUtil(private val context: Context) {
             return
         }
         val channel = NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION,
-                context.getString(R.string.notification_channel_name),
+                Constants.notificationChannelName,
                 NotificationManager.IMPORTANCE_MIN).apply {
-            description = context.getString(R.string.notification_channel_description)
+            description = Constants.notificationChannelDescription
         }
         // Register the channel with the system; you can't change the importance
         // or other notification behaviors after this
