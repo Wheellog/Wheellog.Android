@@ -19,7 +19,7 @@ public class FileLoggingTree extends Timber.DebugTree {
     public FileLoggingTree(Context context) {
         fileUtil = new FileUtil(context);
         fileUtil.setIgnoreTimber(true);
-        SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat fileNameFormat = new SimpleDateFormat("yyyy-MM-dd_HH", Locale.US);
         String fileNameTimeStamp = fileNameFormat.format(new Date());
         fileName = fileNameTimeStamp + ".html";
         if (fileUtil.prepareFile(fileName)) {

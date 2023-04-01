@@ -20,12 +20,12 @@ import com.cooper.wheellog.utils.MathsUtil
 class PiPView {
 
     class SpeedModel : ViewModel() {
-        var value = mutableStateOf(59f)
+        var value = mutableStateOf(0f)
         var maxValue = mutableStateOf(100f)
         var title = "speed"
     }
 
-    @OptIn(ExperimentalUnitApi::class, ExperimentalTextApi::class)
+    @OptIn(ExperimentalTextApi::class)
     @Preview(widthDp = 160, heightDp = 90, showBackground = true)
     @Composable
     fun SpeedWidget(
