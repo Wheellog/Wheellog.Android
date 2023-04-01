@@ -30,11 +30,6 @@ class MapActivity : AppCompatActivity() {
     private val mapAdapter by lazy { MapActivityAdapter(this) }
     private lateinit var viewPager: ViewPager2
     private lateinit var tabs: TabLayout
-
-    private val tabNames: Array<String> = arrayOf(
-        getString(R.string.map_map_tab_name),
-        getString(R.string.map_statistics_tab_name),
-    )
     private val viewModel: MapViewModel by viewModels()
 
     private val header = HashMap<LogHeaderEnum, Int>()
@@ -68,6 +63,11 @@ class MapActivity : AppCompatActivity() {
             isUserInputEnabled = false
             adapter = mapAdapter
         }
+
+        val tabNames: Array<String> = arrayOf(
+            getString(R.string.map_map_tab_name),
+            getString(R.string.map_statistics_tab_name),
+        )
 
         tabs = findViewById(R.id.tabs)
         TabLayoutMediator(tabs, viewPager) { tab, position ->
