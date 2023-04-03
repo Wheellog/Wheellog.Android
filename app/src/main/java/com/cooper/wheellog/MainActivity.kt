@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
                 Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
                     pagerAdapter.updateScreen(
                         intent.hasExtra(
-                            Constants.INTENT_EXTRA_GRAPH_UPDATE_AVILABLE
+                            Constants.INTENT_EXTRA_GRAPH_UPDATE_AVAILABLE
                         )
                     )
                 }
