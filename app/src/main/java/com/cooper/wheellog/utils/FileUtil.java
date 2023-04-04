@@ -34,7 +34,7 @@ import java.util.Objects;
 import timber.log.Timber;
 
 public class FileUtil {
-    private final Context context;
+    final Context context;
     private File file;
     private Uri uri;
     private final Hashtable<String, CachedFile> AndroidQCache = new Hashtable<>();

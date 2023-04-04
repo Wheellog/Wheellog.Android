@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import timber.log.Timber
 import java.io.*
@@ -12,8 +13,7 @@ class ParserLogToWheelData {
     fun parseFile(fileUtil: FileUtil) {
         val inputStream = fileUtil.inputStream
         if (inputStream == null) {
-            // TODO: localize me
-            Timber.wtf("Failed to create inputStream for %s", fileUtil.fileName)
+            Timber.wtf(fileUtil.context.getString(R.string.error_inputstream_null) + " " + fileUtil.fileName)
             return
         }
 
@@ -22,14 +22,13 @@ class ParserLogToWheelData {
             val headerLine = reader.readLine().split(",").toTypedArray()
             for (i in headerLine.indices) {
                 try {
-                    header[LogHeaderEnum.valueOf(headerLine[i].toUpperCase(Locale.US))] = i
+                    header[LogHeaderEnum.valueOf(headerLine[i].uppercase(Locale.US))] = i
                 } catch (ignored: IllegalArgumentException) {
                 }
             }
             if (!header.containsKey(LogHeaderEnum.LATITUDE) || !header.containsKey(LogHeaderEnum.LONGITUDE)) {
                 inputStream.close()
-                // TODO: localize me
-                Timber.wtf("%s file does not contain geolocation data.", fileUtil.fileName)
+                Timber.wtf(fileUtil.context.getString(R.string.error_this_file_without_gps, fileUtil.fileName))
                 return
             }
 
