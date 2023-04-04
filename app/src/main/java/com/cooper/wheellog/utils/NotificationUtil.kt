@@ -1,5 +1,6 @@
 package com.cooper.wheellog.utils
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -155,6 +156,7 @@ class NotificationUtil(private val context: Context) {
         return builder.build()
     }
 
+    @SuppressLint("MissingPermission")
     fun update() {
         notification = build()
         if (buildIsSucceed) {

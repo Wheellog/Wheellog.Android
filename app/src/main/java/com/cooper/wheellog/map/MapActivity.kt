@@ -5,11 +5,11 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.cooper.wheellog.BuildConfig
 import com.cooper.wheellog.R
+import com.cooper.wheellog.databinding.ActivityMapBinding
 import com.cooper.wheellog.utils.LogHeaderEnum
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.github.mikephil.charting.components.YAxis
@@ -55,9 +55,10 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
-        setContentView(R.layout.activity_map)
+        val binding = ActivityMapBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        viewPager = findViewById(R.id.pager)
+        viewPager = binding.pager
         viewPager.apply {
             offscreenPageLimit = 10
             isUserInputEnabled = false
@@ -69,7 +70,7 @@ class MapActivity : AppCompatActivity() {
             getString(R.string.map_statistics_tab_name),
         )
 
-        tabs = findViewById(R.id.tabs)
+        tabs = binding.tabs
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = tabNames[position]
         }.attach()
@@ -94,16 +95,16 @@ class MapActivity : AppCompatActivity() {
     }
 
     private fun parseFile(extras: Bundle): TripData {
-        val title = extras.get("title") as String
+        val title = extras.getString("title", "undefined")
         val tripData = TripData(title)
         val inputStream: InputStream?
         try {
             inputStream = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 // Android 9 or less
-                FileInputStream(File(extras.get("path") as String))
+                FileInputStream(File(extras.getString("path", "undefined")))
             } else {
                 // Android 10+
-                applicationContext.contentResolver.openInputStream(extras.get("uri") as Uri)
+                applicationContext.contentResolver.openInputStream(Uri.parse(extras.getString("uri")))
             }
         } catch (ex: Exception) {
             Timber.wtf(ex.localizedMessage)

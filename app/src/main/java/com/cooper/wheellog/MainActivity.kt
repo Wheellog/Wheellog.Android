@@ -18,12 +18,10 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextClock
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
@@ -38,6 +36,7 @@ import com.cooper.wheellog.ElectroClub.Companion.instance
 import com.cooper.wheellog.GarminConnectIQ.Companion.isInstanceCreated
 import com.cooper.wheellog.companion.WearOs
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
+import com.cooper.wheellog.databinding.ActivityMainBinding
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Alarms.checkAlarm
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
@@ -52,7 +51,6 @@ import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
 import com.yandex.metrica.YandexMetrica
-import me.relex.circleindicator.CircleIndicator3
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,6 +63,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //region private variables
+    private lateinit var binding: ActivityMainBinding
     lateinit var pager: ViewPager2
     lateinit var pagerAdapter: MainPageAdapter
     lateinit var pipView: ComposeView
@@ -110,21 +109,22 @@ class MainActivity : AppCompatActivity() {
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
     ) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+            togglePipView(show = isInPictureInPictureMode)
         }
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
-        val toolbar = findViewById<View>(R.id.toolbar)
-        val indicator = findViewById<View>(R.id.indicator)
-        if (isInPictureInPictureMode) {
+    }
+
+    private fun togglePipView(show: Boolean) {
+        if (show) {
             try {
-                registerReceiver(mPiPBroadcastReceiver, makeIntentFilter())
+                registerReceiver(mPiPBroadcastReceiver, makeIntentPipFilter())
             } catch (_: Exception) {
                 // ignore
             } finally {
-                toolbar.visibility = View.GONE
+                binding.toolbar.visibility = View.GONE
                 pager.visibility = View.GONE
-                indicator.visibility = View.GONE
+                binding.indicator.visibility = View.GONE
                 pipView.setContent {
                     PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
                 }
@@ -136,9 +136,9 @@ class MainActivity : AppCompatActivity() {
             } catch (_: Exception) {
                 // ignore
             }
-            toolbar.visibility = View.VISIBLE
+            binding.toolbar.visibility = View.VISIBLE
             pager.visibility = View.VISIBLE
-            indicator.visibility = View.VISIBLE
+            binding.indicator.visibility = View.VISIBLE
             pipView.visibility = View.GONE
         }
     }
@@ -511,7 +511,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createPager() {
         // add pages into main view
-        pager = findViewById(R.id.pager)
+        pager = binding.pager
         pager.offscreenPageLimit = 10
         val pages = ArrayList<Int>()
         pages.add(R.layout.main_view_main)
@@ -534,7 +534,7 @@ class MainActivity : AppCompatActivity() {
         })
         eventsLoggingTree = EventsLoggingTree(applicationContext, pagerAdapter)
         Timber.plant(eventsLoggingTree!!)
-        val indicator = findViewById<CircleIndicator3>(R.id.indicator)
+        val indicator = binding.indicator
         indicator.setViewPager(pager)
         pagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
     }
@@ -548,7 +548,9 @@ class MainActivity : AppCompatActivity() {
         setTheme(WheelLog.AppConfig.appTheme)
         super.onCreate(savedInstanceState)
         volumeControlStream = AudioManager.STREAM_MUSIC
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val electroClub = instance
         electroClub.dao = getDataBase(this).tripDao()
         electroClub.errorListener = { method: String?, error: String? ->
@@ -565,13 +567,13 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread { showSnackBar(message, 4000) }
         }
         createPager()
-        pipView = findViewById(R.id.pipFrame)
+        pipView = binding.pipFrame
 
         // clock font
-        val textClock = findViewById<TextClock>(R.id.textClock)
+        val textClock = binding.textClock
         textClock.typeface = WheelLog.ThemeManager.getTypeface(applicationContext)
         mDeviceAddress = WheelLog.AppConfig.lastMac
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         checkAndShowPrivatePolicyDialog(this)
@@ -639,7 +641,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isInPictureInPictureMode) {
+            togglePipView(show = true)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            togglePipView(show = false)
+        }
+    }
+
     override fun onDestroy() {
+        super.onDestroy()
+        if (!this.isFinishing) {
+            Timber.wtf("Recreate main activity")
+            return
+        }
+        // Real finish.
+        Timber.wtf("-=[ finish ]=-")
         onDestroyProcess = true
         if (wearOs != null) {
             wearOs!!.stop()
@@ -653,7 +676,6 @@ class MainActivity : AppCompatActivity() {
             WheelData.getInstance().bluetoothService = null
         }
         WheelLog.ThemeManager.changeAppIcon(this@MainActivity)
-        super.onDestroy()
         object : CountDownTimer((2 * 60 * 1000 /* 2 min */).toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 if (!LoggingService.isInstanceCreated()) {
@@ -811,9 +833,8 @@ class MainActivity : AppCompatActivity() {
     private fun showSnackBar(msg: String?, timeout: Int = 2000) {
         if (!isPaused) {
             if (snackbar == null) {
-                val mainView = findViewById<View>(R.id.main_view)
                 snackbar = Snackbar
-                    .make(mainView, "", Snackbar.LENGTH_LONG).apply {
+                    .make(binding.mainView, "", Snackbar.LENGTH_LONG).apply {
                         view.setBackgroundResource(R.color.primary_dark)
                         setAction(android.R.string.ok) { }
                     }
@@ -969,6 +990,13 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show()
             finish()
         }
+    }
+
+    private fun makeIntentPipFilter(): IntentFilter {
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
+        intentFilter.addAction(Constants.ACTION_WHEEL_MODEL_CHANGED)
+        return intentFilter
     }
 
     private fun makeIntentFilter(): IntentFilter {

@@ -83,7 +83,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     putExtra("path", tripModel.mediaId)
                 } else {
-                    putExtra("uri", tripModel.uri)
+                    putExtra("uri", tripModel.uri.toString())
                 }
                 putExtra("title", tripModel.title)
             }, Bundle.EMPTY)
