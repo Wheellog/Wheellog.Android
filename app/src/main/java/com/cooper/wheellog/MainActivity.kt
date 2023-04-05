@@ -176,9 +176,7 @@ class MainActivity : AppCompatActivity() {
                 hideSnackBar()
             }
             ConnectionState.DISCONNECTED -> if (wheelSearch) {
-                if (mConnectionState == ConnectionState.DISCONNECTED) {
-                    showSnackBar(R.string.bluetooth_direct_connect_failed)
-                } else if (bluetoothService?.getDisconnectTime() != null) {
+                if (mConnectionState != ConnectionState.DISCONNECTED && bluetoothService?.getDisconnectTime() != null) {
                     val text = bluetoothService?.getDisconnectTime()
                         ?.let { timeFormatter.format(it) } +
                             getString(R.string.connection_lost_at)
@@ -306,11 +304,16 @@ class MainActivity : AppCompatActivity() {
                     )
                     val isWheelSearch =
                         intent.getBooleanExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, false)
+                    val isDirectConnectionFailed =
+                        intent.getBooleanExtra(Constants.INTENT_EXTRA_DIRECT_SEARCH_FAILED, false)
                     Timber.i(
                         "Bluetooth state = %s, wheel search is %s",
                         connectionState,
                         isWheelSearch
                     )
+                    if (connectionState == ConnectionState.DISCONNECTED && isWheelSearch && isDirectConnectionFailed) {
+                        showSnackBar(R.string.bluetooth_direct_connect_failed)
+                    }
                     setConnectionState(connectionState, isWheelSearch)
                     WheelData.getInstance().isConnected =
                         connectionState == ConnectionState.CONNECTED
@@ -653,6 +656,20 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             togglePipView(show = false)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ConnectionState::class.simpleName, mConnectionState.value)
+        outState.putBoolean(isWheelSearch::class.simpleName, isWheelSearch)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        mConnectionState = ConnectionState.fromValue(savedInstanceState.getInt(ConnectionState::class.simpleName, ConnectionState.DISCONNECTED.value))
+        isWheelSearch = savedInstanceState.getBoolean(isWheelSearch::class.simpleName, false)
+        setConnectionState(mConnectionState, isWheelSearch)
+        setMenuIconStates()
     }
 
     override fun onDestroy() {

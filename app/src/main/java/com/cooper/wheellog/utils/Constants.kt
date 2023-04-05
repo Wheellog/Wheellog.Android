@@ -85,6 +85,7 @@ object Constants {
     const val INTENT_EXTRA_GRAPH_UPDATE_AVAILABLE = "graph_update_available"
     const val INTENT_EXTRA_CONNECTION_STATE = "connection_state"
     const val INTENT_EXTRA_WHEEL_SEARCH = "wheel_search"
+    const val INTENT_EXTRA_DIRECT_SEARCH_FAILED = "direct_search_failed"
     const val INTENT_EXTRA_ALARM_TYPE = "alarm_type"
     const val INTENT_EXTRA_ALARM_VALUE = "alarm_value"
     const val INTENT_EXTRA_NEWS = "wheel_news"
