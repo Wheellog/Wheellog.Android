@@ -95,6 +95,7 @@
     <string name="continue_this_day_log" translatable="false">continue_this_day_log</string>
     <string name="continue_this_day_log_exception" translatable="false">continue_this_day_log_exception</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
+    <string name="select_garage_ec" translatable="false">clear_garage_ec</string>
     <string name="ec_token" translatable="false">ec_token</string>
     <string name="ec_user_id" translatable="false">ec_user_id</string>
     <string name="ec_garage" translatable="false">ec_garage</string>

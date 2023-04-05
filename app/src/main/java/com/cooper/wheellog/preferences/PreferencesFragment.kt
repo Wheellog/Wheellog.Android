@@ -253,6 +253,18 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             .show()
     }
 
+    override fun onPreferenceTreeClick(preference: Preference): Boolean {
+        if (preference.key == getString(R.string.select_garage_ec)) {
+            WheelLog.AppConfig.ecGarage = null
+            ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
+                mac = "",
+                activity = requireActivity()
+            ) { }
+            return true
+        }
+        return super.onPreferenceTreeClick(preference)
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (context == null || key == null) {
             return

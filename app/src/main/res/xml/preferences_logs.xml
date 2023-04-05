@@ -32,6 +32,11 @@
         android:title="@string/auto_upload_log_ec_title"
         android:dependency="@string/use_gps" />
 
+    <Preference
+        android:key="@string/select_garage_ec"
+        android:title="@string/select_garage_ec_title"
+        android:dependency="@string/auto_upload_ec" />
+
     <SwitchPreference
         android:icon="@drawable/ic_baseline_raw_on_24"
         android:key="@string/use_raw_data"
