@@ -257,8 +257,8 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
         if (preference.key == getString(R.string.select_garage_ec)) {
             WheelLog.AppConfig.ecGarage = null
             ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
-                WheelLog.AppConfig.lastMac,
-                requireActivity()
+                mac = "",
+                activity = requireActivity()
             ) { }
             return true
         }

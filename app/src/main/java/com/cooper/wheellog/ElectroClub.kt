@@ -220,12 +220,14 @@ class ElectroClub {
             return // not connected or already selected
 
         getGarage { transportList ->
-            val transport = transportList.find { it.mac == mac }
-            if (transport != null) {
-                WheelLog.AppConfig.ecGarage = transport.id
-                success(transport.id)
-                successListener?.invoke(GET_GARAGE_METHOD_FILTRED, transport.name)
-                return@getGarage
+            if (mac.isNotEmpty()) {
+                val transport = transportList.find { it.mac == mac }
+                if (transport != null) {
+                    WheelLog.AppConfig.ecGarage = transport.id
+                    success(transport.id)
+                    successListener?.invoke(GET_GARAGE_METHOD_FILTRED, transport.name)
+                    return@getGarage
+                }
             }
 
             // UI with list select garage if mac isn't found
