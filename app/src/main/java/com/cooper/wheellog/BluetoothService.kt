@@ -55,6 +55,14 @@ class BluetoothService: Service() {
     private val bluetoothCentralManagerCallback: BluetoothCentralManagerCallback =
         object : BluetoothCentralManagerCallback() {
 
+            override fun onConnectionFailed(peripheral: BluetoothPeripheral, status: HciStatus) {
+                super.onConnectionFailed(peripheral, status)
+                broadcastConnectionUpdate(autoConnect = isWheelSearch, directSearch = true)
+                if (isWheelSearch) {
+                    central.autoConnectPeripheral(peripheral, wheelCallback)
+                }
+            }
+
             override fun onConnectedPeripheral(peripheral: BluetoothPeripheral) {
                 super.onConnectedPeripheral(peripheral)
                 val connectionSound = WheelLog.AppConfig.connectionSound
@@ -243,10 +251,13 @@ class BluetoothService: Service() {
         }
     }
 
-    private fun broadcastConnectionUpdate(autoConnect: Boolean = false) {
+    private fun broadcastConnectionUpdate(autoConnect: Boolean = false, directSearch: Boolean = false) {
         val intent = Intent(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intent.putExtra(Constants.INTENT_EXTRA_CONNECTION_STATE, connectionState.value)
         intent.putExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, isWheelSearch)
+        if (directSearch) {
+            intent.putExtra(Constants.INTENT_EXTRA_DIRECT_SEARCH_FAILED, true)
+        }
         if (autoConnect) {
             intent.putExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT, true)
         }
