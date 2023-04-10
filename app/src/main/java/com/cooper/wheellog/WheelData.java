@@ -700,8 +700,12 @@ public class WheelData {
     }
 
     public double getAvgVoltagePerCell() {
-        double voltPerCell = mVoltage/(getAdapter().getCellsForWheel()*100.0);
-        return voltPerCell;
+        var adapter = getAdapter();
+        if (adapter == null) {
+            return 0.0;
+        }
+        var cells = Math.max(1, adapter.getCellsForWheel());
+        return mVoltage / (cells * 100.0);
     }
 
     public double getRemainingDistance() {
