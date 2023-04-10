@@ -1,6 +1,8 @@
 package com.cooper.wheellog.map
 
 import org.osmdroid.util.GeoPoint
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LogGeoPoint(latitude: Double, longitude: Double, altitude: Double): GeoPoint(latitude, longitude, altitude) {
     var speed: Double = 0.0
@@ -9,15 +11,13 @@ class LogGeoPoint(latitude: Double, longitude: Double, altitude: Double): GeoPoi
     var distance: Int = 0
     var temperature: Int = 0
     var timeString: String = ""
-
-    override fun toString(): String {
-        // TODO: localize me
-        return String.format("Speed: %.2f km/h\nBattery: %s %%\nDistance by wheel: %.2f km\nVoltage: %.2f V\nTemperature: %s °C\nTime: %s",
-            speed,
-            battery,
-            distance / 1000.0,
-            voltage,
-            temperature,
-            timeString)
-    }
+    val timeDate: Date?
+        get() {
+            return if (timeString.isNotEmpty()) {
+                val sdf = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
+                sdf.parse(timeString)
+            } else {
+                null
+            }
+        }
 }

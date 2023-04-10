@@ -1,11 +1,11 @@
 package com.cooper.wheellog.map
 
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -22,7 +22,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.ScaleBarOverlay
-import org.osmdroid.views.overlay.TilesOverlay
 import org.osmdroid.views.overlay.compass.CompassOverlay
 import timber.log.Timber
 
@@ -97,7 +96,7 @@ class MapFragment : Fragment() {
                         } as LogGeoPoint?
                         if (logGeoPoint != null) {
                             polyline.apply {
-                                title = logGeoPoint.toString()
+                                snippet = getPointTitle(logGeoPoint)
                                 infoWindowLocation = logGeoPoint
                                 showInfoWindow()
                             }
@@ -110,25 +109,31 @@ class MapFragment : Fragment() {
             }
         }
 
+        if (tripData.geoLine.isEmpty()) {
+            return
+        }
+
         map.apply {
             isVisible = true
             tripData.geoLine.forEach {
                 polyLine.addPoint(it)
             }
             overlays.add(polyLine)
-            val startPoint = tripData.geoLine.firstOrNull()
+            val startPoint = tripData.geoLine.first()
 
             Marker(this).apply {
-                title = "Start!\n%s".format(startPoint.toString())
+                title = "Start"
+                snippet = getPointTitle( startPoint)
                 position = startPoint
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 icon = getDrawableEx(R.drawable.ic_start_marker)
                 overlays.add(this)
             }
 
-            val finishPoint = tripData.geoLine.lastOrNull()
+            val finishPoint = tripData.geoLine.last()
             Marker(this).apply {
-                title = "Finish!\n%s".format(finishPoint.toString())
+                title = "Finish"
+                snippet = getPointTitle(finishPoint)
                 position = finishPoint
                 setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 icon = getDrawableEx(R.drawable.ic_finish_marker)
@@ -139,7 +144,8 @@ class MapFragment : Fragment() {
                     val maxSpeedPoint = tripData.geoLine.maxByOrNull { it.speed }
                     if (maxSpeedPoint != null && maxSpeedPoint.speed > 20) {
                         Marker(this).apply {
-                            title = "Max speed!\n%s".format(maxSpeedPoint.toString())
+                            title = "Max speed"
+                            snippet = getPointTitle(maxSpeedPoint)
                             position = maxSpeedPoint
                             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                             icon = getDrawableEx(R.drawable.ic_maxspeed_marker)
@@ -152,6 +158,15 @@ class MapFragment : Fragment() {
             }
             zoomToBoundingBox(polyLine.bounds, true, MathsUtil.dpToPx(context, 24))
         }
+    }
+
+    private fun getPointTitle(geoPoint: LogGeoPoint): String {
+        return "\uD83D\uDE80 ${getString(R.string.speed)}: <b>${"%.2f".format(geoPoint.speed)}</b> ${getString(R.string.kmh)}<br/>" +
+                "\uD83D\uDD0B ${getString(R.string.battery)}: <b>${geoPoint.battery}</b> %<br/>" +
+                "⚡ ${getString(R.string.voltage)}: <b>${"%.2f".format(geoPoint.voltage)}</b> ${getString(R.string.volt)}<br/>" +
+                "\uD83D\uDCCF ${getString(R.string.distance)}: <b>${"%.2f".format(geoPoint.distance / 1000.0)}</b> ${getString(R.string.km)}<br/>" +
+                "\uD83C\uDF21 ${getString(R.string.temperature_title)}: <b>${geoPoint.temperature}</b> °C<br/><br/>" +
+                "⌚ <b>${geoPoint.timeDate?.let { DateFormat.getTimeFormat(context).format(it) }}</b>"
     }
 
     override fun onResume() {
