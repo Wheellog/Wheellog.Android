@@ -66,9 +66,10 @@ android {
         kotlinCompilerExtensionVersion = "1.4.3"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     testOptions {
         unitTests {
             includeAndroidResources = true
@@ -86,7 +87,7 @@ android {
         }
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     lint {
         abortOnError false
@@ -143,7 +144,7 @@ dependencies {
     // coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     // AppMetrica SDK.
     implementation ('com.yandex.android:mobmetricalib:5.2.0') {
         exclude group: 'com.yandex.android', module: 'mobmetricalib-identifiers'
