@@ -433,7 +433,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 serialNumber = new String(data, 1, 16);
 
                 wd.setSerial(serialNumber);
-            } else if ((data[0] == (byte) 0x06) && len >= 10) {
+            } else if ((data[0] == (byte) 0x06) && len >= 24) {
                 Timber.i("Parse versions");
                 protoVer = 0;
                 int DriverBoard3 = MathsUtil.shortFromBytesLE(data, 2);
@@ -472,8 +472,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         protoVer = 1;
                     } else protoVer = 2; // main board 1.4+
                 }
-
-
             }
             return false;
         }
@@ -558,6 +556,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
         }
 
         boolean parseTotalStats() {
+            if (data.length < 20) {
+                return false;
+            }
             Timber.i("Parse total stats data");
             WheelData wd = WheelData.getInstance();
             long mTotal = MathsUtil.intFromBytesLE(data, 0);
