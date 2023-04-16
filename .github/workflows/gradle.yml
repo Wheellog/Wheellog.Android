@@ -20,7 +20,7 @@ jobs:
     - name: Set up JAVA
       uses: actions/setup-java@v3.6.0
       with:
-        distribution: 'adopt'
+        distribution: 'temurin' # See 'Supported distributions' for available options
         java-version: '17'
         cache: 'gradle'
         check-latest: true
