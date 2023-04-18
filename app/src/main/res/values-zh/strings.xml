@@ -113,7 +113,8 @@
     <string name="alarm_settings_title">报警设置</string>
     <string name="watch_settings_title">手表设置</string>
     <string name="wheel_settings_title">轮子设置</string>
-    <string name="reset_top_speed_title">重置最高速度</string>
+    <string name="reset_max_values_title">重置最高大值</string>
+    <string name="reset_max_values_description">重置速度、PWM、电流、功率的最高大值</string>
     <string name="reset_user_distance_title">重置用户距离</string>
     <string name="edit_mac_addr_title">编辑MAC地址</string>
     <string name="about_app_title">关于WheelLog</string>

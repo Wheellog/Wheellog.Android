@@ -171,7 +171,8 @@
     <string name="logging_error_no_storage_permission">Немає дозволу на запис файлів. Логи не будуть записані</string>
     <string name="logging_error_storage_unavailable">Зовнішнє сховище не доступне, логування скасовано</string>
     <string name="reset_lowest_battery_title">Скинути просадку напруги</string>
-    <string name="reset_top_speed_title">Скинути максимальну швидкість</string>
+    <string name="reset_max_values_title">Скинути максимальні значення</string>
+    <string name="reset_max_values_description">Скинути максимальні значення швидкісти, PWM, силі струма, потужністи</string>
     <string name="search_for_wheel">Знайти колесо</string>
     <string name="searching">Пошук</string>
     <string name="start_data_service">Логування заборонено</string>

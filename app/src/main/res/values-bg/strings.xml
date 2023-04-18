@@ -119,7 +119,8 @@
 	<string name="alarm_settings_title">Алармени настройки</string>
 	<string name="watch_settings_title">Настройки на часовника</string>
 	<string name="wheel_settings_title">Настройки на колелото</string>
-	<string name="reset_top_speed_title">Занулете максималната скорост</string>
+	<string name="reset_max_values_title">Занулете максималните стойности</string>
+	<string name="reset_max_values_description">Нулирайте максималните стойности на скорост, PWM, ток, мощност</string>
 	<string name="reset_user_distance_title">Занулете пробега на потребителя</string>
 	<string name="edit_mac_addr_title">Въведете МАС адрес</string>
 	<string name="about_app_title">За WheelLog</string>

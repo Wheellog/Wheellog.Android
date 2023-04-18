@@ -142,7 +142,7 @@
     <string name="garmin_connectiq_use_beta" translatable="false">garmin_connectiq_use_beta</string>
 
     // TRIP PREFERENCES
-    <string name="reset_top_speed" translatable="false">reset_top_speed</string>
+    <string name="reset_max_values" translatable="false">reset_max_values</string>
     <string name="reset_user_distance" translatable="false">reset_user_distance</string>
     <string name="reset_lowest_battery" translatable="false">reset_lowest_battery</string>
     <string name="last_mac" translatable="false">last_mac</string>

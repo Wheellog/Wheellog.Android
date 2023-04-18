@@ -3,9 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<Preference
-		android:key="@string/reset_top_speed"
 		android:enabled="true"
-		android:title="@string/reset_top_speed_title" />
+		android:key="@string/reset_max_values"
+		android:summary="@string/reset_max_values_description"
+		android:title="@string/reset_max_values_title" />
 
 	<Preference
 		android:enabled="true"

@@ -538,11 +538,11 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             }
             SettingsScreen.Trip -> {
                 tb.title = getText(R.string.trip_settings_title)
-                val resetTopButton: Preference? = findPreference(getString(R.string.reset_top_speed))
+                val resetMaxValuesButton: Preference? = findPreference(getString(R.string.reset_max_values))
                 val resetLowestBatteryButton: Preference? = findPreference(getString(R.string.reset_lowest_battery))
                 val resetUserDistanceButton: Preference? = findPreference(getString(R.string.reset_user_distance))
-                resetTopButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    WheelData.getInstance().resetTopSpeed()
+                resetMaxValuesButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    WheelData.getInstance().resetMaxValues()
                     true
                 }
                 resetLowestBatteryButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {

@@ -163,7 +163,8 @@
     <string name="watch_settings_title">Watch/Band Preferences</string>
     <string name="wheel_settings_title">Wheel Settings</string>
     <string name="trip_settings_title">Trip Settings</string>
-    <string name="reset_top_speed_title">Reset top speed and PWM</string>
+    <string name="reset_max_values_title">Reset maximum values</string>
+    <string name="reset_max_values_description">Reset maximum values of speed, PWM, current, power</string>
     <string name="reset_lowest_battery_title">Reset battery sag</string>
     <string name="reset_user_distance_title">Reset user distance</string>
     <string name="edit_mac_addr_title">Edit MAC address</string>

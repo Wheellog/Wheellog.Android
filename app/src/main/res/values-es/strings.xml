@@ -119,7 +119,8 @@
 	<string name="alarm_settings_title">configuración de alarmas</string>
 	<string name="watch_settings_title">Configuración del relog</string>
 	<string name="wheel_settings_title">Configuración de la rueda</string>
-	<string name="reset_top_speed_title">Restablecer la velocidad máxima.</string>
+	<string name="reset_max_values_title">Restablecer valores máximos.</string>
+	<string name="reset_max_values_description">Restablecer valores máximos de velocidad, PWM, corriente, potencia</string>
 	<string name="reset_user_distance_title">Restablecer la distancia del usuario.</string>
 	<string name="edit_mac_addr_title">Editar de la dirección MAC</string>
 	<string name="about_app_title">Acerca de WheelLog</string>

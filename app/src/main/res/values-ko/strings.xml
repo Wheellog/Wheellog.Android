@@ -166,7 +166,8 @@
     <string name="watch_settings_title">"워치 설정"</string>
     <string name="wheel_settings_title">"휠 설정"</string>
     <string name="trip_settings_title">"여행 설정"</string>
-    <string name="reset_top_speed_title"></string>
+    <string name="reset_max_values_title">최대값을 재설정합니다</string>
+    <string name="reset_max_values_description">속도, PWM, 전류, 전력의 최대값을 재설정합니다</string>
     <string name="reset_lowest_battery_title"></string>
     <string name="reset_user_distance_title">"사용자 거리 초기화"</string>
     <string name="edit_mac_addr_title">"MAC 주소 수정"</string>

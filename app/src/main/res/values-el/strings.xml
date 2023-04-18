@@ -119,7 +119,8 @@
 	<string name="alarm_settings_title">Ρυθμίσεις συναγερμών</string>
 	<string name="watch_settings_title">Προτιμήσεις ρολογιού</string>
 	<string name="wheel_settings_title">Ρυθμίσεις Ρόδας</string>
-	<string name="reset_top_speed_title">Επαναφορά της μέγιστης ταχύτητας</string>
+	<string name="reset_max_values_title">Επαναφέρετε τις μέγιστες τιμές</string>
+	<string name="reset_max_values_description">Επαναφέρετε τις μέγιστες τιμές ταχύτητας, PWM, ρεύματος, ισχύος</string>
 	<string name="reset_user_distance_title">Επαναφορά της απόστασης χρήστη</string>
 	<string name="edit_mac_addr_title">Επεξεργασία διεύθυνσης MAC</string>
 	<string name="about_app_title">Σχετικά με το WheelLog</string>
