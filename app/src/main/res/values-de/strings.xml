@@ -119,7 +119,8 @@
 	<string name="alarm_settings_title">Alarmeinstellungen</string>
 	<string name="watch_settings_title">Uhreinstellungen</string>
 	<string name="wheel_settings_title">Radeinstellungen</string>
-	<string name="reset_top_speed_title">Spitzengeschwindigkeit zurücksetzen</string>
+	<string name="reset_max_values_title">Spitzengeschwindigkeit zurücksetzen</string>
+	<string name="reset_max_values_description">Скинути максимальні значення швидкісти, PWM, силі струма, потужністи</string>
 	<string name="reset_user_distance_title">Benutzerentfernung zurücksetzen</string>
 	<string name="edit_mac_addr_title">MAC adresse ändern</string>
 	<string name="about_app_title">Über WheelLog</string>

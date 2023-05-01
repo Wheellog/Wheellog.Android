@@ -183,7 +183,8 @@
     <string name="logging_error_no_storage_permission">Нет разрешения на запись файлов. Логи не будут записаны</string>
     <string name="logging_error_storage_unavailable">Внешнее хранилище не доступно, логгирование отменено</string>
     <string name="reset_lowest_battery_title">Сбросить просадку напряжения</string>
-    <string name="reset_top_speed_title">Сбросить максимальную скорость и PWM</string>
+    <string name="reset_max_values_title">Сбросить максимальные значения</string>
+    <string name="reset_max_values_description">Сбросить максимальную скорость, PWM, ток, мощность</string>
     <string name="search_for_wheel">Найти колесо</string>
     <string name="searching">Поиск</string>
     <string name="start_data_service">Логирование запущено</string>

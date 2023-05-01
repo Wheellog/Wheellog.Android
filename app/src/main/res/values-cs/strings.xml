@@ -119,7 +119,8 @@
 	<string name="alarm_settings_title">Nastavení upozornění</string>
 	<string name="watch_settings_title">Nastavení hodinek</string>
 	<string name="wheel_settings_title">Nastavení jednokolky</string>
-	<string name="reset_top_speed_title">Vynulovat maximální rychlost</string>
+	<string name="reset_max_values_title">Vynulovat maximální hodnoty</string>
+	<string name="reset_max_values_description">Vynulovat maximální hodnoty rychlosti, PWM, proudu, výkonu</string>
 	<string name="reset_user_distance_title">Vynulovat uživatelskou vzdálenost</string>
 	<string name="edit_mac_addr_title">Upravit MAC adresu</string>
 	<string name="about_app_title">O WheelLogu</string>

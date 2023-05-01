@@ -869,9 +869,11 @@ public class WheelData {
         }
     }
 
-    public void resetTopSpeed() {
+    public void resetMaxValues() {
         mTopSpeed = 0;
         mMaxPwm = 0;
+        mMaxCurrent = 0;
+        mMaxPower = 0;
     }
 
     public void resetVoltageSag() {
