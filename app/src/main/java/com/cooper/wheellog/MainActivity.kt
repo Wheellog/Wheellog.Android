@@ -562,17 +562,7 @@ class MainActivity : AppCompatActivity() {
         ElectroClub.instance.apply {
             lifecycle.coroutineScope.launch {
                 dao = getDataBase(this@MainActivity).tripDao()
-
-                withContext(Dispatchers.IO) {
-                    dao?.getTripByFileName("123")
-                        ?: dao?.insert(TripDataDbEntry(fileName = "123", profileName = "pro"))
-
-                    val d = dao?.getAll()
-                    Timber.wtf("a" + d?.size)
-                }
             }
-
-
             errorListener = { method: String?, error: String? ->
                 val message = "[ec] $method error: $error"
                 Timber.i(message)
