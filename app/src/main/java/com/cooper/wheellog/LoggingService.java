@@ -16,11 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.cooper.wheellog.data.TripData;
-import com.cooper.wheellog.data.TripDatabase;
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
-import com.cooper.wheellog.utils.NotificationUtil;
 import com.cooper.wheellog.utils.ParserLogToWheelData;
 import com.cooper.wheellog.utils.PermissionsUtil;
 import com.welie.blessed.ConnectionState;

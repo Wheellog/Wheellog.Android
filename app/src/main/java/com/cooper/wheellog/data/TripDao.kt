@@ -1,28 +1,30 @@
 package com.cooper.wheellog.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface TripDao {
     @Query("SELECT * FROM trip_database ORDER BY id ASC")
-    fun getAll(): LiveData<List<TripData>>
+    fun getAll(): List<TripDataDbEntry>
 
     @Query("SELECT * FROM trip_database WHERE id IN (:tripIds) ORDER BY id ASC")
-    fun loadAllByIds(tripIds: IntArray): LiveData<List<TripData>>
+    fun loadAllByIds(tripIds: IntArray): List<TripDataDbEntry>
 
     @Query("SELECT * FROM trip_database WHERE fileName LIKE :fileName LIMIT 1")
-    fun getTripByFileName(fileName: String): LiveData<TripData?>
+    fun getTripByFileName(fileName: String): TripDataDbEntry?
 
     @Query("SELECT * FROM trip_database WHERE ecId LIKE :ecId LIMIT 1")
-    fun getTripByElectroClubId(ecId: Int): LiveData<TripData?>
+    fun getTripByElectroClubId(ecId: Int): TripDataDbEntry?
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(vararg tripData: TripData)
+    @Insert(entity = TripDataDbEntry::class, onConflict = OnConflictStrategy.IGNORE)
+    fun insert(vararg tripDatumTuples: TripDataDbEntry)
 
     @Update
-    fun update(vararg tripData: TripData)
+    fun update(vararg tripDatumTuples: TripDataDbEntry)
 
     @Delete
-    fun delete(vararg tripData: TripData)
+    fun delete(vararg tripDatumTuples: TripDataDbEntry)
+
+    @Query("DELETE FROM trip_database WHERE id = :inputId")
+    fun deleteDataById(inputId: Long)
 }

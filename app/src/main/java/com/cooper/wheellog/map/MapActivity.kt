@@ -9,6 +9,9 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.cooper.wheellog.BuildConfig
 import com.cooper.wheellog.R
+import com.cooper.wheellog.data.TripDao
+import com.cooper.wheellog.data.TripDataDbEntry
+import com.cooper.wheellog.data.TripDatabase
 import com.cooper.wheellog.databinding.ActivityMapBinding
 import com.cooper.wheellog.utils.LogHeaderEnum
 import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
@@ -35,6 +38,8 @@ class MapActivity : AppCompatActivity() {
     private val header = HashMap<LogHeaderEnum, Int>()
     private val backgroundScope: CoroutineScope = CoroutineScope(Dispatchers.Default + Job())
 
+    var dao: TripDao? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = applicationContext
@@ -44,8 +49,7 @@ class MapActivity : AppCompatActivity() {
             load(context, PreferenceManager.getDefaultSharedPreferences(context))
             userAgentValue = BuildConfig.APPLICATION_ID
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q)
-            {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
                 osmdroidBasePath = File(context.filesDir, "osmdroid").apply {
                     mkdirs()
                 }
@@ -108,12 +112,15 @@ class MapActivity : AppCompatActivity() {
             }
         } catch (ex: Exception) {
             Timber.wtf(ex.localizedMessage)
-            return tripData.apply { errorMessage = "${getString(R.string.error_cannot_open_file)} ${ex.localizedMessage}" }
+            return tripData.apply {
+                errorMessage =
+                    "${getString(R.string.error_cannot_open_file)} ${ex.localizedMessage}"
+            }
         }
         if (inputStream == null) {
             val message = getString(R.string.error_inputstream_null)
             Timber.wtf(message)
-            return tripData.apply { errorMessage = message}
+            return tripData.apply { errorMessage = message }
         }
 
         val reader = BufferedReader(InputStreamReader(inputStream))
@@ -181,7 +188,8 @@ class MapActivity : AppCompatActivity() {
                 entriesPWM.add(Entry(time, pwm.toFloat()))
                 // map
                 if (latitudeNew != latitude && longitudeNew != longitude
-                    && latitudeNew != 0.0 && longitudeNew != 0.0) {
+                    && latitudeNew != 0.0 && longitudeNew != 0.0
+                ) {
                     latitude = latitudeNew
                     longitude = longitudeNew
                     val altitude = row[header[LogHeaderEnum.GPS_ALT]!!].toDoubleOrNull() ?: 0.0
@@ -201,13 +209,31 @@ class MapActivity : AppCompatActivity() {
             }
         } catch (ex: Exception) {
             Timber.wtf(ex.localizedMessage)
-            return tripData.apply { errorMessage = "${getString(R.string.error_parsing_log)} ${ex.localizedMessage}" }
+            return tripData.apply {
+                errorMessage = "${getString(R.string.error_parsing_log)} ${ex.localizedMessage}"
+            }
         } finally {
             inputStream.close()
         }
 
+        dao = TripDatabase.getDataBase(this).tripDao()
+        var trip = dao?.getTripByFileName(title)
+        if (trip == null) {
+            trip = TripDataDbEntry(fileName = title)
+            dao?.insert(trip)
+        }
+        trip.apply {
+            duration = (entriesSpeed.first().x - entriesSpeed.last().x).toInt()
+            maxCurrent = entriesCurrent.maxOf { it.y }
+            maxPwm = entriesPWM.maxOf { it.y }
+            maxPower = entriesPower.maxOf { it.y }
+            maxSpeed = entriesSpeed.maxOf { it.y }
+            avgSpeed = entriesSpeed.map { it.y }.average().toFloat()
+        }
+        dao?.update(trip)
+
         val chart1DataSets = listOf(
-             LineDataSet(entriesBattery, batteryLabel).apply {
+            LineDataSet(entriesBattery, batteryLabel).apply {
                 color = getColorEx(R.color.stats_battery)
                 setDrawCircles(false)
                 axisDependency = YAxis.AxisDependency.LEFT

@@ -48,4 +48,5 @@ enum class ThemeIconEnum {
     TripsUpload,
     TripsShare,
     TripsDelete,
+    TripsOpenEc,
 }

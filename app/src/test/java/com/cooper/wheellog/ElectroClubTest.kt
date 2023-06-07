@@ -1,8 +1,7 @@
 package com.cooper.wheellog
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.cooper.wheellog.data.TripData
+import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripDatabase
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -21,7 +20,7 @@ class ElectroClubTest {
     private lateinit var ec: ElectroClub
     private var successCalls = 0
     private var errorCalls = 0
-    private lateinit var tripData: MutableLiveData<TripData>
+    private lateinit var tripDataDbEntry: MutableLiveData<TripDataDbEntry>
     private val data = byteArrayOf()
     private val fileName = "fileName"
     private lateinit var db: TripDatabase
@@ -36,9 +35,9 @@ class ElectroClubTest {
         ec.successListener = { _: String?, _: Any? -> successCalls++ }
         ec.errorListener = { _: String?, _: Any? -> errorCalls++ }
         wd = spyk(WheelData())
-        tripData = MutableLiveData(TripData(fileName = fileName))
+        tripDataDbEntry = MutableLiveData(TripDataDbEntry(fileName = fileName))
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
-        every { db.tripDao().getTripByFileName(any()) } returns tripData
+        every { db.tripDao().getTripByFileName(any()) } returns tripDataDbEntry
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns wd
     }
@@ -184,10 +183,10 @@ class ElectroClubTest {
         assertThat(ec.lastError).isEqualTo(null)
         assertThat(successCalls).isEqualTo(1)
         assertThat(errorCalls).isEqualTo(0)
-        assertThat(tripData.value?.ecId).isEqualTo(666)
-        assertThat(tripData.value?.ecTransportId).isEqualTo(9999)
-        assertThat(tripData.value?.ecStartTime).isEqualTo(1616340639)
-        assertThat(tripData.value?.ecUrlImage).isEqualTo("https://electro.club/data/map/22451/track-72485b82b22769b98723bbcea83ca764.png")
-        assertThat(tripData.value?.ecDuration).isEqualTo(6652)
+        assertThat(tripDataDbEntry.value?.ecId).isEqualTo(666)
+        assertThat(tripDataDbEntry.value?.ecTransportId).isEqualTo(9999)
+        assertThat(tripDataDbEntry.value?.ecStartTime).isEqualTo(1616340639)
+        assertThat(tripDataDbEntry.value?.ecUrlImage).isEqualTo("https://electro.club/data/map/22451/track-72485b82b22769b98723bbcea83ca764.png")
+        assertThat(tripDataDbEntry.value?.ecDuration).isEqualTo(6652)
     }
 }
