@@ -10,58 +10,62 @@ jobs:
     if: github.event.issue.pull_request != '' && github.event.comment.body == '/telega'
 
     steps:
-    - name: GitHub API Request
-      id: request
-      uses: octokit/request-action@v2.0.0
-      with:
-        route: ${{ github.event.issue.pull_request.url }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout
+      uses: actions/checkout@v2.5.0
 
-    - name: Get PR informations
-      id: pr_data
-      run: |
-        echo "::set-output name=branch::${{ fromJson(steps.request.outputs.data).head.ref }}"
-        echo "::set-output name=repo_name::${{ fromJson(steps.request.outputs.data).base.repo.full_name }}"
-        echo "::set-output name=repo_clone_url::${{ fromJson(steps.request.outputs.data).base.repo.clone_url }}"
-        echo "::set-output name=repo_ssh_url::${{ fromJson(steps.request.outputs.data).base.repo.ssh_url }}"
-        echo "::set-output name=userlogin::${{ fromJson(steps.request.outputs.data).head.user.login }}"
-        echo "::set-output name=link::${{ fromJson(steps.request.outputs.data)._links.html.href }}"        
-        echo "::set-output name=title::${{ fromJson(steps.request.outputs.data).title }}"        
-        echo "::set-output name=number::${{ fromJson(steps.request.outputs.data).number }}"
-
-    - name: Clone branch of PR
-      uses: actions/checkout@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Checkout PR
-      uses: dawidd6/action-checkout-pr@v1.2.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        pr: ${{ steps.pr_data.outputs.number }}
-        repo: ${{ steps.pr_data.outputs.repo_name }}
-    
     - name: Set up JAVA
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3.6.0
       with:
-        distribution: 'adopt'
-        java-version: '15'
+        distribution: 'temurin' # See 'Supported distributions' for available options
+        java-version: '17'
+        cache: 'gradle'
         check-latest: true
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      
+    - name: Cache Gradle packages
+      uses: actions/cache@v3.0.11
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
 
+    - name: Test
+      run: ./gradlew test
     - name: Assemble
-      run: ./gradlew assembleDebug -Dec_accessToken="${{ secrets.EC_TOKEN }}"
+      run: ./gradlew assembleDebug -Dec_accessToken="${{ secrets.EC_TOKEN }}" -Dmetrica_api="${{ secrets.METRICA_API }}"
+      
+    - name: Cleanup Gradle Cache
+      run: |
+        rm -f ~/.gradle/caches/modules-2/modules-2.lock
+        rm -f ~/.gradle/caches/modules-2/gc.properties
+
+    - name: Get APK
+      uses: actions/upload-artifact@v3.1.1
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
+          
+    - name: Get wearos APK
+      uses: actions/upload-artifact@v3.1.1
+      with:
+        name: wearos-debug
+        path: wearos/build/outputs/apk/debug/wearos-debug.apk
 
     - name: Send apk to telegram
+      env: 
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      if: github.event_name == 'pull_request' && env.TELEGRAM_TOKEN != ''
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
+        token: env.TELEGRAM_TOKEN
         message: |
-          [trigger] ${{ steps.pr_data.outputs.title }} 
-          Branch ${{ steps.pr_data.outputs.branch }} from ${{ steps.pr_data.outputs.userlogin }}
-          PR: ${{ steps.pr_data.outputs.link }}
+          ${{ github.event.pull_request.title }}
+          ${{ github.base_ref }} <= ${{ github.head_ref }}
+          PR: https://github.com/Wheellog/Wheellog.Android/pull/${{github.event.number}}
         document: app/build/outputs/apk/debug/app-debug.apk
