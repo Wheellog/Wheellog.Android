@@ -371,7 +371,7 @@ public class KingsongAdapter extends BaseAdapter {
         int cells = 16;
         if (is84vWheel()) {cells = 20; }
         else if (is126vWheel()) {cells = 30; }
-        else if (is100vWheel()) {cells = 24; }
+        else if (is100vWheel()) { cells = 24; }
         return cells;
     }
 
