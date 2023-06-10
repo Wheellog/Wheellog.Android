@@ -402,7 +402,8 @@
     <string name="bmsSn">с/н</string>
     <string name="bmsFw">Прошивка</string>
     <string name="trip_menu_view_map">Показать карту</string>
-    <string name="trip_menu_upload_to_ec">Залить на electro.club</string>
+    <string name="trip_menu_upload_to_ec">Загрузить в electro.club</string>
+    <string name="trip_menu_open_in_ec">Открыть в electro.club</string>
     <string name="trip_menu_share">Поделиться</string>
     <string name="trip_menu_delete_file">Удалить</string>
     <string name="trip_menu_delete_file_confirmation">Точно удалить?</string>

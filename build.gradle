@@ -2,12 +2,12 @@
 
 buildscript {
     ext.kotlin_version = '1.8.10'
-    ext.compose_version = '1.4.1'
+    ext.compose_version = '1.4.3'
     ext.lifecycle_version = '2.6.1'
     ext.room_version = '2.5.1'
-    ext.material_version = '1.8.0'
+    ext.material_version = '1.9.0'
     ext.appcompact_version = '1.6.1'
-    ext.core_ktx_version = '1.10.0'
+    ext.core_ktx_version = '1.10.1'
     repositories {
         mavenCentral()
         google()

@@ -1,9 +1,10 @@
 package com.cooper.wheellog
 
 import android.app.Activity
+import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import com.cooper.wheellog.data.TripDao
-import com.cooper.wheellog.data.TripData
+import com.cooper.wheellog.data.TripDataDbEntry
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -114,9 +115,14 @@ class ElectroClub {
             errorListener?.invoke(UPLOAD_METHOD, lastError)
             return false
         }
-        val prepare = GlobalScope.launch {
-            insertEmptyEntryInDb(fileName, WheelLog.AppConfig.profileName)
+
+        if (data.size > 50_000_000) {
+            lastError = "The File is too big. Sorrrry =("
+            errorListener?.invoke(UPLOAD_METHOD, lastError)
+            return false
         }
+
+        insertEmptyEntryInDb(fileName, WheelLog.AppConfig.profileName)
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault())
         val currentLocalTime = calendar.time
         val date = SimpleDateFormat("Z", Locale.getDefault())
@@ -169,8 +175,7 @@ class ElectroClub {
                                     errorListener?.invoke(UPLOAD_METHOD, lastError)
                                     continuation.resume(false)
                                 } else {
-                                    GlobalScope.launch {
-                                        prepare.join()
+                                    CoroutineScope(Dispatchers.IO).launch {
                                         val tripInserted = updateEntryInDb(track, fileName)
                                         successListener?.invoke(UPLOAD_METHOD, "trackId = ${tripInserted.ecId}")
                                         continuation.resume(true)
@@ -194,25 +199,33 @@ class ElectroClub {
         }
     }
 
-    private fun insertEmptyEntryInDb(fileName: String, profileName: String) {
-        dao?.getTripByFileName(fileName)
-            ?: dao?.insert(TripData(fileName = fileName, profileName = profileName))
+    private suspend fun insertEmptyEntryInDb(fileName: String, profileName: String) {
+        withContext(Dispatchers.IO) {
+            dao?.getTripByFileName(fileName)
+                ?: dao?.insert(TripDataDbEntry(fileName = fileName, profileName = profileName))
+        }
     }
 
-    fun updateEntryInDb(track: JSONObject, fileName: String): TripData {
-        // gets or create trip with fileName field
-        val trip = dao?.getTripByFileName(fileName)?.value
-                ?: TripData(fileName = fileName)
-        trip.apply {
-            ecId = track.getInt("id")
-            ecStartTime = track.optInt("start_time")
-            ecTransportId = track.optInt("garage_id")
-            ecUrlImage = track.optString("image")
-            ecDuration = track.optInt("duration")
-        }
+    private suspend fun updateEntryInDb(track: JSONObject, fileName: String): TripDataDbEntry {
+        return withContext(Dispatchers.IO) {
+            // gets or create trip with fileName field
+            val trip = dao?.getTripByFileName(fileName)
+                ?: TripDataDbEntry(fileName = fileName)
+            trip.apply {
+                ecId = track.getInt("id")
+                ecStartTime = track.optInt("start_time")
+                ecTransportId = track.optInt("garage_id")
+                ecUrlImage = track.optString("image")
+                ecDuration = track.optInt("duration")
+            }
 
-        dao?.update(trip)
-        return trip
+            dao?.update(trip)
+            trip
+        }
+    }
+
+    fun getUrlFromTrackId(trackId: Int): Uri {
+        return Uri.parse("https:/electro.club/track/$trackId")
     }
 
     fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, activity: Activity, success: (String?) -> Unit) {

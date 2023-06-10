@@ -1,26 +1,38 @@
 package com.cooper.wheellog.views
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.view.*
-import android.widget.*
+import android.view.ContextThemeWrapper
+import android.view.GestureDetector
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.cooper.wheellog.*
 import com.cooper.wheellog.DialogHelper.setBlackIcon
-import com.cooper.wheellog.data.TripDatabase
+import com.cooper.wheellog.ElectroClub
+import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.map.MapActivity
+import com.cooper.wheellog.utils.SomeUtil.Companion.doAsync
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
-import kotlinx.coroutines.*
 import timber.log.Timber
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
+import kotlinx.coroutines.*
+
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var inflater: LayoutInflater = LayoutInflater.from(context)
@@ -48,6 +60,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val trip = tripModels[position]
         holder.bind(trip, uploadViewVisible, this)
+
     }
 
     override fun getItemCount(): Int {
@@ -71,11 +84,6 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         private fun uploadInProgress(inProgress: Boolean) {
 //            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
 //            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
-        }
-
-        private fun uploadViewEnabled(isEnabled: Boolean) {
-//            uploadView.isEnabled = isEnabled
-//            uploadView.imageAlpha = if (isEnabled) 0xFF else 0x20
         }
 
         private fun showMap(tripModel: TripModel) {
@@ -109,9 +117,14 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     MainScope().launch {
                         uploadInProgress(false)
                     }
-                    // hide the upload button if it was successful
-                    uploadViewEnabled(!success)
                 }
+            }
+        }
+
+        private fun showTrackEc(trackIdInEc: Int) {
+            if (trackIdInEc != -1) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, ElectroClub.instance.getUrlFromTrackId(trackIdInEc))
+                startActivity(view.context, browserIntent, Bundle.EMPTY)
             }
         }
 
@@ -159,59 +172,67 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             descriptionView.typeface = font
             uploadInProgress(false)
 
-            // check upload
-            if (uploadViewVisible == View.VISIBLE) {
-                GlobalScope.launch {
-                    // async find
-                    val trip = TripDatabase.getDataBase(context).tripDao().getTripByFileName(tripModel.fileName).value
-                    withContext(Dispatchers.Main) {
-                        uploadViewEnabled(trip != null && trip.ecId > 0)
+            var trackIdInEc = -1
+            itemView.doAsync({
+                // check upload
+                if (uploadViewVisible == View.VISIBLE) {
+                    val trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                    trackIdInEc =
+                        if (trip != null && trip.ecId > 0)
+                            trip.ecId
+                        else -1
+                }
+            }) {
+                val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
+                val popupMenu = PopupMenu(wrapper, popupView).apply {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                        menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =
+                            context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsMap))
+                        menu.add(0, 1, 1, R.string.trip_menu_upload_to_ec).apply {
+                            icon =
+                                context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsUpload))
+                            isVisible = trackIdInEc == -1
+                        }
+                        menu.add(0, 2, 2, R.string.trip_menu_open_in_ec).apply {
+                            icon =
+                                context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsOpenEc))
+                            isVisible = trackIdInEc != -1
+                        }
+                        menu.add(0, 3, 3, R.string.trip_menu_share).icon =
+                            context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsShare))
+                        menu.add(0, 4, 4, R.string.trip_menu_delete_file).icon =
+                            context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsDelete))
                     }
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            0 -> showMap(tripModel)
+                            1 -> uploadToEc(tripModel)
+                            2 -> showTrackEc(trackIdInEc)
+                            3 -> share(tripModel)
+                            4 -> deleteFile(tripModel, adapter)
+                        }
+                        return@setOnMenuItemClickListener false
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        setForceShowIcon(true)
+                    }
+                }
+                val gestureDetector = GestureDetector(
+                    context, object : GestureDetector.SimpleOnGestureListener() {
+                        override fun onLongPress(e: MotionEvent) {
+                            super.onLongPress(e)
+                            popupMenu.show()
+                        }
+                    })
+                view.setOnTouchListener { _, event ->
+                    gestureDetector.onTouchEvent(event)
+                    true
+                }
+                popupView.setOnClickListener {
+                    popupMenu.show()
                 }
             }
 
-            val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
-            val popupMenu = PopupMenu(wrapper, popupView).apply {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                    menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =
-                        context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsMap))
-                    menu.add(0, 1, 1, R.string.trip_menu_upload_to_ec).apply {
-                        icon = context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsUpload))
-                        isVisible = uploadViewVisible == View.VISIBLE
-                    }
-                    menu.add(0, 2, 2, R.string.trip_menu_share).icon =
-                        context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsShare))
-                    menu.add(0, 3, 3, R.string.trip_menu_delete_file).icon =
-                        context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsDelete))
-                }
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        0 -> showMap(tripModel)
-                        1 -> uploadToEc(tripModel)
-                        2 -> share(tripModel)
-                        3 -> deleteFile(tripModel, adapter)
-                    }
-                    return@setOnMenuItemClickListener false
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    setForceShowIcon(true)
-                }
-            }
-
-            val gestureDetector = GestureDetector(
-                context, object : GestureDetector.SimpleOnGestureListener() {
-                    override fun onLongPress(e: MotionEvent) {
-                        super.onLongPress(e)
-                        popupMenu.show()
-                    }
-                })
-            view.setOnTouchListener { _, event ->
-                gestureDetector.onTouchEvent(event)
-                true
-            }
-            popupView.setOnClickListener {
-                popupMenu.show()
-            }
             // Themes
             popupView.setImageResource(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsPopupButton))
         }

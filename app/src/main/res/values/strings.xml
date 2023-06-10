@@ -514,6 +514,7 @@
     <string name="avg_cell_volt">Avg cell</string>
     <string name="trip_menu_view_map">View map</string>
     <string name="trip_menu_upload_to_ec">Upload to electro.club</string>
+    <string name="trip_menu_open_in_ec">Open in electro.club</string>
     <string name="trip_menu_share">Share</string>
     <string name="trip_menu_delete_file">Delete file</string>
     <string name="trip_menu_delete_file_confirmation">Delete a trip file?</string>

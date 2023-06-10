@@ -26,15 +26,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.whenStateAtLeast
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.cooper.wheellog.BluetoothService.LocalBinder
 import com.cooper.wheellog.DialogHelper.checkAndShowPrivatePolicyDialog
 import com.cooper.wheellog.DialogHelper.checkBatteryOptimizationsAndShowAlert
 import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
-import com.cooper.wheellog.ElectroClub.Companion.instance
-import com.cooper.wheellog.GarminConnectIQ.Companion.isInstanceCreated
 import com.cooper.wheellog.companion.WearOs
+import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
 import com.cooper.wheellog.databinding.ActivityMainBinding
 import com.cooper.wheellog.utils.*
@@ -51,6 +52,9 @@ import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
 import com.yandex.metrica.YandexMetrica
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -164,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                 if (mDeviceAddress.isNotEmpty()) {
                     WheelLog.AppConfig.lastMac = mDeviceAddress
                     if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
-                        instance.getAndSelectGarageByMacOrShowChooseDialog(
+                        ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
                             WheelLog.AppConfig.lastMac,
                             this
                         ) { }
@@ -554,20 +558,24 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val electroClub = instance
-        electroClub.dao = getDataBase(this).tripDao()
-        electroClub.errorListener = { method: String?, error: String? ->
-            val message = "[ec] $method error: $error"
-            Timber.i(message)
-            runOnUiThread { showSnackBar(message, 4000) }
-        }
-        electroClub.successListener = label@{ method: String?, success: Any? ->
-            if (method == ElectroClub.GET_GARAGE_METHOD) {
-                return@label
+
+        ElectroClub.instance.apply {
+            lifecycle.coroutineScope.launch {
+                dao = getDataBase(this@MainActivity).tripDao()
             }
-            val message = "[ec] $method ok: $success"
-            Timber.i(message)
-            runOnUiThread { showSnackBar(message, 4000) }
+            errorListener = { method: String?, error: String? ->
+                val message = "[ec] $method error: $error"
+                Timber.i(message)
+                runOnUiThread { showSnackBar(message, 4000) }
+            }
+            successListener = label@{ method: String?, success: Any? ->
+                if (method == ElectroClub.GET_GARAGE_METHOD) {
+                    return@label
+                }
+                val message = "[ec] $method ok: $success"
+                Timber.i(message)
+                runOnUiThread { showSnackBar(message, 4000) }
+            }
         }
         createPager()
         pipView = binding.pipFrame
@@ -884,9 +892,10 @@ class MainActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).postDelayed(
                     { pagerAdapter.updatePageOfTrips() }, 200)
             }
-        } else if (mConnectionState == ConnectionState.CONNECTED) startService(
-            dataLoggerServiceIntent
-        )
+        } else if (mConnectionState == ConnectionState.CONNECTED) {
+            startService(dataLoggerServiceIntent)
+            pagerAdapter.updatePageOfTrips()
+        }
     }
 
     private fun stopPebbleService() {
@@ -911,12 +920,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopGarminConnectIQ() {
-        if (isInstanceCreated) toggleGarminConnectIQ()
+        if (GarminConnectIQ.isInstanceCreated) toggleGarminConnectIQ()
     }
 
     private fun toggleGarminConnectIQ() {
         val garminConnectIQIntent = Intent(applicationContext, GarminConnectIQ::class.java)
-        if (isInstanceCreated) stopService(garminConnectIQIntent) else ContextCompat.startForegroundService(
+        if (GarminConnectIQ.isInstanceCreated) stopService(garminConnectIQIntent) else ContextCompat.startForegroundService(
             this,
             garminConnectIQIntent
         )
@@ -990,7 +999,7 @@ class MainActivity : AppCompatActivity() {
             setMenuIconStates()
             toggleConnectToWheel()
             if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
-                instance.getAndSelectGarageByMacOrShowChooseDialog(
+                ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
                     mDeviceAddress,
                     this
                 ) { }
