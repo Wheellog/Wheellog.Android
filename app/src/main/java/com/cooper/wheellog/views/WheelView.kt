@@ -12,6 +12,7 @@ import android.view.View
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
 import com.cooper.wheellog.DialogHelper.setBlackIcon
+import com.cooper.wheellog.utils.Calculator
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
@@ -265,6 +266,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                             Locale.US,
                             "%.3f " + resources.getString(R.string.km),
                             WheelData.getInstance().userDistanceDouble)
+                    },
+                    false
+                ),
+                ViewBlockInfo(
+                    resources.getString(R.string.powerh_by_km),
+                    {
+                        String.format(
+                            Locale.US,
+                            "%.1f " + resources.getString(R.string.whkm),
+                            Calculator.whByKm)
                     },
                     false
                 )

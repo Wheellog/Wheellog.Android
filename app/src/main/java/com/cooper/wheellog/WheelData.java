@@ -781,6 +781,7 @@ public class WheelData {
     public void setPower(int value) {
         mPower = value;
         setMaxPower(value);
+        Calculator.INSTANCE.pushPower(getPowerDouble(), getDistance());
     }
 
     public double getCurrentDouble() {
