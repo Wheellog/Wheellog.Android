@@ -4,12 +4,16 @@ import android.os.Build
 
 object Calculator {
     private const val maxPowerMillis = 10_000 // 10 sec
-    private const val lastPackageShouldNotNeLater = 1_000 // 1 sec
+    private const val lastPackageShouldNotNeLater = 2_000 // 2 sec
     private var powerArray = mutableListOf<Triple<Long, Int, Double>>() // time, distance, power
+
+    private val isActual: Boolean
+        get() = powerArray.size != 0
+                && System.currentTimeMillis() - powerArray.last().first < lastPackageShouldNotNeLater
 
     val powerHour: Double
         get() {
-            if (powerArray.size == 0 || powerArray.last().first < lastPackageShouldNotNeLater) {
+            if (!isActual) {
                 return 0.0
             }
             val elapsedTime = powerArray.last().first - powerArray.first().first
@@ -19,10 +23,13 @@ object Calculator {
 
     val whByKm: Double
         get() {
-            if (powerArray.size == 0) {
+            if (!isActual) {
                 return 0.0
             }
-            val distance = powerArray.first().second - powerArray.last().second
+            val distance = powerArray.last().second - powerArray.first().second
+            if (distance == 0) {
+                return 0.0
+            }
             return powerHour * 1000 / distance
         }
 
