@@ -47,26 +47,47 @@ public class VeteranAdapter extends BaseAdapter {
                 int hwPwm = MathsUtil.shortFromBytesBE(buff, 34);
 
                 int battery;
-                if (useBetterPercents) {
-                    if (voltage > 10020) {
-                        battery = 100;
-                    } else if (voltage > 8160) {
-                        battery = (int) Math.round((voltage - 8070) / 19.5);
-                    } else if (voltage > 7935) {
-                        battery = (int) Math.round((voltage - 7935) / 48.75);
+                if (mVer < 4) { // not Patton
+                    if (useBetterPercents) {
+                        if (voltage > 10020) {
+                            battery = 100;
+                        } else if (voltage > 8160) {
+                            battery = (int) Math.round((voltage - 8070) / 19.5);
+                        } else if (voltage > 7935) {
+                            battery = (int) Math.round((voltage - 7935) / 48.75);
+                        } else {
+                            battery = 0;
+                        }
                     } else {
-                        battery = 0;
+                        if (voltage <= 7935) {
+                            battery = 0;
+                        } else if (voltage >= 9870) {
+                            battery = 100;
+                        } else {
+                            battery = (int) Math.round((voltage - 7935) / 19.5);
+                        }
                     }
-                } else {
-                    if (voltage <= 7935) {
-                        battery = 0;
-                    } else if (voltage >= 9870) {
-                        battery = 100;
+                } else { // Patton
+                    if (useBetterPercents) {
+                        if (voltage > 12525) {
+                            battery = 100;
+                        } else if (voltage > 10200) {
+                            battery = (int) Math.round((voltage - 9975) / 25.5);
+                        } else if (voltage > 9600) {
+                            battery = (int) Math.round((voltage - 9600) / 67.5);
+                        } else {
+                            battery = 0;
+                        }
                     } else {
-                        battery = (int) Math.round((voltage - 7935) / 19.5);
+                        if (voltage <= 9918) {
+                            battery = 0;
+                        } else if (voltage >= 12337) {
+                            battery = 100;
+                        } else {
+                            battery = (int) Math.round((voltage - 9918) / 24.2);
+                        }
                     }
                 }
-
                 if (veteranNegative == 0) {
                     speed = Math.abs(speed);
                     phaseCurrent = Math.abs(phaseCurrent);
@@ -146,7 +167,11 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        return 24;
+        if (mVer > 3) {
+            return 30;
+        } else {
+            return 24;
+        }
     }
 
     @Override
