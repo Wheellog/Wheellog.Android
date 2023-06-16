@@ -8,7 +8,7 @@ import android.widget.Toast
 import com.cooper.wheellog.utils.Alarms
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.*
-import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
+import com.cooper.wheellog.utils.SomeUtil.playBeep
 import com.garmin.android.connectiq.ConnectIQ
 import com.garmin.android.connectiq.ConnectIQ.*
 import com.garmin.android.connectiq.IQApp

@@ -14,7 +14,7 @@ import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripDatabase
 import com.cooper.wheellog.databinding.ActivityMapBinding
 import com.cooper.wheellog.utils.LogHeaderEnum
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet

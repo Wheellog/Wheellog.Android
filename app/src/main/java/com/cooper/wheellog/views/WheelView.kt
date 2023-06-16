@@ -17,8 +17,8 @@ import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
 import com.cooper.wheellog.utils.SomeUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
-import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.utils.StringUtil.toTempString
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*

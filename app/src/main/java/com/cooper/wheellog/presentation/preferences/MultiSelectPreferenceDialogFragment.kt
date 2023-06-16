@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceDialogFragmentCompat
 import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import java.util.*
 import kotlin.math.roundToInt
 

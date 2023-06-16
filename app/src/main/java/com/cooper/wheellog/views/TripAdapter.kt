@@ -24,7 +24,7 @@ import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.map.MapActivity
-import com.cooper.wheellog.utils.SomeUtil.Companion.doAsync
+import com.cooper.wheellog.utils.SomeUtil.doAsync
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
 import timber.log.Timber

@@ -28,7 +28,7 @@ import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.databinding.ActivityScanBinding
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.StringUtil
-import com.cooper.wheellog.utils.StringUtil.Companion.toHexStringRaw
+import com.cooper.wheellog.utils.StringUtil.toHexStringRaw
 import com.welie.blessed.BluetoothCentralManager
 import com.welie.blessed.BluetoothCentralManagerCallback
 import com.welie.blessed.BluetoothPeripheral

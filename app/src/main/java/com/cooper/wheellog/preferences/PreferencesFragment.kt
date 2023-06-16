@@ -32,7 +32,7 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogF
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
-import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
+import com.cooper.wheellog.utils.SomeUtil.getDrawableEx
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.yandex.metrica.YandexMetrica
 import timber.log.Timber
