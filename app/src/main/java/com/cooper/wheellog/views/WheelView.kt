@@ -270,7 +270,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.powerh_by_km),
+                    resources.getString(R.string.consumption),
                     {
                         String.format(
                             Locale.US,

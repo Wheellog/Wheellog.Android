@@ -56,7 +56,7 @@
     <string name="distance">Distance</string>
     <string name="wheel_distance">Wheel Distance</string>
     <string name="user_distance">User Distance</string>
-    <string name="powerh_by_km">Power by km</string>
+    <string name="consumption">Consumption</string>
     <string name="ride_time">Journey Time</string>
     <string name="riding_time">Ride Time</string>
     <string name="voltage">Voltage</string>
