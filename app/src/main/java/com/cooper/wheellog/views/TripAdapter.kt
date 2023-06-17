@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -33,6 +34,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var uploadViewVisible: Int = View.VISIBLE
@@ -159,6 +162,45 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 .setBlackIcon()
         }
 
+        private fun setDescFromDb(trip: TripDataDbEntry?) {
+            if (trip != null && trip.duration != 0) {
+                val min = context.getString(R.string.min)
+                var descText = if (WheelLog.AppConfig.useMph) {
+                    val mph = context.getString(R.string.mph)
+                    "\uD83D\uDE80: ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeed))} $mph | ♿: ${String.format("%.2f", MathsUtil.kmToMiles(trip.avgSpeed))} $mph" +
+                            "\n\uD83D\uDCE1: ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeedGps))} $mph | ⌚: ${trip.duration} $min"
+                } else {
+                    val kmh = context.getString(R.string.kmh)
+                    "\uD83D\uDE80: ${String.format("%.2f", trip.maxSpeed)} $kmh    ♿: ${String.format("%.2f", trip.avgSpeed)} $kmh" +
+                            "\n\uD83D\uDCE1: ${String.format("%.2f", trip.maxSpeedGps)} $kmh    ⌚: ${trip.duration} $min"
+                }
+                if (trip.ecId != 0) {
+                    descText += "\n\uD83C\uDF10 uploaded to electro.club."
+                }
+                itemBinding.description.text = descText
+            }
+        }
+
+        private fun setFriendlyName() {
+            val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
+            try {
+                val dateTime = sdf.parse(itemBinding.name.text.toString())
+                if (dateTime != null) {
+                    if (System.currentTimeMillis() - dateTime.time < 72_000_000) { // 20 hours
+                        itemBinding.name.text = itemBinding.name.context.getText(R.string.today)
+                    } else if (System.currentTimeMillis() - dateTime.time < 604_800_000) { // current week
+                        itemBinding.name.text = SimpleDateFormat("EEEE, HH:mm", Locale.getDefault()).format(dateTime)
+                    } else {
+                        val bestFormat = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMM dd, HH:mm")
+                        val sdfName = SimpleDateFormat(bestFormat, Locale.getDefault())
+                        itemBinding.name.text = sdfName.format(dateTime)
+                    }
+                }
+            } catch (_: Exception) {
+                // ignore
+            }
+        }
+
         @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility", "SetTextI18n")
         fun bind(tripModel: TripModel, uploadViewVisible: Int, adapter: TripAdapter) {
             itemBinding.name.text = tripModel.title
@@ -179,20 +221,8 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                         else -1
                 }
             }) {
-                if (trip != null && trip!!.duration != 0) {
-                    val min = context.getString(R.string.min)
-                    if (WheelLog.AppConfig.useMph) {
-                        val mph = context.getString(R.string.mph)
-                        itemBinding.description.text =
-                            "\uD83D\uDE80: ${String.format("%.2f", MathsUtil.kmToMiles(trip!!.maxSpeed))} $mph | ♿: ${String.format("%.2f", MathsUtil.kmToMiles(trip!!.avgSpeed))} $mph" +
-                            "\n\uD83D\uDCE1: ${String.format("%.2f", MathsUtil.kmToMiles(trip!!.maxSpeedGps))} $mph | ⌚: ${trip!!.duration} $min"
-                    } else {
-                        val kmh = context.getString(R.string.kmh)
-                        itemBinding.description.text =
-                            "\uD83D\uDE80: ${String.format("%.2f", trip!!.maxSpeed)} $kmh | ♿: ${String.format("%.2f", trip!!.avgSpeed)} $kmh" +
-                            "\n\uD83D\uDCE1: ${String.format("%.2f", trip!!.maxSpeedGps)} $kmh | ⌚: ${trip!!.duration} $min"
-                    }
-                }
+                setFriendlyName()
+                setDescFromDb(trip)
                 val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
                 val ecAvailable = WheelLog.AppConfig.ecToken != null
                 val popupMenu = PopupMenu(wrapper,  itemBinding.popupButton).apply {

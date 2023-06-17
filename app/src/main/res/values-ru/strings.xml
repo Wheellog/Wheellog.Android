@@ -486,4 +486,5 @@
     <string name="error_this_file_without_gps">Файл %s не содержит GPS данных.</string>
     <string name="error_parsing_log">Что-то пошло не так при парсинге файла.</string>
     <string name="min">мин</string>
+    <string name="today">Сегодня</string>
 </resources>
