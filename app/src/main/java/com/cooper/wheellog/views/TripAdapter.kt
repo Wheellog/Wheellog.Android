@@ -35,6 +35,7 @@ import java.io.FileInputStream
 import java.io.InputStream
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.Locale
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
@@ -185,13 +186,18 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
             try {
                 val dateTime = sdf.parse(itemBinding.name.text.toString())
+                val now = System.currentTimeMillis()
+                var skeleton = "MMMM dd, HH:mm"
                 if (dateTime != null) {
-                    if (System.currentTimeMillis() - dateTime.time < 72_000_000) { // 20 hours
+                    if (now - dateTime.time < 72_000_000) { // 20 hours
                         itemBinding.name.text = itemBinding.name.context.getText(R.string.today)
-                    } else if (System.currentTimeMillis() - dateTime.time < 604_800_000) { // current week
+                    } else if (now - dateTime.time < 604_800_000) { // current week
                         itemBinding.name.text = SimpleDateFormat("EEEE, HH:mm", Locale.getDefault()).format(dateTime)
                     } else {
-                        val bestFormat = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMM dd, HH:mm")
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Year.now().value != Year.parse(itemBinding.name.text.subSequence(0, 4).toString()).value) {
+                            skeleton = "yyyy $skeleton"
+                        }
+                        val bestFormat = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton)
                         val sdfName = SimpleDateFormat(bestFormat, Locale.getDefault())
                         itemBinding.name.text = sdfName.format(dateTime)
                     }
