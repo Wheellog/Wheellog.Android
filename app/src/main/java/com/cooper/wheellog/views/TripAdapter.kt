@@ -168,12 +168,12 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 val min = context.getString(R.string.min)
                 var descText = if (WheelLog.AppConfig.useMph) {
                     val mph = context.getString(R.string.mph)
-                    "\uD83D\uDE80: ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeed))} $mph | ♿: ${String.format("%.2f", MathsUtil.kmToMiles(trip.avgSpeed))} $mph" +
-                            "\n\uD83D\uDCE1: ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeedGps))} $mph | ⌚: ${trip.duration} $min"
+                    "\uD83D\uDE80 ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeed))} $mph | ♿ ${String.format("%.2f", MathsUtil.kmToMiles(trip.avgSpeed))} $mph" +
+                            "\n\uD83D\uDCE1 ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeedGps))} $mph | ⌚ ${trip.duration} $min"
                 } else {
                     val kmh = context.getString(R.string.kmh)
-                    "\uD83D\uDE80: ${String.format("%.2f", trip.maxSpeed)} $kmh    ♿: ${String.format("%.2f", trip.avgSpeed)} $kmh" +
-                            "\n\uD83D\uDCE1: ${String.format("%.2f", trip.maxSpeedGps)} $kmh    ⌚: ${trip.duration} $min"
+                    "\uD83D\uDE80 ${String.format("%.2f", trip.maxSpeed)} $kmh    ♿ ${String.format("%.2f", trip.avgSpeed)} $kmh" +
+                            "\n\uD83D\uDCE1 ${String.format("%.2f", trip.maxSpeedGps)} $kmh    ⌚ ${trip.duration} $min"
                 }
                 if (trip.ecId != 0) {
                     descText += "\n\uD83C\uDF10 uploaded to electro.club."
