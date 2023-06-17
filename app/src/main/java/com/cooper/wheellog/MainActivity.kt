@@ -635,6 +635,7 @@ class MainActivity : AppCompatActivity() {
             Timber.e(e)
         }
         pagerAdapter.updateScreen(true)
+        pagerAdapter.updatePageOfTrips()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -894,7 +895,8 @@ class MainActivity : AppCompatActivity() {
             }
         } else if (mConnectionState == ConnectionState.CONNECTED) {
             startService(dataLoggerServiceIntent)
-            pagerAdapter.updatePageOfTrips()
+            Handler(Looper.getMainLooper()).postDelayed(
+                { pagerAdapter.updatePageOfTrips() }, 200)
         }
     }
 
