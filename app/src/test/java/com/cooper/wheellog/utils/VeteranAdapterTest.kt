@@ -59,6 +59,7 @@ class VeteranAdapterTest {
         val temperature = 3599.toShort()
         val distance = 3231.toShort()
         val phaseCurrent = (-8322).toShort()
+        val version = 3210.toShort()
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
@@ -72,7 +73,7 @@ class VeteranAdapterTest {
                 byteArrayOf(0, 0) +
                 byteArrayOf(0, 0) +
                 byteArrayOf(0, 0) +
-                byteArrayOf(43, 45) +
+                MathsUtil.getBytes(version) +
                 byteArrayOf(0, 0) +
                 byteArrayOf(0, 0) +
                 byteArrayOf(0, 0)
@@ -88,7 +89,7 @@ class VeteranAdapterTest {
         assertThat(data.wheelDistanceDouble).isEqualTo(distance/1000.0)
         assertThat(data.totalDistance).isEqualTo(distance)
         assertThat(data.batteryLevel).isEqualTo(80)
-        assertThat(data.version).isEqualTo("011.0.53")
+        assertThat(data.version).isEqualTo("003.2.10")
     }
 
     @Test
