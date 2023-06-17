@@ -93,6 +93,47 @@ class VeteranAdapterTest {
     }
 
     @Test
+    fun `decode with normal data - Patton`() {
+        // Arrange.
+        val voltage = 11500.toShort()
+        val speed = (-1111).toShort()
+        val temperature = 3599.toShort()
+        val distance = 3231.toShort()
+        val phaseCurrent = (-8322).toShort()
+        val version = 4210.toShort()
+        val byteArray = header +
+                MathsUtil.getBytes(voltage) +
+                MathsUtil.getBytes(speed) +
+                MathsUtil.getBytes(distance) +
+                byteArrayOf(0, 0) +
+                MathsUtil.getBytes(distance) +
+                byteArrayOf(0, 0) +
+                MathsUtil.getBytes(phaseCurrent) +
+                MathsUtil.getBytes(temperature) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                MathsUtil.getBytes(version) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0) +
+                byteArrayOf(0, 0)
+        // Act.
+        val result = adapter.decode(byteArray)
+
+        // Assert.
+        assertThat(result).isTrue()
+        assertThat(data.speed).isEqualTo(speed)
+        assertThat(data.temperature).isEqualTo(temperature/100)
+        assertThat(data.voltageDouble).isEqualTo(voltage/100.0)
+        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent/10.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(distance/1000.0)
+        assertThat(data.totalDistance).isEqualTo(distance)
+        assertThat(data.batteryLevel).isEqualTo(65)
+        assertThat(data.version).isEqualTo("004.2.10")
+    }
+
+    @Test
     fun `decode veteran old board data`() {
         // Arrange.
         val byteArray1 = "DC5A5C2025D600003BF500003BF50000FFDE1399".hexToByteArray()
