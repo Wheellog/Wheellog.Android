@@ -222,15 +222,21 @@ class MapActivity : AppCompatActivity() {
             trip = TripDataDbEntry(fileName = title)
             dao?.insert(trip)
         }
-        trip.apply {
-            duration = (entriesSpeed.first().x - entriesSpeed.last().x).toInt()
-            maxCurrent = entriesCurrent.maxOf { it.y }
-            maxPwm = entriesPWM.maxOf { it.y }
-            maxPower = entriesPower.maxOf { it.y }
-            maxSpeed = entriesSpeed.maxOf { it.y }
-            avgSpeed = entriesSpeed.map { it.y }.average().toFloat()
+        try {
+            trip.apply {
+                duration = ((entriesSpeed.last().x - entriesSpeed.first().x) / 600.0).toInt()
+                trip.distance = geoLine.last().distance - geoLine.first().distance
+                maxSpeedGps = geoLine.maxOf { it.speed }.toFloat()
+                maxCurrent = entriesCurrent.maxOf { it.y }
+                maxPwm = entriesPWM.maxOf { it.y }
+                maxPower = entriesPower.maxOf { it.y }
+                maxSpeed = entriesSpeed.maxOf { it.y }
+                avgSpeed = entriesSpeed.map { it.y }.average().toFloat()
+            }
+            dao?.update(trip)
+        } catch (ex: Exception) {
+            Timber.wtf(ex.localizedMessage)
         }
-        dao?.update(trip)
 
         val chart1DataSets = listOf(
             LineDataSet(entriesBattery, batteryLabel).apply {

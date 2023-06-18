@@ -7,15 +7,14 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -23,19 +22,24 @@ import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.data.TripDataDbEntry
+import com.cooper.wheellog.databinding.ListTripItemBinding
 import com.cooper.wheellog.map.MapActivity
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.doAsync
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
-import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
+import java.time.Year
+import java.util.Locale
 
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
-    private var inflater: LayoutInflater = LayoutInflater.from(context)
     private var uploadViewVisible: Int = View.VISIBLE
     private var font = WheelLog.ThemeManager.getTypeface(context)
 
@@ -53,14 +57,13 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = inflater.inflate(R.layout.list_trip_item, parent, false)
-        return ViewHolder(view, font)
+        val itemBinding = ListTripItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(itemBinding, font)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val trip = tripModels[position]
         holder.bind(trip, uploadViewVisible, this)
-
     }
 
     override fun getItemCount(): Int {
@@ -75,11 +78,8 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         }
     }
 
-    class ViewHolder internal constructor(var view: View, val font: Typeface) : RecyclerView.ViewHolder(view) {
-        private var nameView: TextView = view.findViewById(R.id.name)
-        private var descriptionView: TextView = view.findViewById(R.id.description)
-        private var popupView: ImageView = view.findViewById(R.id.popupButton)
-        private val context = view.context
+    class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root) {
+        private val context = itemBinding.root.context
 
         private fun uploadInProgress(inProgress: Boolean) {
 //            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
@@ -124,7 +124,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         private fun showTrackEc(trackIdInEc: Int) {
             if (trackIdInEc != -1) {
                 val browserIntent = Intent(Intent.ACTION_VIEW, ElectroClub.instance.getUrlFromTrackId(trackIdInEc))
-                startActivity(view.context, browserIntent, Bundle.EMPTY)
+                startActivity(context, browserIntent, Bundle.EMPTY)
             }
         }
 
@@ -136,7 +136,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             }
 
             val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(view.context, shareIntent, Bundle.EMPTY)
+            startActivity(context, shareIntent, Bundle.EMPTY)
         }
 
         private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {
@@ -158,45 +158,126 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                         WheelLog.cResolver().delete(tripModel.uri, null, null)
                     }
                     adapter.removeAt(adapterPosition)
+
+                    CoroutineScope(Dispatchers.IO + Job()).launch {
+                        ElectroClub.instance.dao?.apply {
+                            val tripDb = getTripByFileName(tripModel.fileName)
+                            if (tripDb != null) {
+                                delete(tripDb)
+                            }
+                        }
+                    }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .show()
                 .setBlackIcon()
         }
 
-        @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
+        private fun toMiles(value: Float): String {
+            return String.format("%.2f", MathsUtil.kmToMiles(value))
+        }
+
+        private fun toKm(value: Float): String {
+            return String.format("%.2f", value)
+        }
+
+        private fun setDescFromDb(trip: TripDataDbEntry?) {
+            if (trip != null && trip.duration != 0) {
+                val min = context.getString(R.string.min)
+                var desc1: String
+                var desc2 = "⌚ ${trip.duration} $min" +
+                        "\n\uD83D\uDE31 ${trip.maxPwm}%"
+                if (WheelLog.AppConfig.useMph) {
+                    val mph = context.getString(R.string.mph)
+                    val miles = context.getString(R.string.miles)
+                    desc1 = "\uD83D\uDE80 ${toMiles(trip.maxSpeed)} $mph" +
+                            "\n\uD83D\uDCE1 ${toMiles(trip.maxSpeedGps)} $mph" +
+                            "\n♿ ${toMiles(trip.avgSpeed)} $mph"
+                    desc2 += "\n\uD83D\uDCCF ${toMiles(trip.distance / 1000.0f)} $miles"
+                } else {
+                    val kmh = context.getString(R.string.kmh)
+                    val km = context.getString(R.string.km)
+                    desc1 = "\uD83D\uDE80 ${toKm(trip.maxSpeed)} $kmh" +
+                            "\n\uD83D\uDCE1 ${toKm(trip.maxSpeedGps)} $kmh" +
+                            "\n♿ ${toKm(trip.avgSpeed)} $kmh"
+                    desc2 += "\n\uD83D\uDCCF ${toKm(trip.distance / 1000.0f)} $km"
+                }
+                if (trip.ecId != 0) {
+                    desc1 += "\n\uD83C\uDF10 electro.club"
+                }
+                itemBinding.description.text = desc1
+                itemBinding.description2.text = desc2
+            }
+        }
+
+        private fun setFriendlyName() {
+            val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
+            try {
+                val dateTime = sdf.parse(itemBinding.name.text.toString())
+                val now = System.currentTimeMillis()
+                var skeleton = "MMMM dd, HH:mm"
+                if (dateTime != null) {
+                    if (now - dateTime.time < 72_000_000) { // 20 hours
+                        itemBinding.name.text = itemBinding.name.context.getText(R.string.today)
+                    } else if (now - dateTime.time < 604_800_000) { // current week
+                        itemBinding.name.text = SimpleDateFormat("EEEE, HH:mm", Locale.getDefault()).format(dateTime)
+                    } else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Year.now().value != Year.parse(itemBinding.name.text.subSequence(0, 4).toString()).value) {
+                            skeleton = "yyyy $skeleton"
+                        }
+                        val bestFormat = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton)
+                        val sdfName = SimpleDateFormat(bestFormat, Locale.getDefault())
+                        itemBinding.name.text = sdfName.format(dateTime)
+                    }
+                }
+            } catch (_: Exception) {
+                // ignore
+            }
+        }
+
+        @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility", "SetTextI18n")
         fun bind(tripModel: TripModel, uploadViewVisible: Int, adapter: TripAdapter) {
-            nameView.text = tripModel.title
-            nameView.typeface = font
-            descriptionView.text = tripModel.description
-            descriptionView.typeface = font
+            itemBinding.name.text = tripModel.title
+            itemBinding.name.typeface = font
+            itemBinding.description.apply {
+                text = tripModel.description
+                typeface = font
+            }
+            itemBinding.description2.apply {
+                text = ""
+                typeface = font
+            }
             uploadInProgress(false)
 
             var trackIdInEc = -1
+            var trip: TripDataDbEntry? = null
             itemView.doAsync({
                 // check upload
                 if (uploadViewVisible == View.VISIBLE) {
-                    val trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                    trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
                     trackIdInEc =
-                        if (trip != null && trip.ecId > 0)
-                            trip.ecId
+                        if (trip != null && trip!!.ecId > 0)
+                            trip!!.ecId
                         else -1
                 }
             }) {
+                setFriendlyName()
+                setDescFromDb(trip)
                 val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
-                val popupMenu = PopupMenu(wrapper, popupView).apply {
+                val ecAvailable = WheelLog.AppConfig.ecToken != null
+                val popupMenu = PopupMenu(wrapper,  itemBinding.popupButton).apply {
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                         menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =
                             context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsMap))
                         menu.add(0, 1, 1, R.string.trip_menu_upload_to_ec).apply {
                             icon =
                                 context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsUpload))
-                            isVisible = trackIdInEc == -1
+                            isVisible = trackIdInEc == -1 && ecAvailable
                         }
                         menu.add(0, 2, 2, R.string.trip_menu_open_in_ec).apply {
                             icon =
                                 context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsOpenEc))
-                            isVisible = trackIdInEc != -1
+                            isVisible = trackIdInEc != -1 && ecAvailable
                         }
                         menu.add(0, 3, 3, R.string.trip_menu_share).icon =
                             context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsShare))
@@ -224,17 +305,17 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                             popupMenu.show()
                         }
                     })
-                view.setOnTouchListener { _, event ->
+                itemView.setOnTouchListener { _, event ->
                     gestureDetector.onTouchEvent(event)
                     true
                 }
-                popupView.setOnClickListener {
+                itemBinding.popupButton.setOnClickListener {
                     popupMenu.show()
                 }
             }
 
             // Themes
-            popupView.setImageResource(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsPopupButton))
+            itemBinding.popupButton.setImageResource(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsPopupButton))
         }
     }
 }

@@ -3,6 +3,7 @@
     <string name="mph">mph</string>
     <string name="km">km</string>
     <string name="sec">sec</string>
+    <string name="min">min</string>
     <string name="miles">mi</string>
 
     // Garmin ConnectIQ dialogs
@@ -10,6 +11,7 @@
     <string name="garmin_connectiq_service_unavailable_message">The ConnectIQ service is unavailable.</string>
 
     // Other
+    <string name="today">Today</string>
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
     <string name="error_bluetooth_not_supported">Bluetooth is not supported on your device.</string>

@@ -3,12 +3,10 @@ package com.cooper.wheellog
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.os.Build
 import android.view.*
 import android.widget.TextView
 import androidx.gridlayout.widget.GridLayout
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
@@ -17,7 +15,6 @@ import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
 import com.cooper.wheellog.utils.StringUtil.Companion.inArray
 import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
 import com.cooper.wheellog.views.TripAdapter
-import com.cooper.wheellog.views.TripModel
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -132,7 +129,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             }
             R.layout.main_view_trips -> {
                 listOfTrips = view.findViewById(R.id.list_trips)
-                listOfTrips?.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+                // listOfTrips?.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
                 listOfTrips?.adapter = TripAdapter(activity, FileUtil.fillTrips(activity))
                 // for Tests
                 // val models = arrayListOf(TripModel("title", "desc", "asd"))
