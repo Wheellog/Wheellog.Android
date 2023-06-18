@@ -10,7 +10,7 @@
     <color name="secondary_text">#FFFFFF</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#000000</color>
-    <color name="background">#001233</color>
+    <color name="background">#272E3F</color>
     <color name="navigation_bar">#000000</color>
     <color name="wheelview_text">#BDBDBD</color>
     <color name="wheelview_block">#000000</color>
@@ -22,9 +22,9 @@
     <color name="wheelview_battery_dial">#01BF50</color>
     <color name="wheelview_battery_low_dial">#ffcc00</color>
     <color name="wheelview_temperature_dial">#00ffff</color>
-    <color name="wheelview_arc_dim">#222222</color>
+    <color name="wheelview_arc_dim">#070A10</color>
     <color name="alert_bg">#F2F2F2</color>
-    <color name="settings_bg">#000000</color>
+    <color name="settings_bg">#272E3F</color>
     <color name="splash_status_bar">#000000</color>
 
 </resources>

@@ -29,14 +29,15 @@ import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.Companion.doAsync
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
-import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.time.Year
 import java.util.Locale
+
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var uploadViewVisible: Int = View.VISIBLE
@@ -157,28 +158,55 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                         WheelLog.cResolver().delete(tripModel.uri, null, null)
                     }
                     adapter.removeAt(adapterPosition)
+
+                    CoroutineScope(Dispatchers.IO + Job()).launch {
+                        ElectroClub.instance.dao?.apply {
+                            val tripDb = getTripByFileName(tripModel.fileName)
+                            if (tripDb != null) {
+                                delete(tripDb)
+                            }
+                        }
+                    }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .show()
                 .setBlackIcon()
         }
 
+        private fun toMiles(value: Float): String {
+            return String.format("%.2f", MathsUtil.kmToMiles(value))
+        }
+
+        private fun toKm(value: Float): String {
+            return String.format("%.2f", value)
+        }
+
         private fun setDescFromDb(trip: TripDataDbEntry?) {
             if (trip != null && trip.duration != 0) {
                 val min = context.getString(R.string.min)
-                var descText = if (WheelLog.AppConfig.useMph) {
+                var desc1: String
+                var desc2 = "⌚ ${trip.duration} $min" +
+                        "\n\uD83D\uDE31 ${trip.maxPwm}%"
+                if (WheelLog.AppConfig.useMph) {
                     val mph = context.getString(R.string.mph)
-                    "\uD83D\uDE80 ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeed))} $mph | ♿ ${String.format("%.2f", MathsUtil.kmToMiles(trip.avgSpeed))} $mph" +
-                            "\n\uD83D\uDCE1 ${String.format("%.2f", MathsUtil.kmToMiles(trip.maxSpeedGps))} $mph | ⌚ ${trip.duration} $min"
+                    val miles = context.getString(R.string.miles)
+                    desc1 = "\uD83D\uDE80 ${toMiles(trip.maxSpeed)} $mph" +
+                            "\n\uD83D\uDCE1 ${toMiles(trip.maxSpeedGps)} $mph" +
+                            "\n♿ ${toMiles(trip.avgSpeed)} $mph"
+                    desc2 += "\n\uD83D\uDCCF ${toMiles(trip.distance / 1000.0f)} $miles"
                 } else {
                     val kmh = context.getString(R.string.kmh)
-                    "\uD83D\uDE80 ${String.format("%.2f", trip.maxSpeed)} $kmh    ♿ ${String.format("%.2f", trip.avgSpeed)} $kmh" +
-                            "\n\uD83D\uDCE1 ${String.format("%.2f", trip.maxSpeedGps)} $kmh    ⌚ ${trip.duration} $min"
+                    val km = context.getString(R.string.km)
+                    desc1 = "\uD83D\uDE80 ${toKm(trip.maxSpeed)} $kmh" +
+                            "\n\uD83D\uDCE1 ${toKm(trip.maxSpeedGps)} $kmh" +
+                            "\n♿ ${toKm(trip.avgSpeed)} $kmh"
+                    desc2 += "\n\uD83D\uDCCF ${toKm(trip.distance / 1000.0f)} $km"
                 }
                 if (trip.ecId != 0) {
-                    descText += "\n\uD83C\uDF10 uploaded to electro.club."
+                    desc1 += "\n\uD83C\uDF10 electro.club"
                 }
-                itemBinding.description.text = descText
+                itemBinding.description.text = desc1
+                itemBinding.description2.text = desc2
             }
         }
 
@@ -211,8 +239,14 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         fun bind(tripModel: TripModel, uploadViewVisible: Int, adapter: TripAdapter) {
             itemBinding.name.text = tripModel.title
             itemBinding.name.typeface = font
-            itemBinding.description.text = tripModel.description
-            itemBinding.description.typeface = font
+            itemBinding.description.apply {
+                text = tripModel.description
+                typeface = font
+            }
+            itemBinding.description2.apply {
+                text = ""
+                typeface = font
+            }
             uploadInProgress(false)
 
             var trackIdInEc = -1

@@ -225,6 +225,7 @@ class MapActivity : AppCompatActivity() {
         try {
             trip.apply {
                 duration = ((entriesSpeed.last().x - entriesSpeed.first().x) / 600.0).toInt()
+                trip.distance = geoLine.last().distance - geoLine.first().distance
                 maxSpeedGps = geoLine.maxOf { it.speed }.toFloat()
                 maxCurrent = entriesCurrent.maxOf { it.y }
                 maxPwm = entriesPWM.maxOf { it.y }

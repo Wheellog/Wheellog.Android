@@ -33,6 +33,9 @@ data class TripDataDbEntry(
     var maxPwm: Float = 0f,
     var maxCurrent: Float = 0f,
     var maxPower: Float = 0f,
+    var distance: Int = 0,
+    var consumptionTotal: Float = 0f,
+    var consumptionByKm: Float = 0f,
 
     var additionalJson: String? = null
 )

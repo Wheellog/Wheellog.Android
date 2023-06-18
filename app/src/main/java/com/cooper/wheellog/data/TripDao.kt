@@ -19,7 +19,7 @@ interface TripDao {
     @Insert(entity = TripDataDbEntry::class, onConflict = OnConflictStrategy.IGNORE)
     fun insert(vararg tripDatumTuples: TripDataDbEntry)
 
-    @Update
+    @Update(entity = TripDataDbEntry::class, onConflict = OnConflictStrategy.REPLACE)
     fun update(vararg tripDatumTuples: TripDataDbEntry)
 
     @Delete
