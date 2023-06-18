@@ -25,11 +25,8 @@ object Calculator {
 
     val powerHour: Double
         get() {
-            if (Cached.inCache(CachedFunc.PowerHour.name)) {
+            if (Cached.inCache(CachedFunc.PowerHour.name) || !isActual) {
                 return Cached.getDouble(CachedFunc.PowerHour.name)
-            }
-            if (!isActual) {
-                return 0.0
             }
             removeOldElements()
             val elapsedTime = powerArray.last().first - powerArray.first().first
@@ -41,11 +38,8 @@ object Calculator {
 
     val whByKm: Double
         get() {
-            if (Cached.inCache(CachedFunc.WhByKm.name)) {
+            if (Cached.inCache(CachedFunc.WhByKm.name) || !isActual) {
                 return Cached.getDouble(CachedFunc.WhByKm.name)
-            }
-            if (!isActual) {
-                return 0.0
             }
             val distance = powerArray.last().second - powerArray.first().second
             if (distance == 0) {

@@ -199,8 +199,10 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     val km = context.getString(R.string.km)
                     desc1 = "\uD83D\uDE80 ${toKm(trip.maxSpeed)} $kmh" +
                             "\n\uD83D\uDCE1 ${toKm(trip.maxSpeedGps)} $kmh" +
-                            "\n♿ ${toKm(trip.avgSpeed)} $kmh"
-                    desc2 += "\n\uD83D\uDCCF ${toKm(trip.distance / 1000.0f)} $km"
+                            "\n♿ ${toKm(trip.avgSpeed)} $kmh" +
+                            "\n\uD83D\uDD0C ${toKm(trip.consumptionTotal)} wh"
+                    desc2 += "\n\uD83D\uDCCF ${toKm(trip.distance / 1000.0f)} $km" +
+                            "\n\uD83D\uDD0B ${toKm(trip.consumptionByKm)} wh/km"
                 }
                 if (trip.ecId != 0) {
                     desc1 += "\n\uD83C\uDF10 electro.club"

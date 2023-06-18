@@ -13,6 +13,7 @@ import com.cooper.wheellog.data.TripDao
 import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripDatabase
 import com.cooper.wheellog.databinding.ActivityMapBinding
+import com.cooper.wheellog.utils.Calculator
 import com.cooper.wheellog.utils.LogHeaderEnum
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.github.mikephil.charting.components.YAxis
@@ -232,6 +233,8 @@ class MapActivity : AppCompatActivity() {
                 maxPower = entriesPower.maxOf { it.y }
                 maxSpeed = entriesSpeed.maxOf { it.y }
                 avgSpeed = entriesSpeed.map { it.y }.average().toFloat()
+                consumptionTotal = entriesPower.map { it.y }.average().toFloat() * duration / 36F
+                consumptionByKm = consumptionTotal * 1000F / trip.distance
             }
             dao?.update(trip)
         } catch (ex: Exception) {
