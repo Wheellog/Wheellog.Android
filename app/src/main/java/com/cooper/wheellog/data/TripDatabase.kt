@@ -4,14 +4,28 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [TripDataDbEntry::class], version = 1, exportSchema = false)
+@Database(entities = [TripDataDbEntry::class], version = 2, exportSchema = false)
 abstract class TripDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
 
     companion object {
         @Volatile
         private var INSTANCE: TripDatabase? = null
+
+        private val migration1To2: Migration = object: Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.apply {
+                    execSQL("BEGIN TRANSACTION;")
+                    execSQL("ALTER TABLE `trip_database` ADD COLUMN `distance` INTEGER NOT NULL DEFAULT 0;")
+                    execSQL("ALTER TABLE `trip_database` ADD COLUMN `consumptionTotal` REAL NOT NULL DEFAULT 0;")
+                    execSQL("ALTER TABLE `trip_database` ADD COLUMN `consumptionByKm` REAL NOT NULL DEFAULT 0;")
+                    execSQL("COMMIT;")
+                }
+            }
+        }
 
         fun getDataBase(context: Context): TripDatabase {
             val tempInstance = INSTANCE
@@ -23,7 +37,9 @@ abstract class TripDatabase : RoomDatabase() {
                     context.applicationContext,
                     TripDatabase::class.java,
                     "trip_database"
-                ).build()
+                )
+                    .addMigrations(migration1To2)
+                    .build()
                 INSTANCE = instance
                 return instance
             }
