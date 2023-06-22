@@ -106,7 +106,7 @@ class ThemeManager {
         ajdm[ThemeIconEnum.SettingsWheel] = R.drawable.ajdm_wheel_set
         ajdm[ThemeIconEnum.SettingsTrips] = R.drawable.ajdm_trip
         // trip page
-        original[ThemeIconEnum.TripsPopupButton] = R.drawable.ic_arrow_drop_down_circle_24
+        original[ThemeIconEnum.TripsPopupButton] = R.drawable.ic_baseline_settings_24
         original[ThemeIconEnum.TripsMap] = R.drawable.ic_baseline_map_24
         original[ThemeIconEnum.TripsUpload] = R.drawable.ic_baseline_cloud_upload_24
         original[ThemeIconEnum.TripsShare] = R.drawable.ic_baseline_share_24

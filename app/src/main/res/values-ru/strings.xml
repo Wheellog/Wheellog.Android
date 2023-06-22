@@ -13,6 +13,7 @@
     <string name="distance">Расстояние</string>
     <string name="wheel_distance">Поездка</string>
     <string name="user_distance">Мой пробег</string>
+    <string name="consumption">Потребление</string>
     <string name="ride_time">Время работы</string>
     <string name="riding_time">Время в пути</string>
     <string name="voltage">Напряжение</string>
@@ -215,6 +216,7 @@
     <string name="show_unknown_devices_description">Показывать устройства Bluetooth без имени</string>
     <string name="connect_beep_title">Звук подключения</string>
     <string name="connect_beep_description">Звук подключения к колесу</string>
+    <string name="whkm">Втч/км</string>
     <string name="sec">сек</string>
     <string name="altered_alarms_title">Измененные предупреждения</string>
     <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
