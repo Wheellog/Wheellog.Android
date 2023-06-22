@@ -306,6 +306,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .show()
                     .setBlackIcon()
             }
+            R.string.use_pip_mode -> {
+                findPreference<ListPreference>(getString(R.string.pip_block))?.isVisible = WheelLog.AppConfig.usePipMode
+            }
+            R.string.pip_block -> {
+                findPreference<ListPreference>(getString(R.string.pip_block))?.summary = WheelLog.AppConfig.pipBlock
+            }
             R.string.light_enabled -> wd.updateLight(WheelLog.AppConfig.lightEnabled)
             R.string.led_enabled -> wd.updateLed(WheelLog.AppConfig.ledEnabled)
             R.string.taillight_enabled -> wd.updateTailLight(WheelLog.AppConfig.taillightEnabled)

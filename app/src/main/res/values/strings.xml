@@ -186,6 +186,7 @@
     <string name="use_fahrenheit_description">Show temperature in Fahrenheit rather than Celsius</string>
     <string name="view_blocks_title">Info blocks</string>
     <string name="view_blocks_description">Show info blocks below speedometer</string>
+    <string name="pip_block_title">Pip parameter</string>
     <string name="use_eng_alert_title">Restart required</string>
     <string name="use_eng_alert_description">Please restart the application to apply this change</string>
     <string name="use_better_percents_title">Improved percents</string>
