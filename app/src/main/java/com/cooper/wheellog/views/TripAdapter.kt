@@ -258,17 +258,13 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             var trackIdInEc = -1
             var trip: TripDataDbEntry? = null
             itemView.doAsync({
-                // check upload
-                if (uploadViewVisible == View.VISIBLE) {
-                    trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
-                    trackIdInEc =
-                        if (trip != null && trip!!.ecId > 0) {
-                            trip!!.ecId
-                        }
-                        else {
-                            -1
-                        }
-                }
+                trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                trackIdInEc =
+                    if (uploadViewVisible == View.VISIBLE && trip != null && trip!!.ecId > 0) {
+                        trip!!.ecId
+                    } else {
+                        -1
+                    }
             }) {
                 setDescFromDb(trip)
                 val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
