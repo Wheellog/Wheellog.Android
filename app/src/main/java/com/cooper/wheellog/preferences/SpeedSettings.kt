@@ -181,6 +181,12 @@ class SpeedSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             }
         }
         SwitchPreference(context).apply {
+            key = getString(R.string.show_page_graph)
+            title = getString(R.string.show_page_graph_title)
+            setDefaultValue(WheelLog.AppConfig.pageGraph)
+            ps.addPreference(this)
+        }
+        SwitchPreference(context).apply {
             key = getString(R.string.show_page_events)
             title = getString(R.string.show_page_events_title)
             summary = getString(R.string.show_page_events_description)

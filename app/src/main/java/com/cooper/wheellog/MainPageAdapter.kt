@@ -823,6 +823,11 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (WheelLog.AppConfig.getResId(key)) {
+            R.string.show_page_graph -> if (WheelLog.AppConfig.pageGraph) {
+                addPage(R.layout.main_view_graph, 2)
+            } else {
+                removePage(R.layout.main_view_graph)
+            }
             R.string.show_page_events -> if (WheelLog.AppConfig.pageEvents) {
                 addPage(R.layout.main_view_events)
             } else {

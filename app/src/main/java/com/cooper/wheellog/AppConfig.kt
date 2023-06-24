@@ -107,6 +107,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.current_on_dial, false)
         set(value) = setValue(R.string.current_on_dial, value)
 
+    var pageGraph: Boolean
+        get() = getValue(R.string.show_page_graph, true)
+        set(value) = setValue(R.string.show_page_graph, value)
+
     var pageEvents: Boolean
         get() = getValue(R.string.show_page_events, false)
         set(value) = setValue(R.string.show_page_events, value)

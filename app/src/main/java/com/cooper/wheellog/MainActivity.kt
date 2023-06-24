@@ -523,7 +523,9 @@ class MainActivity : AppCompatActivity() {
         val pages = ArrayList<Int>()
         pages.add(R.layout.main_view_main)
         pages.add(R.layout.main_view_params_list)
-        pages.add(R.layout.main_view_graph)
+        if (WheelLog.AppConfig.pageGraph) {
+            pages.add(R.layout.main_view_graph)
+        }
         if (WheelLog.AppConfig.pageTrips) {
             pages.add(R.layout.main_view_trips)
         }

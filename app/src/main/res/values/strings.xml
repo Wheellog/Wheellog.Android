@@ -416,6 +416,7 @@
     <string name="email">E-mail</string>
     <string name="show_page_events_description">Show the events page</string>
     <string name="show_page_events_title">Events page</string>
+    <string name="show_page_graph_title">Graph page</string>
     <string name="main_view_category">Main view</string>
     <string name="beep_category">Beep</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
