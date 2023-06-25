@@ -151,6 +151,7 @@
 
 
     <string name="view_blocks_string" translatable="false">view_blocks_string</string>
+    <string name="show_page_graph" translatable="false">show_page_graph</string>
     <string name="show_page_events" translatable="false">show_page_events</string>
     <string name="notification_buttons" translatable="false">notification_buttons</string>
     <string name="miband_mode" translatable="false">miband_mode</string>
