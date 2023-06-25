@@ -24,6 +24,7 @@ import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.data.TripDataDbEntry
+import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ListTripItemBinding
 import com.cooper.wheellog.map.MapActivity
 import com.cooper.wheellog.utils.SomeUtil.doAsync
@@ -265,6 +266,10 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     } else {
                         -1
                     }
+                if (trip == null) {
+                    TripParser.parseFile(context, tripModel.fileName, tripModel.mediaId, tripModel.uri)
+                    trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                }
             }) {
                 setDescFromDb(trip)
                 val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
