@@ -32,7 +32,7 @@ import com.cooper.wheellog.presentation.preferences.MultiSelectPreferenceDialogF
 import com.cooper.wheellog.presentation.preferences.SeekBarPreference
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
-import com.cooper.wheellog.utils.SomeUtil.Companion.getDrawableEx
+import com.cooper.wheellog.utils.SomeUtil.getDrawableEx
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.yandex.metrica.YandexMetrica
 import timber.log.Timber
@@ -305,6 +305,12 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .show()
                     .setBlackIcon()
+            }
+            R.string.use_pip_mode -> {
+                findPreference<ListPreference>(getString(R.string.pip_block))?.isVisible = WheelLog.AppConfig.usePipMode
+            }
+            R.string.pip_block -> {
+                findPreference<ListPreference>(getString(R.string.pip_block))?.summary = WheelLog.AppConfig.pipBlock
             }
             R.string.light_enabled -> wd.updateLight(WheelLog.AppConfig.lightEnabled)
             R.string.led_enabled -> wd.updateLed(WheelLog.AppConfig.ledEnabled)

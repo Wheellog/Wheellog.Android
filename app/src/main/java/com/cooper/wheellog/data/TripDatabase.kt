@@ -27,6 +27,18 @@ abstract class TripDatabase : RoomDatabase() {
             }
         }
 
+        private val migration2To1: Migration = object: Migration(2, 1) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.apply {
+                    execSQL("BEGIN TRANSACTION;")
+                    execSQL("ALTER TABLE `trip_database` DROP COLUMN `distance`;")
+                    execSQL("ALTER TABLE `trip_database` DROP COLUMN `consumptionTotal`;")
+                    execSQL("ALTER TABLE `trip_database` DROP COLUMN `consumptionByKm`;")
+                    execSQL("COMMIT;")
+                }
+            }
+        }
+
         fun getDataBase(context: Context): TripDatabase {
             val tempInstance = INSTANCE
             if (tempInstance != null) {
@@ -38,7 +50,7 @@ abstract class TripDatabase : RoomDatabase() {
                     TripDatabase::class.java,
                     "trip_database"
                 )
-                    .addMigrations(migration1To2)
+                    .addMigrations(migration1To2, migration2To1)
                     .build()
                 INSTANCE = instance
                 return instance

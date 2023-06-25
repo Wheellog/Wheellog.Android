@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
+import android.text.format.DateUtils
 import android.view.ContextThemeWrapper
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -23,10 +24,11 @@ import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.data.TripDataDbEntry
+import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ListTripItemBinding
 import com.cooper.wheellog.map.MapActivity
+import com.cooper.wheellog.utils.SomeUtil.doAsync
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.doAsync
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
@@ -185,8 +187,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             if (trip != null && trip.duration != 0) {
                 val min = context.getString(R.string.min)
                 var desc1: String
-                var desc2 = "⌚ ${trip.duration} $min" +
-                        "\n\uD83D\uDE31 ${trip.maxPwm}%"
+                var desc2 = "⌚ ${trip.duration} $min"
                 if (WheelLog.AppConfig.useMph) {
                     val mph = context.getString(R.string.mph)
                     val miles = context.getString(R.string.miles)
@@ -202,9 +203,12 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                             "\n♿ ${toKm(trip.avgSpeed)} $kmh"
                     desc2 += "\n\uD83D\uDCCF ${toKm(trip.distance / 1000.0f)} $km"
                 }
+                desc1 += "\n\uD83D\uDE31 ${trip.maxPwm}%"
                 if (trip.ecId != 0) {
                     desc1 += "\n\uD83C\uDF10 electro.club"
                 }
+                desc2 += "\n⚡ ${toKm(trip.consumptionTotal)} ${context.getString(R.string.watt)}" +
+                            "\n\uD83D\uDD0B ${toKm(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
                 itemBinding.description.text = desc1
                 itemBinding.description2.text = desc2
             }
@@ -217,8 +221,10 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 val now = System.currentTimeMillis()
                 var skeleton = "MMMM dd, HH:mm"
                 if (dateTime != null) {
-                    if (now - dateTime.time < 72_000_000) { // 20 hours
-                        itemBinding.name.text = itemBinding.name.context.getText(R.string.today)
+                    if (DateUtils.isToday(dateTime.time)) {
+                        val text = itemBinding.name.context.getText(R.string.today).toString() +
+                                SimpleDateFormat(", EEE, HH:mm", Locale.getDefault()).format(dateTime)
+                        itemBinding.name.text = text
                     } else if (now - dateTime.time < 604_800_000) { // current week
                         itemBinding.name.text = SimpleDateFormat("EEEE, HH:mm", Locale.getDefault()).format(dateTime)
                     } else {
@@ -248,20 +254,23 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 typeface = font
             }
             uploadInProgress(false)
+            setFriendlyName()
 
             var trackIdInEc = -1
             var trip: TripDataDbEntry? = null
             itemView.doAsync({
-                // check upload
-                if (uploadViewVisible == View.VISIBLE) {
+                trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                trackIdInEc =
+                    if (uploadViewVisible == View.VISIBLE && trip != null && trip!!.ecId > 0) {
+                        trip!!.ecId
+                    } else {
+                        -1
+                    }
+                if (trip == null) {
+                    TripParser.parseFile(context, tripModel.fileName, tripModel.mediaId, tripModel.uri)
                     trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
-                    trackIdInEc =
-                        if (trip != null && trip!!.ecId > 0)
-                            trip!!.ecId
-                        else -1
                 }
             }) {
-                setFriendlyName()
                 setDescFromDb(trip)
                 val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
                 val ecAvailable = WheelLog.AppConfig.ecToken != null

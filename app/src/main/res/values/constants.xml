@@ -149,7 +149,7 @@
     <string name="profile_name" translatable="false">profile_name</string>
     <string name="about" translatable="false">about</string>
 
-
+    <string name="pip_block" translatable="false">pip_block</string>
     <string name="view_blocks_string" translatable="false">view_blocks_string</string>
     <string name="show_page_graph" translatable="false">show_page_graph</string>
     <string name="show_page_events" translatable="false">show_page_events</string>

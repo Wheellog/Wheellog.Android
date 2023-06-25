@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.SomeUtil.Companion.getColorEx
-import com.cooper.wheellog.utils.StringUtil.Companion.inArray
-import com.cooper.wheellog.utils.StringUtil.Companion.toTempString
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.utils.StringUtil.inArray
+import com.cooper.wheellog.utils.StringUtil.toTempString
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart

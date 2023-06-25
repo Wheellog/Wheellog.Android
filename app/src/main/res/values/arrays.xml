@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string-array name="modes">
         <item>@string/mode_play</item>
         <item>@string/mode_ride</item>
@@ -117,7 +117,7 @@
     </string-array>
 
     <string-array name="led_mode_nb">
-        <item>@string/off</item>
+        <item tools:ignore="PrivateResource">@string/off</item>
         <item>@string/led_type1</item>
         <item>@string/led_type2</item>
         <item>@string/led_type3</item>
@@ -193,6 +193,7 @@
         <item>@string/wheel_distance</item>
         <item>@string/remaining_distance</item>
         <item>@string/battery_per_km</item>
+        <item>@string/consumption</item>
         <item>@string/avg_cell_volt</item>
         <item>@string/user_distance</item>
         <item>@string/speed</item>

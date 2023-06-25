@@ -781,6 +781,7 @@ public class WheelData {
     public void setPower(int value) {
         mPower = value;
         setMaxPower(value);
+        Calculator.INSTANCE.pushPower(getPowerDouble(), getDistance());
     }
 
     public double getCurrentDouble() {
@@ -1175,7 +1176,7 @@ public class WheelData {
         }
         Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
-        String text = StringUtil.Companion.getRawTextResource(mContext, servicesResId);
+        String text = StringUtil.getRawTextResource(mContext, servicesResId);
         if (mBluetoothService == null) {
             Timber.wtf("[error] BluetoothService is null. The wheel could not be detected.");
             return false;

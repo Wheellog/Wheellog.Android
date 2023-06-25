@@ -46,8 +46,8 @@ import com.cooper.wheellog.utils.PermissionsUtil.checkBlePermissions
 import com.cooper.wheellog.utils.PermissionsUtil.checkExternalFilePermission
 import com.cooper.wheellog.utils.PermissionsUtil.checkNotificationsPermissions
 import com.cooper.wheellog.utils.PermissionsUtil.isMaxBleReq
-import com.cooper.wheellog.utils.SomeUtil.Companion.getSerializable
-import com.cooper.wheellog.utils.SomeUtil.Companion.playBeep
+import com.cooper.wheellog.utils.SomeUtil.getSerializable
+import com.cooper.wheellog.utils.SomeUtil.playBeep
 import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
@@ -152,7 +152,10 @@ class MainActivity : AppCompatActivity() {
         if (WheelLog.AppConfig.usePipMode
             && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
             && !this.isInPictureInPictureMode) {
-            speedModel.title = getString(R.string.speed)
+            when (WheelLog.AppConfig.pipBlock) {
+                getString(R.string.consumption) -> speedModel.title = getString(R.string.consumption)
+                else -> speedModel.title = getString(R.string.speed)
+            }
             this.enterPictureInPictureMode(
                 PictureInPictureParams.Builder()
                     .setAspectRatio(Rational(16, 9))
@@ -286,7 +289,10 @@ class MainActivity : AppCompatActivity() {
                     Timber.i("Wheel type switched")
                 }
                 Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
-                    speedModel.value.value = WheelData.getInstance().speed / 10f
+                    when (WheelLog.AppConfig.pipBlock) {
+                        getString(R.string.consumption) -> speedModel.value.value = Calculator.whByKm.toFloat()
+                        else -> speedModel.value.value = WheelData.getInstance().speed / 10f
+                    }
                     pipView.invalidate()
                 }
             }

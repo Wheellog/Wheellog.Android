@@ -87,6 +87,9 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_pip_mode, true)
         set(value) = setValue(R.string.use_pip_mode, value)
 
+    val pipBlock: String
+        get() = getValue(R.string.pip_block, "")
+
     private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)
         set(value) = setValue(R.string.notification_buttons, value)
