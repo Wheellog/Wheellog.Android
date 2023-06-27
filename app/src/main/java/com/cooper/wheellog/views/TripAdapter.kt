@@ -266,7 +266,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     } else {
                         -1
                     }
-                if (trip == null) {
+                if (trip == null || trip?.duration == 0) {
                     TripParser.parseFile(context, tripModel.fileName, tripModel.mediaId, tripModel.uri)
                     trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
                 }
