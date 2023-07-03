@@ -7,6 +7,7 @@
     <string name="miles">"마일"</string>
     <string name="garmin_connectiq_missing_app_message">"WheelLog 앱에서 사용할 이 어플리케이션이 ConnectIQ 장치에 설치되지 않았습니다. 위젯을 설치한 뒤 다시 시도하세요."</string>
     <string name="garmin_connectiq_service_unavailable_message">"ConnectIQ 서비스를 사용할 수 없습니다"</string>
+    <string name="today">오늘</string>
     <string name="unknown_device">"알 수 없는 장치"</string>
     <string name="ble_not_supported">"저전력 블루투스가 지원되지 않습니다"</string>
     <string name="error_bluetooth_not_supported">"블루투스를 지원하지 않는 장치입니다."</string>
@@ -55,10 +56,11 @@
     <string name="distance">"거리"</string>
     <string name="wheel_distance">"휠 거리"</string>
     <string name="user_distance">"사용자 거리"</string>
+    <string name="consumption">소비</string>
     <string name="ride_time">"여행 시간"</string>
     <string name="riding_time">"라이딩 시간"</string>
     <string name="voltage">"전압"</string>
-    <string name="voltage_sag"></string>
+    <string name="voltage_sag">전압 처짐</string>
     <string name="current">"전류"</string>
 
     <!-- Fuzzy -->
@@ -67,8 +69,9 @@
 
     <!-- Fuzzy -->
     <string name="temperature2">"2차 온도"</string>
+    <string name="maxtemperature">최대 온도</string>
     <string name="pwm"></string>
-    <string name="max_pwm"></string>
+    <string name="max_pwm">최대 PWM</string>
 
     <!-- Fuzzy -->
     <string name="angle">"앞뒤 기울기"</string>
@@ -101,6 +104,7 @@
 
     <!-- Fuzzy -->
     <string name="icon_connection">"연결 아이콘"</string>
+    <string name="icon_beep">경고음</string>
     <string name="connection_lost_at">"초 전 연결 끊김"</string>
     <string name="enable_auto_upload_title">"자동 업로드를 활성화합니까?"</string>
     <string name="enable_auto_upload_descriprion">"WiFi 연결 없이 자동 업로드를 할 경우 모바일 데이터를 사용하게 됩니다. 데이터 요금제가 없다면, 이로 인해 네트워크 제공자가 당신에게 과금할 수도 있습니다."</string>
@@ -123,7 +127,7 @@
 
     <!-- Fuzzy -->
     <string name="horn_mode_description">"Pebble 워치의 선택 버튼을 누르면 실행됩니다"</string>
-    <string name="tilt_back_description"></string>
+    <string name="tilt_back_description">페달 드는 속도</string>
     <string name="max_speed_title">"휠 속도 제한"</string>
     <string name="alert1_title">"1차 속도 경고"</string>
     <string name="alert2_title">"2차 속도 경고"</string>
@@ -180,10 +184,16 @@
 
     <!-- Fuzzy -->
     <string name="newton">"N*m"</string>
+    <string name="max_speed_dial_title">외부 스케일의 상한</string>
+    <string name="max_speed_dial_description">외부 스케일의 최대 값(속도 또는 전류)</string>
+    <string name="measurement_systems_category_title">측정 시스템</string>
     <string name="use_mph_title">"MPH 사용"</string>
     <string name="use_mph_description">"킬로미터가 아니라 마일로 속도를 표기합니다"</string>
+    <string name="use_fahrenheit_title">화씨 사용</string>
+    <string name="use_fahrenheit_description">섭씨 대신 화씨로 온도 표시</string>
     <string name="view_blocks_title">"정보 블록"</string>
     <string name="view_blocks_description">"속도계 아래에 정보 블록을 표시합니다"</string>
+    <string name="pip_block_title">픽처 인 픽처 매개 변수</string>
     <string name="use_eng_alert_title">"재시작 필요"</string>
     <string name="use_eng_alert_description">"앱에 언어 변경 사항을 적용하려면 재시작을 해 주세요"</string>
 
@@ -202,12 +212,12 @@
     <string name="cell_voltage_tiltback_description"></string>
     <string name="use_pip_mode_title">"화면 속 화면 모드 활성화"</string>
     <string name="use_pip_mode_description">"백그라운드가 아니라 화면 속 화면 모드로 돌아가도록 합니다"</string>
-    <string name="current_on_dial_title"></string>
-    <string name="current_on_dial_description"></string>
+    <string name="current_on_dial_title">주요 규모의 전류</string>
+    <string name="current_on_dial_description">대신 속도의 메인 스케일에 전류를 그립니다(속도는 숫자로 유지됩니다)</string>
     <string name="connection_sound_title">"연결음"</string>
     <string name="connection_sound_description">"휠이 연결되거나 끊어질 때 소리를 재생합니다"</string>
     <string name="no_connection_sound_title">"연결 끊김 비프음 간격"</string>
-    <string name="no_connection_sound_description"></string>
+    <string name="no_connection_sound_description">알림 기간,0-비활성화</string>
     <string name="use_stop_music_title">"자동 음소거"</string>
     <string name="use_stop_music_description">"속도가 3.5 km/h 미만이면 자동으로 음소거합니다"</string>
     <string name="battery_capacity_title">"배터리 용량"</string>
@@ -239,9 +249,9 @@
 
     <!-- Fuzzy -->
     <string name="rotation_speed_description">"당신의 휠의 회전 속도 (들어올렸을 때) 입니다"</string>
-    <string name="rotation_voltage_title"></string>
-    <string name="rotation_voltage_description"></string>
-    <string name="power_factor_title"></string>
+    <string name="rotation_voltage_title">승진 의 긴장</string>
+    <string name="rotation_voltage_description">승진의 속도가 측정된 전압</string>
+    <string name="power_factor_title">동력 인자</string>
     <string name="power_factor_description">"무엇인지 모른다면 변경하지 마십시오. 기본값=90"</string>
     <string name="alarm_factor1_title"></string>
     <string name="alarm_factor1_description"></string>
@@ -288,6 +298,7 @@
     <!-- Fuzzy -->
     <string name="auto_upload_log_ec_title">"electro.club에 업로드"</string>
     <string name="auto_upload_log_ec_description">"electro.club 사이트에 기록을 자동으로 업로드합니다. GPS가 반드시 켜져 있어야 합니다."</string>
+    <string name="select_garage_ec_title">electro.club 전송 선택</string>
     <string name="auto_upload_log_title">"기록 자동 업로드"</string>
     <string name="auto_upload_log_description">"Google Drive에 기록을 자동으로 업로드합니다"</string>
     <string name="log_location_title">"위치 기록"</string>

@@ -53,6 +53,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         uploadVisible = WheelLog.AppConfig.autoUploadEc
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateTrips(tripModels: ArrayList<TripModel>) {
         this.tripModels = tripModels
         notifyDataSetChanged()
@@ -83,10 +84,10 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root) {
         private val context = itemBinding.root.context
 
-        private fun uploadInProgress(inProgress: Boolean) {
+//        private fun uploadInProgress(inProgress: Boolean) {
 //            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
 //            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
-        }
+//        }
 
         private fun showMap(tripModel: TripModel) {
             startActivity(context, Intent(context, MapActivity::class.java).apply {
@@ -100,7 +101,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         }
 
         private fun uploadToEc(tripModel: TripModel) {
-            uploadInProgress(true)
+//            uploadInProgress(true)
             val inputStream: InputStream? =
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     // Android 9 or less
@@ -111,14 +112,14 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 }
             if (inputStream == null) {
                 Timber.i("Failed to create inputStream for %s", tripModel.title)
-                uploadInProgress(false)
+//                uploadInProgress(false)
             } else {
                 val data = ByteStreams.toByteArray(inputStream)
                 inputStream.close()
-                ElectroClub.instance.uploadTrack(data, tripModel.title, false) { success ->
-                    MainScope().launch {
-                        uploadInProgress(false)
-                    }
+                ElectroClub.instance.uploadTrack(data, tripModel.title, false) {
+//                    MainScope().launch {
+//                        uploadInProgress(false)
+//                    }
                 }
             }
         }
@@ -207,7 +208,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 if (trip.ecId != 0) {
                     desc1 += "\n\uD83C\uDF10 electro.club"
                 }
-                desc2 += "\n⚡ ${toKm(trip.consumptionTotal)} ${context.getString(R.string.watt)}" +
+                desc2 += "\n⚡ ${toKm(trip.consumptionTotal)} ${context.getString(R.string.wh)}" +
                             "\n\uD83D\uDD0B ${toKm(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
                 itemBinding.description.text = desc1
                 itemBinding.description2.text = desc2
@@ -253,7 +254,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 text = ""
                 typeface = font
             }
-            uploadInProgress(false)
+//            uploadInProgress(false)
             setFriendlyName()
 
             var trackIdInEc = -1
