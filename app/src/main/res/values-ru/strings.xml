@@ -200,6 +200,7 @@
     <string name="cell_voltage_tiltback_title">Напряжение подъёма педалей</string>
     <string name="cell_voltage_tiltback_description">Напряжение на 1 ячейку, при котором колесо поднимает педали</string>
     <string name="use_eng_alert_description">Пожалуйста перезапустите устройство чтобы эта настройка применилась</string>
+    <string name="pip_block_title">PIP параметр</string>
     <string name="use_eng_alert_title">Необходим перезапуск</string>
     <string name="use_pip_mode_description">Переходить в режим картинка-в-картинке вместо сворачивания</string>
     <string name="use_pip_mode_title">Картинка-в-Картинке</string>
@@ -490,4 +491,5 @@
     <string name="error_parsing_log">Что-то пошло не так при парсинге файла.</string>
     <string name="min">мин</string>
     <string name="today">Сегодня</string>
+    <string name="wh">Втч</string>
 </resources>
