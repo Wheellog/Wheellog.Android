@@ -606,6 +606,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun getBlockIndexBy(x: Float, y: Float): Int {
+        if (boxRects.size != mViewBlocks.size) {
+            return -1
+        }
         for ((i, box) in boxRects.withIndex()) {
             if (box != null && box.contains(x, y))
                 return i
