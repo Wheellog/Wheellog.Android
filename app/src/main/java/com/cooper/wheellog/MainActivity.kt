@@ -27,7 +27,6 @@ import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.whenStateAtLeast
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.cooper.wheellog.BluetoothService.LocalBinder
@@ -35,7 +34,6 @@ import com.cooper.wheellog.DialogHelper.checkAndShowPrivatePolicyDialog
 import com.cooper.wheellog.DialogHelper.checkBatteryOptimizationsAndShowAlert
 import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
 import com.cooper.wheellog.companion.WearOs
-import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
 import com.cooper.wheellog.databinding.ActivityMainBinding
 import com.cooper.wheellog.utils.*
@@ -52,9 +50,7 @@ import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
 import com.yandex.metrica.YandexMetrica
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -388,7 +384,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     if (!LoggingService.isInstanceCreated() &&
                         WheelLog.AppConfig.startAutoLoggingWhenIsMoving &&
-                        WheelLog.AppConfig.autoLog && WheelData.getInstance().speedDouble > 3.5
+                        WheelLog.AppConfig.autoLog && WheelData.getInstance().speedDouble > 7
                     ) {
                         toggleLoggingService()
                     }
