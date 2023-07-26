@@ -109,6 +109,10 @@ object TripParser {
             val last = resultList.last()
             trip.apply {
                 duration = ((last.time - first.time) / 600.0).toInt()
+                if (duration < 0) {
+                    // +24 hours in minutes
+                    duration += 1440
+                }
                 distance = resultList.maxOf { it.distance } - first.distance
                 maxSpeedGps = resultList.maxOf { it.speedGps }.toFloat()
                 maxCurrent = resultList.maxOf { it.current }.toFloat()
