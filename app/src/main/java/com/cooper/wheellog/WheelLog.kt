@@ -15,9 +15,9 @@ class WheelLog : Application() {
     override fun onCreate() {
         super.onCreate()
         me = this
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree(), FileLoggingTree(applicationContext))
-        }
+//        if (BuildConfig.DEBUG) {
+//            Timber.plant(Timber.DebugTree(), FileLoggingTree(applicationContext))
+//        }
 
         WheelData.initiate()
 

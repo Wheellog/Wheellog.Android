@@ -5,14 +5,23 @@
     android:layout_gravity="start"
     android:orientation="vertical"
     android:background="@color/settings_bg">
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/pref_settings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" />
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/preference_toolbar"
         android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleTextColor="@android:color/white" />
+        app:titleTextColor="@android:color/white"
+        android:visibility="gone"
+        />
+
     <FrameLayout
         android:id="@+id/settings_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 </LinearLayout>
