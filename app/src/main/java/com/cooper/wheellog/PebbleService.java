@@ -21,6 +21,8 @@ import timber.log.Timber;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.DETAILS;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.GUI;
 
+import androidx.core.content.ContextCompat;
+
 public class PebbleService extends Service {
 
     private static final UUID APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
@@ -243,7 +245,13 @@ public class PebbleService extends Service {
         intentFilter.addAction(Constants.ACTION_PEBBLE_APP_READY);
         intentFilter.addAction(Constants.ACTION_PEBBLE_APP_SCREEN);
         intentFilter.addAction(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED);
-        registerReceiver(mBroadcastReceiver, intentFilter);
+
+        ContextCompat.registerReceiver(
+                getApplicationContext(),
+                mBroadcastReceiver,
+                intentFilter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
 
         Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
                 .putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true);

@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
     buildToolsVersion '30.0.3'
 
     defaultConfig {
         applicationId "com.cooper.wheellog"
         minSdkVersion 24
-        targetSdkVersion 33
+        targetSdk 33
         versionCode 103
         versionName "1.0.8b"
         multiDexEnabled true

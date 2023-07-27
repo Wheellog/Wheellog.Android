@@ -8,7 +8,7 @@ repositories {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     signingConfigs {
         debug {
@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId "com.cooper.wheellog"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 110
         versionName "3.0.10b"
         buildConfigField 'String', 'BUILD_TIME', "\"" + new Date().format('HH:mm dd.MM.yyyy') + "\""

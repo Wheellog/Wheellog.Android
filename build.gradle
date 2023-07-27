@@ -4,7 +4,7 @@ buildscript {
     ext.kotlin_version = '1.8.10'
     ext.compose_version = '1.4.3'
     ext.lifecycle_version = '2.6.1'
-    ext.room_version = '2.5.1'
+    ext.room_version = '2.5.2'
     ext.material_version = '1.9.0'
     ext.appcompact_version = '1.6.1'
     ext.core_ktx_version = '1.10.1'
