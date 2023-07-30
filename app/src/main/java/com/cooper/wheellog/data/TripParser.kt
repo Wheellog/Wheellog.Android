@@ -113,7 +113,7 @@ object TripParser {
                     // +24 hours in minutes
                     duration += 1440
                 }
-                distance = resultList.maxOf { it.distance } - first.distance
+                distance = last.distance
                 maxSpeedGps = resultList.maxOf { it.speedGps }.toFloat()
                 maxCurrent = resultList.maxOf { it.current }.toFloat()
                 maxPwm = resultList.maxOf { it.pwm }.toFloat()
