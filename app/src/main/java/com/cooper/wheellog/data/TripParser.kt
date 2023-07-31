@@ -86,7 +86,8 @@ object TripParser {
                     speedGps = row[header[LogHeaderEnum.GPS_SPEED]!!].toDoubleOrNull() ?: 0.0,
                     temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0,
                     pwm = row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0,
-                    distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0
+                    distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0,
+                    totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toIntOrNull() ?: 0
                 )
                 resultList.add(logTick)
             }
@@ -113,15 +114,45 @@ object TripParser {
                     // +24 hours in minutes
                     duration += 1440
                 }
-                distance = last.distance
+                var timeToExclude = 0f
+                var beforeTime = first.time // 1/10 sec
+                var firstTotalDistance = 0
+                var maxTotalDistance = 0
+                resultList.forEach {
+                    // If time between ticks more than 1 sec, we need to exclude this time
+                    val timeBetween = it.time - beforeTime
+                    if (timeBetween > 10) {
+                        timeToExclude += timeBetween
+                    } else if (timeBetween < 0) { // next day tick
+                        // +24 hours in 1/10 sec
+                        timeToExclude -= 8640000
+                    }
+                    beforeTime = it.time
+
+                    if (firstTotalDistance == 0 && it.totalDistance > 0) {
+                        firstTotalDistance = it.totalDistance
+                    }
+                    if (it.totalDistance > maxTotalDistance) {
+                        maxTotalDistance = it.totalDistance
+                    }
+                }
+
+                val logDuration = (last.time - first.time - timeToExclude) / 600
+                distance = maxTotalDistance - firstTotalDistance
                 maxSpeedGps = resultList.maxOf { it.speedGps }.toFloat()
                 maxCurrent = resultList.maxOf { it.current }.toFloat()
                 maxPwm = resultList.maxOf { it.pwm }.toFloat()
-                maxPower = resultList.maxOf { it.power }.toFloat()
-                maxSpeed = resultList.maxOf { it.speed }.toFloat()
-                avgSpeed = resultList.map { it.speed }.average().toFloat()
-                consumptionTotal = resultList.map { it.power }.average().toFloat() * duration / 36F
-                consumptionByKm = consumptionTotal * 1000F / distance
+                val powers = resultList.map { it.power }
+                maxPower = powers.max().toFloat()
+                val speeds = resultList.map { it.speed }
+                maxSpeed = speeds.max().toFloat()
+                avgSpeed = speeds.average().toFloat()
+                consumptionTotal = powers.average().toFloat() * logDuration / 60F
+                consumptionByKm = if (distance > 0) {
+                    consumptionTotal * 1000F / distance
+                } else {
+                    0F
+                }
             }
             dao.update(trip)
         } catch (ex: Exception) {

@@ -18,6 +18,9 @@ data class TripDataDbEntry(
     var mac: String = "",
     var profileName: String = "",
     var start: Int = 0,
+    /**
+     * Duration in minutes
+     */
     var duration: Int = 0,
 
     var ecId: Int = 0,
