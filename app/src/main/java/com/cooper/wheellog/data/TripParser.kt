@@ -113,6 +113,23 @@ object TripParser {
                     // +24 hours in minutes
                     duration += 1440
                 }
+                // We expected about 3 ticks per minute, if less, we need to recalculate duration
+                if (resultList.size / 3 < duration) {
+                    var timeToExclude = 0f
+                    var beforeTime = first.time // 1/10 sec
+                    resultList.forEach {
+                        // If time between ticks more than 10 sec, we need to exclude this time
+                        val timeBetween = it.time - beforeTime
+                        if (timeBetween > 100) {
+                            timeToExclude += timeBetween
+                        } else if (timeBetween < 0) { // next day tick
+                            // +24 hours in 1/10 sec
+                            timeToExclude -= 8640000
+                        }
+                        beforeTime = it.time
+                    }
+                    duration = ((last.time - first.time - timeToExclude) / 600).toInt()
+                }
                 distance = last.distance
                 maxSpeedGps = resultList.maxOf { it.speedGps }.toFloat()
                 maxCurrent = resultList.maxOf { it.current }.toFloat()
@@ -120,7 +137,7 @@ object TripParser {
                 maxPower = resultList.maxOf { it.power }.toFloat()
                 maxSpeed = resultList.maxOf { it.speed }.toFloat()
                 avgSpeed = resultList.map { it.speed }.average().toFloat()
-                consumptionTotal = resultList.map { it.power }.average().toFloat() * duration / 36F
+                consumptionTotal = resultList.map { it.power }.average().toFloat() * duration / 60F
                 consumptionByKm = consumptionTotal * 1000F / distance
             }
             dao.update(trip)
