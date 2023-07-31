@@ -43,6 +43,11 @@ object TripParser {
             Timber.wtf(lastErrorValue)
             return emptyList()
         }
+        return parseFile(context, fileName, inputStream)
+    }
+
+    fun parseFile(context: Context, fileName: String, inputStream: InputStream?): List<LogTick> {
+        lastErrorValue = null
         if (inputStream == null) {
             lastErrorValue = context.getString(R.string.error_inputstream_null)
             Timber.wtf(lastErrorValue)
@@ -120,12 +125,10 @@ object TripParser {
                 var maxTotalDistance = 0
                 resultList.forEach {
                     // If time between ticks more than 1 sec, we need to exclude this time
+                    // or if time between ticks more than -1 hour (360 sec) next day ticks will be excluded
                     val timeBetween = it.time - beforeTime
-                    if (timeBetween > 10) {
+                    if (-3600_0 > timeBetween || timeBetween > 10) {
                         timeToExclude += timeBetween
-                    } else if (timeBetween < 0) { // next day tick
-                        // +24 hours in 1/10 sec
-                        timeToExclude -= 8640000
                     }
                     beforeTime = it.time
 
