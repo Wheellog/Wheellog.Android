@@ -136,6 +136,7 @@ object TripParser {
                         maxTotalDistance = it.totalDistance
                     }
                 }
+
                 val logDuration = (last.time - first.time - timeToExclude) / 600
                 distance = maxTotalDistance - firstTotalDistance
                 maxSpeedGps = resultList.maxOf { it.speedGps }.toFloat()
