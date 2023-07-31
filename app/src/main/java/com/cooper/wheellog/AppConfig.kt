@@ -32,7 +32,11 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_eng, false)
         set(value) = setValue(R.string.use_eng, value)
 
-    var appTheme: Int
+    var appThemeInt: Int
+        get() = getValue(R.string.app_theme, ThemeEnum.Original.value.toString()).toInt()
+        set(value) = setValue(R.string.app_theme, value.toString())
+
+    val appTheme: Int
         get() {
             val stringVal = getValue(R.string.app_theme, ThemeEnum.Original.value.toString())
             return when (ThemeEnum.fromInt(stringVal.toInt())) {
@@ -40,7 +44,6 @@ class AppConfig(var context: Context) {
                 else -> R.style.OriginalTheme
             }
         }
-        set(value) = setValue(R.string.app_theme, value.toString())
 
     var dayNightThemeMode: Int
         get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED.toString()).toInt()
@@ -87,8 +90,9 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_pip_mode, true)
         set(value) = setValue(R.string.use_pip_mode, value)
 
-    val pipBlock: String
+    var pipBlock: String
         get() = getValue(R.string.pip_block, "")
+        set(value) = setValue(R.string.pip_block, value)
 
     private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)

@@ -1,13 +1,12 @@
 package com.cooper.wheellog.preferences
 
+import android.content.Context
 import androidx.annotation.*
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,91 +18,128 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.cooper.wheellog.AppConfig
+import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
-import kotlin.math.roundToInt
 
 @Composable
-private fun IconWithName(
+private fun baseSettings(
     @StringRes name: Int,
-    icon: ThemeIconEnum? = null,
-    @StringRes desc: Int = 0,
+    @StringRes desc: Int,
+    themeIcon: ThemeIconEnum? = null,
+    rightContent: @Composable BoxScope.() -> Unit = { },
+    bottomContent: @Composable (BoxScope.() -> Unit)? = null
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        if (icon != null) {
-            var offsetX by remember { mutableStateOf(0f) }
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = 16.dp,
+            )
+    ) {
+        val (rightControl, bottomControl, icon, title, subtext) = createRefs()
+        if (themeIcon != null) {
             Icon(
-                painterResource(id = WheelLog.ThemeManager.getId(icon)),
+                painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
                 contentDescription = "",
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(40.dp)
-                    .padding(start = 0.dp,
-                        end = 16.dp,
-                        top = 0.dp,
-                        bottom = 0.dp,
-                    )
-                    .offset { IntOffset(offsetX.roundToInt(), 0) }
-                    .draggable(
-                        orientation = Orientation.Horizontal,
-                        state = rememberDraggableState { delta ->
-                            offsetX += delta
-                        }
-                    )
+                modifier = Modifier
+                    .width((24+16).dp)
+                    .height(24.dp)
+                    .padding(end = 16.dp)
+                    .constrainAs(icon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(subtext.bottom)
+                        start.linkTo(parent.start)
+                    }
+            )
+        } else {
+            Spacer(
+                modifier = Modifier
+                    .size(8.dp)
+                    .constrainAs(icon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(subtext.bottom)
+                        start.linkTo(parent.start)
+                    }
             )
         }
-        Row (
-            verticalAlignment = Alignment.CenterVertically
-                ) {
+        Text(
+            text = stringResource(id = name),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.primary
+            ),
+            textAlign = TextAlign.Start,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(icon.end)
+                top.linkTo(parent.top)
+                end.linkTo(rightControl.start, 8.dp)
+                width = Dimension.fillToConstraints
+            }
+        )
+        if (desc != 0) {
             Text(
-                text = stringResource(id = name),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.primary
-                ),
+                text = stringResource(id = desc),
+                style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.constrainAs(subtext) {
+                    start.linkTo(title.start)
+                    top.linkTo(title.bottom, 8.dp)
+                    end.linkTo(title.end)
+                    width = Dimension.fillToConstraints
+                },
             )
-            if (desc != 0) {
-                Text(
-                    text = stringResource(id = desc),
-                    modifier = Modifier.padding(top = 0.dp).weight(1f),
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.primary
-                    ),
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis,
-                )
+        } else {
+            Spacer(
+                modifier = Modifier
+                    .constrainAs(subtext) {
+                        start.linkTo(title.start)
+                        top.linkTo(title.bottom)
+                        end.linkTo(rightControl.start)
+                        width = Dimension.fillToConstraints
+                    }
+            )
+        }
+        Box(modifier = Modifier
+            .constrainAs(rightControl) {
+                top.linkTo(parent.top)
+                bottom.linkTo(subtext.bottom)
+                end.linkTo(parent.end)
+            })
+        {
+            rightContent()
+        }
+        if (bottomContent != null) {
+            Box(modifier = Modifier
+                .constrainAs(bottomControl) {
+                    top.linkTo(subtext.bottom, 8.dp)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                })
+            {
+                bottomContent()
             }
         }
     }
 }
 
 @Composable
-private fun ShowDescription(
-    @StringRes desc: Int = 0,
-) {
-    if (desc != 0) {
-        Text(
-            text = stringResource(id = desc),
-            modifier = Modifier.padding(top = 0.dp),
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.primary
-            ),
-            textAlign = TextAlign.Start,
-        )
-    }
-}
-
-@Composable
 fun SettingsClickableComp(
     @StringRes name: Int,
+    modifier: Modifier = Modifier,
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
     showArrowIcon: Boolean = true,
@@ -111,31 +147,23 @@ fun SettingsClickableComp(
 ) {
     Surface(
         color = Color.Transparent,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp
-            ),
+        modifier = modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                IconWithName(name, themeIcon, desc)
+        baseSettings(
+            name = name,
+            themeIcon = themeIcon,
+            desc = desc,
+            rightContent = {
                 if (showArrowIcon) {
-                    Spacer(modifier = Modifier.weight(1.0f))
                     Icon(
                         Icons.Rounded.KeyboardArrowRight,
                         tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = ""
+                        contentDescription = "next"
                     )
                 }
             }
-            // ShowDescription(desc)
-        }
+        )
     }
 }
 
@@ -164,6 +192,32 @@ fun SettingsClickablePreview2()
     ) { }
 }
 
+@Preview
+@Composable
+fun SettingsClickablePreview3()
+{
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    SettingsClickableComp(
+        name = R.string.beep_on_volume_up_title,
+        desc = R.string.beep_on_volume_up_description,
+        themeIcon = ThemeIconEnum.SettingsDonate,
+        showArrowIcon = true
+    ) { }
+}
+
+@Preview
+@Composable
+fun SettingsClickablePreview4()
+{
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    SettingsClickableComp(
+        name = R.string.beep_on_volume_up_title,
+        showArrowIcon = false
+    ) { }
+}
+
 @Composable
 fun SettingsSwitchComp(
     @StringRes name: Int,
@@ -173,77 +227,20 @@ fun SettingsSwitchComp(
     onClick: (checked: Boolean) -> Unit
 ) {
     var mutableState by remember { mutableStateOf(isChecked) }
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 8.dp,
-                bottom = 8.dp,
-            ),
-    ) {
-        val (icon, title, subtext, control) = createRefs()
-        if (themeIcon != null) {
-            Icon(
-                painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
-                contentDescription = "",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-                    .constrainAs(icon) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-        }
-        Text(
-            text = stringResource(id = name),
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.primary
-            ),
-            textAlign = TextAlign.Start,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.constrainAs(title) {
-                start.linkTo(icon.end, 16.dp)
-                top.linkTo(parent.top)
-                end.linkTo(control.start, 8.dp)
-                if (desc == 0) {
-                    bottom.linkTo(parent.bottom)
-                }
-                width = Dimension.fillToConstraints
-            }
-        )
-        if (desc != 0) {
-            Text(
-                text = stringResource(id = desc),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.constrainAs(subtext) {
-                    start.linkTo(icon.end, 16.dp)
-                    top.linkTo(title.bottom, 8.dp)
-                    end.linkTo(control.start, 8.dp)
-                    width = Dimension.fillToConstraints
+    baseSettings(
+        name = name,
+        desc = desc,
+        themeIcon = themeIcon,
+        rightContent = {
+            Switch(
+                checked = mutableState,
+                onCheckedChange = {
+                    mutableState = it
+                    onClick(it)
                 },
             )
         }
-        Switch(
-            modifier = Modifier
-                .constrainAs(control) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                },
-            checked = mutableState,
-            onCheckedChange = {
-                mutableState = !mutableState
-                onClick(mutableState)
-            }
-        )
-    }
+    )
 }
 
 @Preview
@@ -279,31 +276,36 @@ fun SettingsSliderComp(
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
     position: Float = 0f,
-    minPosition: Float = 0f,
-    maxPosition: Float = 100f,
+    min: Float = 0f,
+    max: Float = 100f,
+    @StringRes unit: Int = 0,
     format: String = "%.0f",
     onChanged: (newPosition: Float) -> Unit
 ) {
-        Column (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            var sliderPosition by remember { mutableStateOf(position) }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+    baseSettings(
+        name = name,
+        desc = desc,
+        themeIcon = themeIcon,
+        rightContent = {
+            IconButton(
+                onClick = {
+                    onChanged(max)
+                }
             ) {
-                IconWithName(name, themeIcon)
+                Icon(
+                    Icons.Rounded.Info,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = "info"
+                )
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
+        },
+        bottomContent = {
+            Row {
+                var sliderPosition by remember { mutableStateOf(position) }
                 Slider(
                     value = sliderPosition,
                     onValueChange = { sliderPosition = it },
-                    valueRange = minPosition..maxPosition,
+                    valueRange = min..max,
                     onValueChangeFinished = {
                         onChanged(sliderPosition)
                     },
@@ -316,10 +318,13 @@ fun SettingsSliderComp(
                 Card(
                     modifier = Modifier
                         .sizeIn(maxWidth = 80.dp)
-                        .padding(8.dp)
+                        .padding(
+                            top = 8.dp,
+                            start = 8.dp
+                        )
                 ) {
                     Text(
-                        text = String.format(format, sliderPosition),
+                        text = String.format(format, sliderPosition) + stringResource(unit),
                         maxLines = 1,
                         modifier = Modifier.padding(6.dp).fillMaxWidth(),
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -329,8 +334,8 @@ fun SettingsSliderComp(
                     )
                 }
             }
-            ShowDescription(desc)
         }
+    )
 }
 
 @Preview
@@ -356,8 +361,23 @@ fun SettingsSliderPreview2()
         name = R.string.alarm_factor2_title,
         desc = R.string.alarm_factor2_description,
         position = 50f,
-        minPosition = 10f,
-        maxPosition = 60f,
+        min = 10f,
+        max = 60f,
+        format = "%.2f"
+    ) { }
+}
+
+@Preview
+@Composable
+fun SettingsSliderPreview3()
+{
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    SettingsSliderComp(
+        name = R.string.alarm_factor2_title,
+        position = 66.66f,
+        min = 60f,
+        max = 70f,
         format = "%.2f"
     ) { }
 }
@@ -545,7 +565,7 @@ fun SettingsGroup(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Surface(
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(4),
         ) {
@@ -554,4 +574,76 @@ fun SettingsGroup(
             }
         }
     }
+}
+
+@Composable
+fun SettingsListComp(
+    @StringRes name: Int,
+    modifier: Modifier = Modifier,
+    themeIcon: ThemeIconEnum? = null,
+    @StringRes desc: Int = 0,
+    entries: Map<String, String> = mapOf(),
+    selectedKey: String = "",
+    onSelect: (selected: Pair<String, String>) -> Unit = {},
+) {
+    val context: Context = LocalContext.current
+    val title = stringResource(name)
+    val keys = entries.keys.toTypedArray()
+    val values = entries.values.toTypedArray()
+    var selectedIndex by remember { mutableStateOf(keys.indexOf(selectedKey)) }
+    val onClick: () -> Unit = {
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(context)
+            .setTitle(title)
+            .setSingleChoiceItems(values, selectedIndex) { dialog, which ->
+                selectedIndex = which
+                onSelect(Pair(keys[selectedIndex], values[selectedIndex]))
+                dialog.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel) { _, _ -> }
+        if (themeIcon != null) {
+            dialog.setIcon(WheelLog.ThemeManager.getId(themeIcon))
+        }
+        dialog.show().setBlackIcon()
+    }
+    Surface(
+        color = Color.Transparent,
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+    ) {
+        baseSettings(
+            name = name,
+            desc = desc,
+            themeIcon = themeIcon,
+            rightContent = {
+                if (selectedIndex != -1) {
+                    Text(
+                        maxLines = 1,
+                        text = values[selectedIndex],
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.End,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SettingsListPreview()
+{
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    SettingsListComp(
+        name = R.string.view_blocks_title,
+        desc = R.string.view_blocks_description,
+        themeIcon = ThemeIconEnum.SettingsBlocks,
+        entries = mapOf(
+            "1" to "Just one",
+            "2" to "Just two",
+            "3" to "Just three",
+        ),
+        selectedKey = "Just two",
+    )
 }

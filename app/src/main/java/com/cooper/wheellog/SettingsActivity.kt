@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.cooper.wheellog.databinding.SettingsActivityBinding
-import com.cooper.wheellog.preferences.PreferencesFragment
 import com.cooper.wheellog.preferences.SettingsMainScreen
+import com.cooper.wheellog.ui.theme.AppTheme
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -22,11 +22,13 @@ class SettingsActivity : AppCompatActivity() {
         binding = SettingsActivityBinding.inflate(layoutInflater, null, false)
 
         binding.prefSettings.setContent {
-            SettingsMainScreen()
+            AppTheme (useDarkTheme = true) {
+                SettingsMainScreen()
+            }
         }
         binding.prefSettings.visibility = View.VISIBLE
         setContentView(binding.root)
-        setTheme(R.style.SettingStyle)
+//        setTheme(R.style.SettingStyle)
 //        setContentView(R.layout.settings_activity)
 //        setTheme(R.style.SettingStyle)
 //        if (savedInstanceState == null) {

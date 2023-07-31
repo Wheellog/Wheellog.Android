@@ -5,12 +5,17 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.BuildConfig
@@ -22,8 +27,8 @@ import com.cooper.wheellog.utils.ThemeManager
 
 @Composable
 fun StartScreen(
+    modifier: Modifier = Modifier,
     onSelect: (String) -> Unit = {},
-    modifier: Modifier = Modifier
 )
 {
     Column(
@@ -31,11 +36,19 @@ fun StartScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         val context: Context = LocalContext.current
-        SettingsClickableComp(
-            name = R.string.speed_settings_title,
-            themeIcon = ThemeIconEnum.SettingsSpeedometer
+        val visible = remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            visible.value = true
+        }
+        AnimatedVisibility(
+            visible = visible.value,
         ) {
-            onSelect(SettingsScreenEnum.Application.name)
+            SettingsClickableComp(
+                name = R.string.speed_settings_title,
+                themeIcon = ThemeIconEnum.SettingsSpeedometer
+            ) {
+                onSelect(SettingsScreenEnum.Application.name)
+            }
         }
         SettingsClickableComp(
             name = R.string.logs_settings_title,

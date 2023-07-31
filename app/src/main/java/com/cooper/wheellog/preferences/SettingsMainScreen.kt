@@ -1,5 +1,6 @@
 package com.cooper.wheellog.preferences
 
+import android.app.Activity
 import androidx.annotation.StringRes
 import androidx.compose.material3.*
 import androidx.compose.foundation.*
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.*
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavHostController
@@ -21,10 +23,10 @@ enum class SettingsScreenEnum(@StringRes val title: Int) {
     Start(title = R.string.settings_title),
     Application(title = R.string.speed_settings_title),
     Log(title = R.string.logs_settings_title),
-    Alarm(title = R.string.alarm_preferences),
+    Alarm(title = R.string.alarm_settings_title),
     Watch(title = R.string.watch_settings_title),
     Wheel(title = R.string.wheel_settings_title),
-    Trip(title = R.string.trip_settings),
+    Trip(title = R.string.trip_settings_title),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,6 +37,7 @@ fun SettingsAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val activity = (LocalContext.current as? Activity)
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -46,6 +49,13 @@ fun SettingsAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = ""
+                    )
+                }
+            } else {
+                IconButton(onClick = { activity?.finish() }) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
                         contentDescription = ""
                     )
                 }
@@ -83,6 +93,21 @@ fun SettingsMainScreen(
             }
             composable(route = SettingsScreenEnum.Application.name) {
                 ApplicationScreen()
+            }
+            composable(route = SettingsScreenEnum.Log.name) {
+                LogScreen()
+            }
+            composable(route = SettingsScreenEnum.Alarm.name) {
+                AlarmScreen()
+            }
+            composable(route = SettingsScreenEnum.Watch.name) {
+                WatchScreen()
+            }
+            composable(route = SettingsScreenEnum.Wheel.name) {
+                WheelScreen()
+            }
+            composable(route = SettingsScreenEnum.Trip.name) {
+                TripScreen()
             }
         }
     }
