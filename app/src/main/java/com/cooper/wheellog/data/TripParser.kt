@@ -136,7 +136,11 @@ object TripParser {
                 maxSpeed = resultList.maxOf { it.speed }.toFloat()
                 avgSpeed = resultList.map { it.speed }.average().toFloat()
                 consumptionTotal = resultList.map { it.power }.average().toFloat() * logDuration / 60F
-                consumptionByKm = consumptionTotal * 1000F / distance
+                consumptionByKm = if (distance > 0) {
+                    consumptionTotal * 1000F / distance
+                } else {
+                    0F
+                }
             }
             dao.update(trip)
         } catch (ex: Exception) {
