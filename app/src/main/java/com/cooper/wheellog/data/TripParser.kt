@@ -86,7 +86,8 @@ object TripParser {
                     speedGps = row[header[LogHeaderEnum.GPS_SPEED]!!].toDoubleOrNull() ?: 0.0,
                     temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0,
                     pwm = row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0,
-                    distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0
+                    distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0,
+                    totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toIntOrNull() ?: 0
                 )
                 resultList.add(logTick)
             }
@@ -113,31 +114,28 @@ object TripParser {
                     // +24 hours in minutes
                     duration += 1440
                 }
-                // We expected about 3 ticks per minute, if less, we need to recalculate duration
-                if (resultList.size / 3 < duration) {
-                    var timeToExclude = 0f
-                    var beforeTime = first.time // 1/10 sec
-                    resultList.forEach {
-                        // If time between ticks more than 10 sec, we need to exclude this time
-                        val timeBetween = it.time - beforeTime
-                        if (timeBetween > 100) {
-                            timeToExclude += timeBetween
-                        } else if (timeBetween < 0) { // next day tick
-                            // +24 hours in 1/10 sec
-                            timeToExclude -= 8640000
-                        }
-                        beforeTime = it.time
+                var timeToExclude = 0f
+                var beforeTime = first.time // 1/10 sec
+                resultList.forEach {
+                    // If time between ticks more than 1 sec, we need to exclude this time
+                    val timeBetween = it.time - beforeTime
+                    if (timeBetween > 10) {
+                        timeToExclude += timeBetween
+                    } else if (timeBetween < 0) { // next day tick
+                        // +24 hours in 1/10 sec
+                        timeToExclude -= 8640000
                     }
-                    duration = ((last.time - first.time - timeToExclude) / 600).toInt()
+                    beforeTime = it.time
                 }
-                distance = last.distance
+                val logDuration = (last.time - first.time - timeToExclude) / 600
+                distance = resultList.maxOf { it.totalDistance } - first.totalDistance
                 maxSpeedGps = resultList.maxOf { it.speedGps }.toFloat()
                 maxCurrent = resultList.maxOf { it.current }.toFloat()
                 maxPwm = resultList.maxOf { it.pwm }.toFloat()
                 maxPower = resultList.maxOf { it.power }.toFloat()
                 maxSpeed = resultList.maxOf { it.speed }.toFloat()
                 avgSpeed = resultList.map { it.speed }.average().toFloat()
-                consumptionTotal = resultList.map { it.power }.average().toFloat() * duration / 60F
+                consumptionTotal = resultList.map { it.power }.average().toFloat() * logDuration / 60F
                 consumptionByKm = consumptionTotal * 1000F / distance
             }
             dao.update(trip)

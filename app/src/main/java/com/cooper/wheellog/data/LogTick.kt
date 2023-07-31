@@ -42,4 +42,8 @@ data class LogTick(
      * Distance in meters
      */
     val distance: Int,
+    /**
+     * Total distance in meters
+     */
+    val totalDistance: Int,
 )
