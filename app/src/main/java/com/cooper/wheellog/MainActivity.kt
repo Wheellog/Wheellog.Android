@@ -96,12 +96,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        override fun onServiceDisconnected(componentName: ComponentName) {
-            if (componentName.className == BluetoothService::class.java.name) {
+        fun disconnect(componentName: ComponentName?) {
+            if (componentName?.className == BluetoothService::class.java.name) {
                 WheelData.getInstance().bluetoothService = null
                 WheelData.getInstance().isConnected = false
                 Timber.e("BluetoothService disconnected")
             }
+        }
+
+        override fun onServiceDisconnected(componentName: ComponentName) {
+            disconnect(componentName)
+        }
+
+        override fun onBindingDied(name: ComponentName?) {
+            disconnect(name)
         }
     }
 
@@ -702,8 +710,12 @@ class MainActivity : AppCompatActivity() {
         stopLoggingService()
         WheelData.getInstance().full_reset()
         if (bluetoothService != null) {
-            unbindService(mBluetoothServiceConnection)
-            WheelData.getInstance().bluetoothService = null
+            try {
+                unbindService(mBluetoothServiceConnection)
+                WheelData.getInstance().bluetoothService = null
+            } catch (_: Exception) {
+                // ignored
+            }
         }
         WheelLog.ThemeManager.changeAppIcon(this@MainActivity)
         object : CountDownTimer((2 * 60 * 1000 /* 2 min */).toLong(), 1000) {
