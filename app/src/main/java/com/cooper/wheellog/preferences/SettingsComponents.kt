@@ -2,24 +2,26 @@ package com.cooper.wheellog.preferences
 
 import android.content.Context
 import androidx.annotation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.*
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.*
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.cooper.wheellog.AppConfig
@@ -645,5 +647,150 @@ fun SettingsListPreview()
             "3" to "Just three",
         ),
         selectedKey = "Just two",
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SettingsMultiListComp(
+    @StringRes name: Int,
+    modifier: Modifier = Modifier,
+    themeIcon: ThemeIconEnum? = null,
+    @StringRes desc: Int = 0,
+    entries: Map<String, String> = mapOf(),
+    selectedKeys: List<String> = listOf(),
+    onChecked: (selectedKeys: List<String>) -> Unit = {},
+) {
+    val title = stringResource(name)
+    val keys = entries.keys.toList()
+    var selectedIndex by remember { mutableStateOf(selectedKeys) }
+    // if selected keys are not in the list, then find them in the values
+    if (!keys.containsAll(selectedIndex)) {
+        selectedIndex = entries.filter { selectedIndex.contains(it.value) }.keys.toList()
+    }
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            shape = RoundedCornerShape(8.dp),
+            onDismissRequest = { showDialog = false },
+            title = {
+                Row {
+                    if (themeIcon != null) {
+                        Icon(
+                            painter = painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp).padding(end = 8.dp),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                    Text(text = title)
+                }
+            },
+            text = {
+                val state = rememberLazyListState()
+                var items by remember { mutableStateOf(selectedIndex + keys.filter { i -> !selectedIndex.contains(i) }) }
+                LazyColumn(state = state) {
+                    items(items = items, key = { it }) { key ->
+                        val checked = selectedIndex.contains(key)
+                        val onCheckedChange: (Boolean) -> Unit = {
+                            selectedIndex = if (it) {
+                                selectedIndex + key
+                            } else {
+                                selectedIndex - key
+                            }
+                            items = selectedIndex + items.filter { i -> !selectedIndex.contains(i) }
+                            onChecked(selectedIndex)
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItemPlacement(
+                                    animationSpec = tween(300)
+                                ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = checked,
+                                onCheckedChange = onCheckedChange,
+                                colors = CheckboxDefaults.colors(
+                                    checkmarkColor = MaterialTheme.colorScheme.onSurface,
+                                    checkedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                ),
+                                modifier = Modifier.size(32.dp),
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = entries[key] ?: "",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(id = android.R.string.ok))
+                }
+            },
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+            )
+        )
+    }
+
+    Surface(
+        color = Color.Transparent,
+        modifier = modifier.fillMaxWidth(),
+        onClick = { showDialog = true },
+    ) {
+        baseSettings(
+            name = name,
+            desc = desc,
+            themeIcon = themeIcon,
+            rightContent = {
+                if (selectedIndex.isNotEmpty()) {
+                    Text(
+                        maxLines = 1,
+                        text = selectedIndex.size.toString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.End,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SettingsMultiListPreview()
+{
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    SettingsMultiListComp(
+        name = R.string.view_blocks_title,
+        desc = R.string.view_blocks_description,
+        themeIcon = ThemeIconEnum.SettingsBlocks,
+        entries = mapOf(
+            "1" to "Just one",
+            "2" to "Just two",
+            "3" to "Just three",
+            "4" to "Just four",
+            "5" to "Just five",
+            "6" to "Just six",
+            "7" to "Just seven",
+            "8" to "Just eight",
+            "9" to "Just nine",
+            "10" to "Just ten",
+            "11" to "Just eleven",
+            "12" to "Just twelve",
+            "13" to "Just thirteen",
+            "14" to "Just fourteen",
+        ),
+        selectedKeys = listOf("12", "2"),
     )
 }
