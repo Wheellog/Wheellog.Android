@@ -408,7 +408,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             return
         }
 
-        val tb: Toolbar = requireActivity().findViewById(R.id.preference_toolbar)
+        val tb: Toolbar = Toolbar(requireActivity()) //requireActivity().findViewById(R.id.preference_toolbar)
 
         tb.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         tb.setNavigationOnClickListener {

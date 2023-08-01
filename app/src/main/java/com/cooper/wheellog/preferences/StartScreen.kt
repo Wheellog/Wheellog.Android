@@ -36,19 +36,11 @@ fun StartScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         val context: Context = LocalContext.current
-        val visible = remember { mutableStateOf(false) }
-        LaunchedEffect(Unit) {
-            visible.value = true
-        }
-        AnimatedVisibility(
-            visible = visible.value,
+        SettingsClickableComp(
+            name = R.string.speed_settings_title,
+            themeIcon = ThemeIconEnum.SettingsSpeedometer
         ) {
-            SettingsClickableComp(
-                name = R.string.speed_settings_title,
-                themeIcon = ThemeIconEnum.SettingsSpeedometer
-            ) {
-                onSelect(SettingsScreenEnum.Application.name)
-            }
+            onSelect(SettingsScreenEnum.Application.name)
         }
         SettingsClickableComp(
             name = R.string.logs_settings_title,

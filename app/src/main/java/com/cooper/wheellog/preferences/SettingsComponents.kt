@@ -284,15 +284,28 @@ fun SettingsSliderComp(
     format: String = "%.0f",
     onChanged: (newPosition: Float) -> Unit
 ) {
+    // if the dialog is visible
+    var isDialogShown by remember { mutableStateOf(false) }
+    val state = remember { mutableStateOf("position") }
+
+    if (isDialogShown) {
+        Dialog(onDismissRequest = {
+            // dismiss the dialog on touch outside
+            isDialogShown = false
+        }) {
+            TextEditDialog(name = name,) {
+                // to dismiss dialog from within
+                isDialogShown = false
+            }
+        }
+    }
     baseSettings(
         name = name,
         desc = desc,
         themeIcon = themeIcon,
         rightContent = {
             IconButton(
-                onClick = {
-                    onChanged(max)
-                }
+                onClick = { isDialogShown = true }
             ) {
                 Icon(
                     Icons.Rounded.Info,
@@ -385,78 +398,9 @@ fun SettingsSliderPreview3()
 }
 
 @Composable
-fun SettingsTextComp(
-    @DrawableRes icon: Int,
-    @StringRes iconDesc: Int,
-    @StringRes name: Int,
-    state: State<String>, // current value
-    onSave: (String) -> Unit, // method to save the new value
-    onCheck: (String) -> Boolean // check if new value is valid to save
-) {
-
-    // if the dialog is visible
-    var isDialogShown by remember {
-        mutableStateOf(false)
-    }
-
-    // conditional visibility in dependence to state
-    if (isDialogShown) {
-        Dialog(onDismissRequest = {
-            // dismiss the dialog on touch outside
-            isDialogShown = false
-        }) {
-            TextEditDialog(name, state, onSave, onCheck) {
-                // to dismiss dialog from within
-                isDialogShown = false
-            }
-        }
-    }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        onClick = {
-            // clicking on the preference, will show the dialog
-            isDialogShown = true
-        },
-    ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Icon(
-                    painterResource(id = icon),
-                    contentDescription = stringResource(id = iconDesc),
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.padding(8.dp)) {
-                    // setting text title
-                    Text(
-                        text = stringResource(id = name),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Start,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    // current value shown
-                    Text(
-                        text = state.value,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Start,
-                    )
-                }
-            }
-            Divider()
-        }
-    }
-}
-
-@Composable
 private fun TextEditDialog(
     @StringRes name: Int,
-    storedValue: State<String>,
+    storedValue: MutableState<String>,
     onSave: (String) -> Unit,
     onCheck: (String) -> Boolean,
     onDismiss: () -> Unit // internal method to dismiss dialog from within

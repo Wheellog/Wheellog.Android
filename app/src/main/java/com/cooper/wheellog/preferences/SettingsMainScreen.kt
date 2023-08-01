@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 
 enum class SettingsScreenEnum(@StringRes val title: Int) {
@@ -37,7 +38,7 @@ fun SettingsAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val activity = (LocalContext.current as? Activity)
+    val activity = (LocalContext.current as? MainActivity)
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -53,7 +54,7 @@ fun SettingsAppBar(
                     )
                 }
             } else {
-                IconButton(onClick = { activity?.finish() }) {
+                IconButton(onClick = { activity?.toggleSettings() }) {
                     Icon(
                         imageVector = Icons.Filled.Close,
                         contentDescription = ""

@@ -1,7 +1,8 @@
 package com.cooper.wheellog
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.ActivityManager
-import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.app.PictureInPictureParams
 import android.bluetooth.BluetoothAdapter
@@ -27,6 +28,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.cooper.wheellog.BluetoothService.LocalBinder
@@ -36,6 +39,8 @@ import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
 import com.cooper.wheellog.companion.WearOs
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
 import com.cooper.wheellog.databinding.ActivityMainBinding
+import com.cooper.wheellog.preferences.SettingsMainScreen
+import com.cooper.wheellog.ui.theme.AppTheme
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Alarms.checkAlarm
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
@@ -82,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     private val timeFormatter = SimpleDateFormat("HH:mm:ss ", Locale.US)
     private var wearOs: WearOs? = null
     private val speedModel: PiPView.SpeedModel by lazy { PiPView.SpeedModel() }
+    private var settingsNavHostController: NavHostController? = null
     private val bluetoothService: BluetoothService?
         get() = WheelData.getInstance().bluetoothService
     private val mBluetoothServiceConnection: ServiceConnection = object : ServiceConnection {
@@ -130,9 +136,9 @@ class MainActivity : AppCompatActivity() {
             } catch (_: Exception) {
                 // ignore
             } finally {
-                binding.toolbar.visibility = View.GONE
-                pager.visibility = View.GONE
-                binding.indicator.visibility = View.GONE
+//                binding.toolbar.visibility = View.GONE
+//                pager.visibility = View.GONE
+//                binding.indicator.visibility = View.GONE
                 pipView.setContent {
                     PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
                 }
@@ -144,9 +150,9 @@ class MainActivity : AppCompatActivity() {
             } catch (_: Exception) {
                 // ignore
             }
-            binding.toolbar.visibility = View.VISIBLE
-            pager.visibility = View.VISIBLE
-            binding.indicator.visibility = View.VISIBLE
+//            binding.toolbar.visibility = View.VISIBLE
+//            pager.visibility = View.VISIBLE
+//            binding.indicator.visibility = View.VISIBLE
             pipView.visibility = View.GONE
         }
     }
@@ -590,7 +596,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         createPager()
-        pipView = binding.pipFrame
+        pipView = binding.pipView
 
         // clock font
         val textClock = binding.textClock
@@ -620,6 +626,15 @@ class MainActivity : AppCompatActivity() {
         }
         registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter())
         WheelLog.Notifications.update()
+
+        binding.settingsView.apply {
+            setContent {
+                AppTheme(useDarkTheme = true) {
+                    settingsNavHostController = rememberNavController()
+                    SettingsMainScreen(navController = settingsNavHostController!!)
+                }
+            }
+        }
 
         checkBatteryOptimizationsAndShowAlert(this)
         // for test without wheel go to isHardwarePWM and comment Unknown case
@@ -836,25 +851,52 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.miSettings -> {
-                startActivity(
-                    Intent(this@MainActivity, SettingsActivity::class.java),
-                    ActivityOptions.makeSceneTransitionAnimation(
-                        this
-                    ).toBundle()
-                )
+                toggleSettings()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    fun toggleSettings() {
+        if (binding.settingsView.visibility != View.VISIBLE) {
+            binding.settingsView.apply {
+                alpha = 0f
+                visibility = View.VISIBLE
+                animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .setListener(null)
+            }
+        } else {
+            binding.settingsView
+                .animate()
+                .alpha(0f)
+                .setDuration(300)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        binding.settingsView.visibility = View.GONE
+                    }
+                })
+        }
+    }
+
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         return when (keyCode) {
-            KeyEvent.KEYCODE_MENU -> {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-                true
-            }
             KeyEvent.KEYCODE_BACK -> {
+                // If settings is visible, hide it.
+                if (binding.settingsView.visibility == View.VISIBLE) {
+                    if (settingsNavHostController != null) {
+                        if (settingsNavHostController?.previousBackStackEntry == null) {
+                            toggleSettings()
+                        } else {
+                            settingsNavHostController?.navigateUp()
+                        }
+                    } else {
+                        toggleSettings()
+                    }
+                    return true
+                }
                 if (doubleBackToExitPressedOnce) {
                     finish()
                     return true

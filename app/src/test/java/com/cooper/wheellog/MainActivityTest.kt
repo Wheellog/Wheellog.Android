@@ -106,20 +106,6 @@ class MainActivityTest {
         assertThat(shadowActivity.nextStartedActivity).isNull()
     }
 
-    @Test
-    fun `click on settings menu - launch SettingsActivity`() {
-        // Arrange.
-        val shadowActivity = Shadows.shadowOf(activity)
-
-        // Act.
-        shadowActivity.clickMenuItem(R.id.miSettings)
-
-        // Assert.
-        val intent = shadowActivity.nextStartedActivity
-        val shadowIntent = Shadows.shadowOf(intent)
-        assertThat(SettingsActivity::class.java).isEqualTo(shadowIntent.intentClass)
-    }
-
     // All the tests below will fail during the setup phase,
     // because the onDestroy method in the MainActivity kills the entire application.
     @Test
