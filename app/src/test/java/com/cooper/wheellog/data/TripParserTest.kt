@@ -9,6 +9,7 @@ import io.mockk.*
 import org.junit.Test
 import java.io.File
 import java.io.InputStream
+import kotlin.system.measureTimeMillis
 
 class TripParserTest {
 
@@ -24,7 +25,11 @@ class TripParserTest {
         val inputStream: InputStream = File("src/test/resources/log_test1.csv").inputStream()
 
         // Act.
-        TripParser.parseFile(context, "test", inputStream)
+        measureTimeMillis {
+            TripParser.parseFile(context, "test", inputStream)
+        }.also {
+            println("parseFile took $it ms")
+        }
 
         // Assert.
         assertThat(trip.duration).isEqualTo(880)
