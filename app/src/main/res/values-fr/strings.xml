@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Affiche la vitesse et la distance en miles plutôt qu\'en kilomètres</string>
 	<string name="enable_alarms_title">Activation des alarmes</string>
 	<string name="enable_alarms_description">Faire vibrer le téléphone</string>
-	<string name="disable_phone_vibrate_title">Désactiver la vibration du téléphone</string>
+	<string name="disable_phone_vibration_title">Désactiver la vibration du téléphone</string>
 	<string name="disable_phone_vibration_description">Désactiver la vibration du téléphone</string>
 	<string name="speed_alarm1_phone_title">Alarme de vitesse 1</string>
 	<string name="speed_trigger_description">Seuil de l\'alarme de vitesse</string>

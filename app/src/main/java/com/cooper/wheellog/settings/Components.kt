@@ -66,10 +66,10 @@ fun switchPref(
     @StringRes name: Int,
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
-    isChecked: Boolean,
+    default: Boolean,
     onClick: (checked: Boolean) -> Unit
 ) {
-    var mutableState by remember { mutableStateOf(isChecked) }
+    var mutableState by remember { mutableStateOf(default) }
     baseSettings(
         name = name,
         desc = desc,
@@ -112,6 +112,13 @@ fun sliderPref(
 //            }
         }
     }
+
+    val unitStr = if (unit != 0) {
+        " " + stringResource(unit)
+    } else {
+        ""
+    }
+
     baseSettings(
         name = name,
         desc = desc,
@@ -152,12 +159,7 @@ fun sliderPref(
                         )
                 ) {
                     Text(
-                        text = String.format(format, sliderPosition)
-                                + if (unit != 0) {
-                            stringResource(unit)
-                        } else {
-                            ""
-                        },
+                        text = String.format(format, sliderPosition) + unitStr,
                         maxLines = 1,
                         modifier = Modifier.padding(6.dp).fillMaxWidth(),
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -183,7 +185,7 @@ fun group(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(4),
         ) {
@@ -699,7 +701,7 @@ private fun switchPreview() {
         name = R.string.use_eng_title,
         desc = R.string.use_eng_description,
         themeIcon = ThemeIconEnum.SettingsLanguage,
-        isChecked = true
+        default = true
     ) { }
 }
 
@@ -711,7 +713,7 @@ private fun switchPreview2() {
     switchPref(
         name = R.string.use_eng_title,
         themeIcon = ThemeIconEnum.SettingsLanguage,
-        isChecked = false
+        default = false
     ) { }
 }
 

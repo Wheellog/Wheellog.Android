@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.ThemeIconEnum
 
@@ -31,7 +32,7 @@ fun logScreen()
             name = R.string.auto_log_title,
             desc = R.string.auto_log_description,
             themeIcon = ThemeIconEnum.SettingsAutoLog,
-            isChecked = AppConfig.autoLog,
+            default = AppConfig.autoLog,
         ) {
             AppConfig.autoLog = it
             autoLogDependency = it
@@ -41,7 +42,7 @@ fun logScreen()
             switchPref(
                 name = R.string.auto_log_when_moving_title,
                 desc = R.string.auto_log_when_moving_description,
-                isChecked = AppConfig.startAutoLoggingWhenIsMoving,
+                default = AppConfig.startAutoLoggingWhenIsMoving,
             ) {
                 AppConfig.startAutoLoggingWhenIsMoving = it
             }
@@ -52,7 +53,7 @@ fun logScreen()
             name = R.string.log_location_title,
             desc = R.string.log_location_description,
             themeIcon = ThemeIconEnum.SettingsLocation,
-            isChecked = AppConfig.logLocationData,
+            default = AppConfig.logLocationData,
         ) {
             AppConfig.logLocationData = it
             locationDependency = it
@@ -63,13 +64,13 @@ fun logScreen()
             switchPref(
                 name = R.string.auto_upload_log_ec_title,
                 desc = R.string.auto_upload_log_ec_description,
-                isChecked = AppConfig.autoUploadEc,
+                default = AppConfig.autoUploadEc,
             ) {
                 AppConfig.autoUploadEc = it
                 autoUploadDependency = it
             }
 
-            if (autoUploadDependency) {
+            if (autoUploadDependency && WheelData.getInstance().isConnected) {
                 val activity = LocalContext.current as Activity
                 clickablePref(
                     name = R.string.select_garage_ec_title,
@@ -86,7 +87,7 @@ fun logScreen()
         switchPref(
             name = R.string.use_raw_title,
             desc = R.string.use_raw_description,
-            isChecked = AppConfig.enableRawData,
+            default = AppConfig.enableRawData,
         ) {
             AppConfig.enableRawData = it
         }
@@ -94,7 +95,7 @@ fun logScreen()
         switchPref(
             name = R.string.continue_this_day_log_title,
             desc = R.string.continue_this_day_log_description,
-            isChecked = AppConfig.continueThisDayLog,
+            default = AppConfig.continueThisDayLog,
         ) {
             AppConfig.continueThisDayLog = it
         }

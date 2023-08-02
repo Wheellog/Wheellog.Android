@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Δείξτε την ταχύτητα και την απόσταση σε μίλια και όχι σε χιλιόμετρα</string>
 	<string name="enable_alarms_title">Ενεργοποίηση συναγερμών</string>
 	<string name="enable_alarms_description">Επιτρέψτε στο κινητό να δονείται</string>
-	<string name="disable_phone_vibrate_title">Απενεργοποίηση δόνησης κινητού</string>
+	<string name="disable_phone_vibration_title">Απενεργοποίηση δόνησης κινητού</string>
 	<string name="disable_phone_vibration_description">Απενεργοποίηση δόνησης κινητού</string>
 	<string name="speed_alarm1_phone_title">Συναγερμός ταχύτητας 1</string>
 	<string name="speed_trigger_description">Ταχύτητα που ενεργοποιεί το συναγερμό</string>

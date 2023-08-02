@@ -31,7 +31,7 @@ enum class SettingsScreenEnum(@StringRes val title: Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsAppBar(
+private fun settingsAppBar(
     currentScreen: SettingsScreenEnum,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
@@ -65,7 +65,7 @@ fun SettingsAppBar(
 }
 
 @Composable
-fun SettingsMainScreen(
+fun mainScreen(
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -74,7 +74,7 @@ fun SettingsMainScreen(
     )
     Scaffold(
         topBar = {
-            SettingsAppBar(
+            settingsAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() }

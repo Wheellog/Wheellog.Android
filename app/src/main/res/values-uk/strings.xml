@@ -83,7 +83,7 @@
     <string name="view_blocks_description">Налаштування шести блоків під спідометром</string>
     <string name="enable_alarms_title">Увімкнути попередження</string>
     <string name="enable_alarms_description">Телефон буде вібрувати під час попередження.</string>
-    <string name="disable_phone_vibrate_title">Відключити вібросигнал</string>
+    <string name="disable_phone_vibration_title">Відключити вібросигнал</string>
     <string name="disable_phone_vibration_description">Телефон не буде вібрувати, але Pebble буде показуваті попередження.</string>
     <string name="speed_alarm1_phone_title">Перевищення швидкості 1</string>
     <string name="speed_trigger_description">Попередження про досягнуту швидкість</string>

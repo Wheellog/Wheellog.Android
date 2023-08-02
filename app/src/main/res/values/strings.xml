@@ -216,7 +216,7 @@
     <string name="connect_beep_description">Sound of connection to the wheel</string>.
     <string name="enable_alarms_title">Enable Alarms</string>
     <string name="enable_alarms_description">Allow the phone to vibrate as a warning</string>
-    <string name="disable_phone_vibrate_title">Disable Phone Vibration</string>
+    <string name="disable_phone_vibration_title">Disable Phone Vibration</string>
     <string name="disable_phone_vibration_description">Phone will not vibrate but the alarm will be passed to a connected Pebble Watch</string>
     <string name="disable_phone_beep_title">Disable Phone Beep</string>
     <string name="disable_phone_beep_description">Phone will not beep but the alarm will be passed to a connected Pebble Watch</string>

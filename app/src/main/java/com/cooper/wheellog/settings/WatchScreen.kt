@@ -16,6 +16,6 @@ fun watchScreen( )
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-
+        // TODO: Add watch settings
     }
 }

@@ -238,7 +238,7 @@
     <string name="enable_alarms_description">"경고 시 스마트폰 진동 허용"</string>
 
     <!-- Fuzzy -->
-    <string name="disable_phone_vibrate_title">"스마트폰 진동 비활성화"</string>
+    <string name="disable_phone_vibration_title">"스마트폰 진동 비활성화"</string>
     <string name="disable_phone_vibration_description"></string>
     <string name="disable_phone_beep_title">"스마트폰 비프음 비활성화"</string>
     <string name="disable_phone_beep_description"></string>

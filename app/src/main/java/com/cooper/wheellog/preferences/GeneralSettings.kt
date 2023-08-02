@@ -24,7 +24,7 @@ class GeneralSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClas
         }
         SwitchPreference(context).apply {
             key = mac + getString(R.string.disable_phone_vibrate)
-            title = getString(R.string.disable_phone_vibrate_title)
+            title = getString(R.string.disable_phone_vibration_title)
             summary = getString(R.string.disable_phone_vibration_description)
             ps.addPreference(this)
         }

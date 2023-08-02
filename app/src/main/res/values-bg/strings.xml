@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Показвай скоростта и дистанцията в мили вместо в километри</string>
 	<string name="enable_alarms_title">Включи алармите</string>
 	<string name="enable_alarms_description">Разреши нателефона да вибрира като предупреждение</string>
-	<string name="disable_phone_vibrate_title">Изключи вибрацията на телефона</string>
+	<string name="disable_phone_vibration_title">Изключи вибрацията на телефона</string>
 	<string name="disable_phone_vibration_description">Изключи вибрацията на телефона</string>
 	<string name="speed_alarm1_phone_title">Аларма за скорост 1</string>
 	<string name="speed_trigger_description">Скорост която активира алармата</string>

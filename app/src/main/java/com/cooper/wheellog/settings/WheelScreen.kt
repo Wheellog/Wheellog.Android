@@ -16,6 +16,6 @@ fun wheelScreen( )
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-
+        // TODO: Add wheel settings
     }
 }

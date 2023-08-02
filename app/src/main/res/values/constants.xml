@@ -135,6 +135,8 @@
     <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
+    <string name="persent" translatable="false">%</string>
+    <string name="degree" translatable="false">°</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>

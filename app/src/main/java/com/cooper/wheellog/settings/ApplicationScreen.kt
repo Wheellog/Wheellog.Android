@@ -26,7 +26,7 @@ fun applicationScreen() {
             name = R.string.use_eng_title,
             desc = R.string.use_eng_description,
             themeIcon = ThemeIconEnum.SettingsLanguage,
-            isChecked = WheelLog.AppConfig.useEng
+            default = WheelLog.AppConfig.useEng
         ) {
             WheelLog.AppConfig.useEng = it
         }
@@ -55,7 +55,7 @@ fun applicationScreen() {
         switchPref(
             name = R.string.use_better_percents_title,
             desc = R.string.use_better_percents_description,
-            isChecked = WheelLog.AppConfig.useBetterPercents
+            default = WheelLog.AppConfig.useBetterPercents
         ) {
             WheelLog.AppConfig.useBetterPercents = it
         }
@@ -64,7 +64,7 @@ fun applicationScreen() {
         switchPref(
             name = R.string.custom_percents_title,
             desc = R.string.custom_percents_description,
-            isChecked = WheelLog.AppConfig.customPercents
+            default = WheelLog.AppConfig.customPercents
         ) {
             WheelLog.AppConfig.customPercents = it
             customPercents = it
@@ -89,7 +89,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.use_mph_title,
                 desc = R.string.use_mph_description,
-                isChecked = WheelLog.AppConfig.useMph
+                default = WheelLog.AppConfig.useMph
             ) {
                 WheelLog.AppConfig.useMph = it
             }
@@ -97,7 +97,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.use_fahrenheit_title,
                 desc = R.string.use_fahrenheit_description,
-                isChecked = WheelLog.AppConfig.useFahrenheit,
+                default = WheelLog.AppConfig.useFahrenheit,
             ) {
                 WheelLog.AppConfig.useFahrenheit = it
             }
@@ -109,7 +109,7 @@ fun applicationScreen() {
                 name = R.string.auto_log_title,
                 desc = R.string.auto_log_description,
                 themeIcon = ThemeIconEnum.SettingsAutoLog,
-                isChecked = WheelLog.AppConfig.autoLog,
+                default = WheelLog.AppConfig.autoLog,
             ) {
                 WheelLog.AppConfig.autoLog = it
             }
@@ -118,7 +118,7 @@ fun applicationScreen() {
                 name = R.string.auto_watch_title,
                 desc = R.string.auto_watch_description,
                 themeIcon = ThemeIconEnum.SettingsWatch,
-                isChecked = WheelLog.AppConfig.autoWatch,
+                default = WheelLog.AppConfig.autoWatch,
             ) {
                 WheelLog.AppConfig.autoWatch = it
             }
@@ -168,7 +168,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.use_pip_mode_title,
                 desc = R.string.use_pip_mode_description,
-                isChecked = WheelLog.AppConfig.usePipMode,
+                default = WheelLog.AppConfig.usePipMode,
             ) {
                 WheelLog.AppConfig.usePipMode = it
                 usePipMode = it
@@ -216,7 +216,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.current_on_dial_title,
                 desc = R.string.current_on_dial_description,
-                isChecked = WheelLog.AppConfig.currentOnDial,
+                default = WheelLog.AppConfig.currentOnDial,
             ) {
                 WheelLog.AppConfig.currentOnDial = it
             }
@@ -224,7 +224,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.use_short_pwm_title,
                 desc = R.string.use_short_pwm_description,
-                isChecked = WheelLog.AppConfig.useShortPwm,
+                default = WheelLog.AppConfig.useShortPwm,
             ) {
                 WheelLog.AppConfig.useShortPwm = it
             }
@@ -232,7 +232,7 @@ fun applicationScreen() {
 
         switchPref(
             name = R.string.show_page_graph_title,
-            isChecked = WheelLog.AppConfig.pageGraph,
+            default = WheelLog.AppConfig.pageGraph,
         ) {
             WheelLog.AppConfig.pageGraph = it
         }
@@ -241,7 +241,7 @@ fun applicationScreen() {
             name = R.string.show_page_events_title,
             desc = R.string.show_page_events_description,
             themeIcon = ThemeIconEnum.SettingsPageEvents,
-            isChecked = WheelLog.AppConfig.pageEvents,
+            default = WheelLog.AppConfig.pageEvents,
         ) {
             WheelLog.AppConfig.pageEvents = it
         }
@@ -249,7 +249,7 @@ fun applicationScreen() {
         switchPref(
             name = R.string.show_page_trips_title,
             themeIcon = ThemeIconEnum.SettingsPageTrips,
-            isChecked = WheelLog.AppConfig.pageTrips,
+            default = WheelLog.AppConfig.pageTrips,
         ) {
             WheelLog.AppConfig.pageTrips = it
         }
@@ -258,7 +258,7 @@ fun applicationScreen() {
             name = R.string.connection_sound_title,
             desc = R.string.connection_sound_description,
             themeIcon = ThemeIconEnum.SettingsConnectionSound,
-            isChecked = WheelLog.AppConfig.connectionSound,
+            default = WheelLog.AppConfig.connectionSound,
         ) {
             WheelLog.AppConfig.connectionSound = it
         }
@@ -278,7 +278,7 @@ fun applicationScreen() {
             name = R.string.use_stop_music_title,
             desc = R.string.use_stop_music_description,
             themeIcon = ThemeIconEnum.SettingsAutoMute,
-            isChecked = WheelLog.AppConfig.useStopMusic,
+            default = WheelLog.AppConfig.useStopMusic,
         ) {
             WheelLog.AppConfig.useStopMusic = it
         }
@@ -286,7 +286,7 @@ fun applicationScreen() {
         switchPref(
             name = R.string.show_unknown_devices_title,
             desc = R.string.show_unknown_devices_description,
-            isChecked = WheelLog.AppConfig.showUnknownDevices,
+            default = WheelLog.AppConfig.showUnknownDevices,
         ) {
             WheelLog.AppConfig.showUnknownDevices = it
         }
@@ -294,7 +294,7 @@ fun applicationScreen() {
         switchPref(
             name = R.string.use_reconnect_title,
             desc = R.string.use_reconnect_description,
-            isChecked = WheelLog.AppConfig.useReconnect,
+            default = WheelLog.AppConfig.useReconnect,
         ) {
             WheelLog.AppConfig.useReconnect = it
         }
@@ -305,7 +305,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.beep_on_single_tap_title,
                 desc = R.string.beep_on_single_tap_description,
-                isChecked = WheelLog.AppConfig.useBeepOnSingleTap,
+                default = WheelLog.AppConfig.useBeepOnSingleTap,
             ) {
                 WheelLog.AppConfig.useBeepOnSingleTap = it
             }
@@ -313,7 +313,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.beep_on_volume_up_title,
                 desc = R.string.beep_on_volume_up_description,
-                isChecked = WheelLog.AppConfig.useBeepOnVolumeUp,
+                default = WheelLog.AppConfig.useBeepOnVolumeUp,
             ) {
                 WheelLog.AppConfig.useBeepOnVolumeUp = it
             }
@@ -322,7 +322,7 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.beep_by_wheel_title,
                 desc = R.string.beep_by_wheel_description,
-                isChecked = WheelLog.AppConfig.beepByWheel,
+                default = WheelLog.AppConfig.beepByWheel,
             ) {
                 WheelLog.AppConfig.beepByWheel = it
                 beepByWheel = it
@@ -331,7 +331,7 @@ fun applicationScreen() {
             if (!beepByWheel) {
                 switchPref(
                     name = R.string.custom_beep_title,
-                    isChecked = WheelLog.AppConfig.useCustomBeep,
+                    default = WheelLog.AppConfig.useCustomBeep,
                 ) {
                     WheelLog.AppConfig.useCustomBeep = it
                 }
@@ -340,7 +340,7 @@ fun applicationScreen() {
 
         switchPref(
             name = R.string.use_detect_battery_optimization_title,
-            isChecked = WheelLog.AppConfig.detectBatteryOptimization,
+            default = WheelLog.AppConfig.detectBatteryOptimization,
         ) {
             WheelLog.AppConfig.detectBatteryOptimization = it
         }
@@ -348,7 +348,7 @@ fun applicationScreen() {
         switchPref(
             name = R.string.send_yandex_metriсa_title,
             desc = R.string.send_yandex_metriсa_description,
-            isChecked = WheelLog.AppConfig.yandexMetricaAccepted,
+            default = WheelLog.AppConfig.yandexMetricaAccepted,
         ) {
             WheelLog.AppConfig.yandexMetricaAccepted = it
         }

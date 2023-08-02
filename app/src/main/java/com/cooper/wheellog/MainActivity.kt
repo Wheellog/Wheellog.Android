@@ -39,7 +39,7 @@ import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
 import com.cooper.wheellog.companion.WearOs
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
 import com.cooper.wheellog.databinding.ActivityMainBinding
-import com.cooper.wheellog.settings.SettingsMainScreen
+import com.cooper.wheellog.settings.mainScreen
 import com.cooper.wheellog.ui.theme.AppTheme
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Alarms.checkAlarm
@@ -631,7 +631,7 @@ class MainActivity : AppCompatActivity() {
             setContent {
                 AppTheme(useDarkTheme = true) {
                     settingsNavHostController = rememberNavController()
-                    SettingsMainScreen(navController = settingsNavHostController!!)
+                    mainScreen(navController = settingsNavHostController!!)
                 }
             }
         }

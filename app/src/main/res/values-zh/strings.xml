@@ -126,7 +126,7 @@
     <string name="use_mph_description">以英里而不是公里显示速度</string>
     <string name="enable_alarms_title">启用警报</string>
     <string name="enable_alarms_description">允许手机振动作为警告</string>
-    <string name="disable_phone_vibrate_title">禁用手机振动</string>
+    <string name="disable_phone_vibration_title">禁用手机振动</string>
     <string name="disable_phone_vibration_description">电话不会振动但警报会传递给连接的Pebble Watch</string>
     <string name="speed_alarm1_phone_title">一级速度报警</string>
     <string name="speed_trigger_description">触发警报的速度</string>
