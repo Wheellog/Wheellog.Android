@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Automatyczne wysyłanie rejestrów</string>
 	<string name="auto_upload_log_description">Automatycznie wysyłaj rejestry z danymi do Google Drive</string>
 	<string name="log_location_title">Rejestruj lokalizację</string>
-	<string name="log_location_decription">Dołącz dane o lokalizacji do rejestru z danymi</string>
+	<string name="log_location_description">Dołącz dane o lokalizacji do rejestru z danymi</string>
 	<string name="use_gps_title">Używaj GPS do lokalizacji</string>
 	<string name="use_gps_description">Używaj GPS zamiast danych z sieci komórkowej. GPS oferuje wysoką dokładność kosztem zwiększonego zużycia baterii.</string>
 	<string name="on_off_strobe">Włączone/Wyłączone/Migające</string>

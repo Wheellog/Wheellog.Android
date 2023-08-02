@@ -1,4 +1,4 @@
-package com.cooper.wheellog.preferences
+package com.cooper.wheellog.settings
 
 import androidx.annotation.*
 import androidx.compose.animation.core.tween
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -30,118 +29,9 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty
 
 @Composable
-private fun baseSettings(
-    @StringRes name: Int,
-    @StringRes desc: Int,
-    themeIcon: ThemeIconEnum? = null,
-    rightContent: @Composable BoxScope.() -> Unit = { },
-    bottomContent: @Composable (BoxScope.() -> Unit)? = null
-) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp,
-                bottom = 16.dp,
-            )
-    ) {
-        val (rightControl, bottomControl, icon, title, subtext) = createRefs()
-        if (themeIcon != null) {
-            Icon(
-                painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
-                contentDescription = "",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .width((24 + 16).dp)
-                    .height(24.dp)
-                    .padding(end = 16.dp)
-                    .constrainAs(icon) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(subtext.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-        } else {
-            Spacer(
-                modifier = Modifier
-                    .size(8.dp)
-                    .constrainAs(icon) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(subtext.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-        }
-        Text(
-            text = stringResource(id = name),
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.primary
-            ),
-            textAlign = TextAlign.Start,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.constrainAs(title) {
-                start.linkTo(icon.end)
-                top.linkTo(parent.top)
-                end.linkTo(rightControl.start, 8.dp)
-                width = Dimension.fillToConstraints
-            }
-        )
-        if (desc != 0) {
-            Text(
-                text = stringResource(id = desc),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.constrainAs(subtext) {
-                    start.linkTo(title.start)
-                    top.linkTo(title.bottom, 8.dp)
-                    end.linkTo(title.end)
-                    width = Dimension.fillToConstraints
-                },
-            )
-        } else {
-            Spacer(
-                modifier = Modifier
-                    .constrainAs(subtext) {
-                        start.linkTo(title.start)
-                        top.linkTo(title.bottom)
-                        end.linkTo(rightControl.start)
-                        width = Dimension.fillToConstraints
-                    }
-            )
-        }
-        Box(modifier = Modifier
-            .constrainAs(rightControl) {
-                top.linkTo(parent.top)
-                bottom.linkTo(subtext.bottom)
-                end.linkTo(parent.end)
-            })
-        {
-            rightContent()
-        }
-        if (bottomContent != null) {
-            Box(modifier = Modifier
-                .constrainAs(bottomControl) {
-                    top.linkTo(subtext.bottom, 8.dp)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                })
-            {
-                bottomContent()
-            }
-        }
-    }
-}
-
-@Composable
-fun SettingsClickableComp(
+fun clickablePref(
     @StringRes name: Int,
     modifier: Modifier = Modifier,
     themeIcon: ThemeIconEnum? = null,
@@ -171,55 +61,8 @@ fun SettingsClickableComp(
     }
 }
 
-@Preview
 @Composable
-fun SettingsClickablePreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsClickableComp(
-        name = R.string.speed_settings_title,
-        themeIcon = ThemeIconEnum.SettingsSpeedometer
-    ) { }
-}
-
-@Preview
-@Composable
-fun SettingsClickablePreview2() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsClickableComp(
-        name = R.string.donate_title,
-        themeIcon = ThemeIconEnum.SettingsDonate,
-        showArrowIcon = false
-    ) { }
-}
-
-@Preview
-@Composable
-fun SettingsClickablePreview3() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsClickableComp(
-        name = R.string.beep_on_volume_up_title,
-        desc = R.string.beep_on_volume_up_description,
-        themeIcon = ThemeIconEnum.SettingsDonate,
-        showArrowIcon = true
-    ) { }
-}
-
-@Preview
-@Composable
-fun SettingsClickablePreview4() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsClickableComp(
-        name = R.string.beep_on_volume_up_title,
-        showArrowIcon = false
-    ) { }
-}
-
-@Composable
-fun SettingsSwitchComp(
+fun switchPref(
     @StringRes name: Int,
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
@@ -243,33 +86,8 @@ fun SettingsSwitchComp(
     )
 }
 
-@Preview
 @Composable
-fun SettingsSwitchPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsSwitchComp(
-        name = R.string.use_eng_title,
-        desc = R.string.use_eng_description,
-        themeIcon = ThemeIconEnum.SettingsLanguage,
-        isChecked = true
-    ) { }
-}
-
-@Preview
-@Composable
-fun SettingsSwitchPreview2() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsSwitchComp(
-        name = R.string.use_eng_title,
-        themeIcon = ThemeIconEnum.SettingsLanguage,
-        isChecked = false
-    ) { }
-}
-
-@Composable
-fun SettingsSliderComp(
+fun sliderPref(
     @StringRes name: Int,
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
@@ -282,7 +100,6 @@ fun SettingsSliderComp(
 ) {
     // if the dialog is visible
     var isDialogShown by remember { mutableStateOf(false) }
-    val state = remember { mutableStateOf("position") }
 
     if (isDialogShown) {
         Dialog(onDismissRequest = {
@@ -354,151 +171,8 @@ fun SettingsSliderComp(
     )
 }
 
-@Preview
 @Composable
-fun SettingsSliderPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsSliderComp(
-        name = R.string.alarm_1_battery_title,
-        themeIcon = ThemeIconEnum.MenuMiBandAlarm,
-        desc = R.string.alarm_1_battery_description,
-    ) { }
-}
-
-@Preview
-@Composable
-fun SettingsSliderPreview2() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsSliderComp(
-        name = R.string.alarm_factor2_title,
-        desc = R.string.alarm_factor2_description,
-        position = 50f,
-        min = 10f,
-        max = 60f,
-        format = "%.2f"
-    ) { }
-}
-
-@Preview
-@Composable
-fun SettingsSliderPreview3() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsSliderComp(
-        name = R.string.alarm_factor2_title,
-        position = 66.66f,
-        min = 60f,
-        max = 70f,
-        format = "%.2f"
-    ) { }
-}
-
-@Composable
-private fun TextEditDialog(
-    @StringRes name: Int,
-    storedValue: MutableState<String>,
-    onSave: (String) -> Unit,
-    onCheck: (String) -> Boolean,
-    onDismiss: () -> Unit // internal method to dismiss dialog from within
-) {
-
-    // storage for new input
-    var currentInput by remember {
-        mutableStateOf(TextFieldValue(storedValue.value))
-    }
-
-    // if the input is valid - run the method for current value
-    var isValid by remember {
-        mutableStateOf(onCheck(storedValue.value))
-    }
-
-    Surface(
-        color = MaterialTheme.colorScheme.surface
-    ) {
-
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(stringResource(id = name))
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(currentInput, onValueChange = {
-                // check on change, if the value is valid
-                isValid = onCheck(it.text)
-                currentInput = it
-            })
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                Button(onClick = {
-                    // save and dismiss the dialog
-                    onSave(currentInput.text)
-                    onDismiss()
-                    // disable / enable the button
-                }, enabled = isValid) {
-                    Text(stringResource(id = R.string.wh)) // TODO R.string.next))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TextEditNumberDialog(
-    @StringRes name: Int,
-    storedValue: State<String>,
-    inputFilter: (String) -> String, // filters out not needed letters
-    onSave: (String) -> Unit,
-    onCheck: (String) -> Boolean,
-    onDismiss: () -> Unit
-) {
-
-    var currentInput by remember {
-        mutableStateOf(TextFieldValue(storedValue.value))
-    }
-
-    var isValid by remember {
-        mutableStateOf(onCheck(storedValue.value))
-    }
-
-    Surface(
-        color = MaterialTheme.colorScheme.surface
-    ) {
-
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(stringResource(id = name))
-            Spacer(modifier = Modifier.height(8.dp))
-            TextField(currentInput,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                onValueChange = {
-                    // filters the input and removes redundant numbers
-                    val filteredText = inputFilter(it.text)
-                    isValid = onCheck(filteredText)
-                    currentInput = TextFieldValue(filteredText)
-                })
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                Button(onClick = {
-                    onSave(currentInput.text)
-                    onDismiss()
-                }, enabled = isValid) {
-                    Text(stringResource(id = R.string.wh)) //TODO R.string.next))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SettingsGroup(
+fun group(
     @StringRes name: Int,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -521,7 +195,7 @@ fun SettingsGroup(
 }
 
 @Composable
-fun SettingsListComp(
+fun list(
     @StringRes name: Int,
     modifier: Modifier = Modifier,
     themeIcon: ThemeIconEnum? = null,
@@ -628,22 +302,9 @@ fun SettingsListComp(
     }
 }
 
-@Preview
-@Composable
-fun SettingsListPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    SettingsListComp(
-        name = R.string.app_theme_title,
-        desc = R.string.app_theme_description,
-        entries = ThemeEnum.values().associate { it.value.toString() to it.name },
-        selectedKey = ThemeEnum.Original.value.toString(),
-    )
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SettingsMultiListComp(
+fun multiList(
     @StringRes name: Int,
     modifier: Modifier = Modifier,
     themeIcon: ThemeIconEnum? = null,
@@ -773,12 +434,347 @@ fun SettingsMultiListComp(
     }
 }
 
+@Composable
+private fun baseSettings(
+    @StringRes name: Int,
+    @StringRes desc: Int,
+    themeIcon: ThemeIconEnum? = null,
+    rightContent: @Composable BoxScope.() -> Unit = { },
+    bottomContent: @Composable (BoxScope.() -> Unit)? = null
+) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = 16.dp,
+            )
+    ) {
+        val (rightControl, bottomControl, icon, title, subtext) = createRefs()
+        if (themeIcon != null) {
+            Icon(
+                painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .width((24 + 16).dp)
+                    .height(24.dp)
+                    .padding(end = 16.dp)
+                    .constrainAs(icon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(subtext.bottom)
+                        start.linkTo(parent.start)
+                    }
+            )
+        } else {
+            Spacer(
+                modifier = Modifier
+                    .size(8.dp)
+                    .constrainAs(icon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(subtext.bottom)
+                        start.linkTo(parent.start)
+                    }
+            )
+        }
+        Text(
+            text = stringResource(id = name),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.primary
+            ),
+            textAlign = TextAlign.Start,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(icon.end)
+                top.linkTo(parent.top)
+                end.linkTo(rightControl.start, 8.dp)
+                width = Dimension.fillToConstraints
+            }
+        )
+        if (desc != 0) {
+            Text(
+                text = stringResource(id = desc),
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.constrainAs(subtext) {
+                    start.linkTo(title.start)
+                    top.linkTo(title.bottom, 8.dp)
+                    end.linkTo(title.end)
+                    width = Dimension.fillToConstraints
+                },
+            )
+        } else {
+            Spacer(
+                modifier = Modifier
+                    .constrainAs(subtext) {
+                        start.linkTo(title.start)
+                        top.linkTo(title.bottom)
+                        end.linkTo(rightControl.start)
+                        width = Dimension.fillToConstraints
+                    }
+            )
+        }
+        Box(modifier = Modifier
+            .constrainAs(rightControl) {
+                top.linkTo(parent.top)
+                bottom.linkTo(subtext.bottom)
+                end.linkTo(parent.end)
+            })
+        {
+            rightContent()
+        }
+        if (bottomContent != null) {
+            Box(modifier = Modifier
+                .constrainAs(bottomControl) {
+                    top.linkTo(subtext.bottom, 8.dp)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                })
+            {
+                bottomContent()
+            }
+        }
+    }
+}
+
+//@Composable
+//private fun TextEditDialog(
+//    @StringRes name: Int,
+//    storedValue: MutableState<String>,
+//    onSave: (String) -> Unit,
+//    onCheck: (String) -> Boolean,
+//    onDismiss: () -> Unit // internal method to dismiss dialog from within
+//) {
+//
+//    // storage for new input
+//    var currentInput by remember {
+//        mutableStateOf(TextFieldValue(storedValue.value))
+//    }
+//
+//    // if the input is valid - run the method for current value
+//    var isValid by remember {
+//        mutableStateOf(onCheck(storedValue.value))
+//    }
+//
+//    Surface(
+//        color = MaterialTheme.colorScheme.surface
+//    ) {
+//
+//        Column(
+//            modifier = Modifier
+//                .wrapContentHeight()
+//                .fillMaxWidth()
+//                .padding(16.dp)
+//        ) {
+//            Text(stringResource(id = name))
+//            Spacer(modifier = Modifier.height(8.dp))
+//            TextField(currentInput, onValueChange = {
+//                // check on change, if the value is valid
+//                isValid = onCheck(it.text)
+//                currentInput = it
+//            })
+//            Row {
+//                Spacer(modifier = Modifier.weight(1f))
+//                Button(onClick = {
+//                    // save and dismiss the dialog
+//                    onSave(currentInput.text)
+//                    onDismiss()
+//                    // disable / enable the button
+//                }, enabled = isValid) {
+//                    Text(stringResource(id = R.string.wh)) // TODO R.string.next))
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun TextEditNumberDialog(
+//    @StringRes name: Int,
+//    storedValue: State<String>,
+//    inputFilter: (String) -> String, // filters out not needed letters
+//    onSave: (String) -> Unit,
+//    onCheck: (String) -> Boolean,
+//    onDismiss: () -> Unit
+//) {
+//
+//    var currentInput by remember {
+//        mutableStateOf(TextFieldValue(storedValue.value))
+//    }
+//
+//    var isValid by remember {
+//        mutableStateOf(onCheck(storedValue.value))
+//    }
+//
+//    Surface(
+//        color = MaterialTheme.colorScheme.surface
+//    ) {
+//
+//        Column(
+//            modifier = Modifier
+//                .wrapContentHeight()
+//                .fillMaxWidth()
+//                .padding(16.dp)
+//        ) {
+//            Text(stringResource(id = name))
+//            Spacer(modifier = Modifier.height(8.dp))
+//            TextField(currentInput,
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                onValueChange = {
+//                    // filters the input and removes redundant numbers
+//                    val filteredText = inputFilter(it.text)
+//                    isValid = onCheck(filteredText)
+//                    currentInput = TextFieldValue(filteredText)
+//                })
+//            Row {
+//                Spacer(modifier = Modifier.weight(1f))
+//                Button(onClick = {
+//                    onSave(currentInput.text)
+//                    onDismiss()
+//                }, enabled = isValid) {
+//                    Text(stringResource(id = R.string.wh)) //TODO R.string.next))
+//                }
+//            }
+//        }
+//    }
+//}
+
 @Preview
 @Composable
-fun SettingsMultiListPreview() {
+private fun clickablePreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
-    SettingsMultiListComp(
+    clickablePref(
+        name = R.string.speed_settings_title,
+        themeIcon = ThemeIconEnum.SettingsSpeedometer
+    ) { }
+}
+
+@Preview
+@Composable
+private fun clickablePreview2() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    clickablePref(
+        name = R.string.donate_title,
+        themeIcon = ThemeIconEnum.SettingsDonate,
+        showArrowIcon = false
+    ) { }
+}
+
+@Preview
+@Composable
+private fun clickablePreview3() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    clickablePref(
+        name = R.string.beep_on_volume_up_title,
+        desc = R.string.beep_on_volume_up_description,
+        themeIcon = ThemeIconEnum.SettingsDonate,
+        showArrowIcon = true
+    ) { }
+}
+
+@Preview
+@Composable
+private fun clickablePreview4() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    clickablePref(
+        name = R.string.beep_on_volume_up_title,
+        showArrowIcon = false
+    ) { }
+}
+
+@Preview
+@Composable
+private fun switchPreview() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    switchPref(
+        name = R.string.use_eng_title,
+        desc = R.string.use_eng_description,
+        themeIcon = ThemeIconEnum.SettingsLanguage,
+        isChecked = true
+    ) { }
+}
+
+@Preview
+@Composable
+private fun switchPreview2() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    switchPref(
+        name = R.string.use_eng_title,
+        themeIcon = ThemeIconEnum.SettingsLanguage,
+        isChecked = false
+    ) { }
+}
+
+@Preview
+@Composable
+private fun sliderPreview() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    sliderPref(
+        name = R.string.alarm_1_battery_title,
+        themeIcon = ThemeIconEnum.MenuMiBandAlarm,
+        desc = R.string.alarm_1_battery_description,
+    ) { }
+}
+
+@Preview
+@Composable
+private fun sliderPreview2() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    sliderPref(
+        name = R.string.alarm_factor2_title,
+        desc = R.string.alarm_factor2_description,
+        position = 50f,
+        min = 10f,
+        max = 60f,
+        format = "%.2f"
+    ) { }
+}
+
+@Preview
+@Composable
+private fun sliderPreview3() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    sliderPref(
+        name = R.string.alarm_factor2_title,
+        position = 66.66f,
+        min = 60f,
+        max = 70f,
+        format = "%.2f"
+    ) { }
+}
+
+@Preview
+@Composable
+private fun listPreview() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    list(
+        name = R.string.app_theme_title,
+        desc = R.string.app_theme_description,
+        entries = ThemeEnum.values().associate { it.value.toString() to it.name },
+        selectedKey = ThemeEnum.Original.value.toString(),
+    )
+}
+
+@Preview
+@Composable
+private fun multiListPreview() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    multiList(
         name = R.string.view_blocks_title,
         desc = R.string.view_blocks_description,
         themeIcon = ThemeIconEnum.SettingsBlocks,

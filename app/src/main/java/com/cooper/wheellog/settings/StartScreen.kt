@@ -1,21 +1,16 @@
-package com.cooper.wheellog.preferences
+package com.cooper.wheellog.settings
 
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.BuildConfig
@@ -26,7 +21,7 @@ import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
 
 @Composable
-fun StartScreen(
+fun startScreen(
     modifier: Modifier = Modifier,
     onSelect: (String) -> Unit = {},
 )
@@ -36,43 +31,43 @@ fun StartScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         val context: Context = LocalContext.current
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.speed_settings_title,
             themeIcon = ThemeIconEnum.SettingsSpeedometer
         ) {
             onSelect(SettingsScreenEnum.Application.name)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.logs_settings_title,
             themeIcon = ThemeIconEnum.SettingsLog
         ) {
             onSelect(SettingsScreenEnum.Log.name)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.alarm_settings_title,
             themeIcon = ThemeIconEnum.SettingsVibration
         ) {
             onSelect(SettingsScreenEnum.Alarm.name)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.watch_settings_title,
             themeIcon = ThemeIconEnum.SettingsWatch
         ) {
             onSelect(SettingsScreenEnum.Watch.name)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.wheel_settings_title,
             themeIcon = ThemeIconEnum.SettingsWheel
         ) {
             onSelect(SettingsScreenEnum.Wheel.name)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.trip_settings_title,
             themeIcon = ThemeIconEnum.SettingsTrips
         ) {
             onSelect(SettingsScreenEnum.Trip.name)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.bug_report,
             themeIcon = ThemeIconEnum.SettingsBug,
             showArrowIcon = false
@@ -82,7 +77,7 @@ fun StartScreen(
             }
             context.startActivity(intent)
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.donate_title,
             themeIcon = ThemeIconEnum.SettingsDonate,
             showArrowIcon = false
@@ -100,7 +95,7 @@ fun StartScreen(
                 .show()
                 .setBlackIcon()
         }
-        SettingsClickableComp(
+        clickablePref(
             name = R.string.about_app_title,
             themeIcon = ThemeIconEnum.SettingsAbout,
             showArrowIcon = false
@@ -120,9 +115,9 @@ fun StartScreen(
 
 @Preview
 @Composable
-fun StartScreenPreview()
+fun startScreenPreview()
 {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
-    StartScreen()
+    startScreen()
 }

@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Téléchargement automatique du journal</string>
 	<string name="auto_upload_log_description">Téléchargement automatique du journal sur Google Drive</string>
 	<string name="log_location_title">Journaliser les informations de localisation</string>
-	<string name="log_location_decription">Ajout des données de localisation dans le journal</string>
+	<string name="log_location_description">Ajout des données de localisation dans le journal</string>
 	<string name="use_gps_title">Utilisation du GPS pour la localisation</string>
 	<string name="use_gps_description">Utiliser plutôt le GPS que les informations de localisation de l\'opérateur mobile. Le GPS est plus précis mais peut consommer plus la batterie du téléphone</string>
 	<string name="on_off_strobe">Off/On/Stroboscope</string>

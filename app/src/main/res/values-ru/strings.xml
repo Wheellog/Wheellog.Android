@@ -112,7 +112,7 @@
     <string name="auto_upload_log_title">Выгрузка логов</string>
     <string name="auto_upload_log_description">Автоматически выгружать логи на Google Drive.</string>
     <string name="log_location_title">Местоположение</string>
-    <string name="log_location_decription">Добавить текущую позицию в лог.</string>
+    <string name="log_location_description">Добавить текущую позицию в лог.</string>
     <string name="use_gps_title">Использование GPS</string>
     <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, а если параметр отключен, используются данные сотовой связи.</string>
     <string name="use_raw_title">Запись Raw данных</string>

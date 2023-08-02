@@ -1,4 +1,4 @@
-package com.cooper.wheellog.preferences
+package com.cooper.wheellog.settings
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Column
@@ -15,14 +15,14 @@ import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 
 @Composable
-fun ApplicationScreen() {
+fun applicationScreen() {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.use_eng_title,
             desc = R.string.use_eng_description,
             themeIcon = ThemeIconEnum.SettingsLanguage,
@@ -31,7 +31,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.useEng = it
         }
 
-        SettingsListComp(
+        list(
             name = R.string.app_theme_title,
             desc = R.string.app_theme_description,
             entries = ThemeEnum.values().associate { it.value.toString() to it.name },
@@ -40,7 +40,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.appThemeInt = it.first.toInt()
         }
 
-        SettingsListComp(
+        list(
             name = R.string.day_night_theme_title,
             entries = mapOf(
                 AppCompatDelegate.MODE_NIGHT_UNSPECIFIED.toString() to stringResource(R.string.day_night_theme_as_system),
@@ -52,7 +52,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.dayNightThemeMode = it.first.toInt()
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.use_better_percents_title,
             desc = R.string.use_better_percents_description,
             isChecked = WheelLog.AppConfig.useBetterPercents
@@ -61,7 +61,7 @@ fun ApplicationScreen() {
         }
 
         var customPercents by remember { mutableStateOf(WheelLog.AppConfig.customPercents) }
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.custom_percents_title,
             desc = R.string.custom_percents_description,
             isChecked = WheelLog.AppConfig.customPercents
@@ -70,7 +70,7 @@ fun ApplicationScreen() {
             customPercents = it
         }
         if (customPercents) {
-            SettingsSliderComp(
+            sliderPref(
                 name = R.string.cell_voltage_tiltback_title,
                 desc = R.string.cell_voltage_tiltback_description,
                 position = WheelLog.AppConfig.cellVoltageTiltback / 100f,
@@ -84,9 +84,9 @@ fun ApplicationScreen() {
             }
         }
 
-        SettingsGroup(name = R.string.measurement_systems_category_title) {
+        group(name = R.string.measurement_systems_category_title) {
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.use_mph_title,
                 desc = R.string.use_mph_description,
                 isChecked = WheelLog.AppConfig.useMph
@@ -94,7 +94,7 @@ fun ApplicationScreen() {
                 WheelLog.AppConfig.useMph = it
             }
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.use_fahrenheit_title,
                 desc = R.string.use_fahrenheit_description,
                 isChecked = WheelLog.AppConfig.useFahrenheit,
@@ -103,9 +103,9 @@ fun ApplicationScreen() {
             }
         }
 
-        SettingsGroup(name = R.string.after_connect_category) {
+        group(name = R.string.after_connect_category) {
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.auto_log_title,
                 desc = R.string.auto_log_description,
                 themeIcon = ThemeIconEnum.SettingsAutoLog,
@@ -114,7 +114,7 @@ fun ApplicationScreen() {
                 WheelLog.AppConfig.autoLog = it
             }
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.auto_watch_title,
                 desc = R.string.auto_watch_description,
                 themeIcon = ThemeIconEnum.SettingsWatch,
@@ -124,9 +124,9 @@ fun ApplicationScreen() {
             }
         }
 
-        SettingsGroup(name = R.string.main_view_category) {
+        group(name = R.string.main_view_category) {
 
-            SettingsMultiListComp(
+            multiList(
                 name = R.string.view_blocks_title,
                 desc = R.string.view_blocks_description,
                 themeIcon = ThemeIconEnum.SettingsBlocks,
@@ -165,7 +165,7 @@ fun ApplicationScreen() {
             }
             var usePipMode by remember { mutableStateOf(WheelLog.AppConfig.usePipMode) }
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.use_pip_mode_title,
                 desc = R.string.use_pip_mode_description,
                 isChecked = WheelLog.AppConfig.usePipMode,
@@ -174,7 +174,7 @@ fun ApplicationScreen() {
                 usePipMode = it
             }
             if (usePipMode) {
-                SettingsListComp(
+                list(
                     name = R.string.pip_block_title,
                     entries = mapOf(
                         "0" to stringResource(R.string.speed),
@@ -186,7 +186,7 @@ fun ApplicationScreen() {
                 }
             }
 
-            SettingsMultiListComp(
+            multiList(
                 name = R.string.notification_buttons_title,
                 desc = R.string.notification_buttons_description,
                 themeIcon = ThemeIconEnum.SettingsNotification,
@@ -203,7 +203,7 @@ fun ApplicationScreen() {
                 WheelLog.AppConfig.notificationButtons = it.toTypedArray()
             }
 
-            SettingsSliderComp(
+            sliderPref(
                 name = R.string.max_speed_dial_title,
                 desc = R.string.max_speed_dial_description,
                 min = 10f,
@@ -213,7 +213,7 @@ fun ApplicationScreen() {
                 WheelLog.AppConfig.maxSpeed = it.toInt()
             }
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.current_on_dial_title,
                 desc = R.string.current_on_dial_description,
                 isChecked = WheelLog.AppConfig.currentOnDial,
@@ -221,7 +221,7 @@ fun ApplicationScreen() {
                 WheelLog.AppConfig.currentOnDial = it
             }
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.use_short_pwm_title,
                 desc = R.string.use_short_pwm_description,
                 isChecked = WheelLog.AppConfig.useShortPwm,
@@ -230,14 +230,14 @@ fun ApplicationScreen() {
             }
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.show_page_graph_title,
             isChecked = WheelLog.AppConfig.pageGraph,
         ) {
             WheelLog.AppConfig.pageGraph = it
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.show_page_events_title,
             desc = R.string.show_page_events_description,
             themeIcon = ThemeIconEnum.SettingsPageEvents,
@@ -246,7 +246,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.pageEvents = it
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.show_page_trips_title,
             themeIcon = ThemeIconEnum.SettingsPageTrips,
             isChecked = WheelLog.AppConfig.pageTrips,
@@ -254,7 +254,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.pageTrips = it
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.connection_sound_title,
             desc = R.string.connection_sound_description,
             themeIcon = ThemeIconEnum.SettingsConnectionSound,
@@ -263,7 +263,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.connectionSound = it
         }
 
-        SettingsSliderComp(
+        sliderPref(
             name = R.string.no_connection_sound_title,
             desc = R.string.no_connection_sound_description,
             min = 0f,
@@ -274,7 +274,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.noConnectionSound = it.toInt()
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.use_stop_music_title,
             desc = R.string.use_stop_music_description,
             themeIcon = ThemeIconEnum.SettingsAutoMute,
@@ -283,7 +283,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.useStopMusic = it
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.show_unknown_devices_title,
             desc = R.string.show_unknown_devices_description,
             isChecked = WheelLog.AppConfig.showUnknownDevices,
@@ -291,7 +291,7 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.showUnknownDevices = it
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.use_reconnect_title,
             desc = R.string.use_reconnect_description,
             isChecked = WheelLog.AppConfig.useReconnect,
@@ -299,10 +299,10 @@ fun ApplicationScreen() {
             WheelLog.AppConfig.useReconnect = it
         }
 
-        SettingsGroup(
+        group(
             name = R.string.beep_category,
         ) {
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.beep_on_single_tap_title,
                 desc = R.string.beep_on_single_tap_description,
                 isChecked = WheelLog.AppConfig.useBeepOnSingleTap,
@@ -310,7 +310,7 @@ fun ApplicationScreen() {
                 WheelLog.AppConfig.useBeepOnSingleTap = it
             }
 
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.beep_on_volume_up_title,
                 desc = R.string.beep_on_volume_up_description,
                 isChecked = WheelLog.AppConfig.useBeepOnVolumeUp,
@@ -319,7 +319,7 @@ fun ApplicationScreen() {
             }
 
             var beepByWheel by remember { mutableStateOf(WheelLog.AppConfig.beepByWheel) }
-            SettingsSwitchComp(
+            switchPref(
                 name = R.string.beep_by_wheel_title,
                 desc = R.string.beep_by_wheel_description,
                 isChecked = WheelLog.AppConfig.beepByWheel,
@@ -329,7 +329,7 @@ fun ApplicationScreen() {
             }
 
             if (!beepByWheel) {
-                SettingsSwitchComp(
+                switchPref(
                     name = R.string.custom_beep_title,
                     isChecked = WheelLog.AppConfig.useCustomBeep,
                 ) {
@@ -338,14 +338,14 @@ fun ApplicationScreen() {
             }
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.use_detect_battery_optimization_title,
             isChecked = WheelLog.AppConfig.detectBatteryOptimization,
         ) {
             WheelLog.AppConfig.detectBatteryOptimization = it
         }
 
-        SettingsSwitchComp(
+        switchPref(
             name = R.string.send_yandex_metriсa_title,
             desc = R.string.send_yandex_metriсa_description,
             isChecked = WheelLog.AppConfig.yandexMetricaAccepted,

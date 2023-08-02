@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Upload automatico log</string>
 	<string name="auto_upload_log_description">Invia i log a Google Drive automaticamente</string>
 	<string name="log_location_title">Posizione log</string>
-	<string name="log_location_decription">Inserisce le posizioni nei log</string>
+	<string name="log_location_description">Inserisce le posizioni nei log</string>
 	<string name="use_gps_title">Utilizza GPS per le posizioni</string>
 	<string name="use_gps_description">Utilizza GPS per le posizioni al posto dei dati operatore. GPS è più preciso ma consuma più batteria smartphone</string>
 	<string name="on_off_strobe">Accesa/Spenta/Strobo</string>

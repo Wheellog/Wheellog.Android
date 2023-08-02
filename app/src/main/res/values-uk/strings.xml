@@ -107,7 +107,7 @@
     <string name="auto_upload_log_title">Аплоад логів</string>
     <string name="auto_upload_log_description">Автоматично аплоадити логи у Google Drive.</string>
     <string name="log_location_title">Місцезнаходження</string>
-    <string name="log_location_decription">Додати позицію у лог.</string>
+    <string name="log_location_description">Додати позицію у лог.</string>
     <string name="use_gps_title">Використовувати GPS</string>
     <string name="use_gps_description">Використовувати дані GPS для точного пошуку локації.</string>
     <string name="on_off_strobe">Вимк./Увімк./Строб</string>

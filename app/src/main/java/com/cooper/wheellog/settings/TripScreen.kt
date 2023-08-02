@@ -1,4 +1,4 @@
-package com.cooper.wheellog.preferences
+package com.cooper.wheellog.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -9,10 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LogScreen(
-    modifier: Modifier = Modifier
-)
-{
+fun tripScreen( ) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())

@@ -1,4 +1,4 @@
-package com.cooper.wheellog.preferences
+package com.cooper.wheellog.settings
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.*
@@ -87,27 +87,27 @@ fun SettingsMainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = SettingsScreenEnum.Start.name) {
-                StartScreen(
+                startScreen(
                     onSelect = { navController.navigate(it) }
                 )
             }
             composable(route = SettingsScreenEnum.Application.name) {
-                ApplicationScreen()
+                applicationScreen()
             }
             composable(route = SettingsScreenEnum.Log.name) {
-                LogScreen()
+                logScreen()
             }
             composable(route = SettingsScreenEnum.Alarm.name) {
-                AlarmScreen()
+                alarmScreen()
             }
             composable(route = SettingsScreenEnum.Watch.name) {
-                WatchScreen()
+                watchScreen()
             }
             composable(route = SettingsScreenEnum.Wheel.name) {
-                WheelScreen()
+                wheelScreen()
             }
             composable(route = SettingsScreenEnum.Trip.name) {
-                TripScreen()
+                tripScreen()
             }
         }
     }

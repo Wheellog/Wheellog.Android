@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Автоматично качване на лога</string>
 	<string name="auto_upload_log_description">Автоматично качвай лог файловете в Гугъл Драйв</string>
 	<string name="log_location_title">Запис на Локация</string>
-	<string name="log_location_decription">Включвай данни за локация в лога</string>
+	<string name="log_location_description">Включвай данни за локация в лога</string>
 	<string name="use_gps_title">Използвай GPS за локализация</string>
 	<string name="use_gps_description">Използвай GPS за локализация вместо мобилния оператор. GPS е по-точен но може да консумира повече батерия</string>
 	<string name="on_off_strobe">Вкл/Изкл/Строб</string>

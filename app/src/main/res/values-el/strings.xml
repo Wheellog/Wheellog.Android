@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Αυτόματη Μεταφόρτωση Καταγραφών</string>
 	<string name="auto_upload_log_description">Αυτόματη μεταφόρτωση αρχείων καταγραφής στο Google Drive</string>
 	<string name="log_location_title">Τοποθεσία Καταγραφής</string>
-	<string name="log_location_decription">Συμπεριλάβετε δεδομένα θέσης μέσα στα αρχεία καταγραφής</string>
+	<string name="log_location_description">Συμπεριλάβετε δεδομένα θέσης μέσα στα αρχεία καταγραφής</string>
 	<string name="use_gps_title">Χρησιμοποιήστε GPS για τοποθεσία</string>
 	<string name="use_gps_description">Χρησιμοποιήστε το GPS για την τοποθεσία αντί για τον πάροχο δικτύου. Το GPS είναι πιο ακριβές, αλλά μπορεί να καταναλώσει περισσότερη ενέργεια από την μπαταρία</string>
 	<string name="on_off_strobe">Ενεργό/Ανενεργό/Ενάλλαξη</string>

@@ -16,7 +16,7 @@
     <SwitchPreference
         android:icon="@drawable/ic_baseline_location_on_24"
         android:key="@string/log_location_data"
-        android:summary="@string/log_location_decription"
+        android:summary="@string/log_location_description"
         android:title="@string/log_location_title" />
 
     <SwitchPreference

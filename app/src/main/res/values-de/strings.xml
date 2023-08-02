@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Logs automatisch hochladen</string>
 	<string name="auto_upload_log_description">Logs automatisch auf Google Drive hochladen</string>
 	<string name="log_location_title">Standortlogs</string>
-	<string name="log_location_decription">Standort loggen</string>
+	<string name="log_location_description">Standort loggen</string>
 	<string name="use_gps_title">GPS zur Ortsbestimmung</string>
 	<string name="use_gps_description">Benutzt das GPS und nicht das Mobilnetz zur Ortsbestimmung. Diese Methode ist genauer aber verbraucht mehre Energie</string>
 	<string name="on_off_strobe">An/Aus/Stroboskop</string>
