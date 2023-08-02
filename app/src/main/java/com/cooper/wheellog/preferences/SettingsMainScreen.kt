@@ -1,6 +1,5 @@
 package com.cooper.wheellog.preferences
 
-import android.app.Activity
 import androidx.annotation.StringRes
 import androidx.compose.material3.*
 import androidx.compose.foundation.*

@@ -543,7 +543,7 @@
     <string name="setup_pwm_auto">2. Auto. You need to spin wheel on air.</string>
     <string name="setup_pwm_select_from_template">3. Select from template:</string>
     <string name="send_yandex_metriсa_title">Send usage statistics</string>
-    <string name="send_yandex_metriсa">This application uses the AppMetrica analytics service provided by Yandex. Geolocation is not sent. The information collected in this way will be used to resolve errors and cannot identify you.</string>
+    <string name="send_yandex_metriсa_description">This application uses the AppMetrica analytics service provided by Yandex. Geolocation is not sent. The information collected in this way will be used to resolve errors and cannot identify you.</string>
     <string name="map_map_tab_name">Map</string>
     <string name="map_statistics_tab_name">Stats</string>
     <string name="error_cannot_open_file">Could not open the file.</string>

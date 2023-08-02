@@ -1,12 +1,11 @@
 package com.cooper.wheellog.preferences
 
-import android.content.Context
 import androidx.annotation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,6 +16,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.*
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,11 +25,13 @@ import androidx.compose.ui.window.*
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.cooper.wheellog.AppConfig
-import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty
 
 @Composable
 private fun baseSettings(
@@ -56,7 +58,7 @@ private fun baseSettings(
                 contentDescription = "",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
-                    .width((24+16).dp)
+                    .width((24 + 16).dp)
                     .height(24.dp)
                     .padding(end = 16.dp)
                     .constrainAs(icon) {
@@ -171,8 +173,7 @@ fun SettingsClickableComp(
 
 @Preview
 @Composable
-fun SettingsClickablePreview()
-{
+fun SettingsClickablePreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsClickableComp(
@@ -183,8 +184,7 @@ fun SettingsClickablePreview()
 
 @Preview
 @Composable
-fun SettingsClickablePreview2()
-{
+fun SettingsClickablePreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsClickableComp(
@@ -196,8 +196,7 @@ fun SettingsClickablePreview2()
 
 @Preview
 @Composable
-fun SettingsClickablePreview3()
-{
+fun SettingsClickablePreview3() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsClickableComp(
@@ -210,8 +209,7 @@ fun SettingsClickablePreview3()
 
 @Preview
 @Composable
-fun SettingsClickablePreview4()
-{
+fun SettingsClickablePreview4() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsClickableComp(
@@ -247,8 +245,7 @@ fun SettingsSwitchComp(
 
 @Preview
 @Composable
-fun SettingsSwitchPreview()
-{
+fun SettingsSwitchPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsSwitchComp(
@@ -261,8 +258,7 @@ fun SettingsSwitchPreview()
 
 @Preview
 @Composable
-fun SettingsSwitchPreview2()
-{
+fun SettingsSwitchPreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsSwitchComp(
@@ -293,10 +289,10 @@ fun SettingsSliderComp(
             // dismiss the dialog on touch outside
             isDialogShown = false
         }) {
-            TextEditDialog(name = name,) {
-                // to dismiss dialog from within
-                isDialogShown = false
-            }
+//            TextEditDialog(name = name) {
+//                // to dismiss dialog from within
+//                isDialogShown = false
+//            }
         }
     }
     baseSettings(
@@ -339,7 +335,12 @@ fun SettingsSliderComp(
                         )
                 ) {
                     Text(
-                        text = String.format(format, sliderPosition) + stringResource(unit),
+                        text = String.format(format, sliderPosition)
+                                + if (unit != 0) {
+                            stringResource(unit)
+                        } else {
+                            ""
+                        },
                         maxLines = 1,
                         modifier = Modifier.padding(6.dp).fillMaxWidth(),
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -355,8 +356,7 @@ fun SettingsSliderComp(
 
 @Preview
 @Composable
-fun SettingsSliderPreview()
-{
+fun SettingsSliderPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsSliderComp(
@@ -368,8 +368,7 @@ fun SettingsSliderPreview()
 
 @Preview
 @Composable
-fun SettingsSliderPreview2()
-{
+fun SettingsSliderPreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsSliderComp(
@@ -384,8 +383,7 @@ fun SettingsSliderPreview2()
 
 @Preview
 @Composable
-fun SettingsSliderPreview3()
-{
+fun SettingsSliderPreview3() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsSliderComp(
@@ -532,24 +530,79 @@ fun SettingsListComp(
     selectedKey: String = "",
     onSelect: (selected: Pair<String, String>) -> Unit = {},
 ) {
-    val context: Context = LocalContext.current
     val title = stringResource(name)
     val keys = entries.keys.toTypedArray()
-    val values = entries.values.toTypedArray()
-    var selectedIndex by remember { mutableStateOf(keys.indexOf(selectedKey)) }
+    var selectedIndex by remember { mutableStateOf(selectedKey) }
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            shape = RoundedCornerShape(8.dp),
+            onDismissRequest = { showDialog = false },
+            title = {
+                Row {
+                    if (themeIcon != null) {
+                        Icon(
+                            painter = painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp).padding(end = 8.dp),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+            },
+            text = {
+                LazyColumn {
+                    items(items = keys) { key ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = selectedIndex == key,
+                                    onClick = {
+                                        selectedIndex = key
+                                        onSelect(Pair(key, entries[key] ?: ""))
+                                        showDialog = false
+                                    },
+                                    role = Role.RadioButton
+                                )
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = selectedIndex == key,
+                                onClick = null,
+                                colors = RadioButtonDefaults.colors(),
+                                modifier = Modifier.padding(8.dp),
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = entries[key] ?: "",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(id = android.R.string.cancel))
+                }
+            },
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+            )
+        )
+    }
+
     val onClick: () -> Unit = {
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(context)
-            .setTitle(title)
-            .setSingleChoiceItems(values, selectedIndex) { dialog, which ->
-                selectedIndex = which
-                onSelect(Pair(keys[selectedIndex], values[selectedIndex]))
-                dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> }
-        if (themeIcon != null) {
-            dialog.setIcon(WheelLog.ThemeManager.getId(themeIcon))
-        }
-        dialog.show().setBlackIcon()
+        showDialog = true
     }
     Surface(
         color = Color.Transparent,
@@ -561,10 +614,10 @@ fun SettingsListComp(
             desc = desc,
             themeIcon = themeIcon,
             rightContent = {
-                if (selectedIndex != -1) {
+                if (selectedIndex != "") {
                     Text(
                         maxLines = 1,
-                        text = values[selectedIndex],
+                        text = entries[selectedIndex] ?: "",
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.End,
                         overflow = TextOverflow.Ellipsis,
@@ -577,20 +630,14 @@ fun SettingsListComp(
 
 @Preview
 @Composable
-fun SettingsListPreview()
-{
+fun SettingsListPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsListComp(
-        name = R.string.view_blocks_title,
-        desc = R.string.view_blocks_description,
-        themeIcon = ThemeIconEnum.SettingsBlocks,
-        entries = mapOf(
-            "1" to "Just one",
-            "2" to "Just two",
-            "3" to "Just three",
-        ),
-        selectedKey = "Just two",
+        name = R.string.app_theme_title,
+        desc = R.string.app_theme_description,
+        entries = ThemeEnum.values().associate { it.value.toString() to it.name },
+        selectedKey = ThemeEnum.Original.value.toString(),
     )
 }
 
@@ -603,11 +650,12 @@ fun SettingsMultiListComp(
     @StringRes desc: Int = 0,
     entries: Map<String, String> = mapOf(),
     selectedKeys: List<String> = listOf(),
-    onChecked: (selectedKeys: List<String>) -> Unit = {},
+    useSort: Boolean = false,
+    onChecked: (selectedKeys: List<String>) -> Unit,
 ) {
     val title = stringResource(name)
     val keys = entries.keys.toList()
-    var selectedIndex by remember { mutableStateOf(selectedKeys) }
+    var selectedIndex by remember { mutableStateOf(selectedKeys.distinct()) }
     // if selected keys are not in the list, then find them in the values
     if (!keys.containsAll(selectedIndex)) {
         selectedIndex = entries.filter { selectedIndex.contains(it.value) }.keys.toList()
@@ -628,13 +676,24 @@ fun SettingsMultiListComp(
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
-                    Text(text = title)
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
             },
             text = {
-                val state = rememberLazyListState()
-                var items by remember { mutableStateOf(selectedIndex + keys.filter { i -> !selectedIndex.contains(i) }) }
-                LazyColumn(state = state) {
+                val getItems = {
+                    if (useSort) {
+                        selectedIndex + keys.filter { i -> !selectedIndex.contains(i) }
+                    } else {
+                        keys
+                    }
+                }
+                var items by remember {
+                    mutableStateOf(getItems())
+                }
+                LazyColumn {
                     items(items = items, key = { it }) { key ->
                         val checked = selectedIndex.contains(key)
                         val onCheckedChange: (Boolean) -> Unit = {
@@ -643,12 +702,21 @@ fun SettingsMultiListComp(
                             } else {
                                 selectedIndex - key
                             }
-                            items = selectedIndex + items.filter { i -> !selectedIndex.contains(i) }
+                            if (useSort) {
+                                items = getItems()
+                            }
                             onChecked(selectedIndex)
                         }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .selectable(
+                                    selected = checked,
+                                    onClick = {
+                                        onCheckedChange(!checked)
+                                    },
+                                    role = Role.Checkbox
+                                )
                                 .animateItemPlacement(
                                     animationSpec = tween(300)
                                 ),
@@ -657,17 +725,13 @@ fun SettingsMultiListComp(
                             Checkbox(
                                 checked = checked,
                                 onCheckedChange = onCheckedChange,
-                                colors = CheckboxDefaults.colors(
-                                    checkmarkColor = MaterialTheme.colorScheme.onSurface,
-                                    checkedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                ),
+                                colors = CheckboxDefaults.colors(),
                                 modifier = Modifier.size(32.dp),
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = entries[key] ?: "",
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.labelMedium,
                             )
                         }
                     }
@@ -711,8 +775,7 @@ fun SettingsMultiListComp(
 
 @Preview
 @Composable
-fun SettingsMultiListPreview()
-{
+fun SettingsMultiListPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     WheelLog.ThemeManager = ThemeManager()
     SettingsMultiListComp(
@@ -736,5 +799,5 @@ fun SettingsMultiListPreview()
             "14" to "Just fourteen",
         ),
         selectedKeys = listOf("12", "2"),
-    )
+    ) { }
 }

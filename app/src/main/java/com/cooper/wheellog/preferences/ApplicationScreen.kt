@@ -5,30 +5,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
-import com.cooper.wheellog.utils.ThemeManager
 
 @Composable
-fun ApplicationScreen(
-    // onSelect: (String) -> Unit = {},
-    modifier: Modifier = Modifier
-) {
+fun ApplicationScreen() {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+
         SettingsSwitchComp(
             name = R.string.use_eng_title,
             desc = R.string.use_eng_description,
@@ -37,6 +30,7 @@ fun ApplicationScreen(
         ) {
             WheelLog.AppConfig.useEng = it
         }
+
         SettingsListComp(
             name = R.string.app_theme_title,
             desc = R.string.app_theme_description,
@@ -45,6 +39,7 @@ fun ApplicationScreen(
         ) {
             WheelLog.AppConfig.appThemeInt = it.first.toInt()
         }
+
         SettingsListComp(
             name = R.string.day_night_theme_title,
             entries = mapOf(
@@ -56,6 +51,7 @@ fun ApplicationScreen(
         ) {
             WheelLog.AppConfig.dayNightThemeMode = it.first.toInt()
         }
+
         SettingsSwitchComp(
             name = R.string.use_better_percents_title,
             desc = R.string.use_better_percents_description,
@@ -63,6 +59,7 @@ fun ApplicationScreen(
         ) {
             WheelLog.AppConfig.useBetterPercents = it
         }
+
         var customPercents by remember { mutableStateOf(WheelLog.AppConfig.customPercents) }
         SettingsSwitchComp(
             name = R.string.custom_percents_title,
@@ -86,7 +83,9 @@ fun ApplicationScreen(
                 // currentRecomposeScope.invalidate()
             }
         }
+
         SettingsGroup(name = R.string.measurement_systems_category_title) {
+
             SettingsSwitchComp(
                 name = R.string.use_mph_title,
                 desc = R.string.use_mph_description,
@@ -94,6 +93,7 @@ fun ApplicationScreen(
             ) {
                 WheelLog.AppConfig.useMph = it
             }
+
             SettingsSwitchComp(
                 name = R.string.use_fahrenheit_title,
                 desc = R.string.use_fahrenheit_description,
@@ -102,7 +102,9 @@ fun ApplicationScreen(
                 WheelLog.AppConfig.useFahrenheit = it
             }
         }
+
         SettingsGroup(name = R.string.after_connect_category) {
+
             SettingsSwitchComp(
                 name = R.string.auto_log_title,
                 desc = R.string.auto_log_description,
@@ -111,6 +113,7 @@ fun ApplicationScreen(
             ) {
                 WheelLog.AppConfig.autoLog = it
             }
+
             SettingsSwitchComp(
                 name = R.string.auto_watch_title,
                 desc = R.string.auto_watch_description,
@@ -120,44 +123,48 @@ fun ApplicationScreen(
                 WheelLog.AppConfig.autoWatch = it
             }
         }
+
         SettingsGroup(name = R.string.main_view_category) {
-            // TODO: create a new multi-select component
+
             SettingsMultiListComp(
                 name = R.string.view_blocks_title,
                 desc = R.string.view_blocks_description,
                 themeIcon = ThemeIconEnum.SettingsBlocks,
                 entries = mapOf(
-                    "pwm" to stringResource(R.string.pwm),
-                    "maxPwm" to stringResource(R.string.max_pwm),
-                    "voltage" to stringResource(R.string.voltage),
-                    "battery" to stringResource(R.string.battery),
-                    "topSpeed" to stringResource(R.string.top_speed),
-                    "avgRiding" to stringResource(R.string.average_riding_speed),
-                    "avgSpeed" to stringResource(R.string.average_speed),
-                    "rideTime" to stringResource(R.string.riding_time),
-                    "journeyTime" to stringResource(R.string.ride_time),
-                    "current" to stringResource(R.string.current),
-                    "maxCurrent" to stringResource(R.string.maxcurrent),
-                    "power" to stringResource(R.string.power),
-                    "maxPower" to stringResource(R.string.maxpower),
-                    "temp" to stringResource(R.string.temperature),
-                    "temp2" to stringResource(R.string.temperature2),
-                    "maxTemp" to stringResource(R.string.maxtemperature),
-                    "distance" to stringResource(R.string.distance),
-                    "total" to stringResource(R.string.total),
-                    "wheelDistance" to stringResource(R.string.wheel_distance),
-                    "remainingDistance" to stringResource(R.string.remaining_distance),
-                    "batteryPerKm" to stringResource(R.string.battery_per_km),
-                    "consumption" to stringResource(R.string.consumption),
-                    "avgCell" to stringResource(R.string.avg_cell_volt),
-                    "userDistance" to stringResource(R.string.user_distance),
-                    "speed" to stringResource(R.string.speed),
+                    // TODO: use enum as key instead of localized string resources
+                    stringResource(R.string.pwm) to stringResource(R.string.pwm),
+                    stringResource(R.string.max_pwm) to stringResource(R.string.max_pwm),
+                    stringResource(R.string.voltage) to stringResource(R.string.voltage),
+                    stringResource(R.string.battery) to stringResource(R.string.battery),
+                    stringResource(R.string.top_speed) to stringResource(R.string.top_speed),
+                    stringResource(R.string.average_riding_speed) to stringResource(R.string.average_riding_speed),
+                    stringResource(R.string.average_speed) to stringResource(R.string.average_speed),
+                    stringResource(R.string.riding_time) to stringResource(R.string.riding_time),
+                    stringResource(R.string.ride_time) to stringResource(R.string.ride_time),
+                    stringResource(R.string.current) to stringResource(R.string.current),
+                    stringResource(R.string.maxcurrent) to stringResource(R.string.maxcurrent),
+                    stringResource(R.string.power) to stringResource(R.string.power),
+                    stringResource(R.string.maxpower) to stringResource(R.string.maxpower),
+                    stringResource(R.string.temperature) to stringResource(R.string.temperature),
+                    stringResource(R.string.temperature2) to stringResource(R.string.temperature2),
+                    stringResource(R.string.maxtemperature) to stringResource(R.string.maxtemperature),
+                    stringResource(R.string.distance) to stringResource(R.string.distance),
+                    stringResource(R.string.total) to stringResource(R.string.total),
+                    stringResource(R.string.wheel_distance) to stringResource(R.string.wheel_distance),
+                    stringResource(R.string.remaining_distance) to stringResource(R.string.remaining_distance),
+                    stringResource(R.string.battery_per_km) to stringResource(R.string.battery_per_km),
+                    stringResource(R.string.consumption) to stringResource(R.string.consumption),
+                    stringResource(R.string.avg_cell_volt) to stringResource(R.string.avg_cell_volt),
+                    stringResource(R.string.user_distance) to stringResource(R.string.user_distance),
+                    stringResource(R.string.speed) to stringResource(R.string.speed),
                 ),
                 selectedKeys = WheelLog.AppConfig.viewBlocks.toList(),
+                useSort = true,
             ) {
                 WheelLog.AppConfig.viewBlocks = it.toTypedArray()
             }
             var usePipMode by remember { mutableStateOf(WheelLog.AppConfig.usePipMode) }
+
             SettingsSwitchComp(
                 name = R.string.use_pip_mode_title,
                 desc = R.string.use_pip_mode_description,
@@ -178,24 +185,172 @@ fun ApplicationScreen(
                     WheelLog.AppConfig.pipBlock = it.first
                 }
             }
+
+            SettingsMultiListComp(
+                name = R.string.notification_buttons_title,
+                desc = R.string.notification_buttons_description,
+                themeIcon = ThemeIconEnum.SettingsNotification,
+                entries = mapOf(
+                    stringResource(R.string.icon_connection) to stringResource(R.string.icon_connection),
+                    stringResource(R.string.icon_logging) to stringResource(R.string.icon_logging),
+                    stringResource(R.string.icon_watch) to stringResource(R.string.icon_watch),
+                    stringResource(R.string.icon_beep) to stringResource(R.string.icon_beep),
+                    stringResource(R.string.icon_light) to stringResource(R.string.icon_light),
+                    stringResource(R.string.icon_miband) to stringResource(R.string.icon_miband),
+                ),
+                selectedKeys = WheelLog.AppConfig.notificationButtons.toList()
+            ) {
+                WheelLog.AppConfig.notificationButtons = it.toTypedArray()
+            }
+
+            SettingsSliderComp(
+                name = R.string.max_speed_dial_title,
+                desc = R.string.max_speed_dial_description,
+                min = 10f,
+                max = 100f,
+                position = WheelLog.AppConfig.maxSpeed.toFloat(),
+            ) {
+                WheelLog.AppConfig.maxSpeed = it.toInt()
+            }
+
+            SettingsSwitchComp(
+                name = R.string.current_on_dial_title,
+                desc = R.string.current_on_dial_description,
+                isChecked = WheelLog.AppConfig.currentOnDial,
+            ) {
+                WheelLog.AppConfig.currentOnDial = it
+            }
+
+            SettingsSwitchComp(
+                name = R.string.use_short_pwm_title,
+                desc = R.string.use_short_pwm_description,
+                isChecked = WheelLog.AppConfig.useShortPwm,
+            ) {
+                WheelLog.AppConfig.useShortPwm = it
+            }
         }
 
-//        SettingsGroup(name = R.string.alarm_settings_title) {
-//            SettingsSliderComp(
-//                name = R.string.speed_alarm1_phone_title,
-//                themeIcon = ThemeIconEnum.TripsMap,
-//                desc = R.string.alarm1_description,
-//            ) {
-//
-//            }
-//        }
-    }
-}
+        SettingsSwitchComp(
+            name = R.string.show_page_graph_title,
+            isChecked = WheelLog.AppConfig.pageGraph,
+        ) {
+            WheelLog.AppConfig.pageGraph = it
+        }
 
-@Preview
-@Composable
-fun ApplicationScreenPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
-    ApplicationScreen()
+        SettingsSwitchComp(
+            name = R.string.show_page_events_title,
+            desc = R.string.show_page_events_description,
+            themeIcon = ThemeIconEnum.SettingsPageEvents,
+            isChecked = WheelLog.AppConfig.pageEvents,
+        ) {
+            WheelLog.AppConfig.pageEvents = it
+        }
+
+        SettingsSwitchComp(
+            name = R.string.show_page_trips_title,
+            themeIcon = ThemeIconEnum.SettingsPageTrips,
+            isChecked = WheelLog.AppConfig.pageTrips,
+        ) {
+            WheelLog.AppConfig.pageTrips = it
+        }
+
+        SettingsSwitchComp(
+            name = R.string.connection_sound_title,
+            desc = R.string.connection_sound_description,
+            themeIcon = ThemeIconEnum.SettingsConnectionSound,
+            isChecked = WheelLog.AppConfig.connectionSound,
+        ) {
+            WheelLog.AppConfig.connectionSound = it
+        }
+
+        SettingsSliderComp(
+            name = R.string.no_connection_sound_title,
+            desc = R.string.no_connection_sound_description,
+            min = 0f,
+            max = 60f,
+            unit = R.string.sec,
+            position = WheelLog.AppConfig.noConnectionSound.toFloat(),
+        ) {
+            WheelLog.AppConfig.noConnectionSound = it.toInt()
+        }
+
+        SettingsSwitchComp(
+            name = R.string.use_stop_music_title,
+            desc = R.string.use_stop_music_description,
+            themeIcon = ThemeIconEnum.SettingsAutoMute,
+            isChecked = WheelLog.AppConfig.useStopMusic,
+        ) {
+            WheelLog.AppConfig.useStopMusic = it
+        }
+
+        SettingsSwitchComp(
+            name = R.string.show_unknown_devices_title,
+            desc = R.string.show_unknown_devices_description,
+            isChecked = WheelLog.AppConfig.showUnknownDevices,
+        ) {
+            WheelLog.AppConfig.showUnknownDevices = it
+        }
+
+        SettingsSwitchComp(
+            name = R.string.use_reconnect_title,
+            desc = R.string.use_reconnect_description,
+            isChecked = WheelLog.AppConfig.useReconnect,
+        ) {
+            WheelLog.AppConfig.useReconnect = it
+        }
+
+        SettingsGroup(
+            name = R.string.beep_category,
+        ) {
+            SettingsSwitchComp(
+                name = R.string.beep_on_single_tap_title,
+                desc = R.string.beep_on_single_tap_description,
+                isChecked = WheelLog.AppConfig.useBeepOnSingleTap,
+            ) {
+                WheelLog.AppConfig.useBeepOnSingleTap = it
+            }
+
+            SettingsSwitchComp(
+                name = R.string.beep_on_volume_up_title,
+                desc = R.string.beep_on_volume_up_description,
+                isChecked = WheelLog.AppConfig.useBeepOnVolumeUp,
+            ) {
+                WheelLog.AppConfig.useBeepOnVolumeUp = it
+            }
+
+            var beepByWheel by remember { mutableStateOf(WheelLog.AppConfig.beepByWheel) }
+            SettingsSwitchComp(
+                name = R.string.beep_by_wheel_title,
+                desc = R.string.beep_by_wheel_description,
+                isChecked = WheelLog.AppConfig.beepByWheel,
+            ) {
+                WheelLog.AppConfig.beepByWheel = it
+                beepByWheel = it
+            }
+
+            if (!beepByWheel) {
+                SettingsSwitchComp(
+                    name = R.string.custom_beep_title,
+                    isChecked = WheelLog.AppConfig.useCustomBeep,
+                ) {
+                    WheelLog.AppConfig.useCustomBeep = it
+                }
+            }
+        }
+
+        SettingsSwitchComp(
+            name = R.string.use_detect_battery_optimization_title,
+            isChecked = WheelLog.AppConfig.detectBatteryOptimization,
+        ) {
+            WheelLog.AppConfig.detectBatteryOptimization = it
+        }
+
+        SettingsSwitchComp(
+            name = R.string.send_yandex_metriсa_title,
+            desc = R.string.send_yandex_metriсa_description,
+            isChecked = WheelLog.AppConfig.yandexMetricaAccepted,
+        ) {
+            WheelLog.AppConfig.yandexMetricaAccepted = it
+        }
+    }
 }
