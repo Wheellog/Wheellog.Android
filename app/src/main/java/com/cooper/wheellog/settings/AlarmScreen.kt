@@ -82,8 +82,8 @@ fun alarmScreen() {
         }
 
         if (alarmsEnabled) {
-
             if (!alteredAlarms) {
+                // Default alarms
                 group(
                     name = R.string.speed_alarm1_phone_title
                 ) {
@@ -160,6 +160,7 @@ fun alarmScreen() {
                     }
                 }
             } else {
+                // Altered alarms
                 group(
                     name = R.string.altered_alarms_title
                 ) {

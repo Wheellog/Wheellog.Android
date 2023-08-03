@@ -911,7 +911,6 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
             Constants.WHEEL_TYPE.GOTWAY -> begode()
             Constants.WHEEL_TYPE.VETERAN -> veteran()
             else -> ps.addPreference(Preference(context).apply {
-                key = getString(R.string.no_settings)
                 isEnabled = false
                 summary = getString(R.string.unknown_device)
             })

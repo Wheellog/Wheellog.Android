@@ -203,12 +203,12 @@ fun list(
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
     entries: Map<String, String> = mapOf(),
-    selectedKey: String = "",
+    defaultKey: String = "",
     onSelect: (selected: Pair<String, String>) -> Unit = {},
 ) {
     val title = stringResource(name)
     val keys = entries.keys.toTypedArray()
-    var selectedIndex by remember { mutableStateOf(selectedKey) }
+    var selectedIndex by remember { mutableStateOf(defaultKey) }
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -271,7 +271,6 @@ fun list(
                 }
             },
             properties = DialogProperties(
-                dismissOnBackPress = false,
                 dismissOnClickOutside = false,
             )
         )
@@ -312,13 +311,13 @@ fun multiList(
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
     entries: Map<String, String> = mapOf(),
-    selectedKeys: List<String> = listOf(),
+    defaultKeys: List<String> = listOf(),
     useSort: Boolean = false,
     onChecked: (selectedKeys: List<String>) -> Unit,
 ) {
     val title = stringResource(name)
     val keys = entries.keys.toList()
-    var selectedIndex by remember { mutableStateOf(selectedKeys.distinct()) }
+    var selectedIndex by remember { mutableStateOf(defaultKeys.distinct()) }
     // if selected keys are not in the list, then find them in the values
     if (!keys.containsAll(selectedIndex)) {
         selectedIndex = entries.filter { selectedIndex.contains(it.value) }.keys.toList()
@@ -406,7 +405,6 @@ fun multiList(
                 }
             },
             properties = DialogProperties(
-                dismissOnBackPress = false,
                 dismissOnClickOutside = false,
             )
         )
@@ -437,9 +435,9 @@ fun multiList(
 }
 
 @Composable
-private fun baseSettings(
+fun baseSettings(
     @StringRes name: Int,
-    @StringRes desc: Int,
+    @StringRes desc: Int = 0,
     themeIcon: ThemeIconEnum? = null,
     rightContent: @Composable BoxScope.() -> Unit = { },
     bottomContent: @Composable (BoxScope.() -> Unit)? = null
@@ -767,7 +765,7 @@ private fun listPreview() {
         name = R.string.app_theme_title,
         desc = R.string.app_theme_description,
         entries = ThemeEnum.values().associate { it.value.toString() to it.name },
-        selectedKey = ThemeEnum.Original.value.toString(),
+        defaultKey = ThemeEnum.Original.value.toString(),
     )
 }
 
@@ -796,6 +794,6 @@ private fun multiListPreview() {
             "13" to "Just thirteen",
             "14" to "Just fourteen",
         ),
-        selectedKeys = listOf("12", "2"),
+        defaultKeys = listOf("12", "2"),
     ) { }
 }

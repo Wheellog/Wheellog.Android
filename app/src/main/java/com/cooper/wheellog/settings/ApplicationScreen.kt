@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 
@@ -26,18 +27,18 @@ fun applicationScreen() {
             name = R.string.use_eng_title,
             desc = R.string.use_eng_description,
             themeIcon = ThemeIconEnum.SettingsLanguage,
-            default = WheelLog.AppConfig.useEng
+            default = AppConfig.useEng
         ) {
-            WheelLog.AppConfig.useEng = it
+            AppConfig.useEng = it
         }
 
         list(
             name = R.string.app_theme_title,
             desc = R.string.app_theme_description,
             entries = ThemeEnum.values().associate { it.value.toString() to it.name },
-            selectedKey = WheelLog.AppConfig.appThemeInt.toString()
+            defaultKey = AppConfig.appThemeInt.toString()
         ) {
-            WheelLog.AppConfig.appThemeInt = it.first.toInt()
+            AppConfig.appThemeInt = it.first.toInt()
         }
 
         list(
@@ -47,39 +48,39 @@ fun applicationScreen() {
                 AppCompatDelegate.MODE_NIGHT_NO.toString() to stringResource(R.string.day_night_theme_day),
                 AppCompatDelegate.MODE_NIGHT_YES.toString() to stringResource(R.string.day_night_theme_night),
             ),
-            selectedKey = WheelLog.AppConfig.dayNightThemeMode.toString()
+            defaultKey = AppConfig.dayNightThemeMode.toString()
         ) {
-            WheelLog.AppConfig.dayNightThemeMode = it.first.toInt()
+            AppConfig.dayNightThemeMode = it.first.toInt()
         }
 
         switchPref(
             name = R.string.use_better_percents_title,
             desc = R.string.use_better_percents_description,
-            default = WheelLog.AppConfig.useBetterPercents
+            default = AppConfig.useBetterPercents
         ) {
-            WheelLog.AppConfig.useBetterPercents = it
+            AppConfig.useBetterPercents = it
         }
 
-        var customPercents by remember { mutableStateOf(WheelLog.AppConfig.customPercents) }
+        var customPercents by remember { mutableStateOf(AppConfig.customPercents) }
         switchPref(
             name = R.string.custom_percents_title,
             desc = R.string.custom_percents_description,
-            default = WheelLog.AppConfig.customPercents
+            default = AppConfig.customPercents
         ) {
-            WheelLog.AppConfig.customPercents = it
+            AppConfig.customPercents = it
             customPercents = it
         }
         if (customPercents) {
             sliderPref(
                 name = R.string.cell_voltage_tiltback_title,
                 desc = R.string.cell_voltage_tiltback_description,
-                position = WheelLog.AppConfig.cellVoltageTiltback / 100f,
+                position = AppConfig.cellVoltageTiltback / 100f,
                 min = 2.5f,
                 max = 4f,
                 unit = R.string.volt,
                 format = "%.2f",
             ) {
-                WheelLog.AppConfig.cellVoltageTiltback = (it * 100).toInt()
+                AppConfig.cellVoltageTiltback = (it * 100).toInt()
                 // currentRecomposeScope.invalidate()
             }
         }
@@ -89,17 +90,17 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.use_mph_title,
                 desc = R.string.use_mph_description,
-                default = WheelLog.AppConfig.useMph
+                default = AppConfig.useMph
             ) {
-                WheelLog.AppConfig.useMph = it
+                AppConfig.useMph = it
             }
 
             switchPref(
                 name = R.string.use_fahrenheit_title,
                 desc = R.string.use_fahrenheit_description,
-                default = WheelLog.AppConfig.useFahrenheit,
+                default = AppConfig.useFahrenheit,
             ) {
-                WheelLog.AppConfig.useFahrenheit = it
+                AppConfig.useFahrenheit = it
             }
         }
 
@@ -109,18 +110,18 @@ fun applicationScreen() {
                 name = R.string.auto_log_title,
                 desc = R.string.auto_log_description,
                 themeIcon = ThemeIconEnum.SettingsAutoLog,
-                default = WheelLog.AppConfig.autoLog,
+                default = AppConfig.autoLog,
             ) {
-                WheelLog.AppConfig.autoLog = it
+                AppConfig.autoLog = it
             }
 
             switchPref(
                 name = R.string.auto_watch_title,
                 desc = R.string.auto_watch_description,
                 themeIcon = ThemeIconEnum.SettingsWatch,
-                default = WheelLog.AppConfig.autoWatch,
+                default = AppConfig.autoWatch,
             ) {
-                WheelLog.AppConfig.autoWatch = it
+                AppConfig.autoWatch = it
             }
         }
 
@@ -158,19 +159,19 @@ fun applicationScreen() {
                     stringResource(R.string.user_distance) to stringResource(R.string.user_distance),
                     stringResource(R.string.speed) to stringResource(R.string.speed),
                 ),
-                selectedKeys = WheelLog.AppConfig.viewBlocks.toList(),
+                defaultKeys = AppConfig.viewBlocks.toList(),
                 useSort = true,
             ) {
-                WheelLog.AppConfig.viewBlocks = it.toTypedArray()
+                AppConfig.viewBlocks = it.toTypedArray()
             }
-            var usePipMode by remember { mutableStateOf(WheelLog.AppConfig.usePipMode) }
+            var usePipMode by remember { mutableStateOf(AppConfig.usePipMode) }
 
             switchPref(
                 name = R.string.use_pip_mode_title,
                 desc = R.string.use_pip_mode_description,
-                default = WheelLog.AppConfig.usePipMode,
+                default = AppConfig.usePipMode,
             ) {
-                WheelLog.AppConfig.usePipMode = it
+                AppConfig.usePipMode = it
                 usePipMode = it
             }
             if (usePipMode) {
@@ -180,9 +181,9 @@ fun applicationScreen() {
                         "0" to stringResource(R.string.speed),
                         "1" to stringResource(R.string.consumption),
                     ),
-                    selectedKey = WheelLog.AppConfig.pipBlock,
+                    defaultKey = AppConfig.pipBlock,
                 ) {
-                    WheelLog.AppConfig.pipBlock = it.first
+                    AppConfig.pipBlock = it.first
                 }
             }
 
@@ -198,9 +199,10 @@ fun applicationScreen() {
                     stringResource(R.string.icon_light) to stringResource(R.string.icon_light),
                     stringResource(R.string.icon_miband) to stringResource(R.string.icon_miband),
                 ),
-                selectedKeys = WheelLog.AppConfig.notificationButtons.toList()
+                defaultKeys = AppConfig.notificationButtons.toList()
             ) {
-                WheelLog.AppConfig.notificationButtons = it.toTypedArray()
+                AppConfig.notificationButtons = it.toTypedArray()
+                WheelLog.Notifications.update()
             }
 
             sliderPref(
@@ -208,59 +210,59 @@ fun applicationScreen() {
                 desc = R.string.max_speed_dial_description,
                 min = 10f,
                 max = 100f,
-                position = WheelLog.AppConfig.maxSpeed.toFloat(),
+                position = AppConfig.maxSpeed.toFloat(),
             ) {
-                WheelLog.AppConfig.maxSpeed = it.toInt()
+                AppConfig.maxSpeed = it.toInt()
             }
 
             switchPref(
                 name = R.string.current_on_dial_title,
                 desc = R.string.current_on_dial_description,
-                default = WheelLog.AppConfig.currentOnDial,
+                default = AppConfig.currentOnDial,
             ) {
-                WheelLog.AppConfig.currentOnDial = it
+                AppConfig.currentOnDial = it
             }
 
             switchPref(
                 name = R.string.use_short_pwm_title,
                 desc = R.string.use_short_pwm_description,
-                default = WheelLog.AppConfig.useShortPwm,
+                default = AppConfig.useShortPwm,
             ) {
-                WheelLog.AppConfig.useShortPwm = it
+                AppConfig.useShortPwm = it
             }
         }
 
         switchPref(
             name = R.string.show_page_graph_title,
-            default = WheelLog.AppConfig.pageGraph,
+            default = AppConfig.pageGraph,
         ) {
-            WheelLog.AppConfig.pageGraph = it
+            AppConfig.pageGraph = it
         }
 
         switchPref(
             name = R.string.show_page_events_title,
             desc = R.string.show_page_events_description,
             themeIcon = ThemeIconEnum.SettingsPageEvents,
-            default = WheelLog.AppConfig.pageEvents,
+            default = AppConfig.pageEvents,
         ) {
-            WheelLog.AppConfig.pageEvents = it
+            AppConfig.pageEvents = it
         }
 
         switchPref(
             name = R.string.show_page_trips_title,
             themeIcon = ThemeIconEnum.SettingsPageTrips,
-            default = WheelLog.AppConfig.pageTrips,
+            default = AppConfig.pageTrips,
         ) {
-            WheelLog.AppConfig.pageTrips = it
+            AppConfig.pageTrips = it
         }
 
         switchPref(
             name = R.string.connection_sound_title,
             desc = R.string.connection_sound_description,
             themeIcon = ThemeIconEnum.SettingsConnectionSound,
-            default = WheelLog.AppConfig.connectionSound,
+            default = AppConfig.connectionSound,
         ) {
-            WheelLog.AppConfig.connectionSound = it
+            AppConfig.connectionSound = it
         }
 
         sliderPref(
@@ -269,34 +271,34 @@ fun applicationScreen() {
             min = 0f,
             max = 60f,
             unit = R.string.sec,
-            position = WheelLog.AppConfig.noConnectionSound.toFloat(),
+            position = AppConfig.noConnectionSound.toFloat(),
         ) {
-            WheelLog.AppConfig.noConnectionSound = it.toInt()
+            AppConfig.noConnectionSound = it.toInt()
         }
 
         switchPref(
             name = R.string.use_stop_music_title,
             desc = R.string.use_stop_music_description,
             themeIcon = ThemeIconEnum.SettingsAutoMute,
-            default = WheelLog.AppConfig.useStopMusic,
+            default = AppConfig.useStopMusic,
         ) {
-            WheelLog.AppConfig.useStopMusic = it
+            AppConfig.useStopMusic = it
         }
 
         switchPref(
             name = R.string.show_unknown_devices_title,
             desc = R.string.show_unknown_devices_description,
-            default = WheelLog.AppConfig.showUnknownDevices,
+            default = AppConfig.showUnknownDevices,
         ) {
-            WheelLog.AppConfig.showUnknownDevices = it
+            AppConfig.showUnknownDevices = it
         }
 
         switchPref(
             name = R.string.use_reconnect_title,
             desc = R.string.use_reconnect_description,
-            default = WheelLog.AppConfig.useReconnect,
+            default = AppConfig.useReconnect,
         ) {
-            WheelLog.AppConfig.useReconnect = it
+            AppConfig.useReconnect = it
         }
 
         group(
@@ -305,52 +307,52 @@ fun applicationScreen() {
             switchPref(
                 name = R.string.beep_on_single_tap_title,
                 desc = R.string.beep_on_single_tap_description,
-                default = WheelLog.AppConfig.useBeepOnSingleTap,
+                default = AppConfig.useBeepOnSingleTap,
             ) {
-                WheelLog.AppConfig.useBeepOnSingleTap = it
+                AppConfig.useBeepOnSingleTap = it
             }
 
             switchPref(
                 name = R.string.beep_on_volume_up_title,
                 desc = R.string.beep_on_volume_up_description,
-                default = WheelLog.AppConfig.useBeepOnVolumeUp,
+                default = AppConfig.useBeepOnVolumeUp,
             ) {
-                WheelLog.AppConfig.useBeepOnVolumeUp = it
+                AppConfig.useBeepOnVolumeUp = it
             }
 
-            var beepByWheel by remember { mutableStateOf(WheelLog.AppConfig.beepByWheel) }
+            var beepByWheel by remember { mutableStateOf(AppConfig.beepByWheel) }
             switchPref(
                 name = R.string.beep_by_wheel_title,
                 desc = R.string.beep_by_wheel_description,
-                default = WheelLog.AppConfig.beepByWheel,
+                default = AppConfig.beepByWheel,
             ) {
-                WheelLog.AppConfig.beepByWheel = it
+                AppConfig.beepByWheel = it
                 beepByWheel = it
             }
 
             if (!beepByWheel) {
                 switchPref(
                     name = R.string.custom_beep_title,
-                    default = WheelLog.AppConfig.useCustomBeep,
+                    default = AppConfig.useCustomBeep,
                 ) {
-                    WheelLog.AppConfig.useCustomBeep = it
+                    AppConfig.useCustomBeep = it
                 }
             }
         }
 
         switchPref(
             name = R.string.use_detect_battery_optimization_title,
-            default = WheelLog.AppConfig.detectBatteryOptimization,
+            default = AppConfig.detectBatteryOptimization,
         ) {
-            WheelLog.AppConfig.detectBatteryOptimization = it
+            AppConfig.detectBatteryOptimization = it
         }
 
         switchPref(
             name = R.string.send_yandex_metriсa_title,
             desc = R.string.send_yandex_metriсa_description,
-            default = WheelLog.AppConfig.yandexMetricaAccepted,
+            default = AppConfig.yandexMetricaAccepted,
         ) {
-            WheelLog.AppConfig.yandexMetricaAccepted = it
+            AppConfig.yandexMetricaAccepted = it
         }
     }
 }
