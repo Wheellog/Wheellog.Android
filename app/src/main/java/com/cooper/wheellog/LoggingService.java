@@ -130,6 +130,15 @@ public class LoggingService extends Service
 
                 fileUtil.prepareStream();
                 writeToLastLog = true;
+                // reset trip duration for recalculation in trip list
+                var dao = ElectroClub.getInstance().getDao();
+                if (dao != null) {
+                    var trip = dao.getTripByFileName(fileUtil.getFile().getName());
+                    if (trip != null) {
+                        trip.setDuration(0);
+                        dao.update(trip);
+                    }
+                }
             }
         }
 
