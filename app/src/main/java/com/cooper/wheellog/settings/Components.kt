@@ -96,6 +96,7 @@ fun sliderPref(
     max: Float = 100f,
     @StringRes unit: Int = 0,
     format: String = "%.0f",
+    disableWhenZero: Boolean = false,
     onChanged: (newPosition: Float) -> Unit
 ) {
     // if the dialog is visible
@@ -119,54 +120,73 @@ fun sliderPref(
         ""
     }
 
+    var sliderPosition by remember { mutableStateOf(position) }
+    var prevPosition by remember { mutableStateOf(position) }
+
     baseSettings(
         name = name,
         desc = desc,
         themeIcon = themeIcon,
         rightContent = {
-            IconButton(
-                onClick = { isDialogShown = true }
-            ) {
-                Icon(
-                    Icons.Rounded.Info,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = "info"
+            if (disableWhenZero) {
+                Switch(
+                    checked = sliderPosition != 0f,
+                    onCheckedChange = {
+                        if (!it) {
+                            prevPosition = sliderPosition
+                            sliderPosition = 0f
+                        } else {
+                            sliderPosition = prevPosition
+                        }
+                        onChanged(sliderPosition)
+                    },
                 )
+            } else {
+                IconButton(
+                    onClick = { isDialogShown = true }
+                ) {
+                    Icon(
+                        Icons.Rounded.Info,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "info"
+                    )
+                }
             }
         },
         bottomContent = {
             Row {
-                var sliderPosition by remember { mutableStateOf(position) }
-                Slider(
-                    value = sliderPosition,
-                    onValueChange = { sliderPosition = it },
-                    valueRange = min..max,
-                    onValueChangeFinished = {
-                        onChanged(sliderPosition)
-                    },
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.secondary,
-                        activeTrackColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    modifier = Modifier.weight(1f)
-                )
-                Card(
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 80.dp)
-                        .padding(
-                            top = 8.dp,
-                            start = 8.dp
-                        )
-                ) {
-                    Text(
-                        text = String.format(format, sliderPosition) + unitStr,
-                        maxLines = 1,
-                        modifier = Modifier.padding(6.dp).fillMaxWidth(),
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            color = MaterialTheme.colorScheme.primary
+                if (!(disableWhenZero && sliderPosition == 0f)) {
+                    Slider(
+                        value = sliderPosition,
+                        onValueChange = { sliderPosition = it },
+                        valueRange = min..max,
+                        onValueChangeFinished = {
+                            onChanged(sliderPosition)
+                        },
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.secondary,
+                            activeTrackColor = MaterialTheme.colorScheme.secondary
                         ),
-                        textAlign = TextAlign.Center,
+                        modifier = Modifier.weight(1f)
                     )
+                    Card(
+                        modifier = Modifier
+                            .sizeIn(maxWidth = 80.dp)
+                            .padding(
+                                top = 8.dp,
+                                start = 8.dp
+                            )
+                    ) {
+                        Text(
+                            text = String.format(format, sliderPosition) + unitStr,
+                            maxLines = 1,
+                            modifier = Modifier.padding(6.dp).fillMaxWidth(),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 }
             }
         }
@@ -753,6 +773,23 @@ private fun sliderPreview3() {
         min = 60f,
         max = 70f,
         format = "%.2f"
+    ) { }
+}
+
+@Preview
+@Composable
+private fun sliderPreview4() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    sliderPref(
+        name = R.string.warning_speed_period_title,
+        desc = R.string.warning_speed_period_description,
+        position = 10f,
+        min = 0f,
+        max = 50f,
+        disableWhenZero = true,
+        unit = R.string.sec,
+        format = "%.0f"
     ) { }
 }
 
