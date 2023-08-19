@@ -20,7 +20,6 @@ android {
         applicationId "com.cooper.wheellog"
         minSdk 21
         targetSdk 34
-        targetSdk 33
         versionCode 113
         versionName "3.0.15"
         buildConfigField 'String', 'BUILD_TIME', "\"" + new Date().format('HH:mm dd.MM.yyyy') + "\""
