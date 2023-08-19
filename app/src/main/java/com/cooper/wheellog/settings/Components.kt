@@ -1,6 +1,7 @@
 package com.cooper.wheellog.settings
 
 import androidx.annotation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -21,8 +22,6 @@ import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
@@ -67,6 +66,7 @@ fun switchPref(
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
     default: Boolean,
+    showDiv: Boolean = true,
     onClick: (checked: Boolean) -> Unit
 ) {
     var mutableState by remember { mutableStateOf(default) }
@@ -74,6 +74,7 @@ fun switchPref(
         name = name,
         desc = desc,
         themeIcon = themeIcon,
+        showDiv = showDiv,
         rightContent = {
             Switch(
                 checked = mutableState,
@@ -96,7 +97,10 @@ fun sliderPref(
     max: Float = 100f,
     @StringRes unit: Int = 0,
     format: String = "%.0f",
-    disableWhenZero: Boolean = false,
+    showSwitch: Boolean = false,
+    valueWhenSwitchOff: Float = min,
+    disableSwitchAtMin: Boolean = false,
+    showDiv: Boolean = true,
     onChanged: (newPosition: Float) -> Unit
 ) {
     // if the dialog is visible
@@ -122,26 +126,29 @@ fun sliderPref(
 
     var sliderPosition by remember { mutableStateOf(position) }
     var prevPosition by remember { mutableStateOf(position) }
+    val showSlider = !(disableSwitchAtMin && sliderPosition == min)
 
     baseSettings(
         name = name,
         desc = desc,
         themeIcon = themeIcon,
+        showDiv = showDiv,
         rightContent = {
-            if (disableWhenZero) {
+            if (showSwitch) {
                 Switch(
-                    checked = sliderPosition != 0f,
+                    checked = disableSwitchAtMin && sliderPosition != valueWhenSwitchOff,
                     onCheckedChange = {
                         if (!it) {
                             prevPosition = sliderPosition
-                            sliderPosition = 0f
+                            sliderPosition = valueWhenSwitchOff
                         } else {
                             sliderPosition = prevPosition
                         }
                         onChanged(sliderPosition)
                     },
                 )
-            } else {
+            }
+            /* else {
                 IconButton(
                     onClick = { isDialogShown = true }
                 ) {
@@ -151,11 +158,12 @@ fun sliderPref(
                         contentDescription = "info"
                     )
                 }
-            }
+            } */
         },
         bottomContent = {
-            Row {
-                if (!(disableWhenZero && sliderPosition == 0f)) {
+            AnimatedVisibility(showSlider) {
+                Row {
+
                     Slider(
                         value = sliderPosition,
                         onValueChange = { sliderPosition = it },
@@ -169,18 +177,38 @@ fun sliderPref(
                         ),
                         modifier = Modifier.weight(1f)
                     )
+                    val maxCardWidth =
+                        if ((String.format(format, max)).length < 4) {
+                            60.dp
+                        } else {
+                            100.dp
+                        }
                     Card(
                         modifier = Modifier
-                            .sizeIn(maxWidth = 80.dp)
+                            .sizeIn(maxWidth = maxCardWidth)
                             .padding(
                                 top = 8.dp,
                                 start = 8.dp
                             )
                     ) {
                         Text(
-                            text = String.format(format, sliderPosition) + unitStr,
+                            text = String.format(format, sliderPosition),
                             maxLines = 1,
                             modifier = Modifier.padding(6.dp).fillMaxWidth(),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                    if (unitStr.isNotEmpty()) {
+                        Text(
+                            text = unitStr,
+                            maxLines = 1,
+                            modifier = Modifier.padding(
+                                top = 14.dp,
+                                start = 2.dp
+                            ),
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 color = MaterialTheme.colorScheme.primary
                             ),
@@ -199,15 +227,29 @@ fun group(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(
-            text = stringResource(id = name),
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(4.dp))
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            modifier = Modifier,
+            shape = RoundedCornerShape(
+                topStart = 4.dp,
+                topEnd = 4.dp,
+                bottomStart = 0.dp,
+                bottomEnd = 0.dp),
+        ) {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = stringResource(id = name),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         Surface(
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(4),
+            shape = RoundedCornerShape(
+                topStart = 0.dp,
+                topEnd = 4.dp,
+                bottomStart = 4.dp,
+                bottomEnd = 4.dp),
         ) {
             Column {
                 content()
@@ -224,6 +266,7 @@ fun list(
     @StringRes desc: Int = 0,
     entries: Map<String, String> = mapOf(),
     defaultKey: String = "",
+    showDiv: Boolean = true,
     onSelect: (selected: Pair<String, String>) -> Unit = {},
 ) {
     val title = stringResource(name)
@@ -308,6 +351,7 @@ fun list(
             name = name,
             desc = desc,
             themeIcon = themeIcon,
+            showDiv = showDiv,
             rightContent = {
                 if (selectedIndex != "") {
                     Text(
@@ -333,6 +377,7 @@ fun multiList(
     entries: Map<String, String> = mapOf(),
     defaultKeys: List<String> = listOf(),
     useSort: Boolean = false,
+    showDiv: Boolean = true,
     onChecked: (selectedKeys: List<String>) -> Unit,
 ) {
     val title = stringResource(name)
@@ -439,6 +484,7 @@ fun multiList(
             name = name,
             desc = desc,
             themeIcon = themeIcon,
+            showDiv = showDiv,
             rightContent = {
                 if (selectedIndex.isNotEmpty()) {
                     Text(
@@ -456,6 +502,86 @@ fun multiList(
 
 @Composable
 fun baseSettings(
+    @StringRes name: Int,
+    @StringRes desc: Int = 0,
+    themeIcon: ThemeIconEnum? = null,
+    showDiv: Boolean = true,
+    rightContent: @Composable BoxScope.() -> Unit = { },
+    bottomContent: @Composable (BoxScope.() -> Unit)? = null,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = 0.dp)
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+                    .padding(end = 16.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    if (themeIcon != null) {
+                        Icon(
+                            painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                            contentDescription = "",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .width((24 + 8).dp)
+                                .height(24.dp)
+                                .padding(end = 8.dp)
+                        )
+                    }
+                    Text(
+                        text = stringResource(id = name),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        textAlign = TextAlign.Start,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (desc != 0) {
+                    Text(
+                        modifier = Modifier.padding(top = 4.dp),
+                        text = stringResource(id = desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Start,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Box()
+            {
+                rightContent()
+            }
+        }
+        if (bottomContent != null) {
+            Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp) )
+            {
+                bottomContent()
+            }
+        }
+        if (showDiv) {
+            Divider(modifier = Modifier.padding(top = 16.dp))
+        } else {
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+        }
+    }
+}
+
+/*@Composable
+fun baseSettingsConstrant(
     @StringRes name: Int,
     @StringRes desc: Int = 0,
     themeIcon: ThemeIconEnum? = null,
@@ -559,7 +685,7 @@ fun baseSettings(
             }
         }
     }
-}
+}*/
 
 //@Composable
 //private fun TextEditDialog(
@@ -662,6 +788,27 @@ fun baseSettings(
 //        }
 //    }
 //}
+
+@Preview
+@Composable
+private fun baseSettingsPreview() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    WheelLog.ThemeManager = ThemeManager()
+    baseSettings(
+        name = R.string.auto_log_title,
+        desc = R.string.auto_log_description,
+        themeIcon = ThemeIconEnum.SettingsAutoLog,
+        rightContent = {
+            Switch(
+                checked = true,
+                onCheckedChange = {},
+            )
+        },
+        bottomContent = {
+            Text("bottom")
+        }
+    )
+}
 
 @Preview
 @Composable
@@ -787,7 +934,8 @@ private fun sliderPreview4() {
         position = 10f,
         min = 0f,
         max = 50f,
-        disableWhenZero = true,
+        showSwitch = true,
+        disableSwitchAtMin = true,
         unit = R.string.sec,
         format = "%.0f"
     ) { }

@@ -39,13 +39,25 @@ fun logScreen()
         }
 
         if (autoLogDependency) {
-            switchPref(
+            sliderPref(
                 name = R.string.auto_log_when_moving_title,
                 desc = R.string.auto_log_when_moving_description,
-                default = AppConfig.startAutoLoggingWhenIsMoving,
+                position = 7f,
+                min = 3f,
+                max = 20f,
+                unit = R.string.kmh,
+                showSwitch = true,
+
             ) {
-                AppConfig.startAutoLoggingWhenIsMoving = it
+                AppConfig.startAutoLoggingWhenIsMoving = it > 0
             }
+//            switchPref(
+//                name = R.string.auto_log_when_moving_title,
+//                desc = R.string.auto_log_when_moving_description,
+//                default = AppConfig.startAutoLoggingWhenIsMoving,
+//            ) {
+//                AppConfig.startAutoLoggingWhenIsMoving = it
+//            }
         }
 
         var locationDependency by remember { mutableStateOf(AppConfig.logLocationData) }

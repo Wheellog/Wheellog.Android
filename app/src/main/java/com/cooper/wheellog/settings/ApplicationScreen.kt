@@ -1,6 +1,7 @@
 package com.cooper.wheellog.settings
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -65,12 +66,13 @@ fun applicationScreen() {
         switchPref(
             name = R.string.custom_percents_title,
             desc = R.string.custom_percents_description,
-            default = AppConfig.customPercents
+            default = AppConfig.customPercents,
+            showDiv = customPercents,
         ) {
             AppConfig.customPercents = it
             customPercents = it
         }
-        if (customPercents) {
+        AnimatedVisibility(visible = customPercents) {
             sliderPref(
                 name = R.string.cell_voltage_tiltback_title,
                 desc = R.string.cell_voltage_tiltback_description,
@@ -79,6 +81,7 @@ fun applicationScreen() {
                 max = 4f,
                 unit = R.string.volt,
                 format = "%.2f",
+                showDiv = false,
             ) {
                 AppConfig.cellVoltageTiltback = (it * 100).toInt()
                 // currentRecomposeScope.invalidate()
@@ -99,6 +102,7 @@ fun applicationScreen() {
                 name = R.string.use_fahrenheit_title,
                 desc = R.string.use_fahrenheit_description,
                 default = AppConfig.useFahrenheit,
+                showDiv = false,
             ) {
                 AppConfig.useFahrenheit = it
             }
@@ -120,6 +124,7 @@ fun applicationScreen() {
                 desc = R.string.auto_watch_description,
                 themeIcon = ThemeIconEnum.SettingsWatch,
                 default = AppConfig.autoWatch,
+                showDiv = false,
             ) {
                 AppConfig.autoWatch = it
             }
@@ -174,7 +179,7 @@ fun applicationScreen() {
                 AppConfig.usePipMode = it
                 usePipMode = it
             }
-            if (usePipMode) {
+            AnimatedVisibility(visible = usePipMode) {
                 list(
                     name = R.string.pip_block_title,
                     entries = mapOf(
@@ -227,6 +232,7 @@ fun applicationScreen() {
                 name = R.string.use_short_pwm_title,
                 desc = R.string.use_short_pwm_description,
                 default = AppConfig.useShortPwm,
+                showDiv = false,
             ) {
                 AppConfig.useShortPwm = it
             }
@@ -272,6 +278,8 @@ fun applicationScreen() {
             max = 60f,
             unit = R.string.sec,
             position = AppConfig.noConnectionSound.toFloat(),
+            showSwitch = true,
+            disableSwitchAtMin = true,
         ) {
             AppConfig.noConnectionSound = it.toInt()
         }
@@ -297,6 +305,7 @@ fun applicationScreen() {
             name = R.string.use_reconnect_title,
             desc = R.string.use_reconnect_description,
             default = AppConfig.useReconnect,
+            showDiv = false,
         ) {
             AppConfig.useReconnect = it
         }
@@ -330,12 +339,14 @@ fun applicationScreen() {
                 beepByWheel = it
             }
 
-            if (!beepByWheel) {
+            AnimatedVisibility(visible = !beepByWheel) {
                 switchPref(
                     name = R.string.custom_beep_title,
                     default = AppConfig.useCustomBeep,
+                    showDiv = false,
                 ) {
                     AppConfig.useCustomBeep = it
+                    // TODO selectCustomBeep - beepFile
                 }
             }
         }
