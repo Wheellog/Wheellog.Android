@@ -90,6 +90,27 @@ public class KingsongAdapter extends BaseAdapter {
                             battery = (voltage - 9375) / 30;
                         }
                     }
+                } else if (is100vWheel()) {
+                    if (useBetterPercents) {
+                        if (voltage > 10020) {
+                            battery = 100;
+                        } else if (voltage > 8160) {
+                            battery = (int) Math.round((voltage - 7980) / 20.4);
+                        } else if (voltage > 7680) {
+                            battery = (int) Math.round((voltage - 7680) / 54.0);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage < 7500) {
+                            battery = 0;
+                        } else if (voltage >= 9900) {
+                            battery = 100;
+                        } else {
+                            battery = (voltage - 7500) / 24;
+                        }
+                    }
+
                 } else {
                     if (useBetterPercents) {
                         if (voltage > 6680) {
@@ -186,7 +207,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.setRemCap(MathsUtil.getInt2R(data, 6)*10);
                     bms.setFactoryCap(MathsUtil.getInt2R(data, 8)*10);
                     bms.setFullCycles(MathsUtil.getInt2R(data, 10));
-                    bms.setRemPerc(MathsUtil.getInt2R(data, 12)/10);
+                    bms.setRemPerc((int)Math.round(bms.getRemCap()/(bms.getFactoryCap()/100.0)));
                     if (bms.getSerialNumber().equals("")) {
                         if (bmsnum == 1) {
                             requestBms1Serial();
@@ -242,6 +263,7 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.setTempMosEnv((MathsUtil.getInt2R(data, 10)-2730)/10.0);
                     //bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
                     bms.setMinCell(bms.getCells()[29]);
+                    bms.setMaxCell(bms.getCells()[29]);
                     for (int i = 0; i < 30; i++) {
                         double cell = bms.getCells()[i];
                         if (cell > 0.0) {
@@ -338,12 +360,18 @@ public class KingsongAdapter extends BaseAdapter {
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-S20", "KS-S22"});
     }
 
+    private boolean is100vWheel() {
+        WheelData wd = WheelData.getInstance();
+        return StringUtil.inArray(wd.getModel(), new String[]{"KS-S19"});
+    }
+
 
     @Override
     public int getCellsForWheel() {
         int cells = 16;
         if (is84vWheel()) {cells = 20; }
         else if (is126vWheel()) {cells = 30; }
+        else if (is100vWheel()) { cells = 24; }
         return cells;
     }
 
@@ -499,6 +527,42 @@ public class KingsongAdapter extends BaseAdapter {
         byte[] data = getEmptyRequest();
         data[2] = (byte) strobeMode;
         data[16] = (byte) 0x53;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+
+    public void setChargingUpTo(int chargeUpTo) { // 100 => 100%
+        byte[] data = getEmptyRequest();
+        data[2] = (byte) 0x09;
+        data[4] = (byte) chargeUpTo;
+        data[16] = (byte) 0x8a;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void setStandByDelay(int standByDelay) { //3600 => 60 min => 1 hour
+        byte[] data = getEmptyRequest();
+        data[2] = (byte) 0x01;
+        data[4] = (byte) (standByDelay & 0xFF);
+        data[5] = (byte) ((standByDelay >> 8) & 0xFF);
+        data[16] = (byte) 0x3f;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void setGyroSwitchOff(int gyroSwitchOff) { //501 => 50.1 degree
+        byte[] data = getEmptyRequest();
+        data[2] = (byte) 0x03;
+        data[4] = (byte) (gyroSwitchOff & 0xFF);
+        data[5] = (byte) ((gyroSwitchOff >> 8) & 0xFF);
+        data[16] = (byte) 0x8a;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void setGyroFrontAngle(int gyroFrontAngle) { //-32 => -3.2 degree
+        byte[] data = getEmptyRequest();
+        data[2] = (byte) 0x01;
+        data[4] = (byte) (gyroFrontAngle & 0xFF);
+        data[5] = (byte) ((gyroFrontAngle >> 8) & 0xFF);
+        data[16] = (byte) 0x8a;
         WheelData.getInstance().bluetoothCmd(data);
     }
 
