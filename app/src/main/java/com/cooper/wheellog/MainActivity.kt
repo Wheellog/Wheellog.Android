@@ -627,7 +627,7 @@ class MainActivity : AppCompatActivity() {
             applicationContext,
             mCoreBroadcastReceiver,
             makeCoreIntentFilter(),
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
         WheelLog.Notifications.update()
 
