@@ -142,6 +142,9 @@ fun sliderPref(
                             prevPosition = sliderPosition
                             sliderPosition = valueWhenSwitchOff
                         } else {
+                            if (prevPosition == valueWhenSwitchOff) {
+                                prevPosition = valueWhenSwitchOff + 1f
+                            }
                             sliderPosition = prevPosition
                         }
                         onChanged(sliderPosition)

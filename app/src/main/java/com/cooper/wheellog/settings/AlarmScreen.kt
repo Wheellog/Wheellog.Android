@@ -1,5 +1,6 @@
 package com.cooper.wheellog.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -32,7 +33,7 @@ fun alarmScreen() {
         switchPref(
             name = R.string.enable_alarms_title,
             desc = R.string.enable_alarms_description,
-            default = AppConfig.alarmsEnabled,
+            default = alarmsEnabled,
         ) {
             AppConfig.alarmsEnabled = it
             alarmsEnabled = it
@@ -62,13 +63,16 @@ fun alarmScreen() {
             AppConfig.useWheelBeepForAlarm = it
         }
 
-        switchPref(
-            name = R.string.altered_alarms_title,
-            desc = R.string.altered_alarms_description,
-            default = AppConfig.alteredAlarms,
-        ) {
-            AppConfig.alteredAlarms = it
-            alteredAlarms = it
+        AnimatedVisibility(alarmsEnabled) {
+            switchPref(
+                name = R.string.altered_alarms_title,
+                desc = R.string.altered_alarms_description,
+                default = alteredAlarms,
+                showDiv = false,
+            ) {
+                AppConfig.alteredAlarms = it
+                alteredAlarms = it
+            }
         }
 
         val speedUnit: Int
@@ -105,6 +109,7 @@ fun alarmScreen() {
                         unit = R.string.persent,
                         min = 0f,
                         max = 100f,
+                        showDiv = false,
                     ) {
                         AppConfig.alarm1Battery = it.toInt()
                     }
@@ -130,6 +135,7 @@ fun alarmScreen() {
                         unit = R.string.persent,
                         min = 0f,
                         max = 100f,
+                        showDiv = false,
                     ) {
                         AppConfig.alarm2Battery = it.toInt()
                     }
@@ -155,6 +161,7 @@ fun alarmScreen() {
                         unit = R.string.persent,
                         min = 0f,
                         max = 100f,
+                        showDiv = false,
                     ) {
                         AppConfig.alarm3Battery = it.toInt()
                     }
@@ -228,6 +235,8 @@ fun alarmScreen() {
                         unit = speedUnit,
                         min = 0f,
                         max = 120f,
+                        showSwitch = true,
+                        disableSwitchAtMin = true,
                     ) {
                         AppConfig.warningSpeed = it.toInt()
                     }
@@ -239,6 +248,8 @@ fun alarmScreen() {
                         unit = R.string.persent,
                         min = 0f,
                         max = 99f,
+                        showSwitch = true,
+                        disableSwitchAtMin = true,
                     ) {
                         AppConfig.warningPwm = it.toInt()
                     }
@@ -250,6 +261,9 @@ fun alarmScreen() {
                         unit = R.string.sec,
                         min = 0f,
                         max = 60f,
+                        showDiv = false,
+                        showSwitch = true,
+                        disableSwitchAtMin = true,
                     ) {
                         AppConfig.warningSpeedPeriod = it.toInt()
                     }
