@@ -239,13 +239,13 @@ public class PebbleService extends Service {
                 this,
                 ackReceiver,
                 new IntentFilter(INTENT_APP_RECEIVE_ACK),
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED
         );
         ContextCompat.registerReceiver(
                 this,
                 nackReceiver,
                 new IntentFilter(INTENT_APP_RECEIVE_NACK),
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED
         );
 
         PebbleKit.startAppOnPebble(this, APP_UUID);
@@ -262,7 +262,7 @@ public class PebbleService extends Service {
                 this,
                 mBroadcastReceiver,
                 intentFilter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED
         );
 
         Intent serviceStartedIntent = new Intent(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)

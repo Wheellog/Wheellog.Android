@@ -656,7 +656,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 mMainViewBroadcastReceiver,
                 makeIntentFilter(),
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED
             )
         } catch (e: Exception) {
             Timber.e(e)
