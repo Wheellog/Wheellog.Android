@@ -20,6 +20,8 @@ import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.DETAILS;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.GUI;
+import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_ACK;
+import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_NACK;
 
 import androidx.core.content.ContextCompat;
 
@@ -233,8 +235,18 @@ public class PebbleService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         instance = this;
-        PebbleKit.registerReceivedAckHandler(this, ackReceiver);
-        PebbleKit.registerReceivedNackHandler(this, nackReceiver);
+        ContextCompat.registerReceiver(
+                this,
+                ackReceiver,
+                new IntentFilter(INTENT_APP_RECEIVE_ACK),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
+        ContextCompat.registerReceiver(
+                this,
+                nackReceiver,
+                new IntentFilter(INTENT_APP_RECEIVE_NACK),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
 
         PebbleKit.startAppOnPebble(this, APP_UUID);
 
@@ -247,7 +259,7 @@ public class PebbleService extends Service {
         intentFilter.addAction(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED);
 
         ContextCompat.registerReceiver(
-                getApplicationContext(),
+                this,
                 mBroadcastReceiver,
                 intentFilter,
                 ContextCompat.RECEIVER_NOT_EXPORTED

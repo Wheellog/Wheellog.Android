@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
         if (show) {
             try {
                 ContextCompat.registerReceiver(
-                    applicationContext,
+                    this,
                     mPiPBroadcastReceiver,
                     makeIntentPipFilter(),
                     ContextCompat.RECEIVER_NOT_EXPORTED
@@ -624,10 +624,10 @@ class MainActivity : AppCompatActivity() {
             startBluetoothService()
         }
         ContextCompat.registerReceiver(
-            applicationContext,
+            this,
             mCoreBroadcastReceiver,
             makeCoreIntentFilter(),
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
         WheelLog.Notifications.update()
 
@@ -653,7 +653,7 @@ class MainActivity : AppCompatActivity() {
         }
         try {
             ContextCompat.registerReceiver(
-                applicationContext,
+                this,
                 mMainViewBroadcastReceiver,
                 makeIntentFilter(),
                 ContextCompat.RECEIVER_NOT_EXPORTED
