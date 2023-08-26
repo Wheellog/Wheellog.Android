@@ -19,7 +19,6 @@ fun watchScreen( )
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
     ) {
         list(
             name = R.string.horn_mode_title,

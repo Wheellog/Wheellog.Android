@@ -21,7 +21,6 @@ fun applicationScreen() {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
     ) {
 
         switchPref(

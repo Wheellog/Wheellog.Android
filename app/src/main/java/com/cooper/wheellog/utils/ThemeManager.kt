@@ -10,7 +10,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 
-class ThemeManager {
+object ThemeManager {
 
     private val original = HashMap<ThemeIconEnum, Int>()
     private val ajdm = HashMap<ThemeIconEnum, Int>()

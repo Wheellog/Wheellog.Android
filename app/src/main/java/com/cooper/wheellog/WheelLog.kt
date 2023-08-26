@@ -38,7 +38,6 @@ class WheelLog : Application() {
         mContext = LocaleManager.setLocale(mContext)
         Notifications = NotificationUtil(mContext)
         VolumeKeyController = VolumeKeyController(mContext)
-        ThemeManager = ThemeManager()
         super.attachBaseContext(mContext)
     }
 
@@ -57,7 +56,6 @@ class WheelLog : Application() {
         lateinit var AppConfig: AppConfig
         lateinit var Notifications: NotificationUtil
         lateinit var VolumeKeyController: VolumeKeyController
-        lateinit var ThemeManager: ThemeManager
 
         val appContext: Context?
             get() = me?.applicationContext

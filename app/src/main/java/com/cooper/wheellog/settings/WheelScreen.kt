@@ -23,7 +23,6 @@ fun wheelScreen()
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
     ) {
         when (WheelData.getInstance().wheelType) {
             Constants.WHEEL_TYPE.NINEBOT_Z -> ninebotZ()
@@ -345,10 +344,12 @@ private fun forAllWheel() {
             onDismissRequest = { showProfileDialog = false },
             title = { Text(stringResource(R.string.profile_name_title)) },
             text = {
+                var text by remember { mutableStateOf(AppConfig.profileName) }
                 TextField(
-                    value = AppConfig.profileName,
-                    onValueChange = {
-                        AppConfig.profileName = it
+                    value = text,
+                    onValueChange = { newText ->
+                        text = newText
+                        AppConfig.profileName = newText
                     },
                     singleLine = true,
                 )

@@ -474,10 +474,10 @@ class MainActivity : AppCompatActivity() {
             miWheel!!.icon!!.alpha = 255
         }
         when (WheelLog.AppConfig.mibandMode) {
-            MiBandEnum.Alarm -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm))
-            MiBandEnum.Min -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin))
-            MiBandEnum.Medium -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
-            MiBandEnum.Max -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
+            MiBandEnum.Alarm -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm))
+            MiBandEnum.Min -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMin))
+            MiBandEnum.Medium -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
+            MiBandEnum.Max -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
         }
         if (WheelLog.AppConfig.mibandOnMainscreen) {
             miBand!!.isVisible = true
@@ -487,20 +487,20 @@ class MainActivity : AppCompatActivity() {
             miWatch!!.isVisible = true
         }
         if (PebbleService.isInstanceCreated()) {
-            miWatch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
+            miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
         } else {
-            miWatch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOff))
+            miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOff))
         }
         if (LoggingService.isInstanceCreated()) {
             miLogging!!.setTitle(R.string.stop_data_service)
-            miLogging!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOn))
+            miLogging!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuLogOn))
         } else {
             miLogging!!.setTitle(R.string.start_data_service)
-            miLogging!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOff))
+            miLogging!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuLogOff))
         }
         when (mConnectionState) {
             ConnectionState.CONNECTED -> {
-                miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOn))
+                miWheel!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWheelOn))
                 miWheel!!.setTitle(R.string.disconnect_from_wheel)
                 miSearch!!.isEnabled = false
                 miSearch!!.icon!!.alpha = 64
@@ -509,13 +509,13 @@ class MainActivity : AppCompatActivity() {
             }
             ConnectionState.DISCONNECTED -> {
                 if (isWheelSearch) {
-                    miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch))
+                    miWheel!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWheelSearch))
                     miWheel!!.setTitle(R.string.disconnect_from_wheel)
                     (miWheel!!.icon as AnimationDrawable?)!!.start()
                     miSearch!!.isEnabled = false
                     miSearch!!.icon!!.alpha = 64
                 } else {
-                    miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff))
+                    miWheel!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWheelOff))
                     miWheel!!.setTitle(R.string.connect_to_wheel)
                     miSearch!!.isEnabled = true
                     miSearch!!.icon!!.alpha = 255
@@ -600,7 +600,7 @@ class MainActivity : AppCompatActivity() {
 
         // clock font
         val textClock = binding.textClock
-        textClock.typeface = WheelLog.ThemeManager.getTypeface(applicationContext)
+        textClock.typeface = ThemeManager.getTypeface(applicationContext)
         mDeviceAddress = WheelLog.AppConfig.lastMac
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -732,7 +732,7 @@ class MainActivity : AppCompatActivity() {
                 // ignored
             }
         }
-        WheelLog.ThemeManager.changeAppIcon(this@MainActivity)
+        ThemeManager.changeAppIcon(this@MainActivity)
         object : CountDownTimer((2 * 60 * 1000 /* 2 min */).toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 if (!LoggingService.isInstanceCreated()) {
@@ -782,8 +782,8 @@ class MainActivity : AppCompatActivity() {
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
             val miSettings = mMenu!!.findItem(R.id.miSettings)
-            miSettings.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuSettings))
-            miSearch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuBluetooth))
+            miSettings.setIcon(ThemeManager.getId(ThemeIconEnum.MenuSettings))
+            miSearch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuBluetooth))
         }
         return true
     }

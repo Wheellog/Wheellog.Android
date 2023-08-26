@@ -282,7 +282,7 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
             R.string.auto_upload_ec -> electroClubDialog()
             R.string.max_speed, R.string.use_mph -> context?.sendBroadcast(Intent(Constants.ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED))
             R.string.use_eng, R.string.app_theme -> {
-                WheelLog.ThemeManager.theme = WheelLog.AppConfig.appTheme
+                ThemeManager.theme = WheelLog.AppConfig.appTheme
                 AlertDialog.Builder(requireContext())
                     .setTitle(R.string.use_eng_alert_title)
                     .setMessage(R.string.use_eng_alert_description)
@@ -508,15 +508,15 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                     true
                 }
                 // Themes
-                speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsSpeedometer))
-                logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsLog))
-                alarmButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsVibration))
-                watchButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsWatch))
-                wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsWheel))
-                tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsTrips))
-                findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsBug))
-                donateButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsDonate))
-                aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsAbout))
+                speedButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsSpeedometer))
+                logsButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsLog))
+                alarmButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsVibration))
+                watchButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsWatch))
+                wheelButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsWheel))
+                tripButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsTrips))
+                findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsBug))
+                donateButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsDonate))
+                aboutButton?.icon = getDrawableEx(ThemeManager.getId(ThemeIconEnum.SettingsAbout))
             }
             SettingsScreen.Speed -> {
                 tb.title = getText(R.string.speed_settings_title)

@@ -98,10 +98,10 @@ class NotificationUtil(private val context: Context) {
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
                 when (WheelLog.AppConfig.mibandMode) {
-                    MiBandEnum.Alarm -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
-                    MiBandEnum.Min -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
-                    MiBandEnum.Medium -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
-                    MiBandEnum.Max -> WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
+                    MiBandEnum.Alarm -> ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
+                    MiBandEnum.Min -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
+                    MiBandEnum.Medium -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
+                    MiBandEnum.Max -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
                 })
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
@@ -114,20 +114,20 @@ class NotificationUtil(private val context: Context) {
         }
         notificationView.setImageViewResource(R.id.ib_connection,
                 when (connectionState) {
-                    ConnectionState.CONNECTING -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
-                    ConnectionState.CONNECTED -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationConnected)
-                    else -> WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
+                    ConnectionState.CONNECTING -> ThemeManager.getId(ThemeIconEnum.NotificationConnecting)
+                    ConnectionState.CONNECTED -> ThemeManager.getId(ThemeIconEnum.NotificationConnected)
+                    else -> ThemeManager.getId(ThemeIconEnum.NotificationDisconnected)
                 })
         notificationView.setImageViewResource(R.id.ib_logging,
-                if (LoggingService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOn)
-                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLogOff))
+                if (LoggingService.isInstanceCreated()) ThemeManager.getId(ThemeIconEnum.NotificationLogOn)
+                else ThemeManager.getId(ThemeIconEnum.NotificationLogOff))
         notificationView.setImageViewResource(R.id.ib_watch,
-                if (PebbleService.isInstanceCreated()) WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOn)
-                else WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationWatchOff))
-        notificationView.setImageViewResource(R.id.ib_beep, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationHorn))
-        notificationView.setImageViewResource(R.id.ib_light, WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationLight))
+                if (PebbleService.isInstanceCreated()) ThemeManager.getId(ThemeIconEnum.NotificationWatchOn)
+                else ThemeManager.getId(ThemeIconEnum.NotificationWatchOff))
+        notificationView.setImageViewResource(R.id.ib_beep, ThemeManager.getId(ThemeIconEnum.NotificationHorn))
+        notificationView.setImageViewResource(R.id.ib_light, ThemeManager.getId(ThemeIconEnum.NotificationLight))
 
-        builder.setSmallIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.NotificationIcon))
+        builder.setSmallIcon(ThemeManager.getId(ThemeIconEnum.NotificationIcon))
                 .setContentIntent(pendingIntent)
                 .setContent(notificationView)
                 .setCustomBigContentView(notificationView)

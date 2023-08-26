@@ -880,6 +880,9 @@ public class WheelData {
     public void resetVoltageSag() {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
+        if (getBluetoothService() != null) {
+            getBluetoothService().getApplicationContext().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_RESET));
+        }
     }
 
     public double getDistanceDouble() {

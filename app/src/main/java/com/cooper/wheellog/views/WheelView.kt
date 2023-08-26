@@ -19,6 +19,7 @@ import com.cooper.wheellog.utils.ReflectUtil
 import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.utils.StringUtil.toTempString
+import com.cooper.wheellog.utils.ThemeManager
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
@@ -931,7 +932,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun onChangeTheme() {
-        val tfTest = if (isInEditMode) null else WheelLog.ThemeManager.getTypeface(context)
+        val tfTest = if (isInEditMode) null else ThemeManager.getTypeface(context)
         when (currentTheme) {
             R.style.OriginalTheme -> {
                 outerStrokeWidth = dpToPx(context, 40).toFloat()

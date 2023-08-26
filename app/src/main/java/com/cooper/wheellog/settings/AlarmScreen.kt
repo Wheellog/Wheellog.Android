@@ -22,7 +22,6 @@ fun alarmScreen() {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
     ) {
         var alarmsEnabled by remember { mutableStateOf(AppConfig.alarmsEnabled) }
         var alteredAlarms by remember { mutableStateOf(AppConfig.alteredAlarms) }

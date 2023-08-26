@@ -432,6 +432,12 @@
     <string name="custom_beep_title">Select beep file</string>
     <string name="bug_report">Bug report</string>
     <string name="donate_title">Donate</string>
+    <string name="donate_crypto">Cryptocurrency</string>
+    <string name="donate_bank_ru">Russian bank</string>
+    <string name="github">Github</string>
+    <string name="github_desc">"Thanks to all contributors."</string>
+    <string name="telegram">Telegram</string>
+    <string name="FAQ">FAQ</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>

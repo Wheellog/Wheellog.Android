@@ -36,6 +36,7 @@ fun clickablePref(
     themeIcon: ThemeIconEnum? = null,
     @StringRes desc: Int = 0,
     showArrowIcon: Boolean = true,
+    showDiv: Boolean = true,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -47,6 +48,7 @@ fun clickablePref(
             name = name,
             themeIcon = themeIcon,
             desc = desc,
+            showDiv = showDiv,
             rightContent = {
                 if (showArrowIcon) {
                     Icon(
@@ -285,7 +287,7 @@ fun list(
                 Row {
                     if (themeIcon != null) {
                         Icon(
-                            painter = painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                            painter = painterResource(id = ThemeManager.getId(themeIcon)),
                             contentDescription = null,
                             modifier = Modifier.size(32.dp).padding(end = 8.dp),
                             tint = MaterialTheme.colorScheme.onSurface,
@@ -293,7 +295,7 @@ fun list(
                     }
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 }
             },
@@ -400,7 +402,7 @@ fun multiList(
                 Row {
                     if (themeIcon != null) {
                         Icon(
-                            painter = painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                            painter = painterResource(id = ThemeManager.getId(themeIcon)),
                             contentDescription = null,
                             modifier = Modifier.size(32.dp).padding(end = 8.dp),
                             tint = MaterialTheme.colorScheme.onSurface,
@@ -408,7 +410,7 @@ fun multiList(
                     }
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 }
             },
@@ -536,7 +538,7 @@ fun baseSettings(
                 ) {
                     if (themeIcon != null) {
                         Icon(
-                            painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                            painterResource(id = ThemeManager.getId(themeIcon)),
                             contentDescription = "",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
@@ -604,7 +606,7 @@ fun baseSettingsConstrant(
         val (rightControl, bottomControl, icon, title, subtext) = createRefs()
         if (themeIcon != null) {
             Icon(
-                painterResource(id = WheelLog.ThemeManager.getId(themeIcon)),
+                painterResource(id = ThemeManager.getId(themeIcon)),
                 contentDescription = "",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -796,7 +798,6 @@ fun baseSettingsConstrant(
 @Composable
 private fun baseSettingsPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     baseSettings(
         name = R.string.auto_log_title,
         desc = R.string.auto_log_description,
@@ -817,7 +818,6 @@ private fun baseSettingsPreview() {
 @Composable
 private fun clickablePreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     clickablePref(
         name = R.string.speed_settings_title,
         themeIcon = ThemeIconEnum.SettingsSpeedometer
@@ -828,7 +828,6 @@ private fun clickablePreview() {
 @Composable
 private fun clickablePreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     clickablePref(
         name = R.string.donate_title,
         themeIcon = ThemeIconEnum.SettingsDonate,
@@ -840,7 +839,6 @@ private fun clickablePreview2() {
 @Composable
 private fun clickablePreview3() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     clickablePref(
         name = R.string.beep_on_volume_up_title,
         desc = R.string.beep_on_volume_up_description,
@@ -853,7 +851,6 @@ private fun clickablePreview3() {
 @Composable
 private fun clickablePreview4() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     clickablePref(
         name = R.string.beep_on_volume_up_title,
         showArrowIcon = false
@@ -864,7 +861,6 @@ private fun clickablePreview4() {
 @Composable
 private fun switchPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     switchPref(
         name = R.string.use_eng_title,
         desc = R.string.use_eng_description,
@@ -877,7 +873,6 @@ private fun switchPreview() {
 @Composable
 private fun switchPreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     switchPref(
         name = R.string.use_eng_title,
         themeIcon = ThemeIconEnum.SettingsLanguage,
@@ -889,7 +884,6 @@ private fun switchPreview2() {
 @Composable
 private fun sliderPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     sliderPref(
         name = R.string.alarm_1_battery_title,
         themeIcon = ThemeIconEnum.MenuMiBandAlarm,
@@ -901,7 +895,6 @@ private fun sliderPreview() {
 @Composable
 private fun sliderPreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     sliderPref(
         name = R.string.alarm_factor2_title,
         desc = R.string.alarm_factor2_description,
@@ -916,7 +909,6 @@ private fun sliderPreview2() {
 @Composable
 private fun sliderPreview3() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     sliderPref(
         name = R.string.alarm_factor2_title,
         position = 66.66f,
@@ -930,7 +922,6 @@ private fun sliderPreview3() {
 @Composable
 private fun sliderPreview4() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     sliderPref(
         name = R.string.warning_speed_period_title,
         desc = R.string.warning_speed_period_description,
@@ -948,7 +939,6 @@ private fun sliderPreview4() {
 @Composable
 private fun listPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     list(
         name = R.string.app_theme_title,
         desc = R.string.app_theme_description,
@@ -961,7 +951,6 @@ private fun listPreview() {
 @Composable
 private fun multiListPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     multiList(
         name = R.string.view_blocks_title,
         desc = R.string.view_blocks_description,

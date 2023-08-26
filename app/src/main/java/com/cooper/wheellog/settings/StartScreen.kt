@@ -1,22 +1,35 @@
 package com.cooper.wheellog.settings
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.BuildConfig
-import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.R
+import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
 
@@ -27,88 +40,226 @@ fun startScreen(
 )
 {
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = modifier.verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
         val context: Context = LocalContext.current
+
+        var isSpecificVisible by remember {
+            mutableStateOf(
+                WheelData.getInstance()?.wheelType != Constants.WHEEL_TYPE.Unknown
+            )
+        }
+        SystemBroadcastReceiver(systemAction = Constants.ACTION_WHEEL_MODEL_CHANGED) { intent ->
+            if (intent?.action == Constants.ACTION_WHEEL_MODEL_CHANGED) {
+                isSpecificVisible =
+                    WheelData.getInstance()?.wheelType != Constants.WHEEL_TYPE.Unknown
+            }
+        }
+
         clickablePref(
             name = R.string.speed_settings_title,
-            themeIcon = ThemeIconEnum.SettingsSpeedometer
+            themeIcon = ThemeIconEnum.SettingsSpeedometer,
         ) {
             onSelect(SettingsScreenEnum.Application.name)
         }
         clickablePref(
             name = R.string.logs_settings_title,
-            themeIcon = ThemeIconEnum.SettingsLog
+            themeIcon = ThemeIconEnum.SettingsLog,
         ) {
             onSelect(SettingsScreenEnum.Log.name)
         }
-        clickablePref(
-            name = R.string.alarm_settings_title,
-            themeIcon = ThemeIconEnum.SettingsVibration
-        ) {
-            onSelect(SettingsScreenEnum.Alarm.name)
+        if (isSpecificVisible) {
+            clickablePref(
+                name = R.string.alarm_settings_title,
+                themeIcon = ThemeIconEnum.SettingsVibration,
+            ) {
+                onSelect(SettingsScreenEnum.Alarm.name)
+            }
         }
         clickablePref(
             name = R.string.watch_settings_title,
-            themeIcon = ThemeIconEnum.SettingsWatch
+            themeIcon = ThemeIconEnum.SettingsWatch,
         ) {
             onSelect(SettingsScreenEnum.Watch.name)
         }
-        clickablePref(
-            name = R.string.wheel_settings_title,
-            themeIcon = ThemeIconEnum.SettingsWheel
-        ) {
-            onSelect(SettingsScreenEnum.Wheel.name)
-        }
-        clickablePref(
-            name = R.string.trip_settings_title,
-            themeIcon = ThemeIconEnum.SettingsTrips
-        ) {
-            onSelect(SettingsScreenEnum.Trip.name)
-        }
-        clickablePref(
-            name = R.string.bug_report,
-            themeIcon = ThemeIconEnum.SettingsBug,
-            showArrowIcon = false
-        ) {
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse("https://github.com/Wheellog/Wheellog.Android/issues")
+        if (isSpecificVisible) {
+            clickablePref(
+                name = R.string.wheel_settings_title,
+                themeIcon = ThemeIconEnum.SettingsWheel,
+            ) {
+                onSelect(SettingsScreenEnum.Wheel.name)
             }
-            context.startActivity(intent)
+            clickablePref(
+                name = R.string.trip_settings_title,
+                themeIcon = ThemeIconEnum.SettingsTrips,
+            ) {
+                onSelect(SettingsScreenEnum.Trip.name)
+            }
+        }
+        var showDonateDialog by remember { mutableStateOf(false) }
+        if (showDonateDialog) {
+            AlertDialog(
+                shape = RoundedCornerShape(8.dp),
+                onDismissRequest = { showDonateDialog = false },
+                title = {
+                    Row {
+                        Icon(
+                            painter = painterResource(
+                                id = ThemeManager.getId(ThemeIconEnum.SettingsDonate)
+                            ),
+                            contentDescription = "info",
+                            modifier = Modifier.size(32.dp).padding(end = 8.dp),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = stringResource(R.string.donate_title),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    }
+                },
+                text = {
+                    Column {
+                        clickablePref(
+                            name = R.string.donate_crypto,
+                        ) {
+                            startActivity(
+                                context,
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://paymicro.github.io/donate".toUri()
+                                ),
+                                null
+                            )
+                        }
+                        clickablePref(
+                            name = R.string.donate_bank_ru,
+                            showDiv = false
+                        ) {
+                            startActivity(
+                                context,
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://tinkoff.ru/sl/6iw4b0ugfpC".toUri()
+                                ),
+                                null
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDonateDialog = false }) {
+                        Text(stringResource(id = android.R.string.ok))
+                    }
+                },
+            )
         }
         clickablePref(
             name = R.string.donate_title,
             themeIcon = ThemeIconEnum.SettingsDonate,
-            showArrowIcon = false
+            showArrowIcon = false,
         ) {
-            val kvm = mapOf(
-                "Crypto" to "https://paymicro.github.io/donate",
-                "Credit card (only from russian bank)" to "https://tinkoff.ru/sl/6iw4b0ugfpC")
-            AlertDialog.Builder(context)
-                .setTitle(R.string.donate_title)
-                .setItems(kvm.keys.toTypedArray()) { _, which ->
-                    val uri = Uri.parse(kvm[kvm.keys.elementAt(which)])
-                    startActivity(context, Intent(Intent.ACTION_VIEW, uri), null)
-                }
-                .setIcon(R.drawable.ic_donate_24)
-                .show()
-                .setBlackIcon()
+            showDonateDialog = true
+        }
+        var showAboutDialog by remember { mutableStateOf(false) }
+        if (showAboutDialog) {
+            AlertDialog(
+                shape = RoundedCornerShape(8.dp),
+                onDismissRequest = { showAboutDialog = false },
+                title = {
+                    Row {
+                        Icon(
+                            painter = painterResource(
+                                id = android.R.drawable.ic_dialog_info
+                            ),
+                            contentDescription = "info",
+                            modifier = Modifier.size(32.dp).padding(end = 8.dp),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = stringResource(R.string.about_app_title),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    }
+                },
+                text = {
+                    Column {
+                        Text(
+                            text = "Version ${BuildConfig.VERSION_NAME}\n" +
+                                    "Build at ${BuildConfig.BUILD_TIME}",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        clickablePref(
+                            name = R.string.github,
+                            desc = R.string.github_desc,
+                        ) {
+                            startActivity(
+                                context,
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://github.com/Wheellog/Wheellog.Android".toUri()
+                                ),
+                                null
+                            )
+                        }
+                        clickablePref(
+                            name = R.string.FAQ,
+                        ) {
+                            startActivity(
+                                context,
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://github.com/Wheellog/Wheellog.Android/wiki".toUri()
+                                ),
+                                null
+                            )
+                        }
+                        clickablePref(
+                            name = R.string.bug_report
+                        ) {
+                            startActivity(
+                                context,
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://github.com/Wheellog/Wheellog.Android/issues".toUri()
+                                ),
+                                null
+                            )
+                        }
+                        clickablePref(
+                            name = R.string.telegram,
+                            showDiv = false,
+                        ) {
+                            startActivity(
+                                context,
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    "https://t.me/wheellog".toUri()
+                                ),
+                                null
+                            )
+                        }
+                        Text(
+                            text = "This app is free and open source. It is developed by volunteers in their free time.\n" +
+                                    "If you like this app, you can support the project by donating.",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAboutDialog = false }) {
+                        Text(stringResource(id = android.R.string.ok))
+                    }
+                },
+            )
         }
         clickablePref(
             name = R.string.about_app_title,
             themeIcon = ThemeIconEnum.SettingsAbout,
-            showArrowIcon = false
+            showArrowIcon = false,
+            showDiv = false,
         ) {
-            val versionName = BuildConfig.VERSION_NAME
-            val buildTime = BuildConfig.BUILD_TIME
-            AlertDialog.Builder(context)
-                .setTitle(R.string.about_app_title)
-                .setMessage(String.format("Version %s \n build at %s github.com/Wheellog/Wheellog.Android \n Thanks to all contributors", versionName, buildTime))
-                .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int -> }
-                .setIcon(android.R.drawable.ic_dialog_info)
-                .show()
-                .setBlackIcon()
+            showAboutDialog = true
         }
     }
 }
@@ -118,6 +269,5 @@ fun startScreen(
 fun startScreenPreview()
 {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
-    WheelLog.ThemeManager = ThemeManager()
     startScreen()
 }

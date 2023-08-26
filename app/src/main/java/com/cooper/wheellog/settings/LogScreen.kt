@@ -25,7 +25,6 @@ fun logScreen()
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
     ) {
         var autoLogDependency by remember { mutableStateOf(AppConfig.autoLog) }
         switchPref(

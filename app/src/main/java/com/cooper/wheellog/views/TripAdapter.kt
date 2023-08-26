@@ -30,6 +30,7 @@ import com.cooper.wheellog.map.MapActivity
 import com.cooper.wheellog.utils.SomeUtil.doAsync
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
+import com.cooper.wheellog.utils.ThemeManager
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -43,7 +44,7 @@ import java.util.Locale
 
 class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
     private var uploadViewVisible: Int = View.VISIBLE
-    private var font = WheelLog.ThemeManager.getTypeface(context)
+    private var font = ThemeManager.getTypeface(context)
 
     var uploadVisible: Boolean
         get() = uploadViewVisible == View.VISIBLE
@@ -278,21 +279,21 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 val popupMenu = PopupMenu(wrapper,  itemBinding.popupButton).apply {
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                         menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =
-                            context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsMap))
+                            context.getDrawable(ThemeManager.getId(ThemeIconEnum.TripsMap))
                         menu.add(0, 1, 1, R.string.trip_menu_upload_to_ec).apply {
                             icon =
-                                context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsUpload))
+                                context.getDrawable(ThemeManager.getId(ThemeIconEnum.TripsUpload))
                             isVisible = trackIdInEc == -1 && ecAvailable
                         }
                         menu.add(0, 2, 2, R.string.trip_menu_open_in_ec).apply {
                             icon =
-                                context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsOpenEc))
+                                context.getDrawable(ThemeManager.getId(ThemeIconEnum.TripsOpenEc))
                             isVisible = trackIdInEc != -1 && ecAvailable
                         }
                         menu.add(0, 3, 3, R.string.trip_menu_share).icon =
-                            context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsShare))
+                            context.getDrawable(ThemeManager.getId(ThemeIconEnum.TripsShare))
                         menu.add(0, 4, 4, R.string.trip_menu_delete_file).icon =
-                            context.getDrawable(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsDelete))
+                            context.getDrawable(ThemeManager.getId(ThemeIconEnum.TripsDelete))
                     }
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
@@ -325,7 +326,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             }
 
             // Themes
-            itemBinding.popupButton.setImageResource(WheelLog.ThemeManager.getId(ThemeIconEnum.TripsPopupButton))
+            itemBinding.popupButton.setImageResource(ThemeManager.getId(ThemeIconEnum.TripsPopupButton))
         }
     }
 }
