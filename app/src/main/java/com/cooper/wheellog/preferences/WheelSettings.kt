@@ -375,7 +375,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         SwitchPreference(context).apply {
             key = mac + getString(R.string.drl_enabled)
             title = getString(R.string.drl_settings_title)
-            summary = getString(R.string.drl_settings_description_inmo)
+            summary = getString(R.string.drl_settings_description)
             isChecked = WheelLog.AppConfig.drlEnabled
             ps.addPreference(this)
         }

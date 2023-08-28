@@ -98,6 +98,7 @@ fun sliderPref(
     min: Float = 0f,
     max: Float = 100f,
     @StringRes unit: Int = 0,
+    visualMultiple: Float = 1f,
     format: String = "%.0f",
     showSwitch: Boolean = false,
     valueWhenSwitchOff: Float = min,
@@ -126,9 +127,9 @@ fun sliderPref(
         ""
     }
 
-    var sliderPosition by remember { mutableStateOf(position) }
-    var prevPosition by remember { mutableStateOf(position) }
-    val showSlider = !(disableSwitchAtMin && sliderPosition == min)
+    var sliderPosition by remember { mutableStateOf(position * visualMultiple) }
+    var prevPosition by remember { mutableStateOf(position * visualMultiple) }
+    val showSlider = !(disableSwitchAtMin && sliderPosition == min * visualMultiple)
 
     baseSettings(
         name = name,
@@ -137,19 +138,20 @@ fun sliderPref(
         showDiv = showDiv,
         rightContent = {
             if (showSwitch) {
+                val offValue = valueWhenSwitchOff * visualMultiple
                 Switch(
-                    checked = disableSwitchAtMin && sliderPosition != valueWhenSwitchOff,
+                    checked = disableSwitchAtMin && sliderPosition != offValue,
                     onCheckedChange = {
                         if (!it) {
                             prevPosition = sliderPosition
-                            sliderPosition = valueWhenSwitchOff
+                            sliderPosition = offValue
                         } else {
-                            if (prevPosition == valueWhenSwitchOff) {
-                                prevPosition = valueWhenSwitchOff + 1f
+                            if (prevPosition == offValue) {
+                                prevPosition = offValue + 1f
                             }
                             sliderPosition = prevPosition
                         }
-                        onChanged(sliderPosition)
+                        onChanged(sliderPosition / visualMultiple)
                     },
                 )
             }
@@ -168,13 +170,12 @@ fun sliderPref(
         bottomContent = {
             AnimatedVisibility(showSlider) {
                 Row {
-
                     Slider(
                         value = sliderPosition,
                         onValueChange = { sliderPosition = it },
-                        valueRange = min..max,
+                        valueRange = min * visualMultiple..max * visualMultiple,
                         onValueChangeFinished = {
-                            onChanged(sliderPosition)
+                            onChanged(sliderPosition / visualMultiple)
                         },
                         colors = SliderDefaults.colors(
                             thumbColor = MaterialTheme.colorScheme.secondary,
@@ -183,7 +184,7 @@ fun sliderPref(
                         modifier = Modifier.weight(1f)
                     )
                     val maxCardWidth =
-                        if ((String.format(format, max)).length < 4) {
+                        if ((String.format(format, max * visualMultiple)).length < 4) {
                             60.dp
                         } else {
                             100.dp

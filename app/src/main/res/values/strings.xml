@@ -458,7 +458,7 @@
     <string name="show_page_trips_title">Trips page</string>
     <string name="drl_settings_title">Enable DRL</string>taillight_settings_title
     <string name="taillight_settings_title">Tail light</string>
-    <string name="drl_settings_description_inmo">Enable front O-ring and backlight</string>
+    <string name="drl_settings_description">Enable front O-ring and backlight</string>
     <string name="drl_settings_description_nb">Enable front O-ring</string>
     <string name="taillight_settings_description">Enable or disable tail light</string>
     <string name="light_brightness_title">Light brightness</string>

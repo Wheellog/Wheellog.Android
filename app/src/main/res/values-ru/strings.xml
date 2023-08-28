@@ -288,7 +288,7 @@
     <string name="wheel_calibration_message_inmo">Установите колесо в парковочное положение (на крыло), продолжить?</string>
     <string name="wheel_calibration_message_kingsong">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
     <string name="drl_settings_title">DRL</string>
-    <string name="drl_settings_description_inmo">Ангельзкий глаз и задний габарит</string>
+    <string name="drl_settings_description">Ангельзкий глаз и задний габарит</string>
     <string name="light_brightness_title">Яркость фары</string>
     <string name="light_brightness_description">Яркость передней фары</string>
     <string name="fan_title">Вентилятор</string>

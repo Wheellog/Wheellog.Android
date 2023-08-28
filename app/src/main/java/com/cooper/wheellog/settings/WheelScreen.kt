@@ -1,19 +1,19 @@
 package com.cooper.wheellog.settings
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.InMotionAdapter
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.NinebotZAdapter
 import com.cooper.wheellog.utils.ThemeIconEnum
 
@@ -247,38 +247,38 @@ private fun ninebotZ() {
         ) {
             AppConfig.lockMode = it
         }
-        if (WheelData.getInstance().speed < 1) {
-            var showDialog by remember { mutableStateOf(false) }
-            clickablePref(
-                name = R.string.wheel_calibration,
-                themeIcon = ThemeIconEnum.SettingsCalibration,
-            ) {
-                showDialog = true
-            }
-            if (showDialog) {
-                AlertDialog(
-                    onDismissRequest = { showDialog = false },
-                    title = { Text(stringResource(R.string.wheel_calibration)) },
-                    text = {
-                        Text(stringResource(R.string.wheel_calibration_message_nb))
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                WheelData.getInstance().wheelCalibration()
-                            },
-                        ) {
-                            Text(stringResource(R.string.wheel_calibration))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showDialog = false },
-                        ) {
-                            Text(stringResource(android.R.string.cancel))
-                        }
-                    },
-                )
+        var showDialogCalibration by remember { mutableStateOf(false) }
+        if (showDialogCalibration) {
+            AlertDialog(
+                onDismissRequest = { showDialogCalibration = false },
+                title = { Text(stringResource(R.string.wheel_calibration)) },
+                text = {
+                    Text(stringResource(R.string.wheel_calibration_message_nb))
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            WheelData.getInstance().wheelCalibration()
+                        },
+                    ) {
+                        Text(stringResource(R.string.wheel_calibration))
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDialogCalibration = false },
+                    ) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                },
+            )
+        }
+        clickablePref(
+            name = R.string.wheel_calibration,
+            themeIcon = ThemeIconEnum.SettingsCalibration,
+        ) {
+            if (WheelData.getInstance().speed < 1) {
+                showDialogCalibration = true
             }
         }
     }
@@ -286,12 +286,215 @@ private fun ninebotZ() {
 
 @Composable
 private fun inmotion() {
-
+    var speedMultipier = 1.0f
+    var speedUnit = R.string.kmh
+    if (AppConfig.useMph) {
+        speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
+        speedUnit = R.string.mph
+    }
+    switchPref(
+        name = R.string.on_headlight_title,
+        desc = R.string.on_headlight_description,
+        default = AppConfig.lightEnabled,
+    ) {
+        AppConfig.lightEnabled = it
+    }
+    if (InMotionAdapter.getInstance().ledThere) {
+        switchPref(
+            name = R.string.leds_settings_title,
+            desc = R.string.leds_settings_description,
+            default = AppConfig.ledEnabled,
+        ) {
+            AppConfig.ledEnabled = it
+        }
+    }
+    switchPref(
+        name = R.string.disable_handle_button_title,
+        desc = R.string.disable_handle_button_description,
+        default = AppConfig.handleButtonDisabled,
+    ) {
+        AppConfig.handleButtonDisabled = it
+    }
+    sliderPref(
+        name = R.string.max_speed_title,
+        desc = R.string.tilt_back_description,
+        position = AppConfig.wheelMaxSpeed.toFloat(),
+        min = 3f,
+        max = InMotionAdapter.getInstance().maxSpeed.toFloat(),
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelMaxSpeed = it.toInt()
+    }
+    sliderPref(
+        name = R.string.pedal_horizont_title,
+        desc = R.string.pedal_horizont_description,
+        position = (AppConfig.pedalsAdjustment / 10).toFloat(),
+        min = -8f,
+        max = 8f,
+        unit = R.string.degree,
+        format = "%.1f",
+    ) {
+        AppConfig.pedalsAdjustment = (it * 10).toInt()
+    }
+    if (InMotionAdapter.getInstance().wheelModesWheel) {
+        switchPref(
+            name = R.string.ride_mode_title,
+            desc = R.string.ride_mode_description,
+            default = AppConfig.rideMode,
+        ) {
+            AppConfig.rideMode = it
+        }
+        sliderPref(
+            name = R.string.pedal_sensivity_title,
+            desc = R.string.pedal_sensivity_description,
+            position = AppConfig.pedalSensivity.toFloat(),
+            min = 4f,
+            max = 100f,
+            unit = R.string.persent,
+        ) {
+            AppConfig.pedalSensivity = it.toInt()
+        }
+    }
+    var showDialogPowerOff by remember { mutableStateOf(false) }
+    if (showDialogPowerOff) {
+        AlertDialog(
+            onDismissRequest = { showDialogPowerOff = false },
+            title = { Text(stringResource(R.string.power_off)) },
+            text = {
+                Text(stringResource(R.string.power_off_message))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        WheelData.getInstance().powerOff()
+                    },
+                ) {
+                    Text(stringResource(R.string.power_off))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialogPowerOff = false },
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        )
+    }
+    clickablePref(
+        name = R.string.wheel_calibration,
+        themeIcon = ThemeIconEnum.SettingsPowerOff,
+        showArrowIcon = false,
+    ) {
+        if (WheelData.getInstance().speed < 1) {
+            showDialogPowerOff = true
+        }
+    }
+    var showDialogCalibration by remember { mutableStateOf(false) }
+    if (showDialogCalibration) {
+        AlertDialog(
+            onDismissRequest = { showDialogCalibration = false },
+            title = { Text(stringResource(R.string.wheel_calibration)) },
+            text = {
+                Text(stringResource(R.string.wheel_calibration_message_nb))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        WheelData.getInstance().wheelCalibration()
+                    },
+                ) {
+                    Text(stringResource(R.string.wheel_calibration))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialogCalibration = false },
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        )
+    }
+    clickablePref(
+        name = R.string.wheel_calibration,
+        themeIcon = ThemeIconEnum.SettingsCalibration,
+    ) {
+        if (WheelData.getInstance().speed < 1) {
+            showDialogCalibration = true
+        }
+    }
 }
 
 @Composable
 private fun inmotionV2() {
-
+    var speedMultipier = 1.0f
+    var speedUnit = R.string.kmh
+    if (AppConfig.useMph) {
+        speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
+        speedUnit = R.string.mph
+    }
+    switchPref(
+        name = R.string.on_headlight_title,
+        desc = R.string.on_headlight_description,
+        default = AppConfig.lightEnabled,
+    ) {
+        AppConfig.lightEnabled = it
+    }
+    switchPref(
+        name = R.string.drl_settings_title,
+        desc = R.string.drl_settings_description,
+        default = AppConfig.drlEnabled,
+    ) {
+        AppConfig.drlEnabled = it
+    }
+    sliderPref(
+        name = R.string.light_brightness_title,
+        desc = R.string.light_brightness_description,
+        position = AppConfig.lightBrightness.toFloat(),
+        min = 0f,
+        max = 100f,
+        unit = R.string.persent,
+    ) {
+        AppConfig.lightBrightness = it.toInt()
+    }
+    switchPref(
+        name = R.string.fan_title,
+        desc = R.string.fan_description,
+        default = AppConfig.fanQuietEnabled,
+    ) {
+        AppConfig.fanQuietEnabled = it
+    }
+    sliderPref(
+        name = R.string.speaker_volume_title,
+        desc = R.string.speaker_volume_description,
+        position = AppConfig.speakerVolume.toFloat(),
+        min = 0f,
+        max = 100f,
+        unit = R.string.persent,
+    ) {
+        AppConfig.speakerVolume = it.toInt()
+    }
+    switchPref(
+        name = R.string.speaker_mute_title,
+        desc = R.string.speaker_mute_description,
+        default = AppConfig.speakerMute,
+    ) {
+        AppConfig.speakerMute = it
+    }
+    sliderPref(
+        name = R.string.pedal_horizont_title,
+        desc = R.string.pedal_horizont_description,
+        position = AppConfig.pedalsAdjustment.toFloat(),
+        min = -10f,
+        max = 10f,
+        unit = R.string.degree,
+        visualMultiple = 10f,
+        format = "%.1f",
+    ) {
+        AppConfig.pedalsAdjustment = it.toInt()
+    }
 }
 
 @Composable
