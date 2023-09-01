@@ -46,22 +46,22 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     private lateinit var generalSettings: GeneralSettings
     private lateinit var watchSettings: WatchSettings
 
-    private val writeStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (!granted) {
-            // Access is denied
-            WheelLog.AppConfig.autoLog = false
-            WheelLog.AppConfig.enableRawData = false
-            refreshVolatileSettings()
-        }
-    }
-
-    private val readStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (!granted) {
-            // Access is denied
-            WheelLog.AppConfig.useCustomBeep = false
-            refreshVolatileSettings()
-        }
-    }
+//    private val writeStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+//        if (!granted) {
+//            // Access is denied
+//            WheelLog.AppConfig.autoLog = false
+//            WheelLog.AppConfig.enableRawData = false
+//            refreshVolatileSettings()
+//        }
+//    }
+//
+//    private val readStoragePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+//        if (!granted) {
+//            // Access is denied
+//            WheelLog.AppConfig.useCustomBeep = false
+//            refreshVolatileSettings()
+//        }
+//    }
 
     private val locationPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
         if (!map.all { it.value == true }) {
@@ -117,13 +117,13 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
     }
 
     private fun checkAndRequestPermissions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-            && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
-            writeStoragePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && WheelLog.AppConfig.useCustomBeep) {
-            readStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+//            && (WheelLog.AppConfig.autoLog || WheelLog.AppConfig.enableRawData)) {
+//            writeStoragePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        }
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q && WheelLog.AppConfig.useCustomBeep) {
+//            readStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+//        }
         if (WheelLog.AppConfig.useGps) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {

@@ -1,5 +1,13 @@
 package com.cooper.wheellog.settings
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -8,13 +16,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.preference.SwitchPreference
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
+import timber.log.Timber
 
 @Composable
 fun applicationScreen() {
@@ -338,14 +349,104 @@ fun applicationScreen() {
                 beepByWheel = it
             }
 
+            var useCustomBeep by remember { mutableStateOf(AppConfig.useCustomBeep) }
             AnimatedVisibility(visible = !beepByWheel) {
                 switchPref(
                     name = R.string.custom_beep_title,
-                    default = AppConfig.useCustomBeep,
+                    default = useCustomBeep,
                     showDiv = false,
                 ) {
-                    AppConfig.useCustomBeep = it
-                    // TODO selectCustomBeep - beepFile
+                    useCustomBeep = it
+                }
+
+                if (useCustomBeep) {
+                    val context = LocalContext.current
+                    // check permissions
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        AppConfig.useCustomBeep = useCustomBeep
+                    } else {
+                        if (useCustomBeep) {
+                            rememberLauncherForActivityResult(
+                                ActivityResultContracts.RequestPermission()
+                            ) { granted ->
+                                AppConfig.useCustomBeep = granted
+                            }.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                        } else {
+                            AppConfig.useCustomBeep = false
+                            useCustomBeep = false
+                        }
+                    }
+                    AppConfig.useCustomBeep = useCustomBeep
+
+                    // show dialog
+                    if (useCustomBeep) {
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                            // Android 11+
+                            val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                            if (uri == null) {
+                                Timber.wtf(stringResource(R.string.no_file_read_permission))
+                                AppConfig.useCustomBeep = false
+                            }
+                            val projection = arrayOf(
+                                MediaStore.Audio.Media.DISPLAY_NAME,
+                                MediaStore.Audio.Media._ID
+                            )
+                            val cursor = context.contentResolver.query(
+                                uri,
+                                projection,
+                                null,
+                                null,
+                                MediaStore.Downloads.DATE_MODIFIED + " DESC"
+                            )
+                            val sounds = mutableMapOf<String, String>()
+                            if (cursor != null && cursor.moveToFirst()) {
+                                do {
+                                    val title = cursor.getString(0)
+                                    val mediaId = cursor.getString(1)
+                                    sounds[title] = mediaId
+                                } while (cursor.moveToNext())
+                                cursor.close()
+                            }
+                            if (sounds.isNotEmpty()) {
+                                val fileNames = sounds.keys.toTypedArray()
+                                AlertDialog.Builder(context)
+                                    .setTitle(stringResource(R.string.custom_beep_title))
+                                    .setItems(fileNames) { _, which ->
+                                        val fileName = fileNames[which]
+                                        val id = sounds[fileName]
+                                        AppConfig.beepFile = Uri.withAppendedPath(uri, id)
+                                    }
+                                    .setCancelable(false)
+                                    .create()
+                                    .show()
+                            } else {
+                                Timber.wtf(stringResource(R.string.files_not_found))
+                                AppConfig.useCustomBeep = false
+                                useCustomBeep = false
+                            }
+                        } else {
+                            // Android 10 or less
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                type = "audio/*"
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                            }
+                            rememberLauncherForActivityResult(
+                                ActivityResultContracts.StartActivityForResult()
+                            ) { result ->
+                                var isDefault = true
+                                val uri = result.data?.data
+                                if (result.resultCode == Activity.RESULT_OK && uri != null) {
+                                    isDefault = false
+                                    AppConfig.beepFile = uri
+                                }
+                                if (isDefault) {
+                                    AppConfig.beepFile = Uri.EMPTY
+                                    AppConfig.useCustomBeep = false
+                                    useCustomBeep = false
+                                }
+                            }.launch(intent)
+                        }
+                    }
                 }
             }
         }

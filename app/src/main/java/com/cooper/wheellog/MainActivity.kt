@@ -341,7 +341,7 @@ class MainActivity : AppCompatActivity() {
                         ConnectionState.CONNECTED -> {
                             if (!LoggingService.isInstanceCreated() &&
                                 WheelLog.AppConfig.autoLog &&
-                                !WheelLog.AppConfig.startAutoLoggingWhenIsMoving
+                                WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore != 0f
                             ) {
                                 toggleLoggingService()
                             }
@@ -397,8 +397,9 @@ class MainActivity : AppCompatActivity() {
                         WheelLog.Notifications.update()
                     }
                     if (!LoggingService.isInstanceCreated() &&
-                        WheelLog.AppConfig.startAutoLoggingWhenIsMoving &&
-                        WheelLog.AppConfig.autoLog && WheelData.getInstance().speedDouble > 7
+                        WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore != 0f &&
+                        WheelLog.AppConfig.autoLog &&
+                        WheelData.getInstance().speedDouble > WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore
                     ) {
                         toggleLoggingService()
                     }

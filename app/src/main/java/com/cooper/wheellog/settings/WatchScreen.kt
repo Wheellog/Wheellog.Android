@@ -20,59 +20,79 @@ fun watchScreen( )
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        list(
-            name = R.string.horn_mode_title,
-            desc = R.string.horn_mode_description,
-            entries = mapOf(
-                "0" to stringResource(R.string.disabled),
-                "1" to stringResource(R.string.on_board_horn_ks),
-                "2" to stringResource(R.string.bluetooth_audio_horn)
-            ),
-            defaultKey = AppConfig.hornMode.toString(),
+        group(
+            name = R.string.watch_wearos_group_title,
         ) {
-            AppConfig.hornMode = it.first.toInt()
+            multiList(
+                name = R.string.wearos_pages_title,
+                desc = R.string.wearos_pages_description,
+                entries = WearPage.values().associate { it.name to it.name },
+                defaultKeys = AppConfig.wearOsPages.map { it.name },
+                showDiv = false,
+            ) { list ->
+                EnumSet.copyOf(list.map { WearPage.valueOf(it) }).also { enumSet ->
+                    AppConfig.wearOsPages = enumSet
+                }
+            }
         }
 
-        switchPref(
-            name = R.string.garmin_connectiq_enable_title,
-            desc = R.string.garmin_connectiq_enable_description,
-            default = AppConfig.garminConnectIqEnable,
+        group(
+            name = R.string.watch_pebble_group_title,
         ) {
-            AppConfig.garminConnectIqEnable = it
+            list(
+                name = R.string.horn_mode_title,
+                desc = R.string.horn_mode_description,
+                entries = mapOf(
+                    "0" to stringResource(R.string.disabled),
+                    "1" to stringResource(R.string.on_board_horn_ks),
+                    "2" to stringResource(R.string.bluetooth_audio_horn)
+                ),
+                defaultKey = AppConfig.hornMode.toString(),
+                showDiv = false,
+            ) {
+                AppConfig.hornMode = it.first.toInt()
+            }
         }
 
-        switchPref(
-            name = R.string.garmin_connectiq_use_beta_title,
-            desc = R.string.garmin_connectiq_use_beta_description,
-            default = AppConfig.useGarminBetaCompanion,
+        group(
+            name = R.string.watch_garmin_group_title,
         ) {
-            AppConfig.useGarminBetaCompanion = it
+            switchPref(
+                name = R.string.garmin_connectiq_enable_title,
+                desc = R.string.garmin_connectiq_enable_description,
+                default = AppConfig.garminConnectIqEnable,
+            ) {
+                AppConfig.garminConnectIqEnable = it
+            }
+
+            switchPref(
+                name = R.string.garmin_connectiq_use_beta_title,
+                desc = R.string.garmin_connectiq_use_beta_description,
+                default = AppConfig.useGarminBetaCompanion,
+                showDiv = false,
+            ) {
+                AppConfig.useGarminBetaCompanion = it
+            }
         }
 
-        switchPref(
-            name = R.string.miband_on_mainscreen_title,
-            desc = R.string.miband_on_mainscreen_description,
-            default = AppConfig.mibandOnMainscreen,
+        group(
+            name = R.string.watch_miband_group_title,
         ) {
-            AppConfig.mibandOnMainscreen = it
-        }
+            switchPref(
+                name = R.string.miband_on_mainscreen_title,
+                desc = R.string.miband_on_mainscreen_description,
+                default = AppConfig.mibandOnMainscreen,
+            ) {
+                AppConfig.mibandOnMainscreen = it
+            }
 
-        switchPref(
-            name = R.string.miband_fixrs_title,
-            desc = R.string.miband_fixrs_description,
-            default = AppConfig.mibandFixRs,
-        ) {
-            AppConfig.mibandFixRs = it
-        }
-
-        multiList(
-            name = R.string.wearos_pages_title,
-            desc = R.string.wearos_pages_description,
-            entries = WearPage.values().associate { it.name to it.name },
-            defaultKeys = AppConfig.wearOsPages.map { it.name },
-        ) { list ->
-            EnumSet.copyOf(list.map { WearPage.valueOf(it) }).also { enumSet ->
-                AppConfig.wearOsPages = enumSet
+            switchPref(
+                name = R.string.miband_fixrs_title,
+                desc = R.string.miband_fixrs_description,
+                default = AppConfig.mibandFixRs,
+                showDiv = false,
+            ) {
+                AppConfig.mibandFixRs = it
             }
         }
     }

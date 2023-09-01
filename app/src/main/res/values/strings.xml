@@ -108,10 +108,12 @@
     <string name="alarm_text_temperature">Temperature alarm triggered</string>
     <string name="alarm_text_pwm">PWM alarm triggered</string>
     <string name="alarm_text_battery">Battery alarm triggered</string>
+    <string name="watch_garmin_group_title">Garmin</string>
     <string name="garmin_connectiq_enable_title">Garmin ConnectIQ</string>
     <string name="garmin_connectiq_enable_description">Enable connectivity to Garmin ConnectIQ</string>
     <string name="garmin_connectiq_use_beta_title">Beta Garmin companion</string>
     <string name="garmin_connectiq_use_beta_description">Use beta Garmin companion instead of a stable one</string>
+    <string name="watch_pebble_group_title">Pebble</string>
     <string name="horn_mode_title">Horn Mode</string>
     <string name="horn_mode_description">Executed when the select button on the Pebble watch is pressed</string>
     <string name="tilt_back_description">Tiltback speed</string>
@@ -509,18 +511,20 @@
     <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
     <string name="alarm_text_battery_v">[BAT] \n  - %1$d</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
+    <string name="watch_miband_group_title">Mi Band</string>
     <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>
     <string name="miband_on_mainscreen_description">Show Mi Band button on main screen instead watch button</string>
     <string name="miband_fixrs_title">Mi Band fix for Begode RS/EX</string>
     <string name="miband_fixrs_description">Use this only if have no data updates on Mi Band</string>
     <string name="wearos_pages_title" >WearOs Pages</string>
     <string name="wearos_pages_description">Pages on WearOs</string>
+    <string name="watch_wearos_group_title" >WearOs</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="replace_info_block">Replace \"%s\" to:</string>
-    <string name="auto_log_when_moving_description">Start auto logging only when wheel speed more than 7 km/h (4,3 mph).</string>
+    <string name="auto_log_when_moving_description">Start auto logging only when wheel speed more than</string>
     <string name="auto_log_when_moving_title">Start logging when is moving</string>
     <string name="remaining_distance">Remaining distance</string>
     <string name="battery_per_km">Battery per km</string>

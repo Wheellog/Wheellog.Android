@@ -1,8 +1,11 @@
 package com.cooper.wheellog.settings
 
 import android.app.Activity
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -12,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
@@ -27,36 +30,44 @@ fun logScreen()
             .verticalScroll(rememberScrollState())
     ) {
         var autoLogDependency by remember { mutableStateOf(AppConfig.autoLog) }
+        val writePermission = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            AppConfig.autoLog = granted
+            autoLogDependency = granted
+        }
         switchPref(
             name = R.string.auto_log_title,
             desc = R.string.auto_log_description,
             themeIcon = ThemeIconEnum.SettingsAutoLog,
             default = AppConfig.autoLog,
         ) {
-            AppConfig.autoLog = it
-            autoLogDependency = it
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                AppConfig.autoLog = it
+                autoLogDependency = it
+            } else {
+                if (it) {
+                    writePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                } else {
+                    AppConfig.autoLog = false
+                    autoLogDependency = false
+                }
+            }
         }
 
-        if (autoLogDependency) {
+        AnimatedVisibility (autoLogDependency) {
             sliderPref(
                 name = R.string.auto_log_when_moving_title,
                 desc = R.string.auto_log_when_moving_description,
-                position = 7f,
-                min = 3f,
+                position = AppConfig.startAutoLoggingWhenIsMovingMore,
+                min = 0f,
                 max = 20f,
                 unit = R.string.kmh,
                 showSwitch = true,
-
+                disableSwitchAtMin = true,
             ) {
-                AppConfig.startAutoLoggingWhenIsMoving = it > 0
+                AppConfig.startAutoLoggingWhenIsMovingMore = it
             }
-//            switchPref(
-//                name = R.string.auto_log_when_moving_title,
-//                desc = R.string.auto_log_when_moving_description,
-//                default = AppConfig.startAutoLoggingWhenIsMoving,
-//            ) {
-//                AppConfig.startAutoLoggingWhenIsMoving = it
-//            }
         }
 
         var locationDependency by remember { mutableStateOf(AppConfig.logLocationData) }
@@ -70,7 +81,7 @@ fun logScreen()
             locationDependency = it
         }
 
-        if (locationDependency) {
+        AnimatedVisibility (locationDependency) {
             var autoUploadDependency by remember { mutableStateOf(AppConfig.autoUploadEc) }
             switchPref(
                 name = R.string.auto_upload_log_ec_title,

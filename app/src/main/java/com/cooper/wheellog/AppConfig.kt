@@ -186,7 +186,9 @@ class AppConfig(var context: Context) {
     //region logs
     var autoLog: Boolean
         get() = getValue(R.string.auto_log, false)
-        set(value) = setValue(R.string.auto_log, value)
+        set(value) {
+            setValue(R.string.auto_log, value)
+        }
 
     var autoWatch: Boolean
         get() = getValue(R.string.auto_watch, false)
@@ -216,9 +218,9 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_raw_data, false)
         set(value) = setValue(R.string.use_raw_data, value)
 
-    var startAutoLoggingWhenIsMoving: Boolean
-        get() = getValue(R.string.auto_log_when_moving, false)
-        set(value) = setValue(R.string.auto_log_when_moving, value)
+    var startAutoLoggingWhenIsMovingMore: Float
+        get() = getValue(R.string.auto_log_when_moving_more, 7f)
+        set(value) = setValue(R.string.auto_log_when_moving_more, value)
 
     var continueThisDayLog: Boolean
         get() = getValue(R.string.continue_this_day_log, false)

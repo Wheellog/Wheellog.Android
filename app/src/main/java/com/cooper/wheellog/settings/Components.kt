@@ -233,32 +233,47 @@ fun group(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        var contentVisible by remember { mutableStateOf(true) }
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier,
+            color = MaterialTheme.colorScheme.secondaryContainer,
             shape = RoundedCornerShape(
                 topStart = 4.dp,
                 topEnd = 4.dp,
                 bottomStart = 0.dp,
                 bottomEnd = 0.dp),
+            onClick = {
+                contentVisible = !contentVisible
+            },
         ) {
             Text(
-                modifier = Modifier.padding(8.dp),
-                text = stringResource(id = name),
-                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .height(48.dp)
+                    .wrapContentHeight()
+                    .padding(
+                        start = 20.dp,
+                        top = 8.dp,
+                        bottom = 8.dp,
+                        end = 20.dp
+                    ),
+                text = if (contentVisible) { "" } else { "➖   " } + stringResource(id = name),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
             )
         }
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(
-                topStart = 0.dp,
-                topEnd = 4.dp,
-                bottomStart = 4.dp,
-                bottomEnd = 4.dp),
-        ) {
-            Column {
-                content()
+        AnimatedVisibility (contentVisible) {
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 4.dp,
+                    bottomStart = 4.dp,
+                    bottomEnd = 4.dp
+                ),
+            ) {
+                Column {
+                    content()
+                }
             }
         }
     }
@@ -285,7 +300,7 @@ fun list(
             shape = RoundedCornerShape(8.dp),
             onDismissRequest = { showDialog = false },
             title = {
-                Row {
+                Row(modifier = Modifier.padding(start = 8.dp)) {
                     if (themeIcon != null) {
                         Icon(
                             painter = painterResource(id = ThemeManager.getId(themeIcon)),
@@ -314,8 +329,7 @@ fun list(
                                         showDialog = false
                                     },
                                     role = Role.RadioButton
-                                )
-                                .padding(horizontal = 16.dp),
+                                ),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
@@ -400,7 +414,7 @@ fun multiList(
             shape = RoundedCornerShape(8.dp),
             onDismissRequest = { showDialog = false },
             title = {
-                Row {
+                Row(modifier = Modifier.padding(start = 8.dp)) {
                     if (themeIcon != null) {
                         Icon(
                             painter = painterResource(id = ThemeManager.getId(themeIcon)),
@@ -443,6 +457,7 @@ fun multiList(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(start = 4.dp)
                                 .selectable(
                                     selected = checked,
                                     onClick = {

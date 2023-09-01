@@ -8,7 +8,7 @@
         android:title="@string/auto_log_title" />
 
     <SwitchPreference
-        android:key="@string/auto_log_when_moving"
+        android:key="@string/auto_log_when_moving_more"
         android:summary="@string/auto_log_when_moving_description"
         android:title="@string/auto_log_when_moving_title"
         android:dependency="@string/auto_log" />
