@@ -431,7 +431,8 @@
     <string name="beep_on_volume_up_description">The volume buttons will play a beep. Can\'t change the volume in phone.</string>
     <string name="beep_by_wheel_description">Beep by build-in wheel horn</string>
     <string name="beep_by_wheel_title">Beep by wheel</string>
-    <string name="custom_beep_title">Select beep file</string>
+    <string name="use_custom_beep_title">Use phone alarms</string>
+    <string name="custom_beep_title">Alarm is not selected</string>
     <string name="bug_report">Bug report</string>
     <string name="donate_title">Donate</string>
     <string name="donate_crypto">Cryptocurrency</string>

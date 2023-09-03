@@ -1,31 +1,32 @@
 package com.cooper.wheellog.settings
 
 import android.app.Activity
-import android.content.Intent
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.preference.SwitchPreference
+import androidx.compose.ui.window.DialogProperties
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
-import timber.log.Timber
+
 
 @Composable
 fun applicationScreen() {
@@ -350,101 +351,100 @@ fun applicationScreen() {
             }
 
             var useCustomBeep by remember { mutableStateOf(AppConfig.useCustomBeep) }
-            AnimatedVisibility(visible = !beepByWheel) {
-                switchPref(
-                    name = R.string.custom_beep_title,
-                    default = useCustomBeep,
-                    showDiv = false,
-                ) {
-                    useCustomBeep = it
-                }
-
-                if (useCustomBeep) {
-                    val context = LocalContext.current
-                    // check permissions
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        AppConfig.useCustomBeep = useCustomBeep
-                    } else {
-                        if (useCustomBeep) {
-                            rememberLauncherForActivityResult(
-                                ActivityResultContracts.RequestPermission()
-                            ) { granted ->
-                                AppConfig.useCustomBeep = granted
-                            }.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                        } else {
-                            AppConfig.useCustomBeep = false
-                            useCustomBeep = false
-                        }
+            AnimatedVisibility(!beepByWheel) {
+                var showBeepDialog by remember { mutableStateOf(false) }
+                Column {
+                    switchPref(
+                        name = R.string.use_custom_beep_title,
+                        default = AppConfig.useCustomBeep,
+                    ) {
+                        AppConfig.useCustomBeep = it
+                        useCustomBeep = it
                     }
-                    AppConfig.useCustomBeep = useCustomBeep
 
-                    // show dialog
-                    if (useCustomBeep) {
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                            // Android 11+
-                            val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                            if (uri == null) {
-                                Timber.wtf(stringResource(R.string.no_file_read_permission))
-                                AppConfig.useCustomBeep = false
+                    AnimatedVisibility (useCustomBeep) {
+                        clickablePref(
+                            name = R.string.custom_beep_title,
+                            showDiv = false,
+                        ) {
+                            showBeepDialog = true
+                        }
+
+                        val context = LocalContext.current
+
+                        if (showBeepDialog) {
+                            val manager = RingtoneManager(context as Activity)
+                            manager.setType(RingtoneManager.TYPE_ALARM)
+                            val cursor = manager.cursor
+                            val ringtones = mutableListOf<Pair<String, Uri>>()
+                            while (cursor.moveToNext()) {
+                                val title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
+                                val ringtoneURI = manager.getRingtoneUri(cursor.position)
+                                ringtones.add(title to ringtoneURI)
                             }
-                            val projection = arrayOf(
-                                MediaStore.Audio.Media.DISPLAY_NAME,
-                                MediaStore.Audio.Media._ID
-                            )
-                            val cursor = context.contentResolver.query(
-                                uri,
-                                projection,
-                                null,
-                                null,
-                                MediaStore.Downloads.DATE_MODIFIED + " DESC"
-                            )
-                            val sounds = mutableMapOf<String, String>()
-                            if (cursor != null && cursor.moveToFirst()) {
-                                do {
-                                    val title = cursor.getString(0)
-                                    val mediaId = cursor.getString(1)
-                                    sounds[title] = mediaId
-                                } while (cursor.moveToNext())
-                                cursor.close()
+
+                            val audioAttributes = AudioAttributes.Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                                .build()
+
+                            val mediaPlayer by lazy {
+                                MediaPlayer().apply {
+                                    setAudioAttributes(audioAttributes)
+                                    isLooping = false
+                                }
                             }
-                            if (sounds.isNotEmpty()) {
-                                val fileNames = sounds.keys.toTypedArray()
-                                AlertDialog.Builder(context)
-                                    .setTitle(stringResource(R.string.custom_beep_title))
-                                    .setItems(fileNames) { _, which ->
-                                        val fileName = fileNames[which]
-                                        val id = sounds[fileName]
-                                        AppConfig.beepFile = Uri.withAppendedPath(uri, id)
+
+                            AlertDialog(
+                                onDismissRequest = {
+                                    showBeepDialog = false
+                                },
+                                title = {
+                                    Row(modifier = Modifier.padding(start = 8.dp)) {
+                                        Text(
+                                            text = stringResource(R.string.use_custom_beep_title),
+                                            style = MaterialTheme.typography.titleLarge,
+                                        )
                                     }
-                                    .setCancelable(false)
-                                    .create()
-                                    .show()
-                            } else {
-                                Timber.wtf(stringResource(R.string.files_not_found))
-                                AppConfig.useCustomBeep = false
-                                useCustomBeep = false
-                            }
-                        } else {
-                            // Android 10 or less
-                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                                type = "audio/*"
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                            }
-                            rememberLauncherForActivityResult(
-                                ActivityResultContracts.StartActivityForResult()
-                            ) { result ->
-                                var isDefault = true
-                                val uri = result.data?.data
-                                if (result.resultCode == Activity.RESULT_OK && uri != null) {
-                                    isDefault = false
-                                    AppConfig.beepFile = uri
-                                }
-                                if (isDefault) {
-                                    AppConfig.beepFile = Uri.EMPTY
-                                    AppConfig.useCustomBeep = false
-                                    useCustomBeep = false
-                                }
-                            }.launch(intent)
+                                },
+                                text = {
+                                    LazyColumn {
+                                        items(items = ringtones) { key ->
+                                            Row (
+                                                modifier = Modifier
+                                                    .padding(start = 8.dp)
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        mediaPlayer.apply {
+                                                            stop()
+                                                            reset()
+                                                            setDataSource(context, key.second)
+                                                            prepare()
+                                                            start()
+                                                        }
+                                                    }
+                                            ) {
+                                                Text(
+                                                    text = key.first,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                )
+                                            }
+                                        }
+                                    }
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        showBeepDialog = false
+                                        mediaPlayer.release()
+                                    }) {
+                                        Text(stringResource(id = android.R.string.ok))
+                                    }
+                                },
+                                properties = DialogProperties(
+                                    dismissOnBackPress = true,
+                                    dismissOnClickOutside = true,
+                                )
+                            )
                         }
                     }
                 }

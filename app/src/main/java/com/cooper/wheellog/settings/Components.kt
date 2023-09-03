@@ -292,10 +292,11 @@ fun list(
 ) {
     val title = stringResource(name)
     val keys = entries.keys.toTypedArray()
+
     var selectedIndex by remember { mutableStateOf(defaultKey) }
     var showDialog by remember { mutableStateOf(false) }
 
-    if (showDialog) {
+    if (showDialog && keys.isNotEmpty()) {
         AlertDialog(
             shape = RoundedCornerShape(8.dp),
             onDismissRequest = { showDialog = false },
