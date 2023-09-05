@@ -441,6 +441,7 @@
     <string name="github_desc">"Thanks to all contributors."</string>
     <string name="telegram">Telegram</string>
     <string name="FAQ">FAQ</string>
+    <string name="about_app_desc">This app is free and open source. It is developed by volunteers in their free time.\nIf you like this app, you can support the project by donating.</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>

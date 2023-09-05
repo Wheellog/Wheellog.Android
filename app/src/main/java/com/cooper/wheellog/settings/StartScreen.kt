@@ -154,33 +154,17 @@ fun startScreen(
                 },
             )
         }
-        clickablePref(
-            name = stringResource(R.string.donate_title),
-            themeIcon = ThemeIconEnum.SettingsDonate,
-            showArrowIcon = false,
-        ) {
-            showDonateDialog = true
-        }
         var showAboutDialog by remember { mutableStateOf(false) }
+
         if (showAboutDialog) {
             AlertDialog(
                 shape = RoundedCornerShape(8.dp),
                 onDismissRequest = { showAboutDialog = false },
                 title = {
-                    Row {
-                        Icon(
-                            painter = painterResource(
-                                id = android.R.drawable.ic_dialog_info
-                            ),
-                            contentDescription = "info",
-                            modifier = Modifier.size(32.dp).padding(end = 8.dp),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Text(
-                            text = stringResource(R.string.about_app_title),
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.about_app_title),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
                 },
                 text = {
                     Column {
@@ -226,6 +210,14 @@ fun startScreen(
                                 null
                             )
                         }
+                        if (isSpecificVisible) {
+                            clickablePref(
+                                name = stringResource(R.string.donate_title),
+                            ) {
+                                showAboutDialog = false
+                                showDonateDialog = true
+                            }
+                        }
                         clickablePref(
                             name = stringResource(R.string.telegram),
                             showDiv = false,
@@ -240,8 +232,7 @@ fun startScreen(
                             )
                         }
                         Text(
-                            text = "This app is free and open source. It is developed by volunteers in their free time.\n" +
-                                    "If you like this app, you can support the project by donating.",
+                            text = stringResource(R.string.about_app_desc),
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
