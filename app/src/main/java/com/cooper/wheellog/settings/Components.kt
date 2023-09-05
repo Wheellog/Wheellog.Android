@@ -1,9 +1,16 @@
 package com.cooper.wheellog.settings
 
+import android.app.Activity
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
 import androidx.annotation.*
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
@@ -31,10 +38,10 @@ import com.cooper.wheellog.utils.ThemeManager
 
 @Composable
 fun clickablePref(
-    @StringRes name: Int,
+    name: String,
     modifier: Modifier = Modifier,
     themeIcon: ThemeIconEnum? = null,
-    @StringRes desc: Int = 0,
+    desc: String = "",
     showArrowIcon: Boolean = true,
     showDiv: Boolean = true,
     onClick: () -> Unit,
@@ -64,9 +71,9 @@ fun clickablePref(
 
 @Composable
 fun switchPref(
-    @StringRes name: Int,
+    name: String,
     themeIcon: ThemeIconEnum? = null,
-    @StringRes desc: Int = 0,
+    desc: String = "",
     default: Boolean,
     showDiv: Boolean = true,
     onClick: (checked: Boolean) -> Unit
@@ -91,9 +98,9 @@ fun switchPref(
 
 @Composable
 fun sliderPref(
-    @StringRes name: Int,
+    name: String,
     themeIcon: ThemeIconEnum? = null,
-    @StringRes desc: Int = 0,
+    desc: String = "",
     position: Float = 0f,
     min: Float = 0f,
     max: Float = 100f,
@@ -229,7 +236,7 @@ fun sliderPref(
 
 @Composable
 fun group(
-    @StringRes name: Int,
+    name: String,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -255,7 +262,7 @@ fun group(
                         bottom = 8.dp,
                         end = 20.dp
                     ),
-                text = if (contentVisible) { "" } else { "➖   " } + stringResource(id = name),
+                text = if (contentVisible) { "" } else { "➖   " } + name,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -281,16 +288,15 @@ fun group(
 
 @Composable
 fun list(
-    @StringRes name: Int,
+    name: String,
     modifier: Modifier = Modifier,
+    desc: String = "",
     themeIcon: ThemeIconEnum? = null,
-    @StringRes desc: Int = 0,
     entries: Map<String, String> = mapOf(),
     defaultKey: String = "",
     showDiv: Boolean = true,
     onSelect: (selected: Pair<String, String>) -> Unit = {},
 ) {
-    val title = stringResource(name)
     val keys = entries.keys.toTypedArray()
 
     var selectedIndex by remember { mutableStateOf(defaultKey) }
@@ -311,7 +317,7 @@ fun list(
                         )
                     }
                     Text(
-                        text = title,
+                        text = name,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
@@ -345,7 +351,6 @@ fun list(
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         }
-
                     }
                 }
             },
@@ -391,17 +396,16 @@ fun list(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun multiList(
-    @StringRes name: Int,
+    name: String,
     modifier: Modifier = Modifier,
+    desc: String = "",
     themeIcon: ThemeIconEnum? = null,
-    @StringRes desc: Int = 0,
     entries: Map<String, String> = mapOf(),
     defaultKeys: List<String> = listOf(),
     useSort: Boolean = false,
     showDiv: Boolean = true,
     onChecked: (selectedKeys: List<String>) -> Unit,
 ) {
-    val title = stringResource(name)
     val keys = entries.keys.toList()
     var selectedIndex by remember { mutableStateOf(defaultKeys.distinct()) }
     // if selected keys are not in the list, then find them in the values
@@ -425,7 +429,7 @@ fun multiList(
                         )
                     }
                     Text(
-                        text = title,
+                        text = name,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
@@ -523,9 +527,128 @@ fun multiList(
 }
 
 @Composable
+fun alarmsList(
+    name: String,
+    desc: String = "",
+    themeIcon: ThemeIconEnum? = null,
+    default: Uri = Uri.EMPTY,
+    showDiv: Boolean = true,
+    onSelect: (selected: Pair<String, Uri>) -> Unit = {},
+) {
+    val context = LocalContext.current
+    val manager by lazy {
+        RingtoneManager(context as Activity).apply {
+            setType(RingtoneManager.TYPE_ALARM)
+        }
+    }
+
+    val nameTitle = if (default != Uri.EMPTY) {
+        manager.getRingtonePosition(default).let { position ->
+            manager.getRingtone(position)?.getTitle(context)
+        } ?: name
+    } else {
+        name
+    }
+
+    var perfName by remember { mutableStateOf(nameTitle) }
+    var showDialog by remember { mutableStateOf(false) }
+
+    clickablePref(
+        name = perfName,
+        desc = desc,
+        themeIcon = themeIcon,
+        showDiv = showDiv,
+    ) {
+        showDialog = true
+    }
+
+    if (showDialog) {
+        val cursor = manager.cursor
+        val ringtones = mutableListOf<Pair<String, Uri>>()
+        while (cursor.moveToNext()) {
+            val title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
+            val ringtoneURI = manager.getRingtoneUri(cursor.position)
+            ringtones.add(title to ringtoneURI)
+        }
+
+        var currentRingtone: Ringtone? by remember { mutableStateOf(null) }
+        var selectedIndex by remember { mutableStateOf(default) }
+        val listState = rememberLazyListState()
+
+        AlertDialog(
+            onDismissRequest = { },
+            title = {
+                Row(modifier = Modifier.padding(start = 8.dp)) {
+                    Text(
+                        text = stringResource(R.string.use_custom_beep_title),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+            },
+            text = {
+                LazyColumn(state = listState) {
+                    items(items = ringtones) { key ->
+                        Row (
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = selectedIndex == key.second,
+                                    onClick = {
+                                        val needPlay = selectedIndex != key.second ||
+                                                currentRingtone == null ||
+                                                currentRingtone?.isPlaying == false
+                                        selectedIndex = key.second
+                                        currentRingtone?.stop()
+                                        if (needPlay) {
+                                            currentRingtone = manager.getRingtone(manager.getRingtonePosition(key.second))
+                                            currentRingtone?.play()
+                                        }
+                                        perfName = key.first
+                                        onSelect(key)
+                                    },
+                                    role = Role.RadioButton
+                                ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = selectedIndex == key.second,
+                                onClick = null,
+                                colors = RadioButtonDefaults.colors(),
+                                modifier = Modifier.padding(8.dp),
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = key.first,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+                }
+                LaunchedEffect(key1 = Unit) {
+                    listState.animateScrollToItem(ringtones.indexOfFirst { it.second == default })
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    currentRingtone?.stop()
+                }) {
+                    Text(stringResource(id = android.R.string.ok))
+                }
+            },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+            )
+        )
+    }
+}
+
+@Composable
 fun baseSettings(
-    @StringRes name: Int,
-    @StringRes desc: Int = 0,
+    name: String,
+    desc: String = "",
     themeIcon: ThemeIconEnum? = null,
     showDiv: Boolean = true,
     rightContent: @Composable BoxScope.() -> Unit = { },
@@ -565,7 +688,7 @@ fun baseSettings(
                         )
                     }
                     Text(
-                        text = stringResource(id = name),
+                        text = name,
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         ),
@@ -573,10 +696,10 @@ fun baseSettings(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                if (desc != 0) {
+                if (desc.isNotEmpty()) {
                     Text(
                         modifier = Modifier.padding(top = 4.dp),
-                        text = stringResource(id = desc),
+                        text = desc,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis
@@ -602,222 +725,13 @@ fun baseSettings(
     }
 }
 
-/*@Composable
-fun baseSettingsConstrant(
-    @StringRes name: Int,
-    @StringRes desc: Int = 0,
-    themeIcon: ThemeIconEnum? = null,
-    rightContent: @Composable BoxScope.() -> Unit = { },
-    bottomContent: @Composable (BoxScope.() -> Unit)? = null
-) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp,
-                bottom = 16.dp,
-            )
-    ) {
-        val (rightControl, bottomControl, icon, title, subtext) = createRefs()
-        if (themeIcon != null) {
-            Icon(
-                painterResource(id = ThemeManager.getId(themeIcon)),
-                contentDescription = "",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .width((24 + 16).dp)
-                    .height(24.dp)
-                    .padding(end = 16.dp)
-                    .constrainAs(icon) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(subtext.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-        } else {
-            Spacer(
-                modifier = Modifier
-                    .size(8.dp)
-                    .constrainAs(icon) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(subtext.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-        }
-        Text(
-            text = stringResource(id = name),
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.primary
-            ),
-            textAlign = TextAlign.Start,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.constrainAs(title) {
-                start.linkTo(icon.end)
-                top.linkTo(parent.top)
-                end.linkTo(rightControl.start, 8.dp)
-                width = Dimension.fillToConstraints
-            }
-        )
-        if (desc != 0) {
-            Text(
-                text = stringResource(id = desc),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.constrainAs(subtext) {
-                    start.linkTo(title.start)
-                    top.linkTo(title.bottom, 8.dp)
-                    end.linkTo(title.end)
-                    width = Dimension.fillToConstraints
-                },
-            )
-        } else {
-            Spacer(
-                modifier = Modifier
-                    .constrainAs(subtext) {
-                        start.linkTo(title.start)
-                        top.linkTo(title.bottom)
-                        end.linkTo(rightControl.start)
-                        width = Dimension.fillToConstraints
-                    }
-            )
-        }
-        Box(modifier = Modifier
-            .constrainAs(rightControl) {
-                top.linkTo(parent.top)
-                bottom.linkTo(subtext.bottom)
-                end.linkTo(parent.end)
-            })
-        {
-            rightContent()
-        }
-        if (bottomContent != null) {
-            Box(modifier = Modifier
-                .constrainAs(bottomControl) {
-                    top.linkTo(subtext.bottom, 8.dp)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                })
-            {
-                bottomContent()
-            }
-        }
-    }
-}*/
-
-//@Composable
-//private fun TextEditDialog(
-//    @StringRes name: Int,
-//    storedValue: MutableState<String>,
-//    onSave: (String) -> Unit,
-//    onCheck: (String) -> Boolean,
-//    onDismiss: () -> Unit // internal method to dismiss dialog from within
-//) {
-//
-//    // storage for new input
-//    var currentInput by remember {
-//        mutableStateOf(TextFieldValue(storedValue.value))
-//    }
-//
-//    // if the input is valid - run the method for current value
-//    var isValid by remember {
-//        mutableStateOf(onCheck(storedValue.value))
-//    }
-//
-//    Surface(
-//        color = MaterialTheme.colorScheme.surface
-//    ) {
-//
-//        Column(
-//            modifier = Modifier
-//                .wrapContentHeight()
-//                .fillMaxWidth()
-//                .padding(16.dp)
-//        ) {
-//            Text(stringResource(id = name))
-//            Spacer(modifier = Modifier.height(8.dp))
-//            TextField(currentInput, onValueChange = {
-//                // check on change, if the value is valid
-//                isValid = onCheck(it.text)
-//                currentInput = it
-//            })
-//            Row {
-//                Spacer(modifier = Modifier.weight(1f))
-//                Button(onClick = {
-//                    // save and dismiss the dialog
-//                    onSave(currentInput.text)
-//                    onDismiss()
-//                    // disable / enable the button
-//                }, enabled = isValid) {
-//                    Text(stringResource(id = R.string.wh)) // TODO R.string.next))
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Composable
-//private fun TextEditNumberDialog(
-//    @StringRes name: Int,
-//    storedValue: State<String>,
-//    inputFilter: (String) -> String, // filters out not needed letters
-//    onSave: (String) -> Unit,
-//    onCheck: (String) -> Boolean,
-//    onDismiss: () -> Unit
-//) {
-//
-//    var currentInput by remember {
-//        mutableStateOf(TextFieldValue(storedValue.value))
-//    }
-//
-//    var isValid by remember {
-//        mutableStateOf(onCheck(storedValue.value))
-//    }
-//
-//    Surface(
-//        color = MaterialTheme.colorScheme.surface
-//    ) {
-//
-//        Column(
-//            modifier = Modifier
-//                .wrapContentHeight()
-//                .fillMaxWidth()
-//                .padding(16.dp)
-//        ) {
-//            Text(stringResource(id = name))
-//            Spacer(modifier = Modifier.height(8.dp))
-//            TextField(currentInput,
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//                onValueChange = {
-//                    // filters the input and removes redundant numbers
-//                    val filteredText = inputFilter(it.text)
-//                    isValid = onCheck(filteredText)
-//                    currentInput = TextFieldValue(filteredText)
-//                })
-//            Row {
-//                Spacer(modifier = Modifier.weight(1f))
-//                Button(onClick = {
-//                    onSave(currentInput.text)
-//                    onDismiss()
-//                }, enabled = isValid) {
-//                    Text(stringResource(id = R.string.wh)) //TODO R.string.next))
-//                }
-//            }
-//        }
-//    }
-//}
-
 @Preview
 @Composable
 private fun baseSettingsPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     baseSettings(
-        name = R.string.auto_log_title,
-        desc = R.string.auto_log_description,
+        name = stringResource(R.string.auto_log_title),
+        desc = stringResource(R.string.auto_log_description),
         themeIcon = ThemeIconEnum.SettingsAutoLog,
         rightContent = {
             Switch(
@@ -836,7 +750,7 @@ private fun baseSettingsPreview() {
 private fun clickablePreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     clickablePref(
-        name = R.string.speed_settings_title,
+        name = stringResource(R.string.speed_settings_title),
         themeIcon = ThemeIconEnum.SettingsSpeedometer
     ) { }
 }
@@ -846,7 +760,7 @@ private fun clickablePreview() {
 private fun clickablePreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     clickablePref(
-        name = R.string.donate_title,
+        name = stringResource(R.string.donate_title),
         themeIcon = ThemeIconEnum.SettingsDonate,
         showArrowIcon = false
     ) { }
@@ -857,8 +771,8 @@ private fun clickablePreview2() {
 private fun clickablePreview3() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     clickablePref(
-        name = R.string.beep_on_volume_up_title,
-        desc = R.string.beep_on_volume_up_description,
+        name = stringResource(R.string.beep_on_volume_up_title),
+        desc = stringResource(R.string.beep_on_volume_up_description),
         themeIcon = ThemeIconEnum.SettingsDonate,
         showArrowIcon = true
     ) { }
@@ -869,7 +783,7 @@ private fun clickablePreview3() {
 private fun clickablePreview4() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     clickablePref(
-        name = R.string.beep_on_volume_up_title,
+        name = stringResource(R.string.beep_on_volume_up_title),
         showArrowIcon = false
     ) { }
 }
@@ -879,8 +793,8 @@ private fun clickablePreview4() {
 private fun switchPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     switchPref(
-        name = R.string.use_eng_title,
-        desc = R.string.use_eng_description,
+        name = stringResource(R.string.use_eng_title),
+        desc = stringResource(R.string.use_eng_description),
         themeIcon = ThemeIconEnum.SettingsLanguage,
         default = true
     ) { }
@@ -891,7 +805,7 @@ private fun switchPreview() {
 private fun switchPreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     switchPref(
-        name = R.string.use_eng_title,
+        name = stringResource(R.string.use_eng_title),
         themeIcon = ThemeIconEnum.SettingsLanguage,
         default = false
     ) { }
@@ -902,9 +816,9 @@ private fun switchPreview2() {
 private fun sliderPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     sliderPref(
-        name = R.string.alarm_1_battery_title,
+        name = stringResource(R.string.alarm_1_battery_title),
         themeIcon = ThemeIconEnum.MenuMiBandAlarm,
-        desc = R.string.alarm_1_battery_description,
+        desc = stringResource(R.string.alarm_1_battery_description),
     ) { }
 }
 
@@ -913,8 +827,8 @@ private fun sliderPreview() {
 private fun sliderPreview2() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     sliderPref(
-        name = R.string.alarm_factor2_title,
-        desc = R.string.alarm_factor2_description,
+        name = stringResource(R.string.alarm_factor2_title),
+        desc = stringResource(R.string.alarm_factor2_description),
         position = 50f,
         min = 10f,
         max = 60f,
@@ -927,7 +841,7 @@ private fun sliderPreview2() {
 private fun sliderPreview3() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     sliderPref(
-        name = R.string.alarm_factor2_title,
+        name = stringResource(R.string.alarm_factor2_title),
         position = 66.66f,
         min = 60f,
         max = 70f,
@@ -940,8 +854,8 @@ private fun sliderPreview3() {
 private fun sliderPreview4() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     sliderPref(
-        name = R.string.warning_speed_period_title,
-        desc = R.string.warning_speed_period_description,
+        name = stringResource(R.string.warning_speed_period_title),
+        desc = stringResource(R.string.warning_speed_period_description),
         position = 10f,
         min = 0f,
         max = 50f,
@@ -957,8 +871,8 @@ private fun sliderPreview4() {
 private fun listPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     list(
-        name = R.string.app_theme_title,
-        desc = R.string.app_theme_description,
+        name = stringResource(R.string.app_theme_title),
+        desc = stringResource(R.string.app_theme_description),
         entries = ThemeEnum.values().associate { it.value.toString() to it.name },
         defaultKey = ThemeEnum.Original.value.toString(),
     )
@@ -969,8 +883,8 @@ private fun listPreview() {
 private fun multiListPreview() {
     WheelLog.AppConfig = AppConfig(LocalContext.current)
     multiList(
-        name = R.string.view_blocks_title,
-        desc = R.string.view_blocks_description,
+        name = stringResource(R.string.view_blocks_title),
+        desc = stringResource(R.string.view_blocks_description),
         themeIcon = ThemeIconEnum.SettingsBlocks,
         entries = mapOf(
             "1" to "Just one",

@@ -36,8 +36,8 @@ fun applicationScreen() {
     ) {
 
         switchPref(
-            name = R.string.use_eng_title,
-            desc = R.string.use_eng_description,
+            name = stringResource(R.string.use_eng_title),
+            desc = stringResource(R.string.use_eng_description),
             themeIcon = ThemeIconEnum.SettingsLanguage,
             default = AppConfig.useEng
         ) {
@@ -45,8 +45,8 @@ fun applicationScreen() {
         }
 
         list(
-            name = R.string.app_theme_title,
-            desc = R.string.app_theme_description,
+            name = stringResource(R.string.app_theme_title),
+            desc = stringResource(R.string.app_theme_description),
             entries = ThemeEnum.values().associate { it.value.toString() to it.name },
             defaultKey = AppConfig.appThemeInt.toString()
         ) {
@@ -54,7 +54,7 @@ fun applicationScreen() {
         }
 
         list(
-            name = R.string.day_night_theme_title,
+            name = stringResource(R.string.day_night_theme_title),
             entries = mapOf(
                 AppCompatDelegate.MODE_NIGHT_UNSPECIFIED.toString() to stringResource(R.string.day_night_theme_as_system),
                 AppCompatDelegate.MODE_NIGHT_NO.toString() to stringResource(R.string.day_night_theme_day),
@@ -66,8 +66,8 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.use_better_percents_title,
-            desc = R.string.use_better_percents_description,
+            name = stringResource(R.string.use_better_percents_title),
+            desc = stringResource(R.string.use_better_percents_description),
             default = AppConfig.useBetterPercents
         ) {
             AppConfig.useBetterPercents = it
@@ -75,8 +75,8 @@ fun applicationScreen() {
 
         var customPercents by remember { mutableStateOf(AppConfig.customPercents) }
         switchPref(
-            name = R.string.custom_percents_title,
-            desc = R.string.custom_percents_description,
+            name = stringResource(R.string.custom_percents_title),
+            desc = stringResource(R.string.custom_percents_description),
             default = AppConfig.customPercents,
             showDiv = customPercents,
         ) {
@@ -85,8 +85,8 @@ fun applicationScreen() {
         }
         AnimatedVisibility(visible = customPercents) {
             sliderPref(
-                name = R.string.cell_voltage_tiltback_title,
-                desc = R.string.cell_voltage_tiltback_description,
+                name = stringResource(R.string.cell_voltage_tiltback_title),
+                desc = stringResource(R.string.cell_voltage_tiltback_description),
                 position = AppConfig.cellVoltageTiltback / 100f,
                 min = 2.5f,
                 max = 4f,
@@ -99,19 +99,19 @@ fun applicationScreen() {
             }
         }
 
-        group(name = R.string.measurement_systems_category_title) {
+        group(name = stringResource(R.string.measurement_systems_category_title)) {
 
             switchPref(
-                name = R.string.use_mph_title,
-                desc = R.string.use_mph_description,
+                name = stringResource(R.string.use_mph_title),
+                desc = stringResource(R.string.use_mph_description),
                 default = AppConfig.useMph
             ) {
                 AppConfig.useMph = it
             }
 
             switchPref(
-                name = R.string.use_fahrenheit_title,
-                desc = R.string.use_fahrenheit_description,
+                name = stringResource(R.string.use_fahrenheit_title),
+                desc = stringResource(R.string.use_fahrenheit_description),
                 default = AppConfig.useFahrenheit,
                 showDiv = false,
             ) {
@@ -119,11 +119,11 @@ fun applicationScreen() {
             }
         }
 
-        group(name = R.string.after_connect_category) {
+        group(name = stringResource(R.string.after_connect_category)) {
 
             switchPref(
-                name = R.string.auto_log_title,
-                desc = R.string.auto_log_description,
+                name = stringResource(R.string.auto_log_title),
+                desc = stringResource(R.string.auto_log_description),
                 themeIcon = ThemeIconEnum.SettingsAutoLog,
                 default = AppConfig.autoLog,
             ) {
@@ -131,8 +131,8 @@ fun applicationScreen() {
             }
 
             switchPref(
-                name = R.string.auto_watch_title,
-                desc = R.string.auto_watch_description,
+                name = stringResource(R.string.auto_watch_title),
+                desc = stringResource(R.string.auto_watch_description),
                 themeIcon = ThemeIconEnum.SettingsWatch,
                 default = AppConfig.autoWatch,
                 showDiv = false,
@@ -141,11 +141,11 @@ fun applicationScreen() {
             }
         }
 
-        group(name = R.string.main_view_category) {
+        group(name = stringResource(R.string.main_view_category)) {
 
             multiList(
-                name = R.string.view_blocks_title,
-                desc = R.string.view_blocks_description,
+                name = stringResource(R.string.view_blocks_title),
+                desc = stringResource(R.string.view_blocks_description),
                 themeIcon = ThemeIconEnum.SettingsBlocks,
                 entries = mapOf(
                     // TODO: use enum as key instead of localized string resources
@@ -183,8 +183,8 @@ fun applicationScreen() {
             var usePipMode by remember { mutableStateOf(AppConfig.usePipMode) }
 
             switchPref(
-                name = R.string.use_pip_mode_title,
-                desc = R.string.use_pip_mode_description,
+                name = stringResource(R.string.use_pip_mode_title),
+                desc = stringResource(R.string.use_pip_mode_description),
                 default = AppConfig.usePipMode,
             ) {
                 AppConfig.usePipMode = it
@@ -192,7 +192,7 @@ fun applicationScreen() {
             }
             AnimatedVisibility(visible = usePipMode) {
                 list(
-                    name = R.string.pip_block_title,
+                    name = stringResource(R.string.pip_block_title),
                     entries = mapOf(
                         "0" to stringResource(R.string.speed),
                         "1" to stringResource(R.string.consumption),
@@ -204,8 +204,8 @@ fun applicationScreen() {
             }
 
             multiList(
-                name = R.string.notification_buttons_title,
-                desc = R.string.notification_buttons_description,
+                name = stringResource(R.string.notification_buttons_title),
+                desc = stringResource(R.string.notification_buttons_description),
                 themeIcon = ThemeIconEnum.SettingsNotification,
                 entries = mapOf(
                     stringResource(R.string.icon_connection) to stringResource(R.string.icon_connection),
@@ -222,8 +222,8 @@ fun applicationScreen() {
             }
 
             sliderPref(
-                name = R.string.max_speed_dial_title,
-                desc = R.string.max_speed_dial_description,
+                name = stringResource(R.string.max_speed_dial_title),
+                desc = stringResource(R.string.max_speed_dial_description),
                 min = 10f,
                 max = 100f,
                 position = AppConfig.maxSpeed.toFloat(),
@@ -232,16 +232,16 @@ fun applicationScreen() {
             }
 
             switchPref(
-                name = R.string.current_on_dial_title,
-                desc = R.string.current_on_dial_description,
+                name = stringResource(R.string.current_on_dial_title),
+                desc = stringResource(R.string.current_on_dial_description),
                 default = AppConfig.currentOnDial,
             ) {
                 AppConfig.currentOnDial = it
             }
 
             switchPref(
-                name = R.string.use_short_pwm_title,
-                desc = R.string.use_short_pwm_description,
+                name = stringResource(R.string.use_short_pwm_title),
+                desc = stringResource(R.string.use_short_pwm_description),
                 default = AppConfig.useShortPwm,
                 showDiv = false,
             ) {
@@ -250,15 +250,15 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.show_page_graph_title,
+            name = stringResource(R.string.show_page_graph_title),
             default = AppConfig.pageGraph,
         ) {
             AppConfig.pageGraph = it
         }
 
         switchPref(
-            name = R.string.show_page_events_title,
-            desc = R.string.show_page_events_description,
+            name = stringResource(R.string.show_page_events_title),
+            desc = stringResource(R.string.show_page_events_description),
             themeIcon = ThemeIconEnum.SettingsPageEvents,
             default = AppConfig.pageEvents,
         ) {
@@ -266,7 +266,7 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.show_page_trips_title,
+            name = stringResource(R.string.show_page_trips_title),
             themeIcon = ThemeIconEnum.SettingsPageTrips,
             default = AppConfig.pageTrips,
         ) {
@@ -274,8 +274,8 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.connection_sound_title,
-            desc = R.string.connection_sound_description,
+            name = stringResource(R.string.connection_sound_title),
+            desc = stringResource(R.string.connection_sound_description),
             themeIcon = ThemeIconEnum.SettingsConnectionSound,
             default = AppConfig.connectionSound,
         ) {
@@ -283,8 +283,8 @@ fun applicationScreen() {
         }
 
         sliderPref(
-            name = R.string.no_connection_sound_title,
-            desc = R.string.no_connection_sound_description,
+            name = stringResource(R.string.no_connection_sound_title),
+            desc = stringResource(R.string.no_connection_sound_description),
             min = 0f,
             max = 60f,
             unit = R.string.sec,
@@ -296,8 +296,8 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.use_stop_music_title,
-            desc = R.string.use_stop_music_description,
+            name = stringResource(R.string.use_stop_music_title),
+            desc = stringResource(R.string.use_stop_music_description),
             themeIcon = ThemeIconEnum.SettingsAutoMute,
             default = AppConfig.useStopMusic,
         ) {
@@ -305,16 +305,16 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.show_unknown_devices_title,
-            desc = R.string.show_unknown_devices_description,
+            name = stringResource(R.string.show_unknown_devices_title),
+            desc = stringResource(R.string.show_unknown_devices_description),
             default = AppConfig.showUnknownDevices,
         ) {
             AppConfig.showUnknownDevices = it
         }
 
         switchPref(
-            name = R.string.use_reconnect_title,
-            desc = R.string.use_reconnect_description,
+            name = stringResource(R.string.use_reconnect_title),
+            desc = stringResource(R.string.use_reconnect_description),
             default = AppConfig.useReconnect,
             showDiv = false,
         ) {
@@ -322,19 +322,19 @@ fun applicationScreen() {
         }
 
         group(
-            name = R.string.beep_category,
+            name = stringResource(R.string.beep_category),
         ) {
             switchPref(
-                name = R.string.beep_on_single_tap_title,
-                desc = R.string.beep_on_single_tap_description,
+                name = stringResource(R.string.beep_on_single_tap_title),
+                desc = stringResource(R.string.beep_on_single_tap_description),
                 default = AppConfig.useBeepOnSingleTap,
             ) {
                 AppConfig.useBeepOnSingleTap = it
             }
 
             switchPref(
-                name = R.string.beep_on_volume_up_title,
-                desc = R.string.beep_on_volume_up_description,
+                name = stringResource(R.string.beep_on_volume_up_title),
+                desc = stringResource(R.string.beep_on_volume_up_description),
                 default = AppConfig.useBeepOnVolumeUp,
             ) {
                 AppConfig.useBeepOnVolumeUp = it
@@ -342,8 +342,8 @@ fun applicationScreen() {
 
             var beepByWheel by remember { mutableStateOf(AppConfig.beepByWheel) }
             switchPref(
-                name = R.string.beep_by_wheel_title,
-                desc = R.string.beep_by_wheel_description,
+                name = stringResource(R.string.beep_by_wheel_title),
+                desc = stringResource(R.string.beep_by_wheel_description),
                 default = AppConfig.beepByWheel,
             ) {
                 AppConfig.beepByWheel = it
@@ -352,99 +352,26 @@ fun applicationScreen() {
 
             var useCustomBeep by remember { mutableStateOf(AppConfig.useCustomBeep) }
             AnimatedVisibility(!beepByWheel) {
-                var showBeepDialog by remember { mutableStateOf(false) }
+                // var showBeepDialog by remember { mutableStateOf(false) }
                 Column {
                     switchPref(
-                        name = R.string.use_custom_beep_title,
+                        name = stringResource(R.string.use_custom_beep_title),
                         default = AppConfig.useCustomBeep,
+                        showDiv = false,
                     ) {
                         AppConfig.useCustomBeep = it
                         useCustomBeep = it
                     }
 
                     AnimatedVisibility (useCustomBeep) {
-                        clickablePref(
-                            name = R.string.custom_beep_title,
+                        var ringtone by remember { mutableStateOf(AppConfig.beepFile) }
+                        alarmsList(
+                            name = stringResource(R.string.custom_beep_title),
+                            default = ringtone,
                             showDiv = false,
                         ) {
-                            showBeepDialog = true
-                        }
-
-                        val context = LocalContext.current
-
-                        if (showBeepDialog) {
-                            val manager = RingtoneManager(context as Activity)
-                            manager.setType(RingtoneManager.TYPE_ALARM)
-                            val cursor = manager.cursor
-                            val ringtones = mutableListOf<Pair<String, Uri>>()
-                            while (cursor.moveToNext()) {
-                                val title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
-                                val ringtoneURI = manager.getRingtoneUri(cursor.position)
-                                ringtones.add(title to ringtoneURI)
-                            }
-
-                            val audioAttributes = AudioAttributes.Builder()
-                                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                                .build()
-
-                            val mediaPlayer by lazy {
-                                MediaPlayer().apply {
-                                    setAudioAttributes(audioAttributes)
-                                    isLooping = false
-                                }
-                            }
-
-                            AlertDialog(
-                                onDismissRequest = {
-                                    showBeepDialog = false
-                                },
-                                title = {
-                                    Row(modifier = Modifier.padding(start = 8.dp)) {
-                                        Text(
-                                            text = stringResource(R.string.use_custom_beep_title),
-                                            style = MaterialTheme.typography.titleLarge,
-                                        )
-                                    }
-                                },
-                                text = {
-                                    LazyColumn {
-                                        items(items = ringtones) { key ->
-                                            Row (
-                                                modifier = Modifier
-                                                    .padding(start = 8.dp)
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        mediaPlayer.apply {
-                                                            stop()
-                                                            reset()
-                                                            setDataSource(context, key.second)
-                                                            prepare()
-                                                            start()
-                                                        }
-                                                    }
-                                            ) {
-                                                Text(
-                                                    text = key.first,
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                )
-                                            }
-                                        }
-                                    }
-                                },
-                                confirmButton = {
-                                    TextButton(onClick = {
-                                        showBeepDialog = false
-                                        mediaPlayer.release()
-                                    }) {
-                                        Text(stringResource(id = android.R.string.ok))
-                                    }
-                                },
-                                properties = DialogProperties(
-                                    dismissOnBackPress = true,
-                                    dismissOnClickOutside = true,
-                                )
-                            )
+                            AppConfig.beepFile = it.second
+                            ringtone = it.second
                         }
                     }
                 }
@@ -452,15 +379,15 @@ fun applicationScreen() {
         }
 
         switchPref(
-            name = R.string.use_detect_battery_optimization_title,
+            name = stringResource(R.string.use_detect_battery_optimization_title),
             default = AppConfig.detectBatteryOptimization,
         ) {
             AppConfig.detectBatteryOptimization = it
         }
 
         switchPref(
-            name = R.string.send_yandex_metriсa_title,
-            desc = R.string.send_yandex_metriсa_description,
+            name = stringResource(R.string.send_yandex_metriсa_title),
+            desc = stringResource(R.string.send_yandex_metriсa_description),
             default = AppConfig.yandexMetricaAccepted,
         ) {
             AppConfig.yandexMetricaAccepted = it

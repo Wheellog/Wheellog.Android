@@ -37,8 +37,8 @@ fun logScreen()
             autoLogDependency = granted
         }
         switchPref(
-            name = R.string.auto_log_title,
-            desc = R.string.auto_log_description,
+            name = stringResource(R.string.auto_log_title),
+            desc = stringResource(R.string.auto_log_description),
             themeIcon = ThemeIconEnum.SettingsAutoLog,
             default = AppConfig.autoLog,
         ) {
@@ -57,8 +57,8 @@ fun logScreen()
 
         AnimatedVisibility (autoLogDependency) {
             sliderPref(
-                name = R.string.auto_log_when_moving_title,
-                desc = R.string.auto_log_when_moving_description,
+                name = stringResource(R.string.auto_log_when_moving_title),
+                desc = stringResource(R.string.auto_log_when_moving_description),
                 position = AppConfig.startAutoLoggingWhenIsMovingMore,
                 min = 0f,
                 max = 20f,
@@ -72,8 +72,8 @@ fun logScreen()
 
         var locationDependency by remember { mutableStateOf(AppConfig.logLocationData) }
         switchPref(
-            name = R.string.log_location_title,
-            desc = R.string.log_location_description,
+            name = stringResource(R.string.log_location_title),
+            desc = stringResource(R.string.log_location_description),
             themeIcon = ThemeIconEnum.SettingsLocation,
             default = AppConfig.logLocationData,
         ) {
@@ -84,8 +84,8 @@ fun logScreen()
         AnimatedVisibility (locationDependency) {
             var autoUploadDependency by remember { mutableStateOf(AppConfig.autoUploadEc) }
             switchPref(
-                name = R.string.auto_upload_log_ec_title,
-                desc = R.string.auto_upload_log_ec_description,
+                name = stringResource(R.string.auto_upload_log_ec_title),
+                desc = stringResource(R.string.auto_upload_log_ec_description),
                 default = AppConfig.autoUploadEc,
             ) {
                 AppConfig.autoUploadEc = it
@@ -95,7 +95,7 @@ fun logScreen()
             if (autoUploadDependency && WheelData.getInstance().isConnected) {
                 val activity = LocalContext.current as Activity
                 clickablePref(
-                    name = R.string.select_garage_ec_title,
+                    name = stringResource(R.string.select_garage_ec_title),
                 ) {
                     AppConfig.ecGarage = null
                     ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
@@ -107,16 +107,16 @@ fun logScreen()
         }
 
         switchPref(
-            name = R.string.use_raw_title,
-            desc = R.string.use_raw_description,
+            name = stringResource(R.string.use_raw_title),
+            desc = stringResource(R.string.use_raw_description),
             default = AppConfig.enableRawData,
         ) {
             AppConfig.enableRawData = it
         }
 
         switchPref(
-            name = R.string.continue_this_day_log_title,
-            desc = R.string.continue_this_day_log_description,
+            name = stringResource(R.string.continue_this_day_log_title),
+            desc = stringResource(R.string.continue_this_day_log_description),
             default = AppConfig.continueThisDayLog,
         ) {
             AppConfig.continueThisDayLog = it

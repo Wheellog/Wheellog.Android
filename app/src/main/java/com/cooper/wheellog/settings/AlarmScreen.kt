@@ -30,8 +30,8 @@ fun alarmScreen() {
                     && WheelData.getInstance().model.compareTo("KS-18A") != 0
 
         switchPref(
-            name = R.string.enable_alarms_title,
-            desc = R.string.enable_alarms_description,
+            name = stringResource(R.string.enable_alarms_title),
+            desc = stringResource(R.string.enable_alarms_description),
             default = alarmsEnabled,
         ) {
             AppConfig.alarmsEnabled = it
@@ -39,24 +39,24 @@ fun alarmScreen() {
         }
 
         switchPref(
-            name = R.string.disable_phone_vibration_title,
-            desc = R.string.disable_phone_vibration_description,
+            name = stringResource(R.string.disable_phone_vibration_title),
+            desc = stringResource(R.string.disable_phone_vibration_description),
             default = AppConfig.disablePhoneVibrate,
         ) {
             AppConfig.disablePhoneVibrate = it
         }
 
         switchPref(
-            name = R.string.disable_phone_beep_title,
-            desc = R.string.disable_phone_beep_description,
+            name = stringResource(R.string.disable_phone_beep_title),
+            desc = stringResource(R.string.disable_phone_beep_description),
             default = AppConfig.disablePhoneBeep,
         ) {
             AppConfig.disablePhoneBeep = it
         }
 
         switchPref(
-            name = R.string.use_wheel_beep_for_alarm_title,
-            desc = R.string.use_wheel_beep_for_alarm_description,
+            name = stringResource(R.string.use_wheel_beep_for_alarm_title),
+            desc = stringResource(R.string.use_wheel_beep_for_alarm_description),
             default = AppConfig.useWheelBeepForAlarm,
         ) {
             AppConfig.useWheelBeepForAlarm = it
@@ -64,8 +64,8 @@ fun alarmScreen() {
 
         AnimatedVisibility(alarmsEnabled) {
             switchPref(
-                name = R.string.altered_alarms_title,
-                desc = R.string.altered_alarms_description,
+                name = stringResource(R.string.altered_alarms_title),
+                desc = stringResource(R.string.altered_alarms_description),
                 default = alteredAlarms,
                 showDiv = false,
             ) {
@@ -88,11 +88,11 @@ fun alarmScreen() {
             if (!alteredAlarms) {
                 // Default alarms
                 group(
-                    name = R.string.speed_alarm1_phone_title
+                    name = stringResource(R.string.speed_alarm1_phone_title)
                 ) {
                     sliderPref(
-                        name = R.string.speed,
-                        desc = R.string.speed_trigger_description,
+                        name = stringResource(R.string.speed),
+                        desc = stringResource(R.string.speed_trigger_description),
                         position = (AppConfig.alarm1Speed * speedMultipier).toFloat(),
                         unit = speedUnit,
                         min = 0f,
@@ -102,8 +102,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.alarm_1_battery_title,
-                        desc = R.string.alarm_1_battery_description,
+                        name = stringResource(R.string.alarm_1_battery_title),
+                        desc = stringResource(R.string.alarm_1_battery_description),
                         position = AppConfig.alarm1Battery.toFloat(),
                         unit = R.string.persent,
                         min = 0f,
@@ -114,11 +114,11 @@ fun alarmScreen() {
                     }
                 }
                 group(
-                    name = R.string.speed_alarm2_phone_title
+                    name = stringResource(R.string.speed_alarm2_phone_title)
                 ) {
                     sliderPref(
-                        name = R.string.speed,
-                        desc = R.string.speed_trigger_description,
+                        name = stringResource(R.string.speed),
+                        desc = stringResource(R.string.speed_trigger_description),
                         position = (AppConfig.alarm2Speed * speedMultipier).toFloat(),
                         unit = speedUnit,
                         min = 0f,
@@ -128,8 +128,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.alarm_2_battery_title,
-                        desc = R.string.alarm_1_battery_description,
+                        name = stringResource(R.string.alarm_2_battery_title),
+                        desc = stringResource(R.string.alarm_1_battery_description),
                         position = AppConfig.alarm2Battery.toFloat(),
                         unit = R.string.persent,
                         min = 0f,
@@ -140,11 +140,11 @@ fun alarmScreen() {
                     }
                 }
                 group(
-                    name = R.string.speed_alarm3_phone_title
+                    name = stringResource(R.string.speed_alarm3_phone_title)
                 ) {
                     sliderPref(
-                        name = R.string.speed,
-                        desc = R.string.speed_trigger_description,
+                        name = stringResource(R.string.speed),
+                        desc = stringResource(R.string.speed_trigger_description),
                         position = (AppConfig.alarm3Speed * speedMultipier).toFloat(),
                         unit = speedUnit,
                         min = 0f,
@@ -154,8 +154,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.alarm_3_battery_title,
-                        desc = R.string.alarm_1_battery_description,
+                        name = stringResource(R.string.alarm_3_battery_title),
+                        desc = stringResource(R.string.alarm_1_battery_description),
                         position = AppConfig.alarm3Battery.toFloat(),
                         unit = R.string.persent,
                         min = 0f,
@@ -168,12 +168,12 @@ fun alarmScreen() {
             } else {
                 // Altered alarms
                 group(
-                    name = R.string.altered_alarms_title
+                    name = stringResource(R.string.altered_alarms_title)
                 ) {
                     if (!ksAlteredAlarms) {
                         sliderPref(
-                            name = R.string.rotation_speed_title,
-                            desc = R.string.rotation_speed_description,
+                            name = stringResource(R.string.rotation_speed_title),
+                            desc = stringResource(R.string.rotation_speed_description),
                             position = (AppConfig.rotationSpeed / speedMultipier).toFloat(),
                             unit = speedUnit,
                             min = 0f,
@@ -183,8 +183,8 @@ fun alarmScreen() {
                         }
 
                         sliderPref(
-                            name = R.string.rotation_voltage_title,
-                            desc = R.string.rotation_voltage_description,
+                            name = stringResource(R.string.rotation_voltage_title),
+                            desc = stringResource(R.string.rotation_voltage_description),
                             position = AppConfig.rotationVoltage.toFloat(),
                             unit = R.string.volt,
                             min = 0f,
@@ -194,8 +194,8 @@ fun alarmScreen() {
                         }
 
                         sliderPref(
-                            name = R.string.power_factor_title,
-                            desc = R.string.power_factor_description,
+                            name = stringResource(R.string.power_factor_title),
+                            desc = stringResource(R.string.power_factor_description),
                             position = AppConfig.powerFactor.toFloat(),
                             unit = R.string.persent,
                             min = 0f,
@@ -206,8 +206,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.alarm_factor1_title,
-                        desc = R.string.alarm_factor1_description,
+                        name = stringResource(R.string.alarm_factor1_title),
+                        desc = stringResource(R.string.alarm_factor1_description),
                         position = AppConfig.alarmFactor1.toFloat(),
                         unit = R.string.persent,
                         min = 0f,
@@ -217,8 +217,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.alarm_factor2_title,
-                        desc = R.string.alarm_factor2_description,
+                        name = stringResource(R.string.alarm_factor2_title),
+                        desc = stringResource(R.string.alarm_factor2_description),
                         position = AppConfig.alarmFactor2.toFloat(),
                         unit = R.string.persent,
                         min = 0f,
@@ -228,8 +228,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.warning_speed_title,
-                        desc = R.string.warning_speed_description,
+                        name = stringResource(R.string.warning_speed_title),
+                        desc = stringResource(R.string.warning_speed_description),
                         position = AppConfig.warningSpeed.toFloat(),
                         unit = speedUnit,
                         min = 0f,
@@ -241,8 +241,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.warning_pwm_title,
-                        desc = R.string.warning_pwm_description,
+                        name = stringResource(R.string.warning_pwm_title),
+                        desc = stringResource(R.string.warning_pwm_description),
                         position = AppConfig.warningPwm.toFloat(),
                         unit = R.string.persent,
                         min = 0f,
@@ -254,8 +254,8 @@ fun alarmScreen() {
                     }
 
                     sliderPref(
-                        name = R.string.warning_speed_period_title,
-                        desc = R.string.warning_speed_period_description,
+                        name = stringResource(R.string.warning_speed_period_title),
+                        desc = stringResource(R.string.warning_speed_period_description),
                         position = AppConfig.warningSpeedPeriod.toFloat(),
                         unit = R.string.sec,
                         min = 0f,
@@ -269,8 +269,8 @@ fun alarmScreen() {
                 }
 
                 sliderPref(
-                    name = R.string.current_alarm_title,
-                    desc = R.string.alarm_current_description,
+                    name = stringResource(R.string.current_alarm_title),
+                    desc = stringResource(R.string.alarm_current_description),
                     position = AppConfig.alarmCurrent.toFloat(),
                     unit = R.string.amp,
                     min = 0f,
@@ -281,8 +281,8 @@ fun alarmScreen() {
 
                 // TODO: Add Fahrenheit support
                 sliderPref(
-                    name = R.string.temperature_alarm_title,
-                    desc = R.string.alarm_temperature_description,
+                    name = stringResource(R.string.temperature_alarm_title),
+                    desc = stringResource(R.string.alarm_temperature_description),
                     position = AppConfig.alarmTemperature.toFloat(),
                     unit = R.string.degree,
                     min = 0f,
@@ -292,8 +292,8 @@ fun alarmScreen() {
                 }
 
                 sliderPref(
-                    name = R.string.battery_alarm_title,
-                    desc = R.string.alarm_battery_description,
+                    name = stringResource(R.string.battery_alarm_title),
+                    desc = stringResource(R.string.alarm_battery_description),
                     position = AppConfig.alarmBattery.toFloat(),
                     unit = R.string.persent,
                     min = 0f,

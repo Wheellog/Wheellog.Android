@@ -21,11 +21,11 @@ fun watchScreen( )
             .verticalScroll(rememberScrollState())
     ) {
         group(
-            name = R.string.watch_wearos_group_title,
+            name = stringResource(R.string.watch_wearos_group_title),
         ) {
             multiList(
-                name = R.string.wearos_pages_title,
-                desc = R.string.wearos_pages_description,
+                name = stringResource(R.string.wearos_pages_title),
+                desc = stringResource(R.string.wearos_pages_description),
                 entries = WearPage.values().associate { it.name to it.name },
                 defaultKeys = AppConfig.wearOsPages.map { it.name },
                 showDiv = false,
@@ -37,11 +37,11 @@ fun watchScreen( )
         }
 
         group(
-            name = R.string.watch_pebble_group_title,
+            name = stringResource(R.string.watch_pebble_group_title),
         ) {
             list(
-                name = R.string.horn_mode_title,
-                desc = R.string.horn_mode_description,
+                name = stringResource(R.string.horn_mode_title),
+                desc = stringResource(R.string.horn_mode_description),
                 entries = mapOf(
                     "0" to stringResource(R.string.disabled),
                     "1" to stringResource(R.string.on_board_horn_ks),
@@ -55,19 +55,19 @@ fun watchScreen( )
         }
 
         group(
-            name = R.string.watch_garmin_group_title,
+            name = stringResource(R.string.watch_garmin_group_title),
         ) {
             switchPref(
-                name = R.string.garmin_connectiq_enable_title,
-                desc = R.string.garmin_connectiq_enable_description,
+                name = stringResource(R.string.garmin_connectiq_enable_title),
+                desc = stringResource(R.string.garmin_connectiq_enable_description),
                 default = AppConfig.garminConnectIqEnable,
             ) {
                 AppConfig.garminConnectIqEnable = it
             }
 
             switchPref(
-                name = R.string.garmin_connectiq_use_beta_title,
-                desc = R.string.garmin_connectiq_use_beta_description,
+                name = stringResource(R.string.garmin_connectiq_use_beta_title),
+                desc = stringResource(R.string.garmin_connectiq_use_beta_description),
                 default = AppConfig.useGarminBetaCompanion,
                 showDiv = false,
             ) {
@@ -76,19 +76,19 @@ fun watchScreen( )
         }
 
         group(
-            name = R.string.watch_miband_group_title,
+            name = stringResource(R.string.watch_miband_group_title),
         ) {
             switchPref(
-                name = R.string.miband_on_mainscreen_title,
-                desc = R.string.miband_on_mainscreen_description,
+                name = stringResource(R.string.miband_on_mainscreen_title),
+                desc = stringResource(R.string.miband_on_mainscreen_description),
                 default = AppConfig.mibandOnMainscreen,
             ) {
                 AppConfig.mibandOnMainscreen = it
             }
 
             switchPref(
-                name = R.string.miband_fixrs_title,
-                desc = R.string.miband_fixrs_description,
+                name = stringResource(R.string.miband_fixrs_title),
+                desc = stringResource(R.string.miband_fixrs_description),
                 default = AppConfig.mibandFixRs,
                 showDiv = false,
             ) {

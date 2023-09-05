@@ -58,40 +58,40 @@ fun startScreen(
         }
 
         clickablePref(
-            name = R.string.speed_settings_title,
+            name = stringResource(R.string.speed_settings_title),
             themeIcon = ThemeIconEnum.SettingsSpeedometer,
         ) {
             onSelect(SettingsScreenEnum.Application.name)
         }
         clickablePref(
-            name = R.string.logs_settings_title,
+            name = stringResource(R.string.logs_settings_title),
             themeIcon = ThemeIconEnum.SettingsLog,
         ) {
             onSelect(SettingsScreenEnum.Log.name)
         }
         if (isSpecificVisible) {
             clickablePref(
-                name = R.string.alarm_settings_title,
+                name = stringResource(R.string.alarm_settings_title),
                 themeIcon = ThemeIconEnum.SettingsVibration,
             ) {
                 onSelect(SettingsScreenEnum.Alarm.name)
             }
         }
         clickablePref(
-            name = R.string.watch_settings_title,
+            name = stringResource(R.string.watch_settings_title),
             themeIcon = ThemeIconEnum.SettingsWatch,
         ) {
             onSelect(SettingsScreenEnum.Watch.name)
         }
         if (isSpecificVisible) {
             clickablePref(
-                name = R.string.wheel_settings_title,
+                name = stringResource(R.string.wheel_settings_title),
                 themeIcon = ThemeIconEnum.SettingsWheel,
             ) {
                 onSelect(SettingsScreenEnum.Wheel.name)
             }
             clickablePref(
-                name = R.string.trip_settings_title,
+                name = stringResource(R.string.trip_settings_title),
                 themeIcon = ThemeIconEnum.SettingsTrips,
             ) {
                 onSelect(SettingsScreenEnum.Trip.name)
@@ -121,7 +121,7 @@ fun startScreen(
                 text = {
                     Column {
                         clickablePref(
-                            name = R.string.donate_crypto,
+                            name = stringResource(R.string.donate_crypto),
                         ) {
                             startActivity(
                                 context,
@@ -133,7 +133,7 @@ fun startScreen(
                             )
                         }
                         clickablePref(
-                            name = R.string.donate_bank_ru,
+                            name = stringResource(R.string.donate_bank_ru),
                             showDiv = false
                         ) {
                             startActivity(
@@ -155,7 +155,7 @@ fun startScreen(
             )
         }
         clickablePref(
-            name = R.string.donate_title,
+            name = stringResource(R.string.donate_title),
             themeIcon = ThemeIconEnum.SettingsDonate,
             showArrowIcon = false,
         ) {
@@ -190,8 +190,8 @@ fun startScreen(
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         clickablePref(
-                            name = R.string.github,
-                            desc = R.string.github_desc,
+                            name = stringResource(R.string.github),
+                            desc = stringResource(R.string.github_desc),
                         ) {
                             startActivity(
                                 context,
@@ -203,7 +203,7 @@ fun startScreen(
                             )
                         }
                         clickablePref(
-                            name = R.string.FAQ,
+                            name = stringResource(R.string.FAQ),
                         ) {
                             startActivity(
                                 context,
@@ -215,7 +215,7 @@ fun startScreen(
                             )
                         }
                         clickablePref(
-                            name = R.string.bug_report
+                            name = stringResource(R.string.bug_report),
                         ) {
                             startActivity(
                                 context,
@@ -227,7 +227,7 @@ fun startScreen(
                             )
                         }
                         clickablePref(
-                            name = R.string.telegram,
+                            name = stringResource(R.string.telegram),
                             showDiv = false,
                         ) {
                             startActivity(
@@ -254,7 +254,7 @@ fun startScreen(
             )
         }
         clickablePref(
-            name = R.string.about_app_title,
+            name = stringResource(R.string.about_app_title),
             themeIcon = ThemeIconEnum.SettingsAbout,
             showArrowIcon = false,
             showDiv = false,
