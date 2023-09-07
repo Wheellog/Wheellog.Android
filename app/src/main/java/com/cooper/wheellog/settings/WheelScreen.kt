@@ -173,6 +173,7 @@ private fun ninebotZ() {
         }
         list(
             name = stringResource(R.string.led_mode_title),
+            desc = NinebotZAdapter.getInstance().ledModeString ?: "",
             entries = mapOf(
                 "0" to stringResource(R.string.off),
                 "1" to stringResource(R.string.led_type1),
@@ -537,8 +538,10 @@ private fun forAllWheel() {
     }
 
     var showProfileDialog by remember { mutableStateOf(false) }
+    var profileText by remember { mutableStateOf(AppConfig.profileName) }
     clickablePref(
         name = stringResource(R.string.profile_name_title),
+        desc = profileText
     ) {
         showProfileDialog = true
     }
@@ -547,11 +550,10 @@ private fun forAllWheel() {
             onDismissRequest = { showProfileDialog = false },
             title = { Text(stringResource(R.string.profile_name_title)) },
             text = {
-                var text by remember { mutableStateOf(AppConfig.profileName) }
                 TextField(
-                    value = text,
+                    value = profileText,
                     onValueChange = { newText ->
-                        text = newText
+                        profileText = newText
                         AppConfig.profileName = newText
                     },
                     singleLine = true,

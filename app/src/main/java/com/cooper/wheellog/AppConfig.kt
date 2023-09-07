@@ -4,17 +4,22 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
+import androidx.preference.Preference
 import androidx.preference.PreferenceManager
+import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MiBandEnum
 import com.cooper.wheellog.utils.ThemeEnum
 import com.wheellog.shared.Constants
 import com.wheellog.shared.WearPage
 import com.wheellog.shared.WearPages
+import com.yandex.metrica.YandexMetrica
+import timber.log.Timber
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private var specificPrefix: String = ""
     private val separator = ";"
+    private val wd by lazy { WheelData.getInstance() }
 
     init {
         // Clear all preferences if they are incompatible
@@ -96,7 +101,10 @@ class AppConfig(var context: Context) {
 
     private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)
-        set(value) = setValue(R.string.notification_buttons, value)
+        set(value) {
+            setValue(R.string.notification_buttons, value)
+            WheelLog.Notifications.update()
+        }
 
     var notificationButtons: Array<String>
         get() = this.notificationButtonsString?.split(separator)?.toTypedArray()
@@ -112,7 +120,10 @@ class AppConfig(var context: Context) {
 
     var currentOnDial: Boolean
         get() = getValue(R.string.current_on_dial, false)
-        set(value) = setValue(R.string.current_on_dial, value)
+        set(value) {
+            setValue(R.string.current_on_dial, value)
+            Timber.i("Change dial type to %b", value)
+        }
 
     var pageGraph: Boolean
         get() = getValue(R.string.show_page_graph, true)
@@ -148,7 +159,10 @@ class AppConfig(var context: Context) {
 
     var useBeepOnVolumeUp: Boolean
         get() = getValue(R.string.beep_on_volume_up, false)
-        set(value) = setValue(R.string.beep_on_volume_up, value)
+        set(value) {
+            setValue(R.string.beep_on_volume_up, value)
+            WheelLog.VolumeKeyController.setActive(wd.isConnected && value)
+        }
 
     var beepByWheel: Boolean
         get() = getValue(R.string.beep_by_wheel, false)
@@ -168,7 +182,13 @@ class AppConfig(var context: Context) {
 
     var useReconnect: Boolean
         get() = getValue(R.string.use_reconnect, false)
-        set(value) = setValue(R.string.use_reconnect, value)
+        set(value) {
+            setValue(R.string.use_reconnect, value)
+            if (value)
+                wd.bluetoothService?.startReconnectTimer()
+            else
+                wd.bluetoothService?.stopReconnectTimer()
+        }
 
     var detectBatteryOptimization: Boolean
         get() = getValue(R.string.use_detect_battery_optimization, true)
@@ -180,7 +200,13 @@ class AppConfig(var context: Context) {
 
     var yandexMetricaAccepted: Boolean
         get() = getValue(R.string.yandex_metriсa_accepted, false)
-        set(value) = setValue(R.string.yandex_metriсa_accepted, value)
+        set(value) {
+            setValue(R.string.yandex_metriсa_accepted, value)
+            YandexMetrica.setStatisticsSending(
+                context,
+                WheelLog.AppConfig.yandexMetricaAccepted
+            )
+        }
     //endregion
 
     //region logs
@@ -250,7 +276,10 @@ class AppConfig(var context: Context) {
 
     var mibandFixRs: Boolean
         get() = getValue(R.string.miband_fixrs_enable, false)
-        set(value) = setValue(R.string.miband_fixrs_enable, value)
+        set(value) {
+            setValue(R.string.miband_fixrs_enable, value)
+            WheelLog.Notifications.updateKostilTimer()
+        }
 
     var wearOsPages: WearPages
         get() = WearPage.deserialize(
@@ -380,175 +409,298 @@ class AppConfig(var context: Context) {
     //region inmotion
     var ledEnabled: Boolean
         get() = getSpecific(R.string.led_enabled, false)
-        set(value) = setSpecific(R.string.led_enabled, value)
+        set(value) {
+            setSpecific(R.string.led_enabled, value)
+            wd.updateLed(value)
+        }
 
     var drlEnabled: Boolean
         get() = getSpecific(R.string.drl_enabled, false)
-        set(value) = setSpecific(R.string.drl_enabled, value)
+        set(value) {
+            setSpecific(R.string.drl_enabled, value)
+            wd.updateDrl(value)
+        }
 
     var taillightEnabled: Boolean
         get() = getSpecific(R.string.taillight_enabled, false)
-        set(value) = setSpecific(R.string.taillight_enabled, value)
+        set(value) {
+            setSpecific(R.string.taillight_enabled, value)
+            wd.updateTailLight(value)
+        }
 
     var handleButtonDisabled: Boolean
         get() = getSpecific(R.string.handle_button_disabled, false)
-        set(value) = setSpecific(R.string.handle_button_disabled, value)
+        set(value) {
+            setSpecific(R.string.handle_button_disabled, value)
+            wd.updateHandleButton(value)
+        }
 
     var speakerVolume: Int
         get() = getSpecific(R.string.speaker_volume, 0)
-        set(value) = setSpecific(R.string.speaker_volume, value)
+        set(value) {
+            setSpecific(R.string.speaker_volume, value)
+            wd.updateSpeakerVolume(value)
+        }
 
     var beeperVolume: Int
         get() = getSpecific(R.string.beeper_volume, 0)
-        set(value) = setSpecific(R.string.beeper_volume, value)
+        set(value) {
+            setSpecific(R.string.beeper_volume, value)
+            wd.adapter?.updateBeeperVolume(value)
+        }
 
     var pedalsAdjustment: Int
         get() = getSpecific(R.string.pedals_adjustment, 0)
-        set(value) = setSpecific(R.string.pedals_adjustment, value)
+        set(value) {
+            setSpecific(R.string.pedals_adjustment, value)
+            wd.updatePedals(value)
+        }
 
     var pedalSensivity: Int
         get() = getSpecific(R.string.pedal_sensivity, 100)
-        set(value) = setSpecific(R.string.pedal_sensivity, value)
+        set(value) {
+            setSpecific(R.string.pedal_sensivity, value)
+            wd.updatePedalSensivity(value)
+        }
 
     var rideMode: Boolean
         get() = getSpecific(R.string.ride_mode, false)
-        set(value) = setSpecific(R.string.ride_mode, value)
+        set(value) {
+            setSpecific(R.string.ride_mode, value)
+            wd.updateRideMode(value)
+        }
 
     var lockMode: Boolean
         get() = getSpecific(R.string.lock_mode, false)
-        set(value) = setSpecific(R.string.lock_mode, value)
+        set(value) {
+            setSpecific(R.string.lock_mode, value)
+            wd.updateLockMode(value)
+        }
 
     var transportMode: Boolean
         get() = getSpecific(R.string.transport_mode, false)
-        set(value) = setSpecific(R.string.transport_mode, value)
+        set(value) {
+            setSpecific(R.string.transport_mode, value)
+            wd.updateTransportMode(value)
+        }
 
     var goHomeMode: Boolean
         get() = getSpecific(R.string.go_home_mode, false)
-        set(value) = setSpecific(R.string.go_home_mode, value)
+        set(value) {
+            setSpecific(R.string.go_home_mode, value)
+            wd.updateGoHome(value)
+        }
 
     var fancierMode: Boolean
         get() = getSpecific(R.string.fancier_mode, false)
-        set(value) = setSpecific(R.string.fancier_mode, value)
+        set(value) {
+            setSpecific(R.string.fancier_mode, value)
+            wd.updateFancierMode(value)
+        }
 
     var speakerMute: Boolean
         get() = getSpecific(R.string.speaker_mute, false)
-        set(value) = setSpecific(R.string.speaker_mute, value)
+        set(value) {
+            setSpecific(R.string.speaker_mute, value)
+            wd.updateMute(value)
+        }
 
     var fanQuietEnabled: Boolean
         get() = getSpecific(R.string.fan_quiet_enable, false)
-        set(value) = setSpecific(R.string.fan_quiet_enable, value)
+        set(value) {
+            setSpecific(R.string.fan_quiet_enable, value)
+            wd.updateFanQuiet(value)
+        }
 
     var fanEnabled: Boolean
         get() = getSpecific(R.string.fan_enabled, false)
-        set(value) = setSpecific(R.string.fan_enabled, value)
+        set(value) {
+            setSpecific(R.string.fan_enabled, value)
+            wd.updateFanState(value)
+        }
 
     var lightBrightness: Int
         get() = getSpecific(R.string.light_brightness, 0)
-        set(value) = setSpecific(R.string.light_brightness, value)
+        set(value) {
+            setSpecific(R.string.light_brightness, value)
+            wd.updateLightBrightness(value)
+        }
 
     //endregion
 
     //region ninebotZ
     var wheelAlarm1Enabled: Boolean
         get() = getSpecific(R.string.wheel_alarm1_enabled, false)
-        set(value) = setSpecific(R.string.wheel_alarm1_enabled, value)
+        set(value) {
+            setSpecific(R.string.wheel_alarm1_enabled, value)
+            wd.updateAlarmEnabled(value, 1)
+        }
 
     var wheelAlarm2Enabled: Boolean
         get() = getSpecific(R.string.wheel_alarm2_enabled, false)
-        set(value) = setSpecific(R.string.wheel_alarm2_enabled, value)
+        set(value) {
+            setSpecific(R.string.wheel_alarm2_enabled, value)
+            wd.updateAlarmEnabled(value, 2)
+        }
 
     var wheelAlarm3Enabled: Boolean
         get() = getSpecific(R.string.wheel_alarm3_enabled, false)
-        set(value) = setSpecific(R.string.wheel_alarm3_enabled, value)
+        set(value) {
+            setSpecific(R.string.wheel_alarm3_enabled, value)
+            wd.updateAlarmEnabled(value, 3)
+        }
 
     var wheelAlarm1Speed: Int
         get() = getSpecific(R.string.wheel_alarm1, 0)
-        set(value) = setSpecific(R.string.wheel_alarm1, value)
+        set(value) {
+            setSpecific(R.string.wheel_alarm1, value)
+            wd.updateAlarmSpeed(value, 1)
+        }
 
     var wheelAlarm2Speed: Int
         get() = getSpecific(R.string.wheel_alarm2, 0)
-        set(value) = setSpecific(R.string.wheel_alarm2, value)
+        set(value) {
+            setSpecific(R.string.wheel_alarm2, value)
+            wd.updateAlarmSpeed(value, 2)
+        }
 
     var wheelAlarm3Speed: Int
         get() = getSpecific(R.string.wheel_alarm3, 0)
-        set(value) = setSpecific(R.string.wheel_alarm3, value)
+        set(value) {
+            setSpecific(R.string.wheel_alarm3, value)
+            wd.updateAlarmSpeed(value, 3)
+        }
 
     var wheelLimitedModeEnabled: Boolean
         get() = getSpecific(R.string.wheel_limited_mode_enabled, false)
-        set(value) = setSpecific(R.string.wheel_limited_mode_enabled, value)
+        set(value) {
+            setSpecific(R.string.wheel_limited_mode_enabled, value)
+            wd.updateLimitedModeEnabled(value)
+        }
 
     var wheelLimitedModeSpeed: Int
         get() = getSpecific(R.string.wheel_limited_speed, 10)
-        set(value) = setSpecific(R.string.wheel_limited_speed, value)
+        set(value) {
+            setSpecific(R.string.wheel_limited_speed, value)
+            wd.updateLimitedSpeed(value)
+        }
 
     var ledColor1: Int
         get() = getSpecific(R.string.nb_led_color1, 0)
-        set(value) = setSpecific(R.string.nb_led_color1, value)
+        set(value) {
+            setSpecific(R.string.nb_led_color1, value)
+            wd.setLedColor(value, 1)
+        }
 
     var ledColor2: Int
         get() = getSpecific(R.string.nb_led_color2, 0)
-        set(value) = setSpecific(R.string.nb_led_color2, value)
+        set(value) {
+            setSpecific(R.string.nb_led_color2, value)
+            wd.setLedColor(value, 2)
+        }
 
     var ledColor3: Int
         get() = getSpecific(R.string.nb_led_color3, 0)
-        set(value) = setSpecific(R.string.nb_led_color3, value)
+        set(value) {
+            setSpecific(R.string.nb_led_color3, value)
+            wd.setLedColor(value, 3)
+        }
 
     var ledColor4: Int
         get() = getSpecific(R.string.nb_led_color4, 0)
-        set(value) = setSpecific(R.string.nb_led_color4, value)
+        set(value) {
+            setSpecific(R.string.nb_led_color4, value)
+            wd.setLedColor(value, 4)
+        }
 
     var brakeAssistantEnabled: Boolean
         get() = getSpecific(R.string.brake_assistant_enabled, false)
-        set(value) = setSpecific(R.string.brake_assistant_enabled, value)
+        set(value) {
+            setSpecific(R.string.brake_assistant_enabled, value)
+            wd.updateBrakeAssistant(value)
+        }
 
     //end region
 
     //region kingsong
     var lightMode: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.light_mode, "0")
-        set(value) = setSpecific(R.string.light_mode, value)
+        set(value) {
+            setSpecific(R.string.light_mode, value)
+            wd.adapter?.setLightMode(Integer.parseInt(WheelLog.AppConfig.lightMode))
+        }
 
     var strobeMode: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.strobe_mode, "0")
-        set(value) = setSpecific(R.string.strobe_mode, value)
+        set(value) {
+            setSpecific(R.string.strobe_mode, value)
+            wd.updateStrobe(Integer.parseInt(value))
+        }
 
     var ledMode: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.led_mode, "0")
-        set(value) = setSpecific(R.string.led_mode, value)
+        set(value) {
+            setSpecific(R.string.led_mode, value)
+            wd.updateLedMode(Integer.parseInt(WheelLog.AppConfig.ledMode))
+        }
 
     var pedalsMode: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.pedals_mode, "0")
-        set(value) = setSpecific(R.string.pedals_mode, value)
+        set(value) {
+            setSpecific(R.string.pedals_mode, value)
+            wd.updatePedalsMode(Integer.parseInt(WheelLog.AppConfig.pedalsMode))
+        }
 
     var rollAngle: String // ListPreference only works with string parameters and writes them as string
         get() = getSpecific(R.string.roll_angle, "0")
-        set(value) = setSpecific(R.string.roll_angle, value)
+        set(value) {
+            setSpecific(R.string.roll_angle, value)
+            wd.adapter?.setRollAngleMode(Integer.parseInt(value))
+        }
 
     var wheelMaxSpeed: Int
         get() = getSpecific(R.string.wheel_max_speed, 0)
-        set(value) = setSpecific(R.string.wheel_max_speed, value)
+        set(value) {
+            setSpecific(R.string.wheel_max_speed, value)
+            wd.updateMaxSpeed(value)
+        }
 
     var wheelKsAlarm1: Int
         get() = getSpecific(R.string.wheel_ks_alarm1, 0)
-        set(value) = setSpecific(R.string.wheel_ks_alarm1, value)
+        set(value) {
+            setSpecific(R.string.wheel_ks_alarm1, value)
+            KingsongAdapter.getInstance().updateKSAlarm1(value)
+        }
 
     var wheelKsAlarm2: Int
         get() = getSpecific(R.string.wheel_ks_alarm2, 0)
-        set(value) = setSpecific(R.string.wheel_ks_alarm2, value)
+        set(value) {
+            setSpecific(R.string.wheel_ks_alarm2, value)
+            KingsongAdapter.getInstance().updateKSAlarm2(value)
+        }
 
     var wheelKsAlarm3: Int
         get() = getSpecific(R.string.wheel_ks_alarm3, 0)
-        set(value) = setSpecific(R.string.wheel_ks_alarm3, value)
+        set(value) {
+            setSpecific(R.string.wheel_ks_alarm3, value)
+            KingsongAdapter.getInstance().updateKSAlarm3(value)
+        }
 
     var ks18LScaler: Boolean
         get() = getSpecific(R.string.ks18l_scaler, false)
-        set(value) = setSpecific(R.string.ks18l_scaler, value)
+        set(value) {
+            setSpecific(R.string.ks18l_scaler, value)
+            KingsongAdapter.getInstance().set18Lkm(value)
+        }
     //endregion
     
     //region begode
     var alarmMode: String // ListPreference only works with string parameters
         get() = getSpecific(R.string.alarm_mode, "0")
-        set(value) = setSpecific(R.string.alarm_mode, value)
+        set(value) {
+            setSpecific(R.string.alarm_mode, value)
+            wd.updateAlarmMode(Integer.parseInt(value))
+        }
     
     var useRatio: Boolean
         get() = getSpecific(R.string.use_ratio, false)
@@ -556,7 +708,10 @@ class AppConfig(var context: Context) {
 
     var gwInMiles: Boolean
         get() = getSpecific(R.string.gw_in_miles, false)
-        set(value) = setSpecific(R.string.gw_in_miles, value)
+        set(value) {
+            setSpecific(R.string.gw_in_miles, value)
+            wd.adapter?.setMilesMode(value)
+        }
 
     var gotwayVoltage: String // ListPreference only works with string parameters
         get() = getSpecific(R.string.gotway_voltage, "1")
@@ -577,7 +732,10 @@ class AppConfig(var context: Context) {
 
     var lightEnabled: Boolean
         get() = getSpecific(R.string.light_enabled, false)
-        set(value) = setSpecific(R.string.light_enabled, value)
+        set(value) {
+            setSpecific(R.string.light_enabled, value)
+            wd.updateLight(value)
+        }
 
     var profileName: String
         get() = getSpecific(R.string.profile_name, "")
