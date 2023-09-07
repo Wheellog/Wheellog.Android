@@ -10,9 +10,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.InMotionAdapter
+import com.cooper.wheellog.utils.InmotionAdapterV2
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.NinebotZAdapter
 import com.cooper.wheellog.utils.ThemeIconEnum
@@ -43,12 +45,14 @@ fun wheelScreen()
 
 @Composable
 private fun ninebotZ() {
+    val adapter by remember { mutableStateOf(NinebotZAdapter.getInstance()) }
     switchPref(
         name = stringResource(R.string.on_headlight_title),
         desc = stringResource(R.string.on_headlight_description),
         default = AppConfig.lightEnabled,
     ) {
         AppConfig.lightEnabled = it
+        adapter.setLightState(it)
     }
     switchPref(
         name = stringResource(R.string.drl_settings_title),
@@ -56,6 +60,7 @@ private fun ninebotZ() {
         default = AppConfig.drlEnabled,
     ) {
         AppConfig.drlEnabled = it
+        adapter.setDrl(it)
     }
     switchPref(
         name = stringResource(R.string.taillight_settings_title),
@@ -63,6 +68,7 @@ private fun ninebotZ() {
         default = AppConfig.taillightEnabled,
     ) {
         AppConfig.taillightEnabled = it
+        adapter.setTailLightState(it)
     }
     switchPref(
         name = stringResource(R.string.disable_handle_button_title),
@@ -70,6 +76,7 @@ private fun ninebotZ() {
         default = AppConfig.handleButtonDisabled,
     ) {
         AppConfig.handleButtonDisabled = it
+        adapter.setHandleButtonState(it)
     }
     var alarm1 by remember { mutableStateOf(AppConfig.wheelAlarm1Enabled) }
     switchPref(
@@ -79,6 +86,7 @@ private fun ninebotZ() {
     ) {
         AppConfig.wheelAlarm1Enabled = it
         alarm1 = it
+        adapter.setAlarmEnabled(it, 1)
     }
     if (alarm1) {
         sliderPref(
@@ -90,6 +98,7 @@ private fun ninebotZ() {
             unit = R.string.kmh,
         ) {
             AppConfig.wheelAlarm1Speed = it.toInt()
+            adapter.setAlarmSpeed(it.toInt(), 1)
         }
     }
     var alarm2 by remember { mutableStateOf(AppConfig.wheelAlarm2Enabled) }
@@ -100,6 +109,7 @@ private fun ninebotZ() {
     ) {
         AppConfig.wheelAlarm2Enabled = it
         alarm2 = it
+        adapter.setAlarmEnabled(it, 2)
     }
     if (alarm2) {
         sliderPref(
@@ -111,6 +121,7 @@ private fun ninebotZ() {
             unit = R.string.kmh,
         ) {
             AppConfig.wheelAlarm2Speed = it.toInt()
+            adapter.setAlarmSpeed(it.toInt(), 2)
         }
     }
     var alarm3 by remember { mutableStateOf(AppConfig.wheelAlarm3Enabled) }
@@ -121,6 +132,7 @@ private fun ninebotZ() {
     ) {
         AppConfig.wheelAlarm3Enabled = it
         alarm3 = it
+        adapter.setAlarmEnabled(it, 3)
     }
     if (alarm3) {
         sliderPref(
@@ -132,6 +144,7 @@ private fun ninebotZ() {
             unit = R.string.kmh,
         ) {
             AppConfig.wheelAlarm3Speed = it.toInt()
+            adapter.setAlarmSpeed(it.toInt(), 3)
         }
     }
     var limitedMode by remember { mutableStateOf(AppConfig.wheelLimitedModeEnabled) }
@@ -142,6 +155,7 @@ private fun ninebotZ() {
     ) {
         AppConfig.wheelLimitedModeEnabled = it
         limitedMode = it
+        adapter.setLimitedModeEnabled(it)
     }
     if (limitedMode) {
         sliderPref(
@@ -153,7 +167,9 @@ private fun ninebotZ() {
             unit = R.string.kmh,
             format = "%.1f",
         ) {
-            AppConfig.wheelLimitedModeSpeed = it.toInt() * 10
+            val value = it.toInt() * 10
+            AppConfig.wheelLimitedModeSpeed = value
+            adapter.setLimitedSpeed(value)
         }
         switchPref(
             name = stringResource(R.string.brake_assistant_title),
@@ -161,6 +177,7 @@ private fun ninebotZ() {
             default = AppConfig.brakeAssistantEnabled,
         ) {
             AppConfig.brakeAssistantEnabled = it
+            adapter.setBrakeAssist(it)
         }
         sliderPref(
             name = stringResource(R.string.pedal_sensivity_title),
@@ -170,6 +187,7 @@ private fun ninebotZ() {
             max = 4f,
         ) {
             AppConfig.pedalSensivity = it.toInt()
+            adapter.pedalSensivity = it.toInt()
         }
         list(
             name = stringResource(R.string.led_mode_title),
@@ -187,6 +205,7 @@ private fun ninebotZ() {
             defaultKey = AppConfig.ledMode,
         ) {
             AppConfig.ledMode = it.first
+            adapter.updateLedMode(Integer.parseInt(it.first))
         }
         if (NinebotZAdapter.getInstance().getLedIsAvailable(1)) {
             sliderPref(
@@ -197,6 +216,7 @@ private fun ninebotZ() {
                 max = 256f,
             ) {
                 AppConfig.ledColor1 = it.toInt()
+                adapter.setLedColor(it.toInt(), 1)
             }
         }
         if (NinebotZAdapter.getInstance().getLedIsAvailable(2)) {
@@ -208,6 +228,7 @@ private fun ninebotZ() {
                 max = 256f,
             ) {
                 AppConfig.ledColor2 = it.toInt()
+                adapter.setLedColor(it.toInt(), 2)
             }
         }
         if (NinebotZAdapter.getInstance().getLedIsAvailable(3)) {
@@ -219,6 +240,7 @@ private fun ninebotZ() {
                 max = 256f,
             ) {
                 AppConfig.ledColor3 = it.toInt()
+                adapter.setLedColor(it.toInt(), 3)
             }
         }
         if (NinebotZAdapter.getInstance().getLedIsAvailable(4)) {
@@ -230,6 +252,7 @@ private fun ninebotZ() {
                 max = 256f,
             ) {
                 AppConfig.ledColor4 = it.toInt()
+                adapter.setLedColor(it.toInt(), 4)
             }
         }
         sliderPref(
@@ -240,6 +263,7 @@ private fun ninebotZ() {
             max = 127f,
         ) {
             AppConfig.speakerVolume = it.toInt()
+            adapter.speakerVolume = it.toInt()
         }
         switchPref(
             name = stringResource(R.string.lock_mode_title),
@@ -247,6 +271,7 @@ private fun ninebotZ() {
             default = AppConfig.lockMode,
         ) {
             AppConfig.lockMode = it
+            adapter.setLockMode(it)
         }
         var showDialogCalibration by remember { mutableStateOf(false) }
         if (showDialogCalibration) {
@@ -259,7 +284,7 @@ private fun ninebotZ() {
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            WheelData.getInstance().wheelCalibration()
+                            adapter.wheelCalibration()
                         },
                     ) {
                         Text(stringResource(R.string.wheel_calibration))
@@ -287,6 +312,7 @@ private fun ninebotZ() {
 
 @Composable
 private fun inmotion() {
+    val adapter by remember { mutableStateOf(InMotionAdapter.getInstance()) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
     if (AppConfig.useMph) {
@@ -299,6 +325,7 @@ private fun inmotion() {
         default = AppConfig.lightEnabled,
     ) {
         AppConfig.lightEnabled = it
+        adapter.setLightState(it)
     }
     if (InMotionAdapter.getInstance().ledThere) {
         switchPref(
@@ -307,6 +334,7 @@ private fun inmotion() {
             default = AppConfig.ledEnabled,
         ) {
             AppConfig.ledEnabled = it
+            adapter.setLedState(it)
         }
     }
     switchPref(
@@ -315,6 +343,7 @@ private fun inmotion() {
         default = AppConfig.handleButtonDisabled,
     ) {
         AppConfig.handleButtonDisabled = it
+        adapter.setHandleButtonState(it)
     }
     sliderPref(
         name = stringResource(R.string.max_speed_title),
@@ -326,6 +355,7 @@ private fun inmotion() {
         visualMultiple = speedMultipier,
     ) {
         AppConfig.wheelMaxSpeed = it.toInt()
+        adapter.updateMaxSpeed(it.toInt())
     }
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
@@ -337,6 +367,7 @@ private fun inmotion() {
         format = "%.1f",
     ) {
         AppConfig.pedalsAdjustment = (it * 10).toInt()
+        adapter.setPedalTilt(it.toInt() * 10)
     }
     if (InMotionAdapter.getInstance().wheelModesWheel) {
         switchPref(
@@ -345,6 +376,7 @@ private fun inmotion() {
             default = AppConfig.rideMode,
         ) {
             AppConfig.rideMode = it
+            adapter.setRideMode(it)
         }
         sliderPref(
             name = stringResource(R.string.pedal_sensivity_title),
@@ -355,6 +387,7 @@ private fun inmotion() {
             unit = R.string.persent,
         ) {
             AppConfig.pedalSensivity = it.toInt()
+            adapter.setPedalSensivity(it.toInt())
         }
     }
     var showDialogPowerOff by remember { mutableStateOf(false) }
@@ -368,7 +401,7 @@ private fun inmotion() {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        WheelData.getInstance().powerOff()
+                        adapter.powerOff()
                     },
                 ) {
                     Text(stringResource(R.string.power_off))
@@ -403,7 +436,7 @@ private fun inmotion() {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        WheelData.getInstance().wheelCalibration()
+                        adapter.wheelCalibration()
                     },
                 ) {
                     Text(stringResource(R.string.wheel_calibration))
@@ -430,6 +463,7 @@ private fun inmotion() {
 
 @Composable
 private fun inmotionV2() {
+    val adapter by remember { mutableStateOf(InmotionAdapterV2.getInstance()) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
     if (AppConfig.useMph) {
@@ -442,6 +476,7 @@ private fun inmotionV2() {
         default = AppConfig.lightEnabled,
     ) {
         AppConfig.lightEnabled = it
+        adapter.setLightState(it)
     }
     switchPref(
         name = stringResource(R.string.drl_settings_title),
@@ -449,6 +484,7 @@ private fun inmotionV2() {
         default = AppConfig.drlEnabled,
     ) {
         AppConfig.drlEnabled = it
+        adapter.setDrl(it)
     }
     sliderPref(
         name = stringResource(R.string.light_brightness_title),
@@ -459,6 +495,7 @@ private fun inmotionV2() {
         unit = R.string.persent,
     ) {
         AppConfig.lightBrightness = it.toInt()
+        adapter.setLightBrightness(it.toInt())
     }
     switchPref(
         name = stringResource(R.string.fan_title),
@@ -466,6 +503,7 @@ private fun inmotionV2() {
         default = AppConfig.fanQuietEnabled,
     ) {
         AppConfig.fanQuietEnabled = it
+        adapter.setFanQuiet(it)
     }
     sliderPref(
         name = stringResource(R.string.speaker_volume_title),
@@ -476,6 +514,7 @@ private fun inmotionV2() {
         unit = R.string.persent,
     ) {
         AppConfig.speakerVolume = it.toInt()
+        adapter.setSpeakerVolume(it.toInt())
     }
     switchPref(
         name = stringResource(R.string.speaker_mute_title),
@@ -483,6 +522,7 @@ private fun inmotionV2() {
         default = AppConfig.speakerMute,
     ) {
         AppConfig.speakerMute = it
+        adapter.setMute(it)
     }
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
@@ -495,6 +535,7 @@ private fun inmotionV2() {
         format = "%.1f",
     ) {
         AppConfig.pedalsAdjustment = it.toInt()
+        adapter.setPedalTilt(it.toInt())
     }
 }
 

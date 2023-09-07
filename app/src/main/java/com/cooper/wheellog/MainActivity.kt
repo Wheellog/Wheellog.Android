@@ -341,7 +341,7 @@ class MainActivity : AppCompatActivity() {
                         ConnectionState.CONNECTED -> {
                             if (!LoggingService.isInstanceCreated() &&
                                 WheelLog.AppConfig.autoLog &&
-                                WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore != 0f
+                                WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore == 0f
                             ) {
                                 toggleLoggingService()
                             }
