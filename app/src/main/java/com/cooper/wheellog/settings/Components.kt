@@ -1,8 +1,6 @@
 package com.cooper.wheellog.settings
 
 import android.app.Activity
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
@@ -10,7 +8,6 @@ import androidx.annotation.*
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
@@ -642,6 +639,53 @@ fun alarmsList(
                 dismissOnClickOutside = true,
             )
         )
+    }
+}
+
+@Composable
+fun clickableAndAlert(
+    name: String,
+    desc: String = "",
+    alertDesc: String = "",
+    themeIcon: ThemeIconEnum? = null,
+    showDiv: Boolean = true,
+    condition: () -> Boolean = { true },
+    confirmButtonText: String = name,
+    onConfirm: () -> Unit,
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(name) },
+            text = {
+                Text(alertDesc)
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = onConfirm,
+                ) {
+                    Text(confirmButtonText)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false },
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        )
+    }
+    clickablePref(
+        name = name,
+        desc = desc,
+        themeIcon = themeIcon,
+        showDiv = showDiv,
+    ) {
+        if (condition()) {
+            showDialog = true
+        }
     }
 }
 

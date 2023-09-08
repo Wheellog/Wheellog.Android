@@ -50,7 +50,7 @@ fun startScreen(
                 WheelData.getInstance()?.wheelType != Constants.WHEEL_TYPE.Unknown
             )
         }
-        SystemBroadcastReceiver(systemAction = Constants.ACTION_WHEEL_MODEL_CHANGED) { intent ->
+        systemBroadcastReceiver(systemAction = Constants.ACTION_WHEEL_MODEL_CHANGED) { intent ->
             if (intent?.action == Constants.ACTION_WHEEL_MODEL_CHANGED) {
                 isSpecificVisible =
                     WheelData.getInstance()?.wheelType != Constants.WHEEL_TYPE.Unknown

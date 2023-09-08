@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
 
 @Composable
-fun SystemBroadcastReceiver(
+fun systemBroadcastReceiver(
     systemAction: String,
     onSystemEvent: (intent: Intent?) -> Unit
 ) {

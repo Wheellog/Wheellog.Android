@@ -10,14 +10,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
-import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.InMotionAdapter
-import com.cooper.wheellog.utils.InmotionAdapterV2
-import com.cooper.wheellog.utils.MathsUtil
-import com.cooper.wheellog.utils.NinebotZAdapter
-import com.cooper.wheellog.utils.ThemeIconEnum
+import com.cooper.wheellog.utils.*
 
 @Composable
 fun wheelScreen()
@@ -390,75 +384,22 @@ private fun inmotion() {
             adapter.setPedalSensivity(it.toInt())
         }
     }
-    var showDialogPowerOff by remember { mutableStateOf(false) }
-    if (showDialogPowerOff) {
-        AlertDialog(
-            onDismissRequest = { showDialogPowerOff = false },
-            title = { Text(stringResource(R.string.power_off)) },
-            text = {
-                Text(stringResource(R.string.power_off_message))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        adapter.powerOff()
-                    },
-                ) {
-                    Text(stringResource(R.string.power_off))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDialogPowerOff = false },
-                ) {
-                    Text(stringResource(android.R.string.cancel))
-                }
-            },
-        )
-    }
-    clickablePref(
-        name = stringResource(R.string.wheel_calibration),
+    clickableAndAlert(
+        name = stringResource(R.string.power_off),
+        confirmButtonText = stringResource(R.string.power_off),
+        alertDesc = stringResource(R.string.power_off_message),
         themeIcon = ThemeIconEnum.SettingsPowerOff,
-        showArrowIcon = false,
-    ) {
-        if (WheelData.getInstance().speed < 1) {
-            showDialogPowerOff = true
-        }
-    }
-    var showDialogCalibration by remember { mutableStateOf(false) }
-    if (showDialogCalibration) {
-        AlertDialog(
-            onDismissRequest = { showDialogCalibration = false },
-            title = { Text(stringResource(R.string.wheel_calibration)) },
-            text = {
-                Text(stringResource(R.string.wheel_calibration_message_nb))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        adapter.wheelCalibration()
-                    },
-                ) {
-                    Text(stringResource(R.string.wheel_calibration))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDialogCalibration = false },
-                ) {
-                    Text(stringResource(android.R.string.cancel))
-                }
-            },
-        )
-    }
-    clickablePref(
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.powerOff() },
+    )
+    clickableAndAlert(
         name = stringResource(R.string.wheel_calibration),
+        confirmButtonText = stringResource(R.string.wheel_calibration),
+        alertDesc = stringResource(R.string.wheel_calibration_message_inmo),
         themeIcon = ThemeIconEnum.SettingsCalibration,
-    ) {
-        if (WheelData.getInstance().speed < 1) {
-            showDialogCalibration = true
-        }
-    }
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.wheelCalibration() },
+    )
 }
 
 @Composable
@@ -503,7 +444,23 @@ private fun inmotionV2() {
         default = AppConfig.fanQuietEnabled,
     ) {
         AppConfig.fanQuietEnabled = it
+        adapter.setFan(it)
+    }
+    switchPref(
+        name = stringResource(R.string.fan_quiet_title),
+        desc = stringResource(R.string.fan_quiet_description),
+        default = AppConfig.fanQuietEnabled,
+    ) {
+        AppConfig.fanQuietEnabled = it
         adapter.setFanQuiet(it)
+    }
+    switchPref(
+        name = stringResource(R.string.disable_handle_button_title),
+        desc = stringResource(R.string.disable_handle_button_description),
+        default = AppConfig.handleButtonDisabled,
+    ) {
+        AppConfig.handleButtonDisabled = it
+        adapter.setHandleButtonState(it)
     }
     sliderPref(
         name = stringResource(R.string.speaker_volume_title),
@@ -525,6 +482,18 @@ private fun inmotionV2() {
         adapter.setMute(it)
     }
     sliderPref(
+        name = stringResource(R.string.max_speed_title),
+        desc = stringResource(R.string.tilt_back_description),
+        position = AppConfig.wheelMaxSpeed.toFloat(),
+        min = 3f,
+        max = InmotionAdapterV2.getInstance().maxSpeed.toFloat(),
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelMaxSpeed = it.toInt()
+        adapter.updateMaxSpeed(it.toInt())
+    }
+    sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
         desc = stringResource(R.string.pedal_horizont_description),
         position = AppConfig.pedalsAdjustment.toFloat(),
@@ -537,21 +506,203 @@ private fun inmotionV2() {
         AppConfig.pedalsAdjustment = it.toInt()
         adapter.setPedalTilt(it.toInt())
     }
+    switchPref(
+        name = stringResource(R.string.ride_mode_title),
+        desc = stringResource(R.string.ride_mode_description),
+        default = AppConfig.rideMode,
+    ) {
+        AppConfig.rideMode = it
+        adapter.setRideMode(it)
+    }
+    sliderPref(
+        name = stringResource(R.string.pedal_sensivity_title),
+        desc = stringResource(R.string.pedal_sensivity_description),
+        position = AppConfig.pedalSensivity.toFloat(),
+        min = 0f,
+        max = 100f,
+        unit = R.string.persent,
+    ) {
+        AppConfig.pedalSensivity = it.toInt()
+        adapter.setPedalSensivity(it.toInt())
+    }
+    switchPref(
+        name = stringResource(R.string.fancier_mode_title),
+        desc = stringResource(R.string.fancier_mode_description),
+        default = AppConfig.fancierMode,
+    ) {
+        AppConfig.fancierMode = it
+        adapter.setFancierMode(it)
+    }
+    switchPref(
+        name = stringResource(R.string.go_home_mode_title),
+        desc = stringResource(R.string.go_home_mode_description),
+        default = AppConfig.goHomeMode,
+    ) {
+        AppConfig.goHomeMode = it
+        adapter.setGoHomeMode(it)
+    }
+    switchPref(
+        name = stringResource(R.string.transport_mode_title),
+        desc = stringResource(R.string.transport_mode_description),
+        default = AppConfig.transportMode,
+    ) {
+        AppConfig.transportMode = it
+        adapter.setTransportMode(it)
+    }
+    switchPref(
+        name = stringResource(R.string.lock_mode_title),
+        desc = stringResource(R.string.lock_mode_description),
+        default = AppConfig.lockMode,
+    ) {
+        AppConfig.lockMode = it
+        adapter.setLockMode(it)
+    }
+    clickableAndAlert(
+        name = stringResource(R.string.power_off),
+        confirmButtonText = stringResource(R.string.power_off),
+        alertDesc = stringResource(R.string.power_off_message),
+        themeIcon = ThemeIconEnum.SettingsPowerOff,
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.powerOff() },
+    )
+    clickableAndAlert(
+        name = stringResource(R.string.wheel_calibration),
+        confirmButtonText = stringResource(R.string.wheel_calibration),
+        alertDesc = stringResource(R.string.wheel_calibration_message_inmo),
+        themeIcon = ThemeIconEnum.SettingsCalibration,
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.wheelCalibration() },
+    )
 }
 
 @Composable
 private fun kingsong() {
-
+    val adapter by remember { mutableStateOf(KingsongAdapter.getInstance()) }
+    var speedMultipier = 1.0f
+    var speedUnit = R.string.kmh
+    if (AppConfig.useMph) {
+        speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
+        speedUnit = R.string.mph
+    }
+    list(
+        name = stringResource(R.string.light_mode_title),
+        desc = stringResource(R.string.on_off_auto),
+        entries = mapOf(
+            "0" to stringResource(R.string.off),
+            "1" to stringResource(R.string.on),
+            "2" to stringResource(R.string.auto),
+        ),
+        defaultKey = AppConfig.lightMode,
+    ) {
+        AppConfig.lightMode = it.first
+        adapter.setLightMode(it.first.toInt())
+    }
+    list(
+        name = stringResource(R.string.led_mode_title),
+        desc = stringResource(R.string.on_off),
+        entries = mapOf(
+            "0" to stringResource(R.string.on),
+            "1" to stringResource(R.string.off),
+        ),
+        defaultKey = AppConfig.ledMode,
+    ) {
+        AppConfig.ledMode = it.first
+        adapter.updateLedMode(it.first.toInt())
+    }
+    list(
+        name = stringResource(R.string.pedals_mode_title),
+        desc = stringResource(R.string.soft_medium_hard),
+        entries = mapOf(
+            "0" to stringResource(R.string.hard),
+            "1" to stringResource(R.string.medium),
+            "2" to stringResource(R.string.soft),
+        ),
+        defaultKey = AppConfig.pedalsMode,
+    ) {
+        AppConfig.pedalsMode = it.first
+        adapter.setPedalTilt(it.first.toInt())
+    }
+    sliderPref(
+        name = stringResource(R.string.max_speed_title),
+        desc = stringResource(R.string.tilt_back_description),
+        position = AppConfig.wheelMaxSpeed.toFloat(),
+        min = 0f,
+        max = 70f,
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelMaxSpeed = it.toInt()
+        adapter.updateMaxSpeed(it.toInt())
+    }
+    sliderPref(
+        name = stringResource(R.string.alert3_title),
+        desc = stringResource(R.string.alarm3_description),
+        position = AppConfig.wheelKsAlarm3.toFloat(),
+        min = 0f,
+        max = 70f,
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelKsAlarm3 = it.toInt()
+        adapter.updateKSAlarm3(it.toInt())
+    }
+    sliderPref(
+        name = stringResource(R.string.alert2_title),
+        desc = stringResource(R.string.alarm2_description),
+        position = AppConfig.wheelKsAlarm2.toFloat(),
+        min = 0f,
+        max = 70f,
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelKsAlarm2 = it.toInt()
+        adapter.updateKSAlarm2(it.toInt())
+    }
+    sliderPref(
+        name = stringResource(R.string.alert1_title),
+        desc = stringResource(R.string.alarm1_description),
+        position = AppConfig.wheelKsAlarm1.toFloat(),
+        min = 0f,
+        max = 70f,
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelKsAlarm1 = it.toInt()
+        adapter.updateKSAlarm1(it.toInt())
+    }
+    switchPref(
+        name = stringResource(R.string.ks18l_scaler_title),
+        desc = stringResource(R.string.ks18l_scaler_description),
+        default = AppConfig.ks18LScaler,
+    ) {
+        AppConfig.ks18LScaler = it
+    }
+    clickableAndAlert(
+        name = stringResource(R.string.power_off),
+        confirmButtonText = stringResource(R.string.power_off),
+        alertDesc = stringResource(R.string.power_off_message),
+        themeIcon = ThemeIconEnum.SettingsPowerOff,
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.powerOff() },
+    )
+    clickableAndAlert(
+        name = stringResource(R.string.wheel_calibration),
+        confirmButtonText = stringResource(R.string.wheel_calibration),
+        alertDesc = stringResource(R.string.wheel_calibration_message_inmo),
+        themeIcon = ThemeIconEnum.SettingsCalibration,
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.wheelCalibration() },
+    )
 }
 
 @Composable
 private fun begode() {
-
+    // TODO: Add Gotway settings
 }
 
 @Composable
 private fun veteran() {
-
+    // TODO: Add Veteran settings
 }
 
 @Composable
