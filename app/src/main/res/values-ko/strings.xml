@@ -319,7 +319,7 @@
     <string name="ks18l_scaler_title"></string>
     <string name="ks18l_scaler_description"></string>
     <string name="battery_voltage_title">"배터리 전압"</string>
-    <string name="battary_voltage_description">"67V/84V/100V"</string>
+    <string name="battery_voltage_description">"67V/84V/100V"</string>
     <string name="gotway_negative_title">"음의 전류 및 속도 모드"</string>
     <string name="gotway_negative_description">"일직선으로 라이딩할 때 속도와 전류가 음수가 된다면 - 반대가 되도록 설정하시거나 절대값으로 설정하세요"</string>
     <string name="absolute">"절대값 (양수만)"</string>

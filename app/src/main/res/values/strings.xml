@@ -304,7 +304,7 @@
     <string name="ks18l_scaler_title">Wrong 18L distanse</string>
     <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
     <string name="battery_voltage_title">Battery voltage</string>
-    <string name="battary_voltage_description">67V/84V/100V/116V/134V</string>
+    <string name="battery_voltage_description">67V/84V/100V/116V/134V</string>
     <string name="gotway_negative_title">Negative current and speed mode</string>
     <string name="gotway_negative_description">When you riding straight if speed and currents negative - try change to opposite setting, or choose absolute</string>
     <string name="hw_pwm_title">Use hardware PWM instead of software</string>

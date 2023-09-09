@@ -697,7 +697,160 @@ private fun kingsong() {
 
 @Composable
 private fun begode() {
-    // TODO: Add Gotway settings
+    val adapter by remember { mutableStateOf(KingsongAdapter.getInstance()) }
+    var speedMultipier = 1.0f
+    var speedUnit = R.string.kmh
+    if (AppConfig.useMph) {
+        speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
+        speedUnit = R.string.mph
+    }
+    list(
+        name = stringResource(R.string.light_mode_title),
+        desc = stringResource(R.string.on_off_strobe),
+        entries = mapOf(
+            "0" to stringResource(R.string.off),
+            "1" to stringResource(R.string.on),
+            "2" to stringResource(R.string.strobe),
+        ),
+        defaultKey = AppConfig.lightMode,
+    ) {
+        AppConfig.lightMode = it.first
+        adapter.setLightMode(it.first.toInt())
+    }
+    list(
+        name = stringResource(R.string.alarm_mode_title),
+        desc = stringResource(R.string.alarm_settings_title),
+        entries = if (AppConfig.hwPwm) {
+            mapOf(
+                "0" to stringResource(R.string.on_level_alarm),
+                "1" to stringResource(R.string.off_level_1_alarm),
+                "2" to stringResource(R.string.off_level_2_alarm),
+                "3" to stringResource(R.string.pwm_tiltback_alarm),
+            )
+        } else {
+            mapOf(
+                "0" to stringResource(R.string.on_level_alarm),
+                "1" to stringResource(R.string.off_level_1_alarm),
+                "2" to stringResource(R.string.off_level_2_alarm),
+            )
+        },
+        defaultKey = AppConfig.alarmMode,
+    ) {
+        AppConfig.ledMode = it.first
+        adapter.updateLedMode(it.first.toInt())
+    }
+    list(
+        name = stringResource(R.string.pedals_mode_title),
+        desc = stringResource(R.string.soft_medium_hard),
+        entries = mapOf(
+            "0" to stringResource(R.string.hard),
+            "1" to stringResource(R.string.medium),
+            "2" to stringResource(R.string.soft),
+        ),
+        defaultKey = AppConfig.pedalsMode,
+    ) {
+        AppConfig.pedalsMode = it.first
+        adapter.updatePedalsMode(it.first.toInt())
+    }
+    list(
+        name = stringResource(R.string.led_mode_title),
+        desc = stringResource(R.string.on_off),
+        entries = mapOf(
+            "0" to stringResource(R.string.zero),
+            "1" to stringResource(R.string.one),
+            "2" to stringResource(R.string.two),
+            "3" to stringResource(R.string.three),
+            "4" to stringResource(R.string.four),
+            "5" to stringResource(R.string.five),
+            "6" to stringResource(R.string.six),
+            "7" to stringResource(R.string.seven),
+            "8" to stringResource(R.string.eight),
+            "9" to stringResource(R.string.nine),
+        ),
+        defaultKey = AppConfig.ledMode,
+    ) {
+        AppConfig.ledMode = it.first
+        adapter.updateLedMode(it.first.toInt())
+    }
+    switchPref(
+        name = stringResource(R.string.gw_in_miles_title),
+        desc = stringResource(R.string.gw_in_miles_description),
+        default = AppConfig.gwInMiles,
+    ) {
+        AppConfig.gwInMiles = it
+        adapter.setMilesMode(it)
+    }
+    sliderPref(
+        name = stringResource(R.string.max_speed_title),
+        desc = stringResource(R.string.tilt_back_description),
+        position = AppConfig.wheelMaxSpeed.toFloat(),
+        min = 0f,
+        max = 99f,
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelMaxSpeed = it.toInt()
+        adapter.updateMaxSpeed(it.toInt())
+    }
+    sliderPref(
+        name = stringResource(R.string.alert3_title),
+        desc = stringResource(R.string.alarm3_description),
+        position = AppConfig.wheelKsAlarm3.toFloat(),
+        min = 0f,
+        max = 99f,
+        unit = speedUnit,
+        visualMultiple = speedMultipier,
+    ) {
+        AppConfig.wheelKsAlarm3 = it.toInt()
+        adapter.updateKSAlarm3(it.toInt())
+    }
+    clickableAndAlert(
+        name = stringResource(R.string.wheel_calibration),
+        confirmButtonText = stringResource(R.string.wheel_calibration),
+        alertDesc = stringResource(R.string.wheel_calibration_message_inmo),
+        themeIcon = ThemeIconEnum.SettingsCalibration,
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.wheelCalibration() },
+    )
+    switchPref(
+        name = stringResource(R.string.is_gotway_mcm_title),
+        desc = stringResource(R.string.is_gotway_mcm_description),
+        default = AppConfig.useRatio,
+    ) {
+        AppConfig.useRatio = it
+    }
+    list(
+        name = stringResource(R.string.battery_voltage_title),
+        desc = stringResource(R.string.battery_voltage_description),
+        entries = mapOf(
+            "0" to "67.2V",
+            "1" to "84V",
+            "2" to "100.8V",
+            "3" to "117.6V",
+            "4" to "134.4V",
+        ),
+        defaultKey = AppConfig.gotwayVoltage,
+    ) {
+        AppConfig.gotwayVoltage = it.first
+    }
+    list(
+        name = stringResource(R.string.gotway_negative_title),
+        desc = stringResource(R.string.gotway_negative_description),
+        entries = mapOf(
+            "-1" to stringResource(R.string.straight),
+            "0" to stringResource(R.string.absolute),
+            "1" to stringResource(R.string.reverse),
+        ),
+    ) {
+        AppConfig.gotwayNegative = it.first
+    }
+    switchPref(
+        name = stringResource(R.string.connect_beep_title),
+        desc = stringResource(R.string.connect_beep_description),
+        default = AppConfig.connectBeep,
+    ) {
+        AppConfig.connectBeep = it
+    }
 }
 
 @Composable

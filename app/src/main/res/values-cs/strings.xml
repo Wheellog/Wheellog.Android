@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Moje jednokolka je Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Pokud je Vaše jednokolka Gotway ACM a ukazuje špatnou rychlost, vzdálenost a další parametry, tohle by mělo pomoct</string>
 	<string name="battery_voltage_title">Napětí baterie</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Vypnout upozornění 1. úrovně</string>
 	<string name="off_level_2_alarm">Vypnout upozornění 2. úrovně</string>
 	<string name="on_level_alarm">Povolit upozornění</string>

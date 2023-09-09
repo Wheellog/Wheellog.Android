@@ -161,7 +161,7 @@
     <string name="is_gotway_mcm_title">我的轮子是Gotway MCM</string>
     <string name="is_gotway_mcm_description">如果你的轮子是Gotway MCM，它显示错误的速度，距离和其他参数，这个选项可能使它们正常</string>
     <string name="battery_voltage_title">电池电压</string>
-    <string name="battary_voltage_description">67V/84V/100V</string>
+    <string name="battery_voltage_description">67V/84V/100V</string>
     <string name="off_level_1_alarm">关闭1级警报</string>
     <string name="off_level_2_alarm">关闭2级警报</string>
     <string name="on_level_alarm">打开警报</string>

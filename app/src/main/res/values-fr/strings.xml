@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Ma roue est une Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Si votre roue est une  Gotway MCM, et que l\'application affiche des vitesses, distances et autres qui semblent erronnés, ceci pourrait corriger le problème</string>
 	<string name="battery_voltage_title">Tension de la batterie</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Désactiver alarme niveau 1</string>
 	<string name="off_level_2_alarm">Désactiver alarme niveau 2</string>
 	<string name="on_level_alarm">Activer les alarmes</string>

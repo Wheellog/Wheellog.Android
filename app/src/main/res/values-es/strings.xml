@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Mi rueda es Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Si su rueda es un MCM Gotway y la aplicación muestra velocidades, distancias  incorrectas, esto podría solucionar el problema.</string>
 	<string name="battery_voltage_title">Voltaje GOTWAY</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Desactivar primera alarma 1</string>
 	<string name="off_level_2_alarm">Desactivar segunda alarma 2</string>
 	<string name="on_level_alarm">Activar alarmas</string>

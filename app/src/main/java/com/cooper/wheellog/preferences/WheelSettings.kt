@@ -775,7 +775,7 @@ class WheelSettings(context: Context, ps: PreferenceScreen) : BaseSettingsClass(
         ListPreference(context).apply {
             key = mac + getString(R.string.gotway_voltage)
             title = getString(R.string.battery_voltage_title)
-            summary = getString(R.string.battary_voltage_description)
+            summary = getString(R.string.battery_voltage_description)
             setEntries(R.array.gotway_voltage)
             setEntryValues(R.array.gotway_voltage_values)
             setDefaultValue(WheelLog.AppConfig.gotwayVoltage)

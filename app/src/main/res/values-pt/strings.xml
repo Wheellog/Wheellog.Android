@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Meu monociclo é um Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Se seu monociclo é um Gotway MCM, e ele mostra velocidade, distância ou outros parâmetros errados, isto deve resolver</string>
 	<string name="battery_voltage_title">Voltagem da Bateria</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Desligar alarme nível 1</string>
 	<string name="off_level_2_alarm">Desligar alarme nível 2</string>
 	<string name="on_level_alarm">Ligar alarme</string>

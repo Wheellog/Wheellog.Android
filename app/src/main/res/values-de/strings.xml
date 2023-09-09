@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Mein Rad ist ein Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Sollter Ihr Gotway MCM falsche Geschwindigkeit, Distanz etc. angeben, benutzen Sie diese Option</string>
 	<string name="battery_voltage_title">Batteriespannung</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Level 1 Alarm aus</string>
 	<string name="off_level_2_alarm">Level 2 Alarm aus</string>
 	<string name="on_level_alarm">Alarm an</string>

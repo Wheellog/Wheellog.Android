@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Ο Ρόδα μου είναι MCM Gotway</string>
 	<string name="is_gotway_mcm_description">Εάν η ρόδα σας είναι Gotway MCM και εμφανίζει λάθος ταχύτητα, απόσταση και άλλες παραμέτρους, αυτή η επιλογή θα τα φέρει στα κανονικά</string>
 	<string name="battery_voltage_title">Τάση μπαταρίας</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Απενεργοίηση level 1 συναγερμού</string>
 	<string name="off_level_2_alarm">Απενεργοίηση level 2 συναγερμού</string>
 	<string name="on_level_alarm">Ενεργοποίηση συναγερμού</string>
