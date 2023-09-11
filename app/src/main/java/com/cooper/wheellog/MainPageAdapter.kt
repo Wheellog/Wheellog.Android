@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.MathsUtil
+import com.cooper.wheellog.utils.NinebotAdapter
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.utils.StringUtil.inArray
 import com.cooper.wheellog.utils.StringUtil.toTempString
@@ -771,7 +772,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 }
             }
             WHEEL_TYPE.NINEBOT_Z -> {
-                if (WheelData.getInstance().protoVer == "") { //hide page for S2
+                if (NinebotAdapter.getProtoFromAdvData() == "") { //hide page for S2
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)

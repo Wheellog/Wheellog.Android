@@ -445,7 +445,7 @@ class BluetoothService: Service() {
                     return wheelConnection!!.writeCharacteristic(characteristic, cmd, WriteType.WITHOUT_RESPONSE)
                 }
                 WHEEL_TYPE.NINEBOT -> {
-                    if (WheelData.getInstance().protoVer.compareTo("") == 0) {
+                    if (NinebotAdapter.getProtoFromAdvData().compareTo("") == 0) {
                         val characteristic = getServiceCharacteristic(
                             Constants.NINEBOT_SERVICE_UUID,
                             Constants.NINEBOT_WRITE_CHARACTER_UUID

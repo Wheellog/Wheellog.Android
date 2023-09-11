@@ -597,10 +597,6 @@ class AppConfig(var context: Context) {
             setValue("wheel_password_$specificPrefix", password)
         }
 
-    var advDataForWheel: String
-        get() = getValue("wheel_adv_data_$specificPrefix", "")
-        set(value) = setValue("wheel_adv_data_$specificPrefix", value)
-
     var userDistance: Long
         get() = getValue("user_distance_$specificPrefix", 0L)
         set(value) = setValue("user_distance_$specificPrefix", value)
