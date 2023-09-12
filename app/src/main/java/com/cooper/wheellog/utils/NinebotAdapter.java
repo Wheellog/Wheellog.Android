@@ -717,7 +717,7 @@ public class NinebotAdapter extends BaseAdapter {
         return _protoFromAdvData;
     }
 
-    public static void setProtoFromAdvData(String advData) {
+    public static void setAdvData(String advData) {
         _protoFromAdvData = "";
         if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
             _protoFromAdvData = "S2";

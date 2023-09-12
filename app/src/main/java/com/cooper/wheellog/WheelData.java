@@ -1290,7 +1290,7 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
-                NinebotAdapter.setProtoFromAdvData(bleAdvData);
+                NinebotAdapter.setAdvData(bleAdvData);
                 var advProto = NinebotAdapter.getProtoFromAdvData();
                 if (advProto.compareTo("") == 0) {
                     Timber.i("really Z");
@@ -1347,7 +1347,7 @@ public class WheelData {
                     mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     Timber.i("write notify");
                 }
-                NinebotAdapter.setProtoFromAdvData(bleAdvData);
+                NinebotAdapter.setAdvData(bleAdvData);
                 NinebotAdapter.getInstance().startKeepAliveTimer(NinebotAdapter.getProtoFromAdvData());
                 Timber.i("starting ninebot adapter");
                 return true;
