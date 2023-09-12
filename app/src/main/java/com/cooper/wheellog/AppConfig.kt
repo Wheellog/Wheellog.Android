@@ -176,6 +176,10 @@ class AppConfig(var context: Context) {
         get() = Uri.parse(getValue(R.string.beep_file, ""))
         set(value) = setValue(R.string.beep_file, value.toString())
 
+    var customBeepTimeLimit: Float
+        get() = getValue("custom_beep_time_limit", 2.0f)
+        set(value) = setValue("custom_beep_time_limit", value)
+
     var mibandMode: MiBandEnum
         get() = MiBandEnum.fromInt(getValue(R.string.miband_mode, MiBandEnum.Min.value))
         set(value) = setValue(R.string.miband_mode, value.value)

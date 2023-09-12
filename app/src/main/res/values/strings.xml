@@ -433,6 +433,7 @@
     <string name="beep_by_wheel_title">Beep by wheel</string>
     <string name="use_custom_beep_title">Use phone alarms</string>
     <string name="custom_beep_title">Alarm is not selected</string>
+    <string name="beep_time_limit_title">Beep time limit</string>
     <string name="bug_report">Bug report</string>
     <string name="donate_title">Donate</string>
     <string name="donate_crypto">Cryptocurrency</string>
@@ -562,4 +563,5 @@
     <string name="error_inputstream_null">Failed to create inputStream.</string>
     <string name="error_this_file_without_gps">%s file does not contain geolocation data.</string>
     <string name="error_parsing_log">Unexpected exception when parsing file.</string>
+    <string name="invalid_number">Invalid number</string>
 </resources>

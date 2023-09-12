@@ -365,13 +365,25 @@ fun applicationScreen() {
 
                     AnimatedVisibility (useCustomBeep) {
                         var ringtone by remember { mutableStateOf(AppConfig.beepFile) }
-                        alarmsList(
-                            name = stringResource(R.string.custom_beep_title),
-                            default = ringtone,
-                            showDiv = false,
-                        ) {
-                            AppConfig.beepFile = it.second
-                            ringtone = it.second
+                        Column {
+                            alarmsList(
+                                name = stringResource(R.string.custom_beep_title),
+                                default = ringtone,
+                            ) {
+                                AppConfig.beepFile = it.second
+                                ringtone = it.second
+                            }
+                            sliderPref(
+                                name = stringResource(R.string.beep_time_limit_title),
+                                min = 0.5f,
+                                max = 20f,
+                                unit = R.string.sec,
+                                position = AppConfig.customBeepTimeLimit,
+                                format = "%.1f",
+                                showDiv = false,
+                            ) {
+                                AppConfig.customBeepTimeLimit = it
+                            }
                         }
                     }
                 }

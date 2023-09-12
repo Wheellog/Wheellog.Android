@@ -8,10 +8,12 @@ import androidx.annotation.*
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -32,6 +34,7 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
+import com.google.android.material.textfield.TextInputEditText
 
 @Composable
 fun clickablePref(
@@ -93,6 +96,7 @@ fun switchPref(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun sliderPref(
     name: String,
@@ -112,28 +116,96 @@ fun sliderPref(
 ) {
     // if the dialog is visible
     var isDialogShown by remember { mutableStateOf(false) }
-
-    if (isDialogShown) {
-        Dialog(onDismissRequest = {
-            // dismiss the dialog on touch outside
-            isDialogShown = false
-        }) {
-//            TextEditDialog(name = name) {
-//                // to dismiss dialog from within
-//                isDialogShown = false
-//            }
-        }
-    }
-
+    var sliderPosition by remember { mutableStateOf(position * visualMultiple) }
+    var prevPosition by remember { mutableStateOf(position * visualMultiple) }
+    val minV = min * visualMultiple
+    val maxV = max * visualMultiple
+    val showSlider = !(disableSwitchAtMin && sliderPosition == minV)
     val unitStr = if (unit != 0) {
         " " + stringResource(unit)
     } else {
         ""
     }
 
-    var sliderPosition by remember { mutableStateOf(position * visualMultiple) }
-    var prevPosition by remember { mutableStateOf(position * visualMultiple) }
-    val showSlider = !(disableSwitchAtMin && sliderPosition == min * visualMultiple)
+    if (isDialogShown) {
+        var isError by remember { mutableStateOf(false) }
+        var textValue by remember { mutableStateOf(String.format(format, sliderPosition)) }
+        AlertDialog(
+            onDismissRequest = {
+                isDialogShown = false
+            },
+            title = {
+                Text(name)
+            },
+            text = {
+                var errorText by remember { mutableStateOf("") }
+                val invalidNumberText = stringResource(R.string.invalid_number)
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = textValue,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    onValueChange = {
+                        val f = it.toFloatOrNull()
+                        if (f != null && f in minV..maxV) {
+                            isError = false
+                            errorText = ""
+                        } else {
+                            isError = true
+                            errorText = when {
+                                f == null -> invalidNumberText
+                                f > maxV -> "Max = ${String.format(format, maxV)}"
+                                f < minV -> "Min = ${String.format(format, minV)}"
+                                else -> ""
+                            }
+                        }
+                        textValue = it
+                    },
+                    singleLine = true,
+                    suffix = {
+                        Text(
+                            text = unitStr,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    },
+                    isError = isError,
+                    supportingText = {
+                        Text(
+                            text = errorText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    },
+                )
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = isError,
+                    onClick = {
+                    isDialogShown = false
+                }) {
+                    Text(stringResource(id = android.R.string.cancel))
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = !isError,
+                    onClick = {
+                    isDialogShown = false
+                    sliderPosition = textValue.toFloat()
+                    onChanged(sliderPosition / visualMultiple)
+                }) {
+                    Text(stringResource(id = android.R.string.ok))
+                }
+            },
+            properties = DialogProperties(
+                dismissOnClickOutside = false,
+                dismissOnBackPress = false,
+            )
+        )
+    }
 
     baseSettings(
         name = name,
@@ -199,7 +271,9 @@ fun sliderPref(
                             .padding(
                                 top = 8.dp,
                                 start = 8.dp
-                            )
+                            ).clickable {
+                                isDialogShown = true
+                            },
                     ) {
                         Text(
                             text = String.format(format, sliderPosition),
@@ -623,7 +697,10 @@ fun alarmsList(
                     }
                 }
                 LaunchedEffect(key1 = Unit) {
-                    listState.animateScrollToItem(ringtones.indexOfFirst { it.second == default })
+                    val defaultIndex = ringtones.indexOfFirst { it.second == default }
+                    if (defaultIndex != -1) {
+                        listState.animateScrollToItem(defaultIndex)
+                    }
                 }
             },
             confirmButton = {
@@ -889,6 +966,7 @@ private fun sliderPreview3() {
         position = 66.66f,
         min = 60f,
         max = 70f,
+        visualMultiple = 2f,
         format = "%.2f"
     ) { }
 }

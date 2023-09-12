@@ -8,6 +8,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.os.CountDownTimer
 import android.view.View
 import android.widget.*
 import androidx.annotation.ColorInt
@@ -59,6 +60,9 @@ object SomeUtil {
         playBeep(onlyByWheel = false, onlyDefault = false)
     }
 
+    private val mediaPlayer by lazy { MediaPlayer() }
+    private var beepTimer: CountDownTimer? = null
+
     @Suppress("DEPRECATION")
     @JvmStatic
     fun playBeep(onlyByWheel: Boolean, onlyDefault: Boolean) {
@@ -90,12 +94,28 @@ object SomeUtil {
         val beepFile = WheelLog.AppConfig.beepFile
         // selected file
         if (!onlyDefault && WheelLog.AppConfig.useCustomBeep && beepFile !== Uri.EMPTY) {
-            val mp = MediaPlayer()
             try {
-                mp.setDataSource(context, beepFile)
-                mp.setOnPreparedListener { obj: MediaPlayer -> obj.start() }
-                mp.prepareAsync()
-                mp.setOnCompletionListener { obj: MediaPlayer -> obj.release() }
+                beepTimer?.cancel()
+                mediaPlayer.apply {
+                    if (isPlaying) {
+                        stop()
+                    }
+                    reset()
+                    setDataSource(context, beepFile)
+                    setOnPreparedListener { obj: MediaPlayer -> obj.start() }
+                    prepareAsync()
+                    setOnCompletionListener { obj: MediaPlayer -> obj.reset() }
+                    isLooping = false
+                    // max 4 sec for beep
+                    beepTimer = object : CountDownTimer((WheelLog.AppConfig.customBeepTimeLimit * 1000).toLong(), 1000) {
+                        override fun onTick(millisUntilFinished: Long) {}
+                        override fun onFinish() {
+                            if (isPlaying) {
+                                stop()
+                            }
+                        }
+                    }.start()
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
                 playBeep(onlyByWheel = false, onlyDefault = true)
