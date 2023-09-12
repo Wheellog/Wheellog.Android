@@ -14,15 +14,11 @@ import com.wheellog.shared.WearPage
 import java.util.EnumSet
 
 @Composable
-fun watchScreen( )
-{
+fun watchScreen() {
     Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        group(
-            name = stringResource(R.string.watch_wearos_group_title),
-        ) {
+        group(name = stringResource(R.string.watch_wearos_group_title)) {
             multiList(
                 name = stringResource(R.string.wearos_pages_title),
                 desc = stringResource(R.string.wearos_pages_description),
@@ -36,9 +32,7 @@ fun watchScreen( )
             }
         }
 
-        group(
-            name = stringResource(R.string.watch_pebble_group_title),
-        ) {
+        group(name = stringResource(R.string.watch_pebble_group_title)) {
             list(
                 name = stringResource(R.string.horn_mode_title),
                 desc = stringResource(R.string.horn_mode_description),
@@ -54,9 +48,7 @@ fun watchScreen( )
             }
         }
 
-        group(
-            name = stringResource(R.string.watch_garmin_group_title),
-        ) {
+        group(name = stringResource(R.string.watch_garmin_group_title)) {
             switchPref(
                 name = stringResource(R.string.garmin_connectiq_enable_title),
                 desc = stringResource(R.string.garmin_connectiq_enable_description),
@@ -75,9 +67,7 @@ fun watchScreen( )
             }
         }
 
-        group(
-            name = stringResource(R.string.watch_miband_group_title),
-        ) {
+        group(name = stringResource(R.string.watch_miband_group_title)) {
             switchPref(
                 name = stringResource(R.string.miband_on_mainscreen_title),
                 desc = stringResource(R.string.miband_on_mainscreen_description),

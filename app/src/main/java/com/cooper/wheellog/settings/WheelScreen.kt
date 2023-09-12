@@ -697,7 +697,7 @@ private fun kingsong() {
 
 @Composable
 private fun begode() {
-    val adapter by remember { mutableStateOf(KingsongAdapter.getInstance()) }
+    val adapter by remember { mutableStateOf(GotwayAdapter.getInstance()) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
     if (AppConfig.useMph) {
@@ -753,6 +753,19 @@ private fun begode() {
         adapter.updatePedalsMode(it.first.toInt())
     }
     list(
+        name = stringResource(R.string.roll_angle_title),
+        desc = stringResource(R.string.roll_angle_description),
+        entries = mapOf(
+            "0" to stringResource(R.string.low),
+            "1" to stringResource(R.string.medium),
+            "2" to stringResource(R.string.high),
+        ),
+        defaultKey = AppConfig.rollAngle,
+    ) {
+        AppConfig.rollAngle = it.first
+        adapter.setRollAngleMode(it.first.toInt())
+    }
+    list(
         name = stringResource(R.string.led_mode_title),
         desc = stringResource(R.string.on_off),
         entries = mapOf(
@@ -793,16 +806,14 @@ private fun begode() {
         adapter.updateMaxSpeed(it.toInt())
     }
     sliderPref(
-        name = stringResource(R.string.alert3_title),
-        desc = stringResource(R.string.alarm3_description),
-        position = AppConfig.wheelKsAlarm3.toFloat(),
-        min = 0f,
-        max = 99f,
-        unit = speedUnit,
-        visualMultiple = speedMultipier,
+        name = stringResource(R.string.beeper_volume_title),
+        desc = stringResource(R.string.beeper_volume_description),
+        min = 1f,
+        max = 9f,
+        position = AppConfig.beeperVolume.toFloat(),
     ) {
-        AppConfig.wheelKsAlarm3 = it.toInt()
-        adapter.updateKSAlarm3(it.toInt())
+        AppConfig.beeperVolume = it.toInt()
+        adapter.updateBeeperVolume(it.toInt())
     }
     clickableAndAlert(
         name = stringResource(R.string.wheel_calibration),
@@ -855,7 +866,59 @@ private fun begode() {
 
 @Composable
 private fun veteran() {
-    // TODO: Add Veteran settings
+    val adapter by remember { mutableStateOf(VeteranAdapter.getInstance()) }
+    switchPref(
+        name = stringResource(R.string.on_headlight_title),
+        desc = stringResource(R.string.on_headlight_description),
+        default = AppConfig.lightEnabled,
+    ) {
+        AppConfig.lightEnabled = it
+        adapter.setLightState(it)
+    }
+    list(
+        name = stringResource(R.string.pedals_mode_title),
+        desc = stringResource(R.string.soft_medium_hard),
+        entries = mapOf(
+            "0" to stringResource(R.string.hard),
+            "1" to stringResource(R.string.medium),
+            "2" to stringResource(R.string.soft),
+        ),
+        defaultKey = AppConfig.pedalsMode,
+    ) {
+        AppConfig.pedalsMode = it.first
+        adapter.updatePedalsMode(it.first.toInt())
+    }
+    clickableAndAlert(
+        name = stringResource(R.string.reset_trip),
+        confirmButtonText = stringResource(R.string.reset_trip),
+        alertDesc = stringResource(R.string.reset_trip_message),
+        onConfirm = { adapter.resetTrip() },
+    )
+    switchPref(
+        name = stringResource(R.string.connect_beep_title),
+        desc = stringResource(R.string.connect_beep_description),
+        default = AppConfig.connectBeep,
+    ) {
+        AppConfig.connectBeep = it
+    }
+    list(
+        name = stringResource(R.string.gotway_negative_title),
+        desc = stringResource(R.string.gotway_negative_description),
+        entries = mapOf(
+            "-1" to stringResource(R.string.straight),
+            "0" to stringResource(R.string.absolute),
+            "1" to stringResource(R.string.reverse),
+        ),
+    ) {
+        AppConfig.gotwayNegative = it.first
+    }
+    switchPref(
+        name = stringResource(R.string.hw_pwm_title),
+        desc = stringResource(R.string.hw_pwm_description),
+        default = AppConfig.hwPwm,
+    ) {
+        AppConfig.hwPwm = it
+    }
 }
 
 @Composable
