@@ -13,20 +13,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
@@ -34,7 +37,7 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
-import com.google.android.material.textfield.TextInputEditText
+import java.util.Locale
 
 @Composable
 fun clickablePref(
@@ -128,8 +131,14 @@ fun sliderPref(
     }
 
     if (isDialogShown) {
-        var isError by remember { mutableStateOf(false) }
-        var textValue by remember { mutableStateOf(String.format(format, sliderPosition)) }
+        val tv = String.format(Locale.US, format, sliderPosition)
+        var textValue by remember { mutableStateOf(TextFieldValue(tv, TextRange(0, tv.length))) }
+        val onDone = {
+            isDialogShown = false
+            sliderPosition = textValue.text.toFloat()
+            onChanged(sliderPosition / visualMultiple)
+        }
+        var isError by remember { mutableStateOf(sliderPosition !in minV..maxV) }
         AlertDialog(
             onDismissRequest = {
                 isDialogShown = false
@@ -140,15 +149,25 @@ fun sliderPref(
             text = {
                 var errorText by remember { mutableStateOf("") }
                 val invalidNumberText = stringResource(R.string.invalid_number)
+                val focusRequester = remember { FocusRequester() }
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                     value = textValue,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (!isError) {
+                                onDone()
+                            }
+                        }
+                    ),
                     onValueChange = {
-                        val f = it.toFloatOrNull()
+                        val f = it.text.toFloatOrNull()
                         if (f != null && f in minV..maxV) {
                             isError = false
                             errorText = ""
@@ -178,11 +197,18 @@ fun sliderPref(
                             color = MaterialTheme.colorScheme.error
                         )
                     },
+                    textStyle = TextStyle.Default.copy(fontSize = 32.sp),
                 )
+
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
             },
             dismissButton = {
                 TextButton(
-                    enabled = isError,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ),
                     onClick = {
                     isDialogShown = false
                 }) {
@@ -192,11 +218,8 @@ fun sliderPref(
             confirmButton = {
                 TextButton(
                     enabled = !isError,
-                    onClick = {
-                    isDialogShown = false
-                    sliderPosition = textValue.toFloat()
-                    onChanged(sliderPosition / visualMultiple)
-                }) {
+                    onClick = onDone
+                ) {
                     Text(stringResource(id = android.R.string.ok))
                 }
             },
