@@ -102,6 +102,8 @@ public class WheelData {
     private long timestamp_last;
     private long mLastLifeData = -1;
 
+    public String bleAdvData = "";
+
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
             case GOTWAY_VIRTUAL:
@@ -1152,6 +1154,7 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
         mWheelIsReady = false;
+        bleAdvData = "";
     }
 
     boolean detectWheel(String deviceAddress, Context mContext, int servicesResId) {
@@ -1287,6 +1290,7 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
+                NinebotAdapter.setProtoFromAdvData(bleAdvData);
                 var advProto = NinebotAdapter.getProtoFromAdvData();
                 if (advProto.compareTo("") == 0) {
                     Timber.i("really Z");
@@ -1343,6 +1347,7 @@ public class WheelData {
                     mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     Timber.i("write notify");
                 }
+                NinebotAdapter.setProtoFromAdvData(bleAdvData);
                 NinebotAdapter.getInstance().startKeepAliveTimer(NinebotAdapter.getProtoFromAdvData());
                 Timber.i("starting ninebot adapter");
                 return true;

@@ -186,6 +186,7 @@ class ScanActivity: AppCompatActivity() {
         WheelLog.AppConfig.lastMac = deviceAddress
 
         // advData used only for ninebot adapter.
+        WheelData.getInstance().bleAdvData = advData
         NinebotAdapter.setProtoFromAdvData(advData)
 
         setResult(RESULT_OK, intent)
