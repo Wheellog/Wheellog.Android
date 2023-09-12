@@ -187,7 +187,6 @@ class ScanActivity: AppCompatActivity() {
 
         // advData used only for ninebot adapter.
         WheelData.getInstance().bleAdvData = advData
-        NinebotAdapter.setAdvData(advData)
 
         setResult(RESULT_OK, intent)
         // Set password for inmotion
