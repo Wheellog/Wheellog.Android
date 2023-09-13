@@ -428,7 +428,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 val wheelButton: Preference? = findPreference(getString(R.string.wheel_settings))
                 val tripButton: Preference? = findPreference(getString(R.string.trip_settings))
                 val aboutButton: Preference? = findPreference(getString(R.string.about))
-                val donateButton: Preference? = findPreference(getString(R.string.donate))
                 speedButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                     currentScreen = SettingsScreen.Speed
                     speedSettings.fill(WheelData.getInstance().mac + "_")
@@ -492,21 +491,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                         .setBlackIcon()
                     true
                 }
-                donateButton?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                    val kvm = mapOf(
-                        "Crypto" to "https://paymicro.github.io/donate",
-                        "Credit card (only from russian bank)" to "https://tinkoff.ru/sl/6iw4b0ugfpC")
-                    AlertDialog.Builder(requireActivity())
-                        .setTitle(R.string.donate_title)
-                        .setItems(kvm.keys.toTypedArray()) { _, which ->
-                            val uri = Uri.parse(kvm[kvm.keys.elementAt(which)])
-                            startActivity(Intent(ACTION_VIEW, uri))
-                        }
-                        .setIcon(R.drawable.ic_donate_24)
-                        .show()
-                        .setBlackIcon()
-                    true
-                }
                 // Themes
                 speedButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsSpeedometer))
                 logsButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsLog))
@@ -515,7 +499,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChange
                 wheelButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsWheel))
                 tripButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsTrips))
                 findPreference<Preference>(getString(R.string.bug_report))?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsBug))
-                donateButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsDonate))
                 aboutButton?.icon = getDrawableEx(WheelLog.ThemeManager.getId(ThemeIconEnum.SettingsAbout))
             }
             SettingsScreen.Speed -> {
