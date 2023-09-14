@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <queries>
         <package android:name="com.garmin.android.apps.connectmobile" />
     </queries>
@@ -10,6 +9,8 @@
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
+    <permission android:name="com.cooper.wheellog.permission" />
+    <uses-permission android:name="com.cooper.wheellog.permission" />
     <uses-permission android:name="android.permission.BLUETOOTH"
         android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
@@ -19,7 +20,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -35,8 +37,10 @@
     <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK" />
     <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
     <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Companion" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_TYPE_LOCATION" />
 
     <supports-screens
         android:anyDensity="true"
@@ -105,15 +109,26 @@
             android:name=".ScanActivity"
             android:theme="@style/OriginalTheme.Dialog.Alert" />
 
-        <service android:name=".PebbleService" />
-        <service android:name=".BluetoothService" />
-        <service android:name=".LoggingService" />
-        <service android:name="com.cooper.wheellog.GearService" /> <!-- Services needed for Samsung Gear watches -->
-        <service android:name="com.cooper.wheellog.GarminConnectIQ" /> <!-- Services needed for Garmin ConnectIQ devices -->
+        <service android:name=".PebbleService"
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false" />
+        <service android:name=".BluetoothService"
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false" />
+        <service android:name=".LoggingService"
+            android:foregroundServiceType="location"
+            android:exported="false" />
+        <service android:name="com.cooper.wheellog.GearService"
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false" /> <!-- Services needed for Samsung Gear watches -->
+        <service android:name="com.cooper.wheellog.GarminConnectIQ"
+            android:foregroundServiceType="connectedDevice"
+            android:exported="false" /> <!-- Services needed for Garmin ConnectIQ devices -->
 
         <receiver
             android:name=".PebbleBroadcastReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.cooper.wheellog.permission">
             <intent-filter>
                 <action android:name="com.getpebble.action.app.RECEIVE" />
                 <action android:name="com.getpebble.action.app.RECEIVE_ACK" />
@@ -122,13 +137,15 @@
         </receiver>
         <!-- Receivers needed for Samsung Gear watches -->
         <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.cooper.wheellog.permission">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.SERVICE_CONNECTION_REQUESTED" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.cooper.wheellog.permission">
             <intent-filter>
                 <action android:name="com.samsung.accessory.action.REGISTER_AGENT" />
             </intent-filter>

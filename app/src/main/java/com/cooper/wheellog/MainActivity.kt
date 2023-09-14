@@ -126,7 +126,12 @@ class MainActivity : AppCompatActivity() {
     private fun togglePipView(show: Boolean) {
         if (show) {
             try {
-                registerReceiver(mPiPBroadcastReceiver, makeIntentPipFilter())
+                ContextCompat.registerReceiver(
+                    this,
+                    mPiPBroadcastReceiver,
+                    makeIntentPipFilter(),
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+                )
             } catch (_: Exception) {
                 // ignore
             } finally {
@@ -618,7 +623,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             startBluetoothService()
         }
-        registerReceiver(mCoreBroadcastReceiver, makeCoreIntentFilter())
+        ContextCompat.registerReceiver(
+            this,
+            mCoreBroadcastReceiver,
+            makeCoreIntentFilter(),
+            ContextCompat.RECEIVER_EXPORTED
+        )
         WheelLog.Notifications.update()
 
         checkBatteryOptimizationsAndShowAlert(this)
@@ -642,7 +652,12 @@ class MainActivity : AppCompatActivity() {
             WheelLog.Notifications.update()
         }
         try {
-            registerReceiver(mMainViewBroadcastReceiver, makeIntentFilter())
+            ContextCompat.registerReceiver(
+                this,
+                mMainViewBroadcastReceiver,
+                makeIntentFilter(),
+                ContextCompat.RECEIVER_EXPORTED
+            )
         } catch (e: Exception) {
             Timber.e(e)
         }

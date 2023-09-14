@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.FileUtil;
@@ -91,7 +92,13 @@ public class LoggingService extends Service
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE);
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE);
-        registerReceiver(mBluetoothUpdateReceiver, intentFilter);
+
+        ContextCompat.registerReceiver(
+                getBaseContext(),
+                mBluetoothUpdateReceiver,
+                intentFilter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             if (!PermissionsUtil.checkExternalFilePermission(this)) {

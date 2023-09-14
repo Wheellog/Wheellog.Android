@@ -1,10 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.8.10'
-    ext.compose_version = '1.4.3'
+    ext.kotlin_version = '1.9.0'
+    ext.compose_version = '1.5.0'
     ext.lifecycle_version = '2.6.1'
-    ext.room_version = '2.5.1'
+    ext.room_version = '2.5.2'
     ext.material_version = '1.9.0'
     ext.appcompact_version = '1.6.1'
     ext.core_ktx_version = '1.10.1'
@@ -13,7 +13,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.0'
+        classpath 'com.android.tools.build:gradle:8.1.1'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
@@ -30,6 +30,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
