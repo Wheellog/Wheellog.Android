@@ -20,7 +20,7 @@ import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import com.cooper.wheellog.utils.Constants
-import com.yandex.metrica.YandexMetrica
+//import com.yandex.metrica.YandexMetrica
 
 object DialogHelper {
     /**
@@ -258,10 +258,10 @@ object DialogHelper {
         binding.okButton.setOnClickListener {
             WheelLog.AppConfig.privatePolicyAccepted = true
             WheelLog.AppConfig.yandexMetricaAccepted = binding.agreeWithMetrica.isChecked
-            YandexMetrica.setStatisticsSending(
-                mainActivity.applicationContext,
-                binding.agreeWithMetrica.isChecked
-            )
+//            YandexMetrica.setStatisticsSending(
+//                mainActivity.applicationContext,
+//                binding.agreeWithMetrica.isChecked
+//            )
             dialog.dismiss()
         }
         binding.btnCancel.setOnClickListener {
