@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
+import androidx.core.content.ContextCompat
 
 @Composable
 fun systemBroadcastReceiver(
@@ -25,7 +26,12 @@ fun systemBroadcastReceiver(
             }
         }
 
-        context.registerReceiver(receiver, intentFilter)
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            intentFilter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         onDispose {
             context.unregisterReceiver(receiver)
