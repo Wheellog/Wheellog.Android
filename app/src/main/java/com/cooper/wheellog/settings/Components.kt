@@ -77,11 +77,12 @@ fun switchPref(
     name: String,
     themeIcon: ThemeIconEnum? = null,
     desc: String = "",
-    default: Boolean,
+    default: Boolean = false,
+    defaultState: MutableState<Boolean>? = null,
     showDiv: Boolean = true,
     onClick: (checked: Boolean) -> Unit
 ) {
-    var mutableState by remember { mutableStateOf(default) }
+    val mutableState = defaultState ?: remember { mutableStateOf(default) }
     baseSettings(
         name = name,
         desc = desc,
@@ -89,9 +90,9 @@ fun switchPref(
         showDiv = showDiv,
         rightContent = {
             Switch(
-                checked = mutableState,
+                checked = mutableState.value,
                 onCheckedChange = {
-                    mutableState = it
+                    mutableState.value = it
                     onClick(it)
                 },
             )
@@ -99,7 +100,6 @@ fun switchPref(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun sliderPref(
     name: String,
@@ -119,8 +119,8 @@ fun sliderPref(
 ) {
     // if the dialog is visible
     var isDialogShown by remember { mutableStateOf(false) }
-    var sliderPosition by remember { mutableStateOf(position * visualMultiple) }
-    var prevPosition by remember { mutableStateOf(position * visualMultiple) }
+    var sliderPosition by remember { mutableFloatStateOf(position * visualMultiple) }
+    var prevPosition by remember { mutableFloatStateOf(position * visualMultiple) }
     val minV = min * visualMultiple
     val maxV = max * visualMultiple
     val showSlider = !(disableSwitchAtMin && sliderPosition == minV)

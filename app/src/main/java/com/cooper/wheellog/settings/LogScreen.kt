@@ -1,5 +1,6 @@
 package com.cooper.wheellog.settings
 
+import android.Manifest
 import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -8,11 +9,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -20,6 +18,7 @@ import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
+import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
 
 @Composable
@@ -70,18 +69,82 @@ fun logScreen()
             }
         }
 
+        val context = LocalContext.current
         var locationDependency by remember { mutableStateOf(AppConfig.logLocationData) }
+
         switchPref(
             name = stringResource(R.string.log_location_title),
             desc = stringResource(R.string.log_location_description),
             themeIcon = ThemeIconEnum.SettingsLocation,
-            default = AppConfig.logLocationData,
+            default = locationDependency,
         ) {
             AppConfig.logLocationData = it
             locationDependency = it
         }
 
+        val gpsDependency = remember { mutableStateOf(AppConfig.useGps) }
+        if (gpsDependency.value && !PermissionsUtil.checkLocationPermission(context)) {
+            gpsDependency.value = false
+            AppConfig.useGps = false
+        }
+
+        var alertGps by remember { mutableStateOf(false) }
+        val locationPermission = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { granted ->
+            gpsDependency.value = granted.all { gr -> gr.value }
+            AppConfig.useGps = gpsDependency.value
+            alertGps = false
+        }
+
         AnimatedVisibility (locationDependency) {
+            switchPref(
+                name = stringResource(R.string.use_gps_title),
+                desc = stringResource(R.string.use_gps_description),
+                defaultState = gpsDependency,
+            ) {
+                AppConfig.useGps = it
+                gpsDependency.value = it
+                alertGps = it && !PermissionsUtil.checkLocationPermission(context)
+            }
+        }
+
+        if (alertGps) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text(stringResource(R.string.log_location_title)) },
+                text = { Text(stringResource(R.string.log_location_pop_up)) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+                            } else {
+                                locationPermission.launch(
+                                    arrayOf(
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                                    )
+                                )
+                            }
+                        }
+                    ) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        gpsDependency.value = false
+                        AppConfig.useGps = false
+                        alertGps = false
+                    }
+                    ) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                })
+        }
+
+        AnimatedVisibility (locationDependency && gpsDependency.value) {
             var autoUploadDependency by remember { mutableStateOf(AppConfig.autoUploadEc) }
             switchPref(
                 name = stringResource(R.string.auto_upload_log_ec_title),

@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 
 object PermissionsUtil {
     private val permissionsLocation = arrayOf(
@@ -81,8 +82,11 @@ object PermissionsUtil {
 
     @JvmStatic
     fun checkLocationPermission(context: Context): Boolean {
-        val result = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-        return result == PackageManager.PERMISSION_GRANTED
+        var result = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (result && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            result = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PermissionChecker.PERMISSION_GRANTED
+        }
+        return result
     }
 
     /**
