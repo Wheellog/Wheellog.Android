@@ -306,7 +306,7 @@ object DialogHelper {
                     .show()
             }
 
-            if (PermissionsUtil.checkLocationPermission(context)) {
+            if (!PermissionsUtil.checkLocationPermission(context)) {
                 AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
                     .setMessage(R.string.logging_error_no_location_permission)
                     .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
