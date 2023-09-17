@@ -2,7 +2,12 @@ package com.cooper.wheellog.settings
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
 import android.os.Build
+import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -14,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
@@ -62,6 +68,7 @@ fun logScreen()
                 min = 0f,
                 max = 20f,
                 unit = R.string.kmh,
+                format = "%.1f",
                 showSwitch = true,
                 disableSwitchAtMin = true,
             ) {
@@ -126,6 +133,12 @@ fun logScreen()
                                         Manifest.permission.ACCESS_BACKGROUND_LOCATION
                                     )
                                 )
+                            }
+                            val mLocationManager = ContextCompat.getSystemService(context, LocationManager::class.java) as LocationManager
+                            val mGPS = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                            if (!mGPS) {
+                                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                ContextCompat.startActivity(context, intent, null)
                             }
                         }
                     ) {

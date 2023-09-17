@@ -216,7 +216,7 @@ fun sliderPref(
                 }
             },
             confirmButton = {
-                TextButton(
+                Button(
                     enabled = !isError,
                     onClick = onDone
                 ) {
@@ -449,8 +449,8 @@ fun list(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text(stringResource(id = android.R.string.cancel))
+                Button(onClick = { showDialog = false }) {
+                    Text(stringResource(id = android.R.string.ok))
                 }
             },
             properties = DialogProperties(
@@ -585,7 +585,7 @@ fun multiList(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
+                Button(onClick = { showDialog = false }) {
                     Text(stringResource(id = android.R.string.ok))
                 }
             },
@@ -727,7 +727,7 @@ fun alarmsList(
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
+                Button(onClick = {
                     showDialog = false
                     currentRingtone?.stop()
                 }) {
@@ -762,7 +762,7 @@ fun clickableAndAlert(
                 Text(alertDesc)
             },
             confirmButton = {
-                TextButton(
+                Button(
                     onClick = onConfirm,
                 ) {
                     Text(confirmButtonText)
