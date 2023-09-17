@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
@@ -15,11 +16,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.PermissionsUtil
 import com.yandex.metrica.YandexMetrica
 
 object DialogHelper {
@@ -282,6 +285,40 @@ object DialogHelper {
             }
             .setNegativeButton(android.R.string.cancel) { _: DialogInterface, _: Int -> }
             .show()
+    }
+
+    fun checkAndShowLocationDialog(context: Context) {
+        if (WheelLog.AppConfig.useGps) {
+            val mLocationManager = ContextCompat.getSystemService(
+                context,
+                LocationManager::class.java
+            ) as LocationManager
+            val mGPS = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            if (!mGPS) {
+                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                    .setMessage(R.string.gpsdisabled_alert)
+                    .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        ContextCompat.startActivity(context, intent, null)
+                    }
+                    .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
+                    .create()
+                    .show()
+            }
+
+            if (!PermissionsUtil.checkLocationPermission(context)) {
+                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                    .setMessage(R.string.logging_error_no_location_permission)
+                    .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.fromParts("package", context.packageName, null)
+                        ContextCompat.startActivity(context, intent, null)
+                    }
+                    .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
+                    .create()
+                    .show()
+            }
+        }
     }
 
     fun AlertDialog.setBlackIcon(): AlertDialog {

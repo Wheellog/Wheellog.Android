@@ -550,4 +550,6 @@
     <string name="error_inputstream_null">Failed to create inputStream.</string>
     <string name="error_this_file_without_gps">%s file does not contain geolocation data.</string>
     <string name="error_parsing_log">Unexpected exception when parsing file.</string>
+    <string name="gotosettings">Go to Settings</string>
+    <string name="gpsdisabled_alert">GPS is turned off on the phone. The option to use GPS data for log recording is enabled in the settings. Enable gps or disable gps recording setting.</string>
 </resources>
