@@ -8,11 +8,11 @@
     <string name="min">min</string>
     <string name="miles">mi</string>
 
-    // Garmin ConnectIQ dialogs
+    <!-- Garmin ConnectIQ dialogs -->
     <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
     <string name="garmin_connectiq_service_unavailable_message">The ConnectIQ service is unavailable.</string>
 
-    // Other
+    <!-- Other -->
     <string name="today">Today</string>
     <string name="unknown_device">Unknown device</string>
     <string name="ble_not_supported">Bluetooth LE is not supported</string>
@@ -88,8 +88,8 @@
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
-    <string name="notification_text">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
-    <string name="notification_text_ajdm_theme">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
+    <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
+    <string name="notification_text_ajdm_theme" translatable="false">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
@@ -150,16 +150,16 @@
     <string name="soft">Soft</string>
     <string name="low">Low</string>
     <string name="high">High</string>
-    <string name="zero">0</string>
-    <string name="one">1</string>
-    <string name="two">2</string>
-    <string name="three">3</string>
-    <string name="four">4</string>
-    <string name="five">5</string>
-    <string name="six">6</string>
-    <string name="seven">7</string>
-    <string name="eight">8</string>
-    <string name="nine">9</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="three" translatable="false">3</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
     <string name="on_board_horn_ks">On-board (KingSong)</string>
     <string name="bluetooth_audio_horn">via bluetooth audio</string>
     <string name="speed_settings_title">Application Settings</string>
@@ -491,7 +491,7 @@
     <string name="notification_text_max">[SPEED]  \n ⭐ %1$.0f k/h  \n 🔥 %2$.0f top  \n 🙈 %3$.0f avg \n\n[POWER]  \n 💧 %4$d %% \n  ⚡ %5$.2f V \n  💪 %6$.0f W \n  ❄ %7$d °C  \n\n[TRIP] \n  👣 %8$.1f km</string>
     <string name="notification_text_alarm">[DATA]  \n - %1$.0f k/h \n  - %2$.1f A \n  - %3$.2f V  \n - %4$d %%  \n - %5$d °C</string>
     <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d °C</string>
-    <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
+    <string name="notification_text_not" translatable="false">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
     <string name="titlealarm">Alarm!</string>
     <string name="titlealarm_text">Alarm Mode</string>
     <string name="alarmmiband">Alarm Mode Mi Band</string>
