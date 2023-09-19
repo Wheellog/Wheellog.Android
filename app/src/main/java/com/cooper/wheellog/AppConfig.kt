@@ -12,7 +12,7 @@ import com.cooper.wheellog.utils.ThemeEnum
 import com.wheellog.shared.Constants
 import com.wheellog.shared.WearPage
 import com.wheellog.shared.WearPages
-import com.yandex.metrica.YandexMetrica
+// import com.yandex.metrica.YandexMetrica
 import timber.log.Timber
 
 class AppConfig(var context: Context) {
@@ -206,10 +206,10 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.yandex_metriсa_accepted, false)
         set(value) {
             setValue(R.string.yandex_metriсa_accepted, value)
-            YandexMetrica.setStatisticsSending(
-                context,
-                WheelLog.AppConfig.yandexMetricaAccepted
-            )
+//            YandexMetrica.setStatisticsSending(
+//                context,
+//                WheelLog.AppConfig.yandexMetricaAccepted
+//            )
         }
     //endregion
 
