@@ -11,6 +11,7 @@ import android.content.DialogInterface.OnShowListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.drawable.AnimationDrawable
+import android.location.LocationManager
 import android.media.AudioManager
 import android.os.*
 import android.util.Rational
@@ -663,6 +664,9 @@ class MainActivity : AppCompatActivity() {
         }
         pagerAdapter.updateScreen(true)
         pagerAdapter.updatePageOfTrips()
+
+        // Checking GPS is enabled
+        DialogHelper.checkAndShowLocationDialog(this)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
