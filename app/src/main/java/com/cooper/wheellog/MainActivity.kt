@@ -459,7 +459,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleWatch() {
         togglePebbleService()
-        if (WheelLog.AppConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
+        // TODO: Fix garmin for API 34
+        // if (WheelLog.AppConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
         toggleWearOs()
     }
 

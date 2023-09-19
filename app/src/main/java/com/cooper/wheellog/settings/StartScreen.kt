@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.BuildConfig
+import com.cooper.wheellog.LocaleManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -148,7 +150,7 @@ fun startScreen(
                     }
                 },
                 confirmButton = {
-                    TextButton(onClick = { showDonateDialog = false }) {
+                    Button(onClick = { showDonateDialog = false }) {
                         Text(stringResource(id = android.R.string.ok))
                     }
                 },
@@ -222,11 +224,15 @@ fun startScreen(
                             name = stringResource(R.string.telegram),
                             showDiv = false,
                         ) {
+                            val url = if (LocaleManager.getLocale(context.resources).language == "ru")
+                                "https://t.me/wheelLog"
+                            else
+                                "https://t.me/WheelLog_eng"
                             startActivity(
                                 context,
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    "https://t.me/WheelLog_int".toUri()
+                                    url.toUri()
                                 ),
                                 null
                             )
@@ -238,7 +244,7 @@ fun startScreen(
                     }
                 },
                 confirmButton = {
-                    TextButton(onClick = { showAboutDialog = false }) {
+                    Button(onClick = { showAboutDialog = false }) {
                         Text(stringResource(id = android.R.string.ok))
                     }
                 },

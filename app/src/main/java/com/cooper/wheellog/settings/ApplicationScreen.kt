@@ -34,6 +34,19 @@ fun applicationScreen() {
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
+        var restartRequiredAlert by remember { mutableStateOf(false) }
+        if (restartRequiredAlert) {
+            AlertDialog(
+                onDismissRequest ={ restartRequiredAlert = false },
+                title = { Text(stringResource(R.string.use_eng_alert_title)) },
+                text = { Text(stringResource(R.string.use_eng_alert_description)) },
+                confirmButton = {
+                    Button(onClick = { restartRequiredAlert = false }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+            )
+        }
 
         switchPref(
             name = stringResource(R.string.use_eng_title),
@@ -41,16 +54,7 @@ fun applicationScreen() {
             themeIcon = ThemeIconEnum.SettingsLanguage,
             default = AppConfig.useEng
         ) {
-            AlertDialog(
-                onDismissRequest = { },
-                title = { Text(stringResource(R.string.use_eng_alert_title)) },
-                text = { Text(stringResource(R.string.use_eng_alert_description)) },
-                confirmButton = {
-                    TextButton(onClick = { }) {
-                        Text(stringResource(android.R.string.ok))
-                    }
-                },
-            )
+            restartRequiredAlert = true
             AppConfig.useEng = it
         }
 
@@ -60,16 +64,7 @@ fun applicationScreen() {
             entries = ThemeEnum.values().associate { it.value.toString() to it.name },
             defaultKey = AppConfig.appThemeInt.toString()
         ) {
-            AlertDialog(
-                onDismissRequest = { },
-                title = { Text(stringResource(R.string.use_eng_alert_title)) },
-                text = { Text(stringResource(R.string.use_eng_alert_description)) },
-                confirmButton = {
-                    TextButton(onClick = { }) {
-                        Text(stringResource(android.R.string.ok))
-                    }
-                },
-            )
+            restartRequiredAlert = true
             AppConfig.appThemeInt = it.first.toInt()
         }
 
