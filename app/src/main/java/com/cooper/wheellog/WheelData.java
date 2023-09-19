@@ -945,7 +945,7 @@ public class WheelData {
 
     public void setCurrentTime(int currentTime) {
         if (mRideTime > (currentTime + TIME_BUFFER))
-            mLastRideTime += mRideTime;
+            mLastRideTime = mRideTime;
         mRideTime = currentTime;
     }
 
