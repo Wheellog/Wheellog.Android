@@ -60,6 +60,16 @@ fun applicationScreen() {
             entries = ThemeEnum.values().associate { it.value.toString() to it.name },
             defaultKey = AppConfig.appThemeInt.toString()
         ) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text(stringResource(R.string.use_eng_alert_title)) },
+                text = { Text(stringResource(R.string.use_eng_alert_description)) },
+                confirmButton = {
+                    TextButton(onClick = { }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+            )
             AppConfig.appThemeInt = it.first.toInt()
         }
 
