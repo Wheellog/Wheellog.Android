@@ -12,6 +12,7 @@ import android.content.DialogInterface.OnShowListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.drawable.AnimationDrawable
+import android.location.LocationManager
 import android.media.AudioManager
 import android.os.*
 import android.util.Rational
@@ -54,7 +55,7 @@ import com.cooper.wheellog.utils.SomeUtil.playBeep
 import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
-import com.yandex.metrica.YandexMetrica
+// import com.yandex.metrica.YandexMetrica
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -679,6 +680,9 @@ class MainActivity : AppCompatActivity() {
         }
         pagerAdapter.updateScreen(true)
         pagerAdapter.updatePageOfTrips()
+
+        // Checking GPS is enabled
+        DialogHelper.checkAndShowLocationDialog(this)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -1026,7 +1030,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             val bluetoothServiceIntent = Intent(applicationContext, BluetoothService::class.java)
             bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE)
-            YandexMetrica.reportEvent("BluetoothService is starting.")
+//            YandexMetrica.reportEvent("BluetoothService is starting.")
         } else if (isMaxBleReq) {
             showSnackBar(R.string.bluetooth_required)
         }

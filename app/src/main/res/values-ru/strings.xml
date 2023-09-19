@@ -492,6 +492,8 @@
     <string name="min">мин</string>
     <string name="today">Сегодня</string>
     <string name="wh">Втч</string>
-    <string name="use_custom_beep_title">Использовать мелодию будильника</string>
+    <string name="gotosettings">В настройки</string>
+    <string name="gpsdisabled_alert">GPS на телефоне выключен. В настройках включена опция использовать GPS данные для записи лога. Включите GPS на телефоне или отключите настройку его записи.</string>
+	<string name="use_custom_beep_title">Использовать мелодию будильника</string>
     <string name="beep_time_limit_title">Максимальное время</string>
 </resources>
