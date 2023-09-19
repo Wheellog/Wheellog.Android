@@ -20,7 +20,7 @@ class ThemeManager {
     fun getTypeface(context: Context): Typeface {
         val fontResId = when(theme) {
             R.style.AJDMTheme -> R.font.ajdm
-            else -> R.font.prime
+            else -> R.font.mina
         }
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             context.resources.getFont(fontResId)

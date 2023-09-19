@@ -35,7 +35,7 @@ class PiPView {
         val textMeasure = rememberTextMeasurer()
         val textStyle = TextStyle(
             color = Color.White,
-            fontFamily = primeFontFamily,
+            fontFamily = widgetFontFamily,
             shadow = Shadow(
                 color = Color.LightGray,
                 blurRadius = 5f
@@ -137,7 +137,7 @@ class PiPView {
         }
     }
 
-    private val primeFontFamily = FontFamily(
-        Font(R.font.prime, FontWeight.Normal)
+    private val widgetFontFamily = FontFamily(
+        Font(R.font.mina, FontWeight.Normal)
     )
 }

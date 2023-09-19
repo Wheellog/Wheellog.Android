@@ -26,7 +26,7 @@
             android:id="@+id/textClock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/prime"
+            android:fontFamily="@font/mina"
             android:format12Hour="HH:mm:ss"
             android:format24Hour="HH:mm:ss"
             android:gravity="start"
