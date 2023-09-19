@@ -50,7 +50,7 @@ import com.cooper.wheellog.utils.SomeUtil.playBeep
 import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
-import com.yandex.metrica.YandexMetrica
+// import com.yandex.metrica.YandexMetrica
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -987,7 +987,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             val bluetoothServiceIntent = Intent(applicationContext, BluetoothService::class.java)
             bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE)
-            YandexMetrica.reportEvent("BluetoothService is starting.")
+//            YandexMetrica.reportEvent("BluetoothService is starting.")
         } else if (isMaxBleReq) {
             showSnackBar(R.string.bluetooth_required)
         }
