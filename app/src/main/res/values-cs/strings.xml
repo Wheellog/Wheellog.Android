@@ -52,6 +52,7 @@
 	<string name="power">Výkon</string>
 	<string name="temperature">Teplota desky</string>
 	<string name="temperature2">Teplota 2</string>
+	<string name="voltage_sag">Krátk. pokl. napětí</string>
 	<string name="maxtemperature">Max teplota</string>
 	<string name="pwm">PWM</string>
 	<string name="max_pwm">Max PWM</string>
@@ -225,6 +226,9 @@
 	<string name="trip_menu_share">Sdílet</string>
 	<string name="trip_menu_delete_file">Vymazat soubor</string>
 	<string name="trip_menu_delete_file_confirmation">Chcete vymazat soubr s daty o výletu?</string>
+	<string name="after_connect_category">Po připojení jednokolky</string>
+	<string name="auto_watch_title">Automatické připojení hodinek</string>
+	<string name="auto_watch_description">Spustit službu pro obsluhu hodinek, pokud je jednokolka připojena</string>
 	<string name="continue_this_day_log_alert_title">Dokončit výlet?</string>
 	<string name="send_yandex_metriсa_title">Odesílat statistiky použití</string>
 	<string name="map_map_tab_name">Mapa</string>
@@ -310,6 +314,7 @@
 	<string name="pedal_sensivity_title">Citlivost pedálů</string>
 	<string name="pedal_sensivity_description">Vyšší číslo - citlivější</string>
 	<string name="light_brightness_description">Jas předního světla</string>
+	<string name="share">Tato aplikace shromažďuje údaje o poloze, aby umožnila ukládání dat GPS do souborů CSV, když je aplikace WheelLog spuštěna na pozadí (a to i za vypnuté obrazovky). Data GPS se neshromažďují, když je jednokolka odpojena.</string>
 	<string name="fan_title">Povolit větrák</string>
 	<string name="fan_description">Zapnout větrák</string>
 	<string name="fan_quiet_title">Mód tichého větráku</string>
@@ -335,6 +340,7 @@
 	<string name="setup_pwm_setup_max_speed_and_voltage">1. Manuální nastavení maximální rychlosti a napětí</string>
 	<string name="setup_pwm_auto">2, Automaticky. Je potřeba točit kolo ve vzduchu</string>
 	<string name="setup_pwm_select_from_template">3. Vyberte ze šablony</string>
+	<string name="send_yandex_metriсa">Tato aplikace využívá analytickou službu AppMetrica poskytovanou společností Yandex. Geolokace není odesílána. Takto shromážděné informace budou použity k řešení chyb a nemohou vás identifikovat.</string>
 	<string name="roll_angle_description">Nízké/Střední/Vysoké</string>
 	<string name="gw_in_miles_title">Přepnout kontroler na míle</string>
 	<string name="gw_in_miles_description">zapnuto - míle, vypnuto - kilometry</string>
