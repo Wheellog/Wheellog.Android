@@ -226,7 +226,7 @@ fun startScreen(
                                 context,
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    "https://t.me/wheellog".toUri()
+                                    "https://t.me/WheelLog_int".toUri()
                                 ),
                                 null
                             )

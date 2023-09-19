@@ -41,6 +41,16 @@ fun applicationScreen() {
             themeIcon = ThemeIconEnum.SettingsLanguage,
             default = AppConfig.useEng
         ) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text(stringResource(R.string.use_eng_alert_title)) },
+                text = { Text(stringResource(R.string.use_eng_alert_description)) },
+                confirmButton = {
+                    TextButton(onClick = { }) {
+                        Text(stringResource(android.R.string.ok))
+                    }
+                },
+            )
             AppConfig.useEng = it
         }
 
