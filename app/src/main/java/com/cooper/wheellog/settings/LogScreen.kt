@@ -2,12 +2,10 @@ package com.cooper.wheellog.settings
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -159,25 +157,27 @@ fun logScreen()
 
         AnimatedVisibility (locationDependency && gpsDependency.value) {
             var autoUploadDependency by remember { mutableStateOf(AppConfig.autoUploadEc) }
-            switchPref(
-                name = stringResource(R.string.auto_upload_log_ec_title),
-                desc = stringResource(R.string.auto_upload_log_ec_description),
-                default = AppConfig.autoUploadEc,
-            ) {
-                AppConfig.autoUploadEc = it
-                autoUploadDependency = it
-            }
-
-            if (autoUploadDependency && WheelData.getInstance().isConnected) {
-                val activity = LocalContext.current as Activity
-                clickablePref(
-                    name = stringResource(R.string.select_garage_ec_title),
+            Column {
+                switchPref(
+                    name = stringResource(R.string.auto_upload_log_ec_title),
+                    desc = stringResource(R.string.auto_upload_log_ec_description),
+                    default = AppConfig.autoUploadEc,
                 ) {
-                    AppConfig.ecGarage = null
-                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
-                        mac = "",
-                        activity = activity,
-                    ) { }
+                    AppConfig.autoUploadEc = it
+                    autoUploadDependency = it
+                }
+
+                if (autoUploadDependency && WheelData.getInstance().isConnected) {
+                    val activity = LocalContext.current as Activity
+                    clickablePref(
+                        name = stringResource(R.string.select_garage_ec_title),
+                    ) {
+                        AppConfig.ecGarage = null
+                        ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
+                            mac = "",
+                            activity = activity,
+                        ) { }
+                    }
                 }
             }
         }

@@ -38,30 +38,6 @@ fun alarmScreen() {
             alarmsEnabled = it
         }
 
-        switchPref(
-            name = stringResource(R.string.disable_phone_vibration_title),
-            desc = stringResource(R.string.disable_phone_vibration_description),
-            default = AppConfig.disablePhoneVibrate,
-        ) {
-            AppConfig.disablePhoneVibrate = it
-        }
-
-        switchPref(
-            name = stringResource(R.string.disable_phone_beep_title),
-            desc = stringResource(R.string.disable_phone_beep_description),
-            default = AppConfig.disablePhoneBeep,
-        ) {
-            AppConfig.disablePhoneBeep = it
-        }
-
-        switchPref(
-            name = stringResource(R.string.use_wheel_beep_for_alarm_title),
-            desc = stringResource(R.string.use_wheel_beep_for_alarm_description),
-            default = AppConfig.useWheelBeepForAlarm,
-        ) {
-            AppConfig.useWheelBeepForAlarm = it
-        }
-
         AnimatedVisibility(alarmsEnabled) {
             switchPref(
                 name = stringResource(R.string.altered_alarms_title),
@@ -85,6 +61,31 @@ fun alarmScreen() {
         }
 
         if (alarmsEnabled) {
+
+            switchPref(
+                name = stringResource(R.string.disable_phone_vibration_title),
+                desc = stringResource(R.string.disable_phone_vibration_description),
+                default = AppConfig.disablePhoneVibrate,
+            ) {
+                AppConfig.disablePhoneVibrate = it
+            }
+
+            switchPref(
+                name = stringResource(R.string.disable_phone_beep_title),
+                desc = stringResource(R.string.disable_phone_beep_description),
+                default = AppConfig.disablePhoneBeep,
+            ) {
+                AppConfig.disablePhoneBeep = it
+            }
+
+            switchPref(
+                name = stringResource(R.string.use_wheel_beep_for_alarm_title),
+                desc = stringResource(R.string.use_wheel_beep_for_alarm_description),
+                default = AppConfig.useWheelBeepForAlarm,
+            ) {
+                AppConfig.useWheelBeepForAlarm = it
+            }
+
             if (!alteredAlarms) {
                 // Default alarms
                 group(

@@ -128,7 +128,7 @@ dependencies {
     implementation 'com.github.weliem:blessed-android:2.4.1'
     // samsung and garmin libs
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/connectiq.jar')
+    implementation "com.garmin.connectiq:ciq-companion-app-sdk:2.0.3@aar"
     // pebble
     implementation 'com.getpebble:pebblekit:4.0.1'
     // wearOs
