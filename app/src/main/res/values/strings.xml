@@ -88,8 +88,8 @@
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
-    <string name="notification_text" translatable="false">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
-    <string name="notification_text_ajdm_theme" translatable="false">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
+    <string name="notification_text">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
+    <string name="notification_text_ajdm_theme">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
@@ -491,7 +491,7 @@
     <string name="notification_text_max">[SPEED]  \n ⭐ %1$.0f k/h  \n 🔥 %2$.0f top  \n 🙈 %3$.0f avg \n\n[POWER]  \n 💧 %4$d %% \n  ⚡ %5$.2f V \n  💪 %6$.0f W \n  ❄ %7$d °C  \n\n[TRIP] \n  👣 %8$.1f km</string>
     <string name="notification_text_alarm">[DATA]  \n - %1$.0f k/h \n  - %2$.1f A \n  - %3$.2f V  \n - %4$d %%  \n - %5$d °C</string>
     <string name="notification_text_alarm_not">Alarm data: %1$.0f k/h | %2$.1f A | %3$.2f V | %4$d %% | %5$d °C</string>
-    <string name="notification_text_not" translatable="false">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
+    <string name="notification_text_not">%1$.0f km/h | %2$d %% | %3$.0f W | %4$d°C | %5$.3f km</string>
     <string name="titlealarm">Alarm!</string>
     <string name="titlealarm_text">Alarm Mode</string>
     <string name="alarmmiband">Alarm Mode Mi Band</string>
