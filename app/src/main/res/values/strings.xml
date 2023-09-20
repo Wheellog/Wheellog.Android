@@ -7,6 +7,8 @@
     <string name="sec">sec</string>
     <string name="min">min</string>
     <string name="miles">mi</string>
+    <string name="degrees_of_fahrenheit">℉</string>
+    <string name="degrees_of_celsius">℃</string>
 
     // Garmin ConnectIQ dialogs
     <string name="garmin_connectiq_missing_app_message">The WheelLog App used with this application is not installed on your ConnectIQ device. Please install the widget and try again.</string>
@@ -88,8 +90,6 @@
     <string name="version">Version</string>
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
-    <string name="notification_text">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
-    <string name="notification_text_ajdm_theme">%1$.1f km/h | %2$d%% | %3$d°C | %4$.1f km</string>
     <string name="icon_watch">Watch Icon</string>
     <string name="icon_logging">Logging Icon</string>
     <string name="icon_connection">Connection Icon</string>
