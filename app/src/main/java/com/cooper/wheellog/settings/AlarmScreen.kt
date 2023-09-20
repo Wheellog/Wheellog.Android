@@ -2,18 +2,15 @@ package com.cooper.wheellog.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.MathsUtil
 
@@ -228,6 +225,9 @@ fun alarmScreen() {
                         AppConfig.alarmFactor2 = it.toInt()
                     }
 
+                    var warnSpeedEnabled by remember { mutableStateOf(AppConfig.warningSpeed != 0) }
+                    var warnPwmEnabled by remember { mutableStateOf(AppConfig.warningPwm != 0) }
+
                     sliderPref(
                         name = stringResource(R.string.warning_speed_title),
                         desc = stringResource(R.string.warning_speed_description),
@@ -239,6 +239,7 @@ fun alarmScreen() {
                         disableSwitchAtMin = true,
                     ) {
                         AppConfig.warningSpeed = it.toInt()
+                        warnSpeedEnabled = it > 0
                     }
 
                     sliderPref(
@@ -252,20 +253,28 @@ fun alarmScreen() {
                         disableSwitchAtMin = true,
                     ) {
                         AppConfig.warningPwm = it.toInt()
+                        warnPwmEnabled = it > 0
                     }
 
-                    sliderPref(
-                        name = stringResource(R.string.warning_speed_period_title),
-                        desc = stringResource(R.string.warning_speed_period_description),
-                        position = AppConfig.warningSpeedPeriod.toFloat(),
-                        unit = R.string.sec,
-                        min = 0f,
-                        max = 60f,
-                        showDiv = false,
-                        showSwitch = true,
-                        disableSwitchAtMin = true,
-                    ) {
-                        AppConfig.warningSpeedPeriod = it.toInt()
+                    AnimatedVisibility (warnSpeedEnabled || warnPwmEnabled) {
+                        var position = AppConfig.warningSpeedPeriod.toFloat()
+                        if (position == 0f) {
+                            AppConfig.warningSpeedPeriod = 5
+                            position = 5f
+                        }
+                        sliderPref(
+                            name = stringResource(R.string.warning_speed_period_title),
+                            desc = stringResource(R.string.warning_speed_period_description),
+                            position = position,
+                            unit = R.string.sec,
+                            min = 0f,
+                            max = 60f,
+                            showDiv = false,
+                            showSwitch = true,
+                            disableSwitchAtMin = true,
+                        ) {
+                            AppConfig.warningSpeedPeriod = it.toInt()
+                        }
                     }
                 }
 
