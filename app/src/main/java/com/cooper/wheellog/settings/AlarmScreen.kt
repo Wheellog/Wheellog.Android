@@ -172,23 +172,25 @@ fun alarmScreen() {
                         sliderPref(
                             name = stringResource(R.string.rotation_speed_title),
                             desc = stringResource(R.string.rotation_speed_description),
-                            position = (AppConfig.rotationSpeed / speedMultipier).toFloat(),
+                            position = (AppConfig.rotationSpeed * speedMultipier / 10).toFloat(),
                             unit = speedUnit,
                             min = 0f,
-                            max = 1500f,
+                            max = 150f,
+                            format = "%.1f",
                         ) {
-                            AppConfig.rotationSpeed = (it * speedMultipier).toInt()
+                            AppConfig.rotationSpeed = (it / speedMultipier * 10).toInt()
                         }
 
                         sliderPref(
                             name = stringResource(R.string.rotation_voltage_title),
                             desc = stringResource(R.string.rotation_voltage_description),
-                            position = AppConfig.rotationVoltage.toFloat(),
+                            position = (AppConfig.rotationVoltage / 10).toFloat(),
                             unit = R.string.volt,
                             min = 0f,
-                            max = 1500f,
+                            max = 150f,
+                            format = "%.1f",
                         ) {
-                            AppConfig.rotationVoltage = it.toInt()
+                            AppConfig.rotationVoltage = (it * 10).toInt()
                         }
 
                         sliderPref(
@@ -231,14 +233,14 @@ fun alarmScreen() {
                     sliderPref(
                         name = stringResource(R.string.warning_speed_title),
                         desc = stringResource(R.string.warning_speed_description),
-                        position = AppConfig.warningSpeed.toFloat(),
+                        position = (AppConfig.warningSpeed * speedMultipier).toFloat(),
                         unit = speedUnit,
                         min = 0f,
                         max = 120f,
                         showSwitch = true,
                         disableSwitchAtMin = true,
                     ) {
-                        AppConfig.warningSpeed = it.toInt()
+                        AppConfig.warningSpeed = (it / speedMultipier).toInt()
                         warnSpeedEnabled = it > 0
                     }
 
