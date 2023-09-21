@@ -239,12 +239,7 @@
 
     <!-- Fuzzy -->
     <string name="disable_phone_vibration_title">"스마트폰 진동 비활성화"</string>
-    <string name="disable_phone_vibration_description"></string>
     <string name="disable_phone_beep_title">"스마트폰 비프음 비활성화"</string>
-    <string name="disable_phone_beep_description"></string>
-    <string name="altered_alarms_title"></string>
-    <string name="altered_alarms_description"></string>
-    <string name="altered_alarms_pref_title"></string>
     <string name="rotation_speed_title">"회전 속도"</string>
 
     <!-- Fuzzy -->
@@ -253,20 +248,8 @@
     <string name="rotation_voltage_description">승진의 속도가 측정된 전압</string>
     <string name="power_factor_title">동력 인자</string>
     <string name="power_factor_description">"무엇인지 모른다면 변경하지 마십시오. 기본값=90"</string>
-    <string name="alarm_factor1_title"></string>
-    <string name="alarm_factor1_description"></string>
-    <string name="alarm_factor2_title"></string>
-    <string name="alarm_factor2_description"></string>
-    <string name="alarm_factor3_title"></string>
-    <string name="alarm_factor3_description"></string>
     <string name="warning_speed_title">"상세 경고"</string>
-    <string name="warning_speed_description"></string>
-    <string name="warning_pwm_title"></string>
-    <string name="warning_pwm_description"></string>
     <string name="warning_speed_period_title">"경고 빈도"</string>
-    <string name="warning_speed_period_description"></string>
-    <string name="use_short_pwm_title"></string>
-    <string name="use_short_pwm_description"></string>
     <string name="speed_alarm1_phone_title">"속도 경고 1"</string>
     <string name="speed_trigger_description">"경고를 활성화할 속도 수치입니다"</string>
     <string name="speed_alarm2_phone_title">"속도 경고 2"</string>

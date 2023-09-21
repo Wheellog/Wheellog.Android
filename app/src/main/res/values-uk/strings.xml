@@ -192,8 +192,8 @@
     <string name="connection_sound_description">Програвати звуки підключення і відключення колеса</string>
     <string name="connection_sound_title">Звуки підключення колеса</string>
     <string name="sec">сек</string>
-    <string name="altered_alarms_title">Ручні попередження</string>
-    <string name="altered_alarms_description">Попередження при поточній напрузі та можливостях колеса</string>
+    <string name="pwm_based_alarms_title">Алармі по PWM</string>
+    <string name="pwm_based_alarms_description">Алармі при поточній напрузі та можливостях колеса</string>
     <string name="altered_alarms_pref_title">Налаштування опцій змінених попереджень</string>
     <string name="alarm_factor3_title">PWM третього попередження</string>
     <string name="alarm_factor3_description">Повинен бути більше за другий</string>

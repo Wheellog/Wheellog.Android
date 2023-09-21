@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
-import androidx.preference.Preference
 import androidx.preference.PreferenceManager
-import com.cooper.wheellog.utils.KingsongAdapter
 import com.cooper.wheellog.utils.MiBandEnum
 import com.cooper.wheellog.utils.ThemeEnum
 import com.wheellog.shared.Constants
@@ -329,8 +327,8 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.use_wheel_beep_for_alarm, false)
         set(value) = setSpecific(R.string.use_wheel_beep_for_alarm, value)
 
-    var alteredAlarms: Boolean
-        get() = getSpecific(R.string.altered_alarms, false)
+    var pwmBasedAlarms: Boolean
+        get() = getSpecific(R.string.altered_alarms, true)
         set(value) = setSpecific(R.string.altered_alarms, value)
 
     var alarm1Speed: Int

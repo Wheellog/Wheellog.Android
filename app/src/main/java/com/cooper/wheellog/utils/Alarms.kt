@@ -87,7 +87,7 @@ object Alarms {
     }
 
     private fun reCheckAlarm(pwm: Double, mContext: Context): Boolean {
-        val executed = if (WheelLog.AppConfig.alteredAlarms) {
+        val executed = if (WheelLog.AppConfig.pwmBasedAlarms) {
             alertedAlarms(pwm, mContext)
         } else {
             oldAlarms(mContext)

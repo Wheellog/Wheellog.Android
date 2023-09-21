@@ -190,7 +190,7 @@ public class WheelData {
 //        WheelLog.AppConfig.setAlarm1Speed(1);
 //        WheelLog.AppConfig.setAlarm1Battery(70);
 //        WheelLog.AppConfig.setAlarmFactor1(10_00);
-        WheelLog.AppConfig.setAlteredAlarms(false);
+        WheelLog.AppConfig.setPwmBasedAlarms(false);
     }
     /////
 

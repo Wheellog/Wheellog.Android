@@ -219,8 +219,8 @@
     <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="whkm">Втч/км</string>
     <string name="sec">сек</string>
-    <string name="altered_alarms_title">Измененные предупреждения</string>
-    <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
+    <string name="pwm_based_alarms_title">Алармы по PWM</string>
+    <string name="pwm_based_alarms_description">Алармы основанные на текущем напряжении и возможностях колеса</string>
     <string name="altered_alarms_pref_title">Настройки для опции измененных предупреждений</string>
     <string name="alarm_factor1_title">Начало PWM предупреждений</string>
     <string name="alarm_factor1_description">Рассчетный PWM при котором начинаются предупреждения</string>

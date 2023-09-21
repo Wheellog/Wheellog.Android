@@ -21,7 +21,7 @@ fun alarmScreen() {
             .verticalScroll(rememberScrollState())
     ) {
         var alarmsEnabled by remember { mutableStateOf(AppConfig.alarmsEnabled) }
-        var alteredAlarms by remember { mutableStateOf(AppConfig.alteredAlarms) }
+        var pwmBasedAlarms by remember { mutableStateOf(AppConfig.pwmBasedAlarms) }
         val ksAlteredAlarms =
             WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG
                     && WheelData.getInstance().model.compareTo("KS-18A") != 0
@@ -37,13 +37,13 @@ fun alarmScreen() {
 
         AnimatedVisibility(alarmsEnabled) {
             switchPref(
-                name = stringResource(R.string.altered_alarms_title),
-                desc = stringResource(R.string.altered_alarms_description),
-                default = alteredAlarms,
+                name = stringResource(R.string.pwm_based_alarms_title),
+                desc = stringResource(R.string.pwm_based_alarms_description),
+                default = pwmBasedAlarms,
                 showDiv = false,
             ) {
-                AppConfig.alteredAlarms = it
-                alteredAlarms = it
+                AppConfig.pwmBasedAlarms = it
+                pwmBasedAlarms = it
             }
         }
 
@@ -83,7 +83,7 @@ fun alarmScreen() {
                 AppConfig.useWheelBeepForAlarm = it
             }
 
-            if (!alteredAlarms) {
+            if (!pwmBasedAlarms) {
                 // Default alarms
                 group(
                     name = stringResource(R.string.speed_alarm1_phone_title)
@@ -166,7 +166,7 @@ fun alarmScreen() {
             } else {
                 // Altered alarms
                 group(
-                    name = stringResource(R.string.altered_alarms_title)
+                    name = stringResource(R.string.pwm_based_alarms_title)
                 ) {
                     if (!ksAlteredAlarms) {
                         sliderPref(
