@@ -279,40 +279,40 @@ fun alarmScreen() {
                         }
                     }
                 }
+            }
 
-                sliderPref(
-                    name = stringResource(R.string.current_alarm_title),
-                    desc = stringResource(R.string.alarm_current_description),
-                    position = AppConfig.alarmCurrent.toFloat(),
-                    unit = R.string.amp,
-                    min = 0f,
-                    max = 300f,
-                ) {
-                    AppConfig.alarmCurrent = it.toInt()
-                }
+            sliderPref(
+                name = stringResource(R.string.current_alarm_title),
+                desc = stringResource(R.string.alarm_current_description),
+                position = AppConfig.alarmCurrent.toFloat(),
+                unit = R.string.amp,
+                min = 0f,
+                max = 300f,
+            ) {
+                AppConfig.alarmCurrent = it.toInt()
+            }
 
-                // TODO: Add Fahrenheit support
-                sliderPref(
-                    name = stringResource(R.string.temperature_alarm_title),
-                    desc = stringResource(R.string.alarm_temperature_description),
-                    position = AppConfig.alarmTemperature.toFloat(),
-                    unit = R.string.degree,
-                    min = 0f,
-                    max = 120f,
-                ) {
-                    AppConfig.alarmTemperature = it.toInt()
-                }
+            // TODO: Add Fahrenheit support
+            sliderPref(
+                name = stringResource(R.string.temperature_alarm_title),
+                desc = stringResource(R.string.alarm_temperature_description),
+                position = AppConfig.alarmTemperature.toFloat(),
+                unit = R.string.degree,
+                min = 0f,
+                max = 120f,
+            ) {
+                AppConfig.alarmTemperature = it.toInt()
+            }
 
-                sliderPref(
-                    name = stringResource(R.string.battery_alarm_title),
-                    desc = stringResource(R.string.alarm_battery_description),
-                    position = AppConfig.alarmBattery.toFloat(),
-                    unit = R.string.persent,
-                    min = 0f,
-                    max = 100f,
-                ) {
-                    AppConfig.alarmBattery = it.toInt()
-                }
+            sliderPref(
+                name = stringResource(R.string.battery_alarm_title),
+                desc = stringResource(R.string.alarm_battery_description),
+                position = AppConfig.alarmBattery.toFloat(),
+                unit = R.string.persent,
+                min = 0f,
+                max = 100f,
+            ) {
+                AppConfig.alarmBattery = it.toInt()
             }
         }
     }

@@ -763,7 +763,10 @@ fun clickableAndAlert(
             },
             confirmButton = {
                 Button(
-                    onClick = onConfirm,
+                    onClick = {
+                        onConfirm()
+                        showDialog = false
+                    },
                 ) {
                     Text(confirmButtonText)
                 }
