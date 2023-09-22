@@ -238,7 +238,7 @@ public class GotwayAdapter extends BaseAdapter {
         if (lightMode > lightModeStrobe) {
             lightMode = lightModeOff;
         }
-        // На прошивке Freestyl3r с включённым подъёмом педалей недоступен стробоскоп
+        // Strobe light not available on Freestyl3r firmware with pwm tiltback enabled
         if (WheelLog.AppConfig.getHwPwm() && WheelLog.AppConfig.getAlarmMode().equals("3") && lightMode > 1) {
             lightMode = 0;
         }
