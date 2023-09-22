@@ -19,6 +19,13 @@ public class GotwayAdapter extends BaseAdapter {
     private String fw = "";
     private int attempt = 0;
     private int lock_Changes = 0;
+    private final int lightModeOff = 0;
+    private final int lightModeOn = 1;
+    private final int lightModeStrobe = 2;
+    private final int alarmModeTwo = 0; // 30 + 35 (45) km/h + 80% PWM
+    private final int alarmModeOne = 1; // 35 (45) km/h + 80% PWM
+    private final int alarmModeOff = 2; // 80% PWM only
+    private final int alarmModeCF = 3; // PWM tiltback for custom firmware
 
     @Override
     public boolean decode(byte[] data) {
@@ -228,8 +235,8 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void switchFlashlight() {
         int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
-        if (lightMode > 2) {
-            lightMode = 0;
+        if (lightMode > lightModeStrobe) {
+            lightMode = lightModeOff;
         }
         WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
@@ -241,9 +248,9 @@ public class GotwayAdapter extends BaseAdapter {
         String command = "";
         switch (lightMode) {
             default:
-            case 0: command = "E"; break;
-            case 1: command = "Q"; break;
-            case 2: command = "T"; break;
+            case lightModeOff: command = "E"; break;
+            case lightModeOn: command = "Q"; break;
+            case lightModeStrobe: command = "T"; break;
         }
         sendCommand(command);
     }
@@ -293,10 +300,10 @@ public class GotwayAdapter extends BaseAdapter {
     public void updateAlarmMode(int alarmMode) {
         String command = "";
         switch (alarmMode) {
-            case 0: command = "o"; break; // alertTwo (1) // 30 + 35 (45) km/h + 80% PWM
-            case 1: command = "u"; break; // AlertOff (2) // 80% PWM only
-            case 2: command = "i"; break; //alertOne (0) // 35 (45) km/h + 80% PWM
-            case 3: command = "I"; break; //pwm tiltback for custom firmware
+            case alarmModeTwo: command = "o"; break;
+            case alarmModeOne: command = "u"; break;
+            case alarmModeOff: command = "i"; break;
+            case alarmModeCF: command = "I"; break;
         }
         lock_Changes = 2;
         sendCommand(command);
