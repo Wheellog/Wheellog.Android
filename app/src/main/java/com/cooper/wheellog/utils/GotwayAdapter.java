@@ -238,6 +238,10 @@ public class GotwayAdapter extends BaseAdapter {
         if (lightMode > lightModeStrobe) {
             lightMode = lightModeOff;
         }
+        // На прошивке Freestyl3r с включённым подъёмом педалей недоступен стробоскоп
+        if (WheelLog.AppConfig.getHwPwm() && WheelLog.AppConfig.getAlarmMode().equals("3") && lightMode > 1) {
+            lightMode = 0;
+        }
         WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
