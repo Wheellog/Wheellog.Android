@@ -238,6 +238,13 @@ public class GotwayAdapter extends BaseAdapter {
         if (lightMode > lightModeStrobe) {
             lightMode = lightModeOff;
         }
+        // Strobe light not available on Freestyl3r firmware while pwm tiltback mode enabled.
+        // For custom firmware with enabled tiltback available only light off and on.
+        // Strobe is using for tiltback warning. Detect via specific for this firmware alarm mode.
+        if (lightMode > lightModeOn
+                && WheelLog.AppConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
+            lightMode = lightModeOff;
+        }
         WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
