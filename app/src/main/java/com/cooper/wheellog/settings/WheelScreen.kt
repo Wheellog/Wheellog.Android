@@ -736,8 +736,8 @@ private fun begode() {
         },
         defaultKey = AppConfig.alarmMode,
     ) {
-        AppConfig.ledMode = it.first
-        adapter.updateLedMode(it.first.toInt())
+        AppConfig.alarmMode = it.first
+        adapter.updateAlarmMode(it.first.toInt())
     }
     list(
         name = stringResource(R.string.pedals_mode_title),
