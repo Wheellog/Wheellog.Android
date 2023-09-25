@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.databinding.ActivityScanBinding
+import com.cooper.wheellog.utils.NinebotAdapter
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.StringUtil
 import com.cooper.wheellog.utils.StringUtil.toHexStringRaw
@@ -183,28 +184,38 @@ class ScanActivity: AppCompatActivity() {
         intent.putExtra("MAC", deviceAddress)
         intent.putExtra("NAME", deviceName)
         WheelLog.AppConfig.lastMac = deviceAddress
-        WheelLog.AppConfig.advDataForWheel = advData
+
+        // advData used only for ninebot adapter.
+        WheelData.getInstance().bleAdvData = advData
+
         setResult(RESULT_OK, intent)
         // Set password for inmotion
         WheelLog.AppConfig.passwordForWheel = ""
         close()
     }
 
+    private infix fun Byte.eq(i: Int): Boolean = this == i.toByte()
+
     private fun findManufacturerData(scanRecord: ByteArray): String {
         var index = 0
         var result = ""
         while (index < scanRecord.size) {
-            val length = scanRecord[index++].toInt()
+            val length = scanRecord[index++]
             // Done once we run out of records
-            if (length == 0) break
-            val type = scanRecord[index].toInt()
+            val toIndex = index + length
+            if (length eq 0 || toIndex > scanRecord.size) {
+                break
+            }
+            val type = scanRecord[index]
             // Done if our record isn't a valid type
-            if (type == 0) break
-            val data = scanRecord.copyOfRange(index + 1, index + length)
+            if (type eq 0) {
+                break
+            }
+            val data = scanRecord.copyOfRange(index + 1, toIndex)
 
             // Advance
-            index += length
-            if (type == -1) {
+            index = toIndex
+            if (type eq -1) {
                 result = toHexStringRaw(data)
             }
         }

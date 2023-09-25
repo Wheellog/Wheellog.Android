@@ -91,7 +91,7 @@ public class NinebotAdapter extends BaseAdapter {
             Timber.i(status.toString());
             if (status instanceof NinebotAdapter.serialNumberStatus) {
                 wd.setSerial(((serialNumberStatus) status).getSerialNumber());
-                wd.setModel("Ninebot " + wd.getProtoVer());
+                wd.setModel("Ninebot " + getProtoFromAdvData());
             } else if (status instanceof NinebotAdapter.versionStatus) {
                 wd.setVersion(((NinebotAdapter.versionStatus) status).getVersion());
             } else {
@@ -709,5 +709,21 @@ public class NinebotAdapter extends BaseAdapter {
         }
         Timber.i("Kill instance, stop timer");
         INSTANCE = null;
+    }
+
+    private static String _protoFromAdvData = "";
+
+    public static String getProtoFromAdvData() {
+        return _protoFromAdvData;
+    }
+
+    public static void setAdvData(String advData) {
+        _protoFromAdvData = "";
+        if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
+            _protoFromAdvData = "S2";
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf"}) || (advData.startsWith("5600"))) {
+            _protoFromAdvData = "Mini";
+        }
+        Timber.i("ProtoVer %s, adv: %s", _protoFromAdvData, advData);
     }
 }
