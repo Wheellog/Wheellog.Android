@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Affiche la vitesse et la distance en miles plutôt qu\'en kilomètres</string>
 	<string name="enable_alarms_title">Activation des alarmes</string>
 	<string name="enable_alarms_description">Faire vibrer le téléphone</string>
-	<string name="disable_phone_vibrate_title">Désactiver la vibration du téléphone</string>
+	<string name="disable_phone_vibration_title">Désactiver la vibration du téléphone</string>
 	<string name="disable_phone_vibration_description">Désactiver la vibration du téléphone</string>
 	<string name="speed_alarm1_phone_title">Alarme de vitesse 1</string>
 	<string name="speed_trigger_description">Seuil de l\'alarme de vitesse</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Téléchargement automatique du journal</string>
 	<string name="auto_upload_log_description">Téléchargement automatique du journal sur Google Drive</string>
 	<string name="log_location_title">Journaliser les informations de localisation</string>
-	<string name="log_location_decription">Ajout des données de localisation dans le journal</string>
+	<string name="log_location_description">Ajout des données de localisation dans le journal</string>
 	<string name="use_gps_title">Utilisation du GPS pour la localisation</string>
 	<string name="use_gps_description">Utiliser plutôt le GPS que les informations de localisation de l\'opérateur mobile. Le GPS est plus précis mais peut consommer plus la batterie du téléphone</string>
 	<string name="on_off_strobe">Off/On/Stroboscope</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Ma roue est une Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Si votre roue est une  Gotway MCM, et que l\'application affiche des vitesses, distances et autres qui semblent erronnés, ceci pourrait corriger le problème</string>
 	<string name="battery_voltage_title">Tension de la batterie</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Désactiver alarme niveau 1</string>
 	<string name="off_level_2_alarm">Désactiver alarme niveau 2</string>
 	<string name="on_level_alarm">Activer les alarmes</string>

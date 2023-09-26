@@ -15,6 +15,7 @@ import com.cooper.wheellog.utils.NinebotAdapter
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.utils.StringUtil.inArray
 import com.cooper.wheellog.utils.StringUtil.toTempString
+import com.cooper.wheellog.utils.ThemeManager
 import com.cooper.wheellog.views.TripAdapter
 import com.cooper.wheellog.views.WheelView
 import com.github.mikephil.charting.charts.LineChart
@@ -126,7 +127,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             R.layout.main_view_events -> {
                 eventsTextView = view.findViewById(R.id.events_textbox)
                 eventsTextView?.text = logsCashe
-                eventsTextView?.typeface = WheelLog.ThemeManager.getTypeface(view.context)
+                eventsTextView?.typeface = ThemeManager.getTypeface(view.context)
             }
             R.layout.main_view_trips -> {
                 listOfTrips = view.findViewById(R.id.list_trips)
@@ -415,7 +416,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private fun createSecondPage() {
         val layout = pagesView[R.layout.main_view_params_list]?.findViewById<GridLayout>(R.id.page_two_grid) ?: return
         layout.removeAllViews()
-        val font = WheelLog.ThemeManager.getTypeface(activity)
+        val font = ThemeManager.getTypeface(activity)
         for ((key, value) in secondPageValues) {
             val headerText = (activity.layoutInflater.inflate(
                 R.layout.textview_title_template, layout, false
@@ -628,7 +629,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private fun createSmartBmsPage() {
         val layout = pagesView[R.layout.main_view_smart_bms]?.findViewById<GridLayout>(R.id.page_smart_bms_grid) ?: return
         layout.removeAllViews()
-        val font = WheelLog.ThemeManager.getTypeface(activity)
+        val font = ThemeManager.getTypeface(activity)
         val bat1Text = (activity.layoutInflater.inflate(
                 R.layout.textview_smart_bms_battery_template, layout, false
         ) as TextView).apply {

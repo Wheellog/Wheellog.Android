@@ -238,13 +238,8 @@
     <string name="enable_alarms_description">"경고 시 스마트폰 진동 허용"</string>
 
     <!-- Fuzzy -->
-    <string name="disable_phone_vibrate_title">"스마트폰 진동 비활성화"</string>
-    <string name="disable_phone_vibration_description"></string>
+    <string name="disable_phone_vibration_title">"스마트폰 진동 비활성화"</string>
     <string name="disable_phone_beep_title">"스마트폰 비프음 비활성화"</string>
-    <string name="disable_phone_beep_description"></string>
-    <string name="altered_alarms_title"></string>
-    <string name="altered_alarms_description"></string>
-    <string name="altered_alarms_pref_title"></string>
     <string name="rotation_speed_title">"회전 속도"</string>
 
     <!-- Fuzzy -->
@@ -253,20 +248,8 @@
     <string name="rotation_voltage_description">승진의 속도가 측정된 전압</string>
     <string name="power_factor_title">동력 인자</string>
     <string name="power_factor_description">"무엇인지 모른다면 변경하지 마십시오. 기본값=90"</string>
-    <string name="alarm_factor1_title"></string>
-    <string name="alarm_factor1_description"></string>
-    <string name="alarm_factor2_title"></string>
-    <string name="alarm_factor2_description"></string>
-    <string name="alarm_factor3_title"></string>
-    <string name="alarm_factor3_description"></string>
     <string name="warning_speed_title">"상세 경고"</string>
-    <string name="warning_speed_description"></string>
-    <string name="warning_pwm_title"></string>
-    <string name="warning_pwm_description"></string>
     <string name="warning_speed_period_title">"경고 빈도"</string>
-    <string name="warning_speed_period_description"></string>
-    <string name="use_short_pwm_title"></string>
-    <string name="use_short_pwm_description"></string>
     <string name="speed_alarm1_phone_title">"속도 경고 1"</string>
     <string name="speed_trigger_description">"경고를 활성화할 속도 수치입니다"</string>
     <string name="speed_alarm2_phone_title">"속도 경고 2"</string>
@@ -302,7 +285,7 @@
     <string name="auto_upload_log_title">"기록 자동 업로드"</string>
     <string name="auto_upload_log_description">"Google Drive에 기록을 자동으로 업로드합니다"</string>
     <string name="log_location_title">"위치 기록"</string>
-    <string name="log_location_decription">"기록에 위치 정보를 포함합니다"</string>
+    <string name="log_location_description">"기록에 위치 정보를 포함합니다"</string>
     <string name="use_gps_title">"위치 정보에 GPS 사용"</string>
     <string name="use_gps_description">"위치 기록 시 네트워크 제공자보다 GPS를 우선적으로 사용합니다. GPS가 더 정확하지만 배터리 전원 소모가 더 클 것입니다"</string>
     <string name="use_raw_title">"미가공 데이터 기록"</string>
@@ -319,7 +302,7 @@
     <string name="ks18l_scaler_title"></string>
     <string name="ks18l_scaler_description"></string>
     <string name="battery_voltage_title">"배터리 전압"</string>
-    <string name="battary_voltage_description">"67V/84V/100V"</string>
+    <string name="battery_voltage_description">"67V/84V/100V"</string>
     <string name="gotway_negative_title">"음의 전류 및 속도 모드"</string>
     <string name="gotway_negative_description">"일직선으로 라이딩할 때 속도와 전류가 음수가 된다면 - 반대가 되도록 설정하시거나 절대값으로 설정하세요"</string>
     <string name="absolute">"절대값 (양수만)"</string>

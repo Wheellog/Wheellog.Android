@@ -10,7 +10,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 
-class ThemeManager {
+object ThemeManager {
 
     private val original = HashMap<ThemeIconEnum, Int>()
     private val ajdm = HashMap<ThemeIconEnum, Int>()
@@ -91,6 +91,7 @@ class ThemeManager {
         original[ThemeIconEnum.SettingsCalibration] = R.drawable.ic_baseline_calibration_24
         original[ThemeIconEnum.SettingsLanguage] = R.drawable.ic_baseline_translate_24
         original[ThemeIconEnum.SettingsAutoLog] = R.drawable.ic_baseline_magic_log_24
+        original[ThemeIconEnum.SettingsLocation] = R.drawable.ic_baseline_location_on_24
         original[ThemeIconEnum.SettingsBlocks] = R.drawable.ic_baseline_dashboard_customize_24
         original[ThemeIconEnum.SettingsNotification] = R.drawable.ic_notification
         original[ThemeIconEnum.SettingsPageEvents] = R.drawable.ic_baseline_event_note_24

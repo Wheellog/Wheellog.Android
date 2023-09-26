@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Zeige Geschwindigkeit und Entfernung in Meilen anstatt Kilometer</string>
 	<string name="enable_alarms_title">Alarme aktivieren</string>
 	<string name="enable_alarms_description">Das Telefon darf vibrieren</string>
-	<string name="disable_phone_vibrate_title">Telefonvibration deaktivieren</string>
+	<string name="disable_phone_vibration_title">Telefonvibration deaktivieren</string>
 	<string name="disable_phone_vibration_description">Telefonvibration deaktivieren</string>
 	<string name="speed_alarm1_phone_title">Geschwindigkeitsalarm 1</string>
 	<string name="speed_trigger_description">Geschwindigkeit die den Alarm auslöst</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Logs automatisch hochladen</string>
 	<string name="auto_upload_log_description">Logs automatisch auf Google Drive hochladen</string>
 	<string name="log_location_title">Standortlogs</string>
-	<string name="log_location_decription">Standort loggen</string>
+	<string name="log_location_description">Standort loggen</string>
 	<string name="use_gps_title">GPS zur Ortsbestimmung</string>
 	<string name="use_gps_description">Benutzt das GPS und nicht das Mobilnetz zur Ortsbestimmung. Diese Methode ist genauer aber verbraucht mehre Energie</string>
 	<string name="on_off_strobe">An/Aus/Stroboskop</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Mein Rad ist ein Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Sollter Ihr Gotway MCM falsche Geschwindigkeit, Distanz etc. angeben, benutzen Sie diese Option</string>
 	<string name="battery_voltage_title">Batteriespannung</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Level 1 Alarm aus</string>
 	<string name="off_level_2_alarm">Level 2 Alarm aus</string>
 	<string name="on_level_alarm">Alarm an</string>

@@ -10,11 +10,14 @@ import com.cooper.wheellog.utils.ThemeEnum
 import com.wheellog.shared.Constants
 import com.wheellog.shared.WearPage
 import com.wheellog.shared.WearPages
+// import com.yandex.metrica.YandexMetrica
+import timber.log.Timber
 
 class AppConfig(var context: Context) {
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private var specificPrefix: String = ""
     private val separator = ";"
+    private val wd by lazy { WheelData.getInstance() }
 
     init {
         // Clear all preferences if they are incompatible
@@ -32,7 +35,11 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_eng, false)
         set(value) = setValue(R.string.use_eng, value)
 
-    var appTheme: Int
+    var appThemeInt: Int
+        get() = getValue(R.string.app_theme, ThemeEnum.Original.value.toString()).toInt()
+        set(value) = setValue(R.string.app_theme, value.toString())
+
+    val appTheme: Int
         get() {
             val stringVal = getValue(R.string.app_theme, ThemeEnum.Original.value.toString())
             return when (ThemeEnum.fromInt(stringVal.toInt())) {
@@ -40,7 +47,6 @@ class AppConfig(var context: Context) {
                 else -> R.style.OriginalTheme
             }
         }
-        set(value) = setValue(R.string.app_theme, value.toString())
 
     var dayNightThemeMode: Int
         get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED.toString()).toInt()
@@ -87,12 +93,16 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_pip_mode, true)
         set(value) = setValue(R.string.use_pip_mode, value)
 
-    val pipBlock: String
+    var pipBlock: String
         get() = getValue(R.string.pip_block, "")
+        set(value) = setValue(R.string.pip_block, value)
 
     private var notificationButtonsString: String?
         get() = getValue(R.string.notification_buttons, null)
-        set(value) = setValue(R.string.notification_buttons, value)
+        set(value) {
+            setValue(R.string.notification_buttons, value)
+            WheelLog.Notifications.update()
+        }
 
     var notificationButtons: Array<String>
         get() = this.notificationButtonsString?.split(separator)?.toTypedArray()
@@ -108,7 +118,10 @@ class AppConfig(var context: Context) {
 
     var currentOnDial: Boolean
         get() = getValue(R.string.current_on_dial, false)
-        set(value) = setValue(R.string.current_on_dial, value)
+        set(value) {
+            setValue(R.string.current_on_dial, value)
+            Timber.i("Change dial type to %b", value)
+        }
 
     var pageGraph: Boolean
         get() = getValue(R.string.show_page_graph, true)
@@ -144,7 +157,10 @@ class AppConfig(var context: Context) {
 
     var useBeepOnVolumeUp: Boolean
         get() = getValue(R.string.beep_on_volume_up, false)
-        set(value) = setValue(R.string.beep_on_volume_up, value)
+        set(value) {
+            setValue(R.string.beep_on_volume_up, value)
+            WheelLog.VolumeKeyController.setActive(wd.isConnected && value)
+        }
 
     var beepByWheel: Boolean
         get() = getValue(R.string.beep_by_wheel, false)
@@ -158,13 +174,23 @@ class AppConfig(var context: Context) {
         get() = Uri.parse(getValue(R.string.beep_file, ""))
         set(value) = setValue(R.string.beep_file, value.toString())
 
+    var customBeepTimeLimit: Float
+        get() = getValue("custom_beep_time_limit", 2.0f)
+        set(value) = setValue("custom_beep_time_limit", value)
+
     var mibandMode: MiBandEnum
         get() = MiBandEnum.fromInt(getValue(R.string.miband_mode, MiBandEnum.Min.value))
         set(value) = setValue(R.string.miband_mode, value.value)
 
     var useReconnect: Boolean
         get() = getValue(R.string.use_reconnect, false)
-        set(value) = setValue(R.string.use_reconnect, value)
+        set(value) {
+            setValue(R.string.use_reconnect, value)
+            if (value)
+                wd.bluetoothService?.startReconnectTimer()
+            else
+                wd.bluetoothService?.stopReconnectTimer()
+        }
 
     var detectBatteryOptimization: Boolean
         get() = getValue(R.string.use_detect_battery_optimization, true)
@@ -176,13 +202,21 @@ class AppConfig(var context: Context) {
 
     var yandexMetricaAccepted: Boolean
         get() = getValue(R.string.yandex_metriсa_accepted, false)
-        set(value) = setValue(R.string.yandex_metriсa_accepted, value)
+        set(value) {
+            setValue(R.string.yandex_metriсa_accepted, value)
+//            YandexMetrica.setStatisticsSending(
+//                context,
+//                WheelLog.AppConfig.yandexMetricaAccepted
+//            )
+        }
     //endregion
 
     //region logs
     var autoLog: Boolean
         get() = getValue(R.string.auto_log, false)
-        set(value) = setValue(R.string.auto_log, value)
+        set(value) {
+            setValue(R.string.auto_log, value)
+        }
 
     var autoWatch: Boolean
         get() = getValue(R.string.auto_watch, false)
@@ -212,9 +246,9 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.use_raw_data, false)
         set(value) = setValue(R.string.use_raw_data, value)
 
-    var startAutoLoggingWhenIsMoving: Boolean
-        get() = getValue(R.string.auto_log_when_moving, false)
-        set(value) = setValue(R.string.auto_log_when_moving, value)
+    var startAutoLoggingWhenIsMovingMore: Float
+        get() = getValue(R.string.auto_log_when_moving_more, 7f)
+        set(value) = setValue(R.string.auto_log_when_moving_more, value)
 
     var continueThisDayLog: Boolean
         get() = getValue(R.string.continue_this_day_log, false)
@@ -244,7 +278,10 @@ class AppConfig(var context: Context) {
 
     var mibandFixRs: Boolean
         get() = getValue(R.string.miband_fixrs_enable, false)
-        set(value) = setValue(R.string.miband_fixrs_enable, value)
+        set(value) {
+            setValue(R.string.miband_fixrs_enable, value)
+            WheelLog.Notifications.updateKostilTimer()
+        }
 
     var wearOsPages: WearPages
         get() = WearPage.deserialize(
@@ -290,8 +327,8 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.use_wheel_beep_for_alarm, false)
         set(value) = setSpecific(R.string.use_wheel_beep_for_alarm, value)
 
-    var alteredAlarms: Boolean
-        get() = getSpecific(R.string.altered_alarms, false)
+    var pwmBasedAlarms: Boolean
+        get() = getSpecific(R.string.altered_alarms, true)
         set(value) = setSpecific(R.string.altered_alarms, value)
 
     var alarm1Speed: Int

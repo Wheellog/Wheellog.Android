@@ -190,7 +190,7 @@ public class WheelData {
 //        WheelLog.AppConfig.setAlarm1Speed(1);
 //        WheelLog.AppConfig.setAlarm1Battery(70);
 //        WheelLog.AppConfig.setAlarmFactor1(10_00);
-        WheelLog.AppConfig.setAlteredAlarms(false);
+        WheelLog.AppConfig.setPwmBasedAlarms(false);
     }
     /////
 
@@ -876,6 +876,9 @@ public class WheelData {
     public void resetVoltageSag() {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
+        if (getBluetoothService() != null) {
+            getBluetoothService().getApplicationContext().sendBroadcast(new Intent(Constants.ACTION_PREFERENCE_RESET));
+        }
     }
 
     public double getDistanceDouble() {

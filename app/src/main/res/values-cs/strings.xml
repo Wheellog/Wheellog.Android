@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Zobrazit míle místo kilometrů.</string>
 	<string name="enable_alarms_title">Zapnout upozornění</string>
 	<string name="enable_alarms_description">Zapnout vibrace zprávy jako upozornění.</string>
-	<string name="disable_phone_vibrate_title">Vypnout vybrace telefonu</string>
+	<string name="disable_phone_vibration_title">Vypnout vybrace telefonu</string>
 	<string name="disable_phone_vibration_description">Vypnout vybrace telefonu</string>
 	<string name="speed_alarm1_phone_title">Upozornění na rychlost 1</string>
 	<string name="speed_trigger_description">Rychlost spouštící upozornění</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Auto upload záznamů</string>
 	<string name="auto_upload_log_description">Automaticky nahrávat záznamy na Google Drive</string>
 	<string name="log_location_title">Záznam polohy</string>
-	<string name="log_location_decription">V rámci záznamu zahrň i polohu</string>
+	<string name="log_location_description">V rámci záznamu zahrň i polohu</string>
 	<string name="use_gps_title">Použití GPS pro určení polohy</string>
 	<string name="use_gps_description">Použij GPS místo určení polohy pomocí mobilní sítě. Je to přesnější, ale náročnější na baterii.</string>
 	<string name="on_off_strobe">Off/On/Blikání</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Moje jednokolka je Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Pokud je Vaše jednokolka Gotway ACM a ukazuje špatnou rychlost, vzdálenost a další parametry, tohle by mělo pomoct</string>
 	<string name="battery_voltage_title">Napětí baterie</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Vypnout upozornění 1. úrovně</string>
 	<string name="off_level_2_alarm">Vypnout upozornění 2. úrovně</string>
 	<string name="on_level_alarm">Povolit upozornění</string>

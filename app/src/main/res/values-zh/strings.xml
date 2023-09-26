@@ -126,7 +126,7 @@
     <string name="use_mph_description">以英里而不是公里显示速度</string>
     <string name="enable_alarms_title">启用警报</string>
     <string name="enable_alarms_description">允许手机振动作为警告</string>
-    <string name="disable_phone_vibrate_title">禁用手机振动</string>
+    <string name="disable_phone_vibration_title">禁用手机振动</string>
     <string name="disable_phone_vibration_description">电话不会振动但警报会传递给连接的Pebble Watch</string>
     <string name="speed_alarm1_phone_title">一级速度报警</string>
     <string name="speed_trigger_description">触发警报的速度</string>
@@ -150,7 +150,7 @@
     <string name="auto_upload_log_title">自动上传日志</string>
     <string name="auto_upload_log_description">自动将日志文件上传到Google云端硬盘</string>
     <string name="log_location_title">记录位置</string>
-    <string name="log_location_decription">在日志中包含位置数据</string>
+    <string name="log_location_description">在日志中包含位置数据</string>
     <string name="use_gps_title">使用GPS进行定位</string>
     <string name="use_gps_description">使用GPS进行定位而不是网络提供商。 GPS更准确但可能消耗更多电池电量</string>
     <string name="on_off_strobe">关/开/频闪</string>
@@ -161,7 +161,7 @@
     <string name="is_gotway_mcm_title">我的轮子是Gotway MCM</string>
     <string name="is_gotway_mcm_description">如果你的轮子是Gotway MCM，它显示错误的速度，距离和其他参数，这个选项可能使它们正常</string>
     <string name="battery_voltage_title">电池电压</string>
-    <string name="battary_voltage_description">67V/84V/100V</string>
+    <string name="battery_voltage_description">67V/84V/100V</string>
     <string name="off_level_1_alarm">关闭1级警报</string>
     <string name="off_level_2_alarm">关闭2级警报</string>
     <string name="on_level_alarm">打开警报</string>

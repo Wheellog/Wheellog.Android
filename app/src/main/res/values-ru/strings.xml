@@ -85,7 +85,7 @@
     <string name="view_blocks_description">Настройка блоков под спидометром</string>
     <string name="enable_alarms_title">Включить предупреждения</string>
     <string name="enable_alarms_description">Телефон будет вибрировать во время предупреждения.</string>
-    <string name="disable_phone_vibrate_title">Отключить вибросигнал</string>
+    <string name="disable_phone_vibration_title">Отключить вибросигнал</string>
     <string name="disable_phone_vibration_description">Телефон не будет вибрировать, но часы Pebble будут показывать предупреждения.</string>
     <string name="speed_alarm1_phone_title">Превышение скорости 1</string>
     <string name="speed_trigger_description">Предупреждение о достигнутой скорости</string>
@@ -112,7 +112,7 @@
     <string name="auto_upload_log_title">Выгрузка логов</string>
     <string name="auto_upload_log_description">Автоматически выгружать логи на Google Drive.</string>
     <string name="log_location_title">Местоположение</string>
-    <string name="log_location_decription">Добавить текущую позицию в лог.</string>
+    <string name="log_location_description">Добавить текущую позицию в лог.</string>
     <string name="use_gps_title">Использование GPS</string>
     <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, а если параметр отключен, используются данные сотовой связи.</string>
     <string name="use_raw_title">Запись Raw данных</string>
@@ -125,7 +125,7 @@
     <string name="is_gotway_mcm_title">У меня Gotway MCM</string>
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="battery_voltage_title">Напряжение батареи</string>
-    <string name="battary_voltage_description">67В/84В/100В</string>
+    <string name="battery_voltage_description">67В/84В/100В</string>
     <string name="gotway_negative_title">Отрицательный ток и скорость</string>
     <string name="gotway_negative_description">Когда вы едете прямо, если скорость и ток отрицательные - попробуйте изменить настройку на противоположную или выберите абсолютное значение</string>
     <string name="absolute">Абсолютный (всегда положительный)</string>
@@ -219,8 +219,8 @@
     <string name="connect_beep_description">Звук подключения к колесу</string>
     <string name="whkm">Втч/км</string>
     <string name="sec">сек</string>
-    <string name="altered_alarms_title">Измененные предупреждения</string>
-    <string name="altered_alarms_description">Предупреждения основанные на текущем напряжении и возможностях колеса</string>
+    <string name="pwm_based_alarms_title">Алармы по PWM</string>
+    <string name="pwm_based_alarms_description">Алармы основанные на текущем напряжении и возможностях колеса</string>
     <string name="altered_alarms_pref_title">Настройки для опции измененных предупреждений</string>
     <string name="alarm_factor1_title">Начало PWM предупреждений</string>
     <string name="alarm_factor1_description">Рассчетный PWM при котором начинаются предупреждения</string>
@@ -288,7 +288,7 @@
     <string name="wheel_calibration_message_inmo">Установите колесо в парковочное положение (на крыло), продолжить?</string>
     <string name="wheel_calibration_message_kingsong">Установите колесо в центральное положение (без наклона вперед и вбок), затем потребуется перезапустить колесо, продолжить?</string>
     <string name="drl_settings_title">DRL</string>
-    <string name="drl_settings_description_inmo">Ангельзкий глаз и задний габарит</string>
+    <string name="drl_settings_description">Ангельзкий глаз и задний габарит</string>
     <string name="light_brightness_title">Яркость фары</string>
     <string name="light_brightness_description">Яркость передней фары</string>
     <string name="fan_title">Вентилятор</string>
@@ -385,7 +385,7 @@
     <string name="use_reconnect_title">Автореконнект</string>
     <string name="use_reconnect_description">Использовать только, если данные от колеса иногда зависают</string>
     <string name="replace_info_block">Заменить \"%s\" на:</string>
-    <string name="auto_log_when_moving_description">Автоматическая запись лога только на скорости более 7 км/ч</string>
+    <string name="auto_log_when_moving_description">Автоматическая запись лога только на скорости более</string>
     <string name="auto_log_when_moving_title">Автолог только после начала движения</string>
     <string name="remaining_distance">Остаточный пробег</string>
     <string name="battery_per_km">Батарея за км</string>
@@ -448,7 +448,7 @@
     <string name="setup_pwm_auto">2. Авто. После выбора нужно раскрутить колесо в воздухе.</string>
     <string name="setup_pwm_select_from_template">3. Выбрать из шаблона:</string>
     <string name="send_yandex_metriсa_title">Отправлять статистику использования</string>
-    <string name="send_yandex_metriсa">Это приложение использует сервис аналитики AppMetrica, предоставляемый компанией Яндекс. Геолокация не отправляется. Информация будет использоваться для решения ошибок и не может идентифицировать вас.</string>
+    <string name="send_yandex_metriсa_description">Это приложение использует сервис аналитики AppMetrica, предоставляемый компанией Яндекс. Геолокация не отправляется. Информация будет использоваться для решения ошибок и не может идентифицировать вас.</string>
     <string name="alarm_text_battery">Низкий заряд батареи</string>
     <string name="roll_angle_title">Угол отключения колеса</string>
     <string name="battery_alarm_title">Предупреждение по разряду батареи</string>
@@ -494,4 +494,6 @@
     <string name="wh">Втч</string>
     <string name="gotosettings">В настройки</string>
     <string name="gpsdisabled_alert">GPS на телефоне выключен. В настройках включена опция использовать GPS данные для записи лога. Включите GPS на телефоне или отключите настройку его записи.</string>
+	<string name="use_custom_beep_title">Использовать мелодию будильника</string>
+    <string name="beep_time_limit_title">Максимальное время</string>
 </resources>

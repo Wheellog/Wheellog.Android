@@ -10,9 +10,17 @@
     tools:context="com.cooper.wheellog.MainActivity">
 
     <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/pipFrame"
+        android:id="@+id/pip_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="horizontal" />
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/settings_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="horizontal" />
 
     <androidx.appcompat.widget.Toolbar

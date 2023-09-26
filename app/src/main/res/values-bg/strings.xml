@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Показвай скоростта и дистанцията в мили вместо в километри</string>
 	<string name="enable_alarms_title">Включи алармите</string>
 	<string name="enable_alarms_description">Разреши нателефона да вибрира като предупреждение</string>
-	<string name="disable_phone_vibrate_title">Изключи вибрацията на телефона</string>
+	<string name="disable_phone_vibration_title">Изключи вибрацията на телефона</string>
 	<string name="disable_phone_vibration_description">Изключи вибрацията на телефона</string>
 	<string name="speed_alarm1_phone_title">Аларма за скорост 1</string>
 	<string name="speed_trigger_description">Скорост която активира алармата</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Автоматично качване на лога</string>
 	<string name="auto_upload_log_description">Автоматично качвай лог файловете в Гугъл Драйв</string>
 	<string name="log_location_title">Запис на Локация</string>
-	<string name="log_location_decription">Включвай данни за локация в лога</string>
+	<string name="log_location_description">Включвай данни за локация в лога</string>
 	<string name="use_gps_title">Използвай GPS за локализация</string>
 	<string name="use_gps_description">Използвай GPS за локализация вместо мобилния оператор. GPS е по-точен но може да консумира повече батерия</string>
 	<string name="on_off_strobe">Вкл/Изкл/Строб</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Колелото ми е Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Ако колелото ви е MCM, и показва грешната скорост, дистанция и други параметри, това трябва да ги поправи</string>
 	<string name="battery_voltage_title">Волтаж на Батерията</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Изключи алармата на ниво 1</string>
 	<string name="off_level_2_alarm">Изключи алармата на ниво 2</string>
 	<string name="on_level_alarm">Включи алармата</string>

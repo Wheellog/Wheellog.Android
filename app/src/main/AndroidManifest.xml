@@ -65,10 +65,6 @@
             android:theme="@style/SplashTheme"
             android:noHistory="true" />
         <activity
-            android:name=".SettingsActivity"
-            android:configChanges="orientation|screenSize">
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:supportsPictureInPicture="true"
             android:configChanges="smallestScreenSize|screenLayout|orientation|screenSize"

@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Mostrar velocidade e distância em milhas, em vez de quilômetros</string>
 	<string name="enable_alarms_title">Ativar alarmes</string>
 	<string name="enable_alarms_description">Permitir ao celular vibrar</string>
-	<string name="disable_phone_vibrate_title">Desativar vibração do celular</string>
+	<string name="disable_phone_vibration_title">Desativar vibração do celular</string>
 	<string name="disable_phone_vibration_description">Desativar vibração do celular</string>
 	<string name="speed_alarm1_phone_title">Alarme de Velocidade 1</string>
 	<string name="speed_trigger_description">Velocidade que inicia o alarme</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Envio automático de registro</string>
 	<string name="auto_upload_log_description">Envio automático dos arquivos de registro para o Google Drive</string>
 	<string name="log_location_title">Local do registro</string>
-	<string name="log_location_decription">Incluir dados do local com os registros</string>
+	<string name="log_location_description">Incluir dados do local com os registros</string>
 	<string name="use_gps_title">Usar GPS para localização</string>
 	<string name="use_gps_description">Usar GPS para localizçaão em vez do provedor de rede. GPS é mais preciso mas consome mais bateria.</string>
 	<string name="on_off_strobe">On/Off/Estrobo</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Meu monociclo é um Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Se seu monociclo é um Gotway MCM, e ele mostra velocidade, distância ou outros parâmetros errados, isto deve resolver</string>
 	<string name="battery_voltage_title">Voltagem da Bateria</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Desligar alarme nível 1</string>
 	<string name="off_level_2_alarm">Desligar alarme nível 2</string>
 	<string name="on_level_alarm">Ligar alarme</string>

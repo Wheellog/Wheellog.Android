@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Δείξτε την ταχύτητα και την απόσταση σε μίλια και όχι σε χιλιόμετρα</string>
 	<string name="enable_alarms_title">Ενεργοποίηση συναγερμών</string>
 	<string name="enable_alarms_description">Επιτρέψτε στο κινητό να δονείται</string>
-	<string name="disable_phone_vibrate_title">Απενεργοποίηση δόνησης κινητού</string>
+	<string name="disable_phone_vibration_title">Απενεργοποίηση δόνησης κινητού</string>
 	<string name="disable_phone_vibration_description">Απενεργοποίηση δόνησης κινητού</string>
 	<string name="speed_alarm1_phone_title">Συναγερμός ταχύτητας 1</string>
 	<string name="speed_trigger_description">Ταχύτητα που ενεργοποιεί το συναγερμό</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Αυτόματη Μεταφόρτωση Καταγραφών</string>
 	<string name="auto_upload_log_description">Αυτόματη μεταφόρτωση αρχείων καταγραφής στο Google Drive</string>
 	<string name="log_location_title">Τοποθεσία Καταγραφής</string>
-	<string name="log_location_decription">Συμπεριλάβετε δεδομένα θέσης μέσα στα αρχεία καταγραφής</string>
+	<string name="log_location_description">Συμπεριλάβετε δεδομένα θέσης μέσα στα αρχεία καταγραφής</string>
 	<string name="use_gps_title">Χρησιμοποιήστε GPS για τοποθεσία</string>
 	<string name="use_gps_description">Χρησιμοποιήστε το GPS για την τοποθεσία αντί για τον πάροχο δικτύου. Το GPS είναι πιο ακριβές, αλλά μπορεί να καταναλώσει περισσότερη ενέργεια από την μπαταρία</string>
 	<string name="on_off_strobe">Ενεργό/Ανενεργό/Ενάλλαξη</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">Ο Ρόδα μου είναι MCM Gotway</string>
 	<string name="is_gotway_mcm_description">Εάν η ρόδα σας είναι Gotway MCM και εμφανίζει λάθος ταχύτητα, απόσταση και άλλες παραμέτρους, αυτή η επιλογή θα τα φέρει στα κανονικά</string>
 	<string name="battery_voltage_title">Τάση μπαταρίας</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Απενεργοίηση level 1 συναγερμού</string>
 	<string name="off_level_2_alarm">Απενεργοίηση level 2 συναγερμού</string>
 	<string name="on_level_alarm">Ενεργοποίηση συναγερμού</string>

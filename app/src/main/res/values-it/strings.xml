@@ -132,7 +132,7 @@
 	<string name="use_mph_description">Visualizza velocità e distanza in miglia invece che in chilometri</string>
 	<string name="enable_alarms_title">Allarmi attivati</string>
 	<string name="enable_alarms_description">Fai vibrare lo smartphone come avvertimento</string>
-	<string name="disable_phone_vibrate_title">Disabilita la vibrazione smartphone</string>
+	<string name="disable_phone_vibration_title">Disabilita la vibrazione smartphone</string>
 	<string name="disable_phone_vibration_description">Disabilita la vibrazione smartphone</string>
 	<string name="speed_alarm1_phone_title">Allarme velocità 1</string>
 	<string name="speed_trigger_description">Velocità che attiva l\'allarme</string>
@@ -156,7 +156,7 @@
 	<string name="auto_upload_log_title">Upload automatico log</string>
 	<string name="auto_upload_log_description">Invia i log a Google Drive automaticamente</string>
 	<string name="log_location_title">Posizione log</string>
-	<string name="log_location_decription">Inserisce le posizioni nei log</string>
+	<string name="log_location_description">Inserisce le posizioni nei log</string>
 	<string name="use_gps_title">Utilizza GPS per le posizioni</string>
 	<string name="use_gps_description">Utilizza GPS per le posizioni al posto dei dati operatore. GPS è più preciso ma consuma più batteria smartphone</string>
 	<string name="on_off_strobe">Accesa/Spenta/Strobo</string>
@@ -167,7 +167,7 @@
 	<string name="is_gotway_mcm_title">La ruota è Gotway MCM</string>
 	<string name="is_gotway_mcm_description">Se la ruota è Gotway MCM e mostra velocità, distanze e altri parametri errati, questa impostazione dovrebbe risolvere</string>
 	<string name="battery_voltage_title">Voltaggio batteria</string>
-	<string name="battary_voltage_description">67V/84V/100V</string>
+	<string name="battery_voltage_description">67V/84V/100V</string>
 	<string name="off_level_1_alarm">Spegnere allarme livello 1</string>
 	<string name="off_level_2_alarm">Spegnere allarme livello 2</string>
 	<string name="on_level_alarm">Attivare allarmi</string>

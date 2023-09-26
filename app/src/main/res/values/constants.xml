@@ -39,7 +39,6 @@
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
 
     // WHEEL SETTINGS
-    <string name="no_settings" translatable="false">no_settings</string>
     <string name="light_enabled" translatable="false">light_enabled</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
@@ -90,7 +89,7 @@
 
     // LOG PREFERENCES
     <string name="auto_log" translatable="false">auto_log</string>
-    <string name="auto_log_when_moving" translatable="false">auto_log_when_moving</string>
+    <string name="auto_log_when_moving_more" translatable="false">auto_log_when_moving_more</string>
     <string name="continue_this_day_log" translatable="false">continue_this_day_log</string>
     <string name="continue_this_day_log_exception" translatable="false">continue_this_day_log_exception</string>
     <string name="auto_upload_ec" translatable="false">auto_upload_ec</string>
@@ -134,6 +133,8 @@
     <string name="use_detect_battery_optimization" translatable="false">use_detect_battery_optimization</string>
     <string name="show_page_trips" translatable="false">show_page_trips</string>
     <string name="use_reconnect" translatable="false">use_reconnect</string>
+    <string name="persent" translatable="false">%</string>
+    <string name="degree" translatable="false">°</string>
 
     // WATCH PREFERENCES
     <string name="horn_mode" translatable="false">horn_mode</string>

@@ -83,7 +83,7 @@
     <string name="view_blocks_description">Налаштування шести блоків під спідометром</string>
     <string name="enable_alarms_title">Увімкнути попередження</string>
     <string name="enable_alarms_description">Телефон буде вібрувати під час попередження.</string>
-    <string name="disable_phone_vibrate_title">Відключити вібросигнал</string>
+    <string name="disable_phone_vibration_title">Відключити вібросигнал</string>
     <string name="disable_phone_vibration_description">Телефон не буде вібрувати, але Pebble буде показуваті попередження.</string>
     <string name="speed_alarm1_phone_title">Перевищення швидкості 1</string>
     <string name="speed_trigger_description">Попередження про досягнуту швидкість</string>
@@ -107,7 +107,7 @@
     <string name="auto_upload_log_title">Аплоад логів</string>
     <string name="auto_upload_log_description">Автоматично аплоадити логи у Google Drive.</string>
     <string name="log_location_title">Місцезнаходження</string>
-    <string name="log_location_decription">Додати позицію у лог.</string>
+    <string name="log_location_description">Додати позицію у лог.</string>
     <string name="use_gps_title">Використовувати GPS</string>
     <string name="use_gps_description">Використовувати дані GPS для точного пошуку локації.</string>
     <string name="on_off_strobe">Вимк./Увімк./Строб</string>
@@ -118,7 +118,7 @@
     <string name="is_gotway_mcm_title">У мене Gotway MCM</string>
     <string name="is_gotway_mcm_description">Фікс для Gotway MCM</string>
     <string name="battery_voltage_title">Напруга батареї</string>
-    <string name="battary_voltage_description">67В/84В/100В</string>
+    <string name="battery_voltage_description">67В/84В/100В</string>
     <string name="off_level_1_alarm">35 (45) км/г + 80% PWM</string>
     <string name="off_level_2_alarm">Тiльки 80% PWM</string>
     <string name="on_level_alarm">30 + 35 (45) км/г + 80% PWM</string>
@@ -192,8 +192,8 @@
     <string name="connection_sound_description">Програвати звуки підключення і відключення колеса</string>
     <string name="connection_sound_title">Звуки підключення колеса</string>
     <string name="sec">сек</string>
-    <string name="altered_alarms_title">Ручні попередження</string>
-    <string name="altered_alarms_description">Попередження при поточній напрузі та можливостях колеса</string>
+    <string name="pwm_based_alarms_title">Алармі по PWM</string>
+    <string name="pwm_based_alarms_description">Алармі при поточній напрузі та можливостях колеса</string>
     <string name="altered_alarms_pref_title">Налаштування опцій змінених попереджень</string>
     <string name="alarm_factor3_title">PWM третього попередження</string>
     <string name="alarm_factor3_description">Повинен бути більше за другий</string>
@@ -383,7 +383,7 @@
     <string name="bmsFw">Прошивка</string>
     <string name="files_not_found">Аудіо файлів не знайдено</string>
     <string name="replace_info_block">Замінити \"%s\" на:</string>
-    <string name="auto_log_when_moving_description">Автоматичне записування логу тільки при швидкості більше ніж 7 км/год.</string>
+    <string name="auto_log_when_moving_description">Автоматичне записування логу тільки при швидкості більше ніж</string>
     <string name="auto_log_when_moving_title">Автолог тільки після початку руху</string>
     <string name="remaining_distance">Залишилося пробігу</string>
     <string name="battery_per_km">Батарея за км</string>

@@ -1,7 +1,8 @@
 package com.cooper.wheellog
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.ActivityManager
-import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.app.PictureInPictureParams
 import android.bluetooth.BluetoothAdapter
@@ -28,6 +29,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.cooper.wheellog.BluetoothService.LocalBinder
@@ -37,6 +40,8 @@ import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
 import com.cooper.wheellog.companion.WearOs
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
 import com.cooper.wheellog.databinding.ActivityMainBinding
+import com.cooper.wheellog.settings.mainScreen
+import com.cooper.wheellog.ui.theme.AppTheme
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Alarms.checkAlarm
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
@@ -83,6 +88,7 @@ class MainActivity : AppCompatActivity() {
     private val timeFormatter = SimpleDateFormat("HH:mm:ss ", Locale.US)
     private var wearOs: WearOs? = null
     private val speedModel: PiPView.SpeedModel by lazy { PiPView.SpeedModel() }
+    private var settingsNavHostController: NavHostController? = null
     private val bluetoothService: BluetoothService?
         get() = WheelData.getInstance().bluetoothService
     private val mBluetoothServiceConnection: ServiceConnection = object : ServiceConnection {
@@ -136,9 +142,9 @@ class MainActivity : AppCompatActivity() {
             } catch (_: Exception) {
                 // ignore
             } finally {
-                binding.toolbar.visibility = View.GONE
-                pager.visibility = View.GONE
-                binding.indicator.visibility = View.GONE
+//                binding.toolbar.visibility = View.GONE
+//                pager.visibility = View.GONE
+//                binding.indicator.visibility = View.GONE
                 pipView.setContent {
                     PiPView().SpeedWidget(modifier = Modifier.fillMaxSize(), model = speedModel)
                 }
@@ -150,9 +156,9 @@ class MainActivity : AppCompatActivity() {
             } catch (_: Exception) {
                 // ignore
             }
-            binding.toolbar.visibility = View.VISIBLE
-            pager.visibility = View.VISIBLE
-            binding.indicator.visibility = View.VISIBLE
+//            binding.toolbar.visibility = View.VISIBLE
+//            pager.visibility = View.VISIBLE
+//            binding.indicator.visibility = View.VISIBLE
             pipView.visibility = View.GONE
         }
     }
@@ -341,7 +347,7 @@ class MainActivity : AppCompatActivity() {
                         ConnectionState.CONNECTED -> {
                             if (!LoggingService.isInstanceCreated() &&
                                 WheelLog.AppConfig.autoLog &&
-                                !WheelLog.AppConfig.startAutoLoggingWhenIsMoving
+                                WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore == 0f
                             ) {
                                 toggleLoggingService()
                             }
@@ -397,8 +403,9 @@ class MainActivity : AppCompatActivity() {
                         WheelLog.Notifications.update()
                     }
                     if (!LoggingService.isInstanceCreated() &&
-                        WheelLog.AppConfig.startAutoLoggingWhenIsMoving &&
-                        WheelLog.AppConfig.autoLog && WheelData.getInstance().speedDouble > 7
+                        WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore != 0f &&
+                        WheelLog.AppConfig.autoLog &&
+                        WheelData.getInstance().speedDouble > WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore
                     ) {
                         toggleLoggingService()
                     }
@@ -452,7 +459,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleWatch() {
         togglePebbleService()
-        if (WheelLog.AppConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
+        // TODO: Fix garmin for API 34
+        // if (WheelLog.AppConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
         toggleWearOs()
     }
 
@@ -474,10 +482,10 @@ class MainActivity : AppCompatActivity() {
             miWheel!!.icon!!.alpha = 255
         }
         when (WheelLog.AppConfig.mibandMode) {
-            MiBandEnum.Alarm -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm))
-            MiBandEnum.Min -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMin))
-            MiBandEnum.Medium -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
-            MiBandEnum.Max -> miBand!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
+            MiBandEnum.Alarm -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm))
+            MiBandEnum.Min -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMin))
+            MiBandEnum.Medium -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
+            MiBandEnum.Max -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
         }
         if (WheelLog.AppConfig.mibandOnMainscreen) {
             miBand!!.isVisible = true
@@ -487,20 +495,20 @@ class MainActivity : AppCompatActivity() {
             miWatch!!.isVisible = true
         }
         if (PebbleService.isInstanceCreated()) {
-            miWatch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
+            miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
         } else {
-            miWatch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWatchOff))
+            miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOff))
         }
         if (LoggingService.isInstanceCreated()) {
             miLogging!!.setTitle(R.string.stop_data_service)
-            miLogging!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOn))
+            miLogging!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuLogOn))
         } else {
             miLogging!!.setTitle(R.string.start_data_service)
-            miLogging!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuLogOff))
+            miLogging!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuLogOff))
         }
         when (mConnectionState) {
             ConnectionState.CONNECTED -> {
-                miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOn))
+                miWheel!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWheelOn))
                 miWheel!!.setTitle(R.string.disconnect_from_wheel)
                 miSearch!!.isEnabled = false
                 miSearch!!.icon!!.alpha = 64
@@ -509,13 +517,13 @@ class MainActivity : AppCompatActivity() {
             }
             ConnectionState.DISCONNECTED -> {
                 if (isWheelSearch) {
-                    miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelSearch))
+                    miWheel!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWheelSearch))
                     miWheel!!.setTitle(R.string.disconnect_from_wheel)
                     (miWheel!!.icon as AnimationDrawable?)!!.start()
                     miSearch!!.isEnabled = false
                     miSearch!!.icon!!.alpha = 64
                 } else {
-                    miWheel!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuWheelOff))
+                    miWheel!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWheelOff))
                     miWheel!!.setTitle(R.string.connect_to_wheel)
                     miSearch!!.isEnabled = true
                     miSearch!!.icon!!.alpha = 255
@@ -596,11 +604,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         createPager()
-        pipView = binding.pipFrame
+        pipView = binding.pipView
 
         // clock font
         val textClock = binding.textClock
-        textClock.typeface = WheelLog.ThemeManager.getTypeface(applicationContext)
+        textClock.typeface = ThemeManager.getTypeface(applicationContext)
         mDeviceAddress = WheelLog.AppConfig.lastMac
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -631,6 +639,15 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.RECEIVER_EXPORTED
         )
         WheelLog.Notifications.update()
+
+        binding.settingsView.apply {
+            setContent {
+                AppTheme(useDarkTheme = true) {
+                    settingsNavHostController = rememberNavController()
+                    mainScreen(navController = settingsNavHostController!!)
+                }
+            }
+        }
 
         checkBatteryOptimizationsAndShowAlert(this)
         // for test without wheel go to isHardwarePWM and comment Unknown case
@@ -736,7 +753,7 @@ class MainActivity : AppCompatActivity() {
                 // ignored
             }
         }
-        WheelLog.ThemeManager.changeAppIcon(this@MainActivity)
+        ThemeManager.changeAppIcon(this@MainActivity)
         object : CountDownTimer((2 * 60 * 1000 /* 2 min */).toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 if (!LoggingService.isInstanceCreated()) {
@@ -786,8 +803,8 @@ class MainActivity : AppCompatActivity() {
         // Themes
         if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
             val miSettings = mMenu!!.findItem(R.id.miSettings)
-            miSettings.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuSettings))
-            miSearch!!.setIcon(WheelLog.ThemeManager.getId(ThemeIconEnum.MenuBluetooth))
+            miSettings.setIcon(ThemeManager.getId(ThemeIconEnum.MenuSettings))
+            miSearch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuBluetooth))
         }
         return true
     }
@@ -855,25 +872,52 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.miSettings -> {
-                startActivity(
-                    Intent(this@MainActivity, SettingsActivity::class.java),
-                    ActivityOptions.makeSceneTransitionAnimation(
-                        this
-                    ).toBundle()
-                )
+                toggleSettings()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    fun toggleSettings() {
+        if (binding.settingsView.visibility != View.VISIBLE) {
+            binding.settingsView.apply {
+                alpha = 0f
+                visibility = View.VISIBLE
+                animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .setListener(null)
+            }
+        } else {
+            binding.settingsView
+                .animate()
+                .alpha(0f)
+                .setDuration(300)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        binding.settingsView.visibility = View.GONE
+                    }
+                })
+        }
+    }
+
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         return when (keyCode) {
-            KeyEvent.KEYCODE_MENU -> {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-                true
-            }
             KeyEvent.KEYCODE_BACK -> {
+                // If settings is visible, hide it.
+                if (binding.settingsView.visibility == View.VISIBLE) {
+                    if (settingsNavHostController != null) {
+                        if (settingsNavHostController?.previousBackStackEntry == null) {
+                            toggleSettings()
+                        } else {
+                            settingsNavHostController?.navigateUp()
+                        }
+                    } else {
+                        toggleSettings()
+                    }
+                    return true
+                }
                 if (doubleBackToExitPressedOnce) {
                     finish()
                     return true

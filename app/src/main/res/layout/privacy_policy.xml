@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:text="@string/send_yandex_metriсa"
+                android:text="@string/send_yandex_metriсa_description"
                 android:textSize="14sp" />
 
             <CheckBox
