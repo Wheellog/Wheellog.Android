@@ -588,8 +588,8 @@ private fun kingsong() {
         name = stringResource(R.string.light_mode_title),
         desc = stringResource(R.string.on_off_auto),
         entries = mapOf(
-            "0" to stringResource(R.string.off),
-            "1" to stringResource(R.string.on),
+            "0" to stringResource(R.string.on),
+            "1" to stringResource(R.string.off),
             "2" to stringResource(R.string.auto),
         ),
         defaultKey = AppConfig.lightMode,
