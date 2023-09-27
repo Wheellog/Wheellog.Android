@@ -5,6 +5,7 @@ import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Locale;
+import java.util.zip.CRC32;
 import timber.log.Timber;
 
 public class VeteranAdapter extends BaseAdapter {
@@ -219,7 +220,21 @@ public class VeteranAdapter extends BaseAdapter {
                         Timber.i("Len %d", len);
                         Timber.i("Step reset");
                         reset();
-                        return true;
+                        if (len > 38) { // new format with crc32
+                            CRC32 crc = new CRC32();
+                            crc.update(getBuffer(), 0, len);
+                            long calc_crc = crc.getValue();
+                            long provided_crc = MathsUtil.getInt4(getBuffer(), len);
+                            if (calc_crc == provided_crc) {
+                                Timber.i("CRC32 ok");
+                                return true;
+                            } else {
+                                Timber.i("CRC32 fail");
+                                return false;
+                            }
+                        }
+                        return true; // old format without crc32
+
                     }
                     break;
 
