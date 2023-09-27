@@ -412,6 +412,36 @@ class VeteranAdapterTest {
     }
 
     @Test
+    fun `decode veteran patton crc`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c452abe00003edc00008562003500000b5c".hexToByteArray()
+        val byteArray2 = "0dfe000002bc07d00fac000219fb0000006f0000".hexToByteArray()
+        val byteArray3 = "80808080808004000014ffffffffff32ee029109".hexToByteArray()
+        val byteArray4 = "df0fd303cb000000006f9a79c2".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(29)
+        assertThat(data.voltageDouble).isEqualTo(109.42)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(16.092)
+        assertThat(data.totalDistance).isEqualTo(3507554)
+        assertThat(data.batteryLevel).isEqualTo(42)
+        assertThat(data.angle).isEqualTo(66.51)
+        assertThat(data.version).isEqualTo("004.0.12")
+    }
+
+    @Test
     fun `update pedals mode`() {
         // Arrange.
         mockkConstructor(android.os.Handler::class)
