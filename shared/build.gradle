@@ -38,5 +38,5 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.google.truth:truth:1.1.5'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    testImplementation 'io.mockk:mockk:1.13.7'
+    testImplementation 'io.mockk:mockk:1.13.8'
 }
