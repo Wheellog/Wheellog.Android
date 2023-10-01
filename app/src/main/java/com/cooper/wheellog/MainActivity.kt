@@ -880,6 +880,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.miReset -> {
                 WheelData.getInstance().resetExtremumValues()
+                showSnackBar(getString(R.string.reset_extremum_values_title))
                 true
             }
             R.id.miSettings -> {
