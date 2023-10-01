@@ -497,4 +497,6 @@
 	<string name="use_custom_beep_title">Использовать мелодию будильника</string>
     <string name="beep_time_limit_title">Максимальное время</string>
     <string name="main_menu_buttons_title">Кнопки главного меню</string>
+    <string name="reset_extremum_values_title">Сброс крайних значений</string>
+    <string name="show_clock_title">Показывать часы на главном экране</string>
 </resources>

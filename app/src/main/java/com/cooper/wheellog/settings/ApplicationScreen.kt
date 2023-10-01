@@ -253,6 +253,13 @@ fun applicationScreen() {
                 AppConfig.mainMenuButtons = it.toTypedArray()
             }
 
+            switchPref(
+                name = stringResource(R.string.show_clock_title),
+                default = AppConfig.showClock,
+            ) {
+                AppConfig.showClock = it
+            }
+
             sliderPref(
                 name = stringResource(R.string.max_speed_dial_title),
                 desc = stringResource(R.string.max_speed_dial_description),

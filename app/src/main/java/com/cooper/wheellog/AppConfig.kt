@@ -277,6 +277,10 @@ class AppConfig(var context: Context) {
             ?: arrayOf("watch")
         set(value) = setValue("main_menu_buttons", value.joinToString(separator))
 
+    var showClock: Boolean
+        get() = getValue("show_clock", true)
+        set(value) = setValue("show_clock", value)
+
     var mibandFixRs: Boolean
         get() = getValue(R.string.miband_fixrs_enable, false)
         set(value) {

@@ -12,7 +12,6 @@ import android.content.DialogInterface.OnShowListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.drawable.AnimationDrawable
-import android.location.LocationManager
 import android.media.AudioManager
 import android.os.*
 import android.util.Rational
@@ -605,8 +604,7 @@ class MainActivity : AppCompatActivity() {
         pipView = binding.pipView
 
         // clock font
-        val textClock = binding.textClock
-        textClock.typeface = ThemeManager.getTypeface(applicationContext)
+        binding.textClock.typeface = ThemeManager.getTypeface(applicationContext)
         mDeviceAddress = WheelLog.AppConfig.lastMac
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -652,6 +650,15 @@ class MainActivity : AppCompatActivity() {
         // DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(this);
     }
 
+    private fun checkClockVisible() {
+        if (WheelLog.AppConfig.showClock) {
+            binding.textClock.visibility = View.VISIBLE
+        } else {
+            binding.textClock.visibility = View.GONE
+        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
     public override fun onResume() {
         super.onResume()
         isPaused = false
@@ -679,6 +686,8 @@ class MainActivity : AppCompatActivity() {
         }
         pagerAdapter.updateScreen(true)
         pagerAdapter.updatePageOfTrips()
+
+        checkClockVisible()
 
         // Checking GPS is enabled
         DialogHelper.checkAndShowLocationDialog(this)
@@ -870,7 +879,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.miReset -> {
-                WheelData.getInstance().resetMaxValues()
+                WheelData.getInstance().resetExtremumValues()
                 true
             }
             R.id.miSettings -> {
@@ -901,6 +910,8 @@ class MainActivity : AppCompatActivity() {
                         binding.settingsView.visibility = View.GONE
                     }
                 })
+
+            checkClockVisible()
         }
     }
 
