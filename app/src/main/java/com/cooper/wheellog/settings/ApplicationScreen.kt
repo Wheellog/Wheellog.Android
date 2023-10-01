@@ -236,6 +236,23 @@ fun applicationScreen() {
                 WheelLog.Notifications.update()
             }
 
+            multiList(
+                name = stringResource(R.string.main_menu_buttons_title),
+                entries = mapOf(
+                    "watch" to stringResource(R.string.start_pebble_service),
+                    "miband" to stringResource(R.string.miband_desc),
+                    "reset" to stringResource(R.string.reset_max_values_title),
+                ),
+                keyIcons = mapOf(
+                    "watch" to R.drawable.ic_action_watch_white,
+                    "miband" to R.drawable.ajdm_ic_mi_med,
+                    "reset" to R.drawable.ic_action_reset,
+                ),
+                defaultKeys = AppConfig.mainMenuButtons.toList()
+            ) {
+                AppConfig.mainMenuButtons = it.toTypedArray()
+            }
+
             sliderPref(
                 name = stringResource(R.string.max_speed_dial_title),
                 desc = stringResource(R.string.max_speed_dial_description),

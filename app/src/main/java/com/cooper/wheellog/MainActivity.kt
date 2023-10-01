@@ -487,13 +487,11 @@ class MainActivity : AppCompatActivity() {
             MiBandEnum.Medium -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
             MiBandEnum.Max -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
         }
-        if (WheelLog.AppConfig.mibandOnMainscreen) {
-            miBand!!.isVisible = true
-            miWatch!!.isVisible = false
-        } else {
-            miBand!!.isVisible = false
-            miWatch!!.isVisible = true
-        }
+
+        miBand?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("miband")
+        miWatch?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("watch")
+        mMenu?.findItem(R.id.miReset)?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("reset")
+
         if (PebbleService.isInstanceCreated()) {
             miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
         } else {
@@ -869,6 +867,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.miBand -> {
                 toggleSwitchMiBand()
+                true
+            }
+            R.id.miReset -> {
+                WheelData.getInstance().resetMaxValues()
                 true
             }
             R.id.miSettings -> {
