@@ -817,6 +817,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Alarms.vibrate(this, longArrayOf(0, 30, 40))
         return when (item.itemId) {
             R.id.miSearch -> {
                 startScanActivity()

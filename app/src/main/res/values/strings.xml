@@ -201,7 +201,7 @@
     <string name="use_pip_mode_title">Enable Picture-in-Picture</string>
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
     <string name="current_on_dial_title">Current on main dial</string>
-    <string name="current_on_dial_description">Draw current on main dial instead of speed</string>
+    <string name="current_on_dial_description">Draw current on main dial instead of speed. The numbers will still indicate the speed.</string>
     <string name="connection_sound_title">Connect sound</string>
     <string name="connection_sound_description">Play sound when Wheel connects or disconnects</string>
     <string name="no_connection_sound_title">Connection lost beeps period</string>
@@ -442,7 +442,7 @@
     <string name="github_desc">"Thanks to all contributors."</string>
     <string name="telegram">Telegram</string>
     <string name="FAQ">FAQ</string>
-    <string name="about_app_desc">This app is free and open source. It is developed by volunteers in their free time.\nIf you like this app, you can support the project by donating.</string>
+    <string name="about_app_desc">This app is free and open source. It is developed by volunteers in their free time. If you like this app, you can support the project by donating.</string>
     <string name="power_off">Power off</string>
     <string name="reset_trip">Reset trip</string>
     <string name="reset_trip_message">Are you sure you want to reset trip distance on the wheel?</string>

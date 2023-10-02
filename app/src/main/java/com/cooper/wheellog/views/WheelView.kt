@@ -12,6 +12,7 @@ import android.view.View
 import androidx.core.math.MathUtils
 import com.cooper.wheellog.*
 import com.cooper.wheellog.DialogHelper.setBlackIcon
+import com.cooper.wheellog.utils.Alarms
 import com.cooper.wheellog.utils.Calculator
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
@@ -1020,6 +1021,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 if (i == -1) {
                     return
                 }
+                Alarms.vibrate(context, longArrayOf(0, 50, 50))
                 val currentTitle = mViewBlocks.filter { it.enabled }[i].title
                 val items = mViewBlocks.filter { !it.enabled }.map { block -> block.title }
                 AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
