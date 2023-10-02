@@ -272,9 +272,14 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.garmin_connectiq_use_beta, false)
         set(value) = setValue(R.string.garmin_connectiq_use_beta, value)
 
-    var mibandOnMainscreen: Boolean
-        get() = getValue(R.string.miband_on_mainscreen_enable, false)
-        set(value) = setValue(R.string.miband_on_mainscreen_enable, value)
+    var mainMenuButtons: Array<String>
+        get() = getValue<String?>("main_menu_buttons", null)?.split(separator)?.toTypedArray()
+            ?: arrayOf("watch")
+        set(value) = setValue("main_menu_buttons", value.joinToString(separator))
+
+    var showClock: Boolean
+        get() = getValue("show_clock", true)
+        set(value) = setValue("show_clock", value)
 
     var mibandFixRs: Boolean
         get() = getValue(R.string.miband_fixrs_enable, false)

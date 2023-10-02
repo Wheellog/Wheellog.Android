@@ -12,7 +12,6 @@ import android.content.DialogInterface.OnShowListener
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.drawable.AnimationDrawable
-import android.location.LocationManager
 import android.media.AudioManager
 import android.os.*
 import android.util.Rational
@@ -487,13 +486,11 @@ class MainActivity : AppCompatActivity() {
             MiBandEnum.Medium -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
             MiBandEnum.Max -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
         }
-        if (WheelLog.AppConfig.mibandOnMainscreen) {
-            miBand!!.isVisible = true
-            miWatch!!.isVisible = false
-        } else {
-            miBand!!.isVisible = false
-            miWatch!!.isVisible = true
-        }
+
+        miBand?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("miband")
+        miWatch?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("watch")
+        mMenu?.findItem(R.id.miReset)?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("reset")
+
         if (PebbleService.isInstanceCreated()) {
             miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
         } else {
@@ -607,8 +604,7 @@ class MainActivity : AppCompatActivity() {
         pipView = binding.pipView
 
         // clock font
-        val textClock = binding.textClock
-        textClock.typeface = ThemeManager.getTypeface(applicationContext)
+        binding.textClock.typeface = ThemeManager.getTypeface(applicationContext)
         mDeviceAddress = WheelLog.AppConfig.lastMac
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -654,6 +650,15 @@ class MainActivity : AppCompatActivity() {
         // DialogHelper.INSTANCE.checkPWMIsSetAndShowAlert(this);
     }
 
+    private fun checkClockVisible() {
+        if (WheelLog.AppConfig.showClock) {
+            binding.textClock.visibility = View.VISIBLE
+        } else {
+            binding.textClock.visibility = View.GONE
+        }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
     public override fun onResume() {
         super.onResume()
         isPaused = false
@@ -681,6 +686,8 @@ class MainActivity : AppCompatActivity() {
         }
         pagerAdapter.updateScreen(true)
         pagerAdapter.updatePageOfTrips()
+
+        checkClockVisible()
 
         // Checking GPS is enabled
         DialogHelper.checkAndShowLocationDialog(this)
@@ -871,6 +878,11 @@ class MainActivity : AppCompatActivity() {
                 toggleSwitchMiBand()
                 true
             }
+            R.id.miReset -> {
+                WheelData.getInstance().resetExtremumValues()
+                showSnackBar(getString(R.string.reset_extremum_values_title))
+                true
+            }
             R.id.miSettings -> {
                 toggleSettings()
                 true
@@ -899,6 +911,8 @@ class MainActivity : AppCompatActivity() {
                         binding.settingsView.visibility = View.GONE
                     }
                 })
+
+            checkClockVisible()
         }
     }
 

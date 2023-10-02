@@ -69,14 +69,6 @@ fun watchScreen() {
 
         group(name = stringResource(R.string.watch_miband_group_title)) {
             switchPref(
-                name = stringResource(R.string.miband_on_mainscreen_title),
-                desc = stringResource(R.string.miband_on_mainscreen_description),
-                default = AppConfig.mibandOnMainscreen,
-            ) {
-                AppConfig.mibandOnMainscreen = it
-            }
-
-            switchPref(
                 name = stringResource(R.string.miband_fixrs_title),
                 desc = stringResource(R.string.miband_fixrs_description),
                 default = AppConfig.mibandFixRs,

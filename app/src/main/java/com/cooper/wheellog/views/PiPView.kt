@@ -20,8 +20,8 @@ import com.cooper.wheellog.utils.MathsUtil
 class PiPView {
 
     class SpeedModel : ViewModel() {
-        var value = mutableStateOf(0f)
-        var maxValue = mutableStateOf(100f)
+        var value = mutableFloatStateOf(0f)
+        var maxValue = mutableFloatStateOf(100f)
         var title = "speed"
     }
 

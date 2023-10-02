@@ -495,6 +495,7 @@ fun multiList(
     desc: String = "",
     themeIcon: ThemeIconEnum? = null,
     entries: Map<String, String> = mapOf(),
+    keyIcons: Map<String, Int> = mapOf(),
     defaultKeys: List<String> = listOf(),
     useSort: Boolean = false,
     showDiv: Boolean = true,
@@ -576,6 +577,15 @@ fun multiList(
                                 modifier = Modifier.size(32.dp),
                             )
                             Spacer(modifier = Modifier.width(8.dp))
+                            if (keyIcons.containsKey(key)) {
+                                Icon(
+                                    painter = painterResource(id = keyIcons[key]!!),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
                             Text(
                                 text = entries[key] ?: "",
                                 style = MaterialTheme.typography.labelMedium,

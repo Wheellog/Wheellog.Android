@@ -873,6 +873,11 @@ public class WheelData {
         mMaxPower = 0;
     }
 
+    public void resetExtremumValues() {
+        resetMaxValues();
+        mBatteryLowest = 101;
+    }
+
     public void resetVoltageSag() {
         Timber.i("Sag WD");
         mVoltageSag = 20000;
