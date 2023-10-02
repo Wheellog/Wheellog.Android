@@ -159,7 +159,7 @@
     <string name="connected">Подключено</string>
     <string name="connection_failed">Сбой подключения</string>
     <string name="connection_lost_at">Подключение потеряно</string>
-    <string name="current_on_dial_description">Рисовать ток на главной шкале вместо скорости</string>
+    <string name="current_on_dial_description">Рисовать ток на главной шкале вместо скорости. Цифры по прежнему будут обозначать скорость.</string>
     <string name="current_on_dial_title">Ток на главной шкале</string>
     <string name="devices">Устройства</string>
     <string name="disable_phone_beep_title">Отключить звуковые оповещения</string>
@@ -263,6 +263,7 @@
     <string name="beep_on_volume_up_description">Кнопки громкости будут проигрывать гудок. С включенной опцией нельзя будет изменить громкость в телефоне.</string>
     <string name="custom_beep_title">Выбрать файл гудка</string>
     <string name="bug_report">Отчет об ошибке</string>
+    <string name="about_app_desc">Это приложение полностью бесплатно с открытым исходным кодом. Он разрабатывается волонтерами в свободное время. Если вам нравится это приложение, вы можете поддержать проект, сделав пожертвование.</string>
     <string name="power_off">Выключить колесо</string>
     <string name="power_off_message">Колесо будет выключено. Вы уверены?</string>
     <string name="ec_choose_transport">[ec] Выберите транспорт</string>

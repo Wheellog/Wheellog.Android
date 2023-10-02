@@ -273,7 +273,7 @@ object Alarms {
         }
     }
 
-    private fun vibrate(mContext: Context, pattern: LongArray) {
+    fun vibrate(mContext: Context, pattern: LongArray) {
         val vib = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
                 mContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
