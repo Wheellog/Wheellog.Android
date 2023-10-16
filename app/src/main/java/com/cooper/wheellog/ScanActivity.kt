@@ -190,21 +190,28 @@ class ScanActivity: AppCompatActivity() {
         close()
     }
 
+    private infix fun Byte.eq(i: Int): Boolean = this == i.toByte()
+
     private fun findManufacturerData(scanRecord: ByteArray): String {
         var index = 0
         var result = ""
         while (index < scanRecord.size) {
-            val length = scanRecord[index++].toInt()
+            val length = scanRecord[index++]
             // Done once we run out of records
-            if (length == 0) break
-            val type = scanRecord[index].toInt()
+            val toIndex = index + length
+            if (length eq 0 || toIndex > scanRecord.size) {
+                break
+            }
+            val type = scanRecord[index]
             // Done if our record isn't a valid type
-            if (type == 0) break
-            val data = scanRecord.copyOfRange(index + 1, index + length)
+            if (type eq 0) {
+                break
+            }
+            val data = scanRecord.copyOfRange(index + 1, toIndex)
 
             // Advance
-            index += length
-            if (type == -1) {
+            index = toIndex
+            if (type eq -1) {
                 result = toHexStringRaw(data)
             }
         }
