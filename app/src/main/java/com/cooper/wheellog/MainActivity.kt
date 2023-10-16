@@ -1085,7 +1085,9 @@ class MainActivity : AppCompatActivity() {
     private val scanLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK && bluetoothService != null) {
             mDeviceAddress = result.data?.getStringExtra("MAC") ?: ""
+            Timber.i("Device selected = %s", mDeviceAddress)
             val mDeviceName = result.data?.getStringExtra("NAME")
+            Timber.i("Device selected = %s", mDeviceName)
             bluetoothService!!.wheelAddress = mDeviceAddress
             WheelData.getInstance().full_reset()
             WheelData.getInstance().btName = mDeviceName
