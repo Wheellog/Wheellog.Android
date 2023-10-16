@@ -98,11 +98,11 @@ public class WheelData {
     private long mLowSpeedMusicTime = 0;
 
     private boolean mBmsView = false;
+    private String protoVer = "";
+
     private long timestamp_raw;
     private long timestamp_last;
     private long mLastLifeData = -1;
-
-    public String bleAdvData = "";
 
     public BaseAdapter getAdapter() {
         switch (mWheelType) {
@@ -282,6 +282,10 @@ public class WheelData {
 
     public String getBtName() {
         return mBtName;
+    }
+
+    public String getProtoVer() {
+        return protoVer;
     }
 
     public void updateLight(boolean enabledLight) {
@@ -1003,6 +1007,9 @@ public class WheelData {
         for (byte aData : data)
             stringBuilder.append(String.format(Locale.US, "%02X", aData));
         Timber.i("Received: %s", stringBuilder);
+        if (protoVer != "") {
+            Timber.i("Decode, proto: %s", protoVer);
+        }
         boolean new_data = getAdapter().decode(data);
 
         if (!new_data)
@@ -1161,13 +1168,21 @@ public class WheelData {
         mBtName = "";
         rideStartTime = 0;
         mStartTotalDistance = 0;
+        protoVer = "";
         mWheelIsReady = false;
-        bleAdvData = "";
     }
 
     boolean detectWheel(String deviceAddress, Context mContext, int servicesResId) {
         WheelLog.AppConfig.setLastMac(deviceAddress);
+        String advData = WheelLog.AppConfig.getAdvDataForWheel();
         String adapterName = "";
+        protoVer = "";
+        if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
+            protoVer = "S2";
+        } else if (StringUtil.inArray(advData, new String[]{"4e421400000000eb", "4e422000000000df", "4e422200000000dd", "4e4230cf"}) || (advData.startsWith("5600"))) {
+            protoVer = "Mini";
+        }
+        Timber.i("ProtoVer %s, adv: %s", protoVer, advData );
         boolean detected_wheel = false;
         String text = StringUtil.getRawTextResource(mContext, servicesResId);
         if (mBluetoothService == null) {
@@ -1298,9 +1313,7 @@ public class WheelData {
 
             } else if (WHEEL_TYPE.NINEBOT_Z.toString().equalsIgnoreCase(adapterName)) {
                 Timber.i("Trying to start Ninebot Z");
-                NinebotAdapter.setAdvData(bleAdvData);
-                var advProto = NinebotAdapter.getProtoFromAdvData();
-                if (advProto.compareTo("") == 0) {
+                if (protoVer.compareTo("") == 0) {
                     Timber.i("really Z");
                     setWheelType(WHEEL_TYPE.NINEBOT_Z);
                 } else {
@@ -1325,9 +1338,9 @@ public class WheelData {
                     mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 }
                 Timber.i("write notify");
-                if (advProto.compareTo("S2") == 0 || advProto.compareTo("Mini") == 0) {
-                    NinebotAdapter.getInstance().startKeepAliveTimer(advProto);
-                    Timber.i("starting ninebot adapter, proto: %s", advProto);
+                if (protoVer.compareTo("S2") == 0 || protoVer.compareTo("Mini") == 0) {
+                    NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
+                    Timber.i("starting ninebot adapter, proto: %s", protoVer);
                 } else {
                     NinebotZAdapter.getInstance().startKeepAliveTimer();
                     Timber.i("starting ninebot Z adapter");
@@ -1355,8 +1368,7 @@ public class WheelData {
                     mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     Timber.i("write notify");
                 }
-                NinebotAdapter.setAdvData(bleAdvData);
-                NinebotAdapter.getInstance().startKeepAliveTimer(NinebotAdapter.getProtoFromAdvData());
+                NinebotAdapter.getInstance().startKeepAliveTimer(protoVer);
                 Timber.i("starting ninebot adapter");
                 return true;
             }

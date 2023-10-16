@@ -26,7 +26,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.databinding.ActivityScanBinding
-import com.cooper.wheellog.utils.NinebotAdapter
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.StringUtil
 import com.cooper.wheellog.utils.StringUtil.toHexStringRaw
@@ -184,10 +183,7 @@ class ScanActivity: AppCompatActivity() {
         intent.putExtra("MAC", deviceAddress)
         intent.putExtra("NAME", deviceName)
         WheelLog.AppConfig.lastMac = deviceAddress
-
-        // advData used only for ninebot adapter.
-        WheelData.getInstance().bleAdvData = advData
-
+        WheelLog.AppConfig.advDataForWheel = advData
         setResult(RESULT_OK, intent)
         // Set password for inmotion
         WheelLog.AppConfig.passwordForWheel = ""
