@@ -11,7 +11,7 @@ The following manufacturers are supported:
 - Veteran
 - Ninebot Zx, S2, C/P/E+, Mini
 
-| <img src='https://user-images.githubusercontent.com/27482193/95566187-ea8d5580-0a29-11eb-8182-329764d572b7.png' width=400 /> | <img src='https://user-images.githubusercontent.com/27482193/114169041-bdb6ee00-9939-11eb-8fb9-f07b9eac1b2f.png' width=400 /> | ![image](https://github.com/Wheellog/Wheellog.Android/assets/27482193/d7fb7006-1ab3-4ca1-be9f-8d59ec88e376)
+| <img src='https://github.com/Wheellog/Wheellog.Android/assets/27482193/2dd0d43b-53a6-4dc4-9794-ddee620628bb' width=400 /> | <img src='https://user-images.githubusercontent.com/27482193/114169041-bdb6ee00-9939-11eb-8fb9-f07b9eac1b2f.png' width=400 /> | <img src='https://github.com/Wheellog/Wheellog.Android/assets/27482193/d7fb7006-1ab3-4ca1-be9f-8d59ec88e376' width=400 />
 |--|--|--|
 
 ## Contributing
