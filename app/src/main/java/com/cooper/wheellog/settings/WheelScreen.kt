@@ -165,141 +165,141 @@ private fun ninebotZ() {
             AppConfig.wheelLimitedModeSpeed = value
             adapter.setLimitedSpeed(value)
         }
-        switchPref(
-            name = stringResource(R.string.brake_assistant_title),
-            desc = stringResource(R.string.brake_assistant_description),
-            default = AppConfig.brakeAssistantEnabled,
-        ) {
-            AppConfig.brakeAssistantEnabled = it
-            adapter.setBrakeAssist(it)
-        }
+    }
+    switchPref(
+        name = stringResource(R.string.brake_assistant_title),
+        desc = stringResource(R.string.brake_assistant_description),
+        default = AppConfig.brakeAssistantEnabled,
+    ) {
+        AppConfig.brakeAssistantEnabled = it
+        adapter.setBrakeAssist(it)
+    }
+    sliderPref(
+        name = stringResource(R.string.pedal_sensivity_title),
+        desc = stringResource(R.string.pedal_sensivity_description),
+        position = AppConfig.pedalSensivity.toFloat(),
+        min = 0f,
+        max = 4f,
+    ) {
+        AppConfig.pedalSensivity = it.toInt()
+        adapter.pedalSensivity = it.toInt()
+    }
+    list(
+        name = stringResource(R.string.led_mode_title),
+        desc = NinebotZAdapter.getInstance().ledModeString ?: "",
+        entries = mapOf(
+            "0" to stringResource(R.string.off),
+            "1" to stringResource(R.string.led_type1),
+            "2" to stringResource(R.string.led_type2),
+            "3" to stringResource(R.string.led_type3),
+            "4" to stringResource(R.string.led_type4),
+            "5" to stringResource(R.string.led_type5),
+            "6" to stringResource(R.string.led_type6),
+            "7" to stringResource(R.string.led_type7),
+        ),
+        defaultKey = AppConfig.ledMode,
+    ) {
+        AppConfig.ledMode = it.first
+        adapter.updateLedMode(Integer.parseInt(it.first))
+    }
+    if (NinebotZAdapter.getInstance().getLedIsAvailable(1)) {
         sliderPref(
-            name = stringResource(R.string.pedal_sensivity_title),
-            desc = stringResource(R.string.pedal_sensivity_description),
-            position = AppConfig.pedalSensivity.toFloat(),
+            name = stringResource(R.string.nb_led_color1_title),
+            desc = stringResource(R.string.nb_led_color_description),
+            position = AppConfig.ledColor1.toFloat(),
             min = 0f,
-            max = 4f,
+            max = 256f,
         ) {
-            AppConfig.pedalSensivity = it.toInt()
-            adapter.pedalSensivity = it.toInt()
+            AppConfig.ledColor1 = it.toInt()
+            adapter.setLedColor(it.toInt(), 1)
         }
-        list(
-            name = stringResource(R.string.led_mode_title),
-            desc = NinebotZAdapter.getInstance().ledModeString ?: "",
-            entries = mapOf(
-                "0" to stringResource(R.string.off),
-                "1" to stringResource(R.string.led_type1),
-                "2" to stringResource(R.string.led_type2),
-                "3" to stringResource(R.string.led_type3),
-                "4" to stringResource(R.string.led_type4),
-                "5" to stringResource(R.string.led_type5),
-                "6" to stringResource(R.string.led_type6),
-                "7" to stringResource(R.string.led_type7),
-            ),
-            defaultKey = AppConfig.ledMode,
-        ) {
-            AppConfig.ledMode = it.first
-            adapter.updateLedMode(Integer.parseInt(it.first))
-        }
-        if (NinebotZAdapter.getInstance().getLedIsAvailable(1)) {
-            sliderPref(
-                name = stringResource(R.string.nb_led_color1_title),
-                desc = stringResource(R.string.nb_led_color_description),
-                position = AppConfig.ledColor1.toFloat(),
-                min = 0f,
-                max = 256f,
-            ) {
-                AppConfig.ledColor1 = it.toInt()
-                adapter.setLedColor(it.toInt(), 1)
-            }
-        }
-        if (NinebotZAdapter.getInstance().getLedIsAvailable(2)) {
-            sliderPref(
-                name = stringResource(R.string.nb_led_color2_title),
-                desc = stringResource(R.string.nb_led_color_description),
-                position = AppConfig.ledColor2.toFloat(),
-                min = 0f,
-                max = 256f,
-            ) {
-                AppConfig.ledColor2 = it.toInt()
-                adapter.setLedColor(it.toInt(), 2)
-            }
-        }
-        if (NinebotZAdapter.getInstance().getLedIsAvailable(3)) {
-            sliderPref(
-                name = stringResource(R.string.nb_led_color3_title),
-                desc = stringResource(R.string.nb_led_color_description),
-                position = AppConfig.ledColor3.toFloat(),
-                min = 0f,
-                max = 256f,
-            ) {
-                AppConfig.ledColor3 = it.toInt()
-                adapter.setLedColor(it.toInt(), 3)
-            }
-        }
-        if (NinebotZAdapter.getInstance().getLedIsAvailable(4)) {
-            sliderPref(
-                name = stringResource(R.string.nb_led_color4_title),
-                desc = stringResource(R.string.nb_led_color_description),
-                position = AppConfig.ledColor4.toFloat(),
-                min = 0f,
-                max = 256f,
-            ) {
-                AppConfig.ledColor4 = it.toInt()
-                adapter.setLedColor(it.toInt(), 4)
-            }
-        }
+    }
+    if (NinebotZAdapter.getInstance().getLedIsAvailable(2)) {
         sliderPref(
-            name = stringResource(R.string.speaker_volume_title),
-            desc = stringResource(R.string.speaker_volume_description),
-            position = AppConfig.speakerVolume.toFloat(),
+            name = stringResource(R.string.nb_led_color2_title),
+            desc = stringResource(R.string.nb_led_color_description),
+            position = AppConfig.ledColor2.toFloat(),
             min = 0f,
-            max = 127f,
+            max = 256f,
         ) {
-            AppConfig.speakerVolume = it.toInt()
-            adapter.speakerVolume = it.toInt()
+            AppConfig.ledColor2 = it.toInt()
+            adapter.setLedColor(it.toInt(), 2)
         }
-        switchPref(
-            name = stringResource(R.string.lock_mode_title),
-            desc = stringResource(R.string.lock_mode_description),
-            default = AppConfig.lockMode,
+    }
+    if (NinebotZAdapter.getInstance().getLedIsAvailable(3)) {
+        sliderPref(
+            name = stringResource(R.string.nb_led_color3_title),
+            desc = stringResource(R.string.nb_led_color_description),
+            position = AppConfig.ledColor3.toFloat(),
+            min = 0f,
+            max = 256f,
         ) {
-            AppConfig.lockMode = it
-            adapter.setLockMode(it)
+            AppConfig.ledColor3 = it.toInt()
+            adapter.setLedColor(it.toInt(), 3)
         }
-        var showDialogCalibration by remember { mutableStateOf(false) }
-        if (showDialogCalibration) {
-            AlertDialog(
-                onDismissRequest = { showDialogCalibration = false },
-                title = { Text(stringResource(R.string.wheel_calibration)) },
-                text = {
-                    Text(stringResource(R.string.wheel_calibration_message_nb))
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            adapter.wheelCalibration()
-                        },
-                    ) {
-                        Text(stringResource(R.string.wheel_calibration))
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialogCalibration = false },
-                    ) {
-                        Text(stringResource(android.R.string.cancel))
-                    }
-                },
-            )
-        }
-        clickablePref(
-            name = stringResource(R.string.wheel_calibration),
-            themeIcon = ThemeIconEnum.SettingsCalibration,
+    }
+    if (NinebotZAdapter.getInstance().getLedIsAvailable(4)) {
+        sliderPref(
+            name = stringResource(R.string.nb_led_color4_title),
+            desc = stringResource(R.string.nb_led_color_description),
+            position = AppConfig.ledColor4.toFloat(),
+            min = 0f,
+            max = 256f,
         ) {
-            if (WheelData.getInstance().speed < 1) {
-                showDialogCalibration = true
-            }
+            AppConfig.ledColor4 = it.toInt()
+            adapter.setLedColor(it.toInt(), 4)
+        }
+    }
+    sliderPref(
+        name = stringResource(R.string.speaker_volume_title),
+        desc = stringResource(R.string.speaker_volume_description),
+        position = AppConfig.speakerVolume.toFloat(),
+        min = 0f,
+        max = 127f,
+    ) {
+        AppConfig.speakerVolume = it.toInt()
+        adapter.speakerVolume = it.toInt()
+    }
+    switchPref(
+        name = stringResource(R.string.lock_mode_title),
+        desc = stringResource(R.string.lock_mode_description),
+        default = AppConfig.lockMode,
+    ) {
+        AppConfig.lockMode = it
+        adapter.setLockMode(it)
+    }
+    var showDialogCalibration by remember { mutableStateOf(false) }
+    if (showDialogCalibration) {
+        AlertDialog(
+            onDismissRequest = { showDialogCalibration = false },
+            title = { Text(stringResource(R.string.wheel_calibration)) },
+            text = {
+                Text(stringResource(R.string.wheel_calibration_message_nb))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        adapter.wheelCalibration()
+                    },
+                ) {
+                    Text(stringResource(R.string.wheel_calibration))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialogCalibration = false },
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        )
+    }
+    clickablePref(
+        name = stringResource(R.string.wheel_calibration),
+        themeIcon = ThemeIconEnum.SettingsCalibration,
+    ) {
+        if (WheelData.getInstance().speed < 1) {
+            showDialogCalibration = true
         }
     }
 }
