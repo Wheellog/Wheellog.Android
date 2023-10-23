@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                     this,
                     mPiPBroadcastReceiver,
                     makeIntentPipFilter(),
-                    ContextCompat.RECEIVER_NOT_EXPORTED
+                    ContextCompat.RECEIVER_EXPORTED
                 )
             } catch (_: Exception) {
                 // ignore

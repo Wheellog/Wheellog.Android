@@ -30,7 +30,7 @@ fun systemBroadcastReceiver(
             context,
             receiver,
             intentFilter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
 
         onDispose {

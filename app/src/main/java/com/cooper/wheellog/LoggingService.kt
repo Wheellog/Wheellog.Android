@@ -77,7 +77,7 @@ class LoggingService : Service() {
             baseContext,
             mBluetoothUpdateReceiver,
             intentFilter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             if (!checkExternalFilePermission(this)) {
