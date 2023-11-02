@@ -3,22 +3,36 @@ package com.cooper.wheellog.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
-import com.cooper.wheellog.utils.*
+import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.GotwayAdapter
+import com.cooper.wheellog.utils.InMotionAdapter
+import com.cooper.wheellog.utils.InmotionAdapterV2
+import com.cooper.wheellog.utils.KingsongAdapter
+import com.cooper.wheellog.utils.MathsUtil
+import com.cooper.wheellog.utils.NinebotZAdapter
+import com.cooper.wheellog.utils.ThemeIconEnum
+import com.cooper.wheellog.utils.VeteranAdapter
 
 @Composable
-fun wheelScreen()
-{
+fun wheelScreen() {
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
     ) {
         when (WheelData.getInstance().wheelType) {
             Constants.WHEEL_TYPE.NINEBOT_Z -> ninebotZ()
@@ -866,7 +880,7 @@ private fun begode() {
 
 @Composable
 private fun veteran() {
-    val adapter by remember { mutableStateOf(VeteranAdapter.getInstance()) }
+    val adapter by remember { mutableStateOf(VeteranAdapter.instance) }
     switchPref(
         name = stringResource(R.string.on_headlight_title),
         desc = stringResource(R.string.on_headlight_description),
@@ -949,7 +963,7 @@ private fun forAllWheel() {
     var profileText by remember { mutableStateOf(AppConfig.profileName) }
     clickablePref(
         name = stringResource(R.string.profile_name_title),
-        desc = profileText
+        desc = profileText,
     ) {
         showProfileDialog = true
     }
