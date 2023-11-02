@@ -354,14 +354,14 @@ private fun inmotion() {
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
         desc = stringResource(R.string.pedal_horizont_description),
-        position = (AppConfig.pedalsAdjustment / 10).toFloat(),
+        position = AppConfig.pedalsAdjustment / 10f,
         min = -8f,
         max = 8f,
         unit = R.string.degree,
         format = "%.1f",
     ) {
         AppConfig.pedalsAdjustment = (it * 10).toInt()
-        adapter.setPedalTilt(it.toInt() * 10)
+        adapter.setPedalTilt((it * 10).toInt())
     }
     if (InMotionAdapter.getInstance().wheelModesWheel) {
         switchPref(
@@ -496,15 +496,14 @@ private fun inmotionV2() {
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
         desc = stringResource(R.string.pedal_horizont_description),
-        position = AppConfig.pedalsAdjustment.toFloat(),
+        position = AppConfig.pedalsAdjustment / 10f,
         min = -10f,
         max = 10f,
         unit = R.string.degree,
-        visualMultiple = 10f,
         format = "%.1f",
     ) {
-        AppConfig.pedalsAdjustment = it.toInt()
-        adapter.setPedalTilt(it.toInt())
+        AppConfig.pedalsAdjustment = (it * 10).toInt()
+        adapter.setPedalTilt((it * 10).toInt())
     }
     switchPref(
         name = stringResource(R.string.ride_mode_title),
