@@ -1,20 +1,31 @@
-package com.cooper.wheellog.utils
+package com.cooper.wheellog.utils.veteran
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.ByteArrayOutputStream
 import kotlin.math.abs
 
 class VeteranAdapterTest {
 
-    private var adapter: VeteranAdapter = VeteranAdapter()
+    private lateinit var adapter: VeteranAdapter
+
     private var header = byteArrayOf(0xDC.toByte(), 0x5A.toByte(), 0x5C.toByte(), 0x20.toByte())
     private lateinit var data: WheelData
 
@@ -29,6 +40,7 @@ class VeteranAdapterTest {
         data.wheelType = Constants.WHEEL_TYPE.VETERAN
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        adapter = VeteranAdapter(VeteranBatteryCalculator(), VeteranUnpacker(ByteArrayOutputStream()), data, WheelLog.AppConfig)
     }
 
     @After
@@ -61,32 +73,32 @@ class VeteranAdapterTest {
         val phaseCurrent = (-8322).toShort()
         val version = 3210.toShort()
         val byteArray = header +
-                MathsUtil.getBytes(voltage) +
-                MathsUtil.getBytes(speed) +
-                MathsUtil.getBytes(distance) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(distance) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(phaseCurrent) +
-                MathsUtil.getBytes(temperature) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(version) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0)
+            MathsUtil.getBytes(voltage) +
+            MathsUtil.getBytes(speed) +
+            MathsUtil.getBytes(distance) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(distance) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(phaseCurrent) +
+            MathsUtil.getBytes(temperature) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(version) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0)
         // Act.
         val result = adapter.decode(byteArray)
 
         // Assert.
         assertThat(result).isTrue()
         assertThat(data.speed).isEqualTo(speed)
-        assertThat(data.temperature).isEqualTo(temperature/100)
-        assertThat(data.voltageDouble).isEqualTo(voltage/100.0)
-        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent/10.0)
-        assertThat(data.wheelDistanceDouble).isEqualTo(distance/1000.0)
+        assertThat(data.temperature).isEqualTo(temperature / 100)
+        assertThat(data.voltageDouble).isEqualTo(voltage / 100.0)
+        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent / 10.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
         assertThat(data.totalDistance).isEqualTo(distance)
         assertThat(data.batteryLevel).isEqualTo(80)
         assertThat(data.version).isEqualTo("003.2.10")
@@ -102,32 +114,32 @@ class VeteranAdapterTest {
         val phaseCurrent = (-8322).toShort()
         val version = 4210.toShort()
         val byteArray = header +
-                MathsUtil.getBytes(voltage) +
-                MathsUtil.getBytes(speed) +
-                MathsUtil.getBytes(distance) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(distance) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(phaseCurrent) +
-                MathsUtil.getBytes(temperature) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(version) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0) +
-                byteArrayOf(0, 0)
+            MathsUtil.getBytes(voltage) +
+            MathsUtil.getBytes(speed) +
+            MathsUtil.getBytes(distance) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(distance) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(phaseCurrent) +
+            MathsUtil.getBytes(temperature) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(version) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
+            byteArrayOf(0, 0)
         // Act.
         val result = adapter.decode(byteArray)
 
         // Assert.
         assertThat(result).isTrue()
         assertThat(data.speed).isEqualTo(speed)
-        assertThat(data.temperature).isEqualTo(temperature/100)
-        assertThat(data.voltageDouble).isEqualTo(voltage/100.0)
-        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent/10.0)
-        assertThat(data.wheelDistanceDouble).isEqualTo(distance/1000.0)
+        assertThat(data.temperature).isEqualTo(temperature / 100)
+        assertThat(data.voltageDouble).isEqualTo(voltage / 100.0)
+        assertThat(data.phaseCurrentDouble).isEqualTo(phaseCurrent / 10.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(distance / 1000.0)
         assertThat(data.totalDistance).isEqualTo(distance)
         assertThat(data.batteryLevel).isEqualTo(65)
         assertThat(data.version).isEqualTo("004.2.10")
@@ -203,7 +215,6 @@ class VeteranAdapterTest {
         assertThat(data.version).isEqualTo("001.0.58")
     }
 
-
     @Test
     fun `decode veteran with fail data`() {
         // Arrange.
@@ -227,7 +238,6 @@ class VeteranAdapterTest {
         val byteArray18 = "00000000dc5a5c20241202260a9e0000120d0052".hexToByteArray()
         val byteArray19 = "02010f350e1000000af00af0041d000300000000".hexToByteArray()
         val byteArray20 = "dc5a5c202405022e0aa100001210005201f70f2b".hexToByteArray()
-
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -285,7 +295,6 @@ class VeteranAdapterTest {
         assertThat(result19).isTrue()
         assertThat(result20).isFalse()
         assertThat(abs(data.speed)).isEqualTo(550)
-
     }
 
     @Test
