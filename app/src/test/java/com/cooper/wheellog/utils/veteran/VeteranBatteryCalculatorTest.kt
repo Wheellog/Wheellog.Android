@@ -4,8 +4,7 @@ import org.junit.Test
 
 class VeteranBatteryCalculatorTest {
 
-    // test that patton non accurate voltage returns correct percentage
-    // we're using mockk for testing
+    // TODO battery calculator for high voltage wheels
     private val calculator: VeteranBatteryCalculator = VeteranBatteryCalculator()
 
     @Test
