@@ -4,7 +4,7 @@ package com.cooper.wheellog.utils.veteran;
  * Computes the battery percentage for Veteran wheels.
  */
 public class VeteranBatteryCalculator {
-    // todo add support for 151V wheels
+    // TODO add support for 151V wheels
     private static final int VOLTAGE_THRESHOLD_PATTON = 12525;
     private static final int VOLTAGE_THRESHOLD_BETTER_PERCENTS = 10200;
     private static final int VOLTAGE_LOW_THRESHOLD = 9600;
