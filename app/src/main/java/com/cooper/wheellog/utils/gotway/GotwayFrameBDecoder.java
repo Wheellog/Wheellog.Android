@@ -8,6 +8,7 @@ import com.cooper.wheellog.utils.MathsUtil;
 
 /**
  * Decoding of frame B for Gotway wheels
+ * Used for total distance and flags
  */
 public class GotwayFrameBDecoder {
 

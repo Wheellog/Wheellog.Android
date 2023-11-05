@@ -5,6 +5,11 @@ import static com.cooper.wheellog.utils.gotway.GotwayAdapter.RATIO_GW;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.utils.MathsUtil;
 
+/**
+ * Decoding of frame A for Gotway wheels
+ * Used for various real time data points, such as speed,
+ * distance, current, temperature, voltage, battery, etc
+ */
 public class GotwayFrameADecoder {
 
     private WheelData wd;

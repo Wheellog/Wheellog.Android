@@ -2,6 +2,10 @@ package com.cooper.wheellog.utils.gotway;
 
 import com.cooper.wheellog.AppConfig;
 
+/**
+ * Scale voltage for Gotway wheels. Expecting ints between 0 and 4, corresponding to the
+ * voltage setting in the app.
+ */
 public class GotwayScaledVoltageCalculator {
 
     private AppConfig appConfig;

@@ -2,6 +2,9 @@ package com.cooper.wheellog.utils.gotway
 
 import kotlin.math.roundToInt
 
+/**
+ * Calculate the battery percentage for Begode, Gotway, and Extreme Bull wheels.
+ */
 class GotwayBatteryCalculator {
     // Todo check that this is correct for Begode/Gotway/Extreme Bull Wheels of varying voltages
     fun getBattery(useBetterPercents: Boolean, voltage: Int): Int {
