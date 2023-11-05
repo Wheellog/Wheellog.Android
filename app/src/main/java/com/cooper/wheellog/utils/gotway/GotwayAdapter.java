@@ -14,6 +14,7 @@ import timber.log.Timber;
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     private GotwayUnpacker unpacker;
+    private GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator;
     private static final double RATIO_GW = 0.875;
     private String model = "";
     private String imu = "";
@@ -29,9 +30,11 @@ public class GotwayAdapter extends BaseAdapter {
     private final int alarmModeCF = 3; // PWM tiltback for custom firmware
 
     public GotwayAdapter(
-            GotwayUnpacker unpacker
+            GotwayUnpacker unpacker,
+            GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator
     ) {
         this.unpacker = unpacker;
+        this.gotwayScaledVoltageCalculator = gotwayScaledVoltageCalculator;
     }
 
     @Override
@@ -111,7 +114,7 @@ public class GotwayAdapter extends BaseAdapter {
                         distance = (int) Math.round(distance * RATIO_GW);
                         speed = (int) Math.round(speed * RATIO_GW);
                     }
-                    voltage = (int) Math.round(getScaledVoltage(voltage));
+                    voltage = (int) Math.round(gotwayScaledVoltageCalculator.getScaledVoltage(voltage));
 
                     wd.setSpeed(speed);
                     wd.setTopSpeed(speed);
@@ -365,26 +368,11 @@ public class GotwayAdapter extends BaseAdapter {
     public static GotwayAdapter getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new GotwayAdapter(
-                    new GotwayUnpacker()
+                    new GotwayUnpacker(),
+                    new GotwayScaledVoltageCalculator()
             );
         }
         return INSTANCE;
-    }
-
-    private double getScaledVoltage(double value) {
-        int voltage = 0;
-        double scaler = 1.0;
-        if (!WheelLog.AppConfig.getGotwayVoltage().equals("")) {
-            voltage = Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage());
-        }
-        switch (voltage) {
-            case 0 -> scaler = 1.0;
-            case 1 -> scaler = 1.25;
-            case 2 -> scaler = 1.5;
-            case 3 -> scaler = 1.7380952380952380952380952380952;
-            case 4 -> scaler = 2.0;
-        }
-        return value * scaler;
     }
 }
 
