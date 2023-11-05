@@ -1,13 +1,20 @@
-package com.cooper.wheellog.utils
+package com.cooper.wheellog.utils.kingsong
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
-import com.cooper.wheellog.utils.kingsong.KingsongAdapter
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +36,14 @@ class KingsongAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        adapter = KingsongAdapter(WheelData.getInstance(), WheelLog.AppConfig)
+        adapter = KingsongAdapter(
+            WheelData.getInstance(),
+            WheelLog.AppConfig,
+            KingsongLiveDataDecoder(
+                WheelData.getInstance(),
+                WheelLog.AppConfig,
+            ),
+        )
     }
 
     @After
@@ -64,9 +78,9 @@ class KingsongAdapterTest {
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
                 MathsUtil.getBytes(distance) +
-                byteArrayOf(10, 11) +
+            byteArrayOf(10, 11) +
                 MathsUtil.getBytes(temperature) +
-                byteArrayOf(14, 15, 16, type, 0, 0)
+            byteArrayOf(14, 15, 16, type, 0, 0)
 
         // Act.
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
@@ -91,9 +105,9 @@ class KingsongAdapterTest {
         val fanStatus = 321.toByte()
         val byteArray = header +
                 MathsUtil.getBytes(distance) +
-                byteArrayOf(6, 7) +
+            byteArrayOf(6, 7) +
                 MathsUtil.getBytes(topSpeed) +
-                byteArrayOf(10, 11, 12, fanStatus, 14, 15, 16, type, 0, 0)
+            byteArrayOf(10, 11, 12, fanStatus, 14, 15, 16, type, 0, 0)
 
         // Act.
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
@@ -113,8 +127,8 @@ class KingsongAdapterTest {
         val model = name.split("-")[0]
         val byteArray = header +
                 MathsUtil.reverseEvery2(byteArrayOf(2) + name.toByteArray(Charsets.UTF_8)) +
-                byteArrayOf(16) +
-                byteArrayOf(type, 0, 0)
+            byteArrayOf(16) +
+            byteArrayOf(type, 0, 0)
 
         // Act.
         val result = adapter.decode(MathsUtil.reverseEvery2(byteArray))
@@ -132,9 +146,9 @@ class KingsongAdapterTest {
         val serial = "King1234567890123"
         val serialBytes = serial.toByteArray(Charsets.UTF_8)
         val byteArray = MathsUtil.reverseEvery2(header) +
-                serialBytes.copyOfRange(0, 14) +
-                type +
-                serialBytes.copyOfRange(14, serialBytes.size)
+            serialBytes.copyOfRange(0, 14) +
+            type +
+            serialBytes.copyOfRange(14, serialBytes.size)
 
         // Act.
         val result = adapter.decode(byteArray)
@@ -149,7 +163,7 @@ class KingsongAdapterTest {
         // Arrange.
         val type = 181.toByte() // Name and Type data
         val byteArray = MathsUtil.reverseEvery2(header) +
-                byteArrayOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, type, 17, 18, 19)
+            byteArrayOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, type, 17, 18, 19)
 
         // Act.
         val result = adapter.decode(byteArray)
@@ -161,9 +175,10 @@ class KingsongAdapterTest {
     @Test
     fun `decode real data 1`() {
         // Arrange.
-        val byteArray1 = "aa554b532d5331382d30323035000000bb1484fd".hexToByteArray() //model name
-        val byteArray2 = "aa556919030200009f36d700140500e0a9145a5a".hexToByteArray() //life data
-        val byteArray3 = "aa550000090017011502140100004006b9145a5a".hexToByteArray() // dist/fan/time
+        val byteArray1 = "aa554b532d5331382d30323035000000bb1484fd".hexToByteArray() // model name
+        val byteArray2 = "aa556919030200009f36d700140500e0a9145a5a".hexToByteArray() // life data
+        val byteArray3 =
+            "aa550000090017011502140100004006b9145a5a".hexToByteArray() // dist/fan/time
         val byteArray4 = "aa55000000000000000000000000400cf5145a5a".hexToByteArray() // cpu load
         val byteArray5 = "aa55850c010000000000000016000000f6145a5a".hexToByteArray() // output
 
@@ -184,7 +199,7 @@ class KingsongAdapterTest {
         assertThat(data.name).isEqualTo("KS-S18-0205")
         assertThat(data.model).isEqualTo("KS-S18")
         assertThat(data.version).isEqualTo("2.05")
-        //2nd data
+        // 2nd data
         assertThat(data.speedDouble).isEqualTo(5.15)
         assertThat(data.temperature).isEqualTo(13)
         assertThat(data.voltageDouble).isEqualTo(65.05)
@@ -193,17 +208,17 @@ class KingsongAdapterTest {
         assertThat(data.batteryLevel).isEqualTo(12)
         assertThat(data.modeStr).isEqualTo("0")
 
-        //3rd data
+        // 3rd data
         assertThat(data.temperature2).isEqualTo(16)
         assertThat(data.fanStatus).isEqualTo(0)
         assertThat(data.chargingStatus).isEqualTo(0)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.009)
-        //4th data
+        // 4th data
         assertThat(data.cpuLoad).isEqualTo(64)
         assertThat(data.output).isEqualTo(12)
 
-        //5th data
-        assertThat(data.speedLimit).isEqualTo(32.05) //limit speed
+        // 5th data
+        assertThat(data.speedLimit).isEqualTo(32.05) // limit speed
     }
 
     @Test
