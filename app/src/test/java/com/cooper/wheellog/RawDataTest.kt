@@ -57,7 +57,11 @@ class RawDataTest {
                 config,
                 data,
                 GotwayUnpacker(),
-                GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator(config), GotwayBatteryCalculator()),
+                GotwayFrameADecoder(
+                    WheelData.getInstance(),
+                    GotwayScaledVoltageCalculator(config),
+                    GotwayBatteryCalculator(),
+                ),
                 GotwayFrameBDecoder(WheelData.getInstance(), config),
             )
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY

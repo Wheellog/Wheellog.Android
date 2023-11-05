@@ -16,12 +16,18 @@ class GotwayBatteryCalculatorTest {
 
     @Test
     fun testGetBattery_useBetterPercents_mediumVoltage() {
-        assertEquals(((6600 - 5380) / 13), calculator.getBattery(useBetterPercents = true, voltage = 6600))
+        assertEquals(
+            ((6600 - 5380) / 13),
+            calculator.getBattery(useBetterPercents = true, voltage = 6600),
+        )
     }
 
     @Test
     fun testGetBattery_useBetterPercents_lowMediumVoltage() {
-        assertEquals((((5300 - 5290) / 32.5).roundToInt()), calculator.getBattery(useBetterPercents = true, voltage = 5300))
+        assertEquals(
+            (((5300 - 5290) / 32.5).roundToInt()),
+            calculator.getBattery(useBetterPercents = true, voltage = 5300),
+        )
     }
 
     @Test
@@ -42,7 +48,10 @@ class GotwayBatteryCalculatorTest {
 
     @Test
     fun testGetBattery_standardPercents_mediumVoltage() {
-        assertEquals(((5400 - 5290) / 13), calculator.getBattery(useBetterPercents = false, voltage = 5400))
+        assertEquals(
+            ((5400 - 5290) / 13),
+            calculator.getBattery(useBetterPercents = false, voltage = 5400),
+        )
     }
 
     // Edge cases
