@@ -1,4 +1,5 @@
 package com.cooper.wheellog.utils.kingsong;
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.BaseAdapter;
@@ -24,11 +25,14 @@ public class KingsongAdapter extends BaseAdapter {
     private double mSpeedLimit;
 
     private final WheelData wd;
+    private final AppConfig appConfig;
 
     public KingsongAdapter(
-            final WheelData wd
+            final WheelData wd,
+            final AppConfig appConfig
     ) {
         this.wd = wd;
+        this.appConfig = appConfig;
     }
 
     @Override
@@ -387,8 +391,9 @@ public class KingsongAdapter extends BaseAdapter {
         Timber.i("Get instance");
         if (INSTANCE == null) {
             WheelData wd = WheelData.getInstance();
+            AppConfig appConfig = WheelLog.AppConfig;
             Timber.i("New instance");
-            INSTANCE = new KingsongAdapter(wd);
+            INSTANCE = new KingsongAdapter(wd, appConfig);
         }
         return INSTANCE;
     }

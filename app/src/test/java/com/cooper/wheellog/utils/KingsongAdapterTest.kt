@@ -29,7 +29,7 @@ class KingsongAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        adapter = KingsongAdapter(WheelData.getInstance())
+        adapter = KingsongAdapter(WheelData.getInstance(), WheelLog.AppConfig)
     }
 
     @After
