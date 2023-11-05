@@ -53,7 +53,7 @@ public class GotwayFrameBDecoder {
         return new AlertResult(alert, _lock);
     }
 
-    class AlertResult {
+    static class AlertResult {
         public int alert;
         public int lock;
 
