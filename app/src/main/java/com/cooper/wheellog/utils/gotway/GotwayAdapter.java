@@ -15,6 +15,7 @@ public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     private GotwayUnpacker unpacker;
     private GotwayFrameADecoder gotwayFrameADecoder;
+    private GotwayFrameBDecoder gotwayFrameBDecoder;
     static final double RATIO_GW = 0.875;
     private String model = "";
     private String imu = "";
@@ -30,11 +31,13 @@ public class GotwayAdapter extends BaseAdapter {
     private final int alarmModeCF = 3; // PWM tiltback for custom firmware
 
     public GotwayAdapter(
-            GotwayUnpacker unpacker,
-            GotwayFrameADecoder gotwayFrameADecoder
+           final GotwayUnpacker unpacker,
+           final GotwayFrameADecoder gotwayFrameADecoder,
+           final GotwayFrameBDecoder gotwayFrameBDecoder
     ) {
         this.unpacker = unpacker;
         this.gotwayFrameADecoder = gotwayFrameADecoder;
+        this.gotwayFrameBDecoder = gotwayFrameBDecoder;
     }
 
     @Override
@@ -76,36 +79,9 @@ public class GotwayAdapter extends BaseAdapter {
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
-                    int totalDistance = (int) MathsUtil.getInt4(buff, 2);
-                    if (useRatio) {
-                        wd.setTotalDistance(Math.round(totalDistance * RATIO_GW));
-                    } else {
-                        wd.setTotalDistance(totalDistance);
-                    }
-                    int settings = MathsUtil.shortFromBytesBE(buff, 6);
-                    int pedalsMode = (settings >> 13) & 0x03;
-                    int speedAlarms = (settings >> 10) & 0x03;
-                    int rollAngle = (settings >> 7) & 0x03;
-                    int inMiles = settings & 0x01;
-                    int powerOffTime = MathsUtil.shortFromBytesBE(buff, 8);
-                    int tiltBackSpeed = MathsUtil.shortFromBytesBE(buff, 10);
-                    if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
-                    int alert = buff[12] & 0xFF;
-                    int ledMode = buff[13] & 0xFF;
-                    int lightMode = buff[15] & 0x03;
-                    if (lock_Changes == 0) {
-                        WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
-                        WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
-                        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
-                        WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
-                        if (!fw.equals("-")) {
-                            WheelLog.AppConfig.setGwInMiles(inMiles == 1);
-                            WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
-                            WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
-                        }
-                    } else {
-                        lock_Changes -= 1;
-                    }
+                    GotwayFrameBDecoder.AlertResult result = gotwayFrameBDecoder.decode(buff, useRatio, lock_Changes, fw);
+                    lock_Changes = result.lock;
+                    int alert = result.alert;
 
                     String alertLine = "";
                     if ((alert & 0x01) == 1) alertLine += "HighPower ";
@@ -309,11 +285,15 @@ public class GotwayAdapter extends BaseAdapter {
         }
     }
 
+
+
     public static GotwayAdapter getInstance() {
         if (INSTANCE == null) {
+            WheelData wd = WheelData.getInstance();
             INSTANCE = new GotwayAdapter(
                     new GotwayUnpacker(),
-                    new GotwayFrameADecoder(WheelData.getInstance(), new GotwayScaledVoltageCalculator())
+                    new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator()),
+                    new GotwayFrameBDecoder(wd)
             );
         }
         return INSTANCE;
