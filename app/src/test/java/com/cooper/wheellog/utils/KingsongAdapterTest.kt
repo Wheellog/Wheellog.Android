@@ -5,6 +5,7 @@ import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
+import com.cooper.wheellog.utils.kingsong.KingsongAdapter
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
@@ -15,7 +16,8 @@ import kotlin.math.round
 
 class KingsongAdapterTest {
 
-    private var adapter: KingsongAdapter = KingsongAdapter()
+    private var adapter: KingsongAdapter =
+        KingsongAdapter()
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private var data = spyk(WheelData())
 
