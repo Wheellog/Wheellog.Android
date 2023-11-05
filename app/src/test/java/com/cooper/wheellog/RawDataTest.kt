@@ -45,7 +45,7 @@ class RawDataTest {
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter =
-            GotwayAdapter(GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()), GotwayFrameBDecoder(WheelData.getInstance()))
+            GotwayAdapter(config, GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()), GotwayFrameBDecoder(WheelData.getInstance()))
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         val inputStream: InputStream = File("src/test/resources/rawDecodeTest.csv").inputStream()
         val startTime = sdf.parse("11:50:50.123")

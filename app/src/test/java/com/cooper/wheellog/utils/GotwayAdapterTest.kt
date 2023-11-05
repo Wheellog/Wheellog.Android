@@ -44,7 +44,7 @@ class GotwayAdapterTest {
         every { WheelData.getInstance() } returns data
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-        adapter = GotwayAdapter(GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()), GotwayFrameBDecoder(WheelData.getInstance()))
+        adapter = GotwayAdapter(config, GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()), GotwayFrameBDecoder(WheelData.getInstance()))
     }
 
     @After

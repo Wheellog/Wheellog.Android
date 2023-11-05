@@ -3,11 +3,11 @@ package com.cooper.wheellog.utils.gotway;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.BaseAdapter;
 import com.cooper.wheellog.utils.Constants;
-import com.cooper.wheellog.utils.MathsUtil;
 
 import timber.log.Timber;
 
@@ -16,6 +16,7 @@ public class GotwayAdapter extends BaseAdapter {
     private GotwayUnpacker unpacker;
     private GotwayFrameADecoder gotwayFrameADecoder;
     private GotwayFrameBDecoder gotwayFrameBDecoder;
+    private AppConfig appConfig;
     static final double RATIO_GW = 0.875;
     private String model = "";
     private String imu = "";
@@ -31,10 +32,12 @@ public class GotwayAdapter extends BaseAdapter {
     private final int alarmModeCF = 3; // PWM tiltback for custom firmware
 
     public GotwayAdapter(
-           final GotwayUnpacker unpacker,
-           final GotwayFrameADecoder gotwayFrameADecoder,
-           final GotwayFrameBDecoder gotwayFrameBDecoder
+            final AppConfig appConfig,
+            final GotwayUnpacker unpacker,
+            final GotwayFrameADecoder gotwayFrameADecoder,
+            final GotwayFrameBDecoder gotwayFrameBDecoder
     ) {
+        this.appConfig = appConfig;
         this.unpacker = unpacker;
         this.gotwayFrameADecoder = gotwayFrameADecoder;
         this.gotwayFrameBDecoder = gotwayFrameBDecoder;
@@ -55,11 +58,11 @@ public class GotwayAdapter extends BaseAdapter {
             } else if (dataS.startsWith("GW")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                WheelLog.AppConfig.setHwPwm(false);
+                appConfig.setHwPwm(false);
             } else if (dataS.startsWith("CF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                WheelLog.AppConfig.setHwPwm(true);
+                appConfig.setHwPwm(true);
             } else if (dataS.startsWith("MPU")) {
                 imu = dataS.substring(1, 7).trim();
             }
@@ -68,9 +71,9 @@ public class GotwayAdapter extends BaseAdapter {
             if (unpacker.addChar(c)) {
 
                 byte[] buff = unpacker.getBuffer();
-                Boolean useRatio = WheelLog.AppConfig.getUseRatio();
-                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
+                Boolean useRatio = appConfig.getUseRatio();
+                Boolean useBetterPercents = appConfig.getUseBetterPercents();
+                int gotwayNegative = Integer.parseInt(appConfig.getGotwayNegative());
 
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
@@ -85,13 +88,13 @@ public class GotwayAdapter extends BaseAdapter {
 
                     String alertLine = "";
                     if ((alert & 0x01) == 1) alertLine += "HighPower ";
-                    if (((alert>>1) & 0x01) == 1) alertLine += "Speed2 ";
-                    if (((alert>>2) & 0x01) == 1) alertLine += "Speed1 ";
-                    if (((alert>>3) & 0x01) == 1) alertLine += "LowVoltage ";
-                    if (((alert>>4) & 0x01) == 1) alertLine += "OverVoltage ";
-                    if (((alert>>5) & 0x01) == 1) alertLine += "OverTemperature ";
-                    if (((alert>>6) & 0x01) == 1) alertLine += "errHallSensors ";
-                    if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
+                    if (((alert >> 1) & 0x01) == 1) alertLine += "Speed2 ";
+                    if (((alert >> 2) & 0x01) == 1) alertLine += "Speed1 ";
+                    if (((alert >> 3) & 0x01) == 1) alertLine += "LowVoltage ";
+                    if (((alert >> 4) & 0x01) == 1) alertLine += "OverVoltage ";
+                    if (((alert >> 5) & 0x01) == 1) alertLine += "OverTemperature ";
+                    if (((alert >> 6) & 0x01) == 1) alertLine += "errHallSensors ";
+                    if (((alert >> 7) & 0x01) == 1) alertLine += "TransportMode";
                     wd.setAlert(alertLine);
 
                     if ((alertLine != "") && (getContext() != null)) {
@@ -115,7 +118,7 @@ public class GotwayAdapter extends BaseAdapter {
                     } else if (fw.equals("")) {
                         fw = "-";
                         wd.setVersion(fw);
-                        WheelLog.AppConfig.setHwPwm(false);
+                        appConfig.setHwPwm(false);
                     }
                 }
             }
@@ -164,7 +167,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
+        int lightMode = Integer.parseInt(appConfig.getLightMode()) + 1;
         if (lightMode > lightModeStrobe) {
             lightMode = lightModeOff;
         }
@@ -172,10 +175,10 @@ public class GotwayAdapter extends BaseAdapter {
         // For custom firmware with enabled tiltback available only light off and on.
         // Strobe is using for tiltback warning. Detect via specific for this firmware alarm mode.
         if (lightMode > lightModeOn
-                && WheelLog.AppConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
+                && appConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
             lightMode = lightModeOff;
         }
-        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+        appConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
 
@@ -252,7 +255,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        return switch (WheelLog.AppConfig.getGotwayVoltage()) {
+        return switch (appConfig.getGotwayVoltage()) {
             case "0" -> 16;
             case "1" -> 20;
             case "2" -> 24;
@@ -286,11 +289,11 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
 
-
     public static GotwayAdapter getInstance() {
         if (INSTANCE == null) {
             WheelData wd = WheelData.getInstance();
             INSTANCE = new GotwayAdapter(
+                    WheelLog.AppConfig,
                     new GotwayUnpacker(),
                     new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator()),
                     new GotwayFrameBDecoder(wd)
