@@ -6,6 +6,8 @@ import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.cooper.wheellog.utils.gotway.GotwayAdapter
+import com.cooper.wheellog.utils.gotway.GotwayFrameADecoder
+import com.cooper.wheellog.utils.gotway.GotwayScaledVoltageCalculator
 import com.cooper.wheellog.utils.gotway.GotwayUnpacker
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -24,8 +26,7 @@ import kotlin.math.round
 
 class GotwayAdapterTest {
 
-    private var adapter: GotwayAdapter =
-        GotwayAdapter(GotwayUnpacker())
+    private lateinit var adapter: GotwayAdapter
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
 
@@ -42,7 +43,7 @@ class GotwayAdapterTest {
         every { WheelData.getInstance() } returns data
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-
+        adapter = GotwayAdapter(GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()))
     }
 
     @After

@@ -4,6 +4,8 @@ import android.content.Context
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.cooper.wheellog.utils.gotway.GotwayAdapter
+import com.cooper.wheellog.utils.gotway.GotwayFrameADecoder
+import com.cooper.wheellog.utils.gotway.GotwayScaledVoltageCalculator
 import com.cooper.wheellog.utils.gotway.GotwayUnpacker
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -42,7 +44,7 @@ class RawDataTest {
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter =
-            GotwayAdapter(GotwayUnpacker())
+            GotwayAdapter(GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()))
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         val inputStream: InputStream = File("src/test/resources/rawDecodeTest.csv").inputStream()
         val startTime = sdf.parse("11:50:50.123")

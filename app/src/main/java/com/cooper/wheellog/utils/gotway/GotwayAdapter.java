@@ -14,8 +14,8 @@ import timber.log.Timber;
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
     private GotwayUnpacker unpacker;
-    private GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator;
-    private static final double RATIO_GW = 0.875;
+    private GotwayFrameADecoder gotwayFrameADecoder;
+    static final double RATIO_GW = 0.875;
     private String model = "";
     private String imu = "";
     private String fw = "";
@@ -31,10 +31,10 @@ public class GotwayAdapter extends BaseAdapter {
 
     public GotwayAdapter(
             GotwayUnpacker unpacker,
-            GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator
+            GotwayFrameADecoder gotwayFrameADecoder
     ) {
         this.unpacker = unpacker;
-        this.gotwayScaledVoltageCalculator = gotwayScaledVoltageCalculator;
+        this.gotwayFrameADecoder = gotwayFrameADecoder;
     }
 
     @Override
@@ -71,64 +71,8 @@ public class GotwayAdapter extends BaseAdapter {
 
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
-
-                    int voltage = MathsUtil.shortFromBytesBE(buff, 2);
-                    int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
-                    int distance = MathsUtil.shortFromBytesBE(buff, 8);
-                    int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
-                    int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
-                    //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14)*10;
-                    if (gotwayNegative == 0) {
-                        speed = Math.abs(speed);
-                        phaseCurrent = Math.abs(phaseCurrent);
-                        hwPwm = Math.abs(hwPwm);
-                    } else {
-                        speed = speed * gotwayNegative;
-                        phaseCurrent = phaseCurrent * gotwayNegative;
-                        hwPwm = hwPwm * gotwayNegative;
-                    }
-
-                    int battery;
-                    if (useBetterPercents) {
-                        if (voltage > 6680) {
-                            battery = 100;
-                        } else if (voltage > 5440) {
-                            battery = (voltage - 5380) / 13;
-                        } else if (voltage > 5290) {
-                            battery = (int) Math.round((voltage - 5290) / 32.5);
-                        } else {
-                            battery = 0;
-                        }
-                    } else {
-                        if (voltage <= 5290) {
-                            battery = 0;
-                        } else if (voltage >= 6580) {
-                            battery = 100;
-                        } else {
-                            battery = (voltage - 5290) / 13;
-                        }
-                    }
-
-                    if (useRatio) {
-                        distance = (int) Math.round(distance * RATIO_GW);
-                        speed = (int) Math.round(speed * RATIO_GW);
-                    }
-                    voltage = (int) Math.round(gotwayScaledVoltageCalculator.getScaledVoltage(voltage));
-
-                    wd.setSpeed(speed);
-                    wd.setTopSpeed(speed);
-                    wd.setWheelDistance(distance);
-                    wd.setTemperature(temperature);
-                    wd.setPhaseCurrent(phaseCurrent);
-                    wd.setVoltage(voltage);
-                    wd.setVoltageSag(voltage);
-                    wd.setBatteryLevel(battery);
-                    wd.updateRideTime();
-                    wd.setOutput(hwPwm);
-
+                    gotwayFrameADecoder.decode(buff, useRatio, useBetterPercents, gotwayNegative);
                     newDataFound = true;
-
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
@@ -369,7 +313,7 @@ public class GotwayAdapter extends BaseAdapter {
         if (INSTANCE == null) {
             INSTANCE = new GotwayAdapter(
                     new GotwayUnpacker(),
-                    new GotwayScaledVoltageCalculator()
+                    new GotwayFrameADecoder(WheelData.getInstance(), new GotwayScaledVoltageCalculator())
             );
         }
         return INSTANCE;
