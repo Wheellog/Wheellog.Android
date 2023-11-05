@@ -221,12 +221,12 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void updatePedalsMode(int pedalsMode) {
-        String command = "";
-        switch (pedalsMode) {
-            case 0: command = "h"; break;
-            case 1: command = "f"; break;
-            case 2: command = "s"; break;
-        }
+        String command = switch (pedalsMode) {
+            case 0 -> "h";
+            case 1 -> "f";
+            case 2 -> "s";
+            default -> "";
+        };
         lock_Changes = 2;
         sendCommand(command);
 
@@ -252,13 +252,12 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public void setLightMode(int lightMode) {
         lock_Changes = 2;
-        String command = "";
-        switch (lightMode) {
-            default:
-            case lightModeOff: command = "E"; break;
-            case lightModeOn: command = "Q"; break;
-            case lightModeStrobe: command = "T"; break;
-        }
+        String command = switch (lightMode) {
+            case lightModeOff -> "E";
+            case lightModeOn -> "Q";
+            case lightModeStrobe -> "T";
+            default -> "E";
+        };
         sendCommand(command);
     }
 
@@ -279,9 +278,9 @@ public class GotwayAdapter extends BaseAdapter {
         String command = "";
         lock_Changes = 2;
         switch (rollAngle) {
-            case 0: command = ">"; break;
-            case 1: command = "="; break;
-            case 2: command = "<"; break;
+            case 0 -> command = ">";
+            case 1 -> command = "=";
+            case 2 -> command = "<";
         }
         sendCommand(command);
     }
@@ -323,19 +322,14 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        switch (WheelLog.AppConfig.getGotwayVoltage()) {
-            case "0":
-                return 16;
-            case "1":
-                return 20;
-            case "2":
-                return 24;
-            case "3":
-                return 32;
-            case "4":
-                return 32;
-        }
-        return 24;
+        return switch (WheelLog.AppConfig.getGotwayVoltage()) {
+            case "0" -> 16;
+            case "1" -> 20;
+            case "2" -> 24;
+            case "3" -> 32;
+            case "4" -> 32;
+            default -> 24;
+        };
     }
 
     @Override
@@ -420,21 +414,11 @@ public class GotwayAdapter extends BaseAdapter {
             voltage = Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage());
         }
         switch (voltage) {
-            case 0:
-                scaler = 1.0;
-                break;
-            case 1:
-                scaler = 1.25;
-                break;
-            case 2:
-                scaler = 1.5;
-                break;
-            case 3:
-                scaler = 1.7380952380952380952380952380952;
-                break;
-            case 4:
-                scaler = 2.0;
-                break;
+            case 0 -> scaler = 1.0;
+            case 1 -> scaler = 1.25;
+            case 2 -> scaler = 1.5;
+            case 3 -> scaler = 1.7380952380952380952380952380952;
+            case 4 -> scaler = 2.0;
         }
         return value * scaler;
     }
