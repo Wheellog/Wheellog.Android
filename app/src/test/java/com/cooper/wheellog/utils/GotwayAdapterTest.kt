@@ -6,7 +6,14 @@ import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -15,7 +22,8 @@ import kotlin.math.round
 
 class GotwayAdapterTest {
 
-    private var adapter: GotwayAdapter = GotwayAdapter()
+    private var adapter: GotwayAdapter =
+        GotwayAdapter(GotwayUnpacker())
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
 
