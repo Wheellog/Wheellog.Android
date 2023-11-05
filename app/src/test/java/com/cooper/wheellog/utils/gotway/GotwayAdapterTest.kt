@@ -1,15 +1,12 @@
-package com.cooper.wheellog.utils
+package com.cooper.wheellog.utils.gotway
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
-import com.cooper.wheellog.utils.gotway.GotwayAdapter
-import com.cooper.wheellog.utils.gotway.GotwayFrameADecoder
-import com.cooper.wheellog.utils.gotway.GotwayFrameBDecoder
-import com.cooper.wheellog.utils.gotway.GotwayScaledVoltageCalculator
-import com.cooper.wheellog.utils.gotway.GotwayUnpacker
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockkClass
@@ -82,12 +79,12 @@ class GotwayAdapterTest {
         val distance = 3231.toShort()
         val phaseCurrent = (-8322).toShort()
         val byteArray = header +
-            MathsUtil.getBytes(voltage) +
-            MathsUtil.getBytes(speed) +
+                MathsUtil.getBytes(voltage) +
+                MathsUtil.getBytes(speed) +
             byteArrayOf(0, 0) +
-            MathsUtil.getBytes(distance) +
-            MathsUtil.getBytes(phaseCurrent) +
-            MathsUtil.getBytes(temperature) +
+                MathsUtil.getBytes(distance) +
+                MathsUtil.getBytes(phaseCurrent) +
+                MathsUtil.getBytes(temperature) +
             byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
         // Act.
         val result = adapter.decode(byteArray)
