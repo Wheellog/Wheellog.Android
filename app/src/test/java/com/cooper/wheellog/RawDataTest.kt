@@ -58,7 +58,7 @@ class RawDataTest {
                 data,
                 GotwayUnpacker(),
                 GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator(config), GotwayBatteryCalculator()),
-                GotwayFrameBDecoder(WheelData.getInstance()),
+                GotwayFrameBDecoder(WheelData.getInstance(), config),
             )
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         val inputStream: InputStream = File("src/test/resources/rawDecodeTest.csv").inputStream()

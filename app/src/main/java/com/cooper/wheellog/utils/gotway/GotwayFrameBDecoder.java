@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils.gotway;
 
 import static com.cooper.wheellog.utils.gotway.GotwayAdapter.RATIO_GW;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.MathsUtil;
@@ -13,9 +14,11 @@ import com.cooper.wheellog.utils.MathsUtil;
 public class GotwayFrameBDecoder {
 
     private WheelData wd;
+    private AppConfig appConfig;
 
-    public GotwayFrameBDecoder(final WheelData wd) {
+    public GotwayFrameBDecoder(final WheelData wd, final AppConfig appConfig) {
         this.wd = wd;
+        this.appConfig = appConfig;
     }
 
     public AlertResult decode(byte[] buff, Boolean useRatio, int lock, String fw) {
@@ -38,14 +41,14 @@ public class GotwayFrameBDecoder {
         int ledMode = buff[13] & 0xFF;
         int lightMode = buff[15] & 0x03;
         if (_lock == 0) {
-            WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
-            WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
-            WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
-            WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
+            appConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
+            appConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
+            appConfig.setLightMode(String.valueOf(lightMode));
+            appConfig.setLedMode(String.valueOf(ledMode));
             if (!fw.equals("-")) {
-                WheelLog.AppConfig.setGwInMiles(inMiles == 1);
-                WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
-                WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                appConfig.setGwInMiles(inMiles == 1);
+                appConfig.setWheelMaxSpeed(tiltBackSpeed);
+                appConfig.setRollAngle(String.valueOf(rollAngle));
             }
         } else {
             _lock -= 1;
