@@ -23,10 +23,17 @@ public class KingsongAdapter extends BaseAdapter {
     private static final double KS18L_SCALER = 0.83;
     private double mSpeedLimit;
 
+    private final WheelData wd;
+
+    public KingsongAdapter(
+            final WheelData wd
+    ) {
+        this.wd = wd;
+    }
+
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode KingSong");
-        WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
         if (data.length >= 20) {
             int a1 = data[0] & 255;
@@ -382,8 +389,9 @@ public class KingsongAdapter extends BaseAdapter {
     public static KingsongAdapter getInstance() {
         Timber.i("Get instance");
         if (INSTANCE == null) {
+            WheelData wd = WheelData.getInstance();
             Timber.i("New instance");
-            INSTANCE = new KingsongAdapter();
+            INSTANCE = new KingsongAdapter(wd);
         }
         return INSTANCE;
     }

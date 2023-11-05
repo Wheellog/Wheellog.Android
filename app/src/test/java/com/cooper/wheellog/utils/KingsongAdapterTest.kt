@@ -16,8 +16,7 @@ import kotlin.math.round
 
 class KingsongAdapterTest {
 
-    private var adapter: KingsongAdapter =
-        KingsongAdapter()
+    private lateinit var adapter: KingsongAdapter
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private var data = spyk(WheelData())
 
@@ -30,6 +29,7 @@ class KingsongAdapterTest {
         WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        adapter = KingsongAdapter(WheelData.getInstance())
     }
 
     @After
