@@ -5,6 +5,7 @@ import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.InMotionAdapter
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.cooper.wheellog.utils.gotway.GotwayAdapter
+import com.cooper.wheellog.utils.gotway.GotwayBatteryCalculator
 import com.cooper.wheellog.utils.gotway.GotwayFrameADecoder
 import com.cooper.wheellog.utils.gotway.GotwayFrameBDecoder
 import com.cooper.wheellog.utils.gotway.GotwayScaledVoltageCalculator
@@ -56,7 +57,7 @@ class RawDataTest {
                 config,
                 data,
                 GotwayUnpacker(),
-                GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator(config)),
+                GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator(config), GotwayBatteryCalculator()),
                 GotwayFrameBDecoder(WheelData.getInstance()),
             )
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY

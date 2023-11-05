@@ -10,9 +10,16 @@ public class GotwayFrameADecoder {
     private WheelData wd;
     private GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator;
 
-    public GotwayFrameADecoder(final WheelData wd, final GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator) {
+    private GotwayBatteryCalculator gotwayBatteryCalculator;
+
+    public GotwayFrameADecoder(
+            final WheelData wd,
+            final GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator,
+            final GotwayBatteryCalculator gotwayBatteryCalculator
+    ) {
         this.wd = wd;
         this.gotwayScaledVoltageCalculator = gotwayScaledVoltageCalculator;
+        this.gotwayBatteryCalculator = gotwayBatteryCalculator;
     }
 
     public void decode(byte[] buff, Boolean useRatio, Boolean useBetterPercents, int gotwayNegative) {
@@ -33,26 +40,7 @@ public class GotwayFrameADecoder {
             hwPwm = hwPwm * gotwayNegative;
         }
 
-        int battery;
-        if (useBetterPercents) {
-            if (voltage > 6680) {
-                battery = 100;
-            } else if (voltage > 5440) {
-                battery = (voltage - 5380) / 13;
-            } else if (voltage > 5290) {
-                battery = (int) Math.round((voltage - 5290) / 32.5);
-            } else {
-                battery = 0;
-            }
-        } else {
-            if (voltage <= 5290) {
-                battery = 0;
-            } else if (voltage >= 6580) {
-                battery = 100;
-            } else {
-                battery = (voltage - 5290) / 13;
-            }
-        }
+        int battery = gotwayBatteryCalculator.getBattery(useBetterPercents, voltage);
 
         if (useRatio) {
             distance = (int) Math.round(distance * RATIO_GW);

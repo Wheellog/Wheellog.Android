@@ -298,7 +298,7 @@ public class GotwayAdapter extends BaseAdapter {
                     appConfig,
                     wd,
                     new GotwayUnpacker(),
-                    new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator(appConfig)),
+                    new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator(appConfig), new GotwayBatteryCalculator()),
                     new GotwayFrameBDecoder(wd)
             );
         }
