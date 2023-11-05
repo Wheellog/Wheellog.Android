@@ -1,6 +1,9 @@
 package com.cooper.wheellog.utils.kingsong;
 
 import static com.cooper.wheellog.utils.kingsong.KingsongAdapter.KS18L_SCALER;
+import static com.cooper.wheellog.utils.kingsong.KingsongUtils.is100vWheel;
+import static com.cooper.wheellog.utils.kingsong.KingsongUtils.is126vWheel;
+import static com.cooper.wheellog.utils.kingsong.KingsongUtils.is84vWheel;
 
 import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
@@ -43,7 +46,7 @@ public class KingsongLiveDataDecoder {
 
         int battery;
         boolean useBetterPercents = appConfig.getUseBetterPercents();
-        if (is84vWheel()) {
+        if (is84vWheel(wd)) {
             if (useBetterPercents) {
                 if (voltage > 8350) {
                     battery = 100;
@@ -63,7 +66,7 @@ public class KingsongLiveDataDecoder {
                     battery = (voltage - 6250) / 20;
                 }
             }
-        } else if (is126vWheel()) {
+        } else if (is126vWheel(wd)) {
             if (useBetterPercents) {
                 if (voltage > 12525) {
                     battery = 100;
@@ -83,7 +86,7 @@ public class KingsongLiveDataDecoder {
                     battery = (voltage - 9375) / 30;
                 }
             }
-        } else if (is100vWheel()) {
+        } else if (is100vWheel(wd)) {
             if (useBetterPercents) {
                 if (voltage > 10020) {
                     battery = 100;
@@ -131,19 +134,5 @@ public class KingsongLiveDataDecoder {
     }
 
     record KingsongLiveDataDecoderResult(int mode) {
-    }
-
-    private boolean is84vWheel() {
-        return StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "KS-16XF", "RW", "KS-18LH", "KS-18LY", "KS-S18"})
-                || wd.getName().startsWith("ROCKW") // support rockwheel models
-                || wd.getBtName().compareTo("RW") == 0;
-    }
-
-    private boolean is126vWheel() {
-        return StringUtil.inArray(wd.getModel(), new String[]{"KS-S20", "KS-S22"});
-    }
-
-    private boolean is100vWheel() {
-        return StringUtil.inArray(wd.getModel(), new String[]{"KS-S19"});
     }
 }
