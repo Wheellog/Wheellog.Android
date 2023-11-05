@@ -17,6 +17,7 @@ public class GotwayAdapter extends BaseAdapter {
     private GotwayFrameADecoder gotwayFrameADecoder;
     private GotwayFrameBDecoder gotwayFrameBDecoder;
     private AppConfig appConfig;
+    private WheelData wd;
     static final double RATIO_GW = 0.875;
     private String model = "";
     private String imu = "";
@@ -33,11 +34,13 @@ public class GotwayAdapter extends BaseAdapter {
 
     public GotwayAdapter(
             final AppConfig appConfig,
+            final WheelData wd,
             final GotwayUnpacker unpacker,
             final GotwayFrameADecoder gotwayFrameADecoder,
             final GotwayFrameBDecoder gotwayFrameBDecoder
     ) {
         this.appConfig = appConfig;
+        this.wd = wd;
         this.unpacker = unpacker;
         this.gotwayFrameADecoder = gotwayFrameADecoder;
         this.gotwayFrameBDecoder = gotwayFrameBDecoder;
@@ -46,8 +49,6 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode Gotway/Begode");
-
-        WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
         boolean newDataFound = false;
         if ((model.length() == 0) || (fw.length() == 0)) { // IMU sent at the begining, so there is no sense to check it, we can't request it
@@ -294,6 +295,7 @@ public class GotwayAdapter extends BaseAdapter {
             WheelData wd = WheelData.getInstance();
             INSTANCE = new GotwayAdapter(
                     WheelLog.AppConfig,
+                    wd,
                     new GotwayUnpacker(),
                     new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator()),
                     new GotwayFrameBDecoder(wd)

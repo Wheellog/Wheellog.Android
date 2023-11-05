@@ -6,6 +6,9 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.utils.MathsUtil;
 
+/**
+ * Decoding of frame B for Gotway wheels
+ */
 public class GotwayFrameBDecoder {
 
     private WheelData wd;

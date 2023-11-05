@@ -46,6 +46,7 @@ class GotwayAdapterTest {
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         adapter = GotwayAdapter(
             config,
+            data,
             GotwayUnpacker(),
             GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()),
             GotwayFrameBDecoder(WheelData.getInstance()),
