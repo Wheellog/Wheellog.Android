@@ -9,8 +9,9 @@ import com.cooper.wheellog.utils.MathsUtil;
 public class GotwayFrameBDecoder {
 
     private WheelData wd;
+
     public GotwayFrameBDecoder(
-        final WheelData wd
+            final WheelData wd
     ) {
         this.wd = wd;
     }
@@ -49,9 +50,11 @@ public class GotwayFrameBDecoder {
         }
         return new AlertResult(alert, _lock);
     }
+
     class AlertResult {
         public int alert;
         public int lock;
+
         public AlertResult(int alert, int lock) {
             this.alert = alert;
             this.lock = lock;

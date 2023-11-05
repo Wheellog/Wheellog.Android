@@ -7,7 +7,12 @@ import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -33,6 +38,7 @@ class GotwayVirtualAdapterTest {
     fun tearDown() {
         unmockkAll()
     }
+
     @Test
     fun `switch to gotway and decode`() {
         // Arrange.
@@ -43,7 +49,6 @@ class GotwayVirtualAdapterTest {
 
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.GOTWAY)
-        
     }
 
     @Test

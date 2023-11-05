@@ -44,7 +44,12 @@ class GotwayAdapterTest {
         every { WheelData.getInstance() } returns data
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-        adapter = GotwayAdapter(config, GotwayUnpacker(), GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()), GotwayFrameBDecoder(WheelData.getInstance()))
+        adapter = GotwayAdapter(
+            config,
+            GotwayUnpacker(),
+            GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()),
+            GotwayFrameBDecoder(WheelData.getInstance()),
+        )
     }
 
     @After
@@ -76,13 +81,13 @@ class GotwayAdapterTest {
         val distance = 3231.toShort()
         val phaseCurrent = (-8322).toShort()
         val byteArray = header +
-                MathsUtil.getBytes(voltage) +
-                MathsUtil.getBytes(speed) +
-                byteArrayOf(0, 0) +
-                MathsUtil.getBytes(distance) +
-                MathsUtil.getBytes(phaseCurrent) +
-                MathsUtil.getBytes(temperature) +
-                byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
+            MathsUtil.getBytes(voltage) +
+            MathsUtil.getBytes(speed) +
+            byteArrayOf(0, 0) +
+            MathsUtil.getBytes(distance) +
+            MathsUtil.getBytes(phaseCurrent) +
+            MathsUtil.getBytes(temperature) +
+            byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
         // Act.
         val result = adapter.decode(byteArray)
 
@@ -170,7 +175,6 @@ class GotwayAdapterTest {
         assertThat(data.model).isEqualTo("EXN")
         assertThat(data.version).isEqualTo("2002001")
     }
-
 
     @Test
     fun `update pedals mode`() {
