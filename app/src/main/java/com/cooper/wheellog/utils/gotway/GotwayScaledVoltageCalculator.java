@@ -1,14 +1,22 @@
 package com.cooper.wheellog.utils.gotway;
 
-import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.AppConfig;
 
 public class GotwayScaledVoltageCalculator {
+
+    private AppConfig appConfig;
+
+    public GotwayScaledVoltageCalculator(
+            final AppConfig appConfig
+    ) {
+        this.appConfig = appConfig;
+    }
 
     public double getScaledVoltage(double value) {
         int voltage = 0;
         double scaler = 1.0;
-        if (!WheelLog.AppConfig.getGotwayVoltage().equals("")) {
-            voltage = Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage());
+        if (!appConfig.getGotwayVoltage().equals("")) {
+            voltage = Integer.parseInt(appConfig.getGotwayVoltage());
         }
         switch (voltage) {
             case 0 -> scaler = 1.0;

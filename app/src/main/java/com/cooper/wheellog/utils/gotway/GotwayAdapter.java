@@ -293,11 +293,12 @@ public class GotwayAdapter extends BaseAdapter {
     public static GotwayAdapter getInstance() {
         if (INSTANCE == null) {
             WheelData wd = WheelData.getInstance();
+            AppConfig appConfig = WheelLog.AppConfig;
             INSTANCE = new GotwayAdapter(
-                    WheelLog.AppConfig,
+                    appConfig,
                     wd,
                     new GotwayUnpacker(),
-                    new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator()),
+                    new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator(appConfig)),
                     new GotwayFrameBDecoder(wd)
             );
         }

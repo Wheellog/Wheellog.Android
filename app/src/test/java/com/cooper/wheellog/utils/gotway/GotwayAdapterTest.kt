@@ -45,7 +45,7 @@ class GotwayAdapterTest {
             config,
             data,
             GotwayUnpacker(),
-            GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator()),
+            GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator(config)),
             GotwayFrameBDecoder(WheelData.getInstance()),
         )
     }
