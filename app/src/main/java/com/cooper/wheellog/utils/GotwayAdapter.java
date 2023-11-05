@@ -304,13 +304,13 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void updateAlarmMode(int alarmMode) {
-        String command = "";
-        switch (alarmMode) {
-            case alarmModeTwo: command = "o"; break;
-            case alarmModeOne: command = "u"; break;
-            case alarmModeOff: command = "i"; break;
-            case alarmModeCF: command = "I"; break;
-        }
+        String command = switch (alarmMode) {
+            case alarmModeTwo -> "o";
+            case alarmModeOne -> "u";
+            case alarmModeOff -> "i";
+            case alarmModeCF -> "I";
+            default -> "";
+        };
         lock_Changes = 2;
         sendCommand(command);
     }
