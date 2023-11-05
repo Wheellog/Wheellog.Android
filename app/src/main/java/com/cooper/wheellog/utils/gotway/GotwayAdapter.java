@@ -13,11 +13,11 @@ import timber.log.Timber;
 
 public class GotwayAdapter extends BaseAdapter {
     private static GotwayAdapter INSTANCE;
-    private GotwayUnpacker unpacker;
-    private GotwayFrameADecoder gotwayFrameADecoder;
-    private GotwayFrameBDecoder gotwayFrameBDecoder;
-    private AppConfig appConfig;
-    private WheelData wd;
+    private final GotwayUnpacker unpacker;
+    private final GotwayFrameADecoder gotwayFrameADecoder;
+    private final GotwayFrameBDecoder gotwayFrameBDecoder;
+    private final AppConfig appConfig;
+    private final WheelData wd;
     static final double RATIO_GW = 0.875;
     private String model = "";
     private String imu = "";
