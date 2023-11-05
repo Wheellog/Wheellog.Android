@@ -7,9 +7,7 @@ import timber.log.Timber;
 public class GotwayUnpacker {
 
     enum UnpackerState {
-        unknown,
-        collecting,
-        done
+        unknown, collecting, done
     }
 
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();

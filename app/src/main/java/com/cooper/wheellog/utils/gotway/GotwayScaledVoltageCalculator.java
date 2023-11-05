@@ -6,9 +6,7 @@ public class GotwayScaledVoltageCalculator {
 
     private AppConfig appConfig;
 
-    public GotwayScaledVoltageCalculator(
-            final AppConfig appConfig
-    ) {
+    public GotwayScaledVoltageCalculator(final AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 

@@ -9,14 +9,9 @@ public class GotwayFrameADecoder {
 
     private WheelData wd;
     private GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator;
-
     private GotwayBatteryCalculator gotwayBatteryCalculator;
 
-    public GotwayFrameADecoder(
-            final WheelData wd,
-            final GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator,
-            final GotwayBatteryCalculator gotwayBatteryCalculator
-    ) {
+    public GotwayFrameADecoder(final WheelData wd, final GotwayScaledVoltageCalculator gotwayScaledVoltageCalculator, final GotwayBatteryCalculator gotwayBatteryCalculator) {
         this.wd = wd;
         this.gotwayScaledVoltageCalculator = gotwayScaledVoltageCalculator;
         this.gotwayBatteryCalculator = gotwayBatteryCalculator;

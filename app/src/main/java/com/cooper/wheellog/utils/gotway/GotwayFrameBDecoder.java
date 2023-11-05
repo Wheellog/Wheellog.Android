@@ -13,9 +13,7 @@ public class GotwayFrameBDecoder {
 
     private WheelData wd;
 
-    public GotwayFrameBDecoder(
-            final WheelData wd
-    ) {
+    public GotwayFrameBDecoder(final WheelData wd) {
         this.wd = wd;
     }
 

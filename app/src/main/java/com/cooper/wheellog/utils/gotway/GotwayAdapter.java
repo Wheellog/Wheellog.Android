@@ -32,13 +32,7 @@ public class GotwayAdapter extends BaseAdapter {
     private final int alarmModeOff = 2; // 80% PWM only
     private final int alarmModeCF = 3; // PWM tiltback for custom firmware
 
-    public GotwayAdapter(
-            final AppConfig appConfig,
-            final WheelData wd,
-            final GotwayUnpacker unpacker,
-            final GotwayFrameADecoder gotwayFrameADecoder,
-            final GotwayFrameBDecoder gotwayFrameBDecoder
-    ) {
+    public GotwayAdapter(final AppConfig appConfig, final WheelData wd, final GotwayUnpacker unpacker, final GotwayFrameADecoder gotwayFrameADecoder, final GotwayFrameBDecoder gotwayFrameBDecoder) {
         this.appConfig = appConfig;
         this.wd = wd;
         this.unpacker = unpacker;
@@ -175,8 +169,7 @@ public class GotwayAdapter extends BaseAdapter {
         // Strobe light not available on Freestyl3r firmware while pwm tiltback mode enabled.
         // For custom firmware with enabled tiltback available only light off and on.
         // Strobe is using for tiltback warning. Detect via specific for this firmware alarm mode.
-        if (lightMode > lightModeOn
-                && appConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
+        if (lightMode > lightModeOn && appConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
             lightMode = lightModeOff;
         }
         appConfig.setLightMode(String.valueOf(lightMode));
@@ -294,13 +287,7 @@ public class GotwayAdapter extends BaseAdapter {
         if (INSTANCE == null) {
             WheelData wd = WheelData.getInstance();
             AppConfig appConfig = WheelLog.AppConfig;
-            INSTANCE = new GotwayAdapter(
-                    appConfig,
-                    wd,
-                    new GotwayUnpacker(),
-                    new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator(appConfig), new GotwayBatteryCalculator()),
-                    new GotwayFrameBDecoder(wd)
-            );
+            INSTANCE = new GotwayAdapter(appConfig, wd, new GotwayUnpacker(), new GotwayFrameADecoder(wd, new GotwayScaledVoltageCalculator(appConfig), new GotwayBatteryCalculator()), new GotwayFrameBDecoder(wd));
         }
         return INSTANCE;
     }
