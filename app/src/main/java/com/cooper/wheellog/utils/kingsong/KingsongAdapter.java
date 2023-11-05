@@ -1,6 +1,10 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils.kingsong;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.utils.BaseAdapter;
+import com.cooper.wheellog.utils.MathsUtil;
+import com.cooper.wheellog.utils.SmartBms;
+import com.cooper.wheellog.utils.StringUtil;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -49,7 +53,7 @@ public class KingsongAdapter extends BaseAdapter {
                 }
 
                 int battery;
-                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+                boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
                 if (is84vWheel()) {
                     if (useBetterPercents) {
                         if (voltage > 8350) {
