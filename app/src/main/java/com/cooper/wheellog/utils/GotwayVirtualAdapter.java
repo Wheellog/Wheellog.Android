@@ -1,6 +1,8 @@
 package com.cooper.wheellog.utils;
 
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.utils.gotway.GotwayAdapter;
+
 import timber.log.Timber;
 
 public class GotwayVirtualAdapter extends BaseAdapter {

@@ -1,4 +1,4 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils.gotway;
 
 import java.io.ByteArrayOutputStream;
 

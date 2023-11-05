@@ -1,10 +1,13 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils.gotway;
 
 import android.content.Intent;
 import android.os.Handler;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.utils.BaseAdapter;
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.MathsUtil;
 
 import timber.log.Timber;
 
