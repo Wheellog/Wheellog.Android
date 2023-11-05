@@ -60,19 +60,19 @@ public class KingsongAdapter extends BaseAdapter {
                 decodeKingsongDistanceTimeFan(data);
                 return false;
             } else if ((data[16] & 255) == 187) { // Name and Type data
-                decodeKingsongNameAndTypeData(data);
+                decodeKingSongNameAndTypeData(data);
                 return false;
             } else if ((data[16] & 255) == 0xB3) { // Serial Number
-                decodeKingsongSerialNumber(data);
+                decodeKingSongSerialNumber(data);
                 return false;
             } else if ((data[16] & 255) == 0xF5) { //cpu load
-                decodeKingsongCpuLoad(data);
+                decodeKingSongCpuLoad(data);
                 return false;
             } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
-                decodeKingsongSpeed(data);
+                decodeKingSongSpeed(data);
                 return false;
             } else if ((data[16] & 255) == 0xA4 || (data[16] & 255) == 0xB5) { //max speed and alerts
-                deocdeKingsongMaxSpeedAndAlerts(data);
+                decodeKingSongMaxSpeedAndAlerts(data);
                 return true;
             } else if ((data[16] & 255) == 0xF1 || (data[16] & 255) == 0xF2) { // F1 - 1st BMS, F2 - 2nd BMS. F3 and F4 are also present but empty
                 decodeFFrames(data);
@@ -194,7 +194,7 @@ public class KingsongAdapter extends BaseAdapter {
         }
     }
 
-    private void deocdeKingsongMaxSpeedAndAlerts(byte[] data) {
+    private void decodeKingSongMaxSpeedAndAlerts(byte[] data) {
         mWheelMaxSpeed = data[10] & 255;
         appConfig.setWheelMaxSpeed(mWheelMaxSpeed);
         mKSAlarm3Speed = (data[8] & 255);
@@ -210,17 +210,17 @@ public class KingsongAdapter extends BaseAdapter {
         }
     }
 
-    private void decodeKingsongSpeed(byte[] data) {
+    private void decodeKingSongSpeed(byte[] data) {
         mSpeedLimit = MathsUtil.getInt2R(data, 2) / 100.0;
         wd.setSpeedLimit(mSpeedLimit);
     }
 
-    private void decodeKingsongCpuLoad(byte[] data) {
+    private void decodeKingSongCpuLoad(byte[] data) {
         wd.setCpuLoad(data[14]);
         wd.setOutput(data[15] * 100);
     }
 
-    private void decodeKingsongSerialNumber(byte[] data) {
+    private void decodeKingSongSerialNumber(byte[] data) {
         byte[] sndata = new byte[18];
         System.arraycopy(data, 2, sndata, 0, 14);
         System.arraycopy(data, 17, sndata, 14, 3);
@@ -229,7 +229,7 @@ public class KingsongAdapter extends BaseAdapter {
         updateKSAlarmAndSpeed();
     }
 
-    private void decodeKingsongNameAndTypeData(byte[] data) {
+    private void decodeKingSongNameAndTypeData(byte[] data) {
         int end = 0;
         int i = 0;
         while (i < 14 && data[i + 2] != 0) {
@@ -317,17 +317,6 @@ public class KingsongAdapter extends BaseAdapter {
             cells = 24;
         }
         return cells;
-    }
-
-    public static KingsongAdapter getInstance() {
-        Timber.i("Get instance");
-        if (INSTANCE == null) {
-            WheelData wd = WheelData.getInstance();
-            AppConfig appConfig = WheelLog.AppConfig;
-            Timber.i("New instance");
-            INSTANCE = new KingsongAdapter(wd, appConfig, new KingsongLiveDataDecoder(wd, appConfig));
-        }
-        return INSTANCE;
     }
 
     @Override
@@ -511,4 +500,14 @@ public class KingsongAdapter extends BaseAdapter {
         wd.bluetoothCmd(data);
     }
 
+    public static KingsongAdapter getInstance() {
+        Timber.i("Get instance");
+        if (INSTANCE == null) {
+            WheelData wd = WheelData.getInstance();
+            AppConfig appConfig = WheelLog.AppConfig;
+            Timber.i("New instance");
+            INSTANCE = new KingsongAdapter(wd, appConfig, new KingsongLiveDataDecoder(wd, appConfig));
+        }
+        return INSTANCE;
+    }
 }
