@@ -319,8 +319,8 @@ public class KingsongAdapter extends BaseAdapter {
 
     @Override
     public boolean isReady() {
-        return !Objects.equals(WheelData.getInstance().getModel(), "Unknown")
-                && WheelData.getInstance().getVoltage() != 0;
+        return !Objects.equals(wd.getModel(), "Unknown")
+                && wd.getVoltage() != 0;
     }
 
     @Override
@@ -330,14 +330,14 @@ public class KingsongAdapter extends BaseAdapter {
         data[3] = (byte) 0xE0;
         data[16] = (byte) 0x87;
         data[17] = (byte) 0x15;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     @Override
     public void wheelCalibration() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x89;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     @Override
@@ -356,23 +356,20 @@ public class KingsongAdapter extends BaseAdapter {
         data[2] = (byte) (lightMode + 0x12);
         data[3] = (byte) 0x01;
         data[16] = (byte) 0x73;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     private boolean is84vWheel() {
-        WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-18L", "KS-16X", "KS-16XF", "RW", "KS-18LH", "KS-18LY", "KS-S18"})
                 || wd.getName().startsWith("ROCKW") // support rockwheel models
                 || wd.getBtName().compareTo("RW") == 0;
     }
 
     private boolean is126vWheel() {
-        WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-S20", "KS-S22"});
     }
 
     private boolean is100vWheel() {
-        WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-S19"});
     }
 
@@ -413,7 +410,7 @@ public class KingsongAdapter extends BaseAdapter {
         if ((mWheelMaxSpeed | mKSAlarm3Speed | mKSAlarm2Speed | mKSAlarm1Speed) == 0) {
             data[16] = (byte) 0x98; // request speed & alarm values from wheel
         }
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void updateKSAlarm1(int wheelKSAlarm1) {
@@ -440,7 +437,6 @@ public class KingsongAdapter extends BaseAdapter {
     public void set18Lkm(boolean enabled) {
         m18Lkm = enabled;
 
-        WheelData wd = WheelData.getInstance();
         if ((wd.getModel().compareTo("KS-18L") == 0) && !m18Lkm) {
             wd.setTotalDistance(Math.round(wd.getTotalDistance() * KS18L_SCALER));
         }
@@ -462,19 +458,19 @@ public class KingsongAdapter extends BaseAdapter {
     public void wheelBeep() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x88;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestNameData() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x9B;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestSerialData() {
         byte[] data = getEmptyRequest();
         data[16] = 0x63;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestBms1Serial() {
@@ -483,7 +479,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[17] = (byte) 0x00;
         data[18] = (byte) 0x00;
         data[19] = (byte) 0x00;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestBms2Serial() {
@@ -492,7 +488,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[17] = (byte) 0x00;
         data[18] = (byte) 0x00;
         data[19] = (byte) 0x00;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestBms1Firmware() {
@@ -501,7 +497,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[17] = (byte) 0x00;
         data[18] = (byte) 0x00;
         data[19] = (byte) 0x00;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestBms2Firmware() {
@@ -510,20 +506,20 @@ public class KingsongAdapter extends BaseAdapter {
         data[17] = (byte) 0x00;
         data[18] = (byte) 0x00;
         data[19] = (byte) 0x00;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void requestAlarmSettingsAndMaxSpeed() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x98;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     @Override
     public void powerOff() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0x40;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     @Override
@@ -531,7 +527,7 @@ public class KingsongAdapter extends BaseAdapter {
         byte[] data = getEmptyRequest();
         data[2] = (byte) ledMode;
         data[16] = (byte) 0x6C;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     @Override
@@ -539,7 +535,7 @@ public class KingsongAdapter extends BaseAdapter {
         byte[] data = getEmptyRequest();
         data[2] = (byte) strobeMode;
         data[16] = (byte) 0x53;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
 
@@ -548,7 +544,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[2] = (byte) 0x09;
         data[4] = (byte) chargeUpTo;
         data[16] = (byte) 0x8a;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void setStandByDelay(int standByDelay) { //3600 => 60 min => 1 hour
@@ -557,7 +553,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[4] = (byte) (standByDelay & 0xFF);
         data[5] = (byte) ((standByDelay >> 8) & 0xFF);
         data[16] = (byte) 0x3f;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void setGyroSwitchOff(int gyroSwitchOff) { //501 => 50.1 degree
@@ -566,7 +562,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[4] = (byte) (gyroSwitchOff & 0xFF);
         data[5] = (byte) ((gyroSwitchOff >> 8) & 0xFF);
         data[16] = (byte) 0x8a;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
     public void setGyroFrontAngle(int gyroFrontAngle) { //-32 => -3.2 degree
@@ -575,7 +571,7 @@ public class KingsongAdapter extends BaseAdapter {
         data[4] = (byte) (gyroFrontAngle & 0xFF);
         data[5] = (byte) ((gyroFrontAngle >> 8) & 0xFF);
         data[16] = (byte) 0x8a;
-        WheelData.getInstance().bluetoothCmd(data);
+        wd.bluetoothCmd(data);
     }
 
 }
