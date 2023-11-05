@@ -3,6 +3,7 @@ package com.cooper.wheellog.utils.gotway
 import kotlin.math.roundToInt
 
 class GotwayBatteryCalculator {
+    // Todo check that this is correct for Begode/Gotway/Extreme Bull Wheels of varying voltages
     fun getBattery(useBetterPercents: Boolean, voltage: Int): Int {
         val battery: Int = if (useBetterPercents) {
             when {
