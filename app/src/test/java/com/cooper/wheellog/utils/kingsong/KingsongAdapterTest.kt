@@ -39,9 +39,10 @@ class KingsongAdapterTest {
         adapter = KingsongAdapter(
             WheelData.getInstance(),
             WheelLog.AppConfig,
-            KingsongLiveDataDecoder(
+            KingSongLiveDataDecoder(
                 WheelData.getInstance(),
                 WheelLog.AppConfig,
+                KingSongBatteryCalculator(WheelData.getInstance(), WheelLog.AppConfig)
             ),
         )
     }

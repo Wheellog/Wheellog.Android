@@ -30,12 +30,12 @@ public class KingsongAdapter extends BaseAdapter {
 
     private final WheelData wd;
     private final AppConfig appConfig;
-    private final KingsongLiveDataDecoder kingsongLiveDataDecoder;
+    private final KingSongLiveDataDecoder kingsongLiveDataDecoder;
 
     public KingsongAdapter(
             final WheelData wd,
             final AppConfig appConfig,
-            final KingsongLiveDataDecoder kingsongLiveDataDecoder
+            final KingSongLiveDataDecoder kingsongLiveDataDecoder
     ) {
         this.wd = wd;
         this.appConfig = appConfig;
@@ -53,8 +53,7 @@ public class KingsongAdapter extends BaseAdapter {
                 return false;
             }
             if ((data[16] & 255) == 0xA9) {
-                KingsongLiveDataDecoder.KingsongLiveDataDecoderResult result = kingsongLiveDataDecoder.decode(data, m18Lkm, mMode);
-                mMode = result.mode();
+                mMode = kingsongLiveDataDecoder.decode(data, m18Lkm, mMode);
                 return true;
             } else if ((data[16] & 255) == 0xB9) { // Distance/Time/Fan Data
                 decodeKingsongDistanceTimeFan(data);
@@ -506,7 +505,7 @@ public class KingsongAdapter extends BaseAdapter {
             WheelData wd = WheelData.getInstance();
             AppConfig appConfig = WheelLog.AppConfig;
             Timber.i("New instance");
-            INSTANCE = new KingsongAdapter(wd, appConfig, new KingsongLiveDataDecoder(wd, appConfig));
+            INSTANCE = new KingsongAdapter(wd, appConfig, new KingSongLiveDataDecoder(wd, appConfig, new KingSongBatteryCalculator(wd, appConfig)));
         }
         return INSTANCE;
     }
