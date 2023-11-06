@@ -8,7 +8,6 @@ import com.cooper.wheellog.utils.kingsong.KingsongUtils.is84vWheel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -25,19 +24,15 @@ class KingSongBatteryCalculatorTest {
         calculator = KingSongBatteryCalculator(wd, appConfig)
     }
 
-    @After
-    fun tearDown() {
-        // In MockK you would clear the mocks if necessary
-    }
-
     @Test
     fun `calculateAndStoreBatteryLevel sets correct battery level for 84vWheel with better percents`() {
-        // Arrange
         every { is84vWheel(wd) } returns true
+        every { is100vWheel(wd) } returns false
+        every { is126vWheel(wd) } returns false
         every { wd.btName } returns "KS-16X"
-
+        every { wd.model } returns "KS-16X"
         every { appConfig.useBetterPercents } returns true
-        val voltage = 8400 // Example voltage
+        val voltage = 8400
 
         // Act
         calculator.calculateAndStoreBatteryLevel(voltage)
@@ -46,7 +41,6 @@ class KingSongBatteryCalculatorTest {
         verify { wd.batteryLevel = 100 }
     }
 
-    // Test cases for 84vWheel without 'useBetterPercents'
     @Test
     fun `calculateAndStoreBatteryLevel sets correct battery level for 84vWheel without better percents`() {
         every { is84vWheel(wd) } returns true
@@ -62,39 +56,6 @@ class KingSongBatteryCalculatorTest {
         verify { wd.batteryLevel = 2 }
     }
 
-    // Test cases for 126vWheel with 'useBetterPercents'
-    @Test
-    fun `calculateAndStoreBatteryLevel sets correct battery level for 126vWheel with better percents`() {
-        every { is126vWheel(wd) } returns true
-        every { is100vWheel(wd) } returns false
-        every { is84vWheel(wd) } returns false
-        every { wd.model } returns "KS-S20"
-        every { wd.btName } returns "KS-S20"
-        every { appConfig.useBetterPercents } returns true
-        val voltage = 12300
-
-        calculator.calculateAndStoreBatteryLevel(voltage)
-
-        verify { wd.batteryLevel = 91 }
-    }
-
-    // Test cases for 126vWheel without 'useBetterPercents'
-    @Test
-    fun `calculateAndStoreBatteryLevel sets correct battery level for 126vWheel without better percents`() {
-        every { is84vWheel(wd) } returns false
-        every { is100vWheel(wd) } returns false
-        every { is126vWheel(wd) } returns true
-        every { wd.model } returns "KS-S20"
-        every { wd.btName } returns "KS-S20"
-        every { appConfig.useBetterPercents } returns false
-        val voltage = 9500
-
-        calculator.calculateAndStoreBatteryLevel(voltage)
-
-        verify { wd.batteryLevel = 4 }
-    }
-
-    // Test cases for 100vWheel with 'useBetterPercents'
     @Test
     fun `calculateAndStoreBatteryLevel sets correct battery level for 100vWheel with better percents`() {
         every { is84vWheel(wd) } returns false
@@ -110,7 +71,6 @@ class KingSongBatteryCalculatorTest {
         verify { wd.batteryLevel = 100 }
     }
 
-    // Test cases for 100vWheel without 'useBetterPercents'
     @Test
     fun `calculateAndStoreBatteryLevel sets correct battery level for 100vWheel without better percents`() {
         every { is84vWheel(wd) } returns false
@@ -126,7 +86,36 @@ class KingSongBatteryCalculatorTest {
         verify { wd.batteryLevel = 8 }
     }
 
-    // Test cases for non-standard voltages with 'useBetterPercents'
+    @Test
+    fun `calculateAndStoreBatteryLevel sets correct battery level for 126vWheel with better percents`() {
+        every { is126vWheel(wd) } returns true
+        every { is100vWheel(wd) } returns false
+        every { is84vWheel(wd) } returns false
+        every { wd.model } returns "KS-S20"
+        every { wd.btName } returns "KS-S20"
+        every { appConfig.useBetterPercents } returns true
+        val voltage = 12300
+
+        calculator.calculateAndStoreBatteryLevel(voltage)
+
+        verify { wd.batteryLevel = 91 }
+    }
+
+    @Test
+    fun `calculateAndStoreBatteryLevel sets correct battery level for 126vWheel without better percents`() {
+        every { is84vWheel(wd) } returns false
+        every { is100vWheel(wd) } returns false
+        every { is126vWheel(wd) } returns true
+        every { wd.model } returns "KS-S20"
+        every { wd.btName } returns "KS-S20"
+        every { appConfig.useBetterPercents } returns false
+        val voltage = 9500
+
+        calculator.calculateAndStoreBatteryLevel(voltage)
+
+        verify { wd.batteryLevel = 4 }
+    }
+
     @Test
     fun `calculateAndStoreBatteryLevel sets correct battery level for non-standard voltage with better percents`() {
         every { is84vWheel(wd) } returns false
@@ -142,7 +131,6 @@ class KingSongBatteryCalculatorTest {
         verify { wd.batteryLevel = 21 }
     }
 
-    // Test cases for non-standard voltages without 'useBetterPercents'
     @Test
     fun `calculateAndStoreBatteryLevel sets correct battery level for non-standard voltage without better percents`() {
         every { is84vWheel(wd) } returns false
