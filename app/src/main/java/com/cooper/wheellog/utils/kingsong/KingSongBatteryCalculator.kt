@@ -39,7 +39,7 @@ class KingSongBatteryCalculator(
     }
 
     /**
-     * KS-16X, KS-18L, KS-18XL, KS-18S, KS-18S Pro, KS-18XL, KS-18XL Pro, KS-S18
+     * KS-18L, KS-16X, KS-16XF, RW, KS-18LH, KS-18LY, KS-S18
      */
     private fun eightyFourVoltWheel(useBetterPercents: Boolean, voltage: Int): Int =
         if (useBetterPercents) {
@@ -58,8 +58,7 @@ class KingSongBatteryCalculator(
         }
 
     /**
-     * S18
-     * TODO the formula for calculating battery level is not correct for voltages between 100.19V and 81.60V
+     * S19
      */
     private fun oneHundredVoltWheel(useBetterPercents: Boolean, voltage: Int): Int =
         if (useBetterPercents) {
