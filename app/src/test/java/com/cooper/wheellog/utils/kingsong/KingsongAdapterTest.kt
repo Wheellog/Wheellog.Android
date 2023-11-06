@@ -42,8 +42,9 @@ class KingsongAdapterTest {
             KingSongLiveDataDecoder(
                 WheelData.getInstance(),
                 WheelLog.AppConfig,
-                KingSongBatteryCalculator(WheelData.getInstance(), WheelLog.AppConfig)
+                KingSongBatteryCalculator(WheelData.getInstance(), WheelLog.AppConfig),
             ),
+            KingSongFFFrameDecoder(WheelData.getInstance()),
         )
     }
 
@@ -76,11 +77,11 @@ class KingsongAdapterTest {
         val distance = 1234567890
         val type = 169.toByte() // Live data
         val byteArray = header +
-                MathsUtil.getBytes(voltage) +
-                MathsUtil.getBytes(speed) +
-                MathsUtil.getBytes(distance) +
+            MathsUtil.getBytes(voltage) +
+            MathsUtil.getBytes(speed) +
+            MathsUtil.getBytes(distance) +
             byteArrayOf(10, 11) +
-                MathsUtil.getBytes(temperature) +
+            MathsUtil.getBytes(temperature) +
             byteArrayOf(14, 15, 16, type, 0, 0)
 
         // Act.
@@ -105,9 +106,9 @@ class KingsongAdapterTest {
         val type = 185.toByte() // Distance|Time|Fan Data
         val fanStatus = 321.toByte()
         val byteArray = header +
-                MathsUtil.getBytes(distance) +
+            MathsUtil.getBytes(distance) +
             byteArrayOf(6, 7) +
-                MathsUtil.getBytes(topSpeed) +
+            MathsUtil.getBytes(topSpeed) +
             byteArrayOf(10, 11, 12, fanStatus, 14, 15, 16, type, 0, 0)
 
         // Act.
@@ -127,7 +128,7 @@ class KingsongAdapterTest {
         val name = "Super-Wheel12"
         val model = name.split("-")[0]
         val byteArray = header +
-                MathsUtil.reverseEvery2(byteArrayOf(2) + name.toByteArray(Charsets.UTF_8)) +
+            MathsUtil.reverseEvery2(byteArrayOf(2) + name.toByteArray(Charsets.UTF_8)) +
             byteArrayOf(16) +
             byteArrayOf(type, 0, 0)
 
