@@ -109,7 +109,7 @@ public class KingsongAdapter extends BaseAdapter {
     }
 
     private void decodeFFrames(byte[] data) {
-        kingsongFFFrameDecoder.decodeFFrames(data);
+        kingsongFFFrameDecoder.decode(data);
     }
 
     private void decodeKingSongMaxSpeedAndAlerts(byte[] data) {

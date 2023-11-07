@@ -14,7 +14,7 @@ public class KingSongFFFrameDecoder {
         this.wd = wd;
     }
 
-    public void decodeFFrames(byte[] data) {
+    public void decode(byte[] data) {
         int bmsnum = (data[16] & 255) - 0xF0;
         SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
         int pNum = (data[17] & 255);
