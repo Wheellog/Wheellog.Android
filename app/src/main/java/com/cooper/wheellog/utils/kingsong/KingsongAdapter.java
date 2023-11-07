@@ -387,7 +387,7 @@ public class KingsongAdapter extends BaseAdapter {
             INSTANCE = new KingsongAdapter(
                     wd,
                     appConfig,
-                    new KingSongLiveDataDecoder(wd, appConfig, new KingSongBatteryCalculator(wd, appConfig)),
+                    new KingSongLiveDataDecoder(wd, new KingSongBatteryCalculator(wd, appConfig)),
                     new KingSongFFFrameDecoder(wd)
             );
         }

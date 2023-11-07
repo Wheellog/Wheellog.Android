@@ -41,7 +41,6 @@ class KingsongAdapterTest {
             WheelLog.AppConfig,
             KingSongLiveDataDecoder(
                 WheelData.getInstance(),
-                WheelLog.AppConfig,
                 KingSongBatteryCalculator(WheelData.getInstance(), WheelLog.AppConfig),
             ),
             KingSongFFFrameDecoder(WheelData.getInstance()),

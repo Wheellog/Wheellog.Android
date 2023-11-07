@@ -14,16 +14,13 @@ import java.util.Locale;
 public class KingSongLiveDataDecoder {
 
     private final WheelData wd;
-    private final AppConfig appConfig;
     private final KingSongBatteryCalculator kingSongBatteryCalculator;
 
     public KingSongLiveDataDecoder(
             final WheelData wd,
-            final AppConfig appConfig,
             final KingSongBatteryCalculator kingSongBatteryCalculator
     ) {
         this.wd = wd;
-        this.appConfig = appConfig;
         this.kingSongBatteryCalculator = kingSongBatteryCalculator;
     }
 
@@ -48,5 +45,4 @@ public class KingSongLiveDataDecoder {
         kingSongBatteryCalculator.calculateAndStoreBatteryLevel(voltage);
         return mMode;
     }
-
 }
