@@ -59,24 +59,24 @@ class KingSongLiveDataDecoderTest {
         every { wd.getModel() } returns "KS-18L"
 
         // Assume we have predefined values in the byte array
-        every { wd.setVoltage(any()) } just Runs
-        every { wd.setSpeed(any()) } just Runs
-        every { wd.setTotalDistance(any()) } just Runs
-        every { wd.setCurrent(any()) } just Runs
-        every { wd.setTemperature(any()) } just Runs
-        every { wd.setVoltageSag(any()) } just Runs
+        every { wd.voltage = any() } just Runs
+        every { wd.speed = any() } just Runs
+        every { wd.totalDistance = any() } just Runs
+        every { wd.current = any() } just Runs
+        every { wd.temperature = any() } just Runs
+        every { wd.voltageSag = any() } just Runs
         every { kingSongBatteryCalculator.calculateAndStoreBatteryLevel(any()) } just Runs
 
         // Call the method under test
         val returnedMode = decoder.decode(data, m18Lkm, mode)
 
         // Assertions and Verifications
-        verify { wd.setVoltage(any()) }
-        verify { wd.setSpeed(any()) }
-        verify { wd.setTotalDistance(any()) }
-        verify { wd.setCurrent(any()) }
-        verify { wd.setTemperature(any()) }
-        verify { wd.setVoltageSag(any()) }
+        verify { wd.voltage = any() }
+        verify { wd.speed = any() }
+        verify { wd.totalDistance = any() }
+        verify { wd.current = any() }
+        verify { wd.temperature = any() }
+        verify { wd.voltageSag = any() }
         verify { kingSongBatteryCalculator.calculateAndStoreBatteryLevel(any()) }
 
         // You can also verify the returned mode and other specifics if necessary
