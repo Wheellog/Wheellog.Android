@@ -1,8 +1,12 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils.inmotion;
 
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.utils.BaseAdapter;
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.MathsUtil;
+import com.cooper.wheellog.utils.StringUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +15,7 @@ import timber.log.Timber;
 
 import android.content.Intent;
 
-import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
+import static com.cooper.wheellog.utils.inmotion.InMotionAdapter.Model.*;
 
 public class InMotionAdapter extends BaseAdapter {
     private static InMotionAdapter INSTANCE;

@@ -2,7 +2,7 @@ package com.cooper.wheellog
 
 import android.content.Context
 import com.cooper.wheellog.utils.Constants
-import com.cooper.wheellog.utils.InMotionAdapter
+import com.cooper.wheellog.utils.inmotion.InMotionAdapter
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.cooper.wheellog.utils.gotway.GotwayAdapter
 import com.cooper.wheellog.utils.gotway.GotwayBatteryCalculator
@@ -189,7 +189,9 @@ class RawDataTest {
         }
 
         // Assert.
-        assertThat(data.model).isEqualTo(InMotionAdapter.getModelString(InMotionAdapter.Model.V8S))
+        assertThat(data.model).isEqualTo(
+            InMotionAdapter.getModelString(
+                InMotionAdapter.Model.V8S))
         assertThat(data.batteryLevel).isEqualTo(96)
         assertThat(data.temperature).isEqualTo(30)
         assertThat(data.temperature2).isEqualTo(-109) // Fix me

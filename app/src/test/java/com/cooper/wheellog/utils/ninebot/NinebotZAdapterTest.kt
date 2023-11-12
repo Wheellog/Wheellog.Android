@@ -1,4 +1,4 @@
-package com.cooper.wheellog.utils
+package com.cooper.wheellog.utils.ninebot
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
@@ -13,7 +13,8 @@ import org.junit.Test
 
 class NinebotZAdapterTest {
 
-    private var adapter: NinebotZAdapter = NinebotZAdapter()
+    private var adapter: NinebotZAdapter =
+        NinebotZAdapter()
     private lateinit var data: WheelData
 
     @Before

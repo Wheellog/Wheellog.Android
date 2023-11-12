@@ -1,6 +1,9 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils.ninebot;
 
 import com.cooper.wheellog.WheelData;
+import com.cooper.wheellog.utils.BaseAdapter;
+import com.cooper.wheellog.utils.MathsUtil;
+import com.cooper.wheellog.utils.StringUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

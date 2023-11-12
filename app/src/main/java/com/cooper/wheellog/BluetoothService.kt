@@ -9,7 +9,11 @@ import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.SomeUtil.playSound
 import com.cooper.wheellog.utils.StringUtil.toHexStringRaw
+import com.cooper.wheellog.utils.inmotion.InMotionAdapter
+import com.cooper.wheellog.utils.inmotion.InmotionAdapterV2
 import com.cooper.wheellog.utils.kingsong.KingsongAdapter
+import com.cooper.wheellog.utils.ninebot.NinebotAdapter
+import com.cooper.wheellog.utils.ninebot.NinebotZAdapter
 import com.welie.blessed.*
 import timber.log.Timber
 import java.text.SimpleDateFormat

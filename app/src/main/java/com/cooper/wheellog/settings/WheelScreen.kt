@@ -14,6 +14,9 @@ import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.*
 import com.cooper.wheellog.utils.kingsong.KingsongAdapter
 import com.cooper.wheellog.utils.gotway.GotwayAdapter
+import com.cooper.wheellog.utils.inmotion.InMotionAdapter
+import com.cooper.wheellog.utils.inmotion.InmotionAdapterV2
+import com.cooper.wheellog.utils.ninebot.NinebotZAdapter
 import com.cooper.wheellog.utils.veteran.VeteranAdapter
 
 @Composable

@@ -1,10 +1,14 @@
-package com.cooper.wheellog.utils;
+package com.cooper.wheellog.utils.inmotion;
 
 import android.content.Context;
 import android.content.Intent;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+import com.cooper.wheellog.utils.BaseAdapter;
+import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.MathsUtil;
+import com.cooper.wheellog.utils.StringUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

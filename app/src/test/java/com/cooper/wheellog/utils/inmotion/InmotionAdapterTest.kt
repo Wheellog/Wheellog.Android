@@ -1,4 +1,4 @@
-package com.cooper.wheellog.utils
+package com.cooper.wheellog.utils.inmotion
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
@@ -13,7 +13,8 @@ import org.junit.Test
 
 class InmotionAdapterTest {
 
-    private var adapter: InMotionAdapter = InMotionAdapter()
+    private var adapter: InMotionAdapter =
+        InMotionAdapter()
     private lateinit var data: WheelData
 
     @Before
