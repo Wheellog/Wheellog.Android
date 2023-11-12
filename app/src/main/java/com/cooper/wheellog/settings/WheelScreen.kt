@@ -12,6 +12,7 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.*
+import com.cooper.wheellog.utils.gotway.GotwayAdapter
 import com.cooper.wheellog.utils.veteran.VeteranAdapter
 
 @Composable

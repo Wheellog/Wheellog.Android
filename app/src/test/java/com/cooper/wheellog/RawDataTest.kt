@@ -1,10 +1,23 @@
 package com.cooper.wheellog
 
 import android.content.Context
-import com.cooper.wheellog.utils.*
+import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.InMotionAdapter
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
+import com.cooper.wheellog.utils.gotway.GotwayAdapter
+import com.cooper.wheellog.utils.gotway.GotwayBatteryCalculator
+import com.cooper.wheellog.utils.gotway.GotwayFrameADecoder
+import com.cooper.wheellog.utils.gotway.GotwayFrameBDecoder
+import com.cooper.wheellog.utils.gotway.GotwayScaledVoltageCalculator
+import com.cooper.wheellog.utils.gotway.GotwayUnpacker
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -39,7 +52,18 @@ class RawDataTest {
         every { config.gotwayNegative } returns "1"
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-        val adapter = GotwayAdapter()
+        val adapter =
+            GotwayAdapter(
+                config,
+                data,
+                GotwayUnpacker(),
+                GotwayFrameADecoder(
+                    WheelData.getInstance(),
+                    GotwayScaledVoltageCalculator(config),
+                    GotwayBatteryCalculator(),
+                ),
+                GotwayFrameBDecoder(WheelData.getInstance(), config),
+            )
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         val inputStream: InputStream = File("src/test/resources/rawDecodeTest.csv").inputStream()
         val startTime = sdf.parse("11:50:50.123")
@@ -115,7 +139,8 @@ class RawDataTest {
         // Arrange.
         val adapter = InMotionAdapter()
         data.wheelType = Constants.WHEEL_TYPE.INMOTION
-        val inputStream: InputStream = File("src/test/resources/RAW_inmotion_alerts.csv").inputStream()
+        val inputStream: InputStream =
+            File("src/test/resources/RAW_inmotion_alerts.csv").inputStream()
 
         val dataList = mutableListOf<String>()
         inputStream.bufferedReader().useLines { lines ->
@@ -135,7 +160,7 @@ class RawDataTest {
         }
 
         // Assert.
-        //assertThat(data.alert).isEqualTo("")
+        // assertThat(data.alert).isEqualTo("")
     }
 
     @Test

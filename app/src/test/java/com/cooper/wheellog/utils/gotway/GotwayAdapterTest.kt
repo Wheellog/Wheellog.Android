@@ -1,12 +1,21 @@
-package com.cooper.wheellog.utils
+package com.cooper.wheellog.utils.gotway
 
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.utils.Constants
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -15,7 +24,7 @@ import kotlin.math.round
 
 class GotwayAdapterTest {
 
-    private var adapter: GotwayAdapter = GotwayAdapter()
+    private lateinit var adapter: GotwayAdapter
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
 
@@ -32,7 +41,13 @@ class GotwayAdapterTest {
         every { WheelData.getInstance() } returns data
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-
+        adapter = GotwayAdapter(
+            config,
+            data,
+            GotwayUnpacker(),
+            GotwayFrameADecoder(WheelData.getInstance(), GotwayScaledVoltageCalculator(config), GotwayBatteryCalculator()),
+            GotwayFrameBDecoder(WheelData.getInstance(), config),
+        )
     }
 
     @After
@@ -66,11 +81,11 @@ class GotwayAdapterTest {
         val byteArray = header +
                 MathsUtil.getBytes(voltage) +
                 MathsUtil.getBytes(speed) +
-                byteArrayOf(0, 0) +
+            byteArrayOf(0, 0) +
                 MathsUtil.getBytes(distance) +
                 MathsUtil.getBytes(phaseCurrent) +
                 MathsUtil.getBytes(temperature) +
-                byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
+            byteArrayOf(14, 15, 16, 17, 0, 0x18, 0x5A, 0x5A, 0x5A, 0x5A)
         // Act.
         val result = adapter.decode(byteArray)
 
@@ -158,7 +173,6 @@ class GotwayAdapterTest {
         assertThat(data.model).isEqualTo("EXN")
         assertThat(data.version).isEqualTo("2002001")
     }
-
 
     @Test
     fun `update pedals mode`() {
