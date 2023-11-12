@@ -11,6 +11,7 @@ import com.cooper.wheellog.utils.*;
 import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import com.cooper.wheellog.utils.gotway.GotwayAdapter;
 import com.cooper.wheellog.utils.veteran.VeteranAdapter;
+import com.cooper.wheellog.utils.kingsong.KingsongAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
