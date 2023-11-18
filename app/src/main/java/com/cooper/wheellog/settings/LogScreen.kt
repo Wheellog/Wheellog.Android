@@ -199,13 +199,14 @@ fun logScreen()
                                 email = login,
                                 password = password,
                             ) { success ->
+                                val errorMessage = ElectroClub.instance.lastError ?: ""
                                 if (success) {
                                     ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
                                         WheelData.getInstance().mac,
                                         context as Activity
                                     ) { }
                                 }
-                                continuation.resume(Pair(success, ElectroClub.instance.lastError ?: ""))
+                                continuation.resume(Pair(success, errorMessage))
                             }
                         }
                     }

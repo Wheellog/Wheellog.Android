@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import com.cooper.wheellog.AppConfig
-import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeEnum
@@ -898,6 +897,7 @@ fun loginAlertDialog(
     loginPlaceholder: String = stringResource(R.string.email),
     passwordPlaceholder: String = stringResource(R.string.password),
     onDismiss: () -> Unit,
+    /* return: success, error message */
     onConfirm: suspend (login: String, password: String) -> Pair<Boolean, String>,
 ){
     var login by rememberSaveable { mutableStateOf("") }
@@ -909,6 +909,7 @@ fun loginAlertDialog(
         Column {
             TextField(
                 value = login,
+                modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 onValueChange = {
                     isLoginError = !Patterns.EMAIL_ADDRESS.matcher(it).matches()
