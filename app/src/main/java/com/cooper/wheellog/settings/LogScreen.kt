@@ -24,6 +24,8 @@ import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Composable
 fun logScreen()
@@ -50,7 +52,7 @@ fun logScreen()
                 autoLogDependency = it
             } else {
                 if (it) {
-                    writePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 } else {
                     AppConfig.autoLog = false
                     autoLogDependency = false
@@ -156,27 +158,57 @@ fun logScreen()
         }
 
         AnimatedVisibility (locationDependency && gpsDependency.value) {
-            var autoUploadDependency by remember { mutableStateOf(AppConfig.autoUploadEc) }
+            val autoUploadDependency = remember { mutableStateOf(AppConfig.autoUploadEc) }
             Column {
                 switchPref(
                     name = stringResource(R.string.auto_upload_log_ec_title),
                     desc = stringResource(R.string.auto_upload_log_ec_description),
-                    default = AppConfig.autoUploadEc,
+                    defaultState = autoUploadDependency,
                 ) {
                     AppConfig.autoUploadEc = it
-                    autoUploadDependency = it
+                    autoUploadDependency.value = it
+                    if (!it) {
+                        ElectroClub.instance.logout()
+                    }
                 }
 
-                if (autoUploadDependency && WheelData.getInstance().isConnected) {
+                if (autoUploadDependency.value && WheelData.getInstance().isConnected) {
                     val activity = LocalContext.current as Activity
                     clickablePref(
                         name = stringResource(R.string.select_garage_ec_title),
+                        desc = AppConfig.ecGarage ?: "",
                     ) {
                         AppConfig.ecGarage = null
                         ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
                             mac = "",
                             activity = activity,
                         ) { }
+                    }
+                }
+
+                if (autoUploadDependency.value) {
+                    loginAlertDialog(
+                        title = "electro.club",
+                        onDismiss = {
+                            autoUploadDependency.value = false
+                            AppConfig.autoUploadEc = false
+                        },
+                    ) { login, password ->
+                        suspendCoroutine { continuation ->
+                            ElectroClub.instance.login(
+                                email = login,
+                                password = password,
+                            ) { success ->
+                                val errorMessage = ElectroClub.instance.lastError ?: ""
+                                if (success) {
+                                    ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
+                                        WheelData.getInstance().mac,
+                                        context as Activity
+                                    ) { }
+                                }
+                                continuation.resume(Pair(success, errorMessage))
+                            }
+                        }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
+import android.util.Patterns
 import androidx.annotation.*
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -15,9 +16,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.*
 import androidx.compose.foundation.text.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.*
@@ -37,7 +40,13 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Composable
 fun clickablePref(
@@ -882,6 +891,123 @@ fun baseSettings(
     }
 }
 
+@Composable
+fun loginAlertDialog(
+    title: String,
+    loginPlaceholder: String = stringResource(R.string.email),
+    passwordPlaceholder: String = stringResource(R.string.password),
+    onDismiss: () -> Unit,
+    /* return: success, error message */
+    onConfirm: suspend (login: String, password: String) -> Pair<Boolean, String>,
+){
+    var login by rememberSaveable { mutableStateOf("") }
+    var isLoginError by rememberSaveable { mutableStateOf(false) }
+    var errorMessage by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val body = @Composable {
+        Column {
+            TextField(
+                value = login,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                onValueChange = {
+                    isLoginError = !Patterns.EMAIL_ADDRESS.matcher(it).matches()
+                    login = it
+                },
+                placeholder = { Text(loginPlaceholder) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Login,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = Color.Gray,
+                    )
+                },
+                isError = isLoginError,
+                supportingText = {
+                    if (isLoginError && errorMessage.isNotEmpty()) {
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                trailingIcon = {
+                    if (isLoginError) {
+                        Icon(Icons.Filled.Error, "error", tint = MaterialTheme.colorScheme.error)
+                    }
+                },
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            TextField(
+                value = password,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                onValueChange = { password = it },
+                placeholder = { Text(passwordPlaceholder) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Password,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = Color.Gray,
+                    )
+                },
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = null)
+                    }
+                },
+            )
+        }
+    }
+    var showDialog by rememberSaveable { mutableStateOf(true) }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(title) },
+            text = body,
+            confirmButton = {
+                Button(
+                    onClick = {
+                        isLoginError = false
+                        errorMessage = ""
+                        val scope = CoroutineScope(Dispatchers.IO + Job())
+                        scope.launch {
+                            val result = onConfirm(login, password)
+                            if (result.first) {
+                                showDialog = false
+                            } else {
+                                isLoginError = true
+                                errorMessage = result.second
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismiss,
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            },
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun baseSettingsPreview() {
@@ -1062,4 +1188,18 @@ private fun multiListPreview() {
         ),
         defaultKeys = listOf("12", "2"),
     ) { }
+}
+
+@Preview
+@Composable
+fun loginAlertDialogPreview() {
+    WheelLog.AppConfig = AppConfig(LocalContext.current)
+    loginAlertDialog(
+        title = "Login Preview 3",
+        onDismiss = { }
+    ) { login, password ->
+        suspendCoroutine {
+            it.resume(Pair(login == "test" || password == "test", "Type 'test' as login"))
+        }
+    }
 }
