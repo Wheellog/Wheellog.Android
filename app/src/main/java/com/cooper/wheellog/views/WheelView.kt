@@ -14,6 +14,7 @@ import com.cooper.wheellog.*
 import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.utils.Alarms
 import com.cooper.wheellog.utils.Calculator
+import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.MathsUtil.dpToPx
 import com.cooper.wheellog.utils.MathsUtil.kmToMiles
 import com.cooper.wheellog.utils.ReflectUtil
@@ -274,10 +275,18 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 ViewBlockInfo(
                     resources.getString(R.string.consumption),
                     {
-                        String.format(
-                            Locale.US,
-                            "%.1f " + resources.getString(R.string.whkm),
-                            Calculator.whByKm)
+                        if (WheelLog.AppConfig.useMph) {
+                            String.format(
+                                Locale.US,
+                                "%.1f " + resources.getString(R.string.whmi),
+                                kmToMiles(Calculator.whByKm))
+                        } else {
+                            String.format(
+                                Locale.US,
+                                "%.1f " + resources.getString(R.string.whkm),
+                                Calculator.whByKm
+                            )
+                        }
                     },
                     false
                 )

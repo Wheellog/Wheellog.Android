@@ -209,8 +209,14 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 if (trip.ecId != 0) {
                     desc1 += "\n\uD83C\uDF10 electro.club"
                 }
-                desc2 += "\n⚡ ${toKm(trip.consumptionTotal)} ${context.getString(R.string.wh)}" +
-                            "\n\uD83D\uDD0B ${toKm(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
+                desc2 +=
+                    "\n⚡ ${toKm(trip.consumptionTotal)} ${context.getString(R.string.wh)}" +
+                    "\n\uD83D\uDD0B " +
+                    if (WheelLog.AppConfig.useMph) {
+                        "${toMiles(trip.consumptionByKm)} ${context.getString(R.string.whmi)}"
+                    } else {
+                        "${toKm(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
+                    }
                 itemBinding.description.text = desc1
                 itemBinding.description2.text = desc2
             }

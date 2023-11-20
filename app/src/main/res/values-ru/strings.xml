@@ -492,6 +492,7 @@
     <string name="error_parsing_log">Что-то пошло не так при парсинге файла.</string>
     <string name="min">мин</string>
     <string name="today">Сегодня</string>
+    <string name="whmi">Втч/миль</string>
     <string name="wh">Втч</string>
     <string name="gotosettings">В настройки</string>
     <string name="gpsdisabled_alert">GPS на телефоне выключен. В настройках включена опция использовать GPS данные для записи лога. Включите GPS на телефоне или отключите настройку его записи.</string>

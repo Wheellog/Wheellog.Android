@@ -3,6 +3,7 @@
     <string name="mph">mph</string>
     <string name="km">km</string>
     <string name="whkm">Wh/km</string>
+    <string name="whmi">Wh/mi</string>
     <string name="wh">Wh</string>
     <string name="sec">sec</string>
     <string name="min">min</string>
