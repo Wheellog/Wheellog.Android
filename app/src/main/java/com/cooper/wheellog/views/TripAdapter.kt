@@ -29,6 +29,7 @@ import com.cooper.wheellog.databinding.ListTripItemBinding
 import com.cooper.wheellog.map.MapActivity
 import com.cooper.wheellog.utils.SomeUtil.doAsync
 import com.cooper.wheellog.utils.MathsUtil
+import com.cooper.wheellog.utils.MathsUtil.kmToMilesMultiplier
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
 import com.google.common.io.ByteStreams
@@ -177,11 +178,11 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 .setBlackIcon()
         }
 
-        private fun toMiles(value: Float): String {
-            return String.format("%.2f", MathsUtil.kmToMiles(value))
+        private fun formatMi(value: Float): String {
+            return format(MathsUtil.kmToMiles(value))
         }
 
-        private fun toKm(value: Float): String {
+        private fun format(value: Float): String {
             return String.format("%.2f", value)
         }
 
@@ -193,24 +194,30 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 if (WheelLog.AppConfig.useMph) {
                     val mph = context.getString(R.string.mph)
                     val miles = context.getString(R.string.miles)
-                    desc1 = "\uD83D\uDE80 ${toMiles(trip.maxSpeed)} $mph" +
-                            "\n\uD83D\uDCE1 ${toMiles(trip.maxSpeedGps)} $mph" +
-                            "\n♿ ${toMiles(trip.avgSpeed)} $mph"
-                    desc2 += "\n\uD83D\uDCCF ${toMiles(trip.distance / 1000.0f)} $miles"
+                    desc1 = "\uD83D\uDE80 ${formatMi(trip.maxSpeed)} $mph" +
+                            "\n\uD83D\uDCE1 ${formatMi(trip.maxSpeedGps)} $mph" +
+                            "\n♿ ${formatMi(trip.avgSpeed)} $mph"
+                    desc2 += "\n\uD83D\uDCCF ${formatMi(trip.distance / 1000.0f)} $miles"
                 } else {
                     val kmh = context.getString(R.string.kmh)
                     val km = context.getString(R.string.km)
-                    desc1 = "\uD83D\uDE80 ${toKm(trip.maxSpeed)} $kmh" +
-                            "\n\uD83D\uDCE1 ${toKm(trip.maxSpeedGps)} $kmh" +
-                            "\n♿ ${toKm(trip.avgSpeed)} $kmh"
-                    desc2 += "\n\uD83D\uDCCF ${toKm(trip.distance / 1000.0f)} $km"
+                    desc1 = "\uD83D\uDE80 ${format(trip.maxSpeed)} $kmh" +
+                            "\n\uD83D\uDCE1 ${format(trip.maxSpeedGps)} $kmh" +
+                            "\n♿ ${format(trip.avgSpeed)} $kmh"
+                    desc2 += "\n\uD83D\uDCCF ${format(trip.distance / 1000.0f)} $km"
                 }
                 desc1 += "\n\uD83D\uDE31 ${trip.maxPwm}%"
                 if (trip.ecId != 0) {
                     desc1 += "\n\uD83C\uDF10 electro.club"
                 }
-                desc2 += "\n⚡ ${toKm(trip.consumptionTotal)} ${context.getString(R.string.wh)}" +
-                            "\n\uD83D\uDD0B ${toKm(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
+                desc2 +=
+                    "\n⚡ ${format(trip.consumptionTotal)} ${context.getString(R.string.wh)}" +
+                    "\n\uD83D\uDD0B " +
+                    if (WheelLog.AppConfig.useMph) {
+                        "${format(trip.consumptionByKm / kmToMilesMultiplier.toFloat())} ${context.getString(R.string.whmi)}"
+                    } else {
+                        "${format(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
+                    }
                 itemBinding.description.text = desc1
                 itemBinding.description2.text = desc2
             }
