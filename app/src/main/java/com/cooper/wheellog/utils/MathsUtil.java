@@ -39,13 +39,6 @@ public class MathsUtil {
         return ByteBuffer.wrap(arr, offset, 4).getInt();
     }
 
-    public static long intFromBytesBE(byte[] bytes, int starting) {
-        if (bytes.length >= starting + 4) {
-            return (((bytes[starting] & 0xFF) << 24) | ((bytes[starting+1] & 0xFF) << 16) | ((bytes[starting+2] & 0xFF) << 8) | (bytes[starting+3] & 0xFF)) & 0xFFFFFFFFL;
-        }
-        return 0;
-    }
-
     public static int getInt4R(byte[] arr, int offset) {
         return ByteBuffer.wrap(reverseEvery2(arr, offset, 4), 0, 4).getInt();
     }
@@ -115,6 +108,13 @@ public class MathsUtil {
     public static int intFromBytesRevBE(byte[] bytes, int starting) {
         if (bytes.length >= starting + 4) {
             return (((bytes[starting+2] & 0xFF) << 24) | ((bytes[starting+3] & 0xFF) << 16) | ((bytes[starting] & 0xFF) << 8) | (bytes[starting+1] & 0xFF));
+        }
+        return 0;
+    }
+    
+    public static long intFromBytesBE(byte[] bytes, int starting) {
+        if (bytes.length >= starting + 4) {
+            return (((bytes[starting] & 0xFF) << 24) | ((bytes[starting+1] & 0xFF) << 16) | ((bytes[starting+2] & 0xFF) << 8) | (bytes[starting+3] & 0xFF)) & 0xFFFFFFFFL;
         }
         return 0;
     }
