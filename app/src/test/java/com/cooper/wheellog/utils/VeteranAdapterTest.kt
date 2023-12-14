@@ -442,6 +442,39 @@ class VeteranAdapterTest {
     }
 
     @Test
+    fun `decode veteran lynx crc`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c53391b000006d000000770000000260bcc".hexToByteArray()
+        val byteArray2 = "0e08000000fa00c8138c00b4000b014c80c80000".hexToByteArray()
+        val byteArray3 = "808080808080010008808080800fee0fee0fee0f".hexToByteArray()
+        val byteArray4 = "ee0fef0fe80fef0fef0ff00ff00ff00fea0fef0f".hexToByteArray()
+        val byteArray5 = "ef0fefdab22518".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(30)
+        assertThat(data.voltageDouble).isEqualTo(146.19)
+        assertThat(data.phaseCurrentDouble).isEqualTo(3.8)
+        assertThat(data.wheelDistanceDouble).isEqualTo(1.744)
+        assertThat(data.totalDistance).isEqualTo(1904)
+        assertThat(data.batteryLevel).isEqualTo(94)
+        assertThat(data.angle).isEqualTo(0.11)
+        assertThat(data.version).isEqualTo("005.0.04")
+    }
+
+    @Test
     fun `update pedals mode`() {
         // Arrange.
         mockkConstructor(android.os.Handler::class)
