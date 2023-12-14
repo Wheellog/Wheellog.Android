@@ -69,4 +69,16 @@ class GotwayVirtualAdapterTest {
         // Assert.
         assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.VETERAN)
     }
+
+    @Test
+    fun `switch to veteran lynx`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c53391b000006d000000770000000260bcc".hexToByteArray()
+
+        // Act.
+        adapter.decode(byteArray1)
+
+        // Assert.
+        assertThat(data.wheelType).isEqualTo(Constants.WHEEL_TYPE.VETERAN)
+    }
 }
