@@ -68,7 +68,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 7935) / 19.5);
                         }
                     }
-                } else { // Patton
+                } else if (mVer == 4) { // Patton
                     if (useBetterPercents) {
                         if (voltage > 12525) {
                             battery = 100;
@@ -88,7 +88,28 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 9918) / 24.2);
                         }
                     }
-                }
+                } else if (mVer == 5) { // Lynx
+                    if (useBetterPercents) {
+                        if (voltage > 15030) {
+                            battery = 100;
+                        } else if (voltage > 12240) {
+                            battery = (int) Math.round((voltage - 11970) / 30.6);
+                        } else if (voltage > 11520) {
+                            battery = (int) Math.round((voltage - 11520) / 81);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage <= 11902) {
+                            battery = 0;
+                        } else if (voltage >= 14805) {
+                            battery = 100;
+                        } else {
+                            battery = (int) Math.round((voltage - 11902) / 29.03);
+                        }
+                    }
+                } else battery = 1; // for new wheels, set 1% by default
+
                 if (veteranNegative == 0) {
                     speed = Math.abs(speed);
                     phaseCurrent = Math.abs(phaseCurrent);
@@ -208,7 +229,7 @@ public class VeteranAdapter extends BaseAdapter {
                 case collecting:
 
                     int bsize = buffer.size();
-                    if (((bsize == 22 || bsize == 30) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) || ((bsize == 31) && ((c & 0xFC) != 0x00))) {
+                    if (((bsize == 22 || bsize == 30) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) ) {
                         state = UnpackerState.done;
                         Timber.i("Data verification failed");
                         reset();
@@ -224,7 +245,7 @@ public class VeteranAdapter extends BaseAdapter {
                             CRC32 crc = new CRC32();
                             crc.update(getBuffer(), 0, len);
                             long calc_crc = crc.getValue();
-                            long provided_crc = MathsUtil.getInt4(getBuffer(), len);
+                            long provided_crc = MathsUtil.intFromBytesBE(getBuffer(), len);
                             if (calc_crc == provided_crc) {
                                 Timber.i("CRC32 ok");
                                 return true;
