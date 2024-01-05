@@ -1,13 +1,17 @@
 package com.cooper.wheellog
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.*
+import android.content.pm.PackageManager
 import android.location.*
+import android.os.Binder
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.FileUtil
@@ -30,65 +34,53 @@ class LoggingService : Service() {
     private val mLocationManager: LocationManager by lazy { getSystemService(LOCATION_SERVICE) as LocationManager }
     private var mLocationProvider = LocationManager.NETWORK_PROVIDER
     private var logLocationData = false
-    private var fileUtil: FileUtil? = null
+    private lateinit var fileUtil: FileUtil
     private var ioState = CoroutineScope(Dispatchers.IO + Job())
 
-    private val mBluetoothUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        @SuppressLint("MissingPermission")
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action!!) {
-                Constants.ACTION_BLUETOOTH_CONNECTION_STATE -> if (logLocationData) {
-                    val connectionState = intent.getIntExtra(
-                        Constants.INTENT_EXTRA_CONNECTION_STATE,
-                        ConnectionState.DISCONNECTING.value
-                    )
-                    if (connectionState == ConnectionState.CONNECTED.value) {
-                        mLocationManager.requestLocationUpdates(
-                            mLocationProvider,
-                            250,
-                            0f,
-                            locationListener
-                        )
-                    } else {
-                        mLocationManager.removeUpdates(locationListener)
-                    }
+    fun updateConnectionState(connectionState: ConnectionState) {
+        if (logLocationData) {
+            if (connectionState == ConnectionState.CONNECTED) {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
                 }
-
-                Constants.ACTION_WHEEL_DATA_AVAILABLE -> updateFile()
+                mLocationManager.requestLocationUpdates(
+                    mLocationProvider,
+                    250,
+                    0f,
+                    locationListener
+                )
+            } else {
+                mLocationManager.removeUpdates(locationListener)
             }
         }
     }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
-    }
+    private val mBinder: IBinder = LocalBinder()
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onBind(intent: Intent): IBinder? {
         if (WheelData.getInstance() == null) {
             stopSelf()
-            return START_NOT_STICKY // kill itself without restart
+            return null
         }
         instance = this
         fileUtil = FileUtil(applicationContext)
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
-        intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
-        ContextCompat.registerReceiver(
-            baseContext,
-            mBluetoothUpdateReceiver,
-            intentFilter,
-            ContextCompat.RECEIVER_EXPORTED
-        )
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             if (!checkExternalFilePermission(this)) {
                 showToast(R.string.logging_error_no_storage_permission)
                 stopSelf()
-                return START_STICKY
+                return mBinder
             }
             if (!isExternalStorageReadable || !isExternalStorageWritable) {
                 showToast(R.string.logging_error_storage_unavailable)
                 stopSelf()
-                return START_STICKY
+                return mBinder
             }
         }
         logLocationData = WheelLog.AppConfig.logLocationData
@@ -103,20 +95,19 @@ class LoggingService : Service() {
             WheelLog.AppConfig.continueThisDayLogMacException != mac
         ) {
             val lastFileUtil = FileUtil.getLastLog(applicationContext)
-            if (lastFileUtil != null &&
-                lastFileUtil.file.path.contains(mac.replace(':', '_'))
+            if (lastFileUtil?.file?.path?.contains(mac.replace(':', '_')) == true
             ) {
                 fileUtil = lastFileUtil
                 // parse prev log for filling wheeldata values
                 val parser = ParserLogToWheelData()
-                parser.parseFile(fileUtil!!)
-                fileUtil!!.prepareStream()
+                parser.parseFile(fileUtil)
+                fileUtil.prepareStream()
                 writeToLastLog = true
                 // reset trip duration for recalculation in trip list
                 val dao = ElectroClub.instance.dao
                 if (dao != null) {
                     ioState.launch {
-                        dao.getTripByFileName(fileUtil!!.file.name)?.apply {
+                        dao.getTripByFileName(fileUtil.file!!.name)?.apply {
                             duration = 0
                             dao.update(this)
                         }
@@ -127,9 +118,9 @@ class LoggingService : Service() {
         if (!writeToLastLog) {
             val sdFormatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
             val filename = sdFormatter.format(Date()) + ".csv"
-            if (!fileUtil!!.prepareFile(filename, WheelData.getInstance().mac)) {
+            if (!fileUtil.prepareFile(filename, WheelData.getInstance().mac)) {
                 stopSelf()
-                return START_STICKY
+                return mBinder
             }
             WheelLog.AppConfig.continueThisDayLogMacException = ""
         }
@@ -172,24 +163,18 @@ class LoggingService : Service() {
             }
         }
         if (!writeToLastLog) {
-            fileUtil!!.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert")
+            fileUtil.writeLine("date,time," + locationHeaderString + "speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert")
         }
         val serviceIntent = Intent(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
         serviceIntent.putExtra(
             Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION,
-            fileUtil!!.absolutePath
+            fileUtil.absolutePath
         )
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true)
         sendBroadcast(serviceIntent)
         Timber.i("DataLogger Started")
 
-//        TripData tripData = new TripData(
-//                filename,
-//                WheelLog.AppConfig.getLastMac(),
-//                WheelLog.AppConfig.getProfileName(),
-//                (int)(new Date().getTime() / 1000));
-//        TripDatabase.Companion.getDataBase(getBaseContext()).tripDao().insert(tripData);
-        return START_STICKY
+        return mBinder
     }
 
     private fun isNullOrEmpty(s: String?): Boolean {
@@ -197,28 +182,25 @@ class LoggingService : Service() {
     }
 
     override fun onDestroy() {
-        var path: String? = ""
         var isBusy = false
         if (logLocationData && mLastLocation != null) {
             WheelLog.AppConfig.lastLocationLaltitude = mLastLocation!!.latitude
             WheelLog.AppConfig.lastLocationLongitude = mLastLocation!!.longitude
         }
-        if (fileUtil != null) {
-            path = fileUtil!!.absolutePath
-            fileUtil!!.close()
-        }
+        val path = fileUtil.absolutePath
+        fileUtil.close()
         Timber.wtf("DataLogger Stopping...")
         WheelLog.Notifications.setCustomTitle("Uploading tack...")
 
         // electro.club upload
-        if (fileUtil != null && fileUtil!!.fileName != "" && WheelLog.AppConfig.autoUploadEc) {
+        if (fileUtil.fileName != "" && WheelLog.AppConfig.autoUploadEc) {
             isBusy = true
             try {
-                Timber.wtf("Uploading %s to electro.club", fileUtil!!.fileName)
-                val data = fileUtil!!.readBytes()
+                Timber.wtf("Uploading %s to electro.club", fileUtil.fileName)
+                val data = fileUtil.readBytes() ?: return
                 ElectroClub.instance.uploadTrack(
                     data,
-                    fileUtil!!.fileName,
+                    fileUtil.fileName,
                     true
                 ) { success: Boolean? ->
                     if (!success!!) {
@@ -246,7 +228,6 @@ class LoggingService : Service() {
         serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
         sendBroadcast(serviceIntent)
         try {
-            unregisterReceiver(mBluetoothUpdateReceiver)
             if (logLocationData) {
                 mLocationManager.removeUpdates(locationListener)
             }
@@ -269,7 +250,7 @@ class LoggingService : Service() {
             return Environment.MEDIA_MOUNTED == state || Environment.MEDIA_MOUNTED_READ_ONLY == state
         }
 
-    private fun updateFile() {
+    fun updateFile() {
         var LocationDataString = ""
         if (logLocationData) {
             var longitude = ""
@@ -298,7 +279,7 @@ class LoggingService : Service() {
             )
         }
         val wd = WheelData.getInstance()
-        fileUtil!!.writeLine(
+        fileUtil.writeLine(
             String.format(
                 Locale.US, "%s,%s%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%.2f,%.2f,%s,%s",
                 sdf!!.format(WheelData.getInstance().timeStamp),
@@ -324,7 +305,7 @@ class LoggingService : Service() {
     }
 
     // Define a listener that responds to location updates
-    var locationListener: LocationListener = LocationListener { location ->
+    private var locationListener: LocationListener = LocationListener { location ->
         // Called when a new location is found by the specified location provider.
         mLocation = location
     }
@@ -350,6 +331,12 @@ class LoggingService : Service() {
 
     private fun showToast(messageId: Int) {
         for (i in 0..3) Toast.makeText(this, messageId, Toast.LENGTH_LONG).show()
+    }
+
+    inner class LocalBinder : Binder() {
+        fun getService(): LoggingService {
+            return this@LoggingService
+        }
     }
 
     companion object {
