@@ -90,23 +90,35 @@ class MainActivity : AppCompatActivity() {
     private var settingsNavHostController: NavHostController? = null
     private val bluetoothService: BluetoothService?
         get() = WheelData.getInstance().bluetoothService
-    private val mBluetoothServiceConnection: ServiceConnection = object : ServiceConnection {
+    private var loggingService: LoggingService? = null
+    inner class ServicesConnection: ServiceConnection {
         override fun onServiceConnected(componentName: ComponentName, service: IBinder) {
-            if (componentName.className == BluetoothService::class.java.name) {
-                val bluetoothService = (service as LocalBinder).getService()
-                WheelData.getInstance().bluetoothService = bluetoothService
-                if (bluetoothService.connectionState == ConnectionState.DISCONNECTED && mDeviceAddress.isNotEmpty()) {
-                    bluetoothService.wheelAddress = mDeviceAddress
-                    toggleConnectToWheel()
+            when (componentName.className) {
+                BluetoothService::class.java.name -> {
+                    val bluetoothService = (service as LocalBinder).getService()
+                    WheelData.getInstance().bluetoothService = bluetoothService
+                    if (bluetoothService.connectionState == ConnectionState.DISCONNECTED && mDeviceAddress.isNotEmpty()) {
+                        bluetoothService.wheelAddress = mDeviceAddress
+                        toggleConnectToWheel()
+                    }
+                }
+                LoggingService::class.java.name -> {
+                    loggingService = (service as LoggingService.LocalBinder).getService()
                 }
             }
         }
 
         fun disconnect(componentName: ComponentName?) {
-            if (componentName?.className == BluetoothService::class.java.name) {
-                WheelData.getInstance().bluetoothService = null
-                WheelData.getInstance().isConnected = false
-                Timber.e("BluetoothService disconnected")
+            when (componentName?.className) {
+                BluetoothService::class.java.name -> {
+                    WheelData.getInstance().bluetoothService = null
+                    WheelData.getInstance().isConnected = false
+                    Timber.e("BluetoothService disconnected")
+                }
+                LoggingService::class.java.name -> {
+                    loggingService = null
+                    Timber.e("LoggingService disconnected")
+                }
             }
         }
 
@@ -118,6 +130,8 @@ class MainActivity : AppCompatActivity() {
             disconnect(name)
         }
     }
+    private val mBLEServiceConnection: ServiceConnection = ServicesConnection()
+    private val mLoggingServiceConnection: ServiceConnection = ServicesConnection()
 
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
@@ -305,8 +319,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
                     when (WheelLog.AppConfig.pipBlock) {
-                        getString(R.string.consumption) -> speedModel.value.value = Calculator.whByKm.toFloat()
-                        else -> speedModel.value.value = WheelData.getInstance().speed / 10f
+                        getString(R.string.consumption) -> speedModel.value.floatValue = Calculator.whByKm.toFloat()
+                        else -> speedModel.value.floatValue = WheelData.getInstance().speed / 10f
                     }
                     pipView.invalidate()
                 }
@@ -327,6 +341,7 @@ class MainActivity : AppCompatActivity() {
                             ConnectionState.DISCONNECTED.value
                         )
                     )
+                    loggingService?.updateConnectionState(connectionState)
                     val isWheelSearch =
                         intent.getBooleanExtra(Constants.INTENT_EXTRA_WHEEL_SEARCH, false)
                     val isDirectConnectionFailed =
@@ -395,6 +410,7 @@ class MainActivity : AppCompatActivity() {
                     pagerAdapter.wheelView?.resetBatteryLowest()
                 }
                 Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
+                    loggingService?.updateFile()
                     if (wearOs != null) {
                         wearOs!!.sendUpdateData()
                     }
@@ -754,8 +770,15 @@ class MainActivity : AppCompatActivity() {
         WheelData.getInstance().full_reset()
         if (bluetoothService != null) {
             try {
-                unbindService(mBluetoothServiceConnection)
+                unbindService(mBLEServiceConnection)
                 WheelData.getInstance().bluetoothService = null
+            } catch (_: Exception) {
+                // ignored
+            }
+        }
+        if (loggingService != null) {
+            try {
+                unbindService(mLoggingServiceConnection)
             } catch (_: Exception) {
                 // ignored
             }
@@ -982,15 +1005,13 @@ class MainActivity : AppCompatActivity() {
     fun toggleLoggingService() {
         val dataLoggerServiceIntent = Intent(applicationContext, LoggingService::class.java)
         if (LoggingService.isInstanceCreated()) {
-            stopService(dataLoggerServiceIntent)
+            unbindService(mLoggingServiceConnection)
             if (!onDestroyProcess) {
                 Handler(Looper.getMainLooper()).postDelayed(
                     { pagerAdapter.updatePageOfTrips() }, 200)
             }
         } else if (mConnectionState == ConnectionState.CONNECTED) {
-            startService(dataLoggerServiceIntent)
-            Handler(Looper.getMainLooper()).postDelayed(
-                { pagerAdapter.updatePageOfTrips() }, 200)
+            bindService(dataLoggerServiceIntent, mLoggingServiceConnection, BIND_AUTO_CREATE)
         }
     }
 
@@ -1045,7 +1066,7 @@ class MainActivity : AppCompatActivity() {
             && bluetoothService == null
         ) {
             val bluetoothServiceIntent = Intent(applicationContext, BluetoothService::class.java)
-            bindService(bluetoothServiceIntent, mBluetoothServiceConnection, BIND_AUTO_CREATE)
+            bindService(bluetoothServiceIntent, mBLEServiceConnection, BIND_AUTO_CREATE)
 //            YandexMetrica.reportEvent("BluetoothService is starting.")
         } else if (isMaxBleReq) {
             showSnackBar(R.string.bluetooth_required)
