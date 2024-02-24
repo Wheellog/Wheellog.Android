@@ -1,5 +1,6 @@
 package com.cooper.wheellog.map
 
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.cooper.wheellog.BuildConfig
+import com.cooper.wheellog.LocaleManager
 import com.cooper.wheellog.R
 import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ActivityMapBinding
@@ -29,6 +31,10 @@ class MapActivity : AppCompatActivity() {
     private val viewModel: MapViewModel by viewModels()
 
     private val backgroundScope: CoroutineScope = CoroutineScope(Dispatchers.Default + Job())
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleManager.setLocale(base))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
