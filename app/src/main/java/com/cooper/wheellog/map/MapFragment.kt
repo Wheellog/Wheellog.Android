@@ -1,8 +1,10 @@
 package com.cooper.wheellog.map
 
+import android.graphics.Point
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -49,9 +51,23 @@ class MapFragment : Fragment() {
             val compassProvider = CompassOrientationProvider()
             overlays.add(RotationOverlay(map, compassProvider)) // enable rotation
             overlays.add(ScaleBarOverlay(map)) // scale bar in top-left corner
-            overlays.add(CompassOverlay(context, compassProvider, map).apply {
+            val compass = object : CompassOverlay(context, compassProvider, map) {
+                override fun onSingleTapConfirmed(e: MotionEvent, mapView: MapView): Boolean {
+                    val reuse = Point()
+                    mapView.projection.rotateAndScalePoint(e.x.toInt(), e.y.toInt(), reuse)
+                    if (reuse.x < mCompassFrameCenterX * 2 && reuse.y < mCompassFrameCenterY * 2) {
+                        mapView.controller?.animateTo(null, null, 300, 0f)
+                        compassProvider.onChanged(0f)
+                        return true
+                    }
+
+                    return super.onSingleTapConfirmed(e, mapView)
+                }
+            }.apply {
+                azimuthOffset = 180f
                 enableCompass()
-            })
+            }
+            overlays.add(compass)
 //            overlays.add(MyLocationNewOverlay(GpsMyLocationProvider(context), map).apply {
 //                enableFollowLocation()
 //                enableMyLocation()
