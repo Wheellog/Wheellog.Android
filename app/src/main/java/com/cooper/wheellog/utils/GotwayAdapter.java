@@ -27,6 +27,24 @@ public class GotwayAdapter extends BaseAdapter {
     private final int alarmModeOff = 2; // 80% PWM only
     private final int alarmModeCF = 3; // PWM tiltback for custom firmware
 
+    private NormInt normSpeed = new NormInt();
+    private NormInt normTemp = new NormInt();
+    private NormInt normVoltage = new NormInt();
+
+    public GotwayAdapter() {
+        normSpeed.setMin(-300 * 36);        // ~ -300 km/h min (speedInKm modification = * 0.36)
+        normSpeed.setMax(300 * 36);         // ~ 300 km/h max (speedInKm modification = * 0.36)
+        normSpeed.setAverageDiff(40_0);     // 40 km/h diff on last average 5 packets
+
+        normTemp.setMin(-273_00);           // -273 ℃ min
+        normTemp.setMax(150_00);            // 150 ℃ max
+        normTemp.setAverageDiff(30_00);     // 30 ℃ diff
+
+        normVoltage.setMin(0);              // 0 V min
+        normVoltage.setMax(500_00);         // 500 V max
+        normVoltage.setAverageDiff(50_00);  // 50 V diff
+    }
+
     @Override
     public boolean decode(byte[] data) {
         Timber.i("Decode Gotway/Begode");
@@ -105,6 +123,14 @@ public class GotwayAdapter extends BaseAdapter {
                         speed = (int) Math.round(speed * RATIO_GW);
                     }
                     voltage = (int) Math.round(getScaledVoltage(voltage));
+
+                    if (!normSpeed.push(speed) ||
+                        !normTemp.push(temperature) ||
+                        !normVoltage.push(voltage))
+                    {
+                        Timber.i("Skip broken package.");
+                        return false;
+                    }
 
                     wd.setSpeed(speed);
                     wd.setTopSpeed(speed);
