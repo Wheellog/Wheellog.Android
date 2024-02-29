@@ -714,7 +714,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBms2PageValues.clear()
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)
