@@ -262,9 +262,9 @@ public class KingsongAdapter extends BaseAdapter {
                     //bms.getCells()[31] = MathsUtil.getInt2R(data, 8)/1000.0;
                     bms.setTempMosEnv((MathsUtil.getInt2R(data, 10)-2730)/10.0);
                     //bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
-                    bms.setMinCell(bms.getCells()[29]);
-                    bms.setMaxCell(bms.getCells()[29]);
-                    for (int i = 0; i < 30; i++) {
+                    bms.setMinCell(bms.getCells()[0]);
+                    bms.setMaxCell(bms.getCells()[0]);
+                    for (int i = 0; i < getCellsForWheel(); i++) {
                         double cell = bms.getCells()[i];
                         if (cell > 0.0) {
                             if (bms.getMaxCell() < cell) {
