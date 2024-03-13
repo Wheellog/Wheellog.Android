@@ -85,11 +85,28 @@ class NotificationUtil(private val context: Context) {
             if (WheelLog.AppConfig.mibandMode == MiBandEnum.Alarm) {
                 notificationView.setTextViewText(R.id.text_message, context.getString(R.string.alarmmiband))
             } else {
-                val template = when (WheelLog.AppConfig.appTheme) {
-                    R.style.AJDMTheme -> R.string.notification_text_ajdm_theme
-                    else -> R.string.notification_text
-                }
-                notificationView.setTextViewText(R.id.text_message, context.getString(template, speed, batteryLevel, temperature, distance))
+                notificationView.setTextViewText(R.id.text_message,
+                    buildNotification(context) {
+                        // notification content
+                        speedKmPh = speed
+                        batteryLevelPct = batteryLevel
+                        temperatureDegreesOfCelsius = temperature
+                        distanceKm = distance
+                        // formatting options
+                        when (WheelLog.AppConfig.appTheme) {
+                            R.style.AJDMTheme -> {
+                                prefix = ""
+                                separator = " | "
+                            }
+                            else -> {
+                                prefix =  "•"
+                                separator =  " • "
+                            }
+                        }
+                        useFahrenheits = WheelLog.AppConfig.useFahrenheit
+                        useMiles = WheelLog.AppConfig.useMph
+                    }
+                )
                 notificationView.setTextViewText(R.id.text_title, "$title - $titleRide")
             }
         } else {
