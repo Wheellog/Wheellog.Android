@@ -714,7 +714,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBms2PageValues.clear()
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)
@@ -729,8 +729,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsTemp2)
                     setupFieldForSmartBmsPage(R.string.bmsTemp3)
                     setupFieldForSmartBmsPage(R.string.bmsTemp4)
-                    setupFieldForSmartBmsPage(R.string.bmsTemp5)
-                    setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                        setupFieldForSmartBmsPage(R.string.bmsTemp5)
+                        setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    }
                     setupFieldForSmartBmsPage(R.string.bmsTempMos)
                     setupFieldForSmartBmsPage(R.string.bmsTempMosEnv)
                     setupFieldForSmartBmsPage(R.string.bmsMaxCell)
@@ -756,16 +758,20 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsCell18)
                     setupFieldForSmartBmsPage(R.string.bmsCell19)
                     setupFieldForSmartBmsPage(R.string.bmsCell20)
-                    setupFieldForSmartBmsPage(R.string.bmsCell21)
-                    setupFieldForSmartBmsPage(R.string.bmsCell22)
-                    setupFieldForSmartBmsPage(R.string.bmsCell23)
-                    setupFieldForSmartBmsPage(R.string.bmsCell24)
-                    setupFieldForSmartBmsPage(R.string.bmsCell25)
-                    setupFieldForSmartBmsPage(R.string.bmsCell26)
-                    setupFieldForSmartBmsPage(R.string.bmsCell27)
-                    setupFieldForSmartBmsPage(R.string.bmsCell28)
-                    setupFieldForSmartBmsPage(R.string.bmsCell29)
-                    setupFieldForSmartBmsPage(R.string.bmsCell30)
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19"))) {
+                        setupFieldForSmartBmsPage(R.string.bmsCell21)
+                        setupFieldForSmartBmsPage(R.string.bmsCell22)
+                        setupFieldForSmartBmsPage(R.string.bmsCell23)
+                        setupFieldForSmartBmsPage(R.string.bmsCell24)
+                    }
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                        setupFieldForSmartBmsPage(R.string.bmsCell25)
+                        setupFieldForSmartBmsPage(R.string.bmsCell26)
+                        setupFieldForSmartBmsPage(R.string.bmsCell27)
+                        setupFieldForSmartBmsPage(R.string.bmsCell28)
+                        setupFieldForSmartBmsPage(R.string.bmsCell29)
+                        setupFieldForSmartBmsPage(R.string.bmsCell30)
+                    }
                 } else {
                     removePage(R.layout.main_view_smart_bms)
                     return
