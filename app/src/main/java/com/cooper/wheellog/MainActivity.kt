@@ -644,6 +644,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             startBluetoothService()
         }
+
+        try {
+            unregisterReceiver(mCoreBroadcastReceiver)
+        } catch (_: Exception) {
+            // ignore
+        }
         ContextCompat.registerReceiver(
             this,
             mCoreBroadcastReceiver,
