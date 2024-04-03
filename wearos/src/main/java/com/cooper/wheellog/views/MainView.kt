@@ -33,6 +33,10 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
                     value = 33.0
                     max = 80.0
                 }
+                pwm.apply {
+                    value = 77.2
+                    max = 100.1
+                }
                 battery = 90
                 batteryLowest = 50
             }
@@ -220,6 +224,10 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
             val temperatureString = java.lang.String.format(Locale.US, "%02d℃", wd.temperature.value.toInt())
             canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
         }
+
+        // PWM
+        textPaint.color = context.getColor(R.color.green)
+        canvas.drawText("pwm ${wd.pwm.value}   max ${wd.pwm.maxString()}", outerArcRect.centerX(), centerX + centerX / 1.7f, textPaint)
     }
 
     private fun calculateFontSize(textBounds: Rect, textContainer: RectF, text: String, textPaint: Paint): Float {
