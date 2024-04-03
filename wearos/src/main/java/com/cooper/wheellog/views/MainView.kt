@@ -227,7 +227,9 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
 
         // PWM
         textPaint.color = context.getColor(R.color.green)
-        canvas.drawText("pwm ${wd.pwm.value}   max ${wd.pwm.maxString()}", centerX, centerY + centerY / 1.7f, textPaint)
+        canvas.drawText("pwm", centerX, centerY + centerY / 1.15f, textPaint)
+        textPaint.textSize *= 2.8f
+        canvas.drawText("${wd.pwm.value}", centerX, centerY + centerY / 1.3f, textPaint)
     }
 
     private fun calculateFontSize(textBounds: Rect, textContainer: RectF, text: String, textPaint: Paint): Float {
