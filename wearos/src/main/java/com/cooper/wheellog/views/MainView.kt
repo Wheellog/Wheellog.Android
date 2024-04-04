@@ -229,7 +229,7 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         textPaint.color = context.getColor(R.color.green)
         canvas.drawText("pwm", centerX, centerY + centerY / 1.15f, textPaint)
         textPaint.textSize *= 2.8f
-        canvas.drawText("${wd.pwm.value}", centerX, centerY + centerY / 1.3f, textPaint)
+        canvas.drawText("${wd.pwm.value.toInt()}", centerX, centerY + centerY / 1.3f, textPaint)
     }
 
     private fun calculateFontSize(textBounds: Rect, textContainer: RectF, text: String, textPaint: Paint): Float {
