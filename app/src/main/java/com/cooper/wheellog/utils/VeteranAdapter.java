@@ -189,7 +189,9 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        if (mVer > 3) {
+        if (mVer == 5) {
+            return 36;
+        } else if (mVer == 4) {
             return 30;
         } else {
             return 24;
@@ -198,7 +200,12 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        WheelData.getInstance().bluetoothCmd("b".getBytes());
+        if (mVer < 3) {
+            WheelData.getInstance().bluetoothCmd("b".getBytes());
+        } else {
+            WheelData.getInstance().bluetoothCmd(new byte[]{ 0x4c, 0x6b, 0x41, 0x70, 0x0e, 0x00, (byte) 0x80,(byte) 0x80,(byte) 0x80, 0x01,(byte) 0xca,(byte) 0x87,(byte) 0xe6, 0x6f});
+        }
+
     }
 
     static class veteranUnpacker {
