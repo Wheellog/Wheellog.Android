@@ -37,5 +37,7 @@ class Constants {
         const val wearOsTimestampData = "timestamp"
         const val wearOsTimeStringData = "time_string"
         const val wearOsPagesData = "pages"
+        const val wearOsAlarmFactor1Data = "alarm_factor1"
+        const val wearOsAlarmFactor2Data = "alarm_factor2"
     }
 }

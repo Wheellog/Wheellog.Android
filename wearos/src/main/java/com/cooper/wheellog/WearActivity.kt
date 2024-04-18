@@ -131,6 +131,8 @@ class WearActivity : FragmentActivity(),
                 alarmTemp = alarmInt and 4 == 1
                 timeStamp = map.getLong(Constants.wearOsTimestampData)
                 timeString = map.getString(Constants.wearOsTimeStringData, "waiting...")
+                alarmFactor1 = map.getInt(Constants.wearOsAlarmFactor1Data, 80)
+                alarmFactor2 = map.getInt(Constants.wearOsAlarmFactor2Data, 90)
             }
             mMainRecyclerAdapter.updateScreen()
             if (wd.alarmTemp || wd.alarmSpeed || wd.alarmCurrent) {

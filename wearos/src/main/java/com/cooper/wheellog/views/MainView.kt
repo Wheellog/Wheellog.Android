@@ -34,7 +34,7 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
                     max = 80.0
                 }
                 pwm.apply {
-                    value = 77.2
+                    value = 5.2
                     max = 100.1
                 }
                 battery = 90
@@ -181,7 +181,13 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         innerArcPaint.color = context.getColor(R.color.battery_dial)
         canvas.drawArc(innerArcRect, 144f, batteryValue, false, innerArcPaint)
         innerArcPaint.color = context.getColor(R.color.battery_low_dial)
-        canvas.drawArc(innerArcRect, 144f + batteryValue, batteryLowestValue - batteryValue, false, innerArcPaint)
+        canvas.drawArc(
+            innerArcRect,
+            144f + batteryValue,
+            batteryLowestValue - batteryValue,
+            false,
+            innerArcPaint
+        )
 
         // 0 - max | -90 - min
         val value = MathUtils.clamp(wd.temperature.value, 0.0, 80.0).toFloat() / 2f * 2.25f - 90f
@@ -208,11 +214,21 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
             }
         )
         textPaint.textSize = speedTextSize
-        canvas.drawText(speedString, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
+        canvas.drawText(
+            speedString,
+            outerArcRect.centerX(),
+            speedTextRect.centerY() + speedTextRect.height() / 2,
+            textPaint
+        )
 
         textPaint.textSize = speedTextKPHSize
         textPaint.color = context.getColor(R.color.teal_200)
-        canvas.drawText(wd.timeString, outerArcRect.centerX(), speedTextRect.top - speedTextRect.height() / 3f, textPaint)
+        canvas.drawText(
+            wd.timeString,
+            outerArcRect.centerX(),
+            speedTextRect.top - speedTextRect.height() / 3f,
+            textPaint
+        )
 
         //####################################################
         //######## DRAW BATTERY AND TEMPERATURE TEXT #########
@@ -220,16 +236,40 @@ class MainView(context: Context, attrs: AttributeSet?, var wd: WearData) : View(
         if (wd.battery > -1) {
             textPaint.textSize = innerArcTextSize
             val bestBatteryString = java.lang.String.format(Locale.US, "%02d%%", wd.battery)
-            canvas.drawText(bestBatteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint)
-            val temperatureString = java.lang.String.format(Locale.US, "%02d℃", wd.temperature.value.toInt())
-            canvas.drawText(temperatureString, temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
+            canvas.drawText(
+                bestBatteryString,
+                batteryTextRect.centerX(),
+                batteryTextRect.centerY(),
+                textPaint
+            )
+            val temperatureString =
+                java.lang.String.format(Locale.US, "%02d℃", wd.temperature.value.toInt())
+            canvas.drawText(
+                temperatureString,
+                temperatureTextRect.centerX(),
+                temperatureTextRect.centerY(),
+                textPaint
+            )
         }
 
         // PWM
-        textPaint.color = context.getColor(R.color.green)
+        val pwm = wd.pwm.value.toInt()
+        textPaint.color = context.getColor(
+            when (pwm) {
+                in 0..10 -> R.color.teal_200
+                in wd.alarmFactor1..wd.alarmFactor2 -> R.color.speed_text
+                in wd.alarmFactor2..Int.MAX_VALUE -> R.color.accent
+                else -> R.color.green
+            }
+        )
         canvas.drawText("pwm", centerX, centerY + centerY / 1.15f, textPaint)
         textPaint.textSize *= 2.8f
-        canvas.drawText("${wd.pwm.value}", centerX, centerY + centerY / 1.3f, textPaint)
+        canvas.drawText(
+            String.format(Locale.US, "%02d", pwm),
+            centerX,
+            centerY + centerY / 1.3f,
+            textPaint
+        )
     }
 
     private fun calculateFontSize(textBounds: Rect, textContainer: RectF, text: String, textPaint: Paint): Float {

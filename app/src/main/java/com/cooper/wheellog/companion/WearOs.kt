@@ -58,6 +58,8 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
             putLong(Constants.wearOsTimestampData, wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             putString(Constants.wearOsTimeStringData, sdf.format(Date(wd.lastLifeData)))
+            putInt(Constants.wearOsAlarmFactor1Data, WheelLog.AppConfig.alarmFactor1)
+            putInt(Constants.wearOsAlarmFactor2Data, WheelLog.AppConfig.alarmFactor2)
         }
         val request = dataRequest.asPutDataRequest()
         request.setUrgent()

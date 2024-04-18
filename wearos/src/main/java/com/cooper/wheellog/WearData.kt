@@ -19,4 +19,6 @@ class WearData {
     var alarmCurrent: Boolean = false
     var timeStamp: Long = -1
     var timeString: String = ""
+    var alarmFactor1: Int = 80
+    var alarmFactor2: Int = 90
 }
