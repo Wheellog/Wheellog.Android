@@ -11,7 +11,7 @@ android {
         minSdkVersion 24
         targetSdk 34
         versionCode 103
-        versionName "1.0.8b"
+        versionName "1.0.11"
         multiDexEnabled true
     }
 
