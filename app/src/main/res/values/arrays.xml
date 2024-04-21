@@ -149,6 +149,7 @@
         <item>100.8 V</item>
         <item>116.8 V</item>
         <item>134.4 V</item>
+        <item>168.0 V</item>
     </string-array>
 
     <string-array name="gotway_voltage_values">
@@ -157,6 +158,7 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+        <item>5</item>
     </string-array>
 
     <string-array name="gotway_negative">
