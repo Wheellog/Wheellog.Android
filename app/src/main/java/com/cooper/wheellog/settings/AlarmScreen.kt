@@ -175,7 +175,7 @@ fun alarmScreen() {
                             position = (AppConfig.rotationSpeed * speedMultipier / 10).toFloat(),
                             unit = speedUnit,
                             min = 0f,
-                            max = 150f,
+                            max = 250f,
                             format = "%.1f",
                         ) {
                             AppConfig.rotationSpeed = (it / speedMultipier * 10).toInt()
@@ -187,7 +187,7 @@ fun alarmScreen() {
                             position = (AppConfig.rotationVoltage / 10).toFloat(),
                             unit = R.string.volt,
                             min = 0f,
-                            max = 150f,
+                            max = 250f,
                             format = "%.1f",
                         ) {
                             AppConfig.rotationVoltage = (it * 10).toInt()
