@@ -187,12 +187,7 @@ public class GotwayAdapter extends BaseAdapter {
                     newDataFound = trueCurrent;
                     trueCurrent = true;
                     int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
-                    if (gotwayNegative == 0) {
-                        batteryCurrent = Math.abs(batteryCurrent);
-                    } else {
-                        batteryCurrent = batteryCurrent * gotwayNegative;
-                    }
-                    wd.setCurrent(batteryCurrent);
+                    wd.setCurrent( (-1) * batteryCurrent );
                 }
                 if (newDataFound) {
                     Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
