@@ -673,7 +673,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
             wd.setOutput(mPwm);
-            wd.setPwm();
+            wd.updatePwm();
             wd.setTopSpeed(mSpeed);
             wd.setPower(mBatPower * 100);
             wd.setWheelDistance(mMileage);
@@ -771,7 +771,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mBoardTemp * 100);
             wd.setOutput(mPwm);
-            wd.setPwm();
+            wd.updatePwm();
             //wd.setMotorTemp(mMotTemp * 100); not existed in WD
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
@@ -861,7 +861,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mMotTemp * 100);
             wd.setOutput(mPwm);
-            wd.setPwm();
+            wd.updatePwm();
             //wd.setMotorTemp(mMotTemp * 100); not existed in WD
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
@@ -966,7 +966,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mMotTemp * 100);
             wd.setOutput(mPwm);
-            wd.setPwm();
+            wd.updatePwm();
             //wd.setMotorTemp(mMotTemp * 100); not existed in WD
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);

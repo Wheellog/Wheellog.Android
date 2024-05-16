@@ -132,7 +132,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setAngle(pitchAngle/100.0);
                 if (hwPwmEnabled) {
                     wd.setOutput(hwPwm);
-                    wd.setPwm();
+                    wd.updatePwm();
                 } else {
                     wd.calculatePwm();
                 }

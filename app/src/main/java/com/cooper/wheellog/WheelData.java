@@ -970,7 +970,7 @@ public class WheelData {
             mTopSpeed = topSpeed;
     }
 
-    public void setVoltageSag() {
+    public void updateVoltageSag() {
         if ((mVoltage < mVoltageSag) && (mVoltage > 0))
             mVoltageSag = mVoltage;
     }
@@ -991,7 +991,7 @@ public class WheelData {
 
     }
 
-    public void setPwm() {
+    public void updatePwm() {
         mCalculatedPwm = (double) mOutput / 10000.0;
         setMaxPwm(mCalculatedPwm);
     }
@@ -1039,7 +1039,7 @@ public class WheelData {
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);
-        setVoltageSag();
+        updateVoltageSag();
         setMaxTemp(mTemperature);
 
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
