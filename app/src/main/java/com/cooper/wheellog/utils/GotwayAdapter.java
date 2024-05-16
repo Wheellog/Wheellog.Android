@@ -121,14 +121,15 @@ public class GotwayAdapter extends BaseAdapter {
                     if (!trueCurrent) {
                         wd.calculateCurrent();
                     }
-                    newDataFound = !trueVoltage;
+                    newDataFound = !(trueVoltage || trueCurrent);
                 } else if (buff[18] == (byte) 0x01) {
+                    newDataFound = !trueCurrent && trueVoltage;
                     trueVoltage = true;
                     int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
                     int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
                     int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
-                    wd.setVoltage(batVoltage);
-                    newDataFound = !trueCurrent;
+                    wd.setVoltage(batVoltage*10);
+
                 } else if (buff[18] == (byte) 0x03) {
                     int zero = MathsUtil.shortFromBytesBE(buff, 2);
                 } else if (buff[18] == (byte) 0x04) {
@@ -183,10 +184,10 @@ public class GotwayAdapter extends BaseAdapter {
                         getContext().sendBroadcast(intent);
                     }
                 } else if (buff[18] == (byte) 0x07) {
+                    newDataFound = trueCurrent;
                     trueCurrent = true;
                     int batteryCurrent = MathsUtil.shortFromBytesBE(buff, 2);
                     wd.setCurrent(batteryCurrent);
-                    newDataFound = true;
                 }
                 if (newDataFound) {
                     Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
@@ -409,7 +410,7 @@ public class GotwayAdapter extends BaseAdapter {
                 buffer.write(c);
                 oldc = c;
                 int size = buffer.size();
-                if ((size == 20 && c != (byte) 0x18) || (size > 20 && size <= 24 && c != (byte) 0x5A)) {
+                if ((size == 20 && !(c == (byte) 0x18 || c == (byte) 0x00)) || (size > 20 && size <= 24 && c != (byte) 0x5A)) {
                     Timber.i("Invalid frame footer (expected 18 5A 5A 5A 5A)");
                     state = UnpackerState.unknown;
                     return false;

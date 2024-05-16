@@ -123,12 +123,20 @@ class GotwayAdapterTest {
         val byteArray6 = "000000000000000000000000000007185a5a5a5a".hexToByteArray()
 
         // Act.
+
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
         val result3 = adapter.decode(byteArray3)
         val result4 = adapter.decode(byteArray4)
         val result5 = adapter.decode(byteArray5)
         val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray1)
+        val result8 = adapter.decode(byteArray2)
+        val result9 = adapter.decode(byteArray3)
+        val result10 = adapter.decode(byteArray4)
+        val result11 = adapter.decode(byteArray5)
+        val result12 = adapter.decode(byteArray6)
+
 
         // Assert.
         assertThat(result1).isFalse()
@@ -137,13 +145,20 @@ class GotwayAdapterTest {
         assertThat(result4).isFalse()
         assertThat(result5).isFalse()
         assertThat(result6).isFalse()
-        assertThat(abs(data.speed)).isEqualTo(0)
-        assertThat(data.temperature).isEqualTo(24)
-        assertThat(data.voltageDouble).isEqualTo(65.93)
-        assertThat(data.phaseCurrentDouble).isEqualTo(1.4)
-        assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
-        assertThat(data.totalDistance).isEqualTo(24786)
-        assertThat(data.batteryLevel).isEqualTo(100)
+        assertThat(result7).isFalse()
+        assertThat(result8).isFalse()
+        assertThat(result9).isFalse()
+        assertThat(result10).isFalse()
+        assertThat(result11).isFalse()
+        assertThat(result12).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(481)
+        assertThat(data.temperature).isEqualTo(27)
+        assertThat(data.voltageDouble).isEqualTo(120.10)
+        assertThat(data.phaseCurrentDouble).isEqualTo(-11.8)
+        assertThat(data.currentDouble).isEqualTo(5.56)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.75)
+        assertThat(data.totalDistance).isEqualTo(3942284)
+        assertThat(data.batteryLevel).isEqualTo(55)
     }
 
     @Test
