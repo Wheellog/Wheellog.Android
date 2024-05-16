@@ -111,6 +111,41 @@ class GotwayAdapterTest {
         assertThat(data.batteryLevel).isEqualTo(100)
     }
 
+
+    @Test
+    fun `decode with new board data`() {
+        // Arrange.
+        val byteArray1 = "55aa17750538007602eefb64f494148100090018".hexToByteArray()
+        val byteArray2 = "5a5a5a5a55aa0032000004b10000000013880000".hexToByteArray()
+        val byteArray3 = "000001005a5a5a5a55aa00000000000000000000".hexToByteArray()
+        val byteArray4 = "00000000000003005a5a5a5a55aa003c278c4900".hexToByteArray()
+        val byteArray5 = "1c2000c800000000001204185a5a5a5a55aa022c".hexToByteArray()
+        val byteArray6 = "000000000000000000000000000007185a5a5a5a".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isTrue()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(24)
+        assertThat(data.voltageDouble).isEqualTo(65.93)
+        assertThat(data.phaseCurrentDouble).isEqualTo(1.4)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
+        assertThat(data.totalDistance).isEqualTo(24786)
+        assertThat(data.batteryLevel).isEqualTo(100)
+    }
+
     @Test
     fun `decode strange board data`() {
         // Arrange.

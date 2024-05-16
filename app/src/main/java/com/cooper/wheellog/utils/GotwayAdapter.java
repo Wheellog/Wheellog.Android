@@ -68,7 +68,7 @@ public class GotwayAdapter extends BaseAdapter {
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
                     //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14)*10;
+                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
@@ -118,7 +118,12 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setOutput(hwPwm);
 
                     newDataFound = true;
-
+                } else if (buff[18] == (byte) 0x01) {
+                    int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
+                    int trueVoltage = MathsUtil.shortFromBytesBE(buff, 6);
+                    int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
+                } else if (buff[18] == (byte) 0x03) {
+                    int zero = MathsUtil.shortFromBytesBE(buff, 2);
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
@@ -170,6 +175,8 @@ public class GotwayAdapter extends BaseAdapter {
                         intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
                         getContext().sendBroadcast(intent);
                     }
+                } else if (buff[18] == (byte) 0x07) {
+                    int batteryCurrent = MathsUtil.shortFromBytesBE(buff, 2);
                 }
                 if (attempt < 10) {
                     if (model.equals("")) {
