@@ -50,7 +50,7 @@ class ParserLogToWheelData {
                 wd.topSpeed = speed
                 val voltage = (100 * (row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0)).toInt()
                 wd.voltage = voltage
-                wd.voltageSag = voltage
+                wd.voltageSag
                 wd.phaseCurrent = (100 * (row[header[LogHeaderEnum.PHASE_CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
                 wd.current = (100 * (row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0)).toInt()
                 wd.batteryLevel = row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0

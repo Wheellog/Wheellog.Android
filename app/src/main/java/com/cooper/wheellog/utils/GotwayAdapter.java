@@ -17,6 +17,8 @@ public class GotwayAdapter extends BaseAdapter {
     private String model = "";
     private String imu = "";
     private String fw = "";
+    private boolean trueVoltage = false;
+    private boolean trueCurrent = false;
     private int attempt = 0;
     private int lock_Changes = 0;
     private final int lightModeOff = 0;
@@ -61,7 +63,6 @@ public class GotwayAdapter extends BaseAdapter {
 
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
-
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     int distance = MathsUtil.shortFromBytesBE(buff, 8);
@@ -111,17 +112,23 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setWheelDistance(distance);
                     wd.setTemperature(temperature);
                     wd.setPhaseCurrent(phaseCurrent);
-                    wd.setVoltage(voltage);
-                    wd.setVoltageSag(voltage);
+                    if (!trueVoltage) {
+                        wd.setVoltage(voltage);
+                    }
                     wd.setBatteryLevel(battery);
-                    wd.updateRideTime();
                     wd.setOutput(hwPwm);
 
-                    newDataFound = true;
+                    if (!trueCurrent) {
+                        wd.calculateCurrent();
+                    }
+                    newDataFound = !trueVoltage;
                 } else if (buff[18] == (byte) 0x01) {
+                    trueVoltage = true;
                     int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
-                    int trueVoltage = MathsUtil.shortFromBytesBE(buff, 6);
+                    int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
                     int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
+                    wd.setVoltage(batVoltage);
+                    newDataFound = !trueCurrent;
                 } else if (buff[18] == (byte) 0x03) {
                     int zero = MathsUtil.shortFromBytesBE(buff, 2);
                 } else if (buff[18] == (byte) 0x04) {
@@ -176,8 +183,21 @@ public class GotwayAdapter extends BaseAdapter {
                         getContext().sendBroadcast(intent);
                     }
                 } else if (buff[18] == (byte) 0x07) {
+                    trueCurrent = true;
                     int batteryCurrent = MathsUtil.shortFromBytesBE(buff, 2);
+                    wd.setCurrent(batteryCurrent);
+                    newDataFound = true;
                 }
+                if (newDataFound) {
+                    Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
+                    wd.calculatePower();
+                    if (hwPwmEnabled) {
+                        wd.setPwm();
+                    } else {
+                        wd.calculatePwm();
+                    }
+                }
+
                 if (attempt < 10) {
                     if (model.equals("")) {
                         sendCommand("N", "", 0);
