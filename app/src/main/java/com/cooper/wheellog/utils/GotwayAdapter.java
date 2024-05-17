@@ -177,7 +177,7 @@ public class GotwayAdapter extends BaseAdapter {
                     if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
                     wd.setAlert(alertLine);
 
-                    if ((alertLine != "") && (getContext() != null)) {
+                    if (alertLine != "" && getContext() != null) {
                         Timber.i("News to send: %s, sending Intent", alertLine);
                         Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
                         intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);

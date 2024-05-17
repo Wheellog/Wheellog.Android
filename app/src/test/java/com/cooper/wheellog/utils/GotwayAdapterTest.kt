@@ -32,7 +32,6 @@ class GotwayAdapterTest {
         every { WheelData.getInstance() } returns data
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
-
     }
 
     @After
@@ -137,7 +136,6 @@ class GotwayAdapterTest {
         val result11 = adapter.decode(byteArray5)
         val result12 = adapter.decode(byteArray6)
 
-
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isTrue()
@@ -164,7 +162,6 @@ class GotwayAdapterTest {
 
     @Test
     fun `decode with new board data 2`() {
-
         // Arrange.
         val byteArray1 = "55aa177007390076001103b6f387148100090018".hexToByteArray()
         val byteArray2 = "5a5a5a5a55aa0032000004b00000000013880000".hexToByteArray()
@@ -174,7 +171,6 @@ class GotwayAdapterTest {
         val byteArray6 = "000000000000000000000000000007185a5a5a5a".hexToByteArray()
 
         // Act.
-
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
         val result3 = adapter.decode(byteArray3)
@@ -187,7 +183,6 @@ class GotwayAdapterTest {
         val result10 = adapter.decode(byteArray4)
         val result11 = adapter.decode(byteArray5)
         val result12 = adapter.decode(byteArray6)
-
 
         // Assert.
         assertThat(result1).isFalse()
