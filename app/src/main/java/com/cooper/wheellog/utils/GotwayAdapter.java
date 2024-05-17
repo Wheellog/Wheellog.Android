@@ -149,7 +149,7 @@ public class GotwayAdapter extends BaseAdapter {
                     int powerOffTime = MathsUtil.shortFromBytesBE(buff, 8);
                     int tiltBackSpeed = MathsUtil.shortFromBytesBE(buff, 10);
                     if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
-                    int alert = buff[12] & 0xFF;
+                    int alert = buff[14] & 0xFF;
                     int ledMode = buff[13] & 0xFF;
                     int lightMode = buff[15] & 0x03;
                     if (lock_Changes == 0) {
@@ -410,7 +410,7 @@ public class GotwayAdapter extends BaseAdapter {
                 buffer.write(c);
                 oldc = c;
                 int size = buffer.size();
-                if ((size == 20 && !(c == (byte) 0x18 || c == (byte) 0x00)) || (size > 20 && size <= 24 && c != (byte) 0x5A)) {
+                if (size > 20 && size <= 24 && c != (byte) 0x5A) {
                     Timber.i("Invalid frame footer (expected 18 5A 5A 5A 5A)");
                     state = UnpackerState.unknown;
                     return false;
