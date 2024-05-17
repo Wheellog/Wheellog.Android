@@ -155,7 +155,7 @@ class GotwayAdapterTest {
         assertThat(data.temperature).isEqualTo(27)
         assertThat(data.voltageDouble).isEqualTo(120.10)
         assertThat(data.phaseCurrentDouble).isEqualTo(-11.8)
-        assertThat(data.currentDouble).isEqualTo(5.56)
+        assertThat(data.currentDouble).isEqualTo(-5.56)
         assertThat(data.wheelDistanceDouble).isEqualTo(0.75)
         assertThat(data.totalDistance).isEqualTo(3942284)
         assertThat(data.batteryLevel).isEqualTo(55)
