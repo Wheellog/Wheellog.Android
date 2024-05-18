@@ -78,6 +78,7 @@ public class WheelData {
     private int mVoltageSag;
     private int mFanStatus;
     private int mChargingStatus;
+    private boolean mWheelAlarm = false;
     private boolean mConnectionState = false;
     private String mName = "Unknown";
     private String mModel = "Unknown";
@@ -784,6 +785,14 @@ public class WheelData {
         Calculator.INSTANCE.pushPower(getPowerDouble(), getDistance());
     }
 
+    public void setWheelAlarm(boolean value) {
+        mWheelAlarm = value;
+    }
+
+    public boolean getWheelAlarm() {
+        return mWheelAlarm;
+    }
+
     public void calculatePower() {
         setPower((int) Math.round(getCurrentDouble() * mVoltage));
     }
@@ -1175,6 +1184,7 @@ public class WheelData {
         rideStartTime = 0;
         mStartTotalDistance = 0;
         protoVer = "";
+        mWheelAlarm = false;
         mWheelIsReady = false;
     }
 

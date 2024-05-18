@@ -167,7 +167,8 @@ public class GotwayAdapter extends BaseAdapter {
                     }
 
                     String alertLine = "";
-                    if ((alert & 0x01) == 1) alertLine += "HighPower ";
+                    //if ((alert & 0x01) == 1) alertLine += "HighPower ";
+                    wd.setWheelAlarm((alert & 0x01) == 1);
                     if (((alert>>1) & 0x01) == 1) alertLine += "Speed2 ";
                     if (((alert>>2) & 0x01) == 1) alertLine += "Speed1 ";
                     if (((alert>>3) & 0x01) == 1) alertLine += "LowVoltage ";

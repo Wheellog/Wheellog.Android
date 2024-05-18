@@ -265,6 +265,8 @@
     <string name="battery_alarm_title">Battery level Alarm</string>
     <string name="battery_title">Battery level</string>
     <string name="alarm_battery_description">Battery level that triggers the alarm</string>
+    <string name="alarm_wheel_title">Wheel Alarm by Wheellog</string>
+    <string name="alarm_wheel_description">Alarm that triggers by wheel alarm</string>
     <string name="speed_axis">speed</string>
     <string name="current_axis">current</string>
     <string name="no_chart_data">No data available</string>
@@ -514,6 +516,7 @@
     <string name="alarm_text_current_v">[CURRENT] \n  - %1$.0f A</string>
     <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
     <string name="alarm_text_battery_v">[BAT] \n  - %1$d</string>
+    <string name="alarm_text_wheel_v">[WHEEL]</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
     <string name="watch_miband_group_title">Mi Band</string>
     <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>

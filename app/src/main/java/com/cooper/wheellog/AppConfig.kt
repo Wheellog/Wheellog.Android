@@ -411,6 +411,10 @@ class AppConfig(var context: Context) {
     var alarmBattery
         get() = getSpecific(R.string.alarm_battery, 0)
         set(value) = setSpecific(R.string.alarm_battery, value)
+
+    var alarmWheel: Boolean
+        get() = getSpecific(R.string.alarm_wheel, false)
+        set(value) = setSpecific(R.string.alarm_wheel, value)
     //endregion
     
     //region inmotion
