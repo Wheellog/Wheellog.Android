@@ -224,12 +224,12 @@ object Alarms {
         if (alarmWheel && WheelData.getInstance().wheelAlarm) {
             raiseAlarm(
                     ALARM_TYPE.WHEEL,
-                    WheelData.getInstance().batteryLevel.toDouble(),
+                    WheelData.getInstance().calculatedPwm,
                     mContext
-            )
-            batteryAlarmExecuting.value = true
-        }
-        return batteryAlarmExecuting.value
+                )
+                wheelAlarmExecuting.value = true
+            }
+        return wheelAlarmExecuting.value
     }
 
     private fun raiseAlarm(alarmType: ALARM_TYPE, value: Double, mContext: Context) {
