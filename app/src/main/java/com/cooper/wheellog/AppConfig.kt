@@ -598,6 +598,10 @@ class AppConfig(var context: Context) {
         get() = getSpecific(R.string.gw_in_miles, false)
         set(value) = setSpecific(R.string.gw_in_miles, value)
 
+    var autoVoltage: Boolean
+        get() = getSpecific(R.string.auto_voltage, true)
+        set(value) = setSpecific(R.string.auto_voltage, value)
+
     var gotwayVoltage: String // ListPreference only works with string parameters
         get() = getSpecific(R.string.gotway_voltage, "1")
         set(value) = setSpecific(R.string.gotway_voltage, value)

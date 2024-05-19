@@ -59,6 +59,7 @@ public class GotwayAdapter extends BaseAdapter {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useRatio = WheelLog.AppConfig.getUseRatio();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+                Boolean autoVoltage = WheelLog.AppConfig.getAutoVoltage();
                 int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
 
                 if (buff[18] == (byte) 0x00) {
@@ -112,7 +113,7 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setWheelDistance(distance);
                     wd.setTemperature(temperature);
                     wd.setPhaseCurrent(phaseCurrent);
-                    if (!trueVoltage) {
+                    if (!(trueVoltage && autoVoltage)) {
                         wd.setVoltage(voltage);
                     }
                     wd.setBatteryLevel(battery);
@@ -121,14 +122,14 @@ public class GotwayAdapter extends BaseAdapter {
                     if (!trueCurrent) {
                         wd.calculateCurrent();
                     }
-                    newDataFound = !(trueVoltage || trueCurrent);
+                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent);
                 } else if (buff[18] == (byte) 0x01) {
-                    newDataFound = !trueCurrent && trueVoltage;
+                    newDataFound = !trueCurrent && (trueVoltage && autoVoltage);
                     trueVoltage = true;
                     int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
                     int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
                     int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
-                    wd.setVoltage(batVoltage*10);
+                    if (autoVoltage) wd.setVoltage(batVoltage*10);
 
                 } else if (buff[18] == (byte) 0x03) {
                     int zero = MathsUtil.shortFromBytesBE(buff, 2);

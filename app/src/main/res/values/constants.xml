@@ -124,6 +124,7 @@
     <string name="max_speed" translatable="false">max_speed</string>
     <string name="use_ratio" translatable="false">use_ratio</string>
     <string name="gw_in_miles" translatable="false">gw_in_miles</string>
+    <string name="auto_voltage" translatable="false">auto_voltage</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
     <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
     <string name="beep_by_wheel" translatable="false">beep_by_wheel</string>

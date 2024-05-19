@@ -503,4 +503,6 @@
     <string name="main_menu_buttons_title">Кнопки главного меню</string>
     <string name="reset_extremum_values_title">Сброс крайних значений</string>
     <string name="show_clock_title">Показывать часы на главном экране</string>
+    <string name="auto_voltage_title">Автоматически определить напряжение</string>
+    <string name="auto_voltage_description">Если возможно, выключите если напряжение неправильное</string>
 </resources>
