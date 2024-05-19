@@ -25,6 +25,7 @@ class GotwayAdapterTest {
         every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
         val config = mockkClass(AppConfig::class, relaxed = true)
         every { config.gotwayNegative } returns "1"
+        every { config.autoVoltage } returns true
         WheelLog.AppConfig = config
         data = spyk(WheelData())
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
