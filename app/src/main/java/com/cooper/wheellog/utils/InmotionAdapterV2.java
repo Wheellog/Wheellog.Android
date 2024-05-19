@@ -1085,12 +1085,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
             wd.setTemperature(mMosTemp * 100);
             wd.setTemperature2(mMotTemp * 100);
             wd.setOutput(mPwm);
+            wd.updatePwm();
             //wd.setMotorTemp(mMotTemp * 100); not existed in WD
             wd.setAngle((double)mPitchAngle/100.0);
             wd.setRoll((double)mRollAngle/100.0);
-            wd.updateRideTime();
             wd.setTopSpeed(mSpeed);
-            wd.setVoltageSag(mVoltage);
             wd.setPower(mBatPower * 100);
             wd.setWheelDistance(mMileage);
             //// state data
