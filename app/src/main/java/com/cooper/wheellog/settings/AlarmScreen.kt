@@ -201,7 +201,7 @@ fun alarmScreen() {
                             position = AppConfig.powerFactor.toFloat(),
                             unit = R.string.persent,
                             min = 0f,
-                            max = 99f,
+                            max = 100f,
                         ) {
                             AppConfig.powerFactor = it.toInt()
                         }
