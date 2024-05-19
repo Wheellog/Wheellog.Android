@@ -101,6 +101,8 @@
     <string name="temperature_alarm_title">Предупреждение о температуре</string>
     <string name="temperature_title">Температура</string>
     <string name="alarm_temperature_description">Уровень срабатывания предупреждения о температуре.</string>
+    <string name="alarm_wheel_title">Аларм колеса</string>
+    <string name="alarm_wheel_description">Предупреждение срабатывающие при срабатывании предупреждения колеса</string>
     <string name="speed_axis">скорость</string>
     <string name="current_axis">ток</string>
     <string name="no_chart_data">Нет данных для отображения графика</string>
@@ -501,4 +503,6 @@
     <string name="main_menu_buttons_title">Кнопки главного меню</string>
     <string name="reset_extremum_values_title">Сброс крайних значений</string>
     <string name="show_clock_title">Показывать часы на главном экране</string>
+    <string name="auto_voltage_title">Автоматически определить напряжение</string>
+    <string name="auto_voltage_description">Если возможно, выключите если напряжение неправильное</string>
 </resources>

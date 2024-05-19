@@ -110,6 +110,7 @@ object Constants {
         CURRENT(4),
         TEMPERATURE(5),
         PWM(6),
-        BATTERY(7);
+        BATTERY(7),
+        WHEEL(8);
     }
 }

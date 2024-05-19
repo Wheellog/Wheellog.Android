@@ -24,6 +24,7 @@
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
     <string name="alarm_battery" translatable="false">alarm_battery</string>
+    <string name="alarm_wheel" translatable="false">alarm_wheel</string>
     <string name="alarm_temperature" translatable="false">alarm_temperature</string>
     <string name="altered_alarms" translatable="false">altered_alarms</string>
     <string name="rotation_speed" translatable="false">rotation_speed</string>
@@ -123,6 +124,7 @@
     <string name="max_speed" translatable="false">max_speed</string>
     <string name="use_ratio" translatable="false">use_ratio</string>
     <string name="gw_in_miles" translatable="false">gw_in_miles</string>
+    <string name="auto_voltage" translatable="false">auto_voltage</string>
     <string name="beep_on_single_tap" translatable="false">beep_on_single_tap</string>
     <string name="beep_on_volume_up" translatable="false">beep_on_volume_up</string>
     <string name="beep_by_wheel" translatable="false">beep_by_wheel</string>

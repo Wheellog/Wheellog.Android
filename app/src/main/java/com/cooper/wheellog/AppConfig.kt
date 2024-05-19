@@ -411,6 +411,10 @@ class AppConfig(var context: Context) {
     var alarmBattery
         get() = getSpecific(R.string.alarm_battery, 0)
         set(value) = setSpecific(R.string.alarm_battery, value)
+
+    var alarmWheel: Boolean
+        get() = getSpecific(R.string.alarm_wheel, false)
+        set(value) = setSpecific(R.string.alarm_wheel, value)
     //endregion
     
     //region inmotion
@@ -593,6 +597,10 @@ class AppConfig(var context: Context) {
     var gwInMiles: Boolean
         get() = getSpecific(R.string.gw_in_miles, false)
         set(value) = setSpecific(R.string.gw_in_miles, value)
+
+    var autoVoltage: Boolean
+        get() = getSpecific(R.string.auto_voltage, true)
+        set(value) = setSpecific(R.string.auto_voltage, value)
 
     var gotwayVoltage: String // ListPreference only works with string parameters
         get() = getSpecific(R.string.gotway_voltage, "1")

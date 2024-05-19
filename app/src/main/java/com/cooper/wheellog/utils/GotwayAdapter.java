@@ -17,6 +17,8 @@ public class GotwayAdapter extends BaseAdapter {
     private String model = "";
     private String imu = "";
     private String fw = "";
+    private boolean trueVoltage = false;
+    private boolean trueCurrent = false;
     private int attempt = 0;
     private int lock_Changes = 0;
     private final int lightModeOff = 0;
@@ -57,18 +59,18 @@ public class GotwayAdapter extends BaseAdapter {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useRatio = WheelLog.AppConfig.getUseRatio();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+                Boolean autoVoltage = WheelLog.AppConfig.getAutoVoltage();
                 int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
 
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
-
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     int distance = MathsUtil.shortFromBytesBE(buff, 8);
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
                     //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14)*10;
+                    int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
@@ -111,14 +113,26 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setWheelDistance(distance);
                     wd.setTemperature(temperature);
                     wd.setPhaseCurrent(phaseCurrent);
-                    wd.setVoltage(voltage);
-                    wd.setVoltageSag(voltage);
+                    if (!(trueVoltage && autoVoltage)) {
+                        wd.setVoltage(voltage);
+                    }
                     wd.setBatteryLevel(battery);
-                    wd.updateRideTime();
                     wd.setOutput(hwPwm);
 
-                    newDataFound = true;
+                    if (!trueCurrent) {
+                        wd.calculateCurrent();
+                    }
+                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent);
+                } else if (buff[18] == (byte) 0x01) {
+                    newDataFound = !trueCurrent && (trueVoltage && autoVoltage);
+                    trueVoltage = true;
+                    int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
+                    int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
+                    int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
+                    if (autoVoltage) wd.setVoltage(batVoltage*10);
 
+                } else if (buff[18] == (byte) 0x03) {
+                    int zero = MathsUtil.shortFromBytesBE(buff, 2);
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
@@ -136,7 +150,7 @@ public class GotwayAdapter extends BaseAdapter {
                     int powerOffTime = MathsUtil.shortFromBytesBE(buff, 8);
                     int tiltBackSpeed = MathsUtil.shortFromBytesBE(buff, 10);
                     if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
-                    int alert = buff[12] & 0xFF;
+                    int alert = buff[14] & 0xFF;
                     int ledMode = buff[13] & 0xFF;
                     int lightMode = buff[15] & 0x03;
                     if (lock_Changes == 0) {
@@ -154,7 +168,8 @@ public class GotwayAdapter extends BaseAdapter {
                     }
 
                     String alertLine = "";
-                    if ((alert & 0x01) == 1) alertLine += "HighPower ";
+                    //if ((alert & 0x01) == 1) alertLine += "HighPower ";
+                    wd.setWheelAlarm((alert & 0x01) == 1);
                     if (((alert>>1) & 0x01) == 1) alertLine += "Speed2 ";
                     if (((alert>>2) & 0x01) == 1) alertLine += "Speed1 ";
                     if (((alert>>3) & 0x01) == 1) alertLine += "LowVoltage ";
@@ -164,13 +179,28 @@ public class GotwayAdapter extends BaseAdapter {
                     if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
                     wd.setAlert(alertLine);
 
-                    if ((alertLine != "") && (getContext() != null)) {
+                    if (alertLine != "" && getContext() != null) {
                         Timber.i("News to send: %s, sending Intent", alertLine);
                         Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
                         intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
                         getContext().sendBroadcast(intent);
                     }
+                } else if (buff[18] == (byte) 0x07) {
+                    newDataFound = trueCurrent;
+                    trueCurrent = true;
+                    int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
+                    wd.setCurrent( (-1) * batteryCurrent );
                 }
+                if (newDataFound) {
+                    Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
+                    wd.calculatePower();
+                    if (hwPwmEnabled) {
+                        wd.updatePwm();
+                    } else {
+                        wd.calculatePwm();
+                    }
+                }
+
                 if (attempt < 10) {
                     if (model.equals("")) {
                         sendCommand("N", "", 0);
@@ -382,7 +412,7 @@ public class GotwayAdapter extends BaseAdapter {
                 buffer.write(c);
                 oldc = c;
                 int size = buffer.size();
-                if ((size == 20 && c != (byte) 0x18) || (size > 20 && size <= 24 && c != (byte) 0x5A)) {
+                if (size > 20 && size <= 24 && c != (byte) 0x5A) {
                     Timber.i("Invalid frame footer (expected 18 5A 5A 5A 5A)");
                     state = UnpackerState.unknown;
                     return false;

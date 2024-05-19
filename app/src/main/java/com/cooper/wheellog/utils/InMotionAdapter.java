@@ -1152,6 +1152,8 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setTemperature(temperature*100);
             wd.setTemperature2(temperature2*100);
             wd.setModeStr(workMode);
+            wd.calculatePwm();
+            wd.calculatePower();
 
             return true;
         }

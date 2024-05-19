@@ -265,6 +265,8 @@
     <string name="battery_alarm_title">Battery level Alarm</string>
     <string name="battery_title">Battery level</string>
     <string name="alarm_battery_description">Battery level that triggers the alarm</string>
+    <string name="alarm_wheel_title">Wheel Alarm by Wheellog</string>
+    <string name="alarm_wheel_description">Alarm that triggers by wheel alarm</string>
     <string name="speed_axis">speed</string>
     <string name="current_axis">current</string>
     <string name="no_chart_data">No data available</string>
@@ -302,10 +304,12 @@
     <string name="is_gotway_mcm_description">If your wheel is Gotway MCM, and it shows wrong speed, distance and others parameters, it should make them normal</string>
     <string name="gw_in_miles_title">Switch controller in Miles</string>
     <string name="gw_in_miles_description">on - Miles, off - Km</string>
+    <string name="auto_voltage_title">Auto detect wheel voltage</string>
+    <string name="auto_voltage_description">If possible, switch off if voltage is irrelevant</string>
     <string name="ks18l_scaler_title">Wrong 18L distanse</string>
     <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
     <string name="battery_voltage_title">Battery voltage</string>
-    <string name="battery_voltage_description">67V/84V/100V/116V/134V</string>
+    <string name="battery_voltage_description">67V/84V/100V/116V/134V/168V</string>
     <string name="gotway_negative_title">Negative current and speed mode</string>
     <string name="gotway_negative_description">When you riding straight if speed and currents negative - try change to opposite setting, or choose absolute</string>
     <string name="hw_pwm_title">Use hardware PWM instead of software</string>
@@ -514,6 +518,7 @@
     <string name="alarm_text_current_v">[CURRENT] \n  - %1$.0f A</string>
     <string name="alarm_text_temperature_v">[HEAT] \n  - %1$d°C</string>
     <string name="alarm_text_battery_v">[BAT] \n  - %1$d</string>
+    <string name="alarm_text_wheel_v">[WHEEL]</string>
     <string name="notification_buttons_description">Buttons in the notification bar</string>
     <string name="watch_miband_group_title">Mi Band</string>
     <string name="miband_on_mainscreen_title">Mi Band button on main menu</string>

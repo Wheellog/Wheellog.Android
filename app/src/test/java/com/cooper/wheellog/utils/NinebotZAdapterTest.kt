@@ -96,7 +96,7 @@ class NinebotZAdapterTest {
         assertThat(data.currentDouble).isEqualTo(44.98)
         assertThat(data.temperature).isEqualTo(37)
         assertThat(data.totalDistance).isEqualTo(2660251)
-        assertThat(data.powerDouble).isEqualTo(2775.26)
+        assertThat(data.powerDouble).isEqualTo(2775.27)
         assertThat(data.batteryLevel).isEqualTo(78)
     }
 

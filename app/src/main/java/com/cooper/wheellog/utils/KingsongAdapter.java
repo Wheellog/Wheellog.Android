@@ -40,9 +40,8 @@ public class KingsongAdapter extends BaseAdapter {
                     wd.setTotalDistance(Math.round(wd.getTotalDistance() * KS18L_SCALER));
                 }
                 wd.setCurrent((data[10] & 0xFF) + (data[11] << 8));
-
+                wd.calculatePower();
                 wd.setTemperature(MathsUtil.getInt2R(data, 12));
-                wd.setVoltageSag(voltage);
                 if ((data[15] & 255) == 224) {
                     mMode = data[14];
                     wd.setModeStr(String.format(Locale.US, "%d", mMode));
@@ -137,7 +136,6 @@ public class KingsongAdapter extends BaseAdapter {
             } else if ((data[16] & 255) == 0xB9) { // Distance/Time/Fan Data
                 long distance = MathsUtil.getInt4R(data, 2);
                 wd.setWheelDistance(distance);
-                wd.updateRideTime();
                 wd.setTopSpeed(MathsUtil.getInt2R(data, 8));
                 wd.setFanStatus(data[12]);
                 wd.setChargingStatus(data[13]);
@@ -177,6 +175,7 @@ public class KingsongAdapter extends BaseAdapter {
             } else if ((data[16] & 255) == 0xF5) { //cpu load
                 wd.setCpuLoad(data[14]);
                 wd.setOutput(data[15]*100);
+                wd.updatePwm();
                 return false;
             } else if ((data[16] & 255) == 0xF6) { //speed limit (PWM?)
                 mSpeedLimit = MathsUtil.getInt2R(data, 2) / 100.0;

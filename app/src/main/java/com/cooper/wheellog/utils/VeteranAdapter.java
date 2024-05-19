@@ -29,6 +29,7 @@ public class VeteranAdapter extends BaseAdapter {
             if (unpacker.addChar(c)) {
                 byte[] buff = unpacker.getBuffer();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+                Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
                 int veteranNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
                 int voltage = MathsUtil.shortFromBytesBE(buff,4);
                 int speed = MathsUtil.signedShortFromBytesBE(buff,6) * 10;
@@ -125,14 +126,18 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setTotalDistance(totalDistance);
                 wd.setTemperature(temperature);
                 wd.setPhaseCurrent(phaseCurrent);
-                wd.setCurrent(phaseCurrent);
                 wd.setVoltage(voltage);
-                wd.setVoltageSag(voltage);
                 wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
                 wd.setAngle(pitchAngle/100.0);
-                wd.setOutput(hwPwm);
-                wd.updateRideTime();
+                if (hwPwmEnabled) {
+                    wd.setOutput(hwPwm);
+                    wd.updatePwm();
+                } else {
+                    wd.calculatePwm();
+                }
+                wd.calculateCurrent();
+                wd.calculatePower();
                 newDataFound = true;
             }
         }

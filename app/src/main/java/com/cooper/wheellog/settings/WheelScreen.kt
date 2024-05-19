@@ -838,11 +838,20 @@ private fun begode() {
             "2" to "100.8V",
             "3" to "117.6V",
             "4" to "134.4V",
+            "5" to "168V",
         ),
         defaultKey = AppConfig.gotwayVoltage,
     ) {
         AppConfig.gotwayVoltage = it.first
     }
+    switchPref(
+            name = stringResource(R.string.auto_voltage_title),
+            desc = stringResource(R.string.auto_voltage_description),
+            default = AppConfig.autoVoltage,
+    ) {
+        AppConfig.autoVoltage = it
+    }
+
     list(
         name = stringResource(R.string.gotway_negative_title),
         desc = stringResource(R.string.gotway_negative_description),

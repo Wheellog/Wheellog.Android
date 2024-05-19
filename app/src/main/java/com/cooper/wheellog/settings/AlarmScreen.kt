@@ -25,6 +25,8 @@ fun alarmScreen() {
         val ksAlteredAlarms =
             WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.KINGSONG
                     && WheelData.getInstance().model.compareTo("KS-18A") != 0
+        val wheelAlarm =
+                WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.GOTWAY
 
         switchPref(
             name = stringResource(R.string.enable_alarms_title),
@@ -199,7 +201,7 @@ fun alarmScreen() {
                             position = AppConfig.powerFactor.toFloat(),
                             unit = R.string.persent,
                             min = 0f,
-                            max = 99f,
+                            max = 100f,
                         ) {
                             AppConfig.powerFactor = it.toInt()
                         }
@@ -313,6 +315,15 @@ fun alarmScreen() {
                 max = 100f,
             ) {
                 AppConfig.alarmBattery = it.toInt()
+            }
+            if (wheelAlarm) {
+                switchPref(
+                        name = stringResource(R.string.alarm_wheel_title),
+                        desc = stringResource(R.string.alarm_wheel_description),
+                        default = AppConfig.alarmWheel,
+                ) {
+                    AppConfig.alarmWheel = it
+                }
             }
         }
     }

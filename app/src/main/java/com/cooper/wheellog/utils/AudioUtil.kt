@@ -101,6 +101,10 @@ object AudioUtil {
                             write(buffer, sampleRate / 20, toneDuration * sampleRate / 1000)
                         }
                         // 50, 100, 150 ms depends on number of speed alarm
+                        ALARM_TYPE.WHEEL -> {
+                            write(buffer, sampleRate * 12 / 20, 2 * sampleRate / 20)
+                        }
+                        // 150 ms for wheel alarm
                         else -> {
                             write(buffer, sampleRate * 3 / 10, 6 * sampleRate / 10)
                         }
