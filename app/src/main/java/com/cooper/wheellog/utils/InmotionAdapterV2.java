@@ -1026,22 +1026,22 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
             int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
             //int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
-            int mSomeThing2 = MathsUtil.signedShortFromBytesLE(data, 4);
-            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 6); //not sure
+            //int mSomeThing2 = MathsUtil.signedShortFromBytesLE(data, 4);
+            //int mSomeThing183 = MathsUtil.signedShortFromBytesLE(data, 6); //not sure
             int mSpeed = MathsUtil.signedShortFromBytesLE(data, 8);
-            //int mSomething0 = MathsUtil.signedShortFromBytesLE(data, 10);
-            long mMileage = MathsUtil.intFromBytesRevLE(data, 10); // not sure
+            int mSomeThing180 = MathsUtil.signedShortFromBytesLE(data, 10);
+            int mTorque = MathsUtil.signedShortFromBytesLE(data, 12); // not sure
             int mPwm = MathsUtil.signedShortFromBytesLE(data, 14);
             int mBatPower = MathsUtil.signedShortFromBytesLE(data, 16);
-            int mTorque = MathsUtil.signedShortFromBytesLE(data, 18); // not sure
-            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 20); // not sure
-            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 22); // not sure
-            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 24); // not sure
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 18); // not sure
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 20); // not sure
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 22); // not sure
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 24); // not sure
 
-            //int mRemainMileage = MathsUtil.shortFromBytesLE(data, 26) * 10;
-            //int mSomeThing180 = MathsUtil.shortFromBytesLE(data, 28); // always 18000
-            //int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 30);
-            //int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 32);
+            int mSomeThing183 = MathsUtil.signedShortFromBytesLE(data, 26);
+            int mMileage = MathsUtil.shortFromBytesLE(data, 28)*10; // always 18000
+            int mSomeThing181 = MathsUtil.shortFromBytesLE(data, 30);
+            int mSomeThing182 = MathsUtil.shortFromBytesLE(data, 32);
 
             int mBatLevel1 = MathsUtil.shortFromBytesLE(data, 34);
             int mBatLevel2 = MathsUtil.shortFromBytesLE(data, 36);
@@ -1066,8 +1066,12 @@ public class InmotionAdapterV2 extends BaseAdapter {
 // don't remove
 //            int mBrightness = data[48]& 0xff;
 //            int mLightBrightness = data[49]& 0xff;
-//            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Rem Km: %.3f, Bat: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
-//                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, mXz, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/10.0, mRemainMileage/1000.0, mBatLevel/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+//            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Bat1: %.2f, Bat2: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
+//                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, x5, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/1.0,  mBatLevel1/100.0, mBatLevel2/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+//            System.out.println(String.format(Locale.US,"mSomeThing183: %.2f, mPitchAngle: %.2f, mRollAngle: %.2f, X5: %d, X6: %d,X7: %d, mSomeThing380: %.2f",
+//                     mSomeThing183/100.0, mPitchAngle/100.0,mRollAngle/100.0, x5,x6,x7, mSomeThing380/100.0));
+
+
             wd.setVoltage(mVoltage);
             wd.setTorque((double)mTorque/100.0);
             wd.setMotorPower(mMotPower);
