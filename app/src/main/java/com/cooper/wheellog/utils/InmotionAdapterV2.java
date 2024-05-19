@@ -66,6 +66,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
                                 return result.parseRealTimeInfoV12(getContext());
                             } else if (getInstance().getModel() == Model.V13) {
                                 return result.parseRealTimeInfoV13(getContext());
+                            } else if (getInstance().getModel() == Model.V14) {
+                                return result.parseRealTimeInfoV14(getContext());
                             } else if (protoVer < 2) {
                                 return result.parseRealTimeInfoV11(getContext());
                             } else {
@@ -86,6 +88,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         V11(6, "Inmotion V11"),
         V12(7, "Inmotion V12"),
         V13(8, "Inmotion V13"),
+        V14(9, "Inmotion V14"),
         UNKNOWN(0,"Inmotion Unknown");
 
 
@@ -953,6 +956,118 @@ public class InmotionAdapterV2 extends BaseAdapter {
 //            int mLightBrightness = data[49]& 0xff;
 //            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Rem Km: %.3f, Bat: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
 //                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, mXz, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/10.0, mRemainMileage/1000.0, mBatLevel/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+            wd.setVoltage(mVoltage);
+            wd.setTorque((double)mTorque/100.0);
+            wd.setMotorPower(mMotPower);
+            wd.setCpuTemp(mCpuTemp);
+            wd.setImuTemp(mImuTemp);
+            wd.setCurrent(mCurrent);
+            wd.setSpeed(mSpeed);
+            wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
+            wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
+            wd.setBatteryLevel((int)Math.round((mBatLevel1 + mBatLevel2)/200.0));
+            wd.setTemperature(mMosTemp * 100);
+            wd.setTemperature2(mMotTemp * 100);
+            wd.setOutput(mPwm);
+            wd.updatePwm();
+            //wd.setMotorTemp(mMotTemp * 100); not existed in WD
+            wd.setAngle((double)mPitchAngle/100.0);
+            wd.setRoll((double)mRollAngle/100.0);
+            wd.setTopSpeed(mSpeed);
+            wd.setPower(mBatPower * 100);
+            wd.setWheelDistance(mMileage);
+            //// state data
+            int mPcMode = data[74] & 0x07; // lock, drive, shutdown, idle
+            int mMcMode = (data[74]>>3)&0x07;
+            int mMotState = (data[74]>>6)&0x01;
+            int chrgState = (data[74]>>7)&0x01;
+            int lowLightState = (data[75])&0x01;
+            int highLightState = (data[75] >> 1) & 0x01;
+            int liftedState = (data[75]>>2)&0x01;
+            int tailLiState = (data[75]>>3)&0x03;
+            int fwUpdateState = (data[75]>>5)&0x01;
+            String wmode = "";
+            if (mMotState == 1) {wmode = wmode + "Active";}
+            if (chrgState == 1) {wmode = wmode + " Charging";}
+            if (liftedState == 1) {wmode = wmode + " Lifted";}
+            //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
+            wd.setModeStr(wmode);
+
+            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+                if (lightSwitchCounter > 3) {
+                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    lightSwitchCounter = 0;
+                } else lightSwitchCounter += 1;
+            } else lightSwitchCounter = 0;
+
+            //// errors data
+            String inmoError = getError(76);
+            if (!inmoError.equals("")) System.out.println(String.format(Locale.US,"Err: %s", inmoError));
+            wd.setAlert(inmoError);
+            /*
+            if ((inmoError != "") && (sContext != null)) {
+                Timber.i("News to send: %s, sending Intent", inmoError);
+                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                sContext.sendBroadcast(intent);
+            }
+            */
+            return true;
+        }
+
+
+        boolean parseRealTimeInfoV14(Context sContext) {
+            Timber.i("Parse V14 realtime stats data");
+            WheelData wd = WheelData.getInstance();
+            int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
+            int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
+            //int mSpeed = MathsUtil.signedShortFromBytesLE(data, 4);
+            //int mSomeThing2 = MathsUtil.signedShortFromBytesLE(data, 4);
+            //int mSomeThing183 = MathsUtil.signedShortFromBytesLE(data, 6); //not sure
+            int mSpeed = MathsUtil.signedShortFromBytesLE(data, 8);
+            int mSomeThing180 = MathsUtil.signedShortFromBytesLE(data, 10);
+            int mTorque = MathsUtil.signedShortFromBytesLE(data, 12); // not sure
+            int mPwm = MathsUtil.signedShortFromBytesLE(data, 14);
+            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 16);
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 18); // not sure
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 20); // not sure
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 22); // not sure
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 24); // not sure
+
+            int mSomeThing183 = MathsUtil.signedShortFromBytesLE(data, 26);
+            int mMileage = MathsUtil.shortFromBytesLE(data, 28)*10; // always 18000
+            int mSomeThing181 = MathsUtil.shortFromBytesLE(data, 30);
+            int mSomeThing182 = MathsUtil.shortFromBytesLE(data, 32);
+
+            int mBatLevel1 = MathsUtil.shortFromBytesLE(data, 34);
+            int mBatLevel2 = MathsUtil.shortFromBytesLE(data, 36);
+            int mSomeThing200_1 = MathsUtil.shortFromBytesLE(data, 38);
+            int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 40);
+            int x5 = MathsUtil.shortFromBytesLE(data, 42);
+            int x6 = MathsUtil.shortFromBytesLE(data, 44);
+            int x7 = MathsUtil.shortFromBytesLE(data, 46);
+            int mSomeThing200_2 = MathsUtil.shortFromBytesLE(data, 48);
+            int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 50);
+            int mSomeThing380 = MathsUtil.shortFromBytesLE(data, 52);
+
+
+            int mMosTemp = (data[58] & 0xff) + 80 - 256;
+            int mMotTemp = (data[59] & 0xff) + 80 - 256;
+            int mBatTemp = (data[60] & 0xff) + 80 - 256; // 0
+            int mBoardTemp = (data[61] & 0xff) + 80 - 256;
+            int mCpuTemp = (data[62] & 0xff) + 80 - 256;
+            int mImuTemp = (data[63] & 0xff) + 80 - 256;
+            int mLampTemp = (data[64] & 0xff) + 80 - 256; // 0
+
+// don't remove
+//            int mBrightness = data[48]& 0xff;
+//            int mLightBrightness = data[49]& 0xff;
+//            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Bat1: %.2f, Bat2: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
+//                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, x5, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/1.0,  mBatLevel1/100.0, mBatLevel2/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+//            System.out.println(String.format(Locale.US,"mSomeThing183: %.2f, mPitchAngle: %.2f, mRollAngle: %.2f, X5: %d, X6: %d,X7: %d, mSomeThing380: %.2f",
+//                     mSomeThing183/100.0, mPitchAngle/100.0,mRollAngle/100.0, x5,x6,x7, mSomeThing380/100.0));
+
+
             wd.setVoltage(mVoltage);
             wd.setTorque((double)mTorque/100.0);
             wd.setMotorPower(mMotPower);
