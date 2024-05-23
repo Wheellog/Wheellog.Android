@@ -6,6 +6,10 @@ data class LogTick(
      */
     val time: Float,
     val timeString: String,
+    /**
+     * Time in 1/10 second + day of week
+     */
+    val timePlusDayOfWeek: Float,
     val latitude: Double,
     val longitude: Double,
     val altitude: Double,

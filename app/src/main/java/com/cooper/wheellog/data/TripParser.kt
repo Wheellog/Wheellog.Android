@@ -12,6 +12,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Locale
@@ -71,14 +72,17 @@ object TripParser {
         }
 
         val sdfTime = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
+        val sdfFullDate = SimpleDateFormat("dd HH:mm:ss.SSS", Locale.getDefault())
         val resultList = ArrayList<LogTick>()
 
         try {
             reader.forEachLine { line ->
                 val row = line.split(",")
                 val timeString = row[header[LogHeaderEnum.TIME]!!]
+                val dateString = row[header[LogHeaderEnum.DATE]!!]
                 val logTick = LogTick(
                     timeString = timeString,
+                    timePlusDayOfWeek = sdfFullDate.parse("$dateString $timeString", ParsePosition(8))!!.time / 100f,
                     time = sdfTime.parse(timeString)!!.time / 100f,
                     latitude = row[header[LogHeaderEnum.LATITUDE]!!].toDoubleOrNull() ?: 0.0,
                     longitude = row[header[LogHeaderEnum.LONGITUDE]!!].toDoubleOrNull() ?: 0.0,

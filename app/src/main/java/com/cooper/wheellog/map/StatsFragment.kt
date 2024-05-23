@@ -22,7 +22,7 @@ import java.util.*
 
 class StatsFragment: Fragment(), OnChartValueSelectedListener {
 
-    private val timeFormatter = SimpleDateFormat("HH:mm:ss ", Locale.US)
+    private val timeFormatter = SimpleDateFormat("HH:mm:ss", Locale.US)
     private val viewModel: MapViewModel by activityViewModels()
     private lateinit var binding: ChartFragmentBinding
 
@@ -57,7 +57,7 @@ class StatsFragment: Fragment(), OnChartValueSelectedListener {
     private fun initChart(chart: LineChart) {
         chart.apply {
             setDrawGridBackground(false)
-            description.isEnabled = true
+            description.isEnabled = false
             setHardwareAccelerationEnabled(true)
             legend.textColor = getColorEx(android.R.color.white)
             setNoDataText(resources.getString(R.string.no_chart_data))
