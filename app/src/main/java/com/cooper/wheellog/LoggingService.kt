@@ -8,11 +8,11 @@ import android.content.pm.PackageManager
 import android.location.*
 import android.os.Binder
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.ParserLogToWheelData
@@ -305,10 +305,19 @@ class LoggingService : Service() {
     }
 
     // Define a listener that responds to location updates
-    private var locationListener: LocationListener = LocationListener { location ->
-        // Called when a new location is found by the specified location provider.
-        mLocation = location
+    private var locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            mLocation = location
+        }
+
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {}
+
+        @Deprecated("Need for old API level 28 and lower.")
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
     }
+
     private val lastBestLocation: Location?
         @SuppressLint("MissingPermission") get() {
             val locationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
