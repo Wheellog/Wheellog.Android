@@ -120,7 +120,7 @@ class MapActivity : AppCompatActivity() {
 
         val chart1DataSets = listOf(
             LineDataSet(
-                list.map { Entry(it.time, it.batteryLevel.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.batteryLevel.toFloat()) },
                 getString(R.string.battery)
             ).apply {
                 color = getColorEx(R.color.stats_battery)
@@ -129,7 +129,7 @@ class MapActivity : AppCompatActivity() {
                 lineWidth = 2f
             },
             LineDataSet(
-                list.map { Entry(it.time, it.speed.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.speed.toFloat()) },
                 getString(R.string.speed)
             ).apply {
                 color = getColorEx(R.color.stats_speed)
@@ -138,7 +138,7 @@ class MapActivity : AppCompatActivity() {
                 lineWidth = 2f
             },
             LineDataSet(
-                list.map { Entry(it.time, it.temperature.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.temperature.toFloat()) },
                 getString(R.string.temperature)
             ).apply {
                 color = getColorEx(R.color.stats_temp)
@@ -148,7 +148,7 @@ class MapActivity : AppCompatActivity() {
             })
         val chart2DataSets = listOf(
             LineDataSet(
-                list.map { Entry(it.time, it.pwm.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.pwm.toFloat()) },
                 getString(R.string.pwm)
             ).apply {
                 color = getColorEx(R.color.stats_pwm)
@@ -157,7 +157,7 @@ class MapActivity : AppCompatActivity() {
                 lineWidth = 2f
             },
             LineDataSet(
-                list.map { Entry(it.time, it.voltage.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.voltage.toFloat()) },
                 getString(R.string.voltage)
             ).apply {
                 color = getColorEx(R.color.stats_voltage)
@@ -166,7 +166,7 @@ class MapActivity : AppCompatActivity() {
                 lineWidth = 2f
             },
             LineDataSet(
-                list.map { Entry(it.time, it.power.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.power.toFloat()) },
                 getString(R.string.power)
             ).apply {
                 color = getColorEx(R.color.stats_power)
@@ -175,7 +175,7 @@ class MapActivity : AppCompatActivity() {
                 lineWidth = 2f
             },
             LineDataSet(
-                list.map { Entry(it.time, it.current.toFloat()) },
+                list.map { Entry(it.timePlusDayOfWeek, it.current.toFloat()) },
                 getString(R.string.current)
             ).apply {
                 color = getColorEx(R.color.stats_current)
