@@ -74,6 +74,22 @@
     <string name="gotway_voltage" translatable="false">gotway_voltage</string>
     <string name="gotway_negative" translatable="false">gotway_negative</string>
     <string name="hw_pwm" translatable="false">hw_pwm</string>
+    <string name="is_alexovik_fw" translatable="false">is_alexovik_fw</string>
+    <string name="extreme_mode" translatable="false">extreme_mode</string>
+    <string name="braking_current" translatable="false">braking_current</string>
+    <string name="rotation_control" translatable="false">rotation_control</string>
+    <string name="rotation_angle" translatable="false">rotation_angle</string>
+    <string name="advanced_settings" translatable="false">advanced_settings</string>
+    <string name="proportional_factor" translatable="false">proportional_factor</string>
+    <string name="integral_factor" translatable="false">integral_factor</string>
+    <string name="differential_factor" translatable="false">differential_factor</string>
+    <string name="dynamic_compensation" translatable="false">dynamic_compensation</string>
+    <string name="dynamic_compensation_filter" translatable="false">dynamic_compensation_filter</string>
+    <string name="acceleration_compensation" translatable="false">acceleration_compensation</string>
+    <string name="proportional_current_factor_q" translatable="false">proportional_current_factor_q</string>
+    <string name="integral_current_factor_q" translatable="false">integral_current_factor_q</string>
+    <string name="proportional_current_factor_d" translatable="false">proportional_current_factor_d</string>
+    <string name="integral_current_factor_d" translatable="false">integral_current_factor_d</string>
     <string name="wheel_ks_alarm3" translatable="false">wheel_ks_alarm3</string>
     <string name="wheel_ks_alarm2" translatable="false">wheel_ks_alarm2</string>
     <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>

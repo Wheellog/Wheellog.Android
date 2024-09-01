@@ -28,6 +28,8 @@ fun alarmScreen() {
         val wheelAlarm =
                 WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.GOTWAY
 
+        val isAlexovikFW = AppConfig.IsAlexovikFW
+
         switchPref(
             name = stringResource(R.string.enable_alarms_title),
             desc = stringResource(R.string.enable_alarms_description),
@@ -170,7 +172,7 @@ fun alarmScreen() {
                 group(
                     name = stringResource(R.string.pwm_based_alarms_title)
                 ) {
-                    if (!ksAlteredAlarms) {
+                    if (!ksAlteredAlarms && !isAlexovikFW) {
                         sliderPref(
                             name = stringResource(R.string.rotation_speed_title),
                             desc = stringResource(R.string.rotation_speed_description),

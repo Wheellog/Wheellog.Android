@@ -697,137 +697,337 @@ private fun kingsong() {
 @Composable
 private fun begode() {
     val adapter by remember { mutableStateOf(GotwayAdapter.getInstance()) }
+    var isAlexovikFW = AppConfig.IsAlexovikFW
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
+    var percentUnit = R.string.persent
+    var degreeUnit = R.string.degree
     if (AppConfig.useMph) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
-    list(
-        name = stringResource(R.string.light_mode_title),
-        desc = stringResource(R.string.on_off_strobe),
-        entries = mapOf(
-            "0" to stringResource(R.string.off),
-            "1" to stringResource(R.string.on),
-            "2" to stringResource(R.string.strobe),
-        ),
-        defaultKey = AppConfig.lightMode,
-    ) {
-        AppConfig.lightMode = it.first
-        adapter.setLightMode(it.first.toInt())
+    if (!isAlexovikFW) {
+        list(
+            name = stringResource(R.string.light_mode_title),
+            desc = stringResource(R.string.on_off_strobe),
+            entries = mapOf(
+                "0" to stringResource(R.string.off),
+                "1" to stringResource(R.string.on),
+                "2" to stringResource(R.string.strobe),
+            ),
+            defaultKey = AppConfig.lightMode,
+        ) {
+            AppConfig.lightMode = it.first
+            adapter.setLightMode(it.first.toInt())
+        }
+        list(
+            name = stringResource(R.string.alarm_mode_title),
+            desc = stringResource(R.string.alarm_settings_title),
+            entries = if (AppConfig.hwPwm) {
+                mapOf(
+                    "0" to stringResource(R.string.on_level_alarm),
+                    "1" to stringResource(R.string.off_level_1_alarm),
+                    "2" to stringResource(R.string.off_level_2_alarm),
+                    "3" to stringResource(R.string.pwm_tiltback_alarm),
+                )
+            } else {
+                mapOf(
+                    "0" to stringResource(R.string.on_level_alarm),
+                    "1" to stringResource(R.string.off_level_1_alarm),
+                    "2" to stringResource(R.string.off_level_2_alarm),
+                )
+            },
+            defaultKey = AppConfig.alarmMode,
+        ) {
+            AppConfig.alarmMode = it.first
+            adapter.updateAlarmMode(it.first.toInt())
+        }
+        list(
+            name = stringResource(R.string.pedals_mode_title),
+            desc = stringResource(R.string.soft_medium_hard),
+            entries = mapOf(
+                "0" to stringResource(R.string.hard),
+                "1" to stringResource(R.string.medium),
+                "2" to stringResource(R.string.soft),
+            ),
+            defaultKey = AppConfig.pedalsMode,
+        ) {
+            AppConfig.pedalsMode = it.first
+            adapter.updatePedalsMode(it.first.toInt())
+        }
+        list(
+            name = stringResource(R.string.roll_angle_title),
+            desc = stringResource(R.string.roll_angle_description),
+            entries = mapOf(
+                "0" to stringResource(R.string.low),
+                "1" to stringResource(R.string.medium),
+                "2" to stringResource(R.string.high),
+            ),
+            defaultKey = AppConfig.rollAngle,
+        ) {
+            AppConfig.rollAngle = it.first
+            adapter.setRollAngleMode(it.first.toInt())
+        }
+        list(
+            name = stringResource(R.string.led_mode_title),
+            desc = stringResource(R.string.on_off),
+            entries = mapOf(
+                "0" to stringResource(R.string.zero),
+                "1" to stringResource(R.string.one),
+                "2" to stringResource(R.string.two),
+                "3" to stringResource(R.string.three),
+                "4" to stringResource(R.string.four),
+                "5" to stringResource(R.string.five),
+                "6" to stringResource(R.string.six),
+                "7" to stringResource(R.string.seven),
+                "8" to stringResource(R.string.eight),
+                "9" to stringResource(R.string.nine),
+            ),
+            defaultKey = AppConfig.ledMode,
+        ) {
+            AppConfig.ledMode = it.first
+            adapter.updateLedMode(it.first.toInt())
+        }
+        switchPref(
+            name = stringResource(R.string.gw_in_miles_title),
+            desc = stringResource(R.string.gw_in_miles_description),
+            default = AppConfig.gwInMiles,
+        ) {
+            AppConfig.gwInMiles = it
+            adapter.setMilesMode(it)
+        }
+        sliderPref(
+            name = stringResource(R.string.max_speed_title),
+            desc = stringResource(R.string.tilt_back_description),
+            position = AppConfig.wheelMaxSpeed.toFloat(),
+            min = 0f,
+            max = 99f,
+            unit = speedUnit,
+            visualMultiple = speedMultipier,
+        ) {
+            AppConfig.wheelMaxSpeed = it.toInt()
+            adapter.updateMaxSpeed(it.toInt())
+        }
+        sliderPref(
+            name = stringResource(R.string.beeper_volume_title),
+            desc = stringResource(R.string.beeper_volume_description),
+            min = 1f,
+            max = 9f,
+            position = AppConfig.beeperVolume.toFloat(),
+        ) {
+            AppConfig.beeperVolume = it.toInt()
+            adapter.updateBeeperVolume(it.toInt())
+        }
+        clickableAndAlert(
+            name = stringResource(R.string.wheel_calibration),
+            confirmButtonText = stringResource(R.string.wheel_calibration),
+            alertDesc = stringResource(R.string.wheel_calibration_message_inmo),
+            themeIcon = ThemeIconEnum.SettingsCalibration,
+            condition = { WheelData.getInstance().speed < 1 },
+            onConfirm = { adapter.wheelCalibration() },
+        )
+        switchPref(
+            name = stringResource(R.string.is_gotway_mcm_title),
+            desc = stringResource(R.string.is_gotway_mcm_description),
+            default = AppConfig.useRatio,
+        ) {
+            AppConfig.useRatio = it
+        }
+        switchPref(
+            name = stringResource(R.string.auto_voltage_title),
+            desc = stringResource(R.string.auto_voltage_description),
+            default = AppConfig.autoVoltage,
+        ) {
+            AppConfig.autoVoltage = it
+        }
     }
-    list(
-        name = stringResource(R.string.alarm_mode_title),
-        desc = stringResource(R.string.alarm_settings_title),
-        entries = if (AppConfig.hwPwm) {
-            mapOf(
-                "0" to stringResource(R.string.on_level_alarm),
-                "1" to stringResource(R.string.off_level_1_alarm),
-                "2" to stringResource(R.string.off_level_2_alarm),
-                "3" to stringResource(R.string.pwm_tiltback_alarm),
-            )
-        } else {
-            mapOf(
-                "0" to stringResource(R.string.on_level_alarm),
-                "1" to stringResource(R.string.off_level_1_alarm),
-                "2" to stringResource(R.string.off_level_2_alarm),
-            )
-        },
-        defaultKey = AppConfig.alarmMode,
-    ) {
-        AppConfig.alarmMode = it.first
-        adapter.updateAlarmMode(it.first.toInt())
-    }
-    list(
-        name = stringResource(R.string.pedals_mode_title),
-        desc = stringResource(R.string.soft_medium_hard),
-        entries = mapOf(
-            "0" to stringResource(R.string.hard),
-            "1" to stringResource(R.string.medium),
-            "2" to stringResource(R.string.soft),
-        ),
-        defaultKey = AppConfig.pedalsMode,
-    ) {
-        AppConfig.pedalsMode = it.first
-        adapter.updatePedalsMode(it.first.toInt())
-    }
-    list(
-        name = stringResource(R.string.roll_angle_title),
-        desc = stringResource(R.string.roll_angle_description),
-        entries = mapOf(
-            "0" to stringResource(R.string.low),
-            "1" to stringResource(R.string.medium),
-            "2" to stringResource(R.string.high),
-        ),
-        defaultKey = AppConfig.rollAngle,
-    ) {
-        AppConfig.rollAngle = it.first
-        adapter.setRollAngleMode(it.first.toInt())
-    }
-    list(
-        name = stringResource(R.string.led_mode_title),
-        desc = stringResource(R.string.on_off),
-        entries = mapOf(
-            "0" to stringResource(R.string.zero),
-            "1" to stringResource(R.string.one),
-            "2" to stringResource(R.string.two),
-            "3" to stringResource(R.string.three),
-            "4" to stringResource(R.string.four),
-            "5" to stringResource(R.string.five),
-            "6" to stringResource(R.string.six),
-            "7" to stringResource(R.string.seven),
-            "8" to stringResource(R.string.eight),
-            "9" to stringResource(R.string.nine),
-        ),
-        defaultKey = AppConfig.ledMode,
-    ) {
-        AppConfig.ledMode = it.first
-        adapter.updateLedMode(it.first.toInt())
-    }
-    switchPref(
-        name = stringResource(R.string.gw_in_miles_title),
-        desc = stringResource(R.string.gw_in_miles_description),
-        default = AppConfig.gwInMiles,
-    ) {
-        AppConfig.gwInMiles = it
-        adapter.setMilesMode(it)
-    }
-    sliderPref(
-        name = stringResource(R.string.max_speed_title),
-        desc = stringResource(R.string.tilt_back_description),
-        position = AppConfig.wheelMaxSpeed.toFloat(),
-        min = 0f,
-        max = 99f,
-        unit = speedUnit,
-        visualMultiple = speedMultipier,
-    ) {
-        AppConfig.wheelMaxSpeed = it.toInt()
-        adapter.updateMaxSpeed(it.toInt())
-    }
-    sliderPref(
-        name = stringResource(R.string.beeper_volume_title),
-        desc = stringResource(R.string.beeper_volume_description),
-        min = 1f,
-        max = 9f,
-        position = AppConfig.beeperVolume.toFloat(),
-    ) {
-        AppConfig.beeperVolume = it.toInt()
-        adapter.updateBeeperVolume(it.toInt())
-    }
-    clickableAndAlert(
-        name = stringResource(R.string.wheel_calibration),
-        confirmButtonText = stringResource(R.string.wheel_calibration),
-        alertDesc = stringResource(R.string.wheel_calibration_message_inmo),
-        themeIcon = ThemeIconEnum.SettingsCalibration,
-        condition = { WheelData.getInstance().speed < 1 },
-        onConfirm = { adapter.wheelCalibration() },
-    )
-    switchPref(
-        name = stringResource(R.string.is_gotway_mcm_title),
-        desc = stringResource(R.string.is_gotway_mcm_description),
-        default = AppConfig.useRatio,
-    ) {
-        AppConfig.useRatio = it
+    else
+    {
+        list(
+            name = stringResource(R.string.pedals_mode_title),
+            desc = stringResource(R.string.mode1_2_3_4),
+            entries = mapOf(
+                "2" to stringResource(R.string.mode1),
+                "1" to stringResource(R.string.mode2),
+                "0" to stringResource(R.string.mode3),
+                "3" to stringResource(R.string.mode4),
+            ),
+            defaultKey = AppConfig.pedalsMode,
+        ) {
+            AppConfig.pedalsMode = it.first
+            adapter.updatePedalsMode(it.first.toInt())
+        }
+
+        switchPref(
+            name = stringResource(R.string.extreme_mode_title),
+            desc = stringResource(R.string.extreme_mode_description),
+            default = AppConfig.extremeMode,
+        ) {
+            AppConfig.extremeMode = it
+            adapter.updateExtremeMode(it)
+        }
+
+        sliderPref(
+            name = stringResource(R.string.braking_current_title),
+            desc = stringResource(R.string.braking_current_description),
+            position = AppConfig.brakingCurrent.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.brakingCurrent = it.toInt()
+            adapter.updateBrakingCurrent(it.toInt())
+        }
+
+        switchPref(
+            name = stringResource(R.string.rotation_control_title),
+            desc = stringResource(R.string.rotation_control_description),
+            default = AppConfig.rotationControl,
+        ) {
+            AppConfig.rotationControl = it
+            adapter.updateRotationControl(it)
+        }
+
+        sliderPref(
+            name = stringResource(R.string.rotation_angle_title),
+            desc = stringResource(R.string.rotation_angle_description),
+            position = AppConfig.rotationAngle.toFloat(),
+            min = 260f,
+            max = 360f,
+            unit = degreeUnit,
+        ) {
+            AppConfig.rotationAngle = it.toInt()
+            adapter.updateRotationAngle(it.toInt())
+        }
+
+        switchPref(
+            name = stringResource(R.string.advanced_settings_title),
+            desc = stringResource(R.string.advanced_settings_decsription),
+            default = AppConfig.advancedSettings,
+        ) {
+            AppConfig.advancedSettings = it
+            adapter.updateAdvancedSettings(it)
+        }
+
+        sliderPref(
+            name = stringResource(R.string.proportional_factor_title),
+            desc = stringResource(R.string.proportional_factor_decsription),
+            position = AppConfig.proportionalFactor.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.proportionalFactor = it.toInt()
+            adapter.updateProportionalFactor(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.integral_factor_title),
+            desc = stringResource(R.string.integral_factor_decsription),
+            position = AppConfig.integralFactor.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.integralFactor = it.toInt()
+            adapter.updateIntegralFactor(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.differential_factor_title),
+            desc = stringResource(R.string.differential_factor_decsription),
+            position = AppConfig.differentialFactor.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.differentialFactor = it.toInt()
+            adapter.updateDifferentialFactor(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.dynamic_compensation_title),
+            desc = stringResource(R.string.dynamic_compensation_description),
+            position = AppConfig.dynamicCompensation.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.dynamicCompensation = it.toInt()
+            adapter.updateDynamicCompensation(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.dynamic_compensation_filter_title),
+            desc = stringResource(R.string.dynamic_compensation_filter_description),
+            position = AppConfig.dynamicCompensationFilter.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.dynamicCompensationFilter = it.toInt()
+            adapter.updateDynamicCompensationFilter(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.acceleration_compensation_title),
+            desc = stringResource(R.string.acceleration_compensation_description),
+            position = AppConfig.accelerationCompensation.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.accelerationCompensation = it.toInt()
+            adapter.updateAccelerationCompensation(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.proportional_q_current_factor_title),
+            desc = stringResource(R.string.proportional_q_current_factor_decsription),
+            position = AppConfig.proportionalCurrentFactorQ.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.proportionalCurrentFactorQ = it.toInt()
+            adapter.updatePCurrentQ(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.integral_q_current_factor_title),
+            desc = stringResource(R.string.integral_q_current_factor_decsription),
+            position = AppConfig.integralCurrentFactorQ.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.integralCurrentFactorQ = it.toInt()
+            adapter.updateICurrentQ(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.proportional_d_current_factor_title),
+            desc = stringResource(R.string.proportional_d_current_factor_decsription),
+            position = AppConfig.proportionalCurrentFactorD.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.proportionalCurrentFactorD = it.toInt()
+            adapter.updatePCurrentD(it.toInt())
+        }
+
+        sliderPref(
+            name = stringResource(R.string.integral_d_current_factor_title),
+            desc = stringResource(R.string.integral_d_current_factor_decsription),
+            position = AppConfig.integralCurrentFactorD.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = percentUnit,
+        ) {
+            AppConfig.integralCurrentFactorD = it.toInt()
+            adapter.updateICurrentD(it.toInt())
+        }
     }
     list(
         name = stringResource(R.string.battery_voltage_title),
@@ -843,13 +1043,6 @@ private fun begode() {
         defaultKey = AppConfig.gotwayVoltage,
     ) {
         AppConfig.gotwayVoltage = it.first
-    }
-    switchPref(
-            name = stringResource(R.string.auto_voltage_title),
-            desc = stringResource(R.string.auto_voltage_description),
-            default = AppConfig.autoVoltage,
-    ) {
-        AppConfig.autoVoltage = it
     }
 
     list(
