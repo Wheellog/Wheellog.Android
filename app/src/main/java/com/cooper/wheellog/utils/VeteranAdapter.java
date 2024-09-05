@@ -194,7 +194,7 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        if (mVer == 5) {
+        if (mVer >= 5) {
             return 36;
         } else if (mVer == 4) {
             return 30;
