@@ -28,8 +28,6 @@ fun alarmScreen() {
         val wheelAlarm =
                 WheelData.getInstance().wheelType == Constants.WHEEL_TYPE.GOTWAY
 
-        val isAlexovikFW = AppConfig.IsAlexovikFW
-
         switchPref(
             name = stringResource(R.string.enable_alarms_title),
             desc = stringResource(R.string.enable_alarms_description),
