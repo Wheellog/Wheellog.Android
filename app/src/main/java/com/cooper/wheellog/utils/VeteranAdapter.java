@@ -89,7 +89,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 9918) / 24.2);
                         }
                     }
-                } else if (mVer == 5) { // Lynx
+                } else if (mVer >= 5) { // Lynx
                     if (useBetterPercents) {
                         if (voltage > 15030) {
                             battery = 100;
@@ -194,7 +194,7 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        if (mVer == 5) {
+        if (mVer >= 5) {
             return 36;
         } else if (mVer == 4) {
             return 30;
