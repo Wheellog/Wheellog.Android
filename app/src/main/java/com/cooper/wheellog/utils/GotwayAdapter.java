@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.os.SystemClock;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -20,6 +21,7 @@ public class GotwayAdapter extends BaseAdapter {
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
     private boolean bIsReady = false;
+    private long lastTryTime = 0;
     private int attempt = 0;
     private int lock_Changes = 0;
     private final int lightModeOff = 0;
@@ -82,8 +84,12 @@ public class GotwayAdapter extends BaseAdapter {
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     int distance = MathsUtil.shortFromBytesBE(buff, 8);
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
-                    int temperature = !bIsAlexovikFW ? (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100) : (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100);  // mpu6050
-                    //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
+                    int temperature;
+                    if (!bIsAlexovikFW)
+                        temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
+                    else
+                        temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
+
                     int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
@@ -225,7 +231,7 @@ public class GotwayAdapter extends BaseAdapter {
                         int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
                         wd.setCurrent((-1) * batteryCurrent);
                     }
-                } else if ((buff[18] == (byte) 0xFF) && bIsAlexovikFW) {
+                } else if (buff[18] == (byte) 0xFF) {
                     if (lock_Changes == 0) {
                         WheelLog.AppConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
                         WheelLog.AppConfig.setBrakingCurrent(buff[3] & 0xFF);
@@ -256,15 +262,22 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 }
 
-                if (attempt < 20) {
-                    if (fw.equals("")) {
-                        sendCommand("V", "", 0);
+                if (attempt < 10)
+                {
+                    long nowTime = SystemClock.elapsedRealtime();
+                    if (nowTime - lastTryTime > 190)
+                    {
+                        if (fw.equals(""))
+                            sendCommand("V", "", 0);
+                        else if (model.equals(""))
+                            sendCommand("N", "", 0);
+
+                        attempt += 1;
+                        lastTryTime = nowTime;
                     }
-                    else if (model.equals("")) {
-                        sendCommand("N", "", 0);
-                    }
-                    attempt += 1;
-                } else {
+                }
+                else
+                {
                     if (model.equals("")) {
                         model = "Begode";
                         wd.setVersion(model);
