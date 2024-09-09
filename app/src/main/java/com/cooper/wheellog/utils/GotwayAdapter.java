@@ -2,6 +2,7 @@ package com.cooper.wheellog.utils;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.os.SystemClock;
 
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
@@ -19,6 +20,8 @@ public class GotwayAdapter extends BaseAdapter {
     private String fw = "";
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
+    private boolean bIsReady = false;
+    private long lastTryTime = 0;
     private int attempt = 0;
     private int lock_Changes = 0;
     private final int lightModeOff = 0;
@@ -45,10 +48,22 @@ public class GotwayAdapter extends BaseAdapter {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
                 WheelLog.AppConfig.setHwPwm(false);
+                WheelLog.AppConfig.setIsAlexovikFW(false);
+                bIsReady = true;
             } else if (dataS.startsWith("CF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
                 WheelLog.AppConfig.setHwPwm(true);
+                WheelLog.AppConfig.setIsAlexovikFW(false);
+                bIsReady = true;
+            } else if (dataS.startsWith("BF")) {
+                fw = dataS.substring(2).trim();
+                wd.setVersion(fw);
+                model = "Begode";
+                wd.setModel(model);
+                WheelLog.AppConfig.setHwPwm(true);
+                WheelLog.AppConfig.setIsAlexovikFW(true);
+                bIsReady = true;
             } else if (dataS.startsWith("MPU")) {
                 imu = dataS.substring(1, 7).trim();
             }
@@ -57,9 +72,10 @@ public class GotwayAdapter extends BaseAdapter {
             if (unpacker.addChar(c)) {
 
                 byte[] buff = unpacker.getBuffer();
+                Boolean bIsAlexovikFW = WheelLog.AppConfig.getIsAlexovikFW();
                 Boolean useRatio = WheelLog.AppConfig.getUseRatio();
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                Boolean autoVoltage = WheelLog.AppConfig.getAutoVoltage();
+                Boolean autoVoltage = !bIsAlexovikFW ? WheelLog.AppConfig.getAutoVoltage() : false;
                 int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
 
                 if (buff[18] == (byte) 0x00) {
@@ -68,17 +84,24 @@ public class GotwayAdapter extends BaseAdapter {
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     int distance = MathsUtil.shortFromBytesBE(buff, 8);
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
-                    int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
-                    //int temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
+                    int temperature;
+                    if (!bIsAlexovikFW)
+                        temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
+                    else
+                        temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
+
                     int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
                         hwPwm = Math.abs(hwPwm);
                     } else {
-                        speed = speed * gotwayNegative;
                         phaseCurrent = phaseCurrent * gotwayNegative;
-                        hwPwm = hwPwm * gotwayNegative;
+                        if (!bIsAlexovikFW)
+                        {
+                            speed = speed * gotwayNegative;
+                            hwPwm = hwPwm * gotwayNegative;
+                        }
                     }
 
                     int battery;
@@ -124,13 +147,23 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                     newDataFound = !((trueVoltage && autoVoltage) || trueCurrent);
                 } else if (buff[18] == (byte) 0x01) {
-                    newDataFound = !trueCurrent && (trueVoltage && autoVoltage);
-                    trueVoltage = true;
-                    int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
-                    int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
-                    int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
-                    if (autoVoltage) wd.setVoltage(batVoltage*10);
-
+                    if (!bIsAlexovikFW)
+                    {
+                        newDataFound = !trueCurrent && (trueVoltage && autoVoltage);
+                        trueVoltage = true;
+                        int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
+                        int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
+                        int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
+                        if (autoVoltage) wd.setVoltage(batVoltage * 10);
+                    }
+                    else
+                    {
+                        int pedalsMode = buff[6] & 0x03;
+                        if (lock_Changes == 0)
+                            WheelLog.AppConfig.setPedalsMode(String.valueOf(pedalsMode));
+                        else
+                            lock_Changes -= 1;
+                    }
                 } else if (buff[18] == (byte) 0x03) {
                     int zero = MathsUtil.shortFromBytesBE(buff, 2);
                 } else if (buff[18] == (byte) 0x04) {
@@ -142,54 +175,82 @@ public class GotwayAdapter extends BaseAdapter {
                     } else {
                         wd.setTotalDistance(totalDistance);
                     }
-                    int settings = MathsUtil.shortFromBytesBE(buff, 6);
-                    int pedalsMode = (settings >> 13) & 0x03;
-                    int speedAlarms = (settings >> 10) & 0x03;
-                    int rollAngle = (settings >> 7) & 0x03;
-                    int inMiles = settings & 0x01;
-                    int powerOffTime = MathsUtil.shortFromBytesBE(buff, 8);
-                    int tiltBackSpeed = MathsUtil.shortFromBytesBE(buff, 10);
-                    if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
-                    int alert = buff[14] & 0xFF;
-                    int ledMode = buff[13] & 0xFF;
-                    int lightMode = buff[15] & 0x03;
-                    if (lock_Changes == 0) {
-                        WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
-                        WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
-                        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
-                        WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
-                        if (!fw.equals("-")) {
-                            WheelLog.AppConfig.setGwInMiles(inMiles == 1);
-                            WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
-                            WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                    if (!bIsAlexovikFW)
+                    {
+                        int settings = MathsUtil.shortFromBytesBE(buff, 6);
+                        int pedalsMode = (settings >> 13) & 0x03;
+                        int speedAlarms = (settings >> 10) & 0x03;
+                        int rollAngle = (settings >> 7) & 0x03;
+                        int inMiles = settings & 0x01;
+                        int powerOffTime = MathsUtil.shortFromBytesBE(buff, 8);
+                        int tiltBackSpeed = MathsUtil.shortFromBytesBE(buff, 10);
+                        if (tiltBackSpeed >= 100) tiltBackSpeed = 0;
+                        int alert = buff[14] & 0xFF;
+                        int ledMode = buff[13] & 0xFF;
+                        int lightMode = buff[15] & 0x03;
+                        if (lock_Changes == 0) {
+                            WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
+                            WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
+                            WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+                            WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
+                            if (!fw.equals("-"))
+                            {
+                                WheelLog.AppConfig.setGwInMiles(inMiles == 1);
+                                WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
+                                WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                            }
+                        } else {
+                            lock_Changes -= 1;
                         }
+
+                        String alertLine = "";
+                        //if ((alert & 0x01) == 1) alertLine += "HighPower ";
+                        wd.setWheelAlarm((alert & 0x01) == 1);
+                        if (((alert >> 1) & 0x01) == 1) alertLine += "Speed2 ";
+                        if (((alert >> 2) & 0x01) == 1) alertLine += "Speed1 ";
+                        if (((alert >> 3) & 0x01) == 1) alertLine += "LowVoltage ";
+                        if (((alert >> 4) & 0x01) == 1) alertLine += "OverVoltage ";
+                        if (((alert >> 5) & 0x01) == 1) alertLine += "OverTemperature ";
+                        if (((alert >> 6) & 0x01) == 1) alertLine += "errHallSensors ";
+                        if (((alert >> 7) & 0x01) == 1) alertLine += "TransportMode";
+                        wd.setAlert(alertLine);
+
+                        if (alertLine != "" && getContext() != null)
+                        {
+                            Timber.i("News to send: %s, sending Intent", alertLine);
+                            Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                            intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
+                            getContext().sendBroadcast(intent);
+                        }
+                    }
+                } else if (buff[18] == (byte) 0x07) {
+                    if (!bIsAlexovikFW)
+                    {
+                        newDataFound = trueCurrent;
+                        trueCurrent = true;
+                        int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
+                        wd.setCurrent((-1) * batteryCurrent);
+                    }
+                } else if (buff[18] == (byte) 0xFF) {
+                    if (lock_Changes == 0) {
+                        WheelLog.AppConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
+                        WheelLog.AppConfig.setBrakingCurrent(buff[3] & 0xFF);
+                        WheelLog.AppConfig.setRotationControl((buff[4] & 0x01) != (byte) 0);
+                        WheelLog.AppConfig.setRotationAngle((buff[5] & 0xFF) + 260);
+                        WheelLog.AppConfig.setAdvancedSettings((buff[6] & 0x01)!= (byte) 0);
+                        WheelLog.AppConfig.setProportionalFactor(buff[7] & 0xFF);
+                        WheelLog.AppConfig.setIntegralFactor(buff[8] & 0xFF);
+                        WheelLog.AppConfig.setDifferentialFactor(buff[9] & 0xFF);
+                        WheelLog.AppConfig.setDynamicCompensation(buff[10] & 0xFF);
+                        WheelLog.AppConfig.setDynamicCompensationFilter(buff[11] & 0xFF);
+                        WheelLog.AppConfig.setAccelerationCompensation(buff[12] & 0xFF);
+                        WheelLog.AppConfig.setProportionalCurrentFactorQ(buff[14] & 0xFF);
+                        WheelLog.AppConfig.setIntegralCurrentFactorQ(buff[15] & 0xFF);
+                        WheelLog.AppConfig.setProportionalCurrentFactorD(buff[16] & 0xFF);
+                        WheelLog.AppConfig.setIntegralCurrentFactorD(buff[17] & 0xFF);
                     } else {
                         lock_Changes -= 1;
                     }
-
-                    String alertLine = "";
-                    //if ((alert & 0x01) == 1) alertLine += "HighPower ";
-                    wd.setWheelAlarm((alert & 0x01) == 1);
-                    if (((alert>>1) & 0x01) == 1) alertLine += "Speed2 ";
-                    if (((alert>>2) & 0x01) == 1) alertLine += "Speed1 ";
-                    if (((alert>>3) & 0x01) == 1) alertLine += "LowVoltage ";
-                    if (((alert>>4) & 0x01) == 1) alertLine += "OverVoltage ";
-                    if (((alert>>5) & 0x01) == 1) alertLine += "OverTemperature ";
-                    if (((alert>>6) & 0x01) == 1) alertLine += "errHallSensors ";
-                    if (((alert>>7) & 0x01) == 1) alertLine += "TransportMode";
-                    wd.setAlert(alertLine);
-
-                    if (alertLine != "" && getContext() != null) {
-                        Timber.i("News to send: %s, sending Intent", alertLine);
-                        Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
-                        intent.putExtra(Constants.INTENT_EXTRA_NEWS, alertLine);
-                        getContext().sendBroadcast(intent);
-                    }
-                } else if (buff[18] == (byte) 0x07) {
-                    newDataFound = trueCurrent;
-                    trueCurrent = true;
-                    int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
-                    wd.setCurrent( (-1) * batteryCurrent );
                 }
                 if (newDataFound) {
                     Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
@@ -201,14 +262,22 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 }
 
-                if (attempt < 10) {
-                    if (model.equals("")) {
-                        sendCommand("N", "", 0);
-                    } else if (fw.equals("")) {
-                        sendCommand("V", "", 0);
+                if (attempt < 10)
+                {
+                    long nowTime = SystemClock.elapsedRealtime();
+                    if (nowTime - lastTryTime > 190)
+                    {
+                        if (fw.equals(""))
+                            sendCommand("V", "", 0);
+                        else if (model.equals(""))
+                            sendCommand("N", "", 0);
+
+                        attempt += 1;
+                        lastTryTime = nowTime;
                     }
-                    attempt += 1;
-                } else {
+                }
+                else
+                {
                     if (model.equals("")) {
                         model = "Begode";
                         wd.setVersion(model);
@@ -216,6 +285,8 @@ public class GotwayAdapter extends BaseAdapter {
                         fw = "-";
                         wd.setVersion(fw);
                         WheelLog.AppConfig.setHwPwm(false);
+                        WheelLog.AppConfig.setIsAlexovikFW(false);
+                        bIsReady = true;
                     }
                 }
             }
@@ -226,7 +297,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public boolean isReady() {
-        return WheelData.getInstance().getVoltage() != 0;
+        return bIsReady && (WheelData.getInstance().getVoltage() != 0);
     }
 
     private void sendCommand(String s) {
@@ -256,11 +327,103 @@ public class GotwayAdapter extends BaseAdapter {
             case 0: command = "h"; break;
             case 1: command = "f"; break;
             case 2: command = "s"; break;
+            case 3: command = "i"; break;
         }
         lock_Changes = 2;
         sendCommand(command);
-
     }
+
+    //begin Alexovik
+    public void updateExtremeMode(boolean value) {
+        byte[] cmd = { (byte)0x45, (byte)0x4D, (byte)(value ? 1 : 0) };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateBrakingCurrent(int value) {
+        byte[] cmd = { (byte)0x42, (byte)0x41, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateRotationControl(boolean value) {
+        byte[] cmd = { (byte)0x52, (byte)0x43, (byte)(value ? 1 : 0) };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateRotationAngle(int value) {
+        byte[] cmd = { (byte)0x72, (byte)0x73, (byte)(value - 260) };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateAdvancedSettings(boolean value) {
+        byte[] cmd = { (byte)0x61, (byte)0x73, (byte)(value ? 1 : 0) };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateProportionalFactor(int value) {
+        byte[] cmd = { (byte)0x68, (byte)0x70, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateIntegralFactor(int value) {
+        byte[] cmd = { (byte)0x68, (byte)0x69, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateDifferentialFactor(int value) {
+        byte[] cmd = { (byte)0x68, (byte)0x64, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateDynamicCompensation(int value) {
+        byte[] cmd = { (byte)0x68, (byte)0x63, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateDynamicCompensationFilter(int value) {
+        byte[] cmd = { (byte)0x68, (byte)0x66, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateAccelerationCompensation(int value) {
+        byte[] cmd = { (byte)0x61, (byte)0x63, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updatePCurrentQ(int value) {
+        byte[] cmd = { (byte)0x63, (byte)0x70, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateICurrentQ(int value) {
+        byte[] cmd = { (byte)0x63, (byte)0x69, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updatePCurrentD(int value) {
+        byte[] cmd = { (byte)0x64, (byte)0x70, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void updateICurrentD(int value) {
+        byte[] cmd = { (byte)0x64, (byte)0x69, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+    //end Alexovik
 
     @Override
     public void switchFlashlight() {

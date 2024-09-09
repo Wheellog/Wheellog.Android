@@ -619,6 +619,72 @@ class AppConfig(var context: Context) {
         set(value) = setSpecific(R.string.connect_beep, value)
     //endregion
 
+    //region Alexovik
+    var IsAlexovikFW: Boolean
+        get() = getSpecific(R.string.is_alexovik_fw, false)
+        set(value) = setSpecific(R.string.is_alexovik_fw, value)
+
+    var extremeMode: Boolean
+        get() = getSpecific(R.string.extreme_mode, false)
+        set(value) = setSpecific(R.string.extreme_mode, value)
+
+    var brakingCurrent: Int
+        get() = getSpecific(R.string.braking_current, 80)
+        set(value) = setSpecific(R.string.braking_current, value)
+
+    var rotationControl: Boolean
+        get() = getSpecific(R.string.rotation_control, false)
+        set(value) = setSpecific(R.string.rotation_control, value)
+
+    var rotationAngle: Int
+        get() = getSpecific(R.string.rotation_angle, 350)
+        set(value) = setSpecific(R.string.rotation_angle, value)
+
+    var advancedSettings: Boolean
+        get() = getSpecific(R.string.advanced_settings, false)
+        set(value) = setSpecific(R.string.advanced_settings, value)
+
+    var proportionalFactor: Int
+        get() = getSpecific(R.string.proportional_factor, 20)
+        set(value) = setSpecific(R.string.proportional_factor, value)
+
+    var integralFactor: Int
+        get() = getSpecific(R.string.integral_factor, 20)
+        set(value) = setSpecific(R.string.integral_factor, value)
+
+    var differentialFactor: Int
+        get() = getSpecific(R.string.differential_factor, 40)
+        set(value) = setSpecific(R.string.differential_factor, value)
+
+    var dynamicCompensation: Int
+        get() = getSpecific(R.string.dynamic_compensation, 0)
+        set(value) = setSpecific(R.string.dynamic_compensation, value)
+
+    var dynamicCompensationFilter: Int
+        get() = getSpecific(R.string.dynamic_compensation_filter, 0)
+        set(value) = setSpecific(R.string.dynamic_compensation_filter, value)
+
+    var accelerationCompensation: Int
+        get() = getSpecific(R.string.acceleration_compensation, 0)
+        set(value) = setSpecific(R.string.acceleration_compensation, value)
+
+    var proportionalCurrentFactorQ: Int
+        get() = getSpecific(R.string.proportional_current_factor_q, 30)
+        set(value) = setSpecific(R.string.proportional_current_factor_q, value)
+
+    var integralCurrentFactorQ: Int
+        get() = getSpecific(R.string.integral_current_factor_q, 50)
+        set(value) = setSpecific(R.string.integral_current_factor_q, value)
+
+    var proportionalCurrentFactorD: Int
+        get() = getSpecific(R.string.proportional_current_factor_d, 20)
+        set(value) = setSpecific(R.string.proportional_current_factor_d, value)
+
+    var integralCurrentFactorD: Int
+        get() = getSpecific(R.string.integral_current_factor_d, 40)
+        set(value) = setSpecific(R.string.integral_current_factor_d, value)
+    //endregion
+
     var lightEnabled: Boolean
         get() = getSpecific(R.string.light_enabled, false)
         set(value) = setSpecific(R.string.light_enabled, value)

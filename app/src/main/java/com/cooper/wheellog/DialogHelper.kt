@@ -68,7 +68,7 @@ object DialogHelper {
 
     fun checkPWMIsSetAndShowAlert(context: Context) {
         val wd = WheelData.getInstance()
-        if (!wd.isWheelIsReady || wd.isHardwarePWM || WheelLog.AppConfig.rotationIsSet) {
+        if (!wd.isWheelIsReady || wd.isHardwarePWM || WheelLog.AppConfig.hwPwm || WheelLog.AppConfig.rotationIsSet) {
             return
         }
         if (WheelLog.AppConfig.rotationSpeed != 500 && WheelLog.AppConfig.rotationVoltage != 840) {

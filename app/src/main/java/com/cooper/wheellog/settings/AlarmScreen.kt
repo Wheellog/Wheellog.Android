@@ -170,7 +170,7 @@ fun alarmScreen() {
                 group(
                     name = stringResource(R.string.pwm_based_alarms_title)
                 ) {
-                    if (!ksAlteredAlarms) {
+                    if (!ksAlteredAlarms && !AppConfig.hwPwm) {
                         sliderPref(
                             name = stringResource(R.string.rotation_speed_title),
                             desc = stringResource(R.string.rotation_speed_description),
