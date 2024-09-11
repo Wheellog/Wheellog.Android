@@ -358,6 +358,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 cells.add(R.string.bmsCell30)
                 cells.add(R.string.bmsCell31)
                 cells.add(R.string.bmsCell32)
+                cells.add(R.string.bmsCell33)
+                cells.add(R.string.bmsCell34)
+                cells.add(R.string.bmsCell35)
+                cells.add(R.string.bmsCell36)
                 var balanceMap1 = data.bms1.balanceMap
                 var balanceMap2 = data.bms2.balanceMap
                 var index = 0
@@ -714,7 +718,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBms2PageValues.clear()
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16", "KS-S16P"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)
@@ -772,6 +776,61 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                         setupFieldForSmartBmsPage(R.string.bmsCell29)
                         setupFieldForSmartBmsPage(R.string.bmsCell30)
                     }
+                } else {
+                    removePage(R.layout.main_view_smart_bms)
+                    return
+                }
+            }
+            WHEEL_TYPE.VETERAN -> {
+                if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Sherman L"))) {
+                    addPage(R.layout.main_view_smart_bms, 2)
+                    setupFieldForSmartBmsPage(R.string.bmsCurrent)
+                    setupFieldForSmartBmsPage(R.string.bmsVoltage)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp1)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp2)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp3)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp4)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp5)
+                    setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    setupFieldForSmartBmsPage(R.string.bmsMaxCell)
+                    setupFieldForSmartBmsPage(R.string.bmsMinCell)
+                    setupFieldForSmartBmsPage(R.string.bmsCellDiff)
+                    setupFieldForSmartBmsPage(R.string.bmsCell1)
+                    setupFieldForSmartBmsPage(R.string.bmsCell2)
+                    setupFieldForSmartBmsPage(R.string.bmsCell3)
+                    setupFieldForSmartBmsPage(R.string.bmsCell4)
+                    setupFieldForSmartBmsPage(R.string.bmsCell5)
+                    setupFieldForSmartBmsPage(R.string.bmsCell6)
+                    setupFieldForSmartBmsPage(R.string.bmsCell7)
+                    setupFieldForSmartBmsPage(R.string.bmsCell8)
+                    setupFieldForSmartBmsPage(R.string.bmsCell9)
+                    setupFieldForSmartBmsPage(R.string.bmsCell10)
+                    setupFieldForSmartBmsPage(R.string.bmsCell11)
+                    setupFieldForSmartBmsPage(R.string.bmsCell12)
+                    setupFieldForSmartBmsPage(R.string.bmsCell13)
+                    setupFieldForSmartBmsPage(R.string.bmsCell14)
+                    setupFieldForSmartBmsPage(R.string.bmsCell15)
+                    setupFieldForSmartBmsPage(R.string.bmsCell16)
+                    setupFieldForSmartBmsPage(R.string.bmsCell17)
+                    setupFieldForSmartBmsPage(R.string.bmsCell18)
+                    setupFieldForSmartBmsPage(R.string.bmsCell19)
+                    setupFieldForSmartBmsPage(R.string.bmsCell20)
+                    setupFieldForSmartBmsPage(R.string.bmsCell21)
+                    setupFieldForSmartBmsPage(R.string.bmsCell22)
+                    setupFieldForSmartBmsPage(R.string.bmsCell23)
+                    setupFieldForSmartBmsPage(R.string.bmsCell24)
+                    setupFieldForSmartBmsPage(R.string.bmsCell25)
+                    setupFieldForSmartBmsPage(R.string.bmsCell26)
+                    setupFieldForSmartBmsPage(R.string.bmsCell27)
+                    setupFieldForSmartBmsPage(R.string.bmsCell28)
+                    setupFieldForSmartBmsPage(R.string.bmsCell29)
+                    setupFieldForSmartBmsPage(R.string.bmsCell30)
+                    setupFieldForSmartBmsPage(R.string.bmsCell31)
+                    setupFieldForSmartBmsPage(R.string.bmsCell32)
+                    setupFieldForSmartBmsPage(R.string.bmsCell33)
+                    setupFieldForSmartBmsPage(R.string.bmsCell34)
+                    setupFieldForSmartBmsPage(R.string.bmsCell35)
+                    setupFieldForSmartBmsPage(R.string.bmsCell36)
                 } else {
                     removePage(R.layout.main_view_smart_bms)
                     return

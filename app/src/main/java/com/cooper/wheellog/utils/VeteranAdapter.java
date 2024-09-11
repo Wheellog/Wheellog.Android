@@ -48,6 +48,66 @@ public class VeteranAdapter extends BaseAdapter {
                 int pitchAngle = MathsUtil.signedShortFromBytesBE(buff,32);
                 int hwPwm = MathsUtil.shortFromBytesBE(buff, 34);
 
+                // smartBMS part
+                if (mVer >= 5) { // Lynx = 5; Sherman L = 6
+                    int pnum = buff[46];
+                    int bmsnum = pnum < 4 ? 1 : 2;
+                    SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+
+                    if (pnum == 0 || pnum == 4) {
+                        /*
+                        System.out.print(String.format(Locale.US, "Unknown: "));
+                        for (int i = 0; i < 13; i++) {
+                            int cell1 = MathsUtil.signedShortFromBytesBE(buff, 47 + i * 2);
+                            System.out.print(String.format(Locale.US, " %d: %d,", i, cell1));
+                        }
+                        System.out.print(String.format(Locale.US, "\n"));
+                        */
+                        wd.getBms1().setCurrent((double) MathsUtil.signedShortFromBytesBE(buff, 69)/100.0);
+                        wd.getBms2().setCurrent((double) MathsUtil.signedShortFromBytesBE(buff, 71)/100.0);
+                    } else if (pnum == 1 | pnum == 5) {
+                        for (int i = 0; i < 15; i++) {
+                            int cell = MathsUtil.signedShortFromBytesBE(buff, 53 + i * 2);
+                            bms.getCells()[i] = cell/1000.0;
+                        }
+                    } else if (pnum == 2 | pnum == 6) {
+                        for (int i = 0; i < 15; i++) {
+                            int cell = MathsUtil.shortFromBytesBE(buff, 53 + i * 2);
+                            bms.getCells()[i+15] = cell/1000.0;
+                        }
+                    } else if (pnum == 3 | pnum == 7) {
+                        for (int i = 0; i < 6; i++) {
+                            int cell = MathsUtil.shortFromBytesBE(buff, 59 + i * 2);
+                            bms.getCells()[i+30] = cell/1000.0;
+                        }
+                        bms.setTemp1(MathsUtil.shortFromBytesBE(buff, 47)/100.0);
+                        bms.setTemp2(MathsUtil.shortFromBytesBE(buff, 49)/100.0);
+                        bms.setTemp3(MathsUtil.shortFromBytesBE(buff, 51)/100.0);
+                        bms.setTemp4(MathsUtil.shortFromBytesBE(buff, 53)/100.0);
+                        bms.setTemp5(MathsUtil.shortFromBytesBE(buff, 55)/100.0);
+                        bms.setTemp6(MathsUtil.shortFromBytesBE(buff, 57)/100.0);
+
+                        bms.setMinCell(bms.getCells()[0]);
+                        bms.setMaxCell(bms.getCells()[0]);
+                        double totalVolt = 0.0;
+                        for (int i = 0; i < getCellsForWheel(); i++) {
+                            double cell = bms.getCells()[i];
+                            totalVolt += cell;
+                            if (cell > 0.0) {
+                                if (bms.getMaxCell() < cell) {
+                                    bms.setMaxCell(cell);
+                                }
+                                if (bms.getMinCell() > cell) {
+                                    bms.setMinCell(cell);
+                                }
+                            }
+                        }
+                        bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                        bms.setVoltage(totalVolt);
+                    }
+                }
+                // end of smartBMS part
+
                 int battery;
                 if (mVer < 4) { // not Patton
                     if (useBetterPercents) {
@@ -89,7 +149,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 9918) / 24.2);
                         }
                     }
-                } else if (mVer >= 5) { // Lynx
+                } else if (mVer >= 5) { // Lynx = 5; Sherman L = 6
                     if (useBetterPercents) {
                         if (voltage > 15030) {
                             battery = 100;
@@ -138,6 +198,7 @@ public class VeteranAdapter extends BaseAdapter {
                 }
                 wd.calculateCurrent();
                 wd.calculatePower();
+                wd.setModel(getModel());
                 newDataFound = true;
             }
         }
@@ -172,6 +233,17 @@ public class VeteranAdapter extends BaseAdapter {
             WheelLog.AppConfig.setHwPwm(true);
         }
         return mVer;
+    }
+
+    private String getModel() {
+        String vModel = "";
+        if (mVer <= 1) vModel = "Sherman"; else
+        if (mVer == 2) vModel = "Abrams"; else
+        if (mVer == 3) vModel = "Sherman S"; else
+        if (mVer == 4) vModel = "Patton"; else
+        if (mVer == 5) vModel = "Lynx"; else
+        if (mVer == 6) vModel = "Sherman L"; else vModel = "Unknown";
+        return vModel;
     }
 
     @Override
