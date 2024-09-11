@@ -107,7 +107,7 @@ public class VeteranAdapter extends BaseAdapter {
                     }
                 }
                 // end of smartBMS part
-                
+
                 int battery;
                 if (mVer < 4) { // not Patton
                     if (useBetterPercents) {
