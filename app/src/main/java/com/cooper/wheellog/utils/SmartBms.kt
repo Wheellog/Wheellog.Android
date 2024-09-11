@@ -58,6 +58,6 @@ class SmartBms {
         minCell = 0.0
         maxCell = 0.0
         cellDiff = 0.0
-        cells = Array(32) { 0.0 }
+        cells = Array(36) { 0.0 }
     }
 }

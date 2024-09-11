@@ -26,6 +26,7 @@ class RawDataTest {
         data = spyk(WheelData())
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
+        every { config.gotwayNegative } returns "1"
     }
 
     @After
@@ -208,5 +209,39 @@ class RawDataTest {
 
     }
 
- */
+
+
+    @Test
+    fun `LynxBMS`() {
+        // Arrange.
+        val adapter = VeteranAdapter()
+        data.wheelType = Constants.WHEEL_TYPE.VETERAN
+        val inputStream: InputStream = File("src/test/resources/RAW_2024_09_11_16_39_31.csv").inputStream()
+        val startTime = sdf.parse("09:51:02.214")
+
+        val dataList = mutableListOf<String>()
+        inputStream.bufferedReader().useLines { lines ->
+            lines.forEach {
+                val row = it.split(',')
+                val time = sdf.parse(row[0])
+                if (time != null && time > startTime) {
+                    dataList.add(row[1])
+                }
+            }
+        }
+
+        // Act.
+        dataList.forEach {
+            val byteArray = it.hexToByteArray()
+            adapter.decode(byteArray)
+        }
+
+        // Assert.
+        assertThat(data.version).isEqualTo("005.0.11")
+
+
+    }
+
+*/
+
 }
