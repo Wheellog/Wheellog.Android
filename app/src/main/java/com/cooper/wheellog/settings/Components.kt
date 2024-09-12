@@ -132,6 +132,11 @@ fun sliderPref(
     var prevPosition by remember { mutableFloatStateOf(position * visualMultiple) }
     val minV = min * visualMultiple
     val maxV = max * visualMultiple
+
+    LaunchedEffect(position) {
+        sliderPosition = position * visualMultiple
+    }
+
     val showSlider = !(disableSwitchAtMin && sliderPosition == minV)
     val unitStr = if (unit != 0) {
         " " + stringResource(unit)

@@ -116,12 +116,9 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.max_speed, 50)
         set(value) = setValue(R.string.max_speed, value)
 
-    var currentOnDial: Boolean
-        get() = getValue(R.string.current_on_dial, false)
-        set(value) {
-            setValue(R.string.current_on_dial, value)
-            Timber.i("Change dial type to %b", value)
-        }
+    var valueOnDial: String
+        get() = getValue(R.string.value_on_dial, "0")
+        set(value) = setValue(R.string.value_on_dial, value)
 
     var pageGraph: Boolean
         get() = getValue(R.string.show_page_graph, true)
@@ -312,6 +309,18 @@ class AppConfig(var context: Context) {
     var useShortPwm
         get() = getValue(R.string.use_short_pwm, false)
         set(value) = setValue(R.string.use_short_pwm, value)
+
+    var swapSpeedPwm
+        get() = getValue(R.string.swap_speed_pwm, false)
+        set(value) = setValue(R.string.swap_speed_pwm, value)
+
+    var colorPwmStart: Int
+        get() = getValue(R.string.color_pwm_start, 78)
+        set(value) = setValue(R.string.color_pwm_start, value)
+
+    var colorPwmEnd: Int
+        get() = getValue(R.string.color_pwm_end, 92)
+        set(value) = setValue(R.string.color_pwm_end, value)
     //endregion
 
     //region -=[ specific settings ]=-

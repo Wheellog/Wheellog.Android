@@ -53,7 +53,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
                         context.getString(R.string.mph)
                     else
                         context.getString(R.string.kmh))
-            putBoolean(Constants.wearOsCurrentOnDialData, WheelLog.AppConfig.currentOnDial)
+            putBoolean(Constants.wearOsCurrentOnDialData, WheelLog.AppConfig.valueOnDial == "1")
             putInt(Constants.wearOsAlarmData, Alarms.alarm)
             putLong(Constants.wearOsTimestampData, wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)

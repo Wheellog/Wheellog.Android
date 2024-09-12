@@ -247,31 +247,101 @@ fun applicationScreen() {
                 AppConfig.showClock = it
             }
 
-            sliderPref(
-                name = stringResource(R.string.max_speed_dial_title),
-                desc = stringResource(R.string.max_speed_dial_description),
-                min = 10f,
-                max = 100f,
-                position = AppConfig.maxSpeed.toFloat(),
+            var valueOnDial by remember { mutableStateOf(AppConfig.valueOnDial) }
+            list(
+                name = stringResource(R.string.value_on_dial_title),
+                desc = stringResource(R.string.value_on_dial_description),
+                entries = mapOf(
+                    "0" to stringResource(R.string.speed),
+                    "1" to stringResource(R.string.current),
+                    "2" to stringResource(R.string.pwm),
+                ),
+                defaultKey = valueOnDial,
             ) {
-                AppConfig.maxSpeed = it.toInt()
+                valueOnDial = it.first
+                AppConfig.valueOnDial = valueOnDial
+                if (valueOnDial == "2")
+                    AppConfig.maxSpeed = 100
             }
 
-            switchPref(
-                name = stringResource(R.string.current_on_dial_title),
-                desc = stringResource(R.string.current_on_dial_description),
-                default = AppConfig.currentOnDial,
-            ) {
-                AppConfig.currentOnDial = it
+            val pwmDial = (valueOnDial == "2")
+            AnimatedVisibility(visible = !pwmDial) {
+                sliderPref(
+                    name = stringResource(R.string.max_speed_dial_title),
+                    desc = stringResource(R.string.max_speed_dial_description),
+                    min = 10f,
+                    max = 100f,
+                    position = AppConfig.maxSpeed.toFloat(),
+                ) {
+                    AppConfig.maxSpeed = it.toInt()
+                }
             }
 
+            var shortPwm by remember { mutableStateOf(AppConfig.useShortPwm) }
             switchPref(
                 name = stringResource(R.string.use_short_pwm_title),
                 desc = stringResource(R.string.use_short_pwm_description),
-                default = AppConfig.useShortPwm,
-                showDiv = false,
+                default = shortPwm,
+                showDiv = (shortPwm || pwmDial),
             ) {
-                AppConfig.useShortPwm = it
+                shortPwm = it
+                AppConfig.useShortPwm = shortPwm
+                if (!shortPwm)
+                    AppConfig.swapSpeedPwm = false
+            }
+
+            AnimatedVisibility(visible = shortPwm) {
+                switchPref(
+                    name = stringResource(R.string.swap_speedpwm_title),
+                    desc = stringResource(R.string.swap_speedpwm_description),
+                    default = AppConfig.swapSpeedPwm,
+                ) {
+                    AppConfig.swapSpeedPwm = it
+                }
+            }
+
+            var colorPwmStart by remember { mutableStateOf(AppConfig.colorPwmStart.toFloat()) }
+            var colorPwmEnd by remember { mutableStateOf(AppConfig.colorPwmEnd.toFloat()) }
+            AnimatedVisibility(visible = (shortPwm || pwmDial)) {
+                sliderPref(
+                    name = stringResource(R.string.color_pwm_start_title),
+                    desc = stringResource(R.string.color_pwm_start_description),
+                    min = 0f,
+                    max = 100f,
+                    position = colorPwmStart,
+                    showDiv = false,
+                    unit = R.string.persent,
+                ) {
+                    colorPwmStart = it
+
+                    if (colorPwmStart > colorPwmEnd) {
+                        colorPwmEnd = colorPwmStart
+                    }
+
+                    AppConfig.colorPwmStart = colorPwmStart.toInt()
+                    AppConfig.colorPwmEnd = colorPwmEnd.toInt()
+                }
+            }
+
+            AnimatedVisibility(visible = (shortPwm || pwmDial)) {
+                sliderPref(
+                    name = stringResource(R.string.color_pwm_end_title),
+                    desc = stringResource(R.string.color_pwm_end_description),
+                    min = 0f,
+                    max = 100f,
+                    position = colorPwmEnd,
+                    showDiv = false,
+                    unit = R.string.persent,
+                ) {
+                    colorPwmEnd = it
+
+                    if (colorPwmEnd < colorPwmStart) {
+                        colorPwmStart = colorPwmEnd
+                    }
+
+                    AppConfig.colorPwmStart = colorPwmStart.toInt()
+                    AppConfig.colorPwmEnd = colorPwmEnd.toInt()
+                }
             }
         }
 

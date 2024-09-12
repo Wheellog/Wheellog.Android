@@ -207,6 +207,8 @@
     <string name="use_pip_mode_description">Use Picture-in-Picture mode instead of going to background</string>
     <string name="current_on_dial_title">Current on main dial</string>
     <string name="current_on_dial_description">Draw current on main dial instead of speed. The numbers will still indicate the speed.</string>
+    <string name="value_on_dial_title">On main dial</string>
+    <string name="value_on_dial_description">Parameter to be shown on main dial</string>
     <string name="connection_sound_title">Connect sound</string>
     <string name="connection_sound_description">Play sound when Wheel connects or disconnects</string>
     <string name="no_connection_sound_title">Connection lost beeps period</string>
@@ -252,6 +254,10 @@
     <string name="warning_speed_period_description">Notification period, 0 - off</string>
     <string name="use_short_pwm_title">Short display of PWM</string>
     <string name="use_short_pwm_description">Current/Max PWM is displayed at about speed</string>
+    <string name="color_pwm_start_title">Beginning of PWM color coding</string>
+    <string name="color_pwm_start_description">Minimum PWM value to be indicated by color</string>
+    <string name="color_pwm_end_title">Limit of PWM color coding</string>
+    <string name="color_pwm_end_description">PWM limit value to be indicated by color</string>
     <string name="speed_alarm1_phone_title">Speed Alarm 1</string>
     <string name="speed_trigger_description">Speed that triggers the alarm</string>
     <string name="speed_alarm2_phone_title">Speed Alarm 2</string>
@@ -614,4 +620,6 @@
     <string name="main_menu_buttons_title">Main menu buttons</string>
     <string name="reset_extremum_values_title">Reset max/min values</string>
     <string name="show_clock_title">Show the clock on the main screen</string>
+    <string name="swap_speedpwm_title">Show PWM instead of Speed</string>
+    <string name="swap_speedpwm_description">Show PWM instead of Speed and Speed instead of short PWM</string>
 </resources>
