@@ -450,7 +450,7 @@ class InmotionAdapterV2Test {
         assertThat(result6).isFalse()
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A03217C0B001122E")
-        assertThat(data.model).isEqualTo("Inmotion V14")
+        assertThat(data.model).isEqualTo("Inmotion V14 50S")
         assertThat(data.version).isEqualTo("Main:3.0.40 Drv:5.6.60 BLE:2.0.1")
 
 
