@@ -176,15 +176,15 @@ class RawDataTest {
         assertThat(data.current).isEqualTo(8)
         assertThat(data.modeStr).isEqualTo("Drive")
     }
-
     /*
+
     @Test
     fun `Inmotion v11y`() {
         // Arrange.
         val adapter = InmotionAdapterV2()
         data.wheelType = Constants.WHEEL_TYPE.INMOTION_V2
-        val inputStream: InputStream = File("src/test/resources/RAW.csv").inputStream()
-        val startTime = sdf.parse("12:37:37.700")
+        val inputStream: InputStream = File("src/test/resources/RAW1.csv").inputStream()
+        val startTime = sdf.parse("00:14:24.310")
 
         val dataList = mutableListOf<String>()
         inputStream.bufferedReader().useLines { lines ->
