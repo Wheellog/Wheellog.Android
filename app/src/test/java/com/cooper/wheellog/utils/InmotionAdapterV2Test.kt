@@ -450,7 +450,7 @@ class InmotionAdapterV2Test {
         assertThat(result6).isFalse()
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A03217C0B001122E")
-        assertThat(data.model).isEqualTo("Inmotion V14")
+        assertThat(data.model).isEqualTo("Inmotion V14 50S")
         assertThat(data.version).isEqualTo("Main:3.0.40 Drv:5.6.60 BLE:2.0.1")
 
 
@@ -471,6 +471,57 @@ class InmotionAdapterV2Test {
         assertThat(data.powerDouble).isEqualTo(102.0)
         assertThat(data.angle).isEqualTo(0.39)
         assertThat(data.roll).isEqualTo(-0.17)
+    }
+
+    @Test
+    fun `decode with v11y full data 1`() {
+        // Arrange.
+        val byteArray1 = "aaaa110882010206020101009c".hexToByteArray() // wheel type
+        val byteArray2 = "aaaa1117820241303332313831304430303130303139000000000083".hexToByteArray() // s/n
+        val byteArray3 = "aaaa112f8206220800030603000802213400050201000902230300030108000201240d00010101000101250d00010101000101ac".hexToByteArray() //versions
+        val byteArray5 = "aaaa1428a0200410100e401f401f0000006464323232000000005802000a28645a280000144001040100250d92".hexToByteArray() // probably statistics
+        val byteArray6 = "aaaa142b9000011f261f0000004456569ac5024c005400ccc5d0cb030000003e000000000000002000000073000000f5".hexToByteArray() // totals
+        val byteArray7 = "aaaa141991c82e0000266708008d62000091e400005e720300d0cb03009e".hexToByteArray()
+        val byteArray8 = "aaaa145984941e11000000000087000000090104020000000000006502000000000300000000004b20451fe02e0410100e401f401fa816a816c05d00000000ccc5cecdb0cd0000b0c36400000000004900000000000000000000000000fe".hexToByteArray()
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isTrue()
+        assertThat(data.serial).isEqualTo("A0321810D0010019")
+        assertThat(data.model).isEqualTo("Inmotion V11y")
+        assertThat(data.version).isEqualTo("Main:2.5.52 Drv:6.3.8 BLE:1.3.3")
+
+
+        assertThat(data.speedDouble).isEqualTo(1.35)
+        assertThat(data.temperature).isEqualTo(28)
+        assertThat(data.temperature2).isEqualTo(21)
+        assertThat(data.imuTemp).isEqualTo(29)
+        assertThat(data.cpuTemp).isEqualTo(0)
+        assertThat(data.motorPower).isEqualTo(0.0)
+        assertThat(data.currentLimit).isEqualTo(58.00)
+        assertThat(data.speedLimit).isEqualTo(41.00)
+        assertThat(data.torque).isEqualTo(2.65)
+        assertThat(data.voltageDouble).isEqualTo(78.28)
+        assertThat(data.currentDouble).isEqualTo(0.17)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.03)
+        assertThat(data.totalDistance).isEqualTo(119760)
+        assertThat(data.batteryLevel).isEqualTo(81)
+        assertThat(data.powerDouble).isEqualTo(0.0)
+        assertThat(data.angle).isEqualTo(0.0)
+        assertThat(data.roll).isEqualTo(6.13)
     }
 
 /*

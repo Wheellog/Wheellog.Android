@@ -176,7 +176,40 @@ class RawDataTest {
         assertThat(data.current).isEqualTo(8)
         assertThat(data.modeStr).isEqualTo("Drive")
     }
-/*
+    /*
+
+    @Test
+    fun `Inmotion v11y`() {
+        // Arrange.
+        val adapter = InmotionAdapterV2()
+        data.wheelType = Constants.WHEEL_TYPE.INMOTION_V2
+        val inputStream: InputStream = File("src/test/resources/RAW1.csv").inputStream()
+        val startTime = sdf.parse("00:14:24.310")
+
+        val dataList = mutableListOf<String>()
+        inputStream.bufferedReader().useLines { lines ->
+            lines.forEach {
+                val row = it.split(',')
+                val time = sdf.parse(row[0])
+                if (time != null && time > startTime) {
+                    dataList.add(row[1])
+                }
+            }
+        }
+
+        // Act.
+        dataList.forEach {
+            val byteArray = it.hexToByteArray()
+            adapter.decode(byteArray)
+        }
+
+        // Assert.
+        assertThat(data.model).isEqualTo(InmotionAdapterV2.Model.V11Y.name)
+        assertThat(data.batteryLevel).isEqualTo(96)
+
+    }
+
+
     @Test
     fun `Inmotion v14`() {
         // Arrange.
