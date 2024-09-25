@@ -93,7 +93,6 @@ public class GotwayAdapter extends BaseAdapter {
                         temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
 
                     int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
-                    if (bIsAlexovikFW) hwPwm = Math.round(hwPwm / 0.971f);
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
