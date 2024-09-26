@@ -196,8 +196,8 @@
     <string name="connected">Подключено</string>
     <string name="connection_failed">Сбой подключения</string>
     <string name="connection_lost_at">Подключение потеряно</string>
-    <string name="current_on_dial_description">Рисовать ток на главной шкале вместо скорости. Цифры по прежнему будут обозначать скорость.</string>
-    <string name="current_on_dial_title">Ток на главной шкале</string>
+    <string name="value_on_dial_description">Рисовать на главной шкале выбранный параметр.</string>
+    <string name="value_on_dial_title">На главной шкале</string>
     <string name="devices">Устройства</string>
     <string name="disable_phone_beep_title">Отключить звуковые оповещения</string>
     <string name="disable_phone_beep_description">Устройство не будет воспроизводить звуковые оповещения, но они будут передаваться на Pebble</string>
@@ -273,6 +273,10 @@
     <string name="warning_speed_period_description">Период оповещений, 0 - отключить</string>
     <string name="use_short_pwm_title">Короткое отображение PWM</string>
     <string name="use_short_pwm_description">Current/Max PWM отображается около скорости</string>
+    <string name="color_pwm_start_title">Начало цветного обозначения PWM</string>
+    <string name="color_pwm_start_description">Минимальное значение PWM, с которого начинать цветное обозначение</string>
+    <string name="color_pwm_end_title">Предел цветного обозначения PWM</string>
+    <string name="color_pwm_end_description">Предельное значение PWM для цветного обозначения</string>
     <string name="no_connection_sound_title">Периодические оповещения в случае потери связи</string>
     <string name="no_connection_sound_description">Период оповещений, 0-отключить</string>
     <string name="power_factor_description">Не меняйте если не знаете что это, 90 по дефолту</string>
@@ -540,4 +544,6 @@
     <string name="show_clock_title">Показывать часы на главном экране</string>
     <string name="auto_voltage_title">Автоматически определить напряжение</string>
     <string name="auto_voltage_description">Если возможно, выключите если напряжение неправильное</string>
+    <string name="swap_speedpwm_title">Показывать PWM вместо скорости</string>
+    <string name="swap_speedpwm_description">Поменять местами отображение скорости и PWM</string>
 </resources>

@@ -38,6 +38,9 @@
     <string name="warning_pwm" translatable="false">warning_pwm</string>
     <string name="warning_speed_period" translatable="false">warning_speed_period</string>
     <string name="use_short_pwm" translatable="false">use_short_pwm</string>
+    <string name="swap_speed_pwm" translatable="false">swap_speed_pwm</string>
+    <string name="color_pwm_start" translatable="false">color_pwm_start</string>
+    <string name="color_pwm_end" translatable="false">color_pwm_end</string>
 
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
@@ -129,7 +132,7 @@
     <string name="custom_percents" translatable="false">custom_percents</string>
     <string name="cell_voltage_tiltback" translatable="false">cell_voltage_tiltback</string>
     <string name="use_pip_mode" translatable="false">use_pip_mode</string>
-    <string name="current_on_dial" translatable="false">current_on_dial</string>
+    <string name="value_on_dial" translatable="false">value_on_dial</string>
     <string name="connection_sound" translatable="false">connection_sound</string>
     <string name="no_connection_sound" translatable="false">no_connection_sound</string>
     <string name="use_stop_music" translatable="false">use_stop_music</string>

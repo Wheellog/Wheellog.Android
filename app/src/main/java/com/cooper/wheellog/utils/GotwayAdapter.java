@@ -22,6 +22,8 @@ public class GotwayAdapter extends BaseAdapter {
     private boolean trueCurrent = false;
     private boolean bIsReady = false;
     private long lastTryTime = 0;
+    private long lastFFTime = 0;
+    private int frameFFcount = 0;
     private int attempt = 0;
     private int lock_Changes = 0;
     private final int lightModeOff = 0;
@@ -59,7 +61,7 @@ public class GotwayAdapter extends BaseAdapter {
             } else if (dataS.startsWith("BF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                model = "Begode";
+                model = "Begode Alexovik";
                 wd.setModel(model);
                 WheelLog.AppConfig.setHwPwm(true);
                 WheelLog.AppConfig.setIsAlexovikFW(true);
@@ -232,6 +234,9 @@ public class GotwayAdapter extends BaseAdapter {
                         wd.setCurrent((-1) * batteryCurrent);
                     }
                 } else if (buff[18] == (byte) 0xFF) {
+                    if (!bIsAlexovikFW) {
+                        checkFirmware();
+                    }
                     if (lock_Changes == 0) {
                         WheelLog.AppConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
                         WheelLog.AppConfig.setBrakingCurrent(buff[3] & 0xFF);
@@ -334,6 +339,26 @@ public class GotwayAdapter extends BaseAdapter {
     }
 
     //begin Alexovik
+    private void checkFirmware() {
+        long nowTime = SystemClock.elapsedRealtime();
+        long interval = nowTime - lastFFTime;
+        lastFFTime = nowTime;
+
+        if (interval > 80 && interval < 120)
+            frameFFcount++;
+        else
+            frameFFcount = 0;
+
+        if (frameFFcount > 5) {
+            model = "Begode Alexovik";
+            WheelData.getInstance().setModel(model);
+            WheelLog.AppConfig.setHwPwm(true);
+            WheelLog.AppConfig.setIsAlexovikFW(true);
+            bIsReady = true;
+            frameFFcount = 0;
+        }
+    }
+
     public void updateExtremeMode(boolean value) {
         byte[] cmd = { (byte)0x45, (byte)0x4D, (byte)(value ? 1 : 0) };
         lock_Changes = 2;
