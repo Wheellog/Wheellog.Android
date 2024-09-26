@@ -241,7 +241,7 @@ public class GotwayAdapter extends BaseAdapter {
                             if (gotwayNegative == 0) {
                                 hwPWMb = Math.abs(hwPWMb);
                             } else {
-                                hwPWMb = hwPWMb * gotwayNegative;
+                                hwPWMb = hwPWMb * gotwayNegative * (-1);
                             }
                             wd.setOutput(hwPWMb * 100);
                         }
