@@ -238,6 +238,11 @@ public class GotwayAdapter extends BaseAdapter {
                             truePWM = true;
                         }
                         if (truePWM) {
+                            if (gotwayNegative == 0) {
+                                hwPWMb = Math.abs(hwPWMb);
+                            } else {
+                                hwPWMb = hwPWMb * gotwayNegative;
+                            }
                             wd.setOutput(hwPWMb * 100);
                         }
                         wd.setCurrent((-1) * batteryCurrent);
