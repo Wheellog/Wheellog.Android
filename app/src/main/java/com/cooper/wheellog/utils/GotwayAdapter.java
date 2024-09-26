@@ -8,6 +8,7 @@ import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -20,6 +21,7 @@ public class GotwayAdapter extends BaseAdapter {
     private String fw = "";
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
+    private boolean truePWM = false;
     private boolean bIsReady = false;
     private long lastTryTime = 0;
     private long lastFFTime = 0;
@@ -79,7 +81,8 @@ public class GotwayAdapter extends BaseAdapter {
                 Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
                 Boolean autoVoltage = !bIsAlexovikFW ? WheelLog.AppConfig.getAutoVoltage() : false;
                 int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
-
+                if (buff[18] == (byte) 0x07) System.out.println(String.format(Locale.US,StringUtil.toHexString(buff)));
+                //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
@@ -142,8 +145,9 @@ public class GotwayAdapter extends BaseAdapter {
                         wd.setVoltage(voltage);
                     }
                     wd.setBatteryLevel(battery);
-                    wd.setOutput(hwPwm);
-
+                    if (!truePWM) {
+                        wd.setOutput(hwPwm);
+                    }
                     if (!trueCurrent) {
                         wd.calculateCurrent();
                     }
@@ -231,6 +235,18 @@ public class GotwayAdapter extends BaseAdapter {
                         newDataFound = trueCurrent;
                         trueCurrent = true;
                         int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
+                        int hwPWMb = MathsUtil.signedShortFromBytesBE(buff, 8);
+                        if (hwPWMb > 0) {
+                            truePWM = true;
+                        }
+                        if (truePWM) {
+                            if (gotwayNegative == 0) {
+                                hwPWMb = Math.abs(hwPWMb);
+                            } else {
+                                hwPWMb = hwPWMb * gotwayNegative * (-1);
+                            }
+                            wd.setOutput(hwPWMb * 100);
+                        }
                         wd.setCurrent((-1) * batteryCurrent);
                     }
                 } else if (buff[18] == (byte) 0xFF) {
@@ -260,7 +276,7 @@ public class GotwayAdapter extends BaseAdapter {
                 if (newDataFound) {
                     Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
                     wd.calculatePower();
-                    if (hwPwmEnabled) {
+                    if (hwPwmEnabled || truePWM) {
                         wd.updatePwm();
                     } else {
                         wd.calculatePwm();

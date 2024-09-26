@@ -177,6 +177,42 @@ class RawDataTest {
         assertThat(data.modeStr).isEqualTo("Drive")
     }
     /*
+    @Test
+    fun `Begode PWM`() {
+        // Arrange.
+        every { config.gotwayNegative } returns "1"
+        mockkConstructor(android.os.Handler::class)
+        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
+        val adapter = GotwayAdapter()
+        data.wheelType = Constants.WHEEL_TYPE.GOTWAY
+        val inputStream: InputStream = File("src/test/resources/RAW2.csv").inputStream()
+        val startTime = sdf.parse("10:29:00.000")
+
+        val dataList = mutableListOf<String>()
+        inputStream.bufferedReader().useLines { lines ->
+            lines.forEach {
+                val row = it.split(',')
+                val time = sdf.parse(row[0])
+                if (time != null && time > startTime) {
+                    dataList.add(row[1])
+                }
+            }
+        }
+
+        // Act.
+        dataList.forEach {
+            val byteArray = it.hexToByteArray()
+            adapter.decode(byteArray)
+        }
+
+        // Assert.
+        assertThat(data.model).isEqualTo("bEGODE")
+
+
+    }
+
+
+
 
     @Test
     fun `Inmotion v11y`() {
