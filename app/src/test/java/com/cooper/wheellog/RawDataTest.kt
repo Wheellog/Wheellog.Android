@@ -285,15 +285,15 @@ class RawDataTest {
         // Arrange.
         val adapter = VeteranAdapter()
         data.wheelType = Constants.WHEEL_TYPE.VETERAN
-        val inputStream: InputStream = File("src/test/resources/RAW_2024_09_11_16_39_31.csv").inputStream()
-        val startTime = sdf.parse("09:51:02.214")
-
+        val inputStream: InputStream = File("src/test/resources/RAW1.csv").inputStream()
+        val startTime = sdf.parse("02:08:40.000")
+        val stopTime = sdf.parse("02:08:42.000")
         val dataList = mutableListOf<String>()
         inputStream.bufferedReader().useLines { lines ->
             lines.forEach {
                 val row = it.split(',')
                 val time = sdf.parse(row[0])
-                if (time != null && time > startTime) {
+                if (time != null && time > startTime && time < stopTime) {
                     dataList.add(row[1])
                 }
             }
@@ -310,7 +310,7 @@ class RawDataTest {
 
 
     }
+    */
 
-*/
 
 }
