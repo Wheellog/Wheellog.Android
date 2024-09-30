@@ -966,9 +966,9 @@ class MainActivity : AppCompatActivity() {
                     finish()
                     return true
                 }
-                doubleBackToExitPressedOnce = true
-                showSnackBar(R.string.back_to_exit)
-                Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+                doubleBackToExitPressedOnce = false
+                //showSnackBar(R.string.back_to_exit)
+                //Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
                 true
             }
             else -> super.onKeyDown(keyCode, event)
