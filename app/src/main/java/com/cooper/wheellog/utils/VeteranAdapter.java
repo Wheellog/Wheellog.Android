@@ -286,7 +286,7 @@ public class VeteranAdapter extends BaseAdapter {
     }
 
     static class veteranUnpacker {
-
+        private boolean usingCrc = false;
         enum UnpackerState {
             unknown,
             collecting,
@@ -325,12 +325,13 @@ public class VeteranAdapter extends BaseAdapter {
                         Timber.i("Len %d", len);
                         Timber.i("Step reset");
                         reset();
-                        if (len > 38) { // new format with crc32
+                        if (len > 38 || usingCrc) { // new format with crc32
                             CRC32 crc = new CRC32();
                             crc.update(getBuffer(), 0, len);
                             long calc_crc = crc.getValue();
                             long provided_crc = MathsUtil.intFromBytesBE(getBuffer(), len);
                             if (calc_crc == provided_crc) {
+                                usingCrc = true;
                                 Timber.i("CRC32 ok");
                                 return true;
                             } else {
