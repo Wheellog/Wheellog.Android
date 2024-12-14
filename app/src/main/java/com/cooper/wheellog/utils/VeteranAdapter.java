@@ -80,12 +80,12 @@ public class VeteranAdapter extends BaseAdapter {
                             int cell = MathsUtil.shortFromBytesBE(buff, 59 + i * 2);
                             bms.getCells()[i+30] = cell/1000.0;
                         }
-                        bms.setTemp1(MathsUtil.shortFromBytesBE(buff, 47)/100.0);
-                        bms.setTemp2(MathsUtil.shortFromBytesBE(buff, 49)/100.0);
-                        bms.setTemp3(MathsUtil.shortFromBytesBE(buff, 51)/100.0);
-                        bms.setTemp4(MathsUtil.shortFromBytesBE(buff, 53)/100.0);
-                        bms.setTemp5(MathsUtil.shortFromBytesBE(buff, 55)/100.0);
-                        bms.setTemp6(MathsUtil.shortFromBytesBE(buff, 57)/100.0);
+                        bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 47)/100.0);
+                        bms.setTemp2(MathsUtil.signedShortFromBytesBE(buff, 49)/100.0);
+                        bms.setTemp3(MathsUtil.signedShortFromBytesBE(buff, 51)/100.0);
+                        bms.setTemp4(MathsUtil.signedShortFromBytesBE(buff, 53)/100.0);
+                        bms.setTemp5(MathsUtil.signedShortFromBytesBE(buff, 55)/100.0);
+                        bms.setTemp6(MathsUtil.signedShortFromBytesBE(buff, 57)/100.0);
 
                         bms.setMinCell(bms.getCells()[0]);
                         bms.setMaxCell(bms.getCells()[0]);
