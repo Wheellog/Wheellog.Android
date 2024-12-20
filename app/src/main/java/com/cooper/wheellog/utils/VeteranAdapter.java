@@ -80,12 +80,12 @@ public class VeteranAdapter extends BaseAdapter {
                             int cell = MathsUtil.shortFromBytesBE(buff, 59 + i * 2);
                             bms.getCells()[i+30] = cell/1000.0;
                         }
-                        bms.setTemp1(MathsUtil.shortFromBytesBE(buff, 47)/100.0);
-                        bms.setTemp2(MathsUtil.shortFromBytesBE(buff, 49)/100.0);
-                        bms.setTemp3(MathsUtil.shortFromBytesBE(buff, 51)/100.0);
-                        bms.setTemp4(MathsUtil.shortFromBytesBE(buff, 53)/100.0);
-                        bms.setTemp5(MathsUtil.shortFromBytesBE(buff, 55)/100.0);
-                        bms.setTemp6(MathsUtil.shortFromBytesBE(buff, 57)/100.0);
+                        bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 47)/100.0);
+                        bms.setTemp2(MathsUtil.signedShortFromBytesBE(buff, 49)/100.0);
+                        bms.setTemp3(MathsUtil.signedShortFromBytesBE(buff, 51)/100.0);
+                        bms.setTemp4(MathsUtil.signedShortFromBytesBE(buff, 53)/100.0);
+                        bms.setTemp5(MathsUtil.signedShortFromBytesBE(buff, 55)/100.0);
+                        bms.setTemp6(MathsUtil.signedShortFromBytesBE(buff, 57)/100.0);
 
                         bms.setMinCell(bms.getCells()[0]);
                         bms.setMaxCell(bms.getCells()[0]);
@@ -242,7 +242,8 @@ public class VeteranAdapter extends BaseAdapter {
         if (mVer == 3) vModel = "Sherman S"; else
         if (mVer == 4) vModel = "Patton"; else
         if (mVer == 5) vModel = "Lynx"; else
-        if (mVer == 6) vModel = "Sherman L"; else vModel = "Unknown";
+        if (mVer == 6) vModel = "Sherman L"; else
+        if (mVer == 42) vModel = "Nosfet Apex"; else vModel = "Unknown";
         return vModel;
     }
 
@@ -313,7 +314,10 @@ public class VeteranAdapter extends BaseAdapter {
                 case collecting:
 
                     int bsize = buffer.size();
-                    if (((bsize == 22 || bsize == 30) && (c != 0x00)) || ((bsize == 23) && ((c & 0xFE) != 0x00)) ) {
+//                    if ((bsize == 30) && (c != 0x07)) {
+//                        Timber.i("Data verification failed");
+//                    }
+                    if (((bsize == 22) && (c != 0x00)) || (((bsize == 30) && !(c == 0x00 || c == 0x07))) || ((bsize == 23) && ((c & 0xFE) != 0x00)) ) {
                         state = UnpackerState.done;
                         Timber.i("Data verification failed");
                         reset();

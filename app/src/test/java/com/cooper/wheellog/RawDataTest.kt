@@ -310,7 +310,37 @@ class RawDataTest {
 
 
     }
+
+    @Test
+    fun `Apex`() {
+        // Arrange.
+        val adapter = VeteranAdapter()
+        data.wheelType = Constants.WHEEL_TYPE.VETERAN
+        val inputStream: InputStream = File("src/test/resources/RAW3.csv").inputStream()
+        val startTime = sdf.parse("16:38:41.000")
+        val stopTime = sdf.parse("23:59:45.000")
+        val dataList = mutableListOf<String>()
+        inputStream.bufferedReader().useLines { lines ->
+            lines.forEach {
+                val row = it.split(',')
+                val time = sdf.parse(row[0])
+                if (time != null && time > startTime && time < stopTime) {
+                    dataList.add(row[1])
+                }
+            }
+        }
+
+        // Act.
+        dataList.forEach {
+            val byteArray = it.hexToByteArray()
+            adapter.decode(byteArray)
+        }
+
+        // Assert.
+        assertThat(data.version).isEqualTo("042.2.53")
+
+
+    }
+
     */
-
-
 }
