@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         minSdk 21
-        targetSdk 34
+        targetSdk 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -36,7 +36,7 @@ dependencies {
     implementation "com.google.android.material:material:$material_version"
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'com.google.truth:truth:1.1.5'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    testImplementation 'io.mockk:mockk:1.13.8'
+    testImplementation 'com.google.truth:truth:1.4.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testImplementation 'io.mockk:mockk:1.13.14'
 }

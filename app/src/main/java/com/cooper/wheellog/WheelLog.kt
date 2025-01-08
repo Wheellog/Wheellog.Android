@@ -1,11 +1,8 @@
 package com.cooper.wheellog
 
 import android.app.Application
-// import com.yandex.metrica.YandexMetricaConfig
-// import com.yandex.metrica.YandexMetrica
 import com.cooper.wheellog.utils.NotificationUtil
 import com.cooper.wheellog.utils.VolumeKeyController
-import com.cooper.wheellog.utils.ThemeManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
@@ -32,12 +29,19 @@ class WheelLog : Application() {
 //        }
     }
 
-    override fun attachBaseContext(base: Context) {
+    override fun attachBaseContext(base: Context?) {
         var mContext = base
-        AppConfig = AppConfig(mContext)
-        mContext = LocaleManager.setLocale(mContext)
-        Notifications = NotificationUtil(mContext)
-        VolumeKeyController = VolumeKeyController(mContext)
+        if (mContext != null) {
+            Timber.d("attachBaseContext")
+            AppConfig = AppConfig(mContext)
+            mContext = LocaleManager.setLocale(mContext)
+            Notifications = NotificationUtil(mContext)
+            VolumeKeyController = VolumeKeyController(mContext)
+        }
+        else
+        {
+            Timber.e("attachBaseContext with null context")
+        }
         super.attachBaseContext(mContext)
     }
 

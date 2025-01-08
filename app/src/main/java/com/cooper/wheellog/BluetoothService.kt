@@ -277,7 +277,7 @@ class BluetoothService: Service() {
         }
         val magicPeriod = 15000
         reconnectTimer = Timer().apply {
-            scheduleAtFixedRate(object : TimerTask() {
+            schedule(object : TimerTask() {
                 override fun run() {
                     val wd = WheelData.getInstance()
                     if (connectionState == ConnectionState.CONNECTED
@@ -529,6 +529,12 @@ class BluetoothService: Service() {
         return mDisconnectTime
     }
 
+    override fun onTimeout(startId: Int) {
+        super.onTimeout(startId)
+        Timber.e("BluetoothService stops on timeout")
+        stopSelf()
+    }
+
     private fun startBeepTimer() {
         wl = mgr?.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakeLogTag)?.apply {
             acquire(5 * 60 * 1000L /*5 minutes*/)
@@ -545,7 +551,7 @@ class BluetoothService: Service() {
             }
         }
         beepTimer = Timer().apply {
-            scheduleAtFixedRate(
+            schedule(
                 beepTimerTask,
                 noConnectionSound.toLong(),
                 noConnectionSound.toLong()
