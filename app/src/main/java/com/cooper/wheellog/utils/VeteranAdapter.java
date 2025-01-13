@@ -129,7 +129,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 7935) / 19.5);
                         }
                     }
-                } else if (mVer == 4) { // Patton
+                } else if (mVer == 4 || mVer == 7) { // Patton and Patton S
                     if (useBetterPercents) {
                         if (voltage > 12525) {
                             battery = 100;
@@ -149,7 +149,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 9918) / 24.2);
                         }
                     }
-                } else if (mVer >= 5) { // Lynx = 5; Sherman L = 6
+                } else if (mVer >= 5) { // Lynx = 5; Sherman L = 6, Except Patton S
                     if (useBetterPercents) {
                         if (voltage > 15030) {
                             battery = 100;
@@ -243,6 +243,7 @@ public class VeteranAdapter extends BaseAdapter {
         if (mVer == 4) vModel = "Patton"; else
         if (mVer == 5) vModel = "Lynx"; else
         if (mVer == 6) vModel = "Sherman L"; else
+        if (mVer == 7) vModel = "Patton S"; else
         if (mVer == 42) vModel = "Nosfet Apex"; else vModel = "Unknown";
         return vModel;
     }
