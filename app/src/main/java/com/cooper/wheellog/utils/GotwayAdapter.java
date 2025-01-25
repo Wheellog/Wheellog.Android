@@ -114,9 +114,9 @@ public class GotwayAdapter extends BaseAdapter {
                         if (voltage > 6680) {
                             battery = 100;
                         } else if (voltage > 5440) {
-                            battery = (voltage - 5380) / 13;
-                        } else if (voltage > 5290) {
-                            battery = (int) Math.round((voltage - 5290) / 32.5);
+                            battery = (int) Math.round((voltage - 5320) / 13.6);
+                        } else if (voltage > 5120) {
+                            battery = (voltage - 5120) / 36;
                         } else {
                             battery = 0;
                         }
