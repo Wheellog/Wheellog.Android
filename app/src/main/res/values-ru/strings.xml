@@ -15,6 +15,7 @@
     <string name="user_distance">Мой пробег</string>
     <string name="consumption">Потребление</string>
     <string name="ride_time">Время работы</string>
+    <string name="sleep_timer">Таймер сна</string>
     <string name="riding_time">Время в пути</string>
     <string name="voltage">Напряжение</string>
     <string name="current">Ток</string>
@@ -384,7 +385,7 @@
     <string name="mode_play">Эксперт</string>
     <string name="mode_ride">Обычный</string>
     <string name="no_smart_bms">Smart BMS не найдена</string>
-    <string name="output">Скважность</string>
+    <string name="output">Коэффициент заполнения</string>
     <string name="charging_status">Зарядка</string>
     <string name="maxtemperature">Макс. температура</string>
     <string name="max_pwm">Макс. PWM</string>

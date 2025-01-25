@@ -189,6 +189,7 @@ public class VeteranAdapter extends BaseAdapter {
                 wd.setVoltage(voltage);
                 wd.setBatteryLevel(battery);
                 wd.setChargingStatus(chargeMode);
+                wd.setSleepTimer(autoOffSec);
                 wd.setAngle(pitchAngle/100.0);
                 if (hwPwmEnabled) {
                     wd.setOutput(hwPwm);
