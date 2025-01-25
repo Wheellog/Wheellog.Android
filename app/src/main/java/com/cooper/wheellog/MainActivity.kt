@@ -185,11 +185,15 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.consumption) -> speedModel.title = getString(R.string.consumption)
                 else -> speedModel.title = getString(R.string.speed)
             }
-            this.enterPictureInPictureMode(
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(Rational(16, 9))
-                    .build()
-            )
+            try {
+                this.enterPictureInPictureMode(
+                    PictureInPictureParams.Builder()
+                        .setAspectRatio(Rational(16, 9))
+                        .build()
+                )
+            } catch (e: RuntimeException) {
+                Toast.makeText(this, R.string.pip_failed, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

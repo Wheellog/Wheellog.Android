@@ -370,6 +370,10 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     fun setPwm(value: Double) {
         var pwm = value
+        if (pwm.isNaN()) { // fix crash
+            pwm = 0.0
+        }
+
         if (mPwm == pwm) return
         mPwm = pwm
         val maxSpeed = WheelLog.AppConfig.maxSpeed

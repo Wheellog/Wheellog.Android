@@ -21,6 +21,7 @@
     <string name="error_bluetooth_not_initialised">Unable to initialize Bluetooth, exiting</string>
     <string name="bluetooth_required">Bluetooth is required and was not successfully enabled.</string>
     <string name="bluetooth_direct_connect_failed">Direct connection failed. Searching for Wheel…</string>
+    <string name="pip_failed">Entering picture-in-picture mode failed</string>
     <string name="back_to_exit">Press BACK again to exit</string>
     <string name="scan">Scan</string>
     <string name="stop">Stop</string>
@@ -54,7 +55,7 @@
     <string name="average_riding_speed">Avg Riding</string>
     <string name="top_speed">Top Speed</string>
     <string name="battery">Battery</string>
-    <string name="output">Motor output</string>
+    <string name="output">Duty cycle</string>
     <string name="cpuload">CPU load</string>
     <string name="charging_status">Charging</string>
     <string name="distance">Distance</string>
@@ -62,6 +63,7 @@
     <string name="user_distance">User Distance</string>
     <string name="consumption">Consumption</string>
     <string name="ride_time">Journey Time</string>
+    <string name="sleep_timer">Sleep Timer</string>
     <string name="riding_time">Ride Time</string>
     <string name="voltage">Voltage</string>
     <string name="voltage_sag">Voltage Sag</string>
