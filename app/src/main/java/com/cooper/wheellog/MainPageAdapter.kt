@@ -782,7 +782,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 }
             }
             WHEEL_TYPE.VETERAN -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Sherman L"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Sherman L", "Nosfet Apex", "Patton S"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsCurrent)
                     setupFieldForSmartBmsPage(R.string.bmsVoltage)
