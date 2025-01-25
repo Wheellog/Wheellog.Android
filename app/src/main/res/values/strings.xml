@@ -21,6 +21,7 @@
     <string name="error_bluetooth_not_initialised">Unable to initialize Bluetooth, exiting</string>
     <string name="bluetooth_required">Bluetooth is required and was not successfully enabled.</string>
     <string name="bluetooth_direct_connect_failed">Direct connection failed. Searching for Wheel…</string>
+    <string name="pip_failed">Entering picture-in-picture mode failed</string>
     <string name="back_to_exit">Press BACK again to exit</string>
     <string name="scan">Scan</string>
     <string name="stop">Stop</string>
