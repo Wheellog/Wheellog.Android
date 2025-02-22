@@ -16,13 +16,17 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.coroutines.*
 
 
-class ElectroClub {
+class ElectroClub: KoinComponent {
+    private val appConfig: AppConfig by inject()
 
     companion object {
-        @JvmStatic val instance: ElectroClub = ElectroClub()
+        @JvmStatic
+        val instance: ElectroClub = ElectroClub()
 
         const val LOGIN_METHOD = "login"
         const val UPLOAD_METHOD = "uploadTrack"
@@ -33,32 +37,32 @@ class ElectroClub {
     var url = "https://electro.club/api/v1"
     private val accessToken = BuildConfig.ec_accessToken
     private val client = OkHttpClient().newBuilder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .build()
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build()
 
     var lastError: String? = null
-    var errorListener: ((String?, String?)->Unit)? = null
-    var successListener: ((String?, Any?)->Unit)? = null
+    var errorListener: ((String?, String?) -> Unit)? = null
+    var successListener: ((String?, Any?) -> Unit)? = null
     var dao: TripDao? = null
 
     fun login(email: String, password: String, success: (Boolean) -> Unit) {
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
-                .addQueryParameter("method", LOGIN_METHOD)
-                .addQueryParameter("access_token", accessToken)
-                .addQueryParameter("email", email)
-                .addQueryParameter("password", password)
-                .build()
+            .addQueryParameter("method", LOGIN_METHOD)
+            .addQueryParameter("access_token", accessToken)
+            .addQueryParameter("email", email)
+            .addQueryParameter("password", password)
+            .build()
 
         val request = Request.Builder()
-                .url(httpUrl)
-                .method("GET", null)
-                .build()
+            .url(httpUrl)
+            .method("GET", null)
+            .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                WheelLog.AppConfig.ecUserId = null
-                WheelLog.AppConfig.ecToken = null
+                appConfig.ecUserId = null
+                appConfig.ecToken = null
                 lastError = "[unexpected] " + e.message
                 errorListener?.invoke(LOGIN_METHOD, lastError)
                 e.printStackTrace()
@@ -86,8 +90,8 @@ class ElectroClub {
                         }
                     }
 
-                    WheelLog.AppConfig.ecUserId = userId
-                    WheelLog.AppConfig.ecToken = userToken
+                    appConfig.ecUserId = userId
+                    appConfig.ecToken = userToken
                     if (userId == null || userToken == null) {
                         errorListener?.invoke(LOGIN_METHOD, lastError)
                         success(false)
@@ -101,7 +105,7 @@ class ElectroClub {
     }
 
     fun logout() {
-        WheelLog.AppConfig.apply {
+        appConfig.apply {
             ecToken = null
             ecUserId = null
             ecGarage = null
@@ -110,7 +114,7 @@ class ElectroClub {
     }
 
     suspend fun uploadTrackAsync(data: ByteArray, fileName: String, verified: Boolean): Boolean {
-        if (WheelLog.AppConfig.ecToken == null) {
+        if (appConfig.ecToken == null) {
             lastError = "Missing parameters"
             errorListener?.invoke(UPLOAD_METHOD, lastError)
             return false
@@ -122,7 +126,7 @@ class ElectroClub {
             return false
         }
 
-        insertEmptyEntryInDb(fileName, WheelLog.AppConfig.profileName)
+        insertEmptyEntryInDb(fileName, appConfig.profileName)
         val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault())
         val currentLocalTime = calendar.time
         val date = SimpleDateFormat("Z", Locale.getDefault())
@@ -130,22 +134,22 @@ class ElectroClub {
         localTime = StringBuilder(localTime).insert(localTime.length - 2, ":").toString()
         val mediaType = "text/csv".toMediaTypeOrNull()
         val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("method", UPLOAD_METHOD)
-                .addFormDataPart("access_token", accessToken)
-                .addFormDataPart("user_token", WheelLog.AppConfig.ecToken!!)
-                .addFormDataPart("file", fileName, data.toRequestBody(mediaType))
-                .addFormDataPart("time_zone", localTime)
-        if (WheelLog.AppConfig.ecGarage != null && WheelLog.AppConfig.ecGarage != "0") {
-            bodyBuilder.addFormDataPart("garage_id", WheelLog.AppConfig.ecGarage!!)
+            .addFormDataPart("method", UPLOAD_METHOD)
+            .addFormDataPart("access_token", accessToken)
+            .addFormDataPart("user_token", appConfig.ecToken!!)
+            .addFormDataPart("file", fileName, data.toRequestBody(mediaType))
+            .addFormDataPart("time_zone", localTime)
+        if (appConfig.ecGarage != null && appConfig.ecGarage != "0") {
+            bodyBuilder.addFormDataPart("garage_id", appConfig.ecGarage!!)
         }
         if (verified) {
             bodyBuilder.addFormDataPart("verified", "1")
         }
 
         val request = Request.Builder()
-                .url(url)
-                .method("POST", bodyBuilder.build())
-                .build()
+            .url(url)
+            .method("POST", bodyBuilder.build())
+            .build()
 
         return suspendCoroutine { continuation ->
             client.newCall(request).enqueue(object : Callback {
@@ -155,6 +159,7 @@ class ElectroClub {
                     e.printStackTrace()
                     continuation.resume(false)
                 }
+
                 override fun onResponse(call: Call, response: Response) {
                     response.use {
                         try {
@@ -177,7 +182,10 @@ class ElectroClub {
                                 } else {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         val tripInserted = updateEntryInDb(track, fileName)
-                                        successListener?.invoke(UPLOAD_METHOD, "trackId = ${tripInserted.ecId}")
+                                        successListener?.invoke(
+                                            UPLOAD_METHOD,
+                                            "trackId = ${tripInserted.ecId}"
+                                        )
                                         continuation.resume(true)
                                     }
                                 }
@@ -193,7 +201,12 @@ class ElectroClub {
         }
     }
 
-    fun uploadTrack(data: ByteArray, fileName: String, verified: Boolean, success: (Boolean) -> Unit) {
+    fun uploadTrack(
+        data: ByteArray,
+        fileName: String,
+        verified: Boolean,
+        success: (Boolean) -> Unit
+    ) {
         GlobalScope.launch {
             success(uploadTrackAsync(data, fileName, verified))
         }
@@ -228,15 +241,19 @@ class ElectroClub {
         return Uri.parse("https:/electro.club/track/$trackId")
     }
 
-    fun getAndSelectGarageByMacOrShowChooseDialog(mac: String, activity: Activity, success: (String?) -> Unit) {
-        if (!WheelData.getInstance().isConnected || WheelLog.AppConfig.ecGarage != null)
+    fun getAndSelectGarageByMacOrShowChooseDialog(
+        mac: String,
+        activity: Activity,
+        success: (String?) -> Unit
+    ) {
+        if (!WheelData.getInstance().isConnected || appConfig.ecGarage != null)
             return // not connected or already selected
 
         getGarage { transportList ->
             if (mac.isNotEmpty()) {
                 val transport = transportList.find { it.mac == mac }
                 if (transport != null) {
-                    WheelLog.AppConfig.ecGarage = transport.id
+                    appConfig.ecGarage = transport.id
                     success(transport.id)
                     successListener?.invoke(GET_GARAGE_METHOD_FILTRED, transport.name)
                     return@getGarage
@@ -247,51 +264,59 @@ class ElectroClub {
             activity.runOnUiThread {
                 var selectedTransport: Transport? = null
                 AlertDialog.Builder(activity)
-                        .setTitle(activity.getString(R.string.ec_choose_transport))
-                        .setSingleChoiceItems(transportList.map { it.name }.toTypedArray(), -1) { _, which ->
-                            if (which != -1) {
-                                selectedTransport = transportList[which]
-                            }
+                    .setTitle(activity.getString(R.string.ec_choose_transport))
+                    .setSingleChoiceItems(
+                        transportList.map { it.name }.toTypedArray(),
+                        -1
+                    ) { _, which ->
+                        if (which != -1) {
+                            selectedTransport = transportList[which]
                         }
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            if (selectedTransport != null) {
-                                WheelLog.AppConfig.ecGarage = selectedTransport!!.id
-                                success(selectedTransport!!.id)
-                                successListener?.invoke(GET_GARAGE_METHOD_FILTRED, selectedTransport!!.name)
-                            } else {
-                                errorListener?.invoke(GET_GARAGE_METHOD_FILTRED, "selected item not valid")
-                            }
+                    }
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        if (selectedTransport != null) {
+                            appConfig.ecGarage = selectedTransport!!.id
+                            success(selectedTransport!!.id)
+                            successListener?.invoke(
+                                GET_GARAGE_METHOD_FILTRED,
+                                selectedTransport!!.name
+                            )
+                        } else {
+                            errorListener?.invoke(
+                                GET_GARAGE_METHOD_FILTRED,
+                                "selected item not valid"
+                            )
                         }
-                        .setNegativeButton(android.R.string.cancel) { _, _ ->
-                            WheelLog.AppConfig.ecGarage = "0"
-                            successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
-                        }
-                        .setCancelable(false)
-                        .create()
-                        .show()
+                    }
+                    .setNegativeButton(android.R.string.cancel) { _, _ ->
+                        appConfig.ecGarage = "0"
+                        successListener?.invoke(GET_GARAGE_METHOD_FILTRED, "nothing")
+                    }
+                    .setCancelable(false)
+                    .create()
+                    .show()
             }
         }
     }
 
     private fun getGarage(success: (Array<Transport>) -> Unit) {
-        if (WheelLog.AppConfig.ecToken == null || WheelLog.AppConfig.ecUserId == null)
-        {
+        if (appConfig.ecToken == null || appConfig.ecUserId == null) {
             lastError = "Missing parameters"
             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
             return
         }
 
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
-                .addQueryParameter("method", GET_GARAGE_METHOD)
-                .addQueryParameter("access_token", accessToken)
-                .addQueryParameter("user_token", WheelLog.AppConfig.ecToken)
-                .addQueryParameter("user_id", WheelLog.AppConfig.ecUserId)
-                .build()
+            .addQueryParameter("method", GET_GARAGE_METHOD)
+            .addQueryParameter("access_token", accessToken)
+            .addQueryParameter("user_token", appConfig.ecToken)
+            .addQueryParameter("user_id", appConfig.ecUserId)
+            .build()
 
         val request = Request.Builder()
-                .url(httpUrl)
-                .method("GET", null)
-                .build()
+            .url(httpUrl)
+            .method("GET", null)
+            .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -331,7 +356,7 @@ class ElectroClub {
                             errorListener?.invoke(GET_GARAGE_METHOD, lastError)
                         }
                     }
-                    successListener?.invoke(GET_GARAGE_METHOD, WheelLog.AppConfig.ecToken)
+                    successListener?.invoke(GET_GARAGE_METHOD, appConfig.ecToken)
                 }
             }
         })
@@ -339,9 +364,9 @@ class ElectroClub {
 
     private fun parseError(jsonObject: JSONObject?) {
         lastError = jsonObject
-                ?.optJSONObject("data")
-                ?.optString("error")
-                ?: "Unknown error"
+            ?.optJSONObject("data")
+            ?.optString("error")
+            ?: "Unknown error"
     }
 
     private fun getSafeJson(method: String, response: Response): JSONObject? {

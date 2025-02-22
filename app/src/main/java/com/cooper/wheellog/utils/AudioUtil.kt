@@ -5,14 +5,17 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.Build
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
 import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import kotlin.math.sin
 
-object AudioUtil {
+object AudioUtil: KoinComponent {
+    private val appConfig: AppConfig by inject()
     private const val duration = 1 // duration of sound
     private const val sampleRate = 44100 //22050; // Hz (maximum frequency is 7902.13Hz (B8))
     private const val numSamples = duration * sampleRate
@@ -77,7 +80,7 @@ object AudioUtil {
     var toneDuration = 0
 
     suspend fun playAlarm(alarmType: ALARM_TYPE) {
-        if (WheelLog.AppConfig.useWheelBeepForAlarm && WheelData.getInstance() != null) {
+        if (appConfig.useWheelBeepForAlarm && WheelData.getInstance() != null) {
             SomeUtil.playBeep(onlyByWheel = true, onlyDefault = false)
             return
         }

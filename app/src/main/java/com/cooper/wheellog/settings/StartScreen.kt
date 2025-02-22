@@ -34,6 +34,7 @@ import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
+import org.koin.compose.koinInject
 
 @Composable
 fun startScreen(
@@ -263,8 +264,7 @@ fun startScreen(
 
 @Preview
 @Composable
-fun startScreenPreview()
+fun startScreenPreview(appConfig: AppConfig = koinInject())
 {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
     startScreen()
 }

@@ -7,15 +7,18 @@ import android.graphics.Typeface
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
-import com.cooper.wheellog.WheelLog
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-object ThemeManager {
+object ThemeManager: KoinComponent {
 
+    private val appConfig: AppConfig by inject()
     private val original = HashMap<ThemeIconEnum, Int>()
     private val ajdm = HashMap<ThemeIconEnum, Int>()
 
-    var theme = WheelLog.AppConfig.appTheme
+    var theme = appConfig.appTheme
 
     fun getTypeface(context: Context): Typeface {
         val fontResId = when(theme) {
@@ -130,7 +133,7 @@ object ThemeManager {
         val pm = pkg.packageManager
         val original = ComponentName(pkg, "com.cooper.wheellog.OriginalIconAlias")
         val ajdm = ComponentName(pkg, "com.cooper.wheellog.AjdmIconAlias")
-        if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+        if (appConfig.appTheme == R.style.AJDMTheme) {
             pm.setComponentEnabledSetting(
                     ajdm,
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED,

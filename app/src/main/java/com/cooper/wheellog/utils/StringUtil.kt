@@ -1,10 +1,15 @@
 package com.cooper.wheellog.utils
 
 import android.content.Context
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelLog
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
-object StringUtil {
+object StringUtil: KoinComponent {
+    private val appConfig: AppConfig by inject()
+
     @JvmStatic
     fun inArray(value: String, array: Array<String>): Boolean {
         return value in array
@@ -15,7 +20,7 @@ object StringUtil {
      */
     @JvmStatic
     fun Int.toTempString(): String {
-        return if (WheelLog.AppConfig.useFahrenheit) {
+        return if (appConfig.useFahrenheit) {
             String.format(Locale.US, "%02d℉", MathsUtil.celsiusToFahrenheit(this.toDouble()).toInt())
         } else {
             String.format(Locale.US, "%02d℃", this)

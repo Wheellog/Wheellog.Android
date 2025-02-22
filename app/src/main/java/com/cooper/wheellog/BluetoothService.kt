@@ -10,11 +10,14 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE
 import com.cooper.wheellog.utils.SomeUtil.playSound
 import com.cooper.wheellog.utils.StringUtil.toHexStringRaw
 import com.welie.blessed.*
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
 class BluetoothService: Service() {
+    private val appConfig: AppConfig by inject()
+    private val notifications: NotificationUtil by inject()
     private var mDisconnectTime: Date? = null
     private val wheelConnection: BluetoothPeripheral?
         get() = if (wheelAddress.isNotEmpty() && BluetoothAdapter.checkBluetoothAddress(wheelAddress)) {
@@ -65,8 +68,8 @@ class BluetoothService: Service() {
 
             override fun onConnectedPeripheral(peripheral: BluetoothPeripheral) {
                 super.onConnectedPeripheral(peripheral)
-                val connectionSound = WheelLog.AppConfig.connectionSound
-                val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
+                val connectionSound = appConfig.connectionSound
+                val noConnectionSound = appConfig.noConnectionSound * 1000
                 if (connectionSound) {
                     if (noConnectionSound > 0) {
                         stopBeepTimer()
@@ -93,8 +96,8 @@ class BluetoothService: Service() {
                 mDisconnectTime = Calendar.getInstance().time
                 if (!disconnectRequested && wheelAddress.isNotEmpty()) {
                     Timber.i("Trying to reconnect")
-                    val connectionSound = WheelLog.AppConfig.connectionSound
-                    val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
+                    val connectionSound = appConfig.connectionSound
+                    val noConnectionSound = appConfig.noConnectionSound * 1000
                     if (connectionSound) {
                         playSound(applicationContext, R.raw.sound_disconnect)
                         if (wl?.isHeld == true) {
@@ -198,7 +201,7 @@ class BluetoothService: Service() {
 
     private fun readData(characteristic: BluetoothGattCharacteristic, value: ByteArray) {
         // RAW data
-        if (WheelLog.AppConfig.enableRawData) {
+        if (appConfig.enableRawData) {
             if (fileUtilRawData == null) {
                 fileUtilRawData = FileUtil(applicationContext)
             }
@@ -298,8 +301,8 @@ class BluetoothService: Service() {
 
     override fun onBind(p0: Intent?): IBinder {
         mgr = this.getSystemService(POWER_SERVICE) as PowerManager
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
-        if (WheelLog.AppConfig.useReconnect) {
+        startForeground(Constants.MAIN_NOTIFICATION_ID, notifications.notification)
+        if (appConfig.useReconnect) {
             startReconnectTimer()
         }
         Timber.i("BluetoothService is started.")
@@ -540,7 +543,7 @@ class BluetoothService: Service() {
             acquire(5 * 60 * 1000L /*5 minutes*/)
         }
         timerTicks = 0
-        val noConnectionSound = WheelLog.AppConfig.noConnectionSound * 1000
+        val noConnectionSound = appConfig.noConnectionSound * 1000
         val beepTimerTask: TimerTask = object : TimerTask() {
             override fun run() {
                 timerTicks++

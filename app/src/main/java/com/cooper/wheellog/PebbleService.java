@@ -10,6 +10,7 @@ import android.os.IBinder;
 
 import com.cooper.wheellog.utils.Constants;
 import com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
 
@@ -25,8 +26,10 @@ import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_NACK;
 
 import androidx.core.content.ContextCompat;
 
-public class PebbleService extends Service {
+import org.koin.java.KoinJavaComponent;
 
+public class PebbleService extends Service {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static final UUID APP_UUID = UUID.fromString("185c8ae9-7e72-451a-a1c7-8f1e81df9a3d");
     private static final int MESSAGE_TIMEOUT = 500; // milliseconds
 
@@ -84,8 +87,8 @@ public class PebbleService extends Service {
             }
 
             if (refreshAll) {
-                outgoingDictionary.addInt32(KEY_USE_MPH, WheelLog.AppConfig.getUseMph() ? 1 : 0);
-                outgoingDictionary.addInt32(KEY_MAX_SPEED, WheelLog.AppConfig.getMaxSpeed());
+                outgoingDictionary.addInt32(KEY_USE_MPH, appConfig.getUseMph() ? 1 : 0);
+                outgoingDictionary.addInt32(KEY_MAX_SPEED, appConfig.getMaxSpeed());
             }
 
             WheelData data = WheelData.getInstance();
@@ -270,8 +273,9 @@ public class PebbleService extends Service {
         sendBroadcast(serviceStartedIntent);
         mHandler.post(mSendPebbleData);
 
-        WheelLog.Notifications.update();
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
+        final NotificationUtil notifications = KoinJavaComponent.get(NotificationUtil.class);
+        notifications.update();
+        startForeground(Constants.MAIN_NOTIFICATION_ID, notifications.getNotification());
         Timber.d("PebbleConnectivity Started");
         return START_STICKY;
     }

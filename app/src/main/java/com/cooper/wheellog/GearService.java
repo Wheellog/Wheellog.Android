@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 
 import com.cooper.wheellog.utils.Alarms;
 import com.cooper.wheellog.utils.Constants;
+import com.cooper.wheellog.utils.NotificationUtil;
 import com.samsung.android.sdk.SsdkUnsupportedException;
 import com.samsung.android.sdk.accessory.SA;
 import com.samsung.android.sdk.accessory.SAAgent;
@@ -33,6 +34,8 @@ import java.util.Vector;
 
 import static java.lang.String.format;
 
+import org.koin.java.KoinJavaComponent;
+
 
 public class GearService extends SAAgent {
     GearBinder mBinder = new GearBinder();
@@ -42,7 +45,6 @@ public class GearService extends SAAgent {
     LocationManager mLocationManager;
     boolean mIsListening = false;
     private Timer keepAliveTimer;
-    private Notification mNotification;
 
     public class GearBinder extends Binder {
         GearService getService() {
@@ -274,7 +276,8 @@ LocationListener locationListener = new LocationListener() {
         super.onStartCommand(intent, flags, startId);
         Toast.makeText(getBaseContext(), "Gear Service started", Toast.LENGTH_LONG).show();
         Log.i(TAG, "started");
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.getNotification());
+        final NotificationUtil notifications = KoinJavaComponent.get(NotificationUtil.class);
+        startForeground(Constants.MAIN_NOTIFICATION_ID, notifications.getNotification());
         return START_STICKY;
     }
 

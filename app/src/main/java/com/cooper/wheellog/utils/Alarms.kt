@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
@@ -13,11 +14,16 @@ import com.cooper.wheellog.utils.AudioUtil.playAlarm
 import com.cooper.wheellog.utils.Constants.ALARM_TYPE
 import com.cooper.wheellog.utils.SomeUtil.playSound
 import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.util.*
 import kotlin.math.roundToInt
 
-object Alarms {
+object Alarms: KoinComponent {
+    private val appConfig: AppConfig by inject()
+    private val notifications: NotificationUtil by inject()
 
     private var speedAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
     private var currentAlarmExecuting = TempBoolean().apply { timeToResetToDefault = 170 }
@@ -34,7 +40,7 @@ object Alarms {
         return object : TimerTask() {
             override fun run() {
                 val wd = WheelData.getInstance() ?: return
-                val mContext: Context = WheelLog.appContext ?: return
+                val mContext: Context = get()
                 if (!reCheckAlarm(wd.calculatedPwm / 100, mContext)) {
                     stop()
                 }
@@ -91,7 +97,7 @@ object Alarms {
     }
 
     private fun reCheckAlarm(pwm: Double, mContext: Context): Boolean {
-        val executed = if (WheelLog.AppConfig.pwmBasedAlarms) {
+        val executed = if (appConfig.pwmBasedAlarms) {
             alertedAlarms(pwm, mContext)
         } else {
             oldAlarms(mContext)
@@ -107,9 +113,9 @@ object Alarms {
     }
 
     private fun alertedAlarms(pwm: Double, mContext: Context): Boolean {
-        if (pwm > WheelLog.AppConfig.alarmFactor1 / 100.0) {
+        if (pwm > appConfig.alarmFactor1 / 100.0) {
             AudioUtil.toneDuration =
-                (200 * (pwm - WheelLog.AppConfig.alarmFactor1 / 100.0) / (WheelLog.AppConfig.alarmFactor2 / 100.0 - WheelLog.AppConfig.alarmFactor1 / 100.0)).roundToInt()
+                (200 * (pwm - appConfig.alarmFactor1 / 100.0) / (appConfig.alarmFactor2 / 100.0 - appConfig.alarmFactor1 / 100.0)).roundToInt()
             AudioUtil.toneDuration = MathsUtil.clamp(AudioUtil.toneDuration, 20, 200)
             raiseAlarm(ALARM_TYPE.PWM, pwm, mContext)
             return true
@@ -117,13 +123,13 @@ object Alarms {
             // check if speed alarm executing and stop it
             speedAlarmExecuting.value = false
             // pre alarm
-            val warningPwm = WheelLog.AppConfig.warningPwm / 100.0
-            val warningSpeedPeriod = WheelLog.AppConfig.warningSpeedPeriod * 1000
+            val warningPwm = appConfig.warningPwm / 100.0
+            val warningSpeedPeriod = appConfig.warningSpeedPeriod * 1000
             if (warningPwm != 0.0 && warningSpeedPeriod != 0 && pwm >= warningPwm && System.currentTimeMillis() - lastPlayWarningSpeedTime > warningSpeedPeriod) {
                 lastPlayWarningSpeedTime = System.currentTimeMillis()
                 playSound(mContext, R.raw.warning_pwm)
             } else {
-                val warningSpeed = WheelLog.AppConfig.warningSpeed
+                val warningSpeed = appConfig.warningSpeed
                 if (warningSpeed != 0 && warningSpeedPeriod != 0 && WheelData.getInstance().speedDouble >= warningSpeed && System.currentTimeMillis() - lastPlayWarningSpeedTime > warningSpeedPeriod) {
                     lastPlayWarningSpeedTime = System.currentTimeMillis()
                     playSound(mContext, R.raw.sound_warning_speed)
@@ -134,21 +140,21 @@ object Alarms {
     }
 
     private fun oldAlarms(mContext: Context): Boolean {
-        if (checkOldAlarmSpeed(WheelLog.AppConfig.alarm1Speed, WheelLog.AppConfig.alarm1Battery)) {
+        if (checkOldAlarmSpeed(appConfig.alarm1Speed, appConfig.alarm1Battery)) {
             AudioUtil.toneDuration = 50
             raiseAlarm(ALARM_TYPE.SPEED1, WheelData.getInstance().speedDouble, mContext)
             return true
         } else if (checkOldAlarmSpeed(
-                WheelLog.AppConfig.alarm2Speed,
-                WheelLog.AppConfig.alarm2Battery
+                appConfig.alarm2Speed,
+                appConfig.alarm2Battery
             )
         ) {
             AudioUtil.toneDuration = 100
             raiseAlarm(ALARM_TYPE.SPEED2, WheelData.getInstance().speedDouble, mContext)
             return true
         } else if (checkOldAlarmSpeed(
-                WheelLog.AppConfig.alarm3Speed,
-                WheelLog.AppConfig.alarm3Battery
+                appConfig.alarm3Speed,
+                appConfig.alarm3Battery
             )
         ) {
             AudioUtil.toneDuration = 180
@@ -172,7 +178,7 @@ object Alarms {
         if (temperatureAlarmExecuting.value) {
             return true
         }
-        val alarmTemperature = WheelLog.AppConfig.alarmTemperature
+        val alarmTemperature = appConfig.alarmTemperature
         if (alarmTemperature > 0 && WheelData.getInstance().temperature >= alarmTemperature) {
             raiseAlarm(
                 ALARM_TYPE.TEMPERATURE,
@@ -188,7 +194,7 @@ object Alarms {
         if (currentAlarmExecuting.value) {
             return true
         }
-        val alarmCurrent = WheelLog.AppConfig.alarmCurrent * 100
+        val alarmCurrent = appConfig.alarmCurrent * 100
         if (alarmCurrent > 0 && WheelData.getInstance().current >= alarmCurrent) {
             raiseAlarm(
                 ALARM_TYPE.CURRENT,
@@ -204,7 +210,7 @@ object Alarms {
         if (batteryAlarmExecuting.value) {
             return true
         }
-        val alarmBattery = WheelLog.AppConfig.alarmBattery
+        val alarmBattery = appConfig.alarmBattery
         if (alarmBattery > 0 && WheelData.getInstance().batteryLevel <= alarmBattery) {
             raiseAlarm(
                     ALARM_TYPE.BATTERY,
@@ -220,7 +226,7 @@ object Alarms {
         if (wheelAlarmExecuting.value) {
             return true
         }
-        val alarmWheel = WheelLog.AppConfig.alarmWheel
+        val alarmWheel = appConfig.alarmWheel
         if (alarmWheel && WheelData.getInstance().wheelAlarm) {
             raiseAlarm(
                     ALARM_TYPE.WHEEL,
@@ -246,10 +252,10 @@ object Alarms {
             ALARM_TYPE.BATTERY -> longArrayOf(0, 100, 500)
             ALARM_TYPE.WHEEL -> longArrayOf(0, 50, 50)
         }
-        if (!WheelLog.AppConfig.disablePhoneVibrate) {
+        if (!appConfig.disablePhoneVibrate) {
             vibrate(mContext, pattern)
         }
-        if (!WheelLog.AppConfig.disablePhoneBeep) {
+        if (!appConfig.disablePhoneBeep) {
             CoroutineScope(Job()).launch {
                 Timber.i("Scheduled alarm. $alarmType")
                 if (alarmType == ALARM_TYPE.BATTERY) {
@@ -259,7 +265,7 @@ object Alarms {
             }
         }
         mContext.sendBroadcast(intent)
-        if (WheelLog.AppConfig.mibandMode === MiBandEnum.Alarm) {
+        if (appConfig.mibandMode === MiBandEnum.Alarm) {
             val miText: String = when (alarmType) {
                 ALARM_TYPE.SPEED1,
                 ALARM_TYPE.SPEED2,
@@ -284,9 +290,9 @@ object Alarms {
                     )
                 ALARM_TYPE.BATTERY ->
                     String.format(
-                            Locale.US,
-                            mContext.getString(R.string.alarm_text_battery_v),
-                            WheelData.getInstance().batteryLevel
+                        Locale.US,
+                        mContext.getString(R.string.alarm_text_battery_v),
+                        WheelData.getInstance().batteryLevel
                     )
                 ALARM_TYPE.WHEEL ->
                     String.format(
@@ -294,8 +300,8 @@ object Alarms {
                             mContext.getString(R.string.alarm_text_wheel_v)
                     )
             }
-            WheelLog.Notifications.alarmText = miText
-            WheelLog.Notifications.update()
+            notifications.alarmText = miText
+            notifications.update()
         }
     }
 
