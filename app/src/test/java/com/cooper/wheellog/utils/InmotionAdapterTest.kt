@@ -3,25 +3,36 @@ package com.cooper.wheellog.utils
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 
-class InmotionAdapterTest {
+class InmotionAdapterTest: KoinTest {
 
-    private var adapter: InMotionAdapter = InMotionAdapter()
+    private lateinit var adapter: InMotionAdapter
     private lateinit var data: WheelData
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private val mockContext = mockk<Context>(relaxed = true)
 
     @Before
     fun setUp() {
-        mockkObject(WheelLog)
-        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                    single { mockContext }
+                }
+            )
+        }
+        adapter = InMotionAdapter()
         data = spyk(WheelData())
-        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -29,6 +40,7 @@ class InmotionAdapterTest {
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test

@@ -176,4 +176,5 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
     testImplementation 'org.json:json:20241224'
+    testImplementation "io.insert-koin:koin-test-junit4:4.0.2"
 }
