@@ -44,6 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -1015,8 +1016,7 @@ fun loginAlertDialog(
 
 @Preview
 @Composable
-private fun baseSettingsPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun baseSettingsPreview(appConfig: AppConfig = koinInject()) {
     baseSettings(
         name = stringResource(R.string.auto_log_title),
         desc = stringResource(R.string.auto_log_description),
@@ -1035,8 +1035,7 @@ private fun baseSettingsPreview() {
 
 @Preview
 @Composable
-private fun clickablePreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun clickablePreview(appConfig: AppConfig = koinInject()) {
     clickablePref(
         name = stringResource(R.string.speed_settings_title),
         themeIcon = ThemeIconEnum.SettingsSpeedometer
@@ -1045,8 +1044,7 @@ private fun clickablePreview() {
 
 @Preview
 @Composable
-private fun clickablePreview2() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun clickablePreview2(appConfig: AppConfig = koinInject()) {
     clickablePref(
         name = stringResource(R.string.donate_title),
         themeIcon = ThemeIconEnum.SettingsDonate,
@@ -1056,8 +1054,7 @@ private fun clickablePreview2() {
 
 @Preview
 @Composable
-private fun clickablePreview3() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun clickablePreview3(appConfig: AppConfig = koinInject()) {
     clickablePref(
         name = stringResource(R.string.beep_on_volume_up_title),
         desc = stringResource(R.string.beep_on_volume_up_description),
@@ -1068,8 +1065,7 @@ private fun clickablePreview3() {
 
 @Preview
 @Composable
-private fun clickablePreview4() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun clickablePreview4(appConfig: AppConfig = koinInject()) {
     clickablePref(
         name = stringResource(R.string.beep_on_volume_up_title),
         showArrowIcon = false
@@ -1078,8 +1074,7 @@ private fun clickablePreview4() {
 
 @Preview
 @Composable
-private fun switchPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun switchPreview(appConfig: AppConfig = koinInject()) {
     switchPref(
         name = stringResource(R.string.use_eng_title),
         desc = stringResource(R.string.use_eng_description),
@@ -1090,8 +1085,7 @@ private fun switchPreview() {
 
 @Preview
 @Composable
-private fun switchPreview2() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun switchPreview2(appConfig: AppConfig = koinInject()) {
     switchPref(
         name = stringResource(R.string.use_eng_title),
         themeIcon = ThemeIconEnum.SettingsLanguage,
@@ -1101,8 +1095,7 @@ private fun switchPreview2() {
 
 @Preview
 @Composable
-private fun sliderPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun sliderPreview(appConfig: AppConfig = koinInject()) {
     sliderPref(
         name = stringResource(R.string.alarm_1_battery_title),
         themeIcon = ThemeIconEnum.MenuMiBandAlarm,
@@ -1112,8 +1105,7 @@ private fun sliderPreview() {
 
 @Preview
 @Composable
-private fun sliderPreview2() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun sliderPreview2(appConfig: AppConfig = koinInject()) {
     sliderPref(
         name = stringResource(R.string.alarm_factor2_title),
         desc = stringResource(R.string.alarm_factor2_description),
@@ -1126,8 +1118,7 @@ private fun sliderPreview2() {
 
 @Preview
 @Composable
-private fun sliderPreview3() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun sliderPreview3(appConfig: AppConfig = koinInject()) {
     sliderPref(
         name = stringResource(R.string.alarm_factor2_title),
         position = 66.66f,
@@ -1140,8 +1131,7 @@ private fun sliderPreview3() {
 
 @Preview
 @Composable
-private fun sliderPreview4() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun sliderPreview4(appConfig: AppConfig = koinInject()) {
     sliderPref(
         name = stringResource(R.string.warning_speed_period_title),
         desc = stringResource(R.string.warning_speed_period_description),
@@ -1157,8 +1147,7 @@ private fun sliderPreview4() {
 
 @Preview
 @Composable
-private fun listPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun listPreview(appConfig: AppConfig = koinInject()) {
     list(
         name = stringResource(R.string.app_theme_title),
         desc = stringResource(R.string.app_theme_description),
@@ -1169,8 +1158,7 @@ private fun listPreview() {
 
 @Preview
 @Composable
-private fun multiListPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+private fun multiListPreview(appConfig: AppConfig = koinInject()) {
     multiList(
         name = stringResource(R.string.view_blocks_title),
         desc = stringResource(R.string.view_blocks_description),
@@ -1197,8 +1185,7 @@ private fun multiListPreview() {
 
 @Preview
 @Composable
-fun loginAlertDialogPreview() {
-    WheelLog.AppConfig = AppConfig(LocalContext.current)
+fun loginAlertDialogPreview(appConfig: AppConfig = koinInject()) {
     loginAlertDialog(
         title = "Login Preview 3",
         onDismiss = { }

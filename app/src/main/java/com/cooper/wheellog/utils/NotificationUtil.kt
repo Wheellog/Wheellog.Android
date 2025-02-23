@@ -15,9 +15,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cooper.wheellog.*
 import com.welie.blessed.ConnectionState
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
-class NotificationUtil(private val context: Context) {
+class NotificationUtil(private val context: Context): KoinComponent {
+    private val appConfig: AppConfig by inject()
     private val builder: NotificationCompat.Builder
     private var kostilTimer: Timer? = null
     private var customText = ""
@@ -49,7 +52,7 @@ class NotificationUtil(private val context: Context) {
         buildIsSucceed = false
         val notificationIntent = Intent(context, MainActivity::class.java)
         val notificationView = RemoteViews(context.packageName, R.layout.notification_base)
-        val buttonSettings = WheelLog.AppConfig.notificationButtons
+        val buttonSettings = appConfig.notificationButtons
         val intentFlag = if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, intentFlag)
 
@@ -82,10 +85,10 @@ class NotificationUtil(private val context: Context) {
         notificationView.setTextViewText(R.id.text_title, context.getString(R.string.app_name))
         notificationView.setTextViewText(R.id.ib_actions_text, context.getString(R.string.notifications_actions_text))
         if (connectionState == ConnectionState.CONNECTED || distance + temperature + batteryLevel + speed > 0) {
-            if (WheelLog.AppConfig.mibandMode == MiBandEnum.Alarm) {
+            if (appConfig.mibandMode == MiBandEnum.Alarm) {
                 notificationView.setTextViewText(R.id.text_message, context.getString(R.string.alarmmiband))
             } else {
-                val template = when (WheelLog.AppConfig.appTheme) {
+                val template = when (appConfig.appTheme) {
                     R.style.AJDMTheme -> R.string.notification_text_ajdm_theme
                     else -> R.string.notification_text
                 }
@@ -97,14 +100,14 @@ class NotificationUtil(private val context: Context) {
         }
 
         notificationView.setImageViewResource(R.id.ib_mi_band,
-                when (WheelLog.AppConfig.mibandMode) {
+                when (appConfig.mibandMode) {
                     MiBandEnum.Alarm -> ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm)
                     MiBandEnum.Min -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMin)
                     MiBandEnum.Medium -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMed)
                     MiBandEnum.Max -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
                 })
         // Themes
-        if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+        if (appConfig.appTheme == R.style.AJDMTheme) {
             notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
             notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
             val textColor = Color.BLACK
@@ -141,7 +144,7 @@ class NotificationUtil(private val context: Context) {
                 else
                     title)
 
-        when (WheelLog.AppConfig.mibandMode) {
+        when (appConfig.mibandMode) {
             MiBandEnum.Alarm -> {
                 builder.setContentTitle(context.getString(R.string.titlealarm))
                     .setContentText(alarmText)
@@ -185,7 +188,7 @@ class NotificationUtil(private val context: Context) {
     // Fix Me
     // https://github.com/Wheellog/Wheellog.Android/pull/249
     fun updateKostilTimer() {
-        if (WheelLog.AppConfig.mibandFixRs && kostilTimer == null) {
+        if (appConfig.mibandFixRs && kostilTimer == null) {
             kostilTimer = Timer().apply {
                 scheduleAtFixedRate(object : TimerTask() {
                     override fun run() {
@@ -195,7 +198,7 @@ class NotificationUtil(private val context: Context) {
                             kostilTimer = null
                             return
                         }
-                        if (WheelLog.AppConfig.mibandMode != MiBandEnum.Alarm && wd.speedDouble > 0) {
+                        if (appConfig.mibandMode != MiBandEnum.Alarm && wd.speedDouble > 0) {
                             update()
                         }
                     }

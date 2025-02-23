@@ -1,20 +1,18 @@
 package com.cooper.wheellog
 
 import android.app.Application
-import com.cooper.wheellog.utils.NotificationUtil
-import com.cooper.wheellog.utils.VolumeKeyController
-import android.content.ContentResolver
-import android.content.Context
 import android.content.res.Configuration
-import timber.log.Timber
+import com.cooper.wheellog.di.*
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class WheelLog : Application() {
     override fun onCreate() {
         super.onCreate()
-        me = this
-//        if (BuildConfig.DEBUG) {
-//            Timber.plant(Timber.DebugTree(), FileLoggingTree(applicationContext))
-//        }
+        startKoin {
+            androidContext(this@WheelLog)
+            modules(listOf(settingModule, notificationsModule, volumeKeyModule))
+        }
 
         WheelData.initiate()
 
@@ -29,43 +27,8 @@ class WheelLog : Application() {
 //        }
     }
 
-    override fun attachBaseContext(base: Context?) {
-        var mContext = base
-        if (mContext != null) {
-            Timber.d("attachBaseContext")
-            AppConfig = AppConfig(mContext)
-            mContext = LocaleManager.setLocale(mContext)
-            Notifications = NotificationUtil(mContext)
-            VolumeKeyController = VolumeKeyController(mContext)
-        }
-        else
-        {
-            Timber.e("attachBaseContext with null context")
-        }
-        super.attachBaseContext(mContext)
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         LocaleManager.setLocale(this)
-    }
-
-    override fun onTerminate() {
-        VolumeKeyController.destroy()
-        super.onTerminate()
-    }
-
-    companion object {
-        private var me: WheelLog? = null
-        lateinit var AppConfig: AppConfig
-        lateinit var Notifications: NotificationUtil
-        lateinit var VolumeKeyController: VolumeKeyController
-
-        val appContext: Context?
-            get() = me?.applicationContext
-
-        fun cResolver(): ContentResolver {
-            return me!!.contentResolver
-        }
     }
 }

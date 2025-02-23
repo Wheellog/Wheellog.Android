@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+import android.content.Context
 import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripDatabase
 import com.google.common.truth.Truth.assertThat
@@ -10,24 +11,38 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
-class ElectroClubTest {
+class ElectroClubTest: KoinTest {
     private lateinit var wd: WheelData
-    private lateinit var ec: ElectroClub
     private var successCalls = 0
     private var errorCalls = 0
     private lateinit var tripDataDbEntry: TripDataDbEntry
     private val data = byteArrayOf()
     private val fileName = "fileName"
     private lateinit var db: TripDatabase
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private val mockContext = mockk<Context>(relaxed = true)
+    private lateinit var ec: ElectroClub
 
     @Before
     fun setUp() {
-        db = mockkClass(TripDatabase::class, relaxed = true)
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                    single { mockContext }
+                }
+            )
+        }
         ec = ElectroClub()
+        db = mockkClass(TripDatabase::class, relaxed = true)
         ec.dao = db.tripDao()
         successCalls = 0
         errorCalls = 0
@@ -35,7 +50,6 @@ class ElectroClubTest {
         ec.errorListener = { _: String?, _: Any? -> errorCalls++ }
         wd = spyk(WheelData())
         tripDataDbEntry = TripDataDbEntry(fileName = fileName)
-        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         every { db.tripDao().getTripByFileName(any()) } returns tripDataDbEntry
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns wd
@@ -44,6 +58,7 @@ class ElectroClubTest {
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test

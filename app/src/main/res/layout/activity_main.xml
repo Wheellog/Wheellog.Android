@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/main_view"
+    android:fitsSystemWindows="true"
     tools:context="com.cooper.wheellog.MainActivity">
 
     <androidx.compose.ui.platform.ComposeView

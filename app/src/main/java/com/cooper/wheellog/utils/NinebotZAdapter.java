@@ -1,8 +1,10 @@
 package com.cooper.wheellog.utils;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
 import com.cooper.wheellog.R;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import timber.log.Timber;
  * Created by palachzzz on 08/2018.
  */
 public class NinebotZAdapter extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static NinebotZAdapter INSTANCE;
     private Timer keepAliveTimer;
     protected boolean settingCommandReady = false;
@@ -215,7 +218,7 @@ public class NinebotZAdapter extends BaseAdapter {
 
     @Override
     public String getLedModeString() {
-        switch (WheelLog.AppConfig.getLedMode()) {
+        switch (appConfig.getLedMode()) {
             case "0": return getContext().getString(R.string.off);
             case "1": return getContext().getString(R.string.led_type1);
             case "2": return getContext().getString(R.string.led_type2);
@@ -230,7 +233,7 @@ public class NinebotZAdapter extends BaseAdapter {
 
     @Override
     public boolean getLedIsAvailable(int ledNum) {
-        switch (WheelLog.AppConfig.getLedMode()) {
+        switch (appConfig.getLedMode()) {
             case "1":
             case "4":
             case "5":
@@ -488,6 +491,7 @@ public class NinebotZAdapter extends BaseAdapter {
     }
 
     public static class CANMessage {
+        private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
 
         enum Addr {
             BMS1(0x11),
@@ -1016,15 +1020,15 @@ public class NinebotZAdapter extends BaseAdapter {
             getInstance().alarm1Speed = MathsUtil.shortFromBytesLE(data, 26)/100;
             getInstance().alarm2Speed = MathsUtil.shortFromBytesLE(data, 28)/100;
             getInstance().alarm3Speed = MathsUtil.shortFromBytesLE(data, 30)/100;
-            WheelLog.AppConfig.setLockMode(getInstance().lockMode==1);
-            WheelLog.AppConfig.setWheelLimitedModeEnabled(getInstance().limitedMode == 1);
-            WheelLog.AppConfig.setWheelLimitedModeSpeed(getInstance().limitModeSpeed);
-            WheelLog.AppConfig.setWheelAlarm1Speed(getInstance().alarm1Speed);
-            WheelLog.AppConfig.setWheelAlarm2Speed(getInstance().alarm2Speed);
-            WheelLog.AppConfig.setWheelAlarm3Speed(getInstance().alarm3Speed);
-            WheelLog.AppConfig.setWheelAlarm1Enabled((getInstance().alarms & 0x0001) == 1);
-            WheelLog.AppConfig.setWheelAlarm2Enabled(((getInstance().alarms >> 1) & 0x0001) == 1);
-            WheelLog.AppConfig.setWheelAlarm3Enabled(((getInstance().alarms >> 2) & 0x0001) == 1);
+            appConfig.setLockMode(getInstance().lockMode==1);
+            appConfig.setWheelLimitedModeEnabled(getInstance().limitedMode == 1);
+            appConfig.setWheelLimitedModeSpeed(getInstance().limitModeSpeed);
+            appConfig.setWheelAlarm1Speed(getInstance().alarm1Speed);
+            appConfig.setWheelAlarm2Speed(getInstance().alarm2Speed);
+            appConfig.setWheelAlarm3Speed(getInstance().alarm3Speed);
+            appConfig.setWheelAlarm1Enabled((getInstance().alarms & 0x0001) == 1);
+            appConfig.setWheelAlarm2Enabled(((getInstance().alarms >> 1) & 0x0001) == 1);
+            appConfig.setWheelAlarm3Enabled(((getInstance().alarms >> 2) & 0x0001) == 1);
         }
 
         void parseParams2() {
@@ -1035,18 +1039,18 @@ public class NinebotZAdapter extends BaseAdapter {
             getInstance().ledColor4 = (MathsUtil.intFromBytesLE(data, 16) >> 16) & 0xFF;
             getInstance().pedalSensivity = MathsUtil.shortFromBytesLE(data, 24);
             getInstance().driveFlags = MathsUtil.shortFromBytesLE(data, 26);
-            WheelLog.AppConfig.setLedMode(Integer.toString(getInstance().ledMode));
-            WheelLog.AppConfig.setPedalSensivity(getInstance().pedalSensivity);
-            WheelLog.AppConfig.setLightEnabled(((getInstance().driveFlags >> 2) & 0x0001) == 1);
-            WheelLog.AppConfig.setTaillightEnabled(((getInstance().driveFlags >> 1) & 0x0001) == 1);
-            WheelLog.AppConfig.setDrlEnabled((getInstance().driveFlags & 0x0001) == 1);
-            WheelLog.AppConfig.setHandleButtonDisabled(((getInstance().driveFlags >> 3) & 0x0001) == 0);
-            WheelLog.AppConfig.setBrakeAssistantEnabled(((getInstance().driveFlags >> 4) & 0x0001) == 1);
+            appConfig.setLedMode(Integer.toString(getInstance().ledMode));
+            appConfig.setPedalSensivity(getInstance().pedalSensivity);
+            appConfig.setLightEnabled(((getInstance().driveFlags >> 2) & 0x0001) == 1);
+            appConfig.setTaillightEnabled(((getInstance().driveFlags >> 1) & 0x0001) == 1);
+            appConfig.setDrlEnabled((getInstance().driveFlags & 0x0001) == 1);
+            appConfig.setHandleButtonDisabled(((getInstance().driveFlags >> 3) & 0x0001) == 0);
+            appConfig.setBrakeAssistantEnabled(((getInstance().driveFlags >> 4) & 0x0001) == 1);
         }
 
         void parseParams3() {
             getInstance().speakerVolume = MathsUtil.shortFromBytesLE(data, 0) >> 3;
-            WheelLog.AppConfig.setSpeakerVolume(getInstance().speakerVolume);
+            appConfig.setSpeakerVolume(getInstance().speakerVolume);
         }
 
         void parseVersionNumber() {

@@ -10,20 +10,25 @@ import android.net.Uri
 import android.os.Build
 import android.os.CountDownTimer
 import android.view.View
-import android.widget.*
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.WheelLog
 import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
 import java.io.IOException
 import java.io.Serializable
 
-object SomeUtil {
+object SomeUtil: KoinComponent {
+    private val appConfig: AppConfig by inject()
+    
     @ColorInt
     fun View.getColorEx(@ColorRes id: Int): Int {
         return context.getColorEx(id)
@@ -70,7 +75,7 @@ object SomeUtil {
             return
         }
 
-        if (WheelLog.AppConfig.beepByWheel || onlyByWheel) {
+        if (appConfig.beepByWheel || onlyByWheel) {
             WheelData.getInstance().wheelBeep()
             return
         }
@@ -90,10 +95,10 @@ object SomeUtil {
 //        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 //        int volume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 //        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
-        val context = WheelLog.appContext ?: return
-        val beepFile = WheelLog.AppConfig.beepFile
+        val context = get<Context>()
+        val beepFile = appConfig.beepFile
         // selected file
-        if (!onlyDefault && WheelLog.AppConfig.useCustomBeep && beepFile !== Uri.EMPTY) {
+        if (!onlyDefault && appConfig.useCustomBeep && beepFile !== Uri.EMPTY) {
             try {
                 beepTimer?.cancel()
                 mediaPlayer.apply {
@@ -107,7 +112,7 @@ object SomeUtil {
                     setOnCompletionListener { obj: MediaPlayer -> obj.reset() }
                     isLooping = false
                     // max 4 sec for beep
-                    beepTimer = object : CountDownTimer((WheelLog.AppConfig.customBeepTimeLimit * 1000).toLong(), 1000) {
+                    beepTimer = object : CountDownTimer((appConfig.customBeepTimeLimit * 1000).toLong(), 1000) {
                         override fun onTick(millisUntilFinished: Long) {}
                         override fun onFinish() {
                             if (isPlaying) {

@@ -33,10 +33,12 @@ import com.welie.blessed.BluetoothCentralManager
 import com.welie.blessed.BluetoothCentralManagerCallback
 import com.welie.blessed.BluetoothPeripheral
 import com.welie.blessed.Transport
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 
 
 class ScanActivity: AppCompatActivity() {
+    private val appConfig: AppConfig by inject()
     private var mDeviceListAdapter: DeviceListAdapter? = null
     private val central: BluetoothCentralManager by lazy {
         BluetoothCentralManager(
@@ -62,7 +64,7 @@ class ScanActivity: AppCompatActivity() {
         binding.list.onItemClickListener = onItemClickListener
         binding.list.adapter = mDeviceListAdapter
         macLayout = binding.lastMacText
-        binding.lastMacText.editText!!.setText(WheelLog.AppConfig.lastMac)
+        binding.lastMacText.editText!!.setText(appConfig.lastMac)
         binding.lastMacText.setEndIconOnClickListener {
             val deviceAddress = binding.lastMacText.editText?.text.toString()
             if (!StringUtil.isCorrectMac(deviceAddress)) {
@@ -75,9 +77,9 @@ class ScanActivity: AppCompatActivity() {
             }
             val intent = Intent()
             intent.putExtra("MAC", deviceAddress)
-            WheelLog.AppConfig.lastMac = deviceAddress
+            appConfig.lastMac = deviceAddress
             setResult(RESULT_OK, intent)
-            WheelLog.AppConfig.passwordForWheel = ""
+            appConfig.passwordForWheel = ""
             close()
         }
         alertDialog = AlertDialog.Builder(this, R.style.OriginalTheme_Dialog_Alert)
@@ -182,11 +184,11 @@ class ScanActivity: AppCompatActivity() {
         val intent = Intent()
         intent.putExtra("MAC", deviceAddress)
         intent.putExtra("NAME", deviceName)
-        WheelLog.AppConfig.lastMac = deviceAddress
-        WheelLog.AppConfig.advDataForWheel = advData
+        appConfig.lastMac = deviceAddress
+        appConfig.advDataForWheel = advData
         setResult(RESULT_OK, intent)
         // Set password for inmotion
-        WheelLog.AppConfig.passwordForWheel = ""
+        appConfig.passwordForWheel = ""
         close()
     }
 

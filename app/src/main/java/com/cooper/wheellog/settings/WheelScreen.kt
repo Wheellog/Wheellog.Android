@@ -8,13 +8,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.*
+import org.koin.compose.koinInject
 
 @Composable
-fun wheelScreen()
+fun wheelScreen(appConfig: AppConfig = koinInject())
 {
     Column(
         modifier = Modifier
@@ -38,47 +39,47 @@ fun wheelScreen()
 }
 
 @Composable
-private fun ninebotZ() {
+private fun ninebotZ(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(NinebotZAdapter.getInstance()) }
     switchPref(
         name = stringResource(R.string.on_headlight_title),
         desc = stringResource(R.string.on_headlight_description),
-        default = AppConfig.lightEnabled,
+        default = appConfig.lightEnabled,
     ) {
-        AppConfig.lightEnabled = it
+        appConfig.lightEnabled = it
         adapter.setLightState(it)
     }
     switchPref(
         name = stringResource(R.string.drl_settings_title),
         desc = stringResource(R.string.drl_settings_description_nb),
-        default = AppConfig.drlEnabled,
+        default = appConfig.drlEnabled,
     ) {
-        AppConfig.drlEnabled = it
+        appConfig.drlEnabled = it
         adapter.setDrl(it)
     }
     switchPref(
         name = stringResource(R.string.taillight_settings_title),
         desc = stringResource(R.string.taillight_settings_description),
-        default = AppConfig.taillightEnabled,
+        default = appConfig.taillightEnabled,
     ) {
-        AppConfig.taillightEnabled = it
+        appConfig.taillightEnabled = it
         adapter.setTailLightState(it)
     }
     switchPref(
         name = stringResource(R.string.disable_handle_button_title),
         desc = stringResource(R.string.disable_handle_button_description),
-        default = AppConfig.handleButtonDisabled,
+        default = appConfig.handleButtonDisabled,
     ) {
-        AppConfig.handleButtonDisabled = it
+        appConfig.handleButtonDisabled = it
         adapter.setHandleButtonState(it)
     }
-    var alarm1 by remember { mutableStateOf(AppConfig.wheelAlarm1Enabled) }
+    var alarm1 by remember { mutableStateOf(appConfig.wheelAlarm1Enabled) }
     switchPref(
         name = stringResource(R.string.wheel_alarm1_enabled_title),
         desc = stringResource(R.string.wheel_alarm1_enabled_description),
-        default = AppConfig.wheelAlarm1Enabled,
+        default = appConfig.wheelAlarm1Enabled,
     ) {
-        AppConfig.wheelAlarm1Enabled = it
+        appConfig.wheelAlarm1Enabled = it
         alarm1 = it
         adapter.setAlarmEnabled(it, 1)
     }
@@ -86,22 +87,22 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.wheel_alarm1_title),
             desc = stringResource(R.string.wheel_alarm1_description),
-            position = AppConfig.wheelAlarm1Speed.toFloat(),
+            position = appConfig.wheelAlarm1Speed.toFloat(),
             min = 0f,
             max = NinebotZAdapter.getInstance().wheelAlarmMax.toFloat(),
             unit = R.string.kmh,
         ) {
-            AppConfig.wheelAlarm1Speed = it.toInt()
+            appConfig.wheelAlarm1Speed = it.toInt()
             adapter.setAlarmSpeed(it.toInt(), 1)
         }
     }
-    var alarm2 by remember { mutableStateOf(AppConfig.wheelAlarm2Enabled) }
+    var alarm2 by remember { mutableStateOf(appConfig.wheelAlarm2Enabled) }
     switchPref(
         name = stringResource(R.string.wheel_alarm2_enabled_title),
         desc = stringResource(R.string.wheel_alarm2_enabled_description),
-        default = AppConfig.wheelAlarm2Enabled,
+        default = appConfig.wheelAlarm2Enabled,
     ) {
-        AppConfig.wheelAlarm2Enabled = it
+        appConfig.wheelAlarm2Enabled = it
         alarm2 = it
         adapter.setAlarmEnabled(it, 2)
     }
@@ -109,22 +110,22 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.wheel_alarm2_title),
             desc = stringResource(R.string.wheel_alarm2_description),
-            position = AppConfig.wheelAlarm2Speed.toFloat(),
+            position = appConfig.wheelAlarm2Speed.toFloat(),
             min = 0f,
             max = NinebotZAdapter.getInstance().wheelAlarmMax.toFloat(),
             unit = R.string.kmh,
         ) {
-            AppConfig.wheelAlarm2Speed = it.toInt()
+            appConfig.wheelAlarm2Speed = it.toInt()
             adapter.setAlarmSpeed(it.toInt(), 2)
         }
     }
-    var alarm3 by remember { mutableStateOf(AppConfig.wheelAlarm3Enabled) }
+    var alarm3 by remember { mutableStateOf(appConfig.wheelAlarm3Enabled) }
     switchPref(
         name = stringResource(R.string.wheel_alarm3_enabled_title),
         desc = stringResource(R.string.wheel_alarm3_enabled_description),
-        default = AppConfig.wheelAlarm3Enabled,
+        default = appConfig.wheelAlarm3Enabled,
     ) {
-        AppConfig.wheelAlarm3Enabled = it
+        appConfig.wheelAlarm3Enabled = it
         alarm3 = it
         adapter.setAlarmEnabled(it, 3)
     }
@@ -132,22 +133,22 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.wheel_alarm3_title),
             desc = stringResource(R.string.wheel_alarm3_description),
-            position = AppConfig.wheelAlarm3Speed.toFloat(),
+            position = appConfig.wheelAlarm3Speed.toFloat(),
             min = 0f,
             max = NinebotZAdapter.getInstance().wheelAlarmMax.toFloat(),
             unit = R.string.kmh,
         ) {
-            AppConfig.wheelAlarm3Speed = it.toInt()
+            appConfig.wheelAlarm3Speed = it.toInt()
             adapter.setAlarmSpeed(it.toInt(), 3)
         }
     }
-    var limitedMode by remember { mutableStateOf(AppConfig.wheelLimitedModeEnabled) }
+    var limitedMode by remember { mutableStateOf(appConfig.wheelLimitedModeEnabled) }
     switchPref(
         name = stringResource(R.string.wheel_limited_mode_title),
         desc = stringResource(R.string.wheel_limited_mode_description),
-        default = AppConfig.wheelLimitedModeEnabled,
+        default = appConfig.wheelLimitedModeEnabled,
     ) {
-        AppConfig.wheelLimitedModeEnabled = it
+        appConfig.wheelLimitedModeEnabled = it
         limitedMode = it
         adapter.setLimitedModeEnabled(it)
     }
@@ -155,33 +156,33 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.wheel_limited_speed_title),
             desc = stringResource(R.string.wheel_limited_speed_description),
-            position = AppConfig.wheelLimitedModeSpeed.toFloat() / 10f,
+            position = appConfig.wheelLimitedModeSpeed.toFloat() / 10f,
             min = 0f,
             max = 65.5f,
             unit = R.string.kmh,
             format = "%.1f",
         ) {
             val value = it.toInt() * 10
-            AppConfig.wheelLimitedModeSpeed = value
+            appConfig.wheelLimitedModeSpeed = value
             adapter.setLimitedSpeed(value)
         }
     }
     switchPref(
         name = stringResource(R.string.brake_assistant_title),
         desc = stringResource(R.string.brake_assistant_description),
-        default = AppConfig.brakeAssistantEnabled,
+        default = appConfig.brakeAssistantEnabled,
     ) {
-        AppConfig.brakeAssistantEnabled = it
+        appConfig.brakeAssistantEnabled = it
         adapter.setBrakeAssist(it)
     }
     sliderPref(
         name = stringResource(R.string.pedal_sensivity_title),
         desc = stringResource(R.string.pedal_sensivity_description),
-        position = AppConfig.pedalSensivity.toFloat(),
+        position = appConfig.pedalSensivity.toFloat(),
         min = 0f,
         max = 4f,
     ) {
-        AppConfig.pedalSensivity = it.toInt()
+        appConfig.pedalSensivity = it.toInt()
         adapter.pedalSensivity = it.toInt()
     }
     list(
@@ -197,20 +198,20 @@ private fun ninebotZ() {
             "6" to stringResource(R.string.led_type6),
             "7" to stringResource(R.string.led_type7),
         ),
-        defaultKey = AppConfig.ledMode,
+        defaultKey = appConfig.ledMode,
     ) {
-        AppConfig.ledMode = it.first
+        appConfig.ledMode = it.first
         adapter.updateLedMode(Integer.parseInt(it.first))
     }
     if (NinebotZAdapter.getInstance().getLedIsAvailable(1)) {
         sliderPref(
             name = stringResource(R.string.nb_led_color1_title),
             desc = stringResource(R.string.nb_led_color_description),
-            position = AppConfig.ledColor1.toFloat(),
+            position = appConfig.ledColor1.toFloat(),
             min = 0f,
             max = 256f,
         ) {
-            AppConfig.ledColor1 = it.toInt()
+            appConfig.ledColor1 = it.toInt()
             adapter.setLedColor(it.toInt(), 1)
         }
     }
@@ -218,11 +219,11 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.nb_led_color2_title),
             desc = stringResource(R.string.nb_led_color_description),
-            position = AppConfig.ledColor2.toFloat(),
+            position = appConfig.ledColor2.toFloat(),
             min = 0f,
             max = 256f,
         ) {
-            AppConfig.ledColor2 = it.toInt()
+            appConfig.ledColor2 = it.toInt()
             adapter.setLedColor(it.toInt(), 2)
         }
     }
@@ -230,11 +231,11 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.nb_led_color3_title),
             desc = stringResource(R.string.nb_led_color_description),
-            position = AppConfig.ledColor3.toFloat(),
+            position = appConfig.ledColor3.toFloat(),
             min = 0f,
             max = 256f,
         ) {
-            AppConfig.ledColor3 = it.toInt()
+            appConfig.ledColor3 = it.toInt()
             adapter.setLedColor(it.toInt(), 3)
         }
     }
@@ -242,30 +243,30 @@ private fun ninebotZ() {
         sliderPref(
             name = stringResource(R.string.nb_led_color4_title),
             desc = stringResource(R.string.nb_led_color_description),
-            position = AppConfig.ledColor4.toFloat(),
+            position = appConfig.ledColor4.toFloat(),
             min = 0f,
             max = 256f,
         ) {
-            AppConfig.ledColor4 = it.toInt()
+            appConfig.ledColor4 = it.toInt()
             adapter.setLedColor(it.toInt(), 4)
         }
     }
     sliderPref(
         name = stringResource(R.string.speaker_volume_title),
         desc = stringResource(R.string.speaker_volume_description),
-        position = AppConfig.speakerVolume.toFloat(),
+        position = appConfig.speakerVolume.toFloat(),
         min = 0f,
         max = 127f,
     ) {
-        AppConfig.speakerVolume = it.toInt()
+        appConfig.speakerVolume = it.toInt()
         adapter.speakerVolume = it.toInt()
     }
     switchPref(
         name = stringResource(R.string.lock_mode_title),
         desc = stringResource(R.string.lock_mode_description),
-        default = AppConfig.lockMode,
+        default = appConfig.lockMode,
     ) {
-        AppConfig.lockMode = it
+        appConfig.lockMode = it
         adapter.setLockMode(it)
     }
     var showDialogCalibration by remember { mutableStateOf(false) }
@@ -305,82 +306,82 @@ private fun ninebotZ() {
 }
 
 @Composable
-private fun inmotion() {
+private fun inmotion(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(InMotionAdapter.getInstance()) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
-    if (AppConfig.useMph) {
+    if (appConfig.useMph) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
     switchPref(
         name = stringResource(R.string.on_headlight_title),
         desc = stringResource(R.string.on_headlight_description),
-        default = AppConfig.lightEnabled,
+        default = appConfig.lightEnabled,
     ) {
-        AppConfig.lightEnabled = it
+        appConfig.lightEnabled = it
         adapter.setLightState(it)
     }
     if (InMotionAdapter.getInstance().ledThere) {
         switchPref(
             name = stringResource(R.string.leds_settings_title),
             desc = stringResource(R.string.leds_settings_description),
-            default = AppConfig.ledEnabled,
+            default = appConfig.ledEnabled,
         ) {
-            AppConfig.ledEnabled = it
+            appConfig.ledEnabled = it
             adapter.setLedState(it)
         }
     }
     switchPref(
         name = stringResource(R.string.disable_handle_button_title),
         desc = stringResource(R.string.disable_handle_button_description),
-        default = AppConfig.handleButtonDisabled,
+        default = appConfig.handleButtonDisabled,
     ) {
-        AppConfig.handleButtonDisabled = it
+        appConfig.handleButtonDisabled = it
         adapter.setHandleButtonState(it)
     }
     sliderPref(
         name = stringResource(R.string.max_speed_title),
         desc = stringResource(R.string.tilt_back_description),
-        position = AppConfig.wheelMaxSpeed.toFloat(),
+        position = appConfig.wheelMaxSpeed.toFloat(),
         min = 3f,
         max = InMotionAdapter.getInstance().maxSpeed.toFloat(),
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
-        AppConfig.wheelMaxSpeed = it.toInt()
+        appConfig.wheelMaxSpeed = it.toInt()
         adapter.updateMaxSpeed(it.toInt())
     }
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
         desc = stringResource(R.string.pedal_horizont_description),
-        position = AppConfig.pedalsAdjustment / 10f,
+        position = appConfig.pedalsAdjustment / 10f,
         min = -8f,
         max = 8f,
         unit = R.string.degree,
         format = "%.1f",
     ) {
-        AppConfig.pedalsAdjustment = (it * 10).toInt()
+        appConfig.pedalsAdjustment = (it * 10).toInt()
         adapter.setPedalTilt((it * 10).toInt())
     }
     if (InMotionAdapter.getInstance().wheelModesWheel) {
         switchPref(
             name = stringResource(R.string.ride_mode_title),
             desc = stringResource(R.string.ride_mode_description),
-            default = AppConfig.rideMode,
+            default = appConfig.rideMode,
         ) {
-            AppConfig.rideMode = it
+            appConfig.rideMode = it
             adapter.setRideMode(it)
         }
         sliderPref(
             name = stringResource(R.string.pedal_sensivity_title),
             desc = stringResource(R.string.pedal_sensivity_description),
-            position = AppConfig.pedalSensivity.toFloat(),
+            position = appConfig.pedalSensivity.toFloat(),
             min = 4f,
             max = 100f,
             unit = R.string.persent,
         ) {
-            AppConfig.pedalSensivity = it.toInt()
+            appConfig.pedalSensivity = it.toInt()
             adapter.setPedalSensivity(it.toInt())
         }
     }
@@ -403,157 +404,157 @@ private fun inmotion() {
 }
 
 @Composable
-private fun inmotionV2() {
+private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(InmotionAdapterV2.getInstance()) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
-    if (AppConfig.useMph) {
+    if (appConfig.useMph) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
     switchPref(
         name = stringResource(R.string.on_headlight_title),
         desc = stringResource(R.string.on_headlight_description),
-        default = AppConfig.lightEnabled,
+        default = appConfig.lightEnabled,
     ) {
-        AppConfig.lightEnabled = it
+        appConfig.lightEnabled = it
         adapter.setLightState(it)
     }
     switchPref(
         name = stringResource(R.string.drl_settings_title),
         desc = stringResource(R.string.drl_settings_description),
-        default = AppConfig.drlEnabled,
+        default = appConfig.drlEnabled,
     ) {
-        AppConfig.drlEnabled = it
+        appConfig.drlEnabled = it
         adapter.setDrl(it)
     }
     sliderPref(
         name = stringResource(R.string.light_brightness_title),
         desc = stringResource(R.string.light_brightness_description),
-        position = AppConfig.lightBrightness.toFloat(),
+        position = appConfig.lightBrightness.toFloat(),
         min = 0f,
         max = 100f,
         unit = R.string.persent,
     ) {
-        AppConfig.lightBrightness = it.toInt()
+        appConfig.lightBrightness = it.toInt()
         adapter.setLightBrightness(it.toInt())
     }
     switchPref(
         name = stringResource(R.string.fan_title),
         desc = stringResource(R.string.fan_description),
-        default = AppConfig.fanQuietEnabled,
+        default = appConfig.fanQuietEnabled,
     ) {
-        AppConfig.fanQuietEnabled = it
+        appConfig.fanQuietEnabled = it
         adapter.setFan(it)
     }
     switchPref(
         name = stringResource(R.string.fan_quiet_title),
         desc = stringResource(R.string.fan_quiet_description),
-        default = AppConfig.fanQuietEnabled,
+        default = appConfig.fanQuietEnabled,
     ) {
-        AppConfig.fanQuietEnabled = it
+        appConfig.fanQuietEnabled = it
         adapter.setFanQuiet(it)
     }
     switchPref(
         name = stringResource(R.string.disable_handle_button_title),
         desc = stringResource(R.string.disable_handle_button_description),
-        default = AppConfig.handleButtonDisabled,
+        default = appConfig.handleButtonDisabled,
     ) {
-        AppConfig.handleButtonDisabled = it
+        appConfig.handleButtonDisabled = it
         adapter.setHandleButtonState(it)
     }
     sliderPref(
         name = stringResource(R.string.speaker_volume_title),
         desc = stringResource(R.string.speaker_volume_description),
-        position = AppConfig.speakerVolume.toFloat(),
+        position = appConfig.speakerVolume.toFloat(),
         min = 0f,
         max = 100f,
         unit = R.string.persent,
     ) {
-        AppConfig.speakerVolume = it.toInt()
+        appConfig.speakerVolume = it.toInt()
         adapter.setSpeakerVolume(it.toInt())
     }
     switchPref(
         name = stringResource(R.string.speaker_mute_title),
         desc = stringResource(R.string.speaker_mute_description),
-        default = AppConfig.speakerMute,
+        default = appConfig.speakerMute,
     ) {
-        AppConfig.speakerMute = it
+        appConfig.speakerMute = it
         adapter.setMute(it)
     }
     sliderPref(
         name = stringResource(R.string.max_speed_title),
         desc = stringResource(R.string.tilt_back_description),
-        position = AppConfig.wheelMaxSpeed.toFloat(),
+        position = appConfig.wheelMaxSpeed.toFloat(),
         min = 3f,
         max = InmotionAdapterV2.getInstance().maxSpeed.toFloat(),
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
-        AppConfig.wheelMaxSpeed = it.toInt()
+        appConfig.wheelMaxSpeed = it.toInt()
         adapter.updateMaxSpeed(it.toInt())
     }
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
         desc = stringResource(R.string.pedal_horizont_description),
-        position = AppConfig.pedalsAdjustment / 10f,
+        position = appConfig.pedalsAdjustment / 10f,
         min = -10f,
         max = 10f,
         unit = R.string.degree,
         format = "%.1f",
     ) {
-        AppConfig.pedalsAdjustment = (it * 10).toInt()
+        appConfig.pedalsAdjustment = (it * 10).toInt()
         adapter.setPedalTilt((it * 10).toInt())
     }
     switchPref(
         name = stringResource(R.string.ride_mode_title),
         desc = stringResource(R.string.ride_mode_description),
-        default = AppConfig.rideMode,
+        default = appConfig.rideMode,
     ) {
-        AppConfig.rideMode = it
+        appConfig.rideMode = it
         adapter.setRideMode(it)
     }
     sliderPref(
         name = stringResource(R.string.pedal_sensivity_title),
         desc = stringResource(R.string.pedal_sensivity_description),
-        position = AppConfig.pedalSensivity.toFloat(),
+        position = appConfig.pedalSensivity.toFloat(),
         min = 0f,
         max = 100f,
         unit = R.string.persent,
     ) {
-        AppConfig.pedalSensivity = it.toInt()
+        appConfig.pedalSensivity = it.toInt()
         adapter.setPedalSensivity(it.toInt())
     }
     switchPref(
         name = stringResource(R.string.fancier_mode_title),
         desc = stringResource(R.string.fancier_mode_description),
-        default = AppConfig.fancierMode,
+        default = appConfig.fancierMode,
     ) {
-        AppConfig.fancierMode = it
+        appConfig.fancierMode = it
         adapter.setFancierMode(it)
     }
     switchPref(
         name = stringResource(R.string.go_home_mode_title),
         desc = stringResource(R.string.go_home_mode_description),
-        default = AppConfig.goHomeMode,
+        default = appConfig.goHomeMode,
     ) {
-        AppConfig.goHomeMode = it
+        appConfig.goHomeMode = it
         adapter.setGoHomeMode(it)
     }
     switchPref(
         name = stringResource(R.string.transport_mode_title),
         desc = stringResource(R.string.transport_mode_description),
-        default = AppConfig.transportMode,
+        default = appConfig.transportMode,
     ) {
-        AppConfig.transportMode = it
+        appConfig.transportMode = it
         adapter.setTransportMode(it)
     }
     switchPref(
         name = stringResource(R.string.lock_mode_title),
         desc = stringResource(R.string.lock_mode_description),
-        default = AppConfig.lockMode,
+        default = appConfig.lockMode,
     ) {
-        AppConfig.lockMode = it
+        appConfig.lockMode = it
         adapter.setLockMode(it)
     }
     clickableAndAlert(
@@ -575,11 +576,11 @@ private fun inmotionV2() {
 }
 
 @Composable
-private fun kingsong() {
+private fun kingsong(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(KingsongAdapter.getInstance()) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
-    if (AppConfig.useMph) {
+    if (appConfig.useMph) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
@@ -591,9 +592,9 @@ private fun kingsong() {
             "1" to stringResource(R.string.off),
             "2" to stringResource(R.string.auto),
         ),
-        defaultKey = AppConfig.lightMode,
+        defaultKey = appConfig.lightMode,
     ) {
-        AppConfig.lightMode = it.first
+        appConfig.lightMode = it.first
         adapter.setLightMode(it.first.toInt())
     }
     list(
@@ -603,9 +604,9 @@ private fun kingsong() {
             "0" to stringResource(R.string.on),
             "1" to stringResource(R.string.off),
         ),
-        defaultKey = AppConfig.ledMode,
+        defaultKey = appConfig.ledMode,
     ) {
-        AppConfig.ledMode = it.first
+        appConfig.ledMode = it.first
         adapter.updateLedMode(it.first.toInt())
     }
     list(
@@ -616,65 +617,65 @@ private fun kingsong() {
             "1" to stringResource(R.string.medium),
             "2" to stringResource(R.string.soft),
         ),
-        defaultKey = AppConfig.pedalsMode,
+        defaultKey = appConfig.pedalsMode,
     ) {
-        AppConfig.pedalsMode = it.first
+        appConfig.pedalsMode = it.first
         adapter.setPedalTilt(it.first.toInt())
     }
     sliderPref(
         name = stringResource(R.string.max_speed_title),
         desc = stringResource(R.string.tilt_back_description),
-        position = AppConfig.wheelMaxSpeed.toFloat(),
+        position = appConfig.wheelMaxSpeed.toFloat(),
         min = 0f,
         max = 70f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
-        AppConfig.wheelMaxSpeed = it.toInt()
+        appConfig.wheelMaxSpeed = it.toInt()
         adapter.updateMaxSpeed(it.toInt())
     }
     sliderPref(
         name = stringResource(R.string.alert3_title),
         desc = stringResource(R.string.alarm3_description),
-        position = AppConfig.wheelKsAlarm3.toFloat(),
+        position = appConfig.wheelKsAlarm3.toFloat(),
         min = 0f,
         max = 70f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
-        AppConfig.wheelKsAlarm3 = it.toInt()
+        appConfig.wheelKsAlarm3 = it.toInt()
         adapter.updateKSAlarm3(it.toInt())
     }
     sliderPref(
         name = stringResource(R.string.alert2_title),
         desc = stringResource(R.string.alarm2_description),
-        position = AppConfig.wheelKsAlarm2.toFloat(),
+        position = appConfig.wheelKsAlarm2.toFloat(),
         min = 0f,
         max = 70f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
-        AppConfig.wheelKsAlarm2 = it.toInt()
+        appConfig.wheelKsAlarm2 = it.toInt()
         adapter.updateKSAlarm2(it.toInt())
     }
     sliderPref(
         name = stringResource(R.string.alert1_title),
         desc = stringResource(R.string.alarm1_description),
-        position = AppConfig.wheelKsAlarm1.toFloat(),
+        position = appConfig.wheelKsAlarm1.toFloat(),
         min = 0f,
         max = 70f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
-        AppConfig.wheelKsAlarm1 = it.toInt()
+        appConfig.wheelKsAlarm1 = it.toInt()
         adapter.updateKSAlarm1(it.toInt())
     }
     switchPref(
         name = stringResource(R.string.ks18l_scaler_title),
         desc = stringResource(R.string.ks18l_scaler_description),
-        default = AppConfig.ks18LScaler,
+        default = appConfig.ks18LScaler,
     ) {
-        AppConfig.ks18LScaler = it
+        appConfig.ks18LScaler = it
     }
     clickableAndAlert(
         name = stringResource(R.string.power_off),
@@ -695,14 +696,14 @@ private fun kingsong() {
 }
 
 @Composable
-private fun begode() {
+private fun begode(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(GotwayAdapter.getInstance()) }
-    var isAlexovikFW = AppConfig.IsAlexovikFW
+    var isAlexovikFW = appConfig.IsAlexovikFW
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
     var percentUnit = R.string.persent
     var degreeUnit = R.string.degree
-    if (AppConfig.useMph) {
+    if (appConfig.useMph) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
@@ -715,15 +716,15 @@ private fun begode() {
                 "1" to stringResource(R.string.on),
                 "2" to stringResource(R.string.strobe),
             ),
-            defaultKey = AppConfig.lightMode,
+            defaultKey = appConfig.lightMode,
         ) {
-            AppConfig.lightMode = it.first
+            appConfig.lightMode = it.first
             adapter.setLightMode(it.first.toInt())
         }
         list(
             name = stringResource(R.string.alarm_mode_title),
             desc = stringResource(R.string.alarm_settings_title),
-            entries = if (AppConfig.hwPwm) {
+            entries = if (appConfig.hwPwm) {
                 mapOf(
                     "0" to stringResource(R.string.on_level_alarm),
                     "1" to stringResource(R.string.off_level_1_alarm),
@@ -737,9 +738,9 @@ private fun begode() {
                     "2" to stringResource(R.string.off_level_2_alarm),
                 )
             },
-            defaultKey = AppConfig.alarmMode,
+            defaultKey = appConfig.alarmMode,
         ) {
-            AppConfig.alarmMode = it.first
+            appConfig.alarmMode = it.first
             adapter.updateAlarmMode(it.first.toInt())
         }
         list(
@@ -750,9 +751,9 @@ private fun begode() {
                 "1" to stringResource(R.string.medium),
                 "2" to stringResource(R.string.soft),
             ),
-            defaultKey = AppConfig.pedalsMode,
+            defaultKey = appConfig.pedalsMode,
         ) {
-            AppConfig.pedalsMode = it.first
+            appConfig.pedalsMode = it.first
             adapter.updatePedalsMode(it.first.toInt())
         }
         list(
@@ -763,9 +764,9 @@ private fun begode() {
                 "1" to stringResource(R.string.medium),
                 "2" to stringResource(R.string.high),
             ),
-            defaultKey = AppConfig.rollAngle,
+            defaultKey = appConfig.rollAngle,
         ) {
-            AppConfig.rollAngle = it.first
+            appConfig.rollAngle = it.first
             adapter.setRollAngleMode(it.first.toInt())
         }
         list(
@@ -783,29 +784,29 @@ private fun begode() {
                 "8" to stringResource(R.string.eight),
                 "9" to stringResource(R.string.nine),
             ),
-            defaultKey = AppConfig.ledMode,
+            defaultKey = appConfig.ledMode,
         ) {
-            AppConfig.ledMode = it.first
+            appConfig.ledMode = it.first
             adapter.updateLedMode(it.first.toInt())
         }
         switchPref(
             name = stringResource(R.string.gw_in_miles_title),
             desc = stringResource(R.string.gw_in_miles_description),
-            default = AppConfig.gwInMiles,
+            default = appConfig.gwInMiles,
         ) {
-            AppConfig.gwInMiles = it
+            appConfig.gwInMiles = it
             adapter.setMilesMode(it)
         }
         sliderPref(
             name = stringResource(R.string.max_speed_title),
             desc = stringResource(R.string.tilt_back_description),
-            position = AppConfig.wheelMaxSpeed.toFloat(),
+            position = appConfig.wheelMaxSpeed.toFloat(),
             min = 0f,
             max = 99f,
             unit = speedUnit,
             visualMultiple = speedMultipier,
         ) {
-            AppConfig.wheelMaxSpeed = it.toInt()
+            appConfig.wheelMaxSpeed = it.toInt()
             adapter.updateMaxSpeed(it.toInt())
         }
         sliderPref(
@@ -813,9 +814,9 @@ private fun begode() {
             desc = stringResource(R.string.beeper_volume_description),
             min = 1f,
             max = 9f,
-            position = AppConfig.beeperVolume.toFloat(),
+            position = appConfig.beeperVolume.toFloat(),
         ) {
-            AppConfig.beeperVolume = it.toInt()
+            appConfig.beeperVolume = it.toInt()
             adapter.updateBeeperVolume(it.toInt())
         }
         clickableAndAlert(
@@ -829,16 +830,16 @@ private fun begode() {
         switchPref(
             name = stringResource(R.string.is_gotway_mcm_title),
             desc = stringResource(R.string.is_gotway_mcm_description),
-            default = AppConfig.useRatio,
+            default = appConfig.useRatio,
         ) {
-            AppConfig.useRatio = it
+            appConfig.useRatio = it
         }
         switchPref(
             name = stringResource(R.string.auto_voltage_title),
             desc = stringResource(R.string.auto_voltage_description),
-            default = AppConfig.autoVoltage,
+            default = appConfig.autoVoltage,
         ) {
-            AppConfig.autoVoltage = it
+            appConfig.autoVoltage = it
         }
     }
     else
@@ -852,180 +853,180 @@ private fun begode() {
                 "0" to stringResource(R.string.mode3),
                 "3" to stringResource(R.string.mode4),
             ),
-            defaultKey = AppConfig.pedalsMode,
+            defaultKey = appConfig.pedalsMode,
         ) {
-            AppConfig.pedalsMode = it.first
+            appConfig.pedalsMode = it.first
             adapter.updatePedalsMode(it.first.toInt())
         }
 
         switchPref(
             name = stringResource(R.string.extreme_mode_title),
             desc = stringResource(R.string.extreme_mode_description),
-            default = AppConfig.extremeMode,
+            default = appConfig.extremeMode,
         ) {
-            AppConfig.extremeMode = it
+            appConfig.extremeMode = it
             adapter.updateExtremeMode(it)
         }
 
         sliderPref(
             name = stringResource(R.string.braking_current_title),
             desc = stringResource(R.string.braking_current_description),
-            position = AppConfig.brakingCurrent.toFloat(),
+            position = appConfig.brakingCurrent.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.brakingCurrent = it.toInt()
+            appConfig.brakingCurrent = it.toInt()
             adapter.updateBrakingCurrent(it.toInt())
         }
 
         switchPref(
             name = stringResource(R.string.rotation_control_title),
             desc = stringResource(R.string.rotation_control_description),
-            default = AppConfig.rotationControl,
+            default = appConfig.rotationControl,
         ) {
-            AppConfig.rotationControl = it
+            appConfig.rotationControl = it
             adapter.updateRotationControl(it)
         }
 
         sliderPref(
             name = stringResource(R.string.rotation_angle_title),
             desc = stringResource(R.string.rotation_angle_description),
-            position = AppConfig.rotationAngle.toFloat(),
+            position = appConfig.rotationAngle.toFloat(),
             min = 260f,
             max = 360f,
             unit = degreeUnit,
         ) {
-            AppConfig.rotationAngle = it.toInt()
+            appConfig.rotationAngle = it.toInt()
             adapter.updateRotationAngle(it.toInt())
         }
 
         switchPref(
             name = stringResource(R.string.advanced_settings_title),
             desc = stringResource(R.string.advanced_settings_decsription),
-            default = AppConfig.advancedSettings,
+            default = appConfig.advancedSettings,
         ) {
-            AppConfig.advancedSettings = it
+            appConfig.advancedSettings = it
             adapter.updateAdvancedSettings(it)
         }
 
         sliderPref(
             name = stringResource(R.string.proportional_factor_title),
             desc = stringResource(R.string.proportional_factor_decsription),
-            position = AppConfig.proportionalFactor.toFloat(),
+            position = appConfig.proportionalFactor.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.proportionalFactor = it.toInt()
+            appConfig.proportionalFactor = it.toInt()
             adapter.updateProportionalFactor(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.integral_factor_title),
             desc = stringResource(R.string.integral_factor_decsription),
-            position = AppConfig.integralFactor.toFloat(),
+            position = appConfig.integralFactor.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.integralFactor = it.toInt()
+            appConfig.integralFactor = it.toInt()
             adapter.updateIntegralFactor(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.differential_factor_title),
             desc = stringResource(R.string.differential_factor_decsription),
-            position = AppConfig.differentialFactor.toFloat(),
+            position = appConfig.differentialFactor.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.differentialFactor = it.toInt()
+            appConfig.differentialFactor = it.toInt()
             adapter.updateDifferentialFactor(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.dynamic_compensation_title),
             desc = stringResource(R.string.dynamic_compensation_description),
-            position = AppConfig.dynamicCompensation.toFloat(),
+            position = appConfig.dynamicCompensation.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.dynamicCompensation = it.toInt()
+            appConfig.dynamicCompensation = it.toInt()
             adapter.updateDynamicCompensation(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.dynamic_compensation_filter_title),
             desc = stringResource(R.string.dynamic_compensation_filter_description),
-            position = AppConfig.dynamicCompensationFilter.toFloat(),
+            position = appConfig.dynamicCompensationFilter.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.dynamicCompensationFilter = it.toInt()
+            appConfig.dynamicCompensationFilter = it.toInt()
             adapter.updateDynamicCompensationFilter(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.acceleration_compensation_title),
             desc = stringResource(R.string.acceleration_compensation_description),
-            position = AppConfig.accelerationCompensation.toFloat(),
+            position = appConfig.accelerationCompensation.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.accelerationCompensation = it.toInt()
+            appConfig.accelerationCompensation = it.toInt()
             adapter.updateAccelerationCompensation(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.proportional_q_current_factor_title),
             desc = stringResource(R.string.proportional_q_current_factor_decsription),
-            position = AppConfig.proportionalCurrentFactorQ.toFloat(),
+            position = appConfig.proportionalCurrentFactorQ.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.proportionalCurrentFactorQ = it.toInt()
+            appConfig.proportionalCurrentFactorQ = it.toInt()
             adapter.updatePCurrentQ(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.integral_q_current_factor_title),
             desc = stringResource(R.string.integral_q_current_factor_decsription),
-            position = AppConfig.integralCurrentFactorQ.toFloat(),
+            position = appConfig.integralCurrentFactorQ.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.integralCurrentFactorQ = it.toInt()
+            appConfig.integralCurrentFactorQ = it.toInt()
             adapter.updateICurrentQ(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.proportional_d_current_factor_title),
             desc = stringResource(R.string.proportional_d_current_factor_decsription),
-            position = AppConfig.proportionalCurrentFactorD.toFloat(),
+            position = appConfig.proportionalCurrentFactorD.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.proportionalCurrentFactorD = it.toInt()
+            appConfig.proportionalCurrentFactorD = it.toInt()
             adapter.updatePCurrentD(it.toInt())
         }
 
         sliderPref(
             name = stringResource(R.string.integral_d_current_factor_title),
             desc = stringResource(R.string.integral_d_current_factor_decsription),
-            position = AppConfig.integralCurrentFactorD.toFloat(),
+            position = appConfig.integralCurrentFactorD.toFloat(),
             min = 0f,
             max = 100f,
             unit = percentUnit,
         ) {
-            AppConfig.integralCurrentFactorD = it.toInt()
+            appConfig.integralCurrentFactorD = it.toInt()
             adapter.updateICurrentD(it.toInt())
         }
     }
@@ -1040,9 +1041,9 @@ private fun begode() {
             "4" to "134.4V",
             "5" to "168V",
         ),
-        defaultKey = AppConfig.gotwayVoltage,
+        defaultKey = appConfig.gotwayVoltage,
     ) {
-        AppConfig.gotwayVoltage = it.first
+        appConfig.gotwayVoltage = it.first
     }
 
     list(
@@ -1054,26 +1055,26 @@ private fun begode() {
             "1" to stringResource(R.string.reverse),
         ),
     ) {
-        AppConfig.gotwayNegative = it.first
+        appConfig.gotwayNegative = it.first
     }
     switchPref(
         name = stringResource(R.string.connect_beep_title),
         desc = stringResource(R.string.connect_beep_description),
-        default = AppConfig.connectBeep,
+        default = appConfig.connectBeep,
     ) {
-        AppConfig.connectBeep = it
+        appConfig.connectBeep = it
     }
 }
 
 @Composable
-private fun veteran() {
+private fun veteran(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(VeteranAdapter.getInstance()) }
     switchPref(
         name = stringResource(R.string.on_headlight_title),
         desc = stringResource(R.string.on_headlight_description),
-        default = AppConfig.lightEnabled,
+        default = appConfig.lightEnabled,
     ) {
-        AppConfig.lightEnabled = it
+        appConfig.lightEnabled = it
         adapter.setLightState(it)
     }
     list(
@@ -1084,9 +1085,9 @@ private fun veteran() {
             "1" to stringResource(R.string.medium),
             "2" to stringResource(R.string.soft),
         ),
-        defaultKey = AppConfig.pedalsMode,
+        defaultKey = appConfig.pedalsMode,
     ) {
-        AppConfig.pedalsMode = it.first
+        appConfig.pedalsMode = it.first
         adapter.updatePedalsMode(it.first.toInt())
     }
     clickableAndAlert(
@@ -1098,9 +1099,9 @@ private fun veteran() {
     switchPref(
         name = stringResource(R.string.connect_beep_title),
         desc = stringResource(R.string.connect_beep_description),
-        default = AppConfig.connectBeep,
+        default = appConfig.connectBeep,
     ) {
-        AppConfig.connectBeep = it
+        appConfig.connectBeep = it
     }
     list(
         name = stringResource(R.string.gotway_negative_title),
@@ -1111,43 +1112,43 @@ private fun veteran() {
             "1" to stringResource(R.string.reverse),
         ),
     ) {
-        AppConfig.gotwayNegative = it.first
+        appConfig.gotwayNegative = it.first
     }
     switchPref(
         name = stringResource(R.string.hw_pwm_title),
         desc = stringResource(R.string.hw_pwm_description),
-        default = AppConfig.hwPwm,
+        default = appConfig.hwPwm,
     ) {
-        AppConfig.hwPwm = it
+        appConfig.hwPwm = it
     }
 }
 
 @Composable
-private fun forAllWheel() {
+private fun forAllWheel(appConfig: AppConfig = koinInject()) {
     sliderPref(
         name = stringResource(R.string.battery_capacity_title),
         desc = stringResource(R.string.battery_capacity_description),
-        position = AppConfig.batteryCapacity.toFloat(),
+        position = appConfig.batteryCapacity.toFloat(),
         min = 0f,
         max = 9999f,
         unit = R.string.wh,
     ) {
-        AppConfig.batteryCapacity = it.toInt()
+        appConfig.batteryCapacity = it.toInt()
     }
     sliderPref(
         name = stringResource(R.string.charging_power_title),
         desc = stringResource(R.string.charging_power_description),
-        position = AppConfig.chargingPower.toFloat() / 10f,
+        position = appConfig.chargingPower.toFloat() / 10f,
         min = 0f,
         max = 100.0f,
         unit = R.string.amp,
         format = "%.1f",
     ) {
-        AppConfig.chargingPower = it.toInt() * 10
+        appConfig.chargingPower = it.toInt() * 10
     }
 
     var showProfileDialog by remember { mutableStateOf(false) }
-    var profileText by remember { mutableStateOf(AppConfig.profileName) }
+    var profileText by remember { mutableStateOf(appConfig.profileName) }
     clickablePref(
         name = stringResource(R.string.profile_name_title),
         desc = profileText
@@ -1163,7 +1164,7 @@ private fun forAllWheel() {
                     value = profileText,
                     onValueChange = { newText ->
                         profileText = newText
-                        AppConfig.profileName = newText
+                        appConfig.profileName = newText
                     },
                     singleLine = true,
                 )
@@ -1192,6 +1193,6 @@ private fun forAllWheel() {
     baseSettings(
         name = stringResource(R.string.current_mac),
     ) {
-        Text(AppConfig.lastMac.trimEnd('_'))
+        Text(appConfig.lastMac.trimEnd('_'))
     }
 }

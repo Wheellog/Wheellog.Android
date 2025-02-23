@@ -12,6 +12,7 @@ import com.getpebble.android.kit.util.PebbleDictionary;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.koin.java.KoinJavaComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_PLAY_HORN;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_READY;
 
 public class PebbleBroadcastReceiver extends BroadcastReceiver {
-
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -73,7 +74,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
                 pebbleScreenIntent.putExtra(INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, displayed_screen);
                 context.sendBroadcast(pebbleScreenIntent);
             } else if (data.contains(PEBBLE_KEY_PLAY_HORN)) {
-                int horn_mode = WheelLog.AppConfig.getHornMode();
+                int horn_mode = appConfig.getHornMode();
                 SomeUtil.playBeep(horn_mode == 1, false);
             }
         }

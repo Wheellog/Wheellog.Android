@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.preference.PreferenceManager
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Alarms
 import com.cooper.wheellog.utils.SomeUtil
 import com.google.android.gms.wearable.MessageClient
@@ -16,12 +16,15 @@ import com.google.android.gms.wearable.Wearable
 import com.wheellog.shared.Constants
 import com.wheellog.shared.serialize
 import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, SharedPreferences.OnSharedPreferenceChangeListener {
+class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, SharedPreferences.OnSharedPreferenceChangeListener, KoinComponent {
+    private val appConfig: AppConfig by inject()
     private val backgroundScope: CoroutineScope = CoroutineScope(Dispatchers.Default + Job())
     private var isConnected = false
     private var sendPingJob: Job
@@ -49,17 +52,17 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
             putInt(Constants.wearOsBatteryLowData, wd.batteryLowestLevel)
             putDouble(Constants.wearOsDistanceData, wd.distanceDouble)
             putString(Constants.wearOsUnitData,
-                    if (WheelLog.AppConfig.useMph)
+                    if (appConfig.useMph)
                         context.getString(R.string.mph)
                     else
                         context.getString(R.string.kmh))
-            putBoolean(Constants.wearOsCurrentOnDialData, WheelLog.AppConfig.valueOnDial == "1")
+            putBoolean(Constants.wearOsCurrentOnDialData, appConfig.valueOnDial == "1")
             putInt(Constants.wearOsAlarmData, Alarms.alarm)
             putLong(Constants.wearOsTimestampData, wd.lastLifeData)
             val sdf = SimpleDateFormat("HH:mm", Locale.US)
             putString(Constants.wearOsTimeStringData, sdf.format(Date(wd.lastLifeData)))
-            putInt(Constants.wearOsAlarmFactor1Data, WheelLog.AppConfig.alarmFactor1)
-            putInt(Constants.wearOsAlarmFactor2Data, WheelLog.AppConfig.alarmFactor2)
+            putInt(Constants.wearOsAlarmFactor1Data, appConfig.alarmFactor1)
+            putInt(Constants.wearOsAlarmFactor2Data, appConfig.alarmFactor2)
         }
         val request = dataRequest.asPutDataRequest()
         request.setUrgent()
@@ -131,7 +134,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
         }
         val dataRequest = PutDataMapRequest.create(Constants.wearOsPagesItemPath)
         dataRequest.dataMap.apply {
-            putString(Constants.wearOsPagesData, WheelLog.AppConfig.wearOsPages.serialize())
+            putString(Constants.wearOsPagesData, appConfig.wearOsPages.serialize())
             putLong(Constants.wearOsTimestampData, System.currentTimeMillis())
         }
         val request = dataRequest.asPutDataRequest()

@@ -1,20 +1,19 @@
 package com.cooper.wheellog.settings
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
-import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.wheellog.shared.WearPage
+import org.koin.compose.koinInject
 import java.util.EnumSet
 
 @Composable
-fun watchScreen() {
+fun watchScreen(appConfig: AppConfig = koinInject()) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
@@ -23,11 +22,11 @@ fun watchScreen() {
                 name = stringResource(R.string.wearos_pages_title),
                 desc = stringResource(R.string.wearos_pages_description),
                 entries = WearPage.values().associate { it.name to it.name },
-                defaultKeys = AppConfig.wearOsPages.map { it.name },
+                defaultKeys = appConfig.wearOsPages.map { it.name },
                 showDiv = false,
             ) { list ->
                 EnumSet.copyOf(list.map { WearPage.valueOf(it) }).also { enumSet ->
-                    AppConfig.wearOsPages = enumSet
+                    appConfig.wearOsPages = enumSet
                 }
             }
         }
@@ -41,10 +40,10 @@ fun watchScreen() {
                     "1" to stringResource(R.string.on_board_horn_ks),
                     "2" to stringResource(R.string.bluetooth_audio_horn)
                 ),
-                defaultKey = AppConfig.hornMode.toString(),
+                defaultKey = appConfig.hornMode.toString(),
                 showDiv = false,
             ) {
-                AppConfig.hornMode = it.first.toInt()
+                appConfig.hornMode = it.first.toInt()
             }
         }
 
@@ -52,18 +51,18 @@ fun watchScreen() {
             switchPref(
                 name = stringResource(R.string.garmin_connectiq_enable_title),
                 desc = stringResource(R.string.garmin_connectiq_enable_description),
-                default = AppConfig.garminConnectIqEnable,
+                default = appConfig.garminConnectIqEnable,
             ) {
-                AppConfig.garminConnectIqEnable = it
+                appConfig.garminConnectIqEnable = it
             }
 
             switchPref(
                 name = stringResource(R.string.garmin_connectiq_use_beta_title),
                 desc = stringResource(R.string.garmin_connectiq_use_beta_description),
-                default = AppConfig.useGarminBetaCompanion,
+                default = appConfig.useGarminBetaCompanion,
                 showDiv = false,
             ) {
-                AppConfig.useGarminBetaCompanion = it
+                appConfig.useGarminBetaCompanion = it
             }
         }
 
@@ -71,10 +70,10 @@ fun watchScreen() {
             switchPref(
                 name = stringResource(R.string.miband_fixrs_title),
                 desc = stringResource(R.string.miband_fixrs_description),
-                default = AppConfig.mibandFixRs,
+                default = appConfig.mibandFixRs,
                 showDiv = false,
             ) {
-                AppConfig.mibandFixRs = it
+                appConfig.mibandFixRs = it
             }
         }
     }

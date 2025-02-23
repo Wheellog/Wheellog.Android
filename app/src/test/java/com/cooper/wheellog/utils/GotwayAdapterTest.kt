@@ -3,30 +3,40 @@ package com.cooper.wheellog.utils
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 import kotlin.math.abs
 import kotlin.math.round
 
-class GotwayAdapterTest {
+class GotwayAdapterTest: KoinTest {
 
-    private var adapter: GotwayAdapter = GotwayAdapter()
+    private lateinit var adapter: GotwayAdapter
     private var header = byteArrayOf(0x55, 0xAA.toByte())
     private lateinit var data: WheelData
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private val mockContext = mockk<Context>(relaxed = true)
 
     @Before
     fun setUp() {
-        mockkObject(WheelLog)
-        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
-        val config = mockkClass(AppConfig::class, relaxed = true)
-        every { config.gotwayNegative } returns "1"
-        every { config.autoVoltage } returns true
-        WheelLog.AppConfig = config
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                    single { mockContext }
+                }
+            )
+        }
+        adapter = GotwayAdapter()
+        every { appConfig.gotwayNegative } returns "1"
+        every { appConfig.autoVoltage } returns true
         data = spyk(WheelData())
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
         mockkStatic(WheelData::class)
@@ -38,6 +48,7 @@ class GotwayAdapterTest {
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test

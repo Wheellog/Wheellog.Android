@@ -1,8 +1,8 @@
 package com.cooper.wheellog.utils;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.R;
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,7 +13,10 @@ import android.content.Intent;
 
 import static com.cooper.wheellog.utils.InMotionAdapter.Model.*;
 
+import org.koin.java.KoinJavaComponent;
+
 public class InMotionAdapter extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static InMotionAdapter INSTANCE;
     private Timer keepAliveTimer;
     private int passwordSent = 0;
@@ -342,8 +345,8 @@ public class InMotionAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelLog.AppConfig.getLightEnabled();
-        WheelLog.AppConfig.setLightEnabled(light);
+        boolean light = !appConfig.getLightEnabled();
+        appConfig.setLightEnabled(light);
         setLightState(light);
     }
 
@@ -483,6 +486,7 @@ public class InMotionAdapter extends BaseAdapter {
     static int batteryFromVoltage(int volts_i, Model model) {
         double volts = (double)volts_i/100.0;
         double batt;
+        final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
 
         if (model.belongToInputType("1") || model == R0) {
             if (volts >= 82.50) {
@@ -493,7 +497,7 @@ public class InMotionAdapter extends BaseAdapter {
                 batt = 0.0;
             }
         } else {
-            Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+            Boolean useBetterPercents = appConfig.getUseBetterPercents();
             if (model.belongToInputType("5") || model == Model.V8 || model == Model.Glide3 || model == Model.V8F || model == Model.V8S) {
                 if (useBetterPercents) {
                     if (volts > 84.00) {
@@ -1218,6 +1222,7 @@ public class InMotionAdapter extends BaseAdapter {
             boolean rideMode = false;
             int pedalHardness = 100;
             int pedals = (int) (Math.round((MathsUtil.intFromBytesLE(ex_data, 56)) / 6553.6));
+            AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
             maxspeed = (((ex_data[61] & 0xFF) * 256) | (ex_data[60] & 0xFF)) / 1000;
             if (ex_data.length > 126) {
                 speakervolume = (((ex_data[126] & 0xFF) * 256) | (ex_data[125] & 0xFF)) / 100;
@@ -1244,14 +1249,14 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setModel(getModelString(lmodel));
             wd.setVersion(version);
 
-            WheelLog.AppConfig.setLightEnabled(light);
-            WheelLog.AppConfig.setLedEnabled(led);
-            WheelLog.AppConfig.setHandleButtonDisabled(handlebutton);
-            WheelLog.AppConfig.setWheelMaxSpeed(maxspeed);
-            WheelLog.AppConfig.setSpeakerVolume(speakervolume);
-            WheelLog.AppConfig.setPedalsAdjustment(pedals);
-            WheelLog.AppConfig.setRideMode(rideMode);
-            WheelLog.AppConfig.setPedalSensivity(pedalHardness);
+            appConfig.setLightEnabled(light);
+            appConfig.setLedEnabled(led);
+            appConfig.setHandleButtonDisabled(handlebutton);
+            appConfig.setWheelMaxSpeed(maxspeed);
+            appConfig.setSpeakerVolume(speakervolume);
+            appConfig.setPedalsAdjustment(pedals);
+            appConfig.setRideMode(rideMode);
+            appConfig.setPedalSensivity(pedalHardness);
             getInstance().setModel(lmodel);
             return false;
         }

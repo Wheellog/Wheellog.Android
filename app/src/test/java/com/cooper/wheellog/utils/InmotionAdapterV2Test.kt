@@ -10,18 +10,30 @@ import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 
-class InmotionAdapterV2Test {
+class InmotionAdapterV2Test: KoinTest {
 
-    private var adapter: InmotionAdapterV2 = InmotionAdapterV2()
+    private lateinit var adapter: InmotionAdapterV2
     private lateinit var data: WheelData
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private val mockContext = mockk<Context>(relaxed = true)
 
     @Before
     fun setUp() {
-        mockkObject(WheelLog)
-        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                    single { mockContext }
+                }
+            )
+        }
+        adapter = InmotionAdapterV2()
         data = spyk(WheelData())
-        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
     }
@@ -29,6 +41,7 @@ class InmotionAdapterV2Test {
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test

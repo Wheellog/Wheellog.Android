@@ -3,8 +3,10 @@ package com.cooper.wheellog.utils;
 import android.content.Context;
 import android.content.Intent;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.util.TimerTask;
 import timber.log.Timber;
 
 public class InmotionAdapterV2 extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static InmotionAdapterV2 INSTANCE;
     private Timer keepAliveTimer;
     private boolean settingCommandReady = false;
@@ -247,8 +250,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelLog.AppConfig.getLightEnabled();
-        WheelLog.AppConfig.setLightEnabled(light);
+        boolean light = !appConfig.getLightEnabled();
+        appConfig.setLightEnabled(light);
         setLightState(light);
     }
 
@@ -363,6 +366,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
 
     public static class Message {
+        private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
 
         enum Flag {
             NoOp(0),
@@ -554,20 +558,21 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mSome2 = (data[i + 23]>>2) & 3; // to test
             int mSome3 = (data[i + 23] >> 4) & 3; // to test
             int mSome4 = (data[i + 23] >> 6) & 3; // to test
-            WheelLog.AppConfig.setPedalsAdjustment(mPitchAngleZero/10);
-            WheelLog.AppConfig.setWheelMaxSpeed(mSpeedLim/100);
-            WheelLog.AppConfig.setFancierMode(mRideMode != 0);
-            WheelLog.AppConfig.setRideMode(mDriveMode != 0);
-            WheelLog.AppConfig.setPedalSensivity(mComfSens);
-            WheelLog.AppConfig.setSpeakerVolume(mVolume);
-            WheelLog.AppConfig.setLightBrightness(mLightBr);
-            WheelLog.AppConfig.setSpeakerMute(mAudioState == 0);
-            WheelLog.AppConfig.setDrlEnabled(mDecorState != 0);
-            WheelLog.AppConfig.setHandleButtonDisabled(mLiftedState == 0);
-            WheelLog.AppConfig.setLockMode(mLockState != 0);
-            WheelLog.AppConfig.setTransportMode(mTranspMode != 0);
-            WheelLog.AppConfig.setFanQuietEnabled(mFanQuiet != 0);
-            WheelLog.AppConfig.setGoHomeMode(mLowBat != 0);
+            final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
+            appConfig.setPedalsAdjustment(mPitchAngleZero/10);
+            appConfig.setWheelMaxSpeed(mSpeedLim/100);
+            appConfig.setFancierMode(mRideMode != 0);
+            appConfig.setRideMode(mDriveMode != 0);
+            appConfig.setPedalSensivity(mComfSens);
+            appConfig.setSpeakerVolume(mVolume);
+            appConfig.setLightBrightness(mLightBr);
+            appConfig.setSpeakerMute(mAudioState == 0);
+            appConfig.setDrlEnabled(mDecorState != 0);
+            appConfig.setHandleButtonDisabled(mLiftedState == 0);
+            appConfig.setLockMode(mLockState != 0);
+            appConfig.setTransportMode(mTranspMode != 0);
+            appConfig.setFanQuietEnabled(mFanQuiet != 0);
+            appConfig.setGoHomeMode(mLowBat != 0);
             return false;
         }
 
@@ -710,16 +715,16 @@ public class InmotionAdapterV2 extends BaseAdapter {
             if (chrgState == 1) {wmode = wmode + " Charging";}
             if (liftedState == 1) {wmode = wmode + " Lifted";}
             wd.setModeStr(wmode);
-            //WheelLog.AppConfig.setFanEnabled(fanState != 0); // bad behaviour
+            //appConfig.setFanEnabled(fanState != 0); // bad behaviour
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lightState == 1)) {
+            if (appConfig.getLightEnabled() != (lightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
             
-            //WheelLog.AppConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
+            //appConfig.setDrlEnabled(decorLiState != 0); // too fast, bad behaviour
 
             //// errors data
             String inmoError = getError(i+5);
@@ -811,9 +816,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
@@ -901,9 +906,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
@@ -1006,9 +1011,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
@@ -1118,9 +1123,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
@@ -1229,9 +1234,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (WheelLog.AppConfig.getLightEnabled() != (lowLightState == 1)) {
+            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //WheelLog.AppConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;

@@ -3,28 +3,38 @@ package com.cooper.wheellog.utils
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 import kotlin.math.abs
 
-class VeteranAdapterTest {
+class VeteranAdapterTest: KoinTest {
 
-    private var adapter: VeteranAdapter = VeteranAdapter()
+    private lateinit var adapter: VeteranAdapter
     private var header = byteArrayOf(0xDC.toByte(), 0x5A.toByte(), 0x5C.toByte(), 0x20.toByte())
     private lateinit var data: WheelData
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private val mockContext = mockk<Context>(relaxed = true)
 
     @Before
     fun setUp() {
-        mockkObject(WheelLog)
-        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
-        val config = mockkClass(AppConfig::class, relaxed = true)
-        WheelLog.AppConfig = config
-        every { config.gotwayNegative } returns "1"
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                    single { mockContext }
+                }
+            )
+        }
+        adapter = VeteranAdapter()
+        every { appConfig.gotwayNegative } returns "1"
         data = spyk(WheelData())
         data.wheelType = Constants.WHEEL_TYPE.VETERAN
         mockkStatic(WheelData::class)
@@ -34,6 +44,7 @@ class VeteranAdapterTest {
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test

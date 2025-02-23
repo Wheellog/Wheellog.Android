@@ -18,43 +18,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog.Companion.AppConfig
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
+import org.koin.compose.koinInject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Composable
-fun logScreen()
+fun logScreen(appConfig: AppConfig = koinInject())
 {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
     ) {
-        var autoLogDependency by remember { mutableStateOf(AppConfig.autoLog) }
+        var autoLogDependency by remember { mutableStateOf(appConfig.autoLog) }
         val writePermission = rememberLauncherForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { granted ->
-            AppConfig.autoLog = granted
+            appConfig.autoLog = granted
             autoLogDependency = granted
         }
         switchPref(
             name = stringResource(R.string.auto_log_title),
             desc = stringResource(R.string.auto_log_description),
             themeIcon = ThemeIconEnum.SettingsAutoLog,
-            default = AppConfig.autoLog,
+            default = appConfig.autoLog,
         ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                AppConfig.autoLog = it
+                appConfig.autoLog = it
                 autoLogDependency = it
             } else {
                 if (it) {
                     writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 } else {
-                    AppConfig.autoLog = false
+                    appConfig.autoLog = false
                     autoLogDependency = false
                 }
             }
@@ -64,7 +65,7 @@ fun logScreen()
             sliderPref(
                 name = stringResource(R.string.auto_log_when_moving_title),
                 desc = stringResource(R.string.auto_log_when_moving_description),
-                position = AppConfig.startAutoLoggingWhenIsMovingMore,
+                position = appConfig.startAutoLoggingWhenIsMovingMore,
                 min = 0f,
                 max = 20f,
                 unit = R.string.kmh,
@@ -72,12 +73,12 @@ fun logScreen()
                 showSwitch = true,
                 disableSwitchAtMin = true,
             ) {
-                AppConfig.startAutoLoggingWhenIsMovingMore = it
+                appConfig.startAutoLoggingWhenIsMovingMore = it
             }
         }
 
         val context = LocalContext.current
-        var locationDependency by remember { mutableStateOf(AppConfig.logLocationData) }
+        var locationDependency by remember { mutableStateOf(appConfig.logLocationData) }
 
         switchPref(
             name = stringResource(R.string.log_location_title),
@@ -85,14 +86,14 @@ fun logScreen()
             themeIcon = ThemeIconEnum.SettingsLocation,
             default = locationDependency,
         ) {
-            AppConfig.logLocationData = it
+            appConfig.logLocationData = it
             locationDependency = it
         }
 
-        val gpsDependency = remember { mutableStateOf(AppConfig.useGps) }
+        val gpsDependency = remember { mutableStateOf(appConfig.useGps) }
         if (gpsDependency.value && !PermissionsUtil.checkLocationPermission(context)) {
             gpsDependency.value = false
-            AppConfig.useGps = false
+            appConfig.useGps = false
         }
 
         var alertGps by remember { mutableStateOf(false) }
@@ -100,7 +101,7 @@ fun logScreen()
             ActivityResultContracts.RequestMultiplePermissions()
         ) { granted ->
             gpsDependency.value = granted.all { gr -> gr.value }
-            AppConfig.useGps = gpsDependency.value
+            appConfig.useGps = gpsDependency.value
             alertGps = false
         }
 
@@ -110,7 +111,7 @@ fun logScreen()
                 desc = stringResource(R.string.use_gps_description),
                 defaultState = gpsDependency,
             ) {
-                AppConfig.useGps = it
+                appConfig.useGps = it
                 gpsDependency.value = it
                 alertGps = it && !PermissionsUtil.checkLocationPermission(context)
             }
@@ -148,7 +149,7 @@ fun logScreen()
                 dismissButton = {
                     Button(onClick = {
                         gpsDependency.value = false
-                        AppConfig.useGps = false
+                        appConfig.useGps = false
                         alertGps = false
                     }
                     ) {
@@ -158,14 +159,14 @@ fun logScreen()
         }
 
         AnimatedVisibility (locationDependency && gpsDependency.value) {
-            val autoUploadDependency = remember { mutableStateOf(AppConfig.autoUploadEc) }
+            val autoUploadDependency = remember { mutableStateOf(appConfig.autoUploadEc) }
             Column {
                 switchPref(
                     name = stringResource(R.string.auto_upload_log_ec_title),
                     desc = stringResource(R.string.auto_upload_log_ec_description),
                     defaultState = autoUploadDependency,
                 ) {
-                    AppConfig.autoUploadEc = it
+                    appConfig.autoUploadEc = it
                     autoUploadDependency.value = it
                     if (!it) {
                         ElectroClub.instance.logout()
@@ -176,9 +177,9 @@ fun logScreen()
                     val activity = LocalContext.current as Activity
                     clickablePref(
                         name = stringResource(R.string.select_garage_ec_title),
-                        desc = AppConfig.ecGarage ?: "",
+                        desc = appConfig.ecGarage ?: "",
                     ) {
-                        AppConfig.ecGarage = null
+                        appConfig.ecGarage = null
                         ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
                             mac = "",
                             activity = activity,
@@ -191,7 +192,7 @@ fun logScreen()
                         title = "electro.club",
                         onDismiss = {
                             autoUploadDependency.value = false
-                            AppConfig.autoUploadEc = false
+                            appConfig.autoUploadEc = false
                         },
                     ) { login, password ->
                         suspendCoroutine { continuation ->
@@ -217,17 +218,17 @@ fun logScreen()
         switchPref(
             name = stringResource(R.string.use_raw_title),
             desc = stringResource(R.string.use_raw_description),
-            default = AppConfig.enableRawData,
+            default = appConfig.enableRawData,
         ) {
-            AppConfig.enableRawData = it
+            appConfig.enableRawData = it
         }
 
         switchPref(
             name = stringResource(R.string.continue_this_day_log_title),
             desc = stringResource(R.string.continue_this_day_log_description),
-            default = AppConfig.continueThisDayLog,
+            default = appConfig.continueThisDayLog,
         ) {
-            AppConfig.continueThisDayLog = it
+            appConfig.continueThisDayLog = it
         }
     }
 }

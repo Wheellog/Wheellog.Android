@@ -10,10 +10,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.koin.core.component.KoinComponent;
+import org.koin.java.KoinJavaComponent;
+
 import java.util.ArrayList;
 
 // Adapter for holding devices found through scanning.
 public class DeviceListAdapter extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private final ArrayList<BluetoothDevice> mLeDevices;
     private final ArrayList<String> mLeAdvDatas;
     private final LayoutInflater mInflator;
@@ -31,7 +35,7 @@ public class DeviceListAdapter extends BaseAdapter {
     }
 
     public void addDevice(BluetoothDevice device, String advData) {
-        if (!WheelLog.AppConfig.getShowUnknownDevices()) {
+        if (!appConfig.getShowUnknownDevices()) {
             @SuppressLint("MissingPermission")
             String deviceName = device.getName();
             if (deviceName == null || deviceName.length() == 0)

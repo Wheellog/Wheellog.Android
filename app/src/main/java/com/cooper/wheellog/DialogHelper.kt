@@ -1,5 +1,6 @@
 package com.cooper.wheellog
 
+//import com.yandex.metrica.YandexMetrica
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
@@ -22,10 +23,12 @@ import com.cooper.wheellog.databinding.EdittextLayoutBinding
 import com.cooper.wheellog.databinding.PrivacyPolicyBinding
 import com.cooper.wheellog.databinding.UpdatePwmSettingsBinding
 import com.cooper.wheellog.utils.Constants
-//import com.yandex.metrica.YandexMetrica
 import com.cooper.wheellog.utils.PermissionsUtil
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-object DialogHelper {
+object DialogHelper : KoinComponent {
+    private val appConfig: AppConfig by inject()
     /**
      * return false if in App's Battery settings "Not optimized" and true if "Optimizing battery use"
      */
@@ -53,7 +56,7 @@ object DialogHelper {
 
     @SuppressLint("BatteryLife")
     fun checkBatteryOptimizationsAndShowAlert(context: Context) {
-        if (!WheelLog.AppConfig.detectBatteryOptimization ||
+        if (!appConfig.detectBatteryOptimization ||
             Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
             !isBatteryOptimizations(context)
         ) {
@@ -68,11 +71,11 @@ object DialogHelper {
 
     fun checkPWMIsSetAndShowAlert(context: Context) {
         val wd = WheelData.getInstance()
-        if (!wd.isWheelIsReady || wd.isHardwarePWM || WheelLog.AppConfig.hwPwm || WheelLog.AppConfig.rotationIsSet) {
+        if (!wd.isWheelIsReady || wd.isHardwarePWM || appConfig.hwPwm || appConfig.rotationIsSet) {
             return
         }
-        if (WheelLog.AppConfig.rotationSpeed != 500 && WheelLog.AppConfig.rotationVoltage != 840) {
-            WheelLog.AppConfig.rotationIsSet = true
+        if (appConfig.rotationSpeed != 500 && appConfig.rotationVoltage != 840) {
+            appConfig.rotationIsSet = true
             return
         }
         val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -206,21 +209,21 @@ object DialogHelper {
             .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                 when (selectedOption) {
                     1 -> {
-                        WheelLog.AppConfig.apply {
+                        appConfig.apply {
                             rotationSpeed = binding.seekBarSpeed.progress
                             rotationVoltage = binding.seekBarVoltage.progress
                         }
-                        WheelLog.AppConfig.rotationIsSet = true
+                        appConfig.rotationIsSet = true
                     }
                     2 -> TODO("доделать как-то Авто")
                     3 -> {
                         val temp = templates[templatesBox.selectedItem]
                         if (temp != null) {
-                            WheelLog.AppConfig.apply {
+                            appConfig.apply {
                                 rotationSpeed = temp.first
                                 rotationVoltage = temp.second
                             }
-                            WheelLog.AppConfig.rotationIsSet = true
+                            appConfig.rotationIsSet = true
                         }
                     }
                 }
@@ -230,7 +233,7 @@ object DialogHelper {
     }
 
     fun checkAndShowPrivatePolicyDialog(mainActivity: MainActivity) {
-        if (WheelLog.AppConfig.privatePolicyAccepted) {
+        if (appConfig.privatePolicyAccepted) {
             return
         }
 
@@ -259,8 +262,8 @@ object DialogHelper {
             }
         }
         binding.okButton.setOnClickListener {
-            WheelLog.AppConfig.privatePolicyAccepted = true
-            WheelLog.AppConfig.yandexMetricaAccepted = binding.agreeWithMetrica.isChecked
+            appConfig.privatePolicyAccepted = true
+            appConfig.yandexMetricaAccepted = binding.agreeWithMetrica.isChecked
 //            YandexMetrica.setStatisticsSending(
 //                mainActivity.applicationContext,
 //                binding.agreeWithMetrica.isChecked
@@ -276,19 +279,19 @@ object DialogHelper {
     fun showEditProfileName(context: Context) {
         val inflater: LayoutInflater = LayoutInflater.from(context)
         val binding = EdittextLayoutBinding.inflate(inflater, null, false)
-        binding.edit.setText(WheelLog.AppConfig.profileName)
+        binding.edit.setText(appConfig.profileName)
         AlertDialog.Builder(context)
             .setTitle(context.getText(R.string.profile_name_title))
             .setView(binding.root)
             .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                WheelLog.AppConfig.profileName = binding.edit.text.toString()
+                appConfig.profileName = binding.edit.text.toString()
             }
             .setNegativeButton(android.R.string.cancel) { _: DialogInterface, _: Int -> }
             .show()
     }
 
     fun checkAndShowLocationDialog(context: Context) {
-        if (WheelLog.AppConfig.useGps) {
+        if (appConfig.useGps) {
             val mLocationManager = ContextCompat.getSystemService(
                 context,
                 LocationManager::class.java

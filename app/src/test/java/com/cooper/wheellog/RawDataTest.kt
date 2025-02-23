@@ -8,36 +8,46 @@ import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.*
 import java.io.File
 import java.io.InputStream
 import java.text.SimpleDateFormat
 
-class RawDataTest {
+class RawDataTest: KoinTest {
     private lateinit var data: WheelData
-    private lateinit var config: AppConfig
     private val sdf = SimpleDateFormat("HH:mm:ss.SSS")
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private val mockContext = mockk<Context>(relaxed = true)
 
     @Before
     fun setUp() {
-        mockkObject(WheelLog)
-        every { WheelLog.appContext } returns mockkClass(Context::class, relaxed = true)
-        config = mockkClass(AppConfig::class, relaxed = true)
-        WheelLog.AppConfig = config
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                    single { mockContext }
+                }
+            )
+        }
         data = spyk(WheelData())
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
-        every { config.gotwayNegative } returns "1"
+        every { appConfig.gotwayNegative } returns "1"
     }
 
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test
     fun `GW - decode with normal data`() {
         // Arrange.
-        every { config.gotwayNegative } returns "1"
+        every { appConfig.gotwayNegative } returns "1"
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter = GotwayAdapter()

@@ -10,13 +10,17 @@ import java.util.Locale;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.N;
 
+import org.koin.java.KoinJavaComponent;
+
 public class LocaleManager {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     public static final  String LANGUAGE_ENGLISH = "en";
 
     public static Context setLocale(Context c) {
         Context a;
         a = c;
-        if (WheelLog.AppConfig.getUseEng()) {
+        final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
+        if (appConfig.getUseEng()) {
             a = updateResources(c, LANGUAGE_ENGLISH);
         }
         return a;
