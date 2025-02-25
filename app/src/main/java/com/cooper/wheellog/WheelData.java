@@ -73,6 +73,7 @@ public class WheelData {
     private long mUserDistance;
     private int mRideTime;
     private int mRidingTime;
+    private int mSleepTimer;
     private int mLastRideTime;
     private int mTopSpeed;
     private int mVoltageSag;
@@ -767,6 +768,19 @@ public class WheelData {
         mVoltage = voltage;
     }
 
+    public void setSleepTimer(int sleepsec) {
+        mSleepTimer = sleepsec;
+    }
+
+    public String getSleepTimerString() {
+        long hours = TimeUnit.SECONDS.toHours(mSleepTimer);
+        long minutes = TimeUnit.SECONDS.toMinutes(mSleepTimer) -
+                TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(mSleepTimer));
+        long seconds = TimeUnit.SECONDS.toSeconds(mSleepTimer) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(mSleepTimer));
+        return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
     double getVoltageSagDouble() {
         return mVoltageSag / 100.0;
     }
@@ -1170,6 +1184,7 @@ public class WheelData {
         mVoltageSag = 20000;
         mRideTime = 0;
         mRidingTime = 0;
+        mSleepTimer = 0;
         mTopSpeed = 0;
         mFanStatus = 0;
         mChargingStatus = 0;
