@@ -8,15 +8,26 @@ import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 
-class CalculatorTest {
+class CalculatorTest: KoinTest {
     private lateinit var data: WheelData
+    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
 
     @Before
     fun setUp() {
+        startKoin {
+            modules(
+                module {
+                    single { appConfig }
+                }
+            )
+        }
         data = spyk(WheelData())
         every { data.bluetoothService.applicationContext } returns mockkClass(Context::class, relaxed = true)
-        WheelLog.AppConfig = mockkClass(AppConfig::class, relaxed = true)
         mockkStatic(WheelData::class)
         every { WheelData.getInstance() } returns data
         mockkObject(SomeUtil)
@@ -30,6 +41,7 @@ class CalculatorTest {
     @After
     fun tearDown() {
         unmockkAll()
+        stopKoin()
     }
 
     @Test

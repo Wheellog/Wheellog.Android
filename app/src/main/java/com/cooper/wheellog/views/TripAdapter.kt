@@ -19,6 +19,7 @@ import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
@@ -34,6 +35,9 @@ import com.cooper.wheellog.utils.ThemeIconEnum
 import com.cooper.wheellog.utils.ThemeManager
 import com.google.common.io.ByteStreams
 import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -43,7 +47,8 @@ import java.time.Year
 import java.util.Locale
 
 
-class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>() {
+class TripAdapter(var context: Context, private var tripModels: ArrayList<TripModel>) : RecyclerView.Adapter<TripAdapter.ViewHolder>(), KoinComponent {
+    private val appConfig: AppConfig by inject()
     private var uploadViewVisible: Int = View.VISIBLE
     private var font = ThemeManager.getTypeface(context)
 
@@ -52,7 +57,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         set(value) { uploadViewVisible = if (value) View.VISIBLE else View.GONE }
 
     init {
-        uploadVisible = WheelLog.AppConfig.autoUploadEc
+        uploadVisible = appConfig.autoUploadEc
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -83,7 +88,9 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         }
     }
 
-    class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root) {
+    class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root), KoinComponent {
+
+        private val appConfig: AppConfig by inject()
         private val context = itemBinding.root.context
 
 //        private fun uploadInProgress(inProgress: Boolean) {
@@ -110,7 +117,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     FileInputStream(File(tripModel.mediaId))
                 } else {
                     // Android 10+
-                    WheelLog.cResolver().openInputStream(tripModel.uri)
+                    get<Context>().contentResolver.openInputStream(tripModel.uri)
                 }
             if (inputStream == null) {
                 Timber.i("Failed to create inputStream for %s", tripModel.title)
@@ -160,7 +167,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                             }
                         }
                     } else {
-                        WheelLog.cResolver().delete(tripModel.uri, null, null)
+                        get<Context>().contentResolver.delete(tripModel.uri, null, null)
                     }
                     adapter.removeAt(adapterPosition)
 
@@ -191,7 +198,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 val min = context.getString(R.string.min)
                 var desc1: String
                 var desc2 = "⌚ ${trip.duration} $min"
-                if (WheelLog.AppConfig.useMph) {
+                if (appConfig.useMph) {
                     val mph = context.getString(R.string.mph)
                     val miles = context.getString(R.string.miles)
                     desc1 = "\uD83D\uDE80 ${formatMi(trip.maxSpeed)} $mph" +
@@ -213,7 +220,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 desc2 +=
                     "\n⚡ ${format(trip.consumptionTotal)} ${context.getString(R.string.wh)}" +
                     "\n\uD83D\uDD0B " +
-                    if (WheelLog.AppConfig.useMph) {
+                    if (appConfig.useMph) {
                         "${format(trip.consumptionByKm / kmToMilesMultiplier.toFloat())} ${context.getString(R.string.whmi)}"
                     } else {
                         "${format(trip.consumptionByKm)} ${context.getString(R.string.whkm)}"
@@ -282,7 +289,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             }) {
                 setDescFromDb(trip)
                 val wrapper = ContextThemeWrapper(context, R.style.OriginalTheme_PopupMenuStyle)
-                val ecAvailable = WheelLog.AppConfig.ecToken != null
+                val ecAvailable = appConfig.ecToken != null
                 val popupMenu = PopupMenu(wrapper,  itemBinding.popupButton).apply {
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                         menu.add(0, 0, 0, R.string.trip_menu_view_map).icon =

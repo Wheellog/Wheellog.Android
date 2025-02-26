@@ -6,14 +6,20 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
 import androidx.preference.PreferenceManager
 import com.cooper.wheellog.utils.MiBandEnum
+import com.cooper.wheellog.utils.NotificationUtil
 import com.cooper.wheellog.utils.ThemeEnum
+import com.cooper.wheellog.utils.VolumeKeyController
 import com.wheellog.shared.Constants
 import com.wheellog.shared.WearPage
 import com.wheellog.shared.WearPages
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 // import com.yandex.metrica.YandexMetrica
 import timber.log.Timber
 
-class AppConfig(var context: Context) {
+class AppConfig(var context: Context): KoinComponent {
+    private val notifications: NotificationUtil by inject()
+    private val volumeKeyController: VolumeKeyController by inject()
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private var specificPrefix: String = ""
     private val separator = ";"
@@ -101,7 +107,7 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.notification_buttons, null)
         set(value) {
             setValue(R.string.notification_buttons, value)
-            WheelLog.Notifications.update()
+            notifications.update()
         }
 
     var notificationButtons: Array<String>
@@ -156,7 +162,7 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.beep_on_volume_up, false)
         set(value) {
             setValue(R.string.beep_on_volume_up, value)
-            WheelLog.VolumeKeyController.setActive(wd.isConnected && value)
+            volumeKeyController.setActive(wd.isConnected && value)
         }
 
     var beepByWheel: Boolean
@@ -282,7 +288,7 @@ class AppConfig(var context: Context) {
         get() = getValue(R.string.miband_fixrs_enable, false)
         set(value) {
             setValue(R.string.miband_fixrs_enable, value)
-            WheelLog.Notifications.updateKostilTimer()
+            notifications.updateKostilTimer()
         }
 
     var wearOsPages: WearPages

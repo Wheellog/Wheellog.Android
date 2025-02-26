@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.SystemClock;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Locale;
@@ -13,6 +15,7 @@ import java.util.Locale;
 import timber.log.Timber;
 
 public class GotwayAdapter extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static GotwayAdapter INSTANCE;
     gotwayUnpacker unpacker = new gotwayUnpacker();
     private static final double RATIO_GW = 0.875;
@@ -51,22 +54,22 @@ public class GotwayAdapter extends BaseAdapter {
             } else if (dataS.startsWith("GW")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                WheelLog.AppConfig.setHwPwm(false);
-                WheelLog.AppConfig.setIsAlexovikFW(false);
+                appConfig.setHwPwm(false);
+                appConfig.setIsAlexovikFW(false);
                 bIsReady = true;
             } else if (dataS.startsWith("CF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                WheelLog.AppConfig.setHwPwm(true);
-                WheelLog.AppConfig.setIsAlexovikFW(false);
+                appConfig.setHwPwm(true);
+                appConfig.setIsAlexovikFW(false);
                 bIsReady = true;
             } else if (dataS.startsWith("BF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
                 model = "Begode Alexovik";
                 wd.setModel(model);
-                WheelLog.AppConfig.setHwPwm(true);
-                WheelLog.AppConfig.setIsAlexovikFW(true);
+                appConfig.setHwPwm(true);
+                appConfig.setIsAlexovikFW(true);
                 bIsReady = true;
             } else if (dataS.startsWith("MPU")) {
                 imu = dataS.substring(1, 7).trim();
@@ -76,11 +79,11 @@ public class GotwayAdapter extends BaseAdapter {
             if (unpacker.addChar(c)) {
 
                 byte[] buff = unpacker.getBuffer();
-                Boolean bIsAlexovikFW = WheelLog.AppConfig.getIsAlexovikFW();
-                Boolean useRatio = WheelLog.AppConfig.getUseRatio();
-                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                Boolean autoVoltage = !bIsAlexovikFW ? WheelLog.AppConfig.getAutoVoltage() : false;
-                int gotwayNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
+                Boolean bIsAlexovikFW = appConfig.getIsAlexovikFW();
+                Boolean useRatio = appConfig.getUseRatio();
+                Boolean useBetterPercents = appConfig.getUseBetterPercents();
+                Boolean autoVoltage = !bIsAlexovikFW ? appConfig.getAutoVoltage() : false;
+                int gotwayNegative = Integer.parseInt(appConfig.getGotwayNegative());
                 if (buff[18] == (byte) 0x07) System.out.println(String.format(Locale.US,StringUtil.toHexString(buff)));
                 //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
                 if (buff[18] == (byte) 0x00) {
@@ -166,7 +169,7 @@ public class GotwayAdapter extends BaseAdapter {
                     {
                         int pedalsMode = buff[6] & 0x03;
                         if (lock_Changes == 0)
-                            WheelLog.AppConfig.setPedalsMode(String.valueOf(pedalsMode));
+                            appConfig.setPedalsMode(String.valueOf(pedalsMode));
                         else
                             lock_Changes -= 1;
                     }
@@ -195,15 +198,15 @@ public class GotwayAdapter extends BaseAdapter {
                         int ledMode = buff[13] & 0xFF;
                         int lightMode = buff[15] & 0x03;
                         if (lock_Changes == 0) {
-                            WheelLog.AppConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
-                            WheelLog.AppConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
-                            WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
-                            WheelLog.AppConfig.setLedMode(String.valueOf(ledMode));
+                            appConfig.setPedalsMode(String.valueOf(2 - pedalsMode));
+                            appConfig.setAlarmMode(String.valueOf(speedAlarms)); //CheckMe
+                            appConfig.setLightMode(String.valueOf(lightMode));
+                            appConfig.setLedMode(String.valueOf(ledMode));
                             if (!fw.equals("-"))
                             {
-                                WheelLog.AppConfig.setGwInMiles(inMiles == 1);
-                                WheelLog.AppConfig.setWheelMaxSpeed(tiltBackSpeed);
-                                WheelLog.AppConfig.setRollAngle(String.valueOf(rollAngle));
+                                appConfig.setGwInMiles(inMiles == 1);
+                                appConfig.setWheelMaxSpeed(tiltBackSpeed);
+                                appConfig.setRollAngle(String.valueOf(rollAngle));
                             }
                         } else {
                             lock_Changes -= 1;
@@ -254,27 +257,27 @@ public class GotwayAdapter extends BaseAdapter {
                         checkFirmware();
                     }
                     if (lock_Changes == 0) {
-                        WheelLog.AppConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
-                        WheelLog.AppConfig.setBrakingCurrent(buff[3] & 0xFF);
-                        WheelLog.AppConfig.setRotationControl((buff[4] & 0x01) != (byte) 0);
-                        WheelLog.AppConfig.setRotationAngle((buff[5] & 0xFF) + 260);
-                        WheelLog.AppConfig.setAdvancedSettings((buff[6] & 0x01)!= (byte) 0);
-                        WheelLog.AppConfig.setProportionalFactor(buff[7] & 0xFF);
-                        WheelLog.AppConfig.setIntegralFactor(buff[8] & 0xFF);
-                        WheelLog.AppConfig.setDifferentialFactor(buff[9] & 0xFF);
-                        WheelLog.AppConfig.setDynamicCompensation(buff[10] & 0xFF);
-                        WheelLog.AppConfig.setDynamicCompensationFilter(buff[11] & 0xFF);
-                        WheelLog.AppConfig.setAccelerationCompensation(buff[12] & 0xFF);
-                        WheelLog.AppConfig.setProportionalCurrentFactorQ(buff[14] & 0xFF);
-                        WheelLog.AppConfig.setIntegralCurrentFactorQ(buff[15] & 0xFF);
-                        WheelLog.AppConfig.setProportionalCurrentFactorD(buff[16] & 0xFF);
-                        WheelLog.AppConfig.setIntegralCurrentFactorD(buff[17] & 0xFF);
+                        appConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
+                        appConfig.setBrakingCurrent(buff[3] & 0xFF);
+                        appConfig.setRotationControl((buff[4] & 0x01) != (byte) 0);
+                        appConfig.setRotationAngle((buff[5] & 0xFF) + 260);
+                        appConfig.setAdvancedSettings((buff[6] & 0x01)!= (byte) 0);
+                        appConfig.setProportionalFactor(buff[7] & 0xFF);
+                        appConfig.setIntegralFactor(buff[8] & 0xFF);
+                        appConfig.setDifferentialFactor(buff[9] & 0xFF);
+                        appConfig.setDynamicCompensation(buff[10] & 0xFF);
+                        appConfig.setDynamicCompensationFilter(buff[11] & 0xFF);
+                        appConfig.setAccelerationCompensation(buff[12] & 0xFF);
+                        appConfig.setProportionalCurrentFactorQ(buff[14] & 0xFF);
+                        appConfig.setIntegralCurrentFactorQ(buff[15] & 0xFF);
+                        appConfig.setProportionalCurrentFactorD(buff[16] & 0xFF);
+                        appConfig.setIntegralCurrentFactorD(buff[17] & 0xFF);
                     } else {
                         lock_Changes -= 1;
                     }
                 }
                 if (newDataFound) {
-                    Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
+                    Boolean hwPwmEnabled = appConfig.getHwPwm();
                     wd.calculatePower();
                     if (hwPwmEnabled || truePWM) {
                         wd.updatePwm();
@@ -305,8 +308,8 @@ public class GotwayAdapter extends BaseAdapter {
                     } else if (fw.equals("")) {
                         fw = "-";
                         wd.setVersion(fw);
-                        WheelLog.AppConfig.setHwPwm(false);
-                        WheelLog.AppConfig.setIsAlexovikFW(false);
+                        appConfig.setHwPwm(false);
+                        appConfig.setIsAlexovikFW(false);
                         bIsReady = true;
                     }
                 }
@@ -368,8 +371,8 @@ public class GotwayAdapter extends BaseAdapter {
         if (frameFFcount > 5) {
             model = "Begode Alexovik";
             WheelData.getInstance().setModel(model);
-            WheelLog.AppConfig.setHwPwm(true);
-            WheelLog.AppConfig.setIsAlexovikFW(true);
+            appConfig.setHwPwm(true);
+            appConfig.setIsAlexovikFW(true);
             bIsReady = true;
             frameFFcount = 0;
         }
@@ -468,7 +471,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
+        int lightMode = Integer.parseInt(appConfig.getLightMode()) + 1;
         if (lightMode > lightModeStrobe) {
             lightMode = lightModeOff;
         }
@@ -476,10 +479,10 @@ public class GotwayAdapter extends BaseAdapter {
         // For custom firmware with enabled tiltback available only light off and on.
         // Strobe is using for tiltback warning. Detect via specific for this firmware alarm mode.
         if (lightMode > lightModeOn
-                && WheelLog.AppConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
+                && appConfig.getAlarmMode().equals(String.valueOf(alarmModeCF))) {
             lightMode = lightModeOff;
         }
-        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+        appConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
 
@@ -557,7 +560,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        switch (WheelLog.AppConfig.getGotwayVoltage()) {
+        switch (appConfig.getGotwayVoltage()) {
             case "0":
                 return 16;
             case "1":
@@ -650,8 +653,8 @@ public class GotwayAdapter extends BaseAdapter {
     private double getScaledVoltage(double value) {
         int voltage = 0;
         double scaler = 1.0;
-        if (!WheelLog.AppConfig.getGotwayVoltage().equals("")) {
-            voltage = Integer.parseInt(WheelLog.AppConfig.getGotwayVoltage());
+        if (!appConfig.getGotwayVoltage().equals("")) {
+            voltage = Integer.parseInt(appConfig.getGotwayVoltage());
         }
         switch (voltage) {
             case 0:

@@ -18,18 +18,23 @@ import com.garmin.android.connectiq.exception.InvalidStateException
 import com.garmin.android.connectiq.exception.ServiceUnavailableException
 import fi.iki.elonen.NanoHTTPD
 import org.json.JSONObject
+import org.koin.android.ext.android.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
 
 class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListener, IQApplicationEventListener, ConnectIQListener {
+    private val appConfig: AppConfig by inject()
+    private val notifications: NotificationUtil by inject()
     private var keepAliveTimer: Timer? = null
     private var mSdkReady = false
     private var mConnectIQ: ConnectIQ? = getInstance(this, IQConnectType.WIRELESS)
     private var mDevice: IQDevice? = null
     private var mApp: IQApp? = null
     private var mWebServer: GarminConnectIQWebServer? = null
-    private var useBeta = WheelLog.AppConfig.useGarminBetaCompanion
+    private var useBeta = appConfig.useGarminBetaCompanion
 
     override fun onBind(intent: Intent): IBinder? {
         Timber.i("onBind")
@@ -47,7 +52,7 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
             IQApp(STABLE_APP_ID)
         }
         mConnectIQ?.initialize(this, false, this)
-        startForeground(Constants.MAIN_NOTIFICATION_ID, WheelLog.Notifications.notification)
+        startForeground(Constants.MAIN_NOTIFICATION_ID, notifications.notification)
         return START_STICKY
     }
 
@@ -235,8 +240,9 @@ class GarminConnectIQ : Service(), IQApplicationInfoListener, IQDeviceEventListe
     }
 }
 
-internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1", 0) {
+internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1", 0), KoinComponent {
     private var applicationContext: Context
+    private val appConfig: AppConfig by inject()
 
     init {
         start(SOCKET_READ_TIMEOUT, false)
@@ -244,12 +250,12 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
     }
 
     private fun playHorn() {
-        playBeep(WheelLog.AppConfig.hornMode == 1, false)
+        playBeep(appConfig.hornMode == 1, false)
     }
 
     private val speedStr
         get() = run {
-            val speed = if (!WheelLog.AppConfig.useMph) {
+            val speed = if (!appConfig.useMph) {
                 WheelData.getInstance().speedDouble
             } else {
                 MathsUtil.kmToMiles(WheelData.getInstance().speedDouble)
@@ -260,28 +266,28 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
         }
 
     private val topSpeed
-        get() = if (!WheelLog.AppConfig.useMph) {
+        get() = if (!appConfig.useMph) {
             WheelData.getInstance().topSpeed
         } else {
             MathsUtil.kmToMiles(WheelData.getInstance().topSpeed.toDouble()).toInt()
         }
 
     private val temperature
-        get() = if (!WheelLog.AppConfig.useMph) {
+        get() = if (!appConfig.useMph) {
             WheelData.getInstance().temperature
         } else {
             MathsUtil.celsiusToFahrenheit(WheelData.getInstance().temperature.toDouble()).toInt()
         }
 
     private val avgSpeed
-        get() = if (!WheelLog.AppConfig.useMph) {
+        get() = if (!appConfig.useMph) {
             WheelData.getInstance().averageSpeedDouble.toInt()
         } else {
             MathsUtil.kmToMiles(WheelData.getInstance().averageSpeedDouble).toInt()
         }
 
     private val avgRidingSpeed
-        get() = if (!WheelLog.AppConfig.useMph) {
+        get() = if (!appConfig.useMph) {
             WheelData.getInstance().averageRidingSpeedDouble.toInt()
         } else {
             MathsUtil.kmToMiles(WheelData.getInstance().averageRidingSpeedDouble).toInt()
@@ -289,7 +295,7 @@ internal class GarminConnectIQWebServer(context: Context) : NanoHTTPD("127.0.0.1
 
     override fun serve(session: IHTTPSession): Response {
         val wd = WheelData.getInstance()
-        val ac = WheelLog.AppConfig
+        val ac = appConfig
       
         return when (session.method) {
             Method.GET -> {

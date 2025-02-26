@@ -13,6 +13,7 @@ import com.cooper.wheellog.utils.Constants.WHEEL_TYPE;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.koin.java.KoinJavaComponent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import timber.log.Timber;
 
 public class WheelData {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static final int TIME_BUFFER = 10;
     private static WheelData mInstance;
     private Timer ridingTimerControl;
@@ -175,7 +177,7 @@ public class WheelData {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Context mContext = WheelLog.Companion.getAppContext();
+                Context mContext =  KoinJavaComponent.get(Context.class);
                 Alarms.INSTANCE.checkAlarm(mCalculatedPwm, mContext);
             }
         }, 1000, 200000);
@@ -186,13 +188,13 @@ public class WheelData {
 //        mCurrent = 100_00;
         mTemperature = 60_00;
 
-        WheelLog.AppConfig.setAlarmTemperature(10);
+        appConfig.setAlarmTemperature(10);
 //        WheelLog.AppConfig.setAlarmCurrent(10);
 
 //        WheelLog.AppConfig.setAlarm1Speed(1);
 //        WheelLog.AppConfig.setAlarm1Battery(70);
 //        WheelLog.AppConfig.setAlarmFactor1(10_00);
-        WheelLog.AppConfig.setPwmBasedAlarms(false);
+        appConfig.setPwmBasedAlarms(false);
     }
     /////
 
@@ -578,7 +580,7 @@ public class WheelData {
         boolean isChanged = wheelType != mWheelType;
         mWheelType = wheelType;
         if (isChanged) {
-            Context mContext = WheelLog.Companion.getAppContext();
+            Context mContext = KoinJavaComponent.get(Context.class);
             Intent intent = new Intent(Constants.ACTION_WHEEL_TYPE_CHANGED);
             mContext.sendBroadcast(intent);
         }
@@ -605,7 +607,8 @@ public class WheelData {
         mModel = model;
         if (isChanged) {
             Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
-            WheelLog.Companion.getAppContext().sendBroadcast(intent);
+            Context mContext = KoinJavaComponent.get(Context.class);
+            mContext.sendBroadcast(intent);
         }
 
     }
@@ -631,7 +634,7 @@ public class WheelData {
         if (adapter == null) {
             return 0;
         }
-        return WheelLog.AppConfig.getCellVoltageTiltback() / 100d * adapter.getCellsForWheel();
+        return appConfig.getCellVoltageTiltback() / 100d * adapter.getCellsForWheel();
     }
 
     public boolean isVoltageTiltbackUnsupported() {
@@ -641,10 +644,10 @@ public class WheelData {
     String getChargeTime() {
         double maxVoltage = getMaxVoltageForWheel();
         double minVoltage = getVoltageTiltbackForWheel();
-        double whInOneV = WheelLog.AppConfig.getBatteryCapacity() / (maxVoltage - minVoltage);
+        double whInOneV = appConfig.getBatteryCapacity() / (maxVoltage - minVoltage);
         double needToMax = maxVoltage - getVoltageDouble();
         double needToMaxInWh = needToMax * whInOneV;
-        double chargePower = maxVoltage * WheelLog.AppConfig.getChargingPower() / 10d;
+        double chargePower = maxVoltage * appConfig.getChargingPower() / 10d;
         int chargeTime = (int) (needToMaxInWh / chargePower * 60);
         return getSpeed() == 0
                 ? String.format(Locale.US, "~%d min", chargeTime)
@@ -875,9 +878,9 @@ public class WheelData {
 
     public double getUserDistanceDouble() {
         if (mUserDistance == 0 && mTotalDistance != 0) {
-            mUserDistance = WheelLog.AppConfig.getUserDistance();
+            mUserDistance = appConfig.getUserDistance();
             if (mUserDistance == 0) {
-                WheelLog.AppConfig.setUserDistance(mTotalDistance);
+                appConfig.setUserDistance(mTotalDistance);
                 mUserDistance = mTotalDistance;
             }
         }
@@ -896,7 +899,7 @@ public class WheelData {
 
     public void resetUserDistance() {
         if (mTotalDistance != 0) {
-            WheelLog.AppConfig.setUserDistance(mTotalDistance);
+            appConfig.setUserDistance(mTotalDistance);
             mUserDistance = mTotalDistance;
         }
     }
@@ -1020,15 +1023,15 @@ public class WheelData {
     }
 
     public void calculatePwm() {
-        double rotationSpeed = WheelLog.AppConfig.getRotationSpeed() / 10d;
-        double rotationVoltage = WheelLog.AppConfig.getRotationVoltage() / 10d;
-        double powerFactor = WheelLog.AppConfig.getPowerFactor() / 100d;
+        double rotationSpeed = appConfig.getRotationSpeed() / 10d;
+        double rotationVoltage = appConfig.getRotationVoltage() / 10d;
+        double powerFactor = appConfig.getPowerFactor() / 100d;
         mCalculatedPwm = mSpeed / (rotationSpeed / rotationVoltage * mVoltage * powerFactor);
         setMaxPwm(mCalculatedPwm);
     }
 
     public void setBatteryLevel(int battery) {
-        if (WheelLog.AppConfig.getCustomPercents()) {
+        if (appConfig.getCustomPercents()) {
             double maxVoltage = getMaxVoltageForWheel();
             double minVoltage = getVoltageTiltbackForWheel();
             double voltagePercentStep = (maxVoltage - minVoltage) / 100.0;
@@ -1098,7 +1101,7 @@ public class WheelData {
     }
 
     private void CheckMuteMusic() {
-        if (!WheelLog.AppConfig.getUseStopMusic())
+        if (!appConfig.getUseStopMusic())
             return;
 
         final double muteSpeedThreshold = 3.5;
@@ -1204,8 +1207,8 @@ public class WheelData {
     }
 
     boolean detectWheel(String deviceAddress, Context mContext, int servicesResId) {
-        WheelLog.AppConfig.setLastMac(deviceAddress);
-        String advData = WheelLog.AppConfig.getAdvDataForWheel();
+        appConfig.setLastMac(deviceAddress);
+        String advData = appConfig.getAdvDataForWheel();
         String adapterName = "";
         protoVer = "";
         if (StringUtil.inArray(advData, new String[]{"4e421300000000ec", "4e421302000000ea",})) {
@@ -1299,7 +1302,7 @@ public class WheelData {
                 var notifyCharacteristic = targetService.getCharacteristic(Constants.GOTWAY_READ_CHARACTER_UUID);
                 mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
                 // Let the user know it's working by making the wheel beep
-                if (WheelLog.AppConfig.getConnectBeep())
+                if (appConfig.getConnectBeep())
                     mBluetoothService.writeWheelCharacteristic("b".getBytes());
 
                 return true;
@@ -1310,7 +1313,7 @@ public class WheelData {
                 mBluetoothService.setCharacteristicNotification(notifyCharacteristic, true);
                 BluetoothGattDescriptor descriptor = notifyCharacteristic.getDescriptor(Constants.INMOTION_DESCRIPTER_UUID);
                 mBluetoothService.writeWheelDescriptor(descriptor, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                String inmotionPassword = WheelLog.AppConfig.getPasswordForWheel();
+                String inmotionPassword = appConfig.getPasswordForWheel();
                 if (inmotionPassword.length() > 0) {
                     InMotionAdapter.getInstance().startKeepAliveTimer(inmotionPassword);
                     return true;
@@ -1404,7 +1407,7 @@ public class WheelData {
                 return true;
             }
         } else {
-            WheelLog.AppConfig.setLastMac("");
+            appConfig.setLastMac("");
             Timber.i("Protocol recognized as Unknown");
             for (BluetoothGattService service : wheelServices) {
                 Timber.i("Service: %s", service.getUuid().toString());

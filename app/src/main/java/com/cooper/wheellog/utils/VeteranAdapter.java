@@ -1,7 +1,10 @@
 package com.cooper.wheellog.utils;
 
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
 import com.cooper.wheellog.WheelLog;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Locale;
@@ -9,6 +12,7 @@ import java.util.zip.CRC32;
 import timber.log.Timber;
 
 public class VeteranAdapter extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static VeteranAdapter INSTANCE;
     veteranUnpacker unpacker = new veteranUnpacker();
     private static final int WAITING_TIME = 100;
@@ -28,9 +32,9 @@ public class VeteranAdapter extends BaseAdapter {
         for (byte c : data) {
             if (unpacker.addChar(c)) {
                 byte[] buff = unpacker.getBuffer();
-                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
-                Boolean hwPwmEnabled = WheelLog.AppConfig.getHwPwm();
-                int veteranNegative = Integer.parseInt(WheelLog.AppConfig.getGotwayNegative());
+                Boolean useBetterPercents = appConfig.getUseBetterPercents();
+                Boolean hwPwmEnabled = appConfig.getHwPwm();
+                int veteranNegative = Integer.parseInt(appConfig.getGotwayNegative());
                 int voltage = MathsUtil.shortFromBytesBE(buff,4);
                 int speed = MathsUtil.signedShortFromBytesBE(buff,6) * 10;
                 int distance = MathsUtil.intFromBytesRevBE(buff,8);
@@ -235,7 +239,7 @@ public class VeteranAdapter extends BaseAdapter {
     }
     public int getVer() {
         if (mVer >=2) {
-            WheelLog.AppConfig.setHwPwm(true);
+            appConfig.setHwPwm(true);
         }
         return mVer;
     }
@@ -255,8 +259,8 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !WheelLog.AppConfig.getLightEnabled();
-        WheelLog.AppConfig.setLightEnabled(light);
+        boolean light = !appConfig.getLightEnabled();
+        appConfig.setLightEnabled(light);
         setLightState(light);
     }
 

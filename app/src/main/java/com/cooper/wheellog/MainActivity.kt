@@ -56,12 +56,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
 // import com.yandex.metrica.YandexMetrica
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+    private val appConfig: AppConfig by inject()
+    private val notifications: NotificationUtil by inject()
+    private val volumeKeyController: VolumeKeyController by inject()
     private var eventsLoggingTree: EventsLoggingTree? = null
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(LocaleManager.setLocale(base))
@@ -178,10 +182,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        if (WheelLog.AppConfig.usePipMode
+        if (appConfig.usePipMode
             && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
             && !this.isInPictureInPictureMode) {
-            when (WheelLog.AppConfig.pipBlock) {
+            when (appConfig.pipBlock) {
                 getString(R.string.consumption) -> speedModel.title = getString(R.string.consumption)
                 else -> speedModel.title = getString(R.string.speed)
             }
@@ -202,15 +206,15 @@ class MainActivity : AppCompatActivity() {
             ConnectionState.CONNECTED -> {
                 pagerAdapter.configureSecondDisplay()
                 if (mDeviceAddress.isNotEmpty()) {
-                    WheelLog.AppConfig.lastMac = mDeviceAddress
-                    if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
+                    appConfig.lastMac = mDeviceAddress
+                    if (appConfig.autoUploadEc && appConfig.ecToken != null) {
                         ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
-                            WheelLog.AppConfig.lastMac,
+                            appConfig.lastMac,
                             this
                         ) { }
                     }
-                    if (WheelLog.AppConfig.useBeepOnVolumeUp) {
-                        WheelLog.VolumeKeyController.setActive(true)
+                    if (appConfig.useBeepOnVolumeUp) {
+                        volumeKeyController.setActive(true)
                     }
                 }
                 hideSnackBar()
@@ -223,8 +227,8 @@ class MainActivity : AppCompatActivity() {
                     showSnackBar(text, Snackbar.LENGTH_INDEFINITE)
                 }
             } else {
-                if (WheelLog.AppConfig.useBeepOnVolumeUp) {
-                    WheelLog.VolumeKeyController.setActive(false)
+                if (appConfig.useBeepOnVolumeUp) {
+                    volumeKeyController.setActive(false)
                 }
             }
             else -> {}
@@ -322,7 +326,7 @@ class MainActivity : AppCompatActivity() {
                     Timber.i("Wheel type switched")
                 }
                 Constants.ACTION_WHEEL_DATA_AVAILABLE -> {
-                    when (WheelLog.AppConfig.pipBlock) {
+                    when (appConfig.pipBlock) {
                         getString(R.string.consumption) -> speedModel.value.floatValue = Calculator.whByKm.toFloat()
                         else -> speedModel.value.floatValue = WheelData.getInstance().speed / 10f
                     }
@@ -364,24 +368,24 @@ class MainActivity : AppCompatActivity() {
                     when (connectionState) {
                         ConnectionState.CONNECTED -> {
                             if (!LoggingService.isInstanceCreated() &&
-                                WheelLog.AppConfig.autoLog &&
-                                WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore == 0f
+                                appConfig.autoLog &&
+                                appConfig.startAutoLoggingWhenIsMovingMore == 0f
                             ) {
                                 toggleLoggingService()
                             }
                             if (WheelData.getInstance().wheelType == WHEEL_TYPE.KINGSONG) {
                                 KingsongAdapter.getInstance().requestNameData()
                             }
-                            if (WheelLog.AppConfig.autoWatch && wearOs == null) {
+                            if (appConfig.autoWatch && wearOs == null) {
                                 toggleWatch()
                             }
-                            WheelLog.Notifications.notificationMessageId = R.string.connected
+                            notifications.notificationMessageId = R.string.connected
                         }
                         ConnectionState.DISCONNECTING, ConnectionState.DISCONNECTED -> if (isWheelSearch) {
                             if (intent.hasExtra(Constants.INTENT_EXTRA_BLE_AUTO_CONNECT)) {
-                                WheelLog.Notifications.notificationMessageId = R.string.searching
+                                notifications.notificationMessageId = R.string.searching
                             } else {
-                                WheelLog.Notifications.notificationMessageId = R.string.connecting
+                                notifications.notificationMessageId = R.string.connecting
                             }
                         } else {
                             when (WheelData.getInstance().wheelType) {
@@ -403,11 +407,11 @@ class MainActivity : AppCompatActivity() {
                                 WHEEL_TYPE.NINEBOT -> NinebotAdapter.newInstance()
                                 else -> {}
                             }
-                            WheelLog.Notifications.notificationMessageId = R.string.disconnected
+                            notifications.notificationMessageId = R.string.disconnected
                         }
                         else -> {}
                     }
-                    WheelLog.Notifications.update()
+                    notifications.update()
                 }
                 Constants.ACTION_PREFERENCE_RESET -> {
                     Timber.i("Reset battery lowest")
@@ -418,17 +422,17 @@ class MainActivity : AppCompatActivity() {
                     if (wearOs != null) {
                         wearOs!!.sendUpdateData()
                     }
-                    if (WheelLog.AppConfig.mibandMode !== MiBandEnum.Alarm) {
-                        WheelLog.Notifications.update()
+                    if (appConfig.mibandMode !== MiBandEnum.Alarm) {
+                        notifications.update()
                     }
                     if (!LoggingService.isInstanceCreated() &&
-                        WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore != 0f &&
-                        WheelLog.AppConfig.autoLog &&
-                        WheelData.getInstance().speedDouble > WheelLog.AppConfig.startAutoLoggingWhenIsMovingMore
+                        appConfig.startAutoLoggingWhenIsMovingMore != 0f &&
+                        appConfig.autoLog &&
+                        WheelData.getInstance().speedDouble > appConfig.startAutoLoggingWhenIsMovingMore
                     ) {
                         toggleLoggingService()
                     }
-                    if (WheelLog.AppConfig.alarmsEnabled) {
+                    if (appConfig.alarmsEnabled) {
                         checkAlarm(
                             WheelData.getInstance().calculatedPwm / 100,
                             applicationContext
@@ -437,7 +441,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 Constants.ACTION_PEBBLE_SERVICE_TOGGLED -> {
                     setMenuIconStates()
-                    WheelLog.Notifications.update()
+                    notifications.update()
                 }
                 Constants.ACTION_LOGGING_SERVICE_TOGGLED -> {
                     val running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
@@ -453,19 +457,19 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     setMenuIconStates()
-                    WheelLog.Notifications.update()
+                    notifications.update()
                 }
                 Constants.NOTIFICATION_BUTTON_CONNECTION -> {
                     toggleConnectToWheel()
-                    WheelLog.Notifications.update()
+                    notifications.update()
                 }
                 Constants.NOTIFICATION_BUTTON_LOGGING -> {
                     toggleLogging()
-                    WheelLog.Notifications.update()
+                    notifications.update()
                 }
                 Constants.NOTIFICATION_BUTTON_WATCH -> {
                     toggleWatch()
-                    WheelLog.Notifications.update()
+                    notifications.update()
                 }
                 Constants.NOTIFICATION_BUTTON_BEEP -> playBeep()
                 Constants.NOTIFICATION_BUTTON_LIGHT -> if (WheelData.getInstance().adapter != null) {
@@ -479,7 +483,7 @@ class MainActivity : AppCompatActivity() {
     private fun toggleWatch() {
         togglePebbleService()
         // TODO: Fix garmin for API 34
-        // if (WheelLog.AppConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
+        // if (appConfig.garminConnectIqEnable) toggleGarminConnectIQ() else stopGarminConnectIQ()
         toggleWearOs()
     }
 
@@ -500,16 +504,16 @@ class MainActivity : AppCompatActivity() {
             miWheel!!.isEnabled = true
             miWheel!!.icon!!.alpha = 255
         }
-        when (WheelLog.AppConfig.mibandMode) {
+        when (appConfig.mibandMode) {
             MiBandEnum.Alarm -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandAlarm))
             MiBandEnum.Min -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMin))
             MiBandEnum.Medium -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMed))
             MiBandEnum.Max -> miBand!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuMiBandMax))
         }
 
-        miBand?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("miband")
-        miWatch?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("watch")
-        mMenu?.findItem(R.id.miReset)?.isVisible = WheelLog.AppConfig.mainMenuButtons.contains("reset")
+        miBand?.isVisible = appConfig.mainMenuButtons.contains("miband")
+        miWatch?.isVisible = appConfig.mainMenuButtons.contains("watch")
+        mMenu?.findItem(R.id.miReset)?.isVisible = appConfig.mainMenuButtons.contains("reset")
 
         if (PebbleService.isInstanceCreated()) {
             miWatch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuWatchOn))
@@ -564,13 +568,13 @@ class MainActivity : AppCompatActivity() {
         val pages = ArrayList<Int>()
         pages.add(R.layout.main_view_main)
         pages.add(R.layout.main_view_params_list)
-        if (WheelLog.AppConfig.pageGraph) {
+        if (appConfig.pageGraph) {
             pages.add(R.layout.main_view_graph)
         }
-        if (WheelLog.AppConfig.pageTrips) {
+        if (appConfig.pageTrips) {
             pages.add(R.layout.main_view_trips)
         }
-        if (WheelLog.AppConfig.pageEvents) {
+        if (appConfig.pageEvents) {
             pages.add(R.layout.main_view_events)
         }
         pagerAdapter = MainPageAdapter(pages, this)
@@ -594,8 +598,8 @@ class MainActivity : AppCompatActivity() {
             Process.killProcess(Process.myPid())
             return
         }
-        AppCompatDelegate.setDefaultNightMode(WheelLog.AppConfig.dayNightThemeMode)
-        setTheme(WheelLog.AppConfig.appTheme)
+        AppCompatDelegate.setDefaultNightMode(appConfig.dayNightThemeMode)
+        setTheme(appConfig.appTheme)
         super.onCreate(savedInstanceState)
         volumeControlStream = AudioManager.STREAM_MUSIC
 
@@ -625,7 +629,7 @@ class MainActivity : AppCompatActivity() {
 
         // clock font
         binding.textClock.typeface = ThemeManager.getTypeface(applicationContext)
-        mDeviceAddress = WheelLog.AppConfig.lastMac
+        mDeviceAddress = appConfig.lastMac
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
@@ -660,7 +664,7 @@ class MainActivity : AppCompatActivity() {
             makeCoreIntentFilter(),
             ContextCompat.RECEIVER_EXPORTED
         )
-        WheelLog.Notifications.update()
+        notifications.update()
 
         binding.settingsView.apply {
             setContent {
@@ -677,7 +681,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkClockVisible() {
-        if (WheelLog.AppConfig.showClock) {
+        if (appConfig.showClock) {
             binding.textClock.visibility = View.VISIBLE
         } else {
             binding.textClock.visibility = View.GONE
@@ -698,7 +702,7 @@ class MainActivity : AppCompatActivity() {
             pagerAdapter.configureSecondDisplay()
         }
         if (checkNotificationsPermissions(this)) {
-            WheelLog.Notifications.update()
+            notifications.update()
         }
         try {
             ContextCompat.registerReceiver(
@@ -802,7 +806,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                WheelLog.Notifications.close()
+                notifications.close()
                 Timber.uproot(eventsLoggingTree!!)
                 eventsLoggingTree!!.close()
                 eventsLoggingTree = null
@@ -841,7 +845,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Themes
-        if (WheelLog.AppConfig.appTheme == R.style.AJDMTheme) {
+        if (appConfig.appTheme == R.style.AJDMTheme) {
             val miSettings = mMenu!!.findItem(R.id.miSettings)
             miSettings.setIcon(ThemeManager.getId(ThemeIconEnum.MenuSettings))
             miSearch!!.setIcon(ThemeManager.getId(ThemeIconEnum.MenuBluetooth))
@@ -861,13 +865,13 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.miLogging -> {
-                if (LoggingService.isInstanceCreated() && WheelLog.AppConfig.continueThisDayLog) {
+                if (LoggingService.isInstanceCreated() && appConfig.continueThisDayLog) {
                     val dialog = AlertDialog.Builder(this)
                         .setTitle(R.string.continue_this_day_log_alert_title)
                         .setMessage(R.string.continue_this_day_log_alert_description)
                         .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
-                            WheelLog.AppConfig.continueThisDayLogMacException =
-                                WheelLog.AppConfig.lastMac
+                            appConfig.continueThisDayLogMacException =
+                                appConfig.lastMac
                             toggleLogging()
                         }
                         .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> toggleLogging() }
@@ -889,8 +893,8 @@ class MainActivity : AppCompatActivity() {
 
                                 override fun onFinish() {
                                     if (dialog.isShowing) {
-                                        WheelLog.AppConfig.continueThisDayLogMacException =
-                                            WheelLog.AppConfig.lastMac
+                                        appConfig.continueThisDayLogMacException =
+                                            appConfig.lastMac
                                         toggleLogging()
                                         dialog.dismiss()
                                     }
@@ -1059,9 +1063,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toggleSwitchMiBand() {
-        val buttonMiBand = WheelLog.AppConfig.mibandMode.next()
-        WheelLog.AppConfig.mibandMode = buttonMiBand
-        WheelLog.Notifications.update()
+        val buttonMiBand = appConfig.mibandMode.next()
+        appConfig.mibandMode = buttonMiBand
+        notifications.update()
         when (buttonMiBand) {
             MiBandEnum.Alarm -> showSnackBar(R.string.alarmmiband)
             MiBandEnum.Min -> showSnackBar(R.string.minmiband)
@@ -1125,7 +1129,7 @@ class MainActivity : AppCompatActivity() {
             pagerAdapter.updateScreen(true)
             setMenuIconStates()
             toggleConnectToWheel()
-            if (WheelLog.AppConfig.autoUploadEc && WheelLog.AppConfig.ecToken != null) {
+            if (appConfig.autoUploadEc && appConfig.ecToken != null) {
                 ElectroClub.instance.getAndSelectGarageByMacOrShowChooseDialog(
                     mDeviceAddress,
                     this

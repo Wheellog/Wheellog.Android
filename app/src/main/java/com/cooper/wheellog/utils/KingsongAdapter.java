@@ -1,6 +1,8 @@
 package com.cooper.wheellog.utils;
+import com.cooper.wheellog.AppConfig;
 import com.cooper.wheellog.WheelData;
-import com.cooper.wheellog.WheelLog;
+
+import org.koin.java.KoinJavaComponent;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -8,6 +10,7 @@ import java.util.Objects;
 import timber.log.Timber;
 
 public class KingsongAdapter extends BaseAdapter {
+    private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
     private static KingsongAdapter INSTANCE;
 
     private int mKSAlarm1Speed = 0;
@@ -48,7 +51,7 @@ public class KingsongAdapter extends BaseAdapter {
                 }
 
                 int battery;
-                Boolean useBetterPercents = WheelLog.AppConfig.getUseBetterPercents();
+                Boolean useBetterPercents = appConfig.getUseBetterPercents();
                 if (is84vWheel()) {
                     if (useBetterPercents) {
                         if (voltage > 8350) {
@@ -183,13 +186,13 @@ public class KingsongAdapter extends BaseAdapter {
                 return false;
             } else if ((data[16] & 255) == 0xA4 || (data[16] & 255) == 0xB5) { //max speed and alerts
                 mWheelMaxSpeed = data[10] & 255;
-                WheelLog.AppConfig.setWheelMaxSpeed(mWheelMaxSpeed);
+                appConfig.setWheelMaxSpeed(mWheelMaxSpeed);
                 mKSAlarm3Speed = (data[8] & 255);
                 mKSAlarm2Speed = (data[6] & 255);
                 mKSAlarm1Speed = (data[4] & 255);
-                WheelLog.AppConfig.setWheelKsAlarm3(mKSAlarm3Speed);
-                WheelLog.AppConfig.setWheelKsAlarm2(mKSAlarm2Speed);
-                WheelLog.AppConfig.setWheelKsAlarm1(mKSAlarm1Speed);
+                appConfig.setWheelKsAlarm3(mKSAlarm3Speed);
+                appConfig.setWheelKsAlarm2(mKSAlarm2Speed);
+                appConfig.setWheelKsAlarm1(mKSAlarm1Speed);
                 // after received 0xa4 send same repeat data[2] =0x01 data[16] = 0x98
                 if ((data[16] & 255) == 164) {
                     data[16] = (byte) 0x98;
@@ -330,11 +333,11 @@ public class KingsongAdapter extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        int lightMode = Integer.parseInt(WheelLog.AppConfig.getLightMode()) + 1;
+        int lightMode = Integer.parseInt(appConfig.getLightMode()) + 1;
         if (lightMode > 2) {
             lightMode = 0;
         }
-        WheelLog.AppConfig.setLightMode(String.valueOf(lightMode));
+        appConfig.setLightMode(String.valueOf(lightMode));
         setLightMode(lightMode);
     }
 

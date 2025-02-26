@@ -15,11 +15,13 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.FileUtil
+import com.cooper.wheellog.utils.NotificationUtil
 import com.cooper.wheellog.utils.ParserLogToWheelData
 import com.cooper.wheellog.utils.PermissionsUtil.checkExternalFilePermission
 import com.cooper.wheellog.utils.PermissionsUtil.checkLocationPermission
 import com.welie.blessed.ConnectionState
 import kotlinx.coroutines.*
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -27,6 +29,8 @@ import java.util.Date
 import java.util.Locale
 
 class LoggingService : Service() {
+    private val appConfig: AppConfig by inject()
+    private val notifications: NotificationUtil by inject()
     private var sdf: SimpleDateFormat? = null
     private var mLocation: Location? = null
     private var mLastLocation: Location? = null
@@ -83,7 +87,7 @@ class LoggingService : Service() {
                 return mBinder
             }
         }
-        logLocationData = WheelLog.AppConfig.logLocationData
+        logLocationData = appConfig.logLocationData
         if (logLocationData && !checkLocationPermission(this)) {
             showToast(R.string.logging_error_no_location_permission)
             logLocationData = false
@@ -91,8 +95,8 @@ class LoggingService : Service() {
         sdf = SimpleDateFormat("yyyy-MM-dd,HH:mm:ss.SSS", Locale.US)
         var writeToLastLog = false
         val mac = WheelData.getInstance().mac
-        if (WheelLog.AppConfig.continueThisDayLog &&
-            WheelLog.AppConfig.continueThisDayLogMacException != mac
+        if (appConfig.continueThisDayLog &&
+            appConfig.continueThisDayLogMacException != mac
         ) {
             val lastFileUtil = FileUtil.getLastLog(applicationContext)
             if (lastFileUtil?.file?.path?.contains(mac.replace(':', '_')) == true
@@ -122,7 +126,7 @@ class LoggingService : Service() {
                 stopSelf()
                 return mBinder
             }
-            WheelLog.AppConfig.continueThisDayLogMacException = ""
+            appConfig.continueThisDayLogMacException = ""
         }
         var locationHeaderString = ""
         if (logLocationData) {
@@ -134,7 +138,7 @@ class LoggingService : Service() {
                 .isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
             // Getting if the users wants to use GPS
-            var useGPS = WheelLog.AppConfig.useGps
+            var useGPS = appConfig.useGps
             if (!isGPSEnabled && !isNetworkEnabled) {
                 logLocationData = false
                 showToast(R.string.logging_error_all_location_providers_disabled)
@@ -184,16 +188,16 @@ class LoggingService : Service() {
     override fun onDestroy() {
         var isBusy = false
         if (logLocationData && mLastLocation != null) {
-            WheelLog.AppConfig.lastLocationLaltitude = mLastLocation!!.latitude
-            WheelLog.AppConfig.lastLocationLongitude = mLastLocation!!.longitude
+            appConfig.lastLocationLaltitude = mLastLocation!!.latitude
+            appConfig.lastLocationLongitude = mLastLocation!!.longitude
         }
         val path = fileUtil.absolutePath
         fileUtil.close()
         Timber.wtf("DataLogger Stopping...")
-        WheelLog.Notifications.setCustomTitle("Uploading tack...")
+        notifications.setCustomTitle("Uploading tack...")
 
         // electro.club upload
-        if (fileUtil.fileName != "" && WheelLog.AppConfig.autoUploadEc) {
+        if (fileUtil.fileName != "" && appConfig.autoUploadEc) {
             isBusy = true
             try {
                 Timber.wtf("Uploading %s to electro.club", fileUtil.fileName)
@@ -205,7 +209,7 @@ class LoggingService : Service() {
                 ) { success: Boolean? ->
                     if (!success!!) {
                         Timber.wtf("Upload failed...")
-                        WheelLog.Notifications.setCustomTitle("Upload failed.")
+                        notifications.setCustomTitle("Upload failed.")
                     }
                     reallyDestroy(null)
                 }

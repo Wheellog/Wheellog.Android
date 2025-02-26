@@ -1,11 +1,12 @@
 package com.cooper.wheellog.utils
 
 import android.content.Context
-import com.cooper.wheellog.WheelLog
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-abstract class BaseAdapter {
-    val context: Context?
-        get() = WheelLog.appContext
+abstract class BaseAdapter: KoinComponent {
+    val context: Context
+        get() = get()
 
     abstract fun decode(data: ByteArray?): Boolean
     open fun updatePedalsMode(pedalsMode: Int) {}

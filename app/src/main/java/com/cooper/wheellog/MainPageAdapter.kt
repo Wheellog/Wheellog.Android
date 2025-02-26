@@ -25,10 +25,12 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import kotlinx.coroutines.*
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
-class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener {
-
+class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainActivity) : RecyclerView.Adapter<MainPageAdapter.ViewHolder>(), OnSharedPreferenceChangeListener, KoinComponent {
+    private val appConfig: AppConfig by inject()
     private var xAxisLabels = ArrayList<String>()
 
     var wheelView: WheelView? = null
@@ -177,7 +179,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     redrawTextBoxes()
                     invalidate()
 
-                    var profileName = WheelLog.AppConfig.profileName
+                    var profileName = appConfig.profileName
                     if (profileName.trim { it <= ' ' } == "") {
                         profileName = if (data.model == "") data.name else data.model
                     }
@@ -185,7 +187,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 }
             }
             R.layout.main_view_params_list -> {
-                if (WheelLog.AppConfig.useMph) {
+                if (appConfig.useMph) {
                     updateFieldForSecondPage(R.string.speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.mph), MathsUtil.kmToMiles(WheelData.getInstance().speedDouble)))
                     updateFieldForSecondPage(R.string.top_speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.mph), MathsUtil.kmToMiles(WheelData.getInstance().topSpeedDouble)))
                     updateFieldForSecondPage(R.string.average_speed, String.format(Locale.US, "%.1f " + activity.getString(R.string.mph), MathsUtil.kmToMiles(WheelData.getInstance().averageSpeedDouble)))
@@ -286,7 +288,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     for (d in speedAxis) {
                         var value = 0f
                         if (d != null) value = d
-                        if (WheelLog.AppConfig.useMph)
+                        if (appConfig.useMph)
                             dataSetSpeed.addEntry(Entry(dataSetSpeed.entryCount.toFloat(), MathsUtil.kmToMiles(value)))
                         else
                             dataSetSpeed.addEntry(Entry(dataSetSpeed.entryCount.toFloat(), value))
@@ -890,18 +892,18 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     //endregion
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        when (WheelLog.AppConfig.getResId(key)) {
-            R.string.show_page_graph -> if (WheelLog.AppConfig.pageGraph) {
+        when (appConfig.getResId(key)) {
+            R.string.show_page_graph -> if (appConfig.pageGraph) {
                 addPage(R.layout.main_view_graph, 2)
             } else {
                 removePage(R.layout.main_view_graph)
             }
-            R.string.show_page_events -> if (WheelLog.AppConfig.pageEvents) {
+            R.string.show_page_events -> if (appConfig.pageEvents) {
                 addPage(R.layout.main_view_events)
             } else {
                 removePage(R.layout.main_view_events)
             }
-            R.string.show_page_trips -> if (WheelLog.AppConfig.pageTrips) {
+            R.string.show_page_trips -> if (appConfig.pageTrips) {
                 addPage(R.layout.main_view_trips)
             } else {
                 removePage(R.layout.main_view_trips)
@@ -915,8 +917,8 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                         listOfTrips?.apply {
                             // redraw
                             val a = adapter as TripAdapter
-                            if (a.uploadVisible != WheelLog.AppConfig.autoUploadEc) {
-                                a.uploadVisible = WheelLog.AppConfig.autoUploadEc
+                            if (a.uploadVisible != appConfig.autoUploadEc) {
+                                a.uploadVisible = appConfig.autoUploadEc
                                 val l = layoutManager
                                 adapter = null
                                 layoutManager = null

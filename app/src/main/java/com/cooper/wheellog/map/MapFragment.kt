@@ -11,12 +11,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.databinding.MapFragmentBinding
 import com.cooper.wheellog.utils.MathsUtil
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.utils.SomeUtil.getDrawableEx
+import org.koin.android.ext.android.inject
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -28,6 +30,7 @@ import org.osmdroid.views.overlay.compass.CompassOverlay
 import timber.log.Timber
 
 class MapFragment : Fragment() {
+    private val appConfig: AppConfig by inject()
     lateinit var map: MapView
     private lateinit var binding: MapFragmentBinding
     private val viewModel: MapViewModel by activityViewModels()
@@ -77,7 +80,7 @@ class MapFragment : Fragment() {
 //            })
             controller.apply {
                 setZoom(10.0)
-                setCenter(GeoPoint(WheelLog.AppConfig.lastLocationLaltitude, WheelLog.AppConfig.lastLocationLongitude))
+                setCenter(GeoPoint(appConfig.lastLocationLaltitude, appConfig.lastLocationLongitude))
             }
         }
 

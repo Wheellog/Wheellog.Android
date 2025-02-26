@@ -22,13 +22,16 @@ import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.utils.StringUtil.toTempString
 import com.cooper.wheellog.utils.ThemeManager
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.util.*
 import kotlin.math.*
 
 
 @SuppressLint("ClickableViewAccessibility")
-class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), KoinComponent {
+    private val appConfig: AppConfig by inject()
     private var currentTheme = R.style.OriginalTheme
     private var outerArcPaint = Paint()
     private var innerArcPaint = Paint()
@@ -277,7 +280,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 ViewBlockInfo(
                     resources.getString(R.string.consumption),
                     {
-                        if (WheelLog.AppConfig.useMph) {
+                        if (appConfig.useMph) {
                             String.format(
                                 Locale.US,
                                 "%.1f " + resources.getString(R.string.whmi),
@@ -307,7 +310,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             block.index = -1
         }
         var index = 0
-        for (title in WheelLog.AppConfig.viewBlocks) {
+        for (title in appConfig.viewBlocks) {
             for (block in mViewBlocks) {
                 if (block.title == title) {
                     block.index = index++
@@ -316,7 +319,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                 }
             }
         }
-        useMph = WheelLog.AppConfig.useMph
+        useMph = appConfig.useMph
         Arrays.sort(mViewBlocks)
     }
 
@@ -329,7 +332,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         var speed = value
         if (mSpeed == speed) return
         mSpeed = speed
-        val maxSpeed = WheelLog.AppConfig.maxSpeed * 10
+        val maxSpeed = appConfig.maxSpeed * 10
         speed = if (speed > maxSpeed) maxSpeed else speed
         targetSpeed = (abs(speed).toFloat() / maxSpeed * 112).roundToInt()
         refresh()
@@ -376,7 +379,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
         if (mPwm == pwm) return
         mPwm = pwm
-        val maxSpeed = WheelLog.AppConfig.maxSpeed
+        val maxSpeed = appConfig.maxSpeed
         pwm = if (abs(pwm) > maxSpeed) maxSpeed.toDouble() else pwm
         targetPwm = (pwm / maxSpeed.toDouble() * 112).roundToInt()
         refresh()
@@ -422,7 +425,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         var current = value
         if (mCurrent == current) return
         mCurrent = current
-        val maxSpeed = WheelLog.AppConfig.maxSpeed
+        val maxSpeed = appConfig.maxSpeed
         current = if (abs(current) > maxSpeed) maxSpeed.toDouble() else current
         targetCurrent = (current / maxSpeed.toDouble() * 112).roundToInt()
         refresh()
@@ -654,19 +657,19 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     fun getPwmColor(value: Int): Int {
-        if (value < WheelLog.AppConfig.colorPwmStart) {
+        if (value < appConfig.colorPwmStart) {
             return 0xAAFFFFFF.toInt()
         }
 
-        if (value >= WheelLog.AppConfig.colorPwmEnd) {
+        if (value >= appConfig.colorPwmEnd) {
             return 0xFFFF0000.toInt()
         }
 
         val startColor = 0xAAFFFFAA.toInt()
         val endColor = 0xFFFF0000.toInt()
 
-        val diff = WheelLog.AppConfig.colorPwmEnd - WheelLog.AppConfig.colorPwmStart
-        val fraction = (value - WheelLog.AppConfig.colorPwmStart) / diff.toFloat()
+        val diff = appConfig.colorPwmEnd - appConfig.colorPwmStart
+        val fraction = (value - appConfig.colorPwmStart) / diff.toFloat()
 
         return interpolateColor(startColor, endColor, fraction)
     }
@@ -674,12 +677,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private fun drawOriginal(canvas: Canvas) {
         var currentDial: Int
         var pwmOnDial = false
-        if (WheelLog.AppConfig.valueOnDial == "2") {
+        if (appConfig.valueOnDial == "2") {
             currentPwm = updateCurrentValue(targetPwm, currentPwm)
             currentDial = currentPwm
             pwmOnDial = true
         }
-        else if (WheelLog.AppConfig.valueOnDial == "1") {
+        else if (appConfig.valueOnDial == "1") {
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent)
             currentDial = currentCurrent
         } else {
@@ -732,21 +735,21 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW SPEED TEXT ##################
         //####################################################
-        val speed = if (WheelLog.AppConfig.useMph) kmToMiles(mSpeed.toFloat()).roundToInt() else mSpeed
+        val speed = if (appConfig.useMph) kmToMiles(mSpeed.toFloat()).roundToInt() else mSpeed
         val speedString: String = if (speed < 100) String.format(Locale.US, "%.1f", speed / 10.0) else String.format(Locale.US, "%02d", (speed / 10.0).roundToInt())
-        val alarm1Speed = WheelLog.AppConfig.alarm1Speed.toDouble()
-        if (WheelLog.AppConfig.swapSpeedPwm) textPaint.color = pwmColor
-        else if (!WheelLog.AppConfig.pwmBasedAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = getColorEx(R.color.accent)
+        val alarm1Speed = appConfig.alarm1Speed.toDouble()
+        if (appConfig.swapSpeedPwm) textPaint.color = pwmColor
+        else if (!appConfig.pwmBasedAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = getColorEx(R.color.accent)
         else textPaint.color = getColorEx(R.color.wheelview_speed_text)
         textPaint.textSize = speedTextSize
-        val mainText: String = if (WheelLog.AppConfig.swapSpeedPwm) WheelData.getInstance().calculatedPwm.roundToInt().toString() else speedString
+        val mainText: String = if (appConfig.swapSpeedPwm) WheelData.getInstance().calculatedPwm.roundToInt().toString() else speedString
         canvas.drawText(mainText, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2f, textPaint)
         textPaint.textSize = speedTextKPHSize
-        val metric = if (WheelLog.AppConfig.useMph) resources.getString(R.string.mph) else resources.getString(R.string.kmh)
+        val metric = if (appConfig.useMph) resources.getString(R.string.mph) else resources.getString(R.string.kmh)
 
-        if (WheelLog.AppConfig.useShortPwm || isInEditMode) {
+        if (appConfig.useShortPwm || isInEditMode) {
             textPaint.textSize = speedTextKPHSize * 1.2f
-            if (!WheelLog.AppConfig.swapSpeedPwm) {
+            if (!appConfig.swapSpeedPwm) {
                 val pwm = String.format("%02.0f%% / %02.0f%%", WheelData.getInstance().calculatedPwm, WheelData.getInstance().maxPwm)
                 textPaint.color = pwmColor
                 canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 3.3f, textPaint)
@@ -773,8 +776,8 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.restore()
             canvas.save()
             /// true battery
-            val customPercents = WheelLog.AppConfig.customPercents
-            if (WheelLog.AppConfig.useBetterPercents || customPercents) {
+            val customPercents = appConfig.customPercents
+            if (appConfig.useBetterPercents || customPercents) {
                 if (width > height) canvas.rotate(144 + -3.3f * 2.25f - 180, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(144 + -2 * 2.25f - 180, innerArcRect.centerY(), innerArcRect.centerX())
                 var batteryCalculateType = "true"
                 if (customPercents && !WheelData.getInstance().isVoltageTiltbackUnsupported) batteryCalculateType = "custom"
@@ -806,14 +809,14 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         var currentDial: Int
         var currentDial2: Int
         var pwmOnDial = false
-        if (WheelLog.AppConfig.valueOnDial == "2") {
+        if (appConfig.valueOnDial == "2") {
             currentPwm = updateCurrentValue(targetPwm, currentPwm)
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent)
             currentDial = currentPwm
             currentDial2 = currentCurrent
             pwmOnDial = true
         }
-        else if (WheelLog.AppConfig.valueOnDial == "1") {
+        else if (appConfig.valueOnDial == "1") {
             currentSpeed = updateCurrentValue(targetSpeed, currentSpeed)
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent)
             currentDial = currentCurrent
@@ -913,23 +916,23 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         //####################################################
         //################# DRAW SPEED TEXT ##################
         //####################################################
-        val speed = if (WheelLog.AppConfig.useMph) kmToMiles(mSpeed.toFloat()).roundToInt() else mSpeed
+        val speed = if (appConfig.useMph) kmToMiles(mSpeed.toFloat()).roundToInt() else mSpeed
         val speedString: String = if (speed < 100) String.format(Locale.US, "%.1f", speed / 10.0) else String.format(Locale.US, "%02d", (speed / 10.0).roundToInt())
-        val alarm1Speed = WheelLog.AppConfig.alarm1Speed.toDouble()
-        if (WheelLog.AppConfig.swapSpeedPwm) textPaint.color = pwmColor
-        else if (!WheelLog.AppConfig.pwmBasedAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10)
+        val alarm1Speed = appConfig.alarm1Speed.toDouble()
+        if (appConfig.swapSpeedPwm) textPaint.color = pwmColor
+        else if (!appConfig.pwmBasedAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10)
             textPaint.color = getColorEx(R.color.ajdm_accent)
         else
             textPaint.color = getColorEx(R.color.ajdm_wheelview_speed_text)
         textPaint.textSize = speedTextSize
-        val mainText: String = if (WheelLog.AppConfig.swapSpeedPwm) WheelData.getInstance().calculatedPwm.roundToInt().toString() else speedString
+        val mainText: String = if (appConfig.swapSpeedPwm) WheelData.getInstance().calculatedPwm.roundToInt().toString() else speedString
         canvas.drawText(mainText, outerArcRect.centerX(), speedTextRect.centerY() + speedTextRect.height() / 2, textPaint)
         textPaint.textSize = speedTextKPHSize
-        val metric = if (WheelLog.AppConfig.useMph) resources.getString(R.string.mph) else resources.getString(R.string.kmh)
+        val metric = if (appConfig.useMph) resources.getString(R.string.mph) else resources.getString(R.string.kmh)
 
-        if (WheelLog.AppConfig.useShortPwm || isInEditMode) {
+        if (appConfig.useShortPwm || isInEditMode) {
             textPaint.textSize = speedTextKPHSize * 1.2f
-            if (!WheelLog.AppConfig.swapSpeedPwm) {
+            if (!appConfig.swapSpeedPwm) {
                 val pwm = String.format("%02.0f%% / %02.0f%%", WheelData.getInstance().calculatedPwm, WheelData.getInstance().maxPwm)
                 textPaint.color = pwmColor
                 canvas.drawText(pwm, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 3.3f, textPaint)
@@ -956,8 +959,8 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             canvas.restore()
             canvas.save()
             /// true battery
-            val customPercents = WheelLog.AppConfig.customPercents
-            if (WheelLog.AppConfig.useBetterPercents || customPercents) {
+            val customPercents = appConfig.customPercents
+            if (appConfig.useBetterPercents || customPercents) {
                 if (width > height) canvas.rotate(147 + currentBattery * 2.25f - 180, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(146 + currentBattery * 2.25f - 180, innerArcRect.centerY(), innerArcRect.centerX())
                 var batteryCalculateType = "true"
                 if (customPercents && !WheelData.getInstance().isVoltageTiltbackUnsupported) batteryCalculateType = "custom"
@@ -1107,7 +1110,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                if (WheelLog.AppConfig.useBeepOnSingleTap) {
+                if (appConfig.useBeepOnSingleTap) {
                     SomeUtil.playBeep()
                     return true
                 }
@@ -1133,9 +1136,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     )
                     .setItems(items.toTypedArray()) { _, which ->
                         val title = items[which]
-                        val newBlocks = WheelLog.AppConfig.viewBlocks
+                        val newBlocks = appConfig.viewBlocks
                         newBlocks[newBlocks.indexOf(currentTitle)] = title
-                        WheelLog.AppConfig.viewBlocks = newBlocks
+                        appConfig.viewBlocks = newBlocks
                         updateViewBlocksVisibility()
                         redrawTextBoxes()
                     }
@@ -1149,7 +1152,6 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     init {
         if (isInEditMode) {
             currentTheme = R.style.OriginalTheme
-            WheelLog.AppConfig = AppConfig(context)
             mSpeed = 380
             targetSpeed = (mSpeed.toFloat() / 500 * 112).roundToInt()
             currentSpeed = targetSpeed
@@ -1178,10 +1180,10 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
             } catch (ignored: Exception) {
             }
         } else {
-            currentTheme = WheelLog.AppConfig.appTheme
+            currentTheme = appConfig.appTheme
         }
 
-        useMph = WheelLog.AppConfig.useMph
+        useMph = appConfig.useMph
         mViewBlocks = viewBlockInfo
         updateViewBlocksVisibility()
         onChangeTheme()
