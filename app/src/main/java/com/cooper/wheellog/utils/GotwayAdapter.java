@@ -571,6 +571,10 @@ public class GotwayAdapter extends BaseAdapter {
                 return 32;
             case "4":
                 return 32;
+            case "5":
+                return 40;
+            case "6":
+                return 36;
         }
         return 24;
     }
@@ -674,6 +678,9 @@ public class GotwayAdapter extends BaseAdapter {
                 break;
             case 5:
                 scaler = 2.5;
+                break;
+            case 6:
+                scaler = 2.25;
                 break;
         }
         return value * scaler;

@@ -627,7 +627,7 @@ private fun kingsong(appConfig: AppConfig = koinInject()) {
         desc = stringResource(R.string.tilt_back_description),
         position = appConfig.wheelMaxSpeed.toFloat(),
         min = 0f,
-        max = 70f,
+        max = 100f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
@@ -639,7 +639,7 @@ private fun kingsong(appConfig: AppConfig = koinInject()) {
         desc = stringResource(R.string.alarm3_description),
         position = appConfig.wheelKsAlarm3.toFloat(),
         min = 0f,
-        max = 70f,
+        max = 100f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
@@ -651,7 +651,7 @@ private fun kingsong(appConfig: AppConfig = koinInject()) {
         desc = stringResource(R.string.alarm2_description),
         position = appConfig.wheelKsAlarm2.toFloat(),
         min = 0f,
-        max = 70f,
+        max = 100f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
@@ -663,7 +663,7 @@ private fun kingsong(appConfig: AppConfig = koinInject()) {
         desc = stringResource(R.string.alarm1_description),
         position = appConfig.wheelKsAlarm1.toFloat(),
         min = 0f,
-        max = 70f,
+        max = 100f,
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
@@ -1040,6 +1040,7 @@ private fun begode(appConfig: AppConfig = koinInject()) {
             "3" to "117.6V",
             "4" to "134.4V",
             "5" to "168V",
+            "6" to "151.2V"
         ),
         defaultKey = appConfig.gotwayVoltage,
     ) {
