@@ -722,7 +722,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         smartBms2PageValues.clear()
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16", "KS-S16P"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16", "KS-S16P", "KS-F22P"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)
@@ -766,13 +766,13 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsCell18)
                     setupFieldForSmartBmsPage(R.string.bmsCell19)
                     setupFieldForSmartBmsPage(R.string.bmsCell20)
-                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19"))) {
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-F22P"))) {
                         setupFieldForSmartBmsPage(R.string.bmsCell21)
                         setupFieldForSmartBmsPage(R.string.bmsCell22)
                         setupFieldForSmartBmsPage(R.string.bmsCell23)
                         setupFieldForSmartBmsPage(R.string.bmsCell24)
                     }
-                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-F22P"))) {
                         setupFieldForSmartBmsPage(R.string.bmsCell25)
                         setupFieldForSmartBmsPage(R.string.bmsCell26)
                         setupFieldForSmartBmsPage(R.string.bmsCell27)
