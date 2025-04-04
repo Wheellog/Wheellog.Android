@@ -92,6 +92,7 @@ public class WheelData {
 
     //    private int mVersion; # sorry King, but INT not good for Inmo
     private String mVersion = "";
+    private String mError = "";
     private String mSerialNumber = "Unknown";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
@@ -574,6 +575,14 @@ public class WheelData {
 
     public void setVersion(String value) {
         mVersion = value;
+    }
+
+    public String getError() {
+        return Objects.equals(mError, "") ? "No" : mError;
+    }
+
+    public void setError(String value) {
+        mError = value;
     }
 
     public void setWheelType(WHEEL_TYPE wheelType) {
@@ -1197,6 +1206,7 @@ public class WheelData {
         mModel = "";
         mModeStr = "";
         mVersion = "";
+        mError = "";
         mSerialNumber = "";
         mBtName = "";
         rideStartTime = 0;

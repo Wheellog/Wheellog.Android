@@ -31,6 +31,7 @@
     <string name="name">Название</string>
     <string name="model">Модель</string>
     <string name="version">Версия</string>
+    <string name="error">Код ошибки</string>
     <string name="serial_number">Серийный номер</string>
     <string name="time_charge_title">Время зарядки</string>
     <string name="waiting_for_wheel">Ожидание колеса</string>

@@ -89,6 +89,7 @@
     <string name="name">Name</string>
     <string name="model">Model</string>
     <string name="version">Version</string>
+    <string name="error">Error code</string>
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
     <string name="notification_text">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
