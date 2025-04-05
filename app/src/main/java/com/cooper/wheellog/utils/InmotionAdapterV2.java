@@ -260,14 +260,48 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        boolean light = !appConfig.getLightEnabled();
-        appConfig.setLightEnabled(light);
-        setLightState(light);
+        if (getModel() == Model.V12 || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
+            boolean lowBeam = appConfig.getLowBeamEnabled();
+            boolean highBeam = appConfig.getHighBeamEnabled();
+            if (lowBeam && highBeam) {
+                highBeam = !highBeam;
+            } else if (lowBeam && !highBeam) {
+                lowBeam = !lowBeam;
+            } else {
+                lowBeam = true;
+                highBeam = true;
+            }
+            appConfig.setLowBeamEnabled(lowBeam);
+            appConfig.setHighBeamEnabled(highBeam);
+            setBeamState(lowBeam, highBeam);
+        } else {
+            boolean light = !appConfig.getLightEnabled();
+            appConfig.setLightEnabled(light);
+            setLightState(light);
+        }
     }
 
     @Override
     public void setLightState(final boolean lightEnable) {
         settingCommand = InmotionAdapterV2.Message.setLight(lightEnable).writeBuffer();
+        settingCommandReady = true;
+    }
+
+
+    public void setAutoLight(final boolean autoLightEnable) {
+        settingCommand = InmotionAdapterV2.Message.setAutoLight(autoLightEnable).writeBuffer();
+        settingCommandReady = true;
+    }
+
+
+    public void setSoundWave(final boolean soundWave) {
+        settingCommand = InmotionAdapterV2.Message.setSoundWave(soundWave).writeBuffer();
+        settingCommandReady = true;
+    }
+
+
+    public void setBeamState(final boolean lowBeamEnable, final boolean highBeamEnable) {
+        settingCommand = InmotionAdapterV2.Message.setLightV12(lowBeamEnable, highBeamEnable).writeBuffer();
         settingCommandReady = true;
     }
 
@@ -301,9 +335,25 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
+
+    public void setSplitModeConf(final int accel, final int breaksens) {
+        settingCommand = InmotionAdapterV2.Message.setSplitAccelBreak(accel, breaksens).writeBuffer();
+        settingCommandReady = true;
+    }
+
     @Override
     public void wheelCalibration() {
-        settingCommand = InmotionAdapterV2.Message.wheelCalibration().writeBuffer();
+        if (getInstance().getModel()==Model.V11) {
+            settingCommand = InmotionAdapterV2.Message.wheelCalibration().writeBuffer();
+        } else {
+            settingCommand = InmotionAdapterV2.Message.wheelCalibrationBalance().writeBuffer();
+        }
+        settingCommandReady = true;
+    }
+
+
+    public void wheelCalibrationTurn() {
+        settingCommand = InmotionAdapterV2.Message.wheelCalibrationTurn().writeBuffer();
         settingCommandReady = true;
     }
 
@@ -337,6 +387,12 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
+
+    public void setSplitMode(final boolean splitMode) {
+        settingCommand = InmotionAdapterV2.Message.setSplitMode(splitMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
     @Override
     public void setMute(final boolean mute) {
         settingCommand = InmotionAdapterV2.Message.setMute(mute).writeBuffer();
@@ -361,9 +417,26 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
+
+    public void setBeamBrightness(final int lowBeamBrightness, final int highBeamBrightness) {
+        settingCommand = InmotionAdapterV2.Message.setLightBrightnessV12(lowBeamBrightness, highBeamBrightness).writeBuffer();
+        settingCommandReady = true;
+    }
+
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
         settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
+        settingCommandReady = true;
+    }
+
+
+    public void updateAlarmSpeed(final int alarm1Speed, final int alarm2Speed) {
+        if (getInstance().getModel() == Model.V11 || getInstance().getModel() == Model.V12 || getInstance().getModel() == Model.V12HT ||
+                getInstance().getModel() == Model.V12PRO) {
+            settingCommand = InmotionAdapterV2.Message.setAlarmSpeedV12(alarm1Speed, alarm2Speed).writeBuffer();
+        } else {
+            settingCommand = InmotionAdapterV2.Message.setAlarmSpeed(alarm1Speed).writeBuffer();
+        }
         settingCommandReady = true;
     }
 
@@ -1386,10 +1459,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
         public static Message setLight(boolean on) {
             byte enable = 0;
             if (on) enable = 1;
+            byte commandCode = (byte) 0x50;
+            if (getInstance().getModel() == Model.V11) {
+                commandCode = (byte) 0x40;
+            }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x40, enable};
+            msg.data = new byte[]{commandCode, enable};
             return msg;
         }
 
@@ -1405,13 +1482,22 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
-        public static Message setAlarmSpeed(int speedLow, int speedHigh) {
+        public static Message setAlarmSpeedV12(int speedLow, int speedHigh) {
             byte[] value1 = MathsUtil.getBytes((short)(speedLow * 100));
             byte[] value2 = MathsUtil.getBytes((short)(speedHigh * 100));
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
             msg.data = new byte[]{0x3e, value1[1], value1[0], value2[1], value2[0]};
+            return msg;
+        }
+
+        public static Message setAlarmSpeed(int speedLow) {
+            byte[] value1 = MathsUtil.getBytes((short)(speedLow * 100));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x3e, value1[1], value1[0]};
             return msg;
         }
 
@@ -1468,6 +1554,16 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
             msg.data = new byte[]{0x2f, enable};
+            return msg;
+        }
+
+        public static Message setLightBrightnessV12(int brightnessLowBeam, int brightnessHighBeam) {
+            byte value1 = (byte)(brightnessLowBeam & 0xFF);
+            byte value2 = (byte)(brightnessHighBeam & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2b, value1, value2};
             return msg;
         }
 
