@@ -1364,10 +1364,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
         public static Message playSound(int number) {
             byte value = (byte)(number & 0xFF);
+            byte commandCode = (byte) 0x51;
+            if (getInstance().getModel() == Model.V11) {
+                commandCode = (byte) 0x41;
+            }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x41, value, 0x01};
+            msg.data = new byte[]{commandCode, value, 0x01};
             return msg;
         }
 
@@ -1386,6 +1390,84 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
             msg.data = new byte[]{0x40, enable};
+            return msg;
+        }
+
+        public static Message setLightV12(boolean lowBeamOn, boolean highBeamOn) {
+            byte enableLowBeam = 0;
+            byte enableHighBeam = 0;
+            if (lowBeamOn) enableLowBeam = 1;
+            if (highBeamOn) enableHighBeam = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x50, enableLowBeam, enableHighBeam};
+            return msg;
+        }
+
+        public static Message setAlarmSpeed(int speedLow, int speedHigh) {
+            byte[] value1 = MathsUtil.getBytes((short)(speedLow * 100));
+            byte[] value2 = MathsUtil.getBytes((short)(speedHigh * 100));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x3e, value1[1], value1[0], value2[1], value2[0]};
+            return msg;
+        }
+
+        public static Message setSplitMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x42, enable};
+            return msg;
+        }
+
+        public static Message setSplitAccelBreak(int acceleration, int breaksens) {
+            byte value1 = (byte)(acceleration & 0xFF);
+            byte value2 = (byte)(breaksens & 0xFF);
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x40, value1, value2};
+            return msg;
+        }
+
+        public static Message wheelCalibrationBalance() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x52, 0x01, 0x01, 0x00};
+            return msg;
+        }
+
+        public static Message wheelCalibrationTurn() {
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x52, 0x01, 0x00, 0x01};
+            return msg;
+        }
+
+        public static Message setSoundWave(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x39, enable};
+            return msg;
+        }
+
+        public static Message setAutoLight(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x2f, enable};
             return msg;
         }
 
@@ -1471,7 +1553,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x25, value, 0x64};
+            msg.data = new byte[]{0x25, value, value};
             return msg;
         }
 
