@@ -227,6 +227,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 updateFieldForSecondPage(R.string.fan_status, if (WheelData.getInstance().fanStatus == 0) activity.getString(R.string.off) else activity.getString(R.string.on))
                 updateFieldForSecondPage(R.string.charging_status, if (WheelData.getInstance().chargingStatus == 0) activity.getString(R.string.discharging) else activity.getString(R.string.charging))
                 updateFieldForSecondPage(R.string.version, String.format(Locale.US, "%s", WheelData.getInstance().version))
+                updateFieldForSecondPage(R.string.error, String.format(Locale.US, "%s", WheelData.getInstance().error))
                 updateFieldForSecondPage(R.string.output, String.format(Locale.US, "%d%%", WheelData.getInstance().output))
                 updateFieldForSecondPage(R.string.cpuload, String.format(Locale.US, "%d%%", WheelData.getInstance().cpuLoad))
                 updateFieldForSecondPage(R.string.name, WheelData.getInstance().name)
@@ -609,6 +610,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.power)
                 setupFieldForSecondPage(R.string.model)
                 setupFieldForSecondPage(R.string.version)
+                setupFieldForSecondPage(R.string.error)
                 setupFieldForSecondPage(R.string.serial_number)
             }
             else -> {}

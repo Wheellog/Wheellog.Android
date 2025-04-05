@@ -63,7 +63,7 @@ class NinebotZAdapterTest: KoinTest {
     @Test
     fun `decode z10 version data`() {
         // Arrange.
-        val byteArray1 = "5AA502143E041A771006FF".hexToByteArray()
+        val byteArray1 = "5AA506143E041A771019180000D1FE".hexToByteArray()
 
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -71,6 +71,7 @@ class NinebotZAdapterTest: KoinTest {
         // Assert.
         assertThat(result1).isFalse()
         assertThat(data.version).isEqualTo("0.7.7")
+        assertThat(data.error).isEqualTo("Err:25 VGM - Voltage < 10V\nErr:24 General voltage > 65V or < 40V")
     }
 
     @Test

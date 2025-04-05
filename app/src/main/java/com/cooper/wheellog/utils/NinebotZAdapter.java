@@ -44,6 +44,8 @@ public class NinebotZAdapter extends BaseAdapter {
     private int ledColor2 = 0;
     private int ledColor3 = 0;
     private int ledColor4 = 0;
+    private int errorCode1 = 0;
+    private int errorCode2 = 0;
     private int pedalSensivity = 0;
     private int driveFlags = 0;
 
@@ -229,6 +231,32 @@ public class NinebotZAdapter extends BaseAdapter {
             case "7": return getContext().getString(R.string.led_type7);
             default: return getContext().getString(R.string.led_mode_nb_description);
         }
+    }
+
+    private static String getErrorString(int errorCode) {
+        String err_text1;
+        switch (errorCode) {
+            case 0: err_text1 = ""; break;
+            case 1: err_text1 = "Motor hall sensor error"; break;
+            case 6: err_text1 = "Initial S/N"; break;
+            case 8: err_text1 = "Error Bat input 1"; break;
+            case 9: err_text1 = "Error Bat input 2"; break;
+            case 10: err_text1 = "Abnormal communication Bat#1"; break; //error and Bat1Volt>48V
+            case 11: err_text1 = "Abnormal communication Bat#2"; break; //error and Bat2Volt>48V
+            case 12: err_text1 = "Failure of Gyroscope initialization"; break;
+            case 24: err_text1 = "General voltage > 65V or < 40V"; break;
+            case 25: err_text1 = "VGM - Voltage < 10V"; break;
+            case 28: err_text1 = "Abnormal power supply Bat#1"; break;
+            case 29: err_text1 = "Abnormal power supply Bat#2"; break;
+            case 34: err_text1 = "Battery cell of Bat#1 in big differential voltage"; break;
+            case 35: err_text1 = "Battery cell of Bat#2 in big differential voltage"; break;
+            case 36: err_text1 = "Bat#1 input error 0x800"; break;
+            case 37: err_text1 = "Bat#2 input error 0x800"; break;
+            case 38: err_text1 = "3c1e8 != 0x5A"; break;
+            case 46: err_text1 = "Unknown error"; break;
+            default: err_text1 = "Error"; break;
+        }
+        return String.format("Err:%d %s", errorCode, err_text1);
     }
 
     @Override
@@ -711,7 +739,7 @@ public class NinebotZAdapter extends BaseAdapter {
             msg.destination = Addr.Controller.getValue();
             msg.command = Comm.Read.getValue();
             msg.parameter = Param.Firmware.getValue();
-            msg.data = new byte[]{0x02};
+            msg.data = new byte[]{0x06};
             msg.len = msg.data.length;
             msg.crc = 0;
             return msg;
@@ -1059,7 +1087,20 @@ public class NinebotZAdapter extends BaseAdapter {
             versionNumber += String.format("%X.", (data[1] & 0x0f));
             versionNumber += String.format("%1X.", (data[0] >> 4) & 0x0f);
             versionNumber += String.format("%1X", (data[0]) & 0x0f);
+            int error1 = data[2];
+            int error2 = data[3];
+            int warn1 = data[4];
+            int warn2 = data[5];
             wd.setVersion(versionNumber);
+            String error = "No";
+            if (error1 != 0) {
+                error = getErrorString(error1);
+                if (error2 != 0){
+                    error = error + "\n" + getErrorString(error2);
+                }
+            }
+            wd.setError(error);
+
         }
 
         void parseActivationDate() { ////// ToDo: add to wheeldata
