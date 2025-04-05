@@ -53,6 +53,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
                             requestSettings = false;
                             if (getInstance().getModel() == Model.V12) {
                                 return false;
+                            } else if (getInstance().getModel() == Model.V12HT) {
+                                return false;
+                            } else if (getInstance().getModel() == Model.V12PRO) {
+                                return false;
                             } else if (getInstance().getModel() == Model.V13) {
                                     return false;
                             } else if (getInstance().getModel() == Model.V14s || getInstance().getModel() == Model.V14g) {
@@ -67,7 +71,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.TotalStats.getValue()) {
                             return result.parseTotalStats();
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                            if (getInstance().getModel() == Model.V12) {
+                            if (getInstance().getModel() == Model.V12 || getInstance().getModel() == Model.V12HT || getInstance().getModel() == Model.V12PRO) {
                                 return result.parseRealTimeInfoV12(getContext());
                             } else if (getInstance().getModel() == Model.V13) {
                                 return result.parseRealTimeInfoV13(getContext());
@@ -95,6 +99,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
         V11(61,  "Inmotion V11"),
         V11Y(62,  "Inmotion V11y"),
         V12(71, "Inmotion V12"),
+        V12HT(72, "Inmotion V12 HT"),
+        V12PRO(73, "Inmotion V12 PRO"),
         V13(81, "Inmotion V13"),
         V14g(91, "Inmotion V14 50GB"),
         V14s(92, "Inmotion V14 50S"),
@@ -138,6 +144,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             case V11Y:
                 return 70;
             case V12:
+                return 70;
+            case V12HT:
+                return 70;
+            case V12PRO:
                 return 70;
             case V13:
                 return 120;
@@ -1675,8 +1685,20 @@ public class InmotionAdapterV2 extends BaseAdapter {
         if (getInstance().getModel() == Model.V12) {
             return 24;
         }
+        if (getInstance().getModel() == Model.V12HT) {
+            return 24;
+        }
+        if (getInstance().getModel() == Model.V12PRO) {
+            return 24;
+        }
         if (getInstance().getModel() == Model.V13) {
             return 30;
+        }
+        if (getInstance().getModel() == Model.V14g) {
+            return 32;
+        }
+        if (getInstance().getModel() == Model.V14s) {
+            return 32;
         }
         return 20;
 
