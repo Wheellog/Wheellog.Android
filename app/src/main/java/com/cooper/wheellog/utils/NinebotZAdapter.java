@@ -239,9 +239,10 @@ public class NinebotZAdapter extends BaseAdapter {
             case 0: err_text1 = ""; break;
             case 1: err_text1 = "Motor hall sensor error"; break;
             case 6: err_text1 = "Initial S/N"; break;
-            case 8: err_text1 = "Internal error"; break;
-            case 10: err_text1 = "Abnormal communication Bat#1"; break;
-            case 11: err_text1 = "Abnormal communication Bat#2"; break;
+            case 8: err_text1 = "Error Bat input 1"; break;
+            case 9: err_text1 = "Error Bat input 2"; break;
+            case 10: err_text1 = "Abnormal communication Bat#1"; break; //error and Bat1Volt>48V
+            case 11: err_text1 = "Abnormal communication Bat#2"; break; //error and Bat2Volt>48V
             case 12: err_text1 = "Failure of Gyroscope initialization"; break;
             case 24: err_text1 = "General voltage > 65V or < 40V"; break;
             case 25: err_text1 = "VGM - Voltage < 10V"; break;
@@ -249,6 +250,8 @@ public class NinebotZAdapter extends BaseAdapter {
             case 29: err_text1 = "Abnormal power supply Bat#2"; break;
             case 34: err_text1 = "Battery cell of Bat#1 in big differential voltage"; break;
             case 35: err_text1 = "Battery cell of Bat#2 in big differential voltage"; break;
+            case 36: err_text1 = "Bat#1 input error 0x800"; break;
+            case 37: err_text1 = "Bat#2 input error 0x800"; break;
             case 38: err_text1 = "3c1e8 != 0x5A"; break;
             case 46: err_text1 = "Unknown error"; break;
             default: err_text1 = "Error"; break;
