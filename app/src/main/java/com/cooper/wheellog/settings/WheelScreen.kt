@@ -487,16 +487,19 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             appConfig.drlEnabled = it
             adapter.setDrl(it)
         }
-        sliderPref(
-            name = stringResource(R.string.light_brightness_title),
-            desc = stringResource(R.string.light_brightness_description),
-            position = appConfig.lightBrightness.toFloat(),
-            min = 0f,
-            max = 100f,
-            unit = R.string.persent,
-        ) {
-            appConfig.lightBrightness = it.toInt()
-            adapter.setLightBrightness(it.toInt())
+        // not applicable for V11y and V14; v13 - not known
+        if (adapter.model == InmotionAdapterV2.Model.V11 || adapter.model == InmotionAdapterV2.Model.V13) {
+            sliderPref(
+                name = stringResource(R.string.light_brightness_title),
+                desc = stringResource(R.string.light_brightness_description),
+                position = appConfig.lightBrightness.toFloat(),
+                min = 0f,
+                max = 100f,
+                unit = R.string.persent,
+            ) {
+                appConfig.lightBrightness = it.toInt()
+                adapter.setLightBrightness(it.toInt())
+            }
         }
     }
     //V11y doesn't have Fan and Quiet mode
@@ -575,7 +578,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         visualMultiple = speedMultipier,
     ) {
         appConfig.wheelAlarm1Speed = it.toInt()
-        adapter.updateAlarmSpeed(it.toInt(), appConfig.wheelAlarm2Speed)
+        adapter.updateAlarmSpeed(it.toInt(), appConfig.wheelAlarm2Speed, appConfig.wheelMaxSpeed)
     }
     if (adapter.model == InmotionAdapterV2.Model.V12 || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
         adapter.model == InmotionAdapterV2.Model.V11) {
@@ -589,7 +592,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             visualMultiple = speedMultipier,
         ) {
             appConfig.wheelAlarm2Speed = it.toInt()
-            adapter.updateAlarmSpeed(appConfig.wheelAlarm1Speed, it.toInt())
+            adapter.updateAlarmSpeed(appConfig.wheelAlarm1Speed, it.toInt(), appConfig.wheelMaxSpeed)
         }
     }
     sliderPref(
@@ -623,6 +626,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.pedalSensivity = it.toInt()
         adapter.setPedalSensivity(it.toInt())
     }
+
     switchPref(
         name = stringResource(R.string.fancier_mode_title),
         desc = stringResource(R.string.fancier_mode_description),
@@ -681,6 +685,29 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
 
      */
+    if (adapter.model == InmotionAdapterV2.Model.V14g || adapter.model == InmotionAdapterV2.Model.V14s) {
+        switchPref(
+            name = stringResource(R.string.berm_angle_mode_title),
+            desc = stringResource(R.string.berm_angle_mode_description),
+            default = appConfig.bermAngleMode,
+        ) {
+            appConfig.bermAngleMode = it
+            adapter.setBermAngleMode(it)
+        }
+
+        sliderPref(
+            name = stringResource(R.string.standby_delay_title),
+            desc = stringResource(R.string.standby_delay_description),
+            position = appConfig.standbyDelay.toFloat(),
+            min = 0f,
+            max = 240f,
+            unit = R.string.min,
+        ) {
+            appConfig.standbyDelay = it.toInt()
+            adapter.setStandbyDelay(it.toInt())
+        }
+
+    }
     switchPref(
         name = stringResource(R.string.transport_mode_title),
         desc = stringResource(R.string.transport_mode_description),
@@ -716,12 +743,12 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     )
 
     clickableAndAlert(
-        name = stringResource(R.string.wheel_calibration_turn),
-        confirmButtonText = stringResource(R.string.wheel_calibration_turn),
-        alertDesc = stringResource(R.string.wheel_calibration_turn_message_inmo),
+        name = stringResource(R.string.wheel_calibration_balance),
+        confirmButtonText = stringResource(R.string.wheel_calibration_balance),
+        alertDesc = stringResource(R.string.wheel_calibration_balance_message_inmo),
         themeIcon = ThemeIconEnum.SettingsCalibration,
         condition = { WheelData.getInstance().speed < 1 },
-        onConfirm = { adapter.wheelCalibrationTurn() },
+        onConfirm = { adapter.wheelCalibrationBalance() },
     )
 
 }

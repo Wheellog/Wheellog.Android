@@ -254,7 +254,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        settingCommand = InmotionAdapterV2.Message.playSound(0x18).writeBuffer();
+        if (getModel() == Model.V13 || getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V11Y) {
+            settingCommand = InmotionAdapterV2.Message.playBeep(0x02).writeBuffer();
+        } else {
+            settingCommand = InmotionAdapterV2.Message.playSound(0x18).writeBuffer();
+        }
         settingCommandReady = true;
     }
 
@@ -335,6 +339,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
+    public void setStandbyDelay(final int delay) {
+        settingCommand = InmotionAdapterV2.Message.setStanbyDelay(delay).writeBuffer();
+        settingCommandReady = true;
+    }
+
 
     public void setSplitModeConf(final int accel, final int breaksens) {
         settingCommand = InmotionAdapterV2.Message.setSplitAccelBreak(accel, breaksens).writeBuffer();
@@ -343,17 +352,17 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void wheelCalibration() {
-        if (getInstance().getModel()==Model.V11) {
+        if (getInstance().getModel()==Model.V11 && protoVer < 2) {
             settingCommand = InmotionAdapterV2.Message.wheelCalibration().writeBuffer();
         } else {
-            settingCommand = InmotionAdapterV2.Message.wheelCalibrationBalance().writeBuffer();
+            settingCommand = InmotionAdapterV2.Message.wheelCalibrationTurn().writeBuffer();
         }
         settingCommandReady = true;
     }
 
 
-    public void wheelCalibrationTurn() {
-        settingCommand = InmotionAdapterV2.Message.wheelCalibrationTurn().writeBuffer();
+    public void wheelCalibrationBalance() {
+        settingCommand = InmotionAdapterV2.Message.wheelCalibrationBalance().writeBuffer();
         settingCommandReady = true;
     }
 
@@ -387,9 +396,13 @@ public class InmotionAdapterV2 extends BaseAdapter {
         settingCommandReady = true;
     }
 
-
     public void setSplitMode(final boolean splitMode) {
         settingCommand = InmotionAdapterV2.Message.setSplitMode(splitMode).writeBuffer();
+        settingCommandReady = true;
+    }
+
+    public void setBermAngleMode(final boolean bermAngleMode) {
+        settingCommand = InmotionAdapterV2.Message.setBermAngleMode(bermAngleMode).writeBuffer();
         settingCommandReady = true;
     }
 
@@ -425,15 +438,20 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
-        settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
+        if (getModel() == Model.V14g || getModel() == Model.V14s) {
+            settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, 0).writeBuffer();
+        } else {
+            settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
+        }
         settingCommandReady = true;
     }
 
 
-    public void updateAlarmSpeed(final int alarm1Speed, final int alarm2Speed) {
-        if (getInstance().getModel() == Model.V11 || getInstance().getModel() == Model.V12 || getInstance().getModel() == Model.V12HT ||
-                getInstance().getModel() == Model.V12PRO) {
+    public void updateAlarmSpeed(final int alarm1Speed, final int alarm2Speed, final int maxSpeed) {
+        if (getModel() == Model.V11 || getModel() == Model.V12 || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
             settingCommand = InmotionAdapterV2.Message.setAlarmSpeedV12(alarm1Speed, alarm2Speed).writeBuffer();
+        } else if (getModel() == Model.V14g || getModel() == Model.V14s) {
+            settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, alarm1Speed).writeBuffer();
         } else {
             settingCommand = InmotionAdapterV2.Message.setAlarmSpeed(alarm1Speed).writeBuffer();
         }
@@ -1438,13 +1456,23 @@ public class InmotionAdapterV2 extends BaseAdapter {
         public static Message playSound(int number) {
             byte value = (byte)(number & 0xFF);
             byte commandCode = (byte) 0x51;
-            if (getInstance().getModel() == Model.V11) {
+            if (getInstance().getModel() == Model.V11 && protoVer < 2) {
                 commandCode = (byte) 0x41;
             }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
             msg.data = new byte[]{commandCode, value, 0x01};
+            return msg;
+        }
+
+        public static Message playBeep(int number) {
+            byte value = (byte)(number & 0xFF);
+            byte commandCode = (byte) 0x51;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{commandCode, value, 0x64};
             return msg;
         }
 
@@ -1460,7 +1488,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             byte enable = 0;
             if (on) enable = 1;
             byte commandCode = (byte) 0x50;
-            if (getInstance().getModel() == Model.V11) {
+            if (getInstance().getModel() == Model.V11 && protoVer < 2 ) {
                 commandCode = (byte) 0x40;
             }
             Message msg = new Message();
@@ -1504,20 +1532,28 @@ public class InmotionAdapterV2 extends BaseAdapter {
         public static Message setSplitMode(boolean on) {
             byte enable = 0;
             if (on) enable = 1;
+            byte commandCode = (byte) 0x42;
+            if (getInstance().getModel() == Model.V14g || getInstance().getModel() == Model.V14s ) {
+                commandCode = (byte) 0x3e; // in conflict with setAlarmSpeed of previous wheels
+            }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x42, enable};
+            msg.data = new byte[]{commandCode, enable};
             return msg;
         }
 
         public static Message setSplitAccelBreak(int acceleration, int breaksens) {
             byte value1 = (byte)(acceleration & 0xFF);
             byte value2 = (byte)(breaksens & 0xFF);
+            byte commandCode = (byte) 0x40;
+            if (getInstance().getModel() == Model.V14g || getInstance().getModel() == Model.V14s ) {
+                commandCode = (byte) 0x3f;
+            }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x40, value1, value2};
+            msg.data = new byte[]{commandCode, value1, value2};
             return msg;
         }
 
@@ -1644,12 +1680,41 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
+        public static Message setMaxSpeedV14(int maxSpeed, int alarmSpeed) {
+            byte[] value1 = MathsUtil.getBytes((short)(maxSpeed * 100));
+            byte[] value2 = MathsUtil.getBytes((short)(alarmSpeed * 100));
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x21, value1[1], value1[0], value2[1], value2[0]};
+            return msg;
+        }
+
         public static Message setPedalSensivity(int sensivity) {
             byte value = (byte)(sensivity & 0xFF);
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
             msg.command = Command.Control.getValue();
             msg.data = new byte[]{0x25, value, value};
+            return msg;
+        }
+
+        public static Message setStanbyDelay(int delay) {
+            byte[] value = MathsUtil.getBytes((short)(delay * 60)); // need to set in sec
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x28, value[1], value[0]};
+            return msg;
+        }
+
+        public static Message setBermAngleMode(boolean on) {
+            byte enable = 0;
+            if (on) enable = 1;
+            Message msg = new Message();
+            msg.flags = Flag.Default.getValue();
+            msg.command = Command.Control.getValue();
+            msg.data = new byte[]{0x45, enable};
             return msg;
         }
 
@@ -1711,9 +1776,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
             msg.data = new byte[]{0x22, value[1], value[0]};
             return msg;
         }
-
-
-
 
         public byte[] writeBuffer() {
 

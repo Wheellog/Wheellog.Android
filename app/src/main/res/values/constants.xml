@@ -55,6 +55,7 @@
     <string name="beeper_volume" translatable="false">beeper_volume</string>
     <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
     <string name="pedal_sensivity" translatable="false">pedal_sensivity</string>
+    <string name="standby_delay" translatable="false">standby_delay</string>
     <string name="split_mode_accel" translatable="false">split_mode_accel</string>
     <string name="split_mode_break" translatable="false">split_mode_break</string>
     <string name="ride_mode" translatable="false">ride_mode</string>
@@ -104,6 +105,7 @@
     <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
     <string name="lock_mode" translatable="false">lock_mode</string>
     <string name="transport_mode" translatable="false">transport_mode</string>
+    <string name="berm_angle_mode" translatable="false">berm_angle_mode</string>
     <string name="drl_enabled" translatable="false">drl_enabled</string>
     <string name="go_home_mode" translatable="false">go_home_mode</string>
     <string name="fancier_mode" translatable="false">fancier_mode</string>

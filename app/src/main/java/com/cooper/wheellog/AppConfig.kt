@@ -465,6 +465,10 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.pedal_sensivity, 100)
         set(value) = setSpecific(R.string.pedal_sensivity, value)
 
+    var standbyDelay: Int
+        get() = getSpecific(R.string.standby_delay, 10)
+        set(value) = setSpecific(R.string.standby_delay, value)
+
     var splitModeAccel: Int
         get() = getSpecific(R.string.split_mode_accel, 100)
         set(value) = setSpecific(R.string.split_mode_accel, value)
@@ -484,6 +488,10 @@ class AppConfig(var context: Context): KoinComponent {
     var transportMode: Boolean
         get() = getSpecific(R.string.transport_mode, false)
         set(value) = setSpecific(R.string.transport_mode, value)
+
+    var bermAngleMode: Boolean
+        get() = getSpecific(R.string.berm_angle_mode, false)
+        set(value) = setSpecific(R.string.berm_angle_mode, value)
 
     var goHomeMode: Boolean
         get() = getSpecific(R.string.go_home_mode, false)
