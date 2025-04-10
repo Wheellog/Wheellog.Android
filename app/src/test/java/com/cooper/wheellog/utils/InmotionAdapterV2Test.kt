@@ -259,7 +259,7 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(result6).isFalse()
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A031155130009730")
-        assertThat(data.model).isEqualTo("Inmotion V12")
+        assertThat(data.model).isEqualTo("Inmotion V12 HS")
         assertThat(data.version).isEqualTo("Main:1.4.24 Drv:4.2.112 BLE:2.1.36")
 
 
@@ -307,7 +307,7 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(result6).isFalse()
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A031155130009730")
-        assertThat(data.model).isEqualTo("Inmotion V12")
+        assertThat(data.model).isEqualTo("Inmotion V12 HS")
         assertThat(data.version).isEqualTo("Main:1.4.24 Drv:4.2.112 BLE:2.1.36")
 
 
