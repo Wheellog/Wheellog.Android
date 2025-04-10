@@ -414,7 +414,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
-    if (adapter.model == InmotionAdapterV2.Model.V12 || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO){
+    if (adapter.model == InmotionAdapterV2.Model.V12HS || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO){
         switchPref(
             name = stringResource(R.string.on_lowbeam_title),
             desc = stringResource(R.string.on_lowbeam_description),
@@ -522,7 +522,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         }
     }
     // Inmotion V13 and V14 don't have such button
-    if (adapter.model == InmotionAdapterV2.Model.V12 || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
+    if (adapter.model == InmotionAdapterV2.Model.V12HS || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
         adapter.model == InmotionAdapterV2.Model.V11 || adapter.model == InmotionAdapterV2.Model.V11Y) {
         switchPref(
             name = stringResource(R.string.disable_handle_button_title),
@@ -580,7 +580,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.wheelAlarm1Speed = it.toInt()
         adapter.updateAlarmSpeed(it.toInt(), appConfig.wheelAlarm2Speed, appConfig.wheelMaxSpeed)
     }
-    if (adapter.model == InmotionAdapterV2.Model.V12 || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
+    if (adapter.model == InmotionAdapterV2.Model.V12HS || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
         adapter.model == InmotionAdapterV2.Model.V11) {
        sliderPref(
             name = stringResource(R.string.wheel_alarm2_title),

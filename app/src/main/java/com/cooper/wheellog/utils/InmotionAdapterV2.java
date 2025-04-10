@@ -51,18 +51,18 @@ public class InmotionAdapterV2 extends BaseAdapter {
                     } else if (result.flags == Message.Flag.Default.getValue()) {
                         if (result.command == Message.Command.Settings.getValue()) {
                             requestSettings = false;
-                            if (getInstance().getModel() == Model.V12) {
-                                return false;
+                            if (getInstance().getModel() == Model.V12HS) {
+                                return result.parseSettingsV12();
                             } else if (getInstance().getModel() == Model.V12HT) {
-                                return false;
+                                return result.parseSettingsV12();
                             } else if (getInstance().getModel() == Model.V12PRO) {
-                                return false;
+                                return result.parseSettingsV12();
                             } else if (getInstance().getModel() == Model.V13) {
                                     return false;
                             } else if (getInstance().getModel() == Model.V14s || getInstance().getModel() == Model.V14g) {
-                                return false;
+                                return result.parseSettingsV14();
                             } else {
-                                return result.parseSettings();
+                                return result.parseSettingsV11();
                             }
                         } else if (result.command == Message.Command.Diagnistic.getValue()) {
                             return result.parseDiagnostic();
@@ -71,7 +71,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.TotalStats.getValue()) {
                             return result.parseTotalStats();
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
-                            if (getInstance().getModel() == Model.V12 || getInstance().getModel() == Model.V12HT || getInstance().getModel() == Model.V12PRO) {
+                            if (getInstance().getModel() == Model.V12HS || getInstance().getModel() == Model.V12HT || getInstance().getModel() == Model.V12PRO) {
                                 return result.parseRealTimeInfoV12(getContext());
                             } else if (getInstance().getModel() == Model.V13) {
                                 return result.parseRealTimeInfoV13(getContext());
@@ -98,7 +98,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     public enum Model {
         V11(61,  "Inmotion V11"),
         V11Y(62,  "Inmotion V11y"),
-        V12(71, "Inmotion V12"),
+        V12HS(71, "Inmotion V12 HS"),
         V12HT(72, "Inmotion V12 HT"),
         V12PRO(73, "Inmotion V12 PRO"),
         V13(81, "Inmotion V13"),
@@ -143,7 +143,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                 return 60;
             case V11Y:
                 return 70;
-            case V12:
+            case V12HS:
                 return 70;
             case V12HT:
                 return 70;
@@ -215,7 +215,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     				} else if (stateCon == 3 | requestSettings) {
                         if (WheelData.getInstance().bluetoothCmd(Message.getCurrentSettings().writeBuffer())) {
                             stateCon += 1;
-                            Timber.i("Sent unknown data message");
+                            Timber.i("Sent get settings data message");
                         } else updateStep = 35;
 
                     }
@@ -264,7 +264,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void switchFlashlight() {
-        if (getModel() == Model.V12 || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
+        if (getModel() == Model.V12HS || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
             boolean lowBeam = appConfig.getLowBeamEnabled();
             boolean highBeam = appConfig.getHighBeamEnabled();
             if (lowBeam && highBeam) {
@@ -448,7 +448,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
 
     public void updateAlarmSpeed(final int alarm1Speed, final int alarm2Speed, final int maxSpeed) {
-        if (getModel() == Model.V11 || getModel() == Model.V12 || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
+        if (getModel() == Model.V11 || getModel() == Model.V12HS || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
             settingCommand = InmotionAdapterV2.Message.setAlarmSpeedV12(alarm1Speed, alarm2Speed).writeBuffer();
         } else if (getModel() == Model.V14g || getModel() == Model.V14s) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, alarm1Speed).writeBuffer();
@@ -627,7 +627,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return false;
         }
 
-        boolean parseSettings(){
+        boolean parseSettingsV11(){
             Timber.i("Parse settings data");
             int i = 1;
             int mSpeedLim = MathsUtil.shortFromBytesLE(data, i);
@@ -676,6 +676,122 @@ public class InmotionAdapterV2 extends BaseAdapter {
             appConfig.setGoHomeMode(mLowBat != 0);
             return false;
         }
+
+        boolean parseSettingsV12(){
+            Timber.i("Parse settings data");
+            int i = 1;
+            /* taken from reverse engineering of InmoApp, seems not to be precise
+            int mSpeedLim = MathsUtil.shortFromBytesLE(data, i);
+            int mPitchAngleZero = MathsUtil.signedShortFromBytesLE(data, i+2);
+            int mDriveMode = data[i+4] & 0xF;
+            int mRideMode = data[i+4] >> 4;
+            int mComfSens = data[i + 5];
+            int mClassSens = data[i + 6];
+            int mVolume = data[i + 7];
+            int mAudioId = MathsUtil.intFromBytesLE(data, i+8);
+            int mStandByTime = MathsUtil.shortFromBytesLE(data, i+12);
+            int mDecorLightMode = data[i + 14];
+            int mAutoLightLowThr = data[i + 15];
+            int mAutoLightHighThr = data[i + 16];
+            int mLightBr = data[i + 17];
+            int mAudioState = data[i + 20] & 3;
+            int mDecorState = (data[i + 20]>>2) & 3;
+            int mLiftedState = (data[i + 20] >> 4) & 3;
+            int mAutoLightState = (data[i + 20] >> 6) & 3;
+            int mAutoLightBrState = data[i + 21] & 3;
+            int mLockState = (data[i + 21]>>2) & 3;
+            int mTranspMode = (data[i + 21] >> 4) & 3;
+            int mLoadDetect = (data[i + 21] >> 6) & 3;
+            int mNoLoadDetect = data[i + 22] & 3;
+            int mLowBat = (data[i + 22]>>2) & 3;
+            int mFanQuiet = (data[i + 22] >> 4) & 3;
+            int mFan = (data[i + 22] >> 6) & 3; // to test
+            int mSome1 = data[i + 23] & 3; // to test
+            int mSome2 = (data[i + 23]>>2) & 3; // to test
+            int mSome3 = (data[i + 23] >> 4) & 3; // to test
+            int mSome4 = (data[i + 23] >> 6) & 3; // to test
+
+             */
+            int mSpeedLim = MathsUtil.shortFromBytesLE(data, 9);
+            int mAlarmSpeed1 = MathsUtil.signedShortFromBytesLE(data, 11);
+            int mAlarmSpeed2 = MathsUtil.signedShortFromBytesLE(data, 13);
+            int mPedalsAdjustment = MathsUtil.signedShortFromBytesLE(data, 15);
+            int mClassicMode = data[19] & 1;
+            int mFancierMode = (data[19] >> 4) & 1;
+            int mPedalsComfSensivity = data[20];
+            int mPedalsClassicSensivity = data[21];
+            int mVolume = data[22];
+            int mLowBeamBrightness = data[26];
+            int mHighBeamBrightness = data[27];
+            int mSplitAccel = data[31];
+            int mSplitBreak = data[32];
+            int mMute = data[39] & 1;
+            int mAutoLight = (data[39] >> 3) & 1;
+            int mTransportMode = (data[39] >> 6) & 1;
+            int mSoundWave = (data[40] >> 2) & 1;
+            int mSplitMode = data[41] & 1;
+            final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
+            appConfig.setPedalsAdjustment(mPedalsAdjustment/10);
+            appConfig.setWheelMaxSpeed(mSpeedLim/100);
+            appConfig.setFancierMode(mFancierMode != 0);
+            appConfig.setRideMode(mClassicMode != 0);
+            appConfig.setPedalSensivity(mPedalsComfSensivity);
+            appConfig.setSpeakerVolume(mVolume);
+            appConfig.setLowBeamBrightness(mLowBeamBrightness);
+            appConfig.setHighBeamBrightness(mHighBeamBrightness);
+            appConfig.setSpeakerMute(mMute == 0);
+            appConfig.setWheelAlarm1Speed(mAlarmSpeed1/100);
+            appConfig.setWheelAlarm2Speed(mAlarmSpeed2/100);
+            //appConfig.setDrlEnabled(mDecorState != 0);
+            //appConfig.setHandleButtonDisabled(mLiftedState == 0);
+            //appConfig.setLockMode(mLockState != 0);
+            appConfig.setTransportMode(mTransportMode != 0);
+            appConfig.setAutoLight(mAutoLight != 0);
+            appConfig.setSoundWave(mSoundWave != 0);
+            appConfig.setSplitMode(mSplitMode != 0);
+            appConfig.setSplitModeAccel(mSplitAccel);
+            appConfig.setSplitModeBreak(mSplitBreak);
+            return false;
+        }
+
+        boolean parseSettingsV14(){
+            Timber.i("Parse settings data");
+            int i = 1;
+
+            int mMaxSpeedLim = MathsUtil.shortFromBytesLE(data, i);
+            int mPedalsAdjustment = MathsUtil.signedShortFromBytesLE(data, i+8);
+            int mOffroadMode = data[i+10] & 1;
+            int mFancierMode = (data[i+10]>>4) & 1;
+            int mComfSens = data[i+11];
+            int mClassSens = data[i+12];
+            int mSplitModeAccel = data[i+13];
+            int mSplitModeBreak = data[i+14];
+            int mStandByDelay = MathsUtil.shortFromBytesLE(data, i+20);
+            int mDrl = (data[i+30] >> 2) & 1;
+            int mMute = data[i+30] & 1;
+            int mTransportMode = (data[i+31]>>4) & 1;
+            int mSplitMode = (data[i+34] >> 2) & 1;
+            int mBermAngleMode = (data[i+34]>>5) & 1;
+
+
+            final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
+            appConfig.setPedalsAdjustment(mPedalsAdjustment/10);
+            appConfig.setWheelMaxSpeed(mMaxSpeedLim/100);
+            appConfig.setFancierMode(mFancierMode != 0);
+            appConfig.setRideMode(mOffroadMode != 0);
+            appConfig.setPedalSensivity(mComfSens);
+            appConfig.setSpeakerMute(mMute == 0);
+            appConfig.setDrlEnabled(mDrl != 0);
+            //appConfig.setLockMode(mLockState != 0);
+            appConfig.setTransportMode(mTransportMode != 0);
+            appConfig.setSplitMode(mSplitMode != 0);
+            appConfig.setSplitModeAccel(mSplitModeAccel);
+            appConfig.setSplitModeBreak(mSplitModeBreak);
+            appConfig.setBermAngleMode(mBermAngleMode != 0);
+            appConfig.setStandbyDelay(mStandByDelay/60);
+            return false;
+        }
+
 
         boolean parseTotalStats() {
             if (data.length < 20) {
@@ -1007,12 +1123,14 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
-                if (lightSwitchCounter > 3) {
+            appConfig.setLowBeamEnabled(lowLightState != 0);
+            appConfig.setHighBeamEnabled(highLightState != 0);
+            //if (appConfig.getLightEnabled() != (lowLightState == 1)) {
+            //    if (lightSwitchCounter > 3) {
                     //appConfig.setLightEnabled(lightState == 1); // bad behaviour
-                    lightSwitchCounter = 0;
-                } else lightSwitchCounter += 1;
-            } else lightSwitchCounter = 0;
+            //        lightSwitchCounter = 0;
+            //    } else lightSwitchCounter += 1;
+            //} else lightSwitchCounter = 0;
 
             //// errors data
             String inmoError = getError(59);
@@ -1212,11 +1330,11 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mMcMode = (data[74]>>3)&0x07;
             int mMotState = (data[74]>>6)&0x01;
             int chrgState = (data[74]>>7)&0x01;
-            int lowLightState = (data[75])&0x01;
-            int highLightState = (data[75] >> 1) & 0x01;
-            int liftedState = (data[75]>>2)&0x01;
-            int tailLiState = (data[75]>>3)&0x03;
-            int fwUpdateState = (data[75]>>5)&0x01;
+            //int lowLightState = (data[76])&0x01;
+            int lightState = (data[76] >> 1) & 0x01;
+            int liftedState = (data[76]>>2)&0x01;
+            int tailLiState = (data[76]>>4)&0x01;
+            int fwUpdateState = (data[76]>>5)&0x01;
             String wmode = "";
             if (mMotState == 1) {wmode = wmode + "Active";}
             if (chrgState == 1) {wmode = wmode + " Charging";}
@@ -1224,12 +1342,13 @@ public class InmotionAdapterV2 extends BaseAdapter {
             //if (!(wmode.equals("Active") || wmode.equals(""))) System.out.println(String.format(Locale.US,"State: %s", wmode));
             wd.setModeStr(wmode);
 
-            if (appConfig.getLightEnabled() != (lowLightState == 1)) {
+            if (appConfig.getLightEnabled() != (lightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    appConfig.setLightEnabled(lightState == 1);
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
+            if (lightSwitchCounter > 3) lightSwitchCounter = 4;
 
             //// errors data
             String inmoError = getError(76);
@@ -1922,7 +2041,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        if (getInstance().getModel() == Model.V12) {
+        if (getInstance().getModel() == Model.V12HS) {
             return 24;
         }
         if (getInstance().getModel() == Model.V12HT) {
