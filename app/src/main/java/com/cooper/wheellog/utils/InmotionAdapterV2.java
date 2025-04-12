@@ -661,7 +661,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mSome2 = (data[i + 23]>>2) & 3; // to test
             int mSome3 = (data[i + 23] >> 4) & 3; // to test
             int mSome4 = (data[i + 23] >> 6) & 3; // to test
-            int mSplitMode = data[i + 24] & 1;
+            int mSplitMode = 0;
+            if (data.length > 25) {
+                mSplitMode = data[i + 24] & 1;
+            }
             int sens = mComfSens;
             if (mRideMode != 0) sens = mClassSens;
             final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
