@@ -452,9 +452,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             settingCommand = InmotionAdapterV2.Message.setAlarmSpeedV12(alarm1Speed, alarm2Speed).writeBuffer();
         } else if (getModel() == Model.V14g || getModel() == Model.V14s) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, alarm1Speed).writeBuffer();
-        } else {
-            settingCommand = InmotionAdapterV2.Message.setAlarmSpeed(alarm1Speed).writeBuffer();
-        }
+        } //else { //  not confirmed that such command exists at all
+            //settingCommand = InmotionAdapterV2.Message.setAlarmSpeed(alarm1Speed).writeBuffer();
+        //}
         settingCommandReady = true;
     }
 
@@ -643,6 +643,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mAutoLightLowThr = data[i + 15];
             int mAutoLightHighThr = data[i + 16];
             int mLightBr = data[i + 17];
+            int mSplitAccel = data[i + 18];
+            int mSplitBreak = data[i + 19];
             int mAudioState = data[i + 20] & 3;
             int mDecorState = (data[i + 20]>>2) & 3;
             int mLiftedState = (data[i + 20] >> 4) & 3;
@@ -659,12 +661,15 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mSome2 = (data[i + 23]>>2) & 3; // to test
             int mSome3 = (data[i + 23] >> 4) & 3; // to test
             int mSome4 = (data[i + 23] >> 6) & 3; // to test
+            int mSplitMode = data[i + 24] & 1;
+            int sens = mComfSens;
+            if (mRideMode != 0) sens = mClassSens;
             final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
             appConfig.setPedalsAdjustment(mPitchAngleZero/10);
             appConfig.setWheelMaxSpeed(mSpeedLim/100);
             appConfig.setFancierMode(mRideMode != 0);
             appConfig.setRideMode(mDriveMode != 0);
-            appConfig.setPedalSensivity(mComfSens);
+            appConfig.setPedalSensivity(sens);
             appConfig.setSpeakerVolume(mVolume);
             appConfig.setLightBrightness(mLightBr);
             appConfig.setSpeakerMute(mAudioState == 0);
@@ -674,6 +679,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
             appConfig.setTransportMode(mTranspMode != 0);
             appConfig.setFanQuietEnabled(mFanQuiet != 0);
             appConfig.setGoHomeMode(mLowBat != 0);
+            appConfig.setSplitMode(mSplitMode != 0);
+            appConfig.setSplitModeAccel(mSplitAccel);
+            appConfig.setSplitModeBreak(mSplitBreak);
+            appConfig.setStandbyDelay(mStandByTime/60);
             return false;
         }
 
@@ -716,26 +725,30 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mAlarmSpeed1 = MathsUtil.signedShortFromBytesLE(data, 11);
             int mAlarmSpeed2 = MathsUtil.signedShortFromBytesLE(data, 13);
             int mPedalsAdjustment = MathsUtil.signedShortFromBytesLE(data, 15);
+            int mStandByDelay = MathsUtil.shortFromBytesLE(data, 17);
             int mClassicMode = data[19] & 1;
             int mFancierMode = (data[19] >> 4) & 1;
-            int mPedalsComfSensivity = data[20];
-            int mPedalsClassicSensivity = data[21];
+            int mPedalsComfSens = data[20];
+            int mPedalsClassicSens = data[21];
             int mVolume = data[22];
             int mLowBeamBrightness = data[26];
             int mHighBeamBrightness = data[27];
             int mSplitAccel = data[31];
             int mSplitBreak = data[32];
             int mMute = data[39] & 1;
+            int mHandleButton = (data[39] >> 2) & 1;
             int mAutoLight = (data[39] >> 3) & 1;
             int mTransportMode = (data[39] >> 6) & 1;
             int mSoundWave = (data[40] >> 2) & 1;
             int mSplitMode = data[41] & 1;
+            int sens = mPedalsComfSens;
+            if (mClassicMode != 0) sens = mPedalsClassicSens;
             final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
             appConfig.setPedalsAdjustment(mPedalsAdjustment/10);
             appConfig.setWheelMaxSpeed(mSpeedLim/100);
             appConfig.setFancierMode(mFancierMode != 0);
             appConfig.setRideMode(mClassicMode != 0);
-            appConfig.setPedalSensivity(mPedalsComfSensivity);
+            appConfig.setPedalSensivity(sens);
             appConfig.setSpeakerVolume(mVolume);
             appConfig.setLowBeamBrightness(mLowBeamBrightness);
             appConfig.setHighBeamBrightness(mHighBeamBrightness);
@@ -743,7 +756,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             appConfig.setWheelAlarm1Speed(mAlarmSpeed1/100);
             appConfig.setWheelAlarm2Speed(mAlarmSpeed2/100);
             //appConfig.setDrlEnabled(mDecorState != 0);
-            //appConfig.setHandleButtonDisabled(mLiftedState == 0);
+            appConfig.setHandleButtonDisabled(mHandleButton == 0);
             //appConfig.setLockMode(mLockState != 0);
             appConfig.setTransportMode(mTransportMode != 0);
             appConfig.setAutoLight(mAutoLight != 0);
@@ -751,6 +764,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
             appConfig.setSplitMode(mSplitMode != 0);
             appConfig.setSplitModeAccel(mSplitAccel);
             appConfig.setSplitModeBreak(mSplitBreak);
+            appConfig.setStandbyDelay(mStandByDelay/60);
             return false;
         }
 
@@ -772,14 +786,15 @@ public class InmotionAdapterV2 extends BaseAdapter {
             int mTransportMode = (data[i+31]>>4) & 1;
             int mSplitMode = (data[i+34] >> 2) & 1;
             int mBermAngleMode = (data[i+34]>>5) & 1;
-
+            int sens = mComfSens;
+            if (mOffroadMode != 0) sens = mClassSens;
 
             final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
             appConfig.setPedalsAdjustment(mPedalsAdjustment/10);
             appConfig.setWheelMaxSpeed(mMaxSpeedLim/100);
             appConfig.setFancierMode(mFancierMode != 0);
             appConfig.setRideMode(mOffroadMode != 0);
-            appConfig.setPedalSensivity(mComfSens);
+            appConfig.setPedalSensivity(sens);
             appConfig.setSpeakerMute(mMute == 0);
             appConfig.setDrlEnabled(mDrl != 0);
             //appConfig.setLockMode(mLockState != 0);
@@ -1651,9 +1666,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
         public static Message setSplitMode(boolean on) {
             byte enable = 0;
             if (on) enable = 1;
-            byte commandCode = (byte) 0x42;
-            if (getInstance().getModel() == Model.V14g || getInstance().getModel() == Model.V14s ) {
-                commandCode = (byte) 0x3e; // in conflict with setAlarmSpeed of previous wheels
+            byte commandCode = (byte) 0x3e; // in conflict with setAlarmSpeed of v12
+            if (getInstance().getModel() == Model.V12HS || getInstance().getModel() == Model.V12HT || getInstance().getModel() == Model.V12PRO) {
+                commandCode = (byte) 0x42;
             }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();
@@ -1665,9 +1680,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
         public static Message setSplitAccelBreak(int acceleration, int breaksens) {
             byte value1 = (byte)(acceleration & 0xFF);
             byte value2 = (byte)(breaksens & 0xFF);
-            byte commandCode = (byte) 0x40;
-            if (getInstance().getModel() == Model.V14g || getInstance().getModel() == Model.V14s ) {
-                commandCode = (byte) 0x3f;
+            byte commandCode = (byte) 0x3f;
+            if (getInstance().getModel() == Model.V12HS || getInstance().getModel() == Model.V12HT || getInstance().getModel() == Model.V12PRO) {
+                commandCode = (byte) 0x40;
             }
             Message msg = new Message();
             msg.flags = Flag.Default.getValue();

@@ -414,7 +414,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
-    if (adapter.model == InmotionAdapterV2.Model.V12HS || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO){
+    // models with HighBeam/LowBeam, currently V12 family
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT, InmotionAdapterV2.Model.V12PRO)){
         switchPref(
             name = stringResource(R.string.on_lowbeam_title),
             desc = stringResource(R.string.on_lowbeam_description),
@@ -487,8 +488,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             appConfig.drlEnabled = it
             adapter.setDrl(it)
         }
-        // not applicable for V11y and V14; v13 - not known
-        if (adapter.model == InmotionAdapterV2.Model.V11 || adapter.model == InmotionAdapterV2.Model.V13) {
+        // With brightness regulation, not applicable for V11y and V14; v13 - not known, V11 - working
+        if (adapter.model in setOf(InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13)) {
             sliderPref(
                 name = stringResource(R.string.light_brightness_title),
                 desc = stringResource(R.string.light_brightness_description),
@@ -502,7 +503,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             }
         }
     }
-    //V11y doesn't have Fan and Quiet mode
+    //V11 only, V11y doesn't have Fan and Quiet mode
     if (adapter.model == InmotionAdapterV2.Model.V11) {
         switchPref(
             name = stringResource(R.string.fan_title),
@@ -521,9 +522,9 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             adapter.setFanQuiet(it)
         }
     }
-    // Inmotion V13 and V14 don't have such button
-    if (adapter.model == InmotionAdapterV2.Model.V12HS || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
-        adapter.model == InmotionAdapterV2.Model.V11 || adapter.model == InmotionAdapterV2.Model.V11Y) {
+    // Inmotion V13 and V14 don't have handle button (kill-switch)
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y)) {
         switchPref(
             name = stringResource(R.string.disable_handle_button_title),
             desc = stringResource(R.string.disable_handle_button_description),
@@ -580,8 +581,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.wheelAlarm1Speed = it.toInt()
         adapter.updateAlarmSpeed(it.toInt(), appConfig.wheelAlarm2Speed, appConfig.wheelMaxSpeed)
     }
-    if (adapter.model == InmotionAdapterV2.Model.V12HS || adapter.model == InmotionAdapterV2.Model.V12HT || adapter.model == InmotionAdapterV2.Model.V12PRO ||
-        adapter.model == InmotionAdapterV2.Model.V11) {
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11)) {
        sliderPref(
             name = stringResource(R.string.wheel_alarm2_title),
             desc = stringResource(R.string.wheel_alarm2_description),
@@ -685,7 +686,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
 
      */
-    if (adapter.model == InmotionAdapterV2.Model.V14g || adapter.model == InmotionAdapterV2.Model.V14s) {
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s)) {
         switchPref(
             name = stringResource(R.string.berm_angle_mode_title),
             desc = stringResource(R.string.berm_angle_mode_description),
@@ -694,20 +695,21 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             appConfig.bermAngleMode = it
             adapter.setBermAngleMode(it)
         }
-
-        sliderPref(
-            name = stringResource(R.string.standby_delay_title),
-            desc = stringResource(R.string.standby_delay_description),
-            position = appConfig.standbyDelay.toFloat(),
-            min = 0f,
-            max = 240f,
-            unit = R.string.min,
-        ) {
-            appConfig.standbyDelay = it.toInt()
-            adapter.setStandbyDelay(it.toInt())
-        }
-
     }
+    // V11, V12HS, V12PRO, V14 have it, I think it is applicable for all
+    sliderPref(
+        name = stringResource(R.string.standby_delay_title),
+        desc = stringResource(R.string.standby_delay_description),
+        position = appConfig.standbyDelay.toFloat(),
+        min = 0f,
+        max = 240f,
+        unit = R.string.min,
+    ) {
+        appConfig.standbyDelay = it.toInt()
+        adapter.setStandbyDelay(it.toInt())
+    }
+
+
     switchPref(
         name = stringResource(R.string.transport_mode_title),
         desc = stringResource(R.string.transport_mode_description),

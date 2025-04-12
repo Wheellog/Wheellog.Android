@@ -49,7 +49,7 @@ class InmotionAdapterV2Test: KoinTest {
         val byteArray1 = "AAAA110882010206010201009C".hexToByteArray() // wheel type
         val byteArray2 = "AAAA11178202313438304341313232323037303032420000000000FD".hexToByteArray() // s/n
         val byteArray3 = "AAAA111D820622080004030F000602214000010110000602230D00010107000001F3".hexToByteArray() //versions
-        val byteArray4 = "AAAA141AA0207C15C800106464140000000058020000006400001500100010".hexToByteArray() // wtf
+        val byteArray4 = "AAAA141AA0207C15C800106464140000000058020000006400001500100010".hexToByteArray() // settings
         val byteArray5 = "AAAA142B900001142614000000803E498AE00FB209D109CEB000C7DF010000BE720000AB1300008F040000AB0600004C".hexToByteArray() // probably statistics
         val byteArray6 = "AAAA141991E86C000066191C002DB2040064E60000974D050000C7DF01A4".hexToByteArray() // totals
         val byteArray7 = "AAAA143184E61EEB0561094A11AE04A004DF01402958CBB000CE004A010000D4FF7C15641900000000492B00000000000000000000C6".hexToByteArray()
@@ -537,7 +537,7 @@ class InmotionAdapterV2Test: KoinTest {
 
 
     @Test
-    fun `decode with v14 settings data 2`() {
+    fun `decode with v14 settings data 1`() {
         // Arrange.
         val byteArray1 = "aaaa1108820102090201010093".hexToByteArray() // wheel type
         val byteArray2 = "AAAA1428A02064196419401F401F6AFF10382F3E324500000000040B000A28385A2800001500000444001E1E55".hexToByteArray() // settings
@@ -556,10 +556,29 @@ class InmotionAdapterV2Test: KoinTest {
     }
 
     @Test
-    fun `decode with v12 settings data 2`() {
+    fun `decode with v12 settings data 1`() {
         // Arrange.
         val byteArray1 = "aaaa110882010207030101009c".hexToByteArray() // wheel type
-        val byteArray2 = "AAAA142CA020000000003AFF96007017BC02B0049CFF403811575701000A28323328AC0D241C0000000000000710010009".hexToByteArray() // settings
+        val byteArray2 = "AAAA142CA020000000000000000070177C1570179CFF403811575701000064323328AC0D241C800C000000000510010096".hexToByteArray() // settings
+        val byteArray3 = "AAAA144384A026FEFF000000000000000000000000C4EDC4ED09000000C125AF25983A7017581B000000000000C5C400C6B0C5B06B282800000000000B00000000000000000000D7".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+
+    }
+
+    @Test
+    fun `decode with v11 settings data 1`() {
+        // Arrange.
+        val byteArray1 = "AAAA110882010206010201009C".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA141EA02018155000106464130000000040380000006461501500141001000000E9".hexToByteArray() // settings
         val byteArray3 = "AAAA144384A026FEFF000000000000000000000000C4EDC4ED09000000C125AF25983A7017581B000000000000C5C400C6B0C5B06B282800000000000B00000000000000000000D7".hexToByteArray() // maindata
         // Act.
         val result1 = adapter.decode(byteArray1)
