@@ -455,14 +455,6 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             adapter.setBeamBrightness(appConfig.lowBeamBrightness, it.toInt())
         }
         switchPref(
-            name = stringResource(R.string.autolight_title),
-            desc = stringResource(R.string.autolight_description),
-            default = appConfig.autoLight,
-        ) {
-            appConfig.autoLight = it
-            adapter.setAutoLight(it)
-        }
-        switchPref(
             name = stringResource(R.string.sound_wave_title),
             desc = stringResource(R.string.sound_wave_description),
             default = appConfig.soundWave,
@@ -488,8 +480,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             appConfig.drlEnabled = it
             adapter.setDrl(it)
         }
-        // With brightness regulation, not applicable for V11y and V14; v13 - not known, V11 - working
-        if (adapter.model in setOf(InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13)) {
+        // With brightness regulation, not applicable for V11y and V14; v13 - not applicable, V11 - working
+        if (adapter.model == InmotionAdapterV2.Model.V11) {
             sliderPref(
                 name = stringResource(R.string.light_brightness_title),
                 desc = stringResource(R.string.light_brightness_description),
@@ -501,6 +493,18 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
                 appConfig.lightBrightness = it.toInt()
                 adapter.setLightBrightness(it.toInt())
             }
+        }
+    }
+    // auto light: V12 family, V13 (only from built-in screen)
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V13)) {
+        switchPref(
+            name = stringResource(R.string.autolight_title),
+            desc = stringResource(R.string.autolight_description),
+            default = appConfig.autoLight,
+        ) {
+            appConfig.autoLight = it
+            adapter.setAutoLight(it)
         }
     }
     //V11 only, V11y doesn't have Fan and Quiet mode
@@ -533,20 +537,22 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             appConfig.handleButtonDisabled = it
             adapter.setHandleButtonState(it)
         }
-        // Inmotion V11Y doesn't have speaker, as well as V13 and V14
-        if (adapter.model != InmotionAdapterV2.Model.V11Y) {
-            sliderPref(
-                name = stringResource(R.string.speaker_volume_title),
-                desc = stringResource(R.string.speaker_volume_description),
-                position = appConfig.speakerVolume.toFloat(),
-                min = 0f,
-                max = 100f,
-                unit = R.string.persent,
-            ) {
-                appConfig.speakerVolume = it.toInt()
-                adapter.setSpeakerVolume(it.toInt())
-            }
+    }
+    // Inmotion V11Y and V14 don't have speaker
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13)) {
+        sliderPref(
+            name = stringResource(R.string.speaker_volume_title),
+            desc = stringResource(R.string.speaker_volume_description),
+            position = appConfig.speakerVolume.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = R.string.persent,
+        ) {
+            appConfig.speakerVolume = it.toInt()
+            adapter.setSpeakerVolume(it.toInt())
         }
+
     }
     // beeper for wheels which don't have speaker
     switchPref(
@@ -569,20 +575,28 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.wheelMaxSpeed = it.toInt()
         adapter.updateMaxSpeed(it.toInt())
     }
-    sliderPref(
-        name = stringResource(R.string.wheel_alarm1_title),
-        desc = stringResource(R.string.wheel_alarm1_description),
-        position = appConfig.wheelAlarm1Speed.toFloat(),
-        min = 3f,
-        max = adapter.maxSpeed.toFloat(),
-        unit = speedUnit,
-        visualMultiple = speedMultipier,
-    ) {
-        appConfig.wheelAlarm1Speed = it.toInt()
-        adapter.updateAlarmSpeed(it.toInt(), appConfig.wheelAlarm2Speed, appConfig.wheelMaxSpeed)
+    // alarms: two on V12 family, 1 on V14, others don't have
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V14g)) {
+        sliderPref(
+            name = stringResource(R.string.wheel_alarm1_title),
+            desc = stringResource(R.string.wheel_alarm1_description),
+            position = appConfig.wheelAlarm1Speed.toFloat(),
+            min = 3f,
+            max = adapter.maxSpeed.toFloat(),
+            unit = speedUnit,
+            visualMultiple = speedMultipier,
+        ) {
+            appConfig.wheelAlarm1Speed = it.toInt()
+            adapter.updateAlarmSpeed(
+                it.toInt(),
+                appConfig.wheelAlarm2Speed,
+                appConfig.wheelMaxSpeed
+            )
+        }
     }
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
-            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11)) {
+            InmotionAdapterV2.Model.V12PRO)) {
        sliderPref(
             name = stringResource(R.string.wheel_alarm2_title),
             desc = stringResource(R.string.wheel_alarm2_description),
@@ -686,7 +700,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
 
      */
-    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s)) {
+    // V13 and V14 applicable
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13)) {
         switchPref(
             name = stringResource(R.string.berm_angle_mode_title),
             desc = stringResource(R.string.berm_angle_mode_description),
@@ -696,7 +711,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             adapter.setBermAngleMode(it)
         }
     }
-    // V11, V12HS, V12PRO, V14 have it, I think it is applicable for all
+    // V11, V12HS, V12PRO, V14 have it, I think it is applicable for all. UPD: V13 seems not have :0
     sliderPref(
         name = stringResource(R.string.standby_delay_title),
         desc = stringResource(R.string.standby_delay_description),

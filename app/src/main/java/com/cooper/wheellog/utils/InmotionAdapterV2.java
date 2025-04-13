@@ -1657,15 +1657,6 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return msg;
         }
 
-        public static Message setAlarmSpeed(int speedLow) {
-            byte[] value1 = MathsUtil.getBytes((short)(speedLow * 100));
-            Message msg = new Message();
-            msg.flags = Flag.Default.getValue();
-            msg.command = Command.Control.getValue();
-            msg.data = new byte[]{0x3e, value1[1], value1[0]};
-            return msg;
-        }
-
         public static Message setSplitMode(boolean on) {
             byte enable = 0;
             if (on) enable = 1;
