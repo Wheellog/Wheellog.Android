@@ -991,7 +991,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
             if (appConfig.getLightEnabled() != (lightState == 1)) {
                 if (lightSwitchCounter > 3) {
-                    //appConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    appConfig.setLightEnabled(lightState == 1); // bad behaviour
                     lightSwitchCounter = 0;
                 } else lightSwitchCounter += 1;
             } else lightSwitchCounter = 0;
