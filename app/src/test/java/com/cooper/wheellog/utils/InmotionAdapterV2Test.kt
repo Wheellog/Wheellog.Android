@@ -535,6 +535,24 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(data.roll).isEqualTo(-0.17)
     }
 
+    @Test
+    fun `decode with v13 settings data 1`() {
+        // Arrange.
+        val byteArray1 = "AAAA1108820102080101010091".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA1428A02028233421401F401F5A00006464302C21000000005802000A28645A2800005500010410000000EB".hexToByteArray() // settings
+        val byteArray3 = "AAAA1459845E2F0F000000F8FF00000000CC11750000000000C900E9FFC8000000000000000000FB20FB1F204E28233421401F401F204E401F709400000000CACCC9CAB0C80000B092000000000000491000000000000000000000000093".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+
+    }
 
     @Test
     fun `decode with v14 settings data 1`() {
