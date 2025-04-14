@@ -480,7 +480,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             appConfig.drlEnabled = it
             adapter.setDrl(it)
         }
-        // With brightness regulation, not applicable for V11y and V14; v13 - not applicable, V11 - working
+        // With brightness regulation, only v11 is applicable
         if (adapter.model == InmotionAdapterV2.Model.V11) {
             sliderPref(
                 name = stringResource(R.string.light_brightness_title),
@@ -576,9 +576,10 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         adapter.updateMaxSpeed(it.toInt())
     }
     // alarms: two on V12 family, 1 on V14, others don't have
+    // temporally check it for V13 and V11y
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
             InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V14g,
-            InmotionAdapterV2.Model.V13)) {
+            InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V11Y)) {
         sliderPref(
             name = stringResource(R.string.wheel_alarm1_title),
             desc = stringResource(R.string.wheel_alarm1_description),
@@ -596,6 +597,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             )
         }
     }
+    // two alarms only V12 family
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
             InmotionAdapterV2.Model.V12PRO)) {
        sliderPref(
@@ -642,7 +644,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.pedalSensivity = it.toInt()
         adapter.setPedalSensivity(it.toInt())
     }
-
+    // seems not applicable for V13, leave it for now here
     switchPref(
         name = stringResource(R.string.fancier_mode_title),
         desc = stringResource(R.string.fancier_mode_description),
@@ -689,18 +691,17 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             }
         }
     }
-    // I'm not sure if still exists on V11 and if it is working on others
-    /*
-    switchPref(
-        name = stringResource(R.string.go_home_mode_title),
-        desc = stringResource(R.string.go_home_mode_description),
-        default = appConfig.goHomeMode,
-    ) {
-        appConfig.goHomeMode = it
-        adapter.setGoHomeMode(it)
+    // Still exist for V11 and V11y, but different name and logic
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y)) {
+        switchPref(
+            name = stringResource(R.string.go_home_mode_title),
+            desc = stringResource(R.string.go_home_mode_description),
+            default = appConfig.goHomeMode,
+        ) {
+            appConfig.goHomeMode = it
+            adapter.setGoHomeMode(it)
+        }
     }
-
-     */
     // V13 and V14 applicable
     if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13)) {
         switchPref(
@@ -724,7 +725,6 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.standbyDelay = it.toInt()
         adapter.setStandbyDelay(it.toInt())
     }
-
 
     switchPref(
         name = stringResource(R.string.transport_mode_title),

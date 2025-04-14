@@ -348,8 +348,8 @@
     <string name="fancier_mode_title">Опытный райдер</string>
     <string name="fancier_mode_description">Этот режим увеличивает максимальную скорость колеса до 55 кмч</string>
     <string name="split_mode_break_description">Регулировка помощи при торможении</string>
-    <string name="go_home_mode_title">Режим докатки</string>
-    <string name="go_home_mode_description">Позволяет доехать на низком заряде батареи</string>
+    <string name="go_home_mode_title">Безопасный режим при низком заряде</string>
+    <string name="go_home_mode_description">Режим безопасного использования батареи при низком заряде</string>
     <string name="transport_mode_title">Транспортный режим</string>
     <string name="transport_mode_description">Колесо не активируется при случайном включении во время транспортировки</string>
     <string name="lock_mode_title">Заблокировать колесо</string>

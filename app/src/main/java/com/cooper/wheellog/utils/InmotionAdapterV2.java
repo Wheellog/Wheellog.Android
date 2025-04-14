@@ -58,8 +58,10 @@ public class InmotionAdapterV2 extends BaseAdapter {
                                 return result.parseSettingsV13();
                             } else if (getInstance().getModel() == Model.V14s || getInstance().getModel() == Model.V14g) {
                                 return result.parseSettingsV14();
-                            } else if (getInstance().getModel() == Model.V11 || getInstance().getModel() == Model.V11Y) {
+                            } else if (getInstance().getModel() == Model.V11) {
                                 return result.parseSettingsV11();
+                            } else if (getInstance().getModel() == Model.V11Y) {
+                                return false;
                             } else {
                                 return false;
                             }
@@ -437,7 +439,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
-        if (getModel() == Model.V14g || getModel() == Model.V14s || getModel()== Model.V13) {
+        if (getModel() == Model.V14g || getModel() == Model.V14s || getModel()== Model.V13 || getModel()== Model.V11Y) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, 0).writeBuffer();
         } else {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();

@@ -548,8 +548,8 @@
     <string name="split_mode_accel_description">Acceleration assist level</string>
     <string name="split_mode_break_title">Break assist</string>
     <string name="split_mode_break_description">Break assist level</string>
-    <string name="go_home_mode_title">Go Home mode</string>
-    <string name="go_home_mode_description">Enables to ride at low battery condition</string>
+    <string name="go_home_mode_title">Low battery safe mode</string>
+    <string name="go_home_mode_description">Safe usage of battery at low charge</string>
     <string name="transport_mode_title">Transport mode</string>
     <string name="transport_mode_description">This mode prevents wheel from starting motor during transportation</string>
     <string name="lock_mode_title">Lock mode</string>
