@@ -346,7 +346,7 @@
     <string name="speaker_mute_description">Отключить динамик колеса</string>
     <string name="sound_wave_description">Звук зависит от скорости</string>
     <string name="fancier_mode_title">Опытный райдер</string>
-    <string name="fancier_mode_description">Этот режим увеличивает максимальную скорость колеса до 55 кмч</string>
+    <string name="fancier_mode_description">Этот режим увеличивает максимальную скорость колеса</string>
     <string name="split_mode_break_description">Регулировка помощи при торможении</string>
     <string name="go_home_mode_title">Безопасный режим при низком заряде</string>
     <string name="go_home_mode_description">Режим безопасного использования батареи при низком заряде</string>
