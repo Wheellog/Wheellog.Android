@@ -54,7 +54,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                             if (getInstance().getModel() == Model.V12HS || getInstance().getModel() == Model.V12HT ||
                                     getInstance().getModel() == Model.V12PRO) {
                                 return result.parseSettingsV12();
-                            } else if (getInstance().getModel() == Model.V13) {
+                            } else if (getInstance().getModel() == Model.V13 || getInstance().getModel() == Model.V13PRO) {
                                 return result.parseSettingsV13();
                             } else if (getInstance().getModel() == Model.V14s || getInstance().getModel() == Model.V14g) {
                                 return result.parseSettingsV14();
@@ -74,7 +74,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
                         } else if (result.command == Message.Command.RealTimeInfo.getValue()) {
                             if (getInstance().getModel() == Model.V12HS || getInstance().getModel() == Model.V12HT || getInstance().getModel() == Model.V12PRO) {
                                 return result.parseRealTimeInfoV12(getContext());
-                            } else if (getInstance().getModel() == Model.V13) {
+                            } else if (getInstance().getModel() == Model.V13 || getInstance().getModel() == Model.V13PRO) {
                                 return result.parseRealTimeInfoV13(getContext());
                             } else if (getInstance().getModel() == Model.V14s || getInstance().getModel() == Model.V14g) {
                                 return result.parseRealTimeInfoV14(getContext());
@@ -103,6 +103,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         V12HT(72, "Inmotion V12 HT"),
         V12PRO(73, "Inmotion V12 PRO"),
         V13(81, "Inmotion V13"),
+        V13PRO(82, "Inmotion V13 PRO"),
         V14g(91, "Inmotion V14 50GB"),
         V14s(92, "Inmotion V14 50S"),
         UNKNOWN(0,"Inmotion Unknown");
@@ -151,6 +152,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
             case V12PRO:
                 return 70;
             case V13:
+                return 120;
+            case V13PRO:
                 return 120;
             case V14s:
                 return 120;
@@ -255,7 +258,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void wheelBeep() {
-        if (getModel() == Model.V13 || getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V11Y) {
+        if (getModel() == Model.V13 || getModel() == Model.V13PRO || getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V11Y) {
             settingCommand = InmotionAdapterV2.Message.playBeep(0x02).writeBuffer();
         } else {
             settingCommand = InmotionAdapterV2.Message.playSound(0x18).writeBuffer();
@@ -439,7 +442,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
-        if (getModel() == Model.V14g || getModel() == Model.V14s || getModel()== Model.V13 || getModel()== Model.V11Y) {
+        if (getModel() == Model.V14g || getModel() == Model.V14s || getModel()== Model.V13 || getModel()== Model.V13PRO ||getModel()== Model.V11Y) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, 0).writeBuffer();
         } else {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
@@ -451,7 +454,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
     public void updateAlarmSpeed(final int alarm1Speed, final int alarm2Speed, final int maxSpeed) {
         if (getModel() == Model.V11 || getModel() == Model.V12HS || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
             settingCommand = InmotionAdapterV2.Message.setAlarmSpeedV12(alarm1Speed, alarm2Speed).writeBuffer();
-        } else if (getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V13 || getModel() == Model.V11Y) {
+        } else if (getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V13 || getModel() == Model.V13PRO || getModel() == Model.V11Y) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, alarm1Speed).writeBuffer();
         } //else { //  not confirmed that such command exists at all
             //settingCommand = InmotionAdapterV2.Message.setAlarmSpeed(alarm1Speed).writeBuffer();
@@ -2152,6 +2155,9 @@ public class InmotionAdapterV2 extends BaseAdapter {
             return 24;
         }
         if (getInstance().getModel() == Model.V13) {
+            return 30;
+        }
+        if (getInstance().getModel() == Model.V13PRO) {
             return 30;
         }
         if (getInstance().getModel() == Model.V14g) {

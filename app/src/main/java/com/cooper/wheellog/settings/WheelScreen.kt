@@ -497,7 +497,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
     // auto light: V12 family, V13 (only from built-in screen)
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
-            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V13)) {
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
         switchPref(
             name = stringResource(R.string.autolight_title),
             desc = stringResource(R.string.autolight_description),
@@ -540,7 +540,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
     // Inmotion V11Y and V14 don't have speaker
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
-            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13)) {
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
         sliderPref(
             name = stringResource(R.string.speaker_volume_title),
             desc = stringResource(R.string.speaker_volume_description),
@@ -579,7 +579,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     // temporally check it for V13 and V11y
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
             InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V14g,
-            InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V11Y)) {
+            InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V11Y)) {
         sliderPref(
             name = stringResource(R.string.wheel_alarm1_title),
             desc = stringResource(R.string.wheel_alarm1_description),
@@ -703,7 +703,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         }
     }
     // V13 and V14 applicable
-    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13)) {
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
         switchPref(
             name = stringResource(R.string.berm_angle_mode_title),
             desc = stringResource(R.string.berm_angle_mode_description),
