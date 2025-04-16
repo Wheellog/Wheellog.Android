@@ -465,6 +465,18 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.pedal_sensivity, 100)
         set(value) = setSpecific(R.string.pedal_sensivity, value)
 
+    var standbyDelay: Int
+        get() = getSpecific(R.string.standby_delay, 10)
+        set(value) = setSpecific(R.string.standby_delay, value)
+
+    var splitModeAccel: Int
+        get() = getSpecific(R.string.split_mode_accel, 100)
+        set(value) = setSpecific(R.string.split_mode_accel, value)
+
+    var splitModeBreak: Int
+        get() = getSpecific(R.string.split_mode_break, 100)
+        set(value) = setSpecific(R.string.split_mode_break, value)
+
     var rideMode: Boolean
         get() = getSpecific(R.string.ride_mode, false)
         set(value) = setSpecific(R.string.ride_mode, value)
@@ -477,6 +489,10 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.transport_mode, false)
         set(value) = setSpecific(R.string.transport_mode, value)
 
+    var bermAngleMode: Boolean
+        get() = getSpecific(R.string.berm_angle_mode, false)
+        set(value) = setSpecific(R.string.berm_angle_mode, value)
+
     var goHomeMode: Boolean
         get() = getSpecific(R.string.go_home_mode, false)
         set(value) = setSpecific(R.string.go_home_mode, value)
@@ -484,6 +500,10 @@ class AppConfig(var context: Context): KoinComponent {
     var fancierMode: Boolean
         get() = getSpecific(R.string.fancier_mode, false)
         set(value) = setSpecific(R.string.fancier_mode, value)
+
+    var splitMode: Boolean
+        get() = getSpecific(R.string.split_mode, false)
+        set(value) = setSpecific(R.string.split_mode, value)
 
     var speakerMute: Boolean
         get() = getSpecific(R.string.speaker_mute, false)
@@ -500,6 +520,14 @@ class AppConfig(var context: Context): KoinComponent {
     var lightBrightness: Int
         get() = getSpecific(R.string.light_brightness, 0)
         set(value) = setSpecific(R.string.light_brightness, value)
+
+    var lowBeamBrightness: Int
+        get() = getSpecific(R.string.low_beam_brightness, 0)
+        set(value) = setSpecific(R.string.low_beam_brightness, value)
+
+    var highBeamBrightness: Int
+        get() = getSpecific(R.string.high_beam_brightness, 0)
+        set(value) = setSpecific(R.string.high_beam_brightness, value)
 
     //endregion
 
@@ -703,6 +731,22 @@ class AppConfig(var context: Context): KoinComponent {
     var lightEnabled: Boolean
         get() = getSpecific(R.string.light_enabled, false)
         set(value) = setSpecific(R.string.light_enabled, value)
+
+    var lowBeamEnabled: Boolean
+        get() = getSpecific(R.string.low_beam_enabled, false)
+        set(value) = setSpecific(R.string.low_beam_enabled, value)
+
+    var highBeamEnabled: Boolean
+        get() = getSpecific(R.string.high_beam_enabled, false)
+        set(value) = setSpecific(R.string.high_beam_enabled, value)
+
+    var autoLight: Boolean
+        get() = getSpecific(R.string.auto_light, false)
+        set(value) = setSpecific(R.string.auto_light, value)
+
+    var soundWave: Boolean
+        get() = getSpecific(R.string.sound_wave, false)
+        set(value) = setSpecific(R.string.sound_wave, value)
 
     var profileName: String
         get() = getSpecific(R.string.profile_name, "")
