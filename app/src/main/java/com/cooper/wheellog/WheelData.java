@@ -1,5 +1,7 @@
 package com.cooper.wheellog;
 
+import static com.cooper.wheellog.BroadcastKt.broadcastData;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -1095,6 +1097,7 @@ public class WheelData {
         timestamp_last = timestamp_raw;
         intent.putExtra("Speed", mSpeed);
         mContext.sendBroadcast(intent);
+        broadcastData(mContext);
 
         if (!mWheelIsReady && getAdapter().isReady()) {
             mWheelIsReady = true;

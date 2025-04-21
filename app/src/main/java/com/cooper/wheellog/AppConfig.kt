@@ -291,6 +291,11 @@ class AppConfig(var context: Context): KoinComponent {
             notifications.updateKostilTimer()
         }
 
+    var broadcastEnabled: Boolean
+        get() = getValue(R.string.broadcast_enabled, false)
+        set(value) = setValue(R.string.broadcast_enabled, value)
+
+
     var wearOsPages: WearPages
         get() = WearPage.deserialize(
             getValue(Constants.wearPages,

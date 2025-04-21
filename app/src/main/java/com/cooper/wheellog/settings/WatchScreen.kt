@@ -76,5 +76,15 @@ fun watchScreen(appConfig: AppConfig = koinInject()) {
                 appConfig.mibandFixRs = it
             }
         }
+        group(name = stringResource(R.string.broadcast_group_title)) {
+            switchPref(
+                name = stringResource(R.string.broadcast_enabled),
+                desc = stringResource(R.string.broadcast_description),
+                default = appConfig.broadcastEnabled,
+                showDiv = false,
+            ) {
+                appConfig.broadcastEnabled = it
+            }
+        }
     }
 }

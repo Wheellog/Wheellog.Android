@@ -576,6 +576,9 @@
     <string name="wearos_pages_title" >WearOs Pages</string>
     <string name="wearos_pages_description">Pages on WearOs</string>
     <string name="watch_wearos_group_title" >WearOs</string>
+    <string name="broadcast_group_title">Broadcast Settings</string>
+    <string name="broadcast_enabled">Enable Broadcast</string>
+    <string name="broadcast_description">Allow wheel data to be available for special apps</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
     <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>

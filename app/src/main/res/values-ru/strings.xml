@@ -525,6 +525,9 @@
     <string name="alarm_text_battery_v">[ЗАРЯД][...]</string>
     <string name="wearos_pages_title">Страницы WearOS</string>
     <string name="wearos_pages_description">Выбрать страницы для WearOS</string>
+    <string name="broadcast_group_title">Настройка Broadcast</string>
+    <string name="broadcast_enabled">Включить Broadcast</string>
+    <string name="broadcast_description">Позволяет сделать данные получаемые с колеса доступными для специальных приложений</string>
     <string name="pwm_tiltback_alarm">FW mod - подъем по PWM</string>
     <string name="avg_cell_volt">Сред. напр. ячейки</string>
     <string name="map_map_tab_name">Карта</string>
