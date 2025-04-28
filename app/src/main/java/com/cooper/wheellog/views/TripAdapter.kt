@@ -17,13 +17,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ListTripItemBinding
@@ -99,7 +97,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
 //        }
 
         private fun showMap(tripModel: TripModel) {
-            startActivity(context, Intent(context, MapActivity::class.java).apply {
+            context.startActivity(Intent(context, MapActivity::class.java).apply {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     putExtra("path", tripModel.mediaId)
                 } else {
@@ -136,19 +134,25 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         private fun showTrackEc(trackIdInEc: Int) {
             if (trackIdInEc != -1) {
                 val browserIntent = Intent(Intent.ACTION_VIEW, ElectroClub.instance.getUrlFromTrackId(trackIdInEc))
-                startActivity(context, browserIntent, Bundle.EMPTY)
+                context.startActivity(browserIntent, Bundle.EMPTY)
             }
         }
 
         private fun share(tripModel: TripModel) {
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_STREAM, tripModel.uri)
-                type = "text/csv"
-            }
+            try {
+                val sendIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, tripModel.uri)
+                    type = "text/csv"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
 
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(context, shareIntent, Bundle.EMPTY)
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                context.startActivity(shareIntent, Bundle.EMPTY)
+
+            } catch (e: Exception) {
+                Toast.makeText(context, "Не удалось поделиться файлом", Toast.LENGTH_SHORT).show()
+            }
         }
 
         private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {

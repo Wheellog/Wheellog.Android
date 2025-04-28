@@ -5,7 +5,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "trip_database",
+    tableName = Consts.DATABASE_NAME,
     indices = [Index(
         value = ["fileName"],
         unique = true

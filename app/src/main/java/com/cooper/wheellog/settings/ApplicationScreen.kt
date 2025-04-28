@@ -1,5 +1,10 @@
 package com.cooper.wheellog.settings
 
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
@@ -7,12 +12,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
+import com.cooper.wheellog.data.TripDatabase
+import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.NotificationUtil
 import com.cooper.wheellog.utils.ThemeEnum
 import com.cooper.wheellog.utils.ThemeIconEnum
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
@@ -495,12 +504,54 @@ fun applicationScreen(
             appConfig.detectBatteryOptimization = it
         }
 
-        switchPref(
-            name = stringResource(R.string.send_yandex_metriсa_title),
-            desc = stringResource(R.string.send_yandex_metriсa_description),
-            default = appConfig.yandexMetricaAccepted,
-        ) {
-            appConfig.yandexMetricaAccepted = it
+        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
+        clickableAndAlert(
+            name = stringResource(R.string.export_data_to_file_title),
+            alertDesc = stringResource(R.string.export_data_to_file_alert_desc),
+            confirmButtonText = stringResource(R.string.export_data_to_file_title),
+        )
+        {
+            coroutineScope.launch {
+                val file = FileUtil.exportData(context)
+                file?.let {
+                    FileUtil.shareBackupFile(context, it)
+                    Toast.makeText(context, "Резервная копия сохранена", Toast.LENGTH_LONG).show()
+                }
+            }
         }
+
+        @Composable
+        fun getImportFileLauncher(
+            onFileSelected: (Uri) -> Unit
+        ) = rememberLauncherForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+            uri?.let { onFileSelected(it) }
+        }
+
+        val filePickerLauncher = getImportFileLauncher() { uri ->
+            coroutineScope.launch {
+                FileUtil.importData(context, uri)
+                Toast.makeText(context, "Данные импортированы", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        clickableAndAlert(
+            name = stringResource(R.string.import_data_to_file_title),
+            alertDesc = stringResource(R.string.import_data_to_file_alert_desc),
+            confirmButtonText = stringResource(R.string.import_data_to_file_title),
+        )
+        {
+            filePickerLauncher.launch("application/zip")
+        }
+
+//        switchPref(
+//            name = stringResource(R.string.send_yandex_metriсa_title),
+//            desc = stringResource(R.string.send_yandex_metriсa_description),
+//            default = appConfig.yandexMetricaAccepted,
+//        ) {
+//            appConfig.yandexMetricaAccepted = it
+//        }
     }
 }
