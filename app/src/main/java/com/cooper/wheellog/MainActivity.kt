@@ -549,8 +549,13 @@ class MainActivity : AppCompatActivity() {
                     miSearch!!.isEnabled = true
                     miSearch!!.icon!!.alpha = 255
                 }
-                miLogging!!.isEnabled = false
-                miLogging!!.icon!!.alpha = 64
+                if (LoggingService.isInstanceCreated()) {
+                    miLogging!!.isEnabled = true
+                    miLogging!!.icon!!.alpha = 255
+                } else {
+                    miLogging!!.isEnabled = false
+                    miLogging!!.icon!!.alpha = 64
+                }
             }
             else -> {}
         }
