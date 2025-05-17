@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.drawable.AnimationDrawable
 import android.media.AudioManager
+import android.net.Uri
 import android.os.*
 import android.util.Rational
 import android.view.KeyEvent
@@ -1146,6 +1147,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, R.string.bluetooth_required, Toast.LENGTH_LONG).show()
             finish()
+        }
+    }
+
+    val getCsvResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            Timber.wtf(uri.path)
         }
     }
 
