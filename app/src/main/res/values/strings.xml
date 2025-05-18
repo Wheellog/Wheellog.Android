@@ -320,8 +320,8 @@
     <string name="gw_in_miles_description">on - Miles, off - Km</string>
     <string name="auto_voltage_title">Auto detect wheel voltage</string>
     <string name="auto_voltage_description">If possible, switch off if voltage is irrelevant</string>
-    <string name="ks18l_scaler_title">Wrong 18L distanse</string>
-    <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
+    <string name="ks18l_scaler_title">Wrong 18L distance</string>
+    <string name="ks18l_scaler_description">18L used to show distance incorrectly. WheelLog corrects this number, but if you want to see the wrong raw numbers from the wheel - check this</string>
     <string name="extreme_mode_title">Extreme Mode</string>
     <string name="extreme_mode_description">For stunts only! Not intended for normal riding!</string>
     <string name="braking_current_title">Braking Current</string>
