@@ -548,4 +548,6 @@
     <string name="auto_voltage_description">Если возможно, выключите если напряжение неправильное</string>
     <string name="swap_speedpwm_title">Показывать PWM вместо скорости</string>
     <string name="swap_speedpwm_description">Поменять местами отображение скорости и PWM</string>
+    <string name="import_log">Импортировать существующий лог</string>
+    <string name="create_test_log">Создать тестовый лог</string>
 </resources>

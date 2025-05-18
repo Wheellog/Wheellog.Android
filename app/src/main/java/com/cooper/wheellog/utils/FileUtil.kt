@@ -179,6 +179,15 @@ class FileUtil(val context: Context) {
         }
     }
 
+    fun writeAllStream(inputStream: InputStream)
+    {
+        val buffer = ByteArray(8192)
+        var count: Int
+        while ((inputStream.read(buffer).also { count = it }) > 0) {
+            stream!!.write(buffer, 0, count)
+        }
+    }
+
     private val contentResolver: ContentResolver?
         get() = context.contentResolver
 

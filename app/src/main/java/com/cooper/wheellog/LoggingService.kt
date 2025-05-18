@@ -13,6 +13,7 @@ import android.os.Environment
 import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.cooper.wheellog.data.TripDao
 import com.cooper.wheellog.utils.Constants
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.NotificationUtil
@@ -31,6 +32,7 @@ import java.util.Locale
 class LoggingService : Service() {
     private val appConfig: AppConfig by inject()
     private val notifications: NotificationUtil by inject()
+    private val dao: TripDao by inject()
     private var sdf: SimpleDateFormat? = null
     private var mLocation: Location? = null
     private var mLastLocation: Location? = null
@@ -108,13 +110,10 @@ class LoggingService : Service() {
                 fileUtil.prepareStream()
                 writeToLastLog = true
                 // reset trip duration for recalculation in trip list
-                val dao = ElectroClub.instance.dao
-                if (dao != null) {
-                    ioState.launch {
-                        dao.getTripByFileName(fileUtil.file!!.name)?.apply {
-                            duration = 0
-                            dao.update(this)
-                        }
+                ioState.launch {
+                    dao.getTripByFileName(fileUtil.file!!.name)?.apply {
+                        duration = 0
+                        dao.update(this)
                     }
                 }
             }

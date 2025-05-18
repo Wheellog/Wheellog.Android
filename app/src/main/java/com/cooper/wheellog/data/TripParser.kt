@@ -3,9 +3,10 @@ package com.cooper.wheellog.data
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.utils.LogHeaderEnum
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
@@ -17,7 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Locale
 
-object TripParser {
+object TripParser: KoinComponent {
+    private val dao: TripDao by inject()
     private val header = HashMap<LogHeaderEnum, Int>()
     private var lastErrorValue: String? = null
 
@@ -79,6 +81,7 @@ object TripParser {
             reader.forEachLine { line ->
                 if (line.isNotEmpty())
                 {
+
                     val row = line.split(",")
                     val timeString = row[header[LogHeaderEnum.TIME]!!]
                     val dateString = row[header[LogHeaderEnum.DATE]!!]
@@ -116,7 +119,6 @@ object TripParser {
             inputStream.close()
         }
 
-        val dao = ElectroClub.instance.dao ?: return resultList
         var trip = dao.getTripByFileName(fileName)
         if (trip == null) {
             trip = TripDataDbEntry(fileName = fileName)

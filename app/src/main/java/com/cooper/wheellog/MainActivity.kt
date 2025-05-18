@@ -15,6 +15,7 @@ import android.graphics.drawable.AnimationDrawable
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
+import android.provider.MediaStore
 import android.util.Rational
 import android.view.KeyEvent
 import android.view.Menu
@@ -39,6 +40,7 @@ import com.cooper.wheellog.DialogHelper.checkBatteryOptimizationsAndShowAlert
 import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
 import com.cooper.wheellog.companion.WearOs
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
+import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ActivityMainBinding
 import com.cooper.wheellog.settings.mainScreen
 import com.cooper.wheellog.ui.theme.AppTheme
@@ -55,10 +57,15 @@ import com.cooper.wheellog.utils.SomeUtil.playBeep
 import com.cooper.wheellog.views.PiPView
 import com.google.android.material.snackbar.Snackbar
 import com.welie.blessed.ConnectionState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 // import com.yandex.metrica.YandexMetrica
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -608,9 +615,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         ElectroClub.instance.apply {
-            lifecycle.coroutineScope.launch {
-                dao = getDataBase(this@MainActivity).tripDao()
-            }
             errorListener = { method: String?, error: String? ->
                 val message = "[ec] $method error: $error"
                 Timber.i(message)
@@ -1150,9 +1154,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Добавление файла через Android систему
+    // В результата файл копируется в папку "manual"
     val getCsvResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            Timber.wtf(uri.path)
+            CoroutineScope(Dispatchers.IO + Job()).launch {
+                contentResolver.apply {
+                    query(uri, null, null, null, null)?.use { cursor ->
+                        val nameIndex = cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME);
+                        cursor.moveToFirst()
+                        cursor.getString(nameIndex)
+                    }?.let { fileName ->
+                        openInputStream(uri)?.use { stream ->
+                            val fileUtil = FileUtil(this@MainActivity)
+                            fileUtil.prepareFile(fileName, "manual")
+                            fileUtil.writeAllStream(stream)
+                            fileUtil.close()
+                        }
+                    }
+                    lifecycle.coroutineScope.launch {
+                        pagerAdapter.updatePageOfTrips()
+                    }
+                }
+            }
         }
     }
 

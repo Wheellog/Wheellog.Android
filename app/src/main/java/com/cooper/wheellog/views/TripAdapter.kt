@@ -22,6 +22,7 @@ import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
+import com.cooper.wheellog.data.TripDao
 import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ListTripItemBinding
@@ -85,7 +86,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     }
 
     class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root), KoinComponent {
-
+        private val dao: TripDao by inject()
         private val appConfig: AppConfig by inject()
         private val context = itemBinding.root.context
 
@@ -149,7 +150,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     adapter.removeAt(adapterPosition)
 
                     CoroutineScope(Dispatchers.IO + Job()).launch {
-                        ElectroClub.instance.dao?.apply {
+                        dao.apply {
                             val tripDb = getTripByFileName(tripModel.fileName)
                             if (tripDb != null) {
                                 delete(tripDb)
@@ -251,7 +252,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
             var trackIdInEc = -1
             var trip: TripDataDbEntry? = null
             itemView.doAsync({
-                trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                trip = dao.getTripByFileName(tripModel.fileName)
                 trackIdInEc =
                     if (uploadViewVisible == View.VISIBLE && trip != null && trip!!.ecId > 0) {
                         trip!!.ecId
@@ -260,7 +261,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     }
                 if (trip == null || trip?.duration == 0) {
                     TripParser.parseFile(context, tripModel.fileName, "", tripModel.uri)
-                    trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                    trip = dao.getTripByFileName(tripModel.fileName)
                 }
             }) {
                 setDescFromDb(trip)
