@@ -1,5 +1,6 @@
 package com.cooper.wheellog.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -406,74 +407,154 @@ private fun inmotion(appConfig: AppConfig = koinInject()) {
 @Composable
 private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     val adapter by remember { mutableStateOf(InmotionAdapterV2.getInstance()) }
+    var splitModeEnabled by remember { mutableStateOf(appConfig.splitMode) }
     var speedMultipier = 1.0f
     var speedUnit = R.string.kmh
     if (appConfig.useMph) {
         speedMultipier = MathsUtil.kmToMilesMultiplier.toFloat()
         speedUnit = R.string.mph
     }
-    switchPref(
-        name = stringResource(R.string.on_headlight_title),
-        desc = stringResource(R.string.on_headlight_description),
-        default = appConfig.lightEnabled,
-    ) {
-        appConfig.lightEnabled = it
-        adapter.setLightState(it)
+    // models with HighBeam/LowBeam, currently V12 family
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT, InmotionAdapterV2.Model.V12PRO)){
+        switchPref(
+            name = stringResource(R.string.on_lowbeam_title),
+            desc = stringResource(R.string.on_lowbeam_description),
+            default = appConfig.lowBeamEnabled,
+        ) {
+            appConfig.lowBeamEnabled = it
+            adapter.setBeamState(it, appConfig.highBeamEnabled)
+        }
+        switchPref(
+            name = stringResource(R.string.on_highbeam_title),
+            desc = stringResource(R.string.on_highbeam_description),
+            default = appConfig.highBeamEnabled,
+        ) {
+            appConfig.highBeamEnabled = it
+            adapter.setBeamState(appConfig.lowBeamEnabled, it)
+        }
+        sliderPref(
+            name = stringResource(R.string.lowbeam_brightness_title),
+            desc = stringResource(R.string.lowbeam_brightness_description),
+            position = appConfig.lowBeamBrightness.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = R.string.persent,
+        ) {
+            appConfig.lowBeamBrightness = it.toInt()
+            adapter.setBeamBrightness(it.toInt(), appConfig.highBeamBrightness)
+        }
+        sliderPref(
+            name = stringResource(R.string.highbeam_brightness_title),
+            desc = stringResource(R.string.highbeam_brightness_description),
+            position = appConfig.highBeamBrightness.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = R.string.persent,
+        ) {
+            appConfig.highBeamBrightness = it.toInt()
+            adapter.setBeamBrightness(appConfig.lowBeamBrightness, it.toInt())
+        }
+        switchPref(
+            name = stringResource(R.string.sound_wave_title),
+            desc = stringResource(R.string.sound_wave_description),
+            default = appConfig.soundWave,
+        ) {
+            appConfig.soundWave = it
+            adapter.setSoundWave(it)
+        }
+
+    } else {
+        switchPref(
+            name = stringResource(R.string.on_headlight_title),
+            desc = stringResource(R.string.on_headlight_description),
+            default = appConfig.lightEnabled,
+        ) {
+            appConfig.lightEnabled = it
+            adapter.setLightState(it)
+        }
+        switchPref(
+            name = stringResource(R.string.drl_settings_title),
+            desc = stringResource(R.string.drl_settings_description),
+            default = appConfig.drlEnabled,
+        ) {
+            appConfig.drlEnabled = it
+            adapter.setDrl(it)
+        }
+        // With brightness regulation, only v11 is applicable
+        if (adapter.model == InmotionAdapterV2.Model.V11) {
+            sliderPref(
+                name = stringResource(R.string.light_brightness_title),
+                desc = stringResource(R.string.light_brightness_description),
+                position = appConfig.lightBrightness.toFloat(),
+                min = 0f,
+                max = 100f,
+                unit = R.string.persent,
+            ) {
+                appConfig.lightBrightness = it.toInt()
+                adapter.setLightBrightness(it.toInt())
+            }
+        }
     }
-    switchPref(
-        name = stringResource(R.string.drl_settings_title),
-        desc = stringResource(R.string.drl_settings_description),
-        default = appConfig.drlEnabled,
-    ) {
-        appConfig.drlEnabled = it
-        adapter.setDrl(it)
+    // auto light: V12 family, V13 (only from built-in screen)
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
+        switchPref(
+            name = stringResource(R.string.autolight_title),
+            desc = stringResource(R.string.autolight_description),
+            default = appConfig.autoLight,
+        ) {
+            appConfig.autoLight = it
+            adapter.setAutoLight(it)
+        }
     }
-    sliderPref(
-        name = stringResource(R.string.light_brightness_title),
-        desc = stringResource(R.string.light_brightness_description),
-        position = appConfig.lightBrightness.toFloat(),
-        min = 0f,
-        max = 100f,
-        unit = R.string.persent,
-    ) {
-        appConfig.lightBrightness = it.toInt()
-        adapter.setLightBrightness(it.toInt())
+    //V11 only, V11y doesn't have Fan and Quiet mode
+    if (adapter.model == InmotionAdapterV2.Model.V11) {
+        switchPref(
+            name = stringResource(R.string.fan_title),
+            desc = stringResource(R.string.fan_description),
+            default = appConfig.fanQuietEnabled,
+        ) {
+            appConfig.fanQuietEnabled = it
+            adapter.setFan(it)
+        }
+        switchPref(
+            name = stringResource(R.string.fan_quiet_title),
+            desc = stringResource(R.string.fan_quiet_description),
+            default = appConfig.fanQuietEnabled,
+        ) {
+            appConfig.fanQuietEnabled = it
+            adapter.setFanQuiet(it)
+        }
     }
-    switchPref(
-        name = stringResource(R.string.fan_title),
-        desc = stringResource(R.string.fan_description),
-        default = appConfig.fanQuietEnabled,
-    ) {
-        appConfig.fanQuietEnabled = it
-        adapter.setFan(it)
+    // Inmotion V13 and V14 don't have handle button (kill-switch)
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y)) {
+        switchPref(
+            name = stringResource(R.string.disable_handle_button_title),
+            desc = stringResource(R.string.disable_handle_button_description),
+            default = appConfig.handleButtonDisabled,
+        ) {
+            appConfig.handleButtonDisabled = it
+            adapter.setHandleButtonState(it)
+        }
     }
-    switchPref(
-        name = stringResource(R.string.fan_quiet_title),
-        desc = stringResource(R.string.fan_quiet_description),
-        default = appConfig.fanQuietEnabled,
-    ) {
-        appConfig.fanQuietEnabled = it
-        adapter.setFanQuiet(it)
+    // Inmotion V11Y and V14 don't have speaker
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
+        sliderPref(
+            name = stringResource(R.string.speaker_volume_title),
+            desc = stringResource(R.string.speaker_volume_description),
+            position = appConfig.speakerVolume.toFloat(),
+            min = 0f,
+            max = 100f,
+            unit = R.string.persent,
+        ) {
+            appConfig.speakerVolume = it.toInt()
+            adapter.setSpeakerVolume(it.toInt())
+        }
+
     }
-    switchPref(
-        name = stringResource(R.string.disable_handle_button_title),
-        desc = stringResource(R.string.disable_handle_button_description),
-        default = appConfig.handleButtonDisabled,
-    ) {
-        appConfig.handleButtonDisabled = it
-        adapter.setHandleButtonState(it)
-    }
-    sliderPref(
-        name = stringResource(R.string.speaker_volume_title),
-        desc = stringResource(R.string.speaker_volume_description),
-        position = appConfig.speakerVolume.toFloat(),
-        min = 0f,
-        max = 100f,
-        unit = R.string.persent,
-    ) {
-        appConfig.speakerVolume = it.toInt()
-        adapter.setSpeakerVolume(it.toInt())
-    }
+    // beeper for wheels which don't have speaker
     switchPref(
         name = stringResource(R.string.speaker_mute_title),
         desc = stringResource(R.string.speaker_mute_description),
@@ -487,12 +568,50 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         desc = stringResource(R.string.tilt_back_description),
         position = appConfig.wheelMaxSpeed.toFloat(),
         min = 3f,
-        max = InmotionAdapterV2.getInstance().maxSpeed.toFloat(),
+        max = adapter.maxSpeed.toFloat(),
         unit = speedUnit,
         visualMultiple = speedMultipier,
     ) {
         appConfig.wheelMaxSpeed = it.toInt()
         adapter.updateMaxSpeed(it.toInt())
+    }
+    // alarms: two on V12 family, 1 on V14, others don't have
+    // temporally check it for V13 and V11y
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V14g,
+            InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V11Y)) {
+        sliderPref(
+            name = stringResource(R.string.wheel_alarm1_title),
+            desc = stringResource(R.string.wheel_alarm1_description),
+            position = appConfig.wheelAlarm1Speed.toFloat(),
+            min = 3f,
+            max = adapter.maxSpeed.toFloat(),
+            unit = speedUnit,
+            visualMultiple = speedMultipier,
+        ) {
+            appConfig.wheelAlarm1Speed = it.toInt()
+            adapter.updateAlarmSpeed(
+                it.toInt(),
+                appConfig.wheelAlarm2Speed,
+                appConfig.wheelMaxSpeed
+            )
+        }
+    }
+    // two alarms only V12 family
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO)) {
+       sliderPref(
+            name = stringResource(R.string.wheel_alarm2_title),
+            desc = stringResource(R.string.wheel_alarm2_description),
+            position = appConfig.wheelAlarm2Speed.toFloat(),
+            min = 3f,
+            max = adapter.maxSpeed.toFloat(),
+            unit = speedUnit,
+            visualMultiple = speedMultipier,
+        ) {
+            appConfig.wheelAlarm2Speed = it.toInt()
+            adapter.updateAlarmSpeed(appConfig.wheelAlarm1Speed, it.toInt(), appConfig.wheelMaxSpeed)
+        }
     }
     sliderPref(
         name = stringResource(R.string.pedal_horizont_title),
@@ -525,6 +644,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.pedalSensivity = it.toInt()
         adapter.setPedalSensivity(it.toInt())
     }
+    // seems not applicable for V13, leave it for now here
     switchPref(
         name = stringResource(R.string.fancier_mode_title),
         desc = stringResource(R.string.fancier_mode_description),
@@ -533,14 +653,79 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         appConfig.fancierMode = it
         adapter.setFancierMode(it)
     }
+
     switchPref(
-        name = stringResource(R.string.go_home_mode_title),
-        desc = stringResource(R.string.go_home_mode_description),
-        default = appConfig.goHomeMode,
+        name = stringResource(R.string.split_mode_title),
+        desc = stringResource(R.string.split_mode_description),
+        default = appConfig.splitMode,
     ) {
-        appConfig.goHomeMode = it
-        adapter.setGoHomeMode(it)
+        appConfig.splitMode = it
+        splitModeEnabled = it
+        adapter.setSplitMode(it)
     }
+    AnimatedVisibility(splitModeEnabled) {
+        group(
+            name = stringResource(R.string.split_mode_title)
+        ) {
+            sliderPref(
+                name = stringResource(R.string.split_mode_accel_title),
+                desc = stringResource(R.string.split_mode_accel_description),
+                position = appConfig.splitModeAccel.toFloat(),
+                min = 0f,
+                max = 100f,
+                unit = R.string.persent,
+            ) {
+                appConfig.splitModeAccel = it.toInt()
+                adapter.setSplitModeConf(it.toInt(), appConfig.splitModeBreak)
+            }
+            sliderPref(
+                name = stringResource(R.string.split_mode_break_title),
+                desc = stringResource(R.string.split_mode_break_description),
+                position = appConfig.splitModeBreak.toFloat(),
+                min = 0f,
+                max = 100f,
+                unit = R.string.persent,
+            ) {
+                appConfig.splitModeBreak = it.toInt()
+                adapter.setSplitModeConf(appConfig.splitModeAccel, it.toInt())
+            }
+        }
+    }
+    // Still exist for V11 and V11y, but different name and logic
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y)) {
+        switchPref(
+            name = stringResource(R.string.go_home_mode_title),
+            desc = stringResource(R.string.go_home_mode_description),
+            default = appConfig.goHomeMode,
+        ) {
+            appConfig.goHomeMode = it
+            adapter.setGoHomeMode(it)
+        }
+    }
+    // V13 and V14 applicable
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
+        switchPref(
+            name = stringResource(R.string.berm_angle_mode_title),
+            desc = stringResource(R.string.berm_angle_mode_description),
+            default = appConfig.bermAngleMode,
+        ) {
+            appConfig.bermAngleMode = it
+            adapter.setBermAngleMode(it)
+        }
+    }
+    // V11, V12HS, V12PRO, V14 have it, I think it is applicable for all. UPD: V13 seems not have :0
+    sliderPref(
+        name = stringResource(R.string.standby_delay_title),
+        desc = stringResource(R.string.standby_delay_description),
+        position = appConfig.standbyDelay.toFloat(),
+        min = 0f,
+        max = 240f,
+        unit = R.string.min,
+    ) {
+        appConfig.standbyDelay = it.toInt()
+        adapter.setStandbyDelay(it.toInt())
+    }
+
     switchPref(
         name = stringResource(R.string.transport_mode_title),
         desc = stringResource(R.string.transport_mode_description),
@@ -565,6 +750,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         condition = { WheelData.getInstance().speed < 1 },
         onConfirm = { adapter.powerOff() },
     )
+
     clickableAndAlert(
         name = stringResource(R.string.wheel_calibration),
         confirmButtonText = stringResource(R.string.wheel_calibration),
@@ -573,6 +759,16 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         condition = { WheelData.getInstance().speed < 1 },
         onConfirm = { adapter.wheelCalibration() },
     )
+
+    clickableAndAlert(
+        name = stringResource(R.string.wheel_calibration_balance),
+        confirmButtonText = stringResource(R.string.wheel_calibration_balance),
+        alertDesc = stringResource(R.string.wheel_calibration_balance_message_inmo),
+        themeIcon = ThemeIconEnum.SettingsCalibration,
+        condition = { WheelData.getInstance().speed < 1 },
+        onConfirm = { adapter.wheelCalibrationBalance() },
+    )
+
 }
 
 @Composable
