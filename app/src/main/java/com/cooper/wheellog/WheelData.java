@@ -1093,7 +1093,24 @@ public class WheelData {
         }
 
         timestamp_last = timestamp_raw;
+
         intent.putExtra("Speed", mSpeed);
+        intent.putExtra("PWM", mCalculatedPwm);
+        intent.putExtra("Voltage", mVoltage);
+        intent.putExtra("Current", mCurrent);
+        intent.putExtra("PhaseCurrent", mPhaseCurrent);
+        intent.putExtra("Power", mPower);
+        intent.putExtra("Battery",mBattery);
+        intent.putExtra("Temp1", mTemperature);
+        intent.putExtra("Temp2", mTemperature2);
+        intent.putExtra("MaxSpeed", mTopSpeed);
+        intent.putExtra("MaxPwm", mMaxPwm);
+        intent.putExtra("MaxPower", mMaxPower);
+        intent.putExtra("MaxTemp", mMaxTemp);
+        intent.putExtra("Distance", mDistance);
+        intent.putExtra("TotalDistance", mTotalDistance);
+        intent.putExtra("RideTime", mRideTime);
+
         mContext.sendBroadcast(intent);
 
         if (!mWheelIsReady && getAdapter().isReady()) {
