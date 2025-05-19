@@ -625,4 +625,6 @@
     <string name="show_clock_title">Show the clock on the main screen</string>
     <string name="swap_speedpwm_title">Show PWM instead of Speed</string>
     <string name="swap_speedpwm_description">Show PWM instead of Speed and Speed instead of short PWM</string>
+    <string name="import_log">Import exits log</string>
+    <string name="create_test_log">Create new test log</string>
 </resources>

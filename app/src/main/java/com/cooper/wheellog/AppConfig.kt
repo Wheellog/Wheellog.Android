@@ -96,7 +96,7 @@ class AppConfig(var context: Context): KoinComponent {
         set(value) { this.viewBlocksString = value.joinToString(separator) }
 
     var usePipMode: Boolean
-        get() = getValue(R.string.use_pip_mode, true)
+        get() = getValue(R.string.use_pip_mode, false)
         set(value) = setValue(R.string.use_pip_mode, value)
 
     var pipBlock: String

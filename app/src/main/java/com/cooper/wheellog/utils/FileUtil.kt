@@ -1,6 +1,7 @@
 package com.cooper.wheellog.utils
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -8,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.content.FileProvider
 import com.cooper.wheellog.views.TripModel
 import com.google.common.io.ByteStreams
 import timber.log.Timber
@@ -177,6 +179,15 @@ class FileUtil(val context: Context) {
         }
     }
 
+    fun writeAllStream(inputStream: InputStream)
+    {
+        val buffer = ByteArray(8192)
+        var count: Int
+        while ((inputStream.read(buffer).also { count = it }) > 0) {
+            stream!!.write(buffer, 0, count)
+        }
+    }
+
     private val contentResolver: ContentResolver?
         get() = context.contentResolver
 
@@ -330,13 +341,26 @@ class FileUtil(val context: Context) {
                             }
                             val extension = f.absolutePath.substring(indexExt)
                             if (extension == ".csv" && !f.name.startsWith("RAW")) {
-                                tripModels.add(
-                                    TripModel(
-                                        f.name,
-                                        sizeToKb(f.length()),
-                                        f.absolutePath
+                                try {
+                                    val contentUri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        f
                                     )
-                                )
+                                    tripModels.add(
+                                        TripModel(
+                                            f.name,
+                                            sizeToKb(f.length()),
+                                            contentUri,
+                                            pathLegacyAndroid = f.absolutePath
+                                        )
+                                    )
+                                } catch (e: Exception) {
+                                    Timber.wtf(
+                                        "FillTrips",
+                                        "Error creating URI for file ${f.name}: ${e.message}"
+                                    )
+                                }
                             }
                         }
                     }
@@ -367,9 +391,8 @@ class FileUtil(val context: Context) {
                         cursor.getString(0.coerceAtLeast(cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME)))
                     val description =
                         sizeToKb(cursor.getLong(0.coerceAtLeast(cursor.getColumnIndex(MediaStore.Downloads.SIZE))))
-                    val mediaId =
-                        cursor.getString(0.coerceAtLeast(cursor.getColumnIndex(MediaStore.Downloads._ID)))
-                    tripModels.add(TripModel(title, description, mediaId))
+                    val mediaId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Downloads._ID))
+                    tripModels.add(TripModel(title, description, ContentUris.withAppendedId(uri, mediaId)))
                 } while (cursor.moveToNext())
                 cursor.close()
             }

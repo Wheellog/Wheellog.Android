@@ -19,12 +19,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import com.cooper.wheellog.AppConfig
+import com.cooper.wheellog.BuildConfig
 import com.cooper.wheellog.ElectroClub
+import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
 import org.koin.compose.koinInject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -229,6 +235,35 @@ fun logScreen(appConfig: AppConfig = koinInject())
             default = appConfig.continueThisDayLog,
         ) {
             appConfig.continueThisDayLog = it
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || BuildConfig.DEBUG) {
+            val activity = (LocalContext.current as? MainActivity)
+            clickablePref(
+                name = stringResource(R.string.import_log),
+            ) {
+                activity?.getCsvResult?.launch("text/*")
+            }
+
+            clickablePref(
+                name = stringResource(R.string.create_test_log),
+            ) {
+                activity?.let {
+                    val fileUtil = FileUtil(activity.applicationContext)
+                    val sdFormatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
+                    val filename = sdFormatter.format(Date()) + ".csv"
+                    if (fileUtil.prepareFile(filename, "test")) {
+                        fileUtil.writeLine(
+                        "date,time,latitude,longitude,gps_speed,gps_alt,gps_heading,gps_distance,speed,voltage,phase_current,current,power,torque,pwm,battery_level,distance,totaldistance,system_temp,temp2,tilt,roll,mode,alert\n" +
+                             "2025-01-29,23:05:53.835,53.921541,27.4574593,0.0,259.5,0.0,0,14.72,83.28,0.00,0.88,73.29,0.00,44.06,95,1,4778555,24,0,0.13,1.42,Drive,\n" +
+                             "2025-01-29,23:05:54.021,53.921541,27.4574593,0.0,259.5,0.0,0,19.92,83.28,0.00,1.04,86.61,0.00,59.62,95,1,4778555,24,0,0.14,1.26,Drive,\n" +
+                             "2025-01-29,23:05:54.021,53.921541,27.4574593,0.0,259.5,0.0,0,19.92,83.28,0.00,1.04,86.61,0.00,59.62,95,1,4778555,24,0,0.14,1.26,Drive,\n" +
+                             "2025-01-29,23:05:54.205,53.921541,27.4574593,0.0,259.5,0.0,0,22.05,83.28,0.00,1.33,110.76,0.00,65.99,95,1,4778555,24,0,0.09,0.51,Drive,"
+                        )
+                        fileUtil.close()
+                    }
+                }
+            }
         }
     }
 }

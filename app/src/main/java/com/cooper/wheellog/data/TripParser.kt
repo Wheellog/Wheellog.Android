@@ -3,9 +3,10 @@ package com.cooper.wheellog.data
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
 import com.cooper.wheellog.utils.LogHeaderEnum
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
@@ -17,7 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Locale
 
-object TripParser {
+object TripParser: KoinComponent {
+    private val dao: TripDao by inject()
     private val header = HashMap<LogHeaderEnum, Int>()
     private var lastErrorValue: String? = null
 
@@ -77,28 +79,37 @@ object TripParser {
 
         try {
             reader.forEachLine { line ->
-                val row = line.split(",")
-                val timeString = row[header[LogHeaderEnum.TIME]!!]
-                val dateString = row[header[LogHeaderEnum.DATE]!!]
-                val logTick = LogTick(
-                    timeString = timeString,
-                    timePlusDayOfWeek = sdfFullDate.parse("$dateString $timeString", ParsePosition(8))!!.time / 100f,
-                    time = sdfTime.parse(timeString)!!.time / 100f,
-                    latitude = row[header[LogHeaderEnum.LATITUDE]!!].toDoubleOrNull() ?: 0.0,
-                    longitude = row[header[LogHeaderEnum.LONGITUDE]!!].toDoubleOrNull() ?: 0.0,
-                    altitude = row[header[LogHeaderEnum.GPS_ALT]!!].toDoubleOrNull() ?: 0.0,
-                    batteryLevel = row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull() ?: 0,
-                    voltage = row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0,
-                    current = row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0,
-                    power = row[header[LogHeaderEnum.POWER]!!].toDoubleOrNull() ?: 0.0,
-                    speed = row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0,
-                    speedGps = row[header[LogHeaderEnum.GPS_SPEED]!!].toDoubleOrNull() ?: 0.0,
-                    temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0,
-                    pwm = row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0,
-                    distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0,
-                    totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toIntOrNull() ?: 0
-                )
-                resultList.add(logTick)
+                if (line.isNotEmpty())
+                {
+
+                    val row = line.split(",")
+                    val timeString = row[header[LogHeaderEnum.TIME]!!]
+                    val dateString = row[header[LogHeaderEnum.DATE]!!]
+                    val logTick = LogTick(
+                        timeString = timeString,
+                        timePlusDayOfWeek = sdfFullDate.parse(
+                            "$dateString $timeString",
+                            ParsePosition(8)
+                        )!!.time / 100f,
+                        time = sdfTime.parse(timeString)!!.time / 100f,
+                        latitude = row[header[LogHeaderEnum.LATITUDE]!!].toDoubleOrNull() ?: 0.0,
+                        longitude = row[header[LogHeaderEnum.LONGITUDE]!!].toDoubleOrNull() ?: 0.0,
+                        altitude = row[header[LogHeaderEnum.GPS_ALT]!!].toDoubleOrNull() ?: 0.0,
+                        batteryLevel = row[header[LogHeaderEnum.BATTERY_LEVEL]!!].toIntOrNull()
+                            ?: 0,
+                        voltage = row[header[LogHeaderEnum.VOLTAGE]!!].toDoubleOrNull() ?: 0.0,
+                        current = row[header[LogHeaderEnum.CURRENT]!!].toDoubleOrNull() ?: 0.0,
+                        power = row[header[LogHeaderEnum.POWER]!!].toDoubleOrNull() ?: 0.0,
+                        speed = row[header[LogHeaderEnum.SPEED]!!].toDoubleOrNull() ?: 0.0,
+                        speedGps = row[header[LogHeaderEnum.GPS_SPEED]!!].toDoubleOrNull() ?: 0.0,
+                        temperature = row[header[LogHeaderEnum.SYSTEM_TEMP]!!].toIntOrNull() ?: 0,
+                        pwm = row[header[LogHeaderEnum.PWM]!!].toDoubleOrNull() ?: 0.0,
+                        distance = row[header[LogHeaderEnum.DISTANCE]!!].toIntOrNull() ?: 0,
+                        totalDistance = row[header[LogHeaderEnum.TOTALDISTANCE]!!].toIntOrNull()
+                            ?: 0
+                    )
+                    resultList.add(logTick)
+                }
             }
         } catch (ex: Exception) {
             lastErrorValue = ex.localizedMessage
@@ -108,7 +119,6 @@ object TripParser {
             inputStream.close()
         }
 
-        val dao = ElectroClub.instance.dao ?: return resultList
         var trip = dao.getTripByFileName(fileName)
         if (trip == null) {
             trip = TripDataDbEntry(fileName = fileName)
@@ -144,7 +154,7 @@ object TripParser {
                     maxPwm = maxPwm.coerceAtLeast(it.pwm.toFloat())
                 }
 
-                val maxTotalDistance = resultList.subList(resultList.size - 10, resultList.size).maxOf { it.totalDistance }
+                val maxTotalDistance = resultList.subList(0.coerceAtLeast(resultList.size - 10), resultList.size).maxOf { it.totalDistance }
                 val logDuration = (last.time - first.time - timeToExclude) / 600
                 distance = maxTotalDistance - firstTotalDistance
                 val powers = resultList.map { it.power }
