@@ -17,13 +17,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.DialogHelper.setBlackIcon
 import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.R
-import com.cooper.wheellog.WheelLog
+import com.cooper.wheellog.data.TripDao
 import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ListTripItemBinding
@@ -40,8 +39,6 @@ import org.koin.core.component.get
 import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.time.Year
 import java.util.Locale
@@ -89,54 +86,34 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     }
 
     class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root), KoinComponent {
-
+        private val dao: TripDao by inject()
         private val appConfig: AppConfig by inject()
         private val context = itemBinding.root.context
 
-//        private fun uploadInProgress(inProgress: Boolean) {
-//            uploadView.visibility = if (!inProgress) View.VISIBLE else View.GONE
-//            uploadProgressView.visibility = if (inProgress) View.VISIBLE else View.GONE
-//        }
-
         private fun showMap(tripModel: TripModel) {
-            startActivity(context, Intent(context, MapActivity::class.java).apply {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    putExtra("path", tripModel.mediaId)
-                } else {
-                    putExtra("uri", tripModel.uri.toString())
-                }
+            context.startActivity(Intent(context, MapActivity::class.java).apply {
+                putExtra("uri", tripModel.uri.toString())
+                putExtra("path", tripModel.pathLegacyAndroid)
                 putExtra("title", tripModel.title)
             }, Bundle.EMPTY)
         }
 
         private fun uploadToEc(tripModel: TripModel) {
-//            uploadInProgress(true)
-            val inputStream: InputStream? =
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    // Android 9 or less
-                    FileInputStream(File(tripModel.mediaId))
-                } else {
-                    // Android 10+
-                    get<Context>().contentResolver.openInputStream(tripModel.uri)
-                }
+            val inputStream =
+                get<Context>().contentResolver.openInputStream(tripModel.uri)
             if (inputStream == null) {
                 Timber.i("Failed to create inputStream for %s", tripModel.title)
-//                uploadInProgress(false)
             } else {
                 val data = ByteStreams.toByteArray(inputStream)
                 inputStream.close()
-                ElectroClub.instance.uploadTrack(data, tripModel.title, false) {
-//                    MainScope().launch {
-//                        uploadInProgress(false)
-//                    }
-                }
+                ElectroClub.instance.uploadTrack(data, tripModel.title, false) { }
             }
         }
 
         private fun showTrackEc(trackIdInEc: Int) {
             if (trackIdInEc != -1) {
                 val browserIntent = Intent(Intent.ACTION_VIEW, ElectroClub.instance.getUrlFromTrackId(trackIdInEc))
-                startActivity(context, browserIntent, Bundle.EMPTY)
+                context.startActivity(browserIntent, Bundle.EMPTY)
             }
         }
 
@@ -145,10 +122,11 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_STREAM, tripModel.uri)
                 type = "text/csv"
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
 
             val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(context, shareIntent, Bundle.EMPTY)
+            context.startActivity(shareIntent, Bundle.EMPTY)
         }
 
         private fun deleteFile(tripModel: TripModel, adapter: TripAdapter) {
@@ -159,8 +137,8 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                        val file = File(tripModel.mediaId.replace(':', '_'))
-                        if (file.exists()) {
+                        val file = tripModel.pathLegacyAndroid?.let { File(it) }
+                        if (file?.exists() == true) {
                             file.canonicalFile.delete()
                             if (file.exists()) {
                                 file.delete()
@@ -172,7 +150,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     adapter.removeAt(adapterPosition)
 
                     CoroutineScope(Dispatchers.IO + Job()).launch {
-                        ElectroClub.instance.dao?.apply {
+                        dao.apply {
                             val tripDb = getTripByFileName(tripModel.fileName)
                             if (tripDb != null) {
                                 delete(tripDb)
@@ -269,13 +247,12 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                 text = ""
                 typeface = font
             }
-//            uploadInProgress(false)
             setFriendlyName()
 
             var trackIdInEc = -1
             var trip: TripDataDbEntry? = null
             itemView.doAsync({
-                trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                trip = dao.getTripByFileName(tripModel.fileName)
                 trackIdInEc =
                     if (uploadViewVisible == View.VISIBLE && trip != null && trip!!.ecId > 0) {
                         trip!!.ecId
@@ -283,8 +260,8 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                         -1
                     }
                 if (trip == null || trip?.duration == 0) {
-                    TripParser.parseFile(context, tripModel.fileName, tripModel.mediaId, tripModel.uri)
-                    trip = ElectroClub.instance.dao?.getTripByFileName(tripModel.fileName)
+                    TripParser.parseFile(context, tripModel.fileName, "", tripModel.uri)
+                    trip = dao.getTripByFileName(tripModel.fileName)
                 }
             }) {
                 setDescFromDb(trip)

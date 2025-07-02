@@ -23,6 +23,7 @@ import kotlin.coroutines.*
 
 class ElectroClub: KoinComponent {
     private val appConfig: AppConfig by inject()
+    private val dao: TripDao by inject()
 
     companion object {
         @JvmStatic
@@ -44,7 +45,6 @@ class ElectroClub: KoinComponent {
     var lastError: String? = null
     var errorListener: ((String?, String?) -> Unit)? = null
     var successListener: ((String?, Any?) -> Unit)? = null
-    var dao: TripDao? = null
 
     fun login(email: String, password: String, success: (Boolean) -> Unit) {
         val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()

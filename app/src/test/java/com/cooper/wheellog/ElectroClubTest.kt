@@ -38,12 +38,12 @@ class ElectroClubTest: KoinTest {
                 module {
                     single { appConfig }
                     single { mockContext }
+                    single { db.tripDao() }
                 }
             )
         }
         ec = ElectroClub()
         db = mockkClass(TripDatabase::class, relaxed = true)
-        ec.dao = db.tripDao()
         successCalls = 0
         errorCalls = 0
         ec.successListener = { _: String?, _: Any? -> successCalls++ }

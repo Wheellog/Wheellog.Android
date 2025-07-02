@@ -89,6 +89,7 @@
     <string name="name">Name</string>
     <string name="model">Model</string>
     <string name="version">Version</string>
+    <string name="error">Error code</string>
     <string name="serial_number">Serial Number</string>
     <string name="time_charge_title">Charge Time</string>
     <string name="notification_text">• %1$.1f km/h • %2$d%% • %3$d°C • %4$.1f km •</string>
@@ -319,8 +320,8 @@
     <string name="gw_in_miles_description">on - Miles, off - Km</string>
     <string name="auto_voltage_title">Auto detect wheel voltage</string>
     <string name="auto_voltage_description">If possible, switch off if voltage is irrelevant</string>
-    <string name="ks18l_scaler_title">Wrong 18L distanse</string>
-    <string name="ks18l_scaler_description">18L use to show wrong distance, WheelLog corrects this number, but if you want to see wrong raw numbers from wheel - check this</string>
+    <string name="ks18l_scaler_title">Wrong 18L distance</string>
+    <string name="ks18l_scaler_description">18L used to show distance incorrectly. WheelLog corrects this number, but if you want to see the wrong raw numbers from the wheel - check this</string>
     <string name="extreme_mode_title">Extreme Mode</string>
     <string name="extreme_mode_description">For stunts only! Not intended for normal riding!</string>
     <string name="braking_current_title">Braking Current</string>
@@ -648,4 +649,6 @@
     <string name="show_clock_title">Show the clock on the main screen</string>
     <string name="swap_speedpwm_title">Show PWM instead of Speed</string>
     <string name="swap_speedpwm_description">Show PWM instead of Speed and Speed instead of short PWM</string>
+    <string name="import_log">Import exits log</string>
+    <string name="create_test_log">Create new test log</string>
 </resources>

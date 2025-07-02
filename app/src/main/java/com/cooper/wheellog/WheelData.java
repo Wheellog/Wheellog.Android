@@ -92,6 +92,7 @@ public class WheelData {
 
     //    private int mVersion; # sorry King, but INT not good for Inmo
     private String mVersion = "";
+    private String mError = "";
     private String mSerialNumber = "Unknown";
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
@@ -574,6 +575,14 @@ public class WheelData {
 
     public void setVersion(String value) {
         mVersion = value;
+    }
+
+    public String getError() {
+        return Objects.equals(mError, "") ? "No" : mError;
+    }
+
+    public void setError(String value) {
+        mError = value;
     }
 
     public void setWheelType(WHEEL_TYPE wheelType) {
@@ -1084,7 +1093,24 @@ public class WheelData {
         }
 
         timestamp_last = timestamp_raw;
+
         intent.putExtra("Speed", mSpeed);
+        intent.putExtra("PWM", mCalculatedPwm);
+        intent.putExtra("Voltage", mVoltage);
+        intent.putExtra("Current", mCurrent);
+        intent.putExtra("PhaseCurrent", mPhaseCurrent);
+        intent.putExtra("Power", mPower);
+        intent.putExtra("Battery",mBattery);
+        intent.putExtra("Temp1", mTemperature);
+        intent.putExtra("Temp2", mTemperature2);
+        intent.putExtra("MaxSpeed", mTopSpeed);
+        intent.putExtra("MaxPwm", mMaxPwm);
+        intent.putExtra("MaxPower", mMaxPower);
+        intent.putExtra("MaxTemp", mMaxTemp);
+        intent.putExtra("Distance", mDistance);
+        intent.putExtra("TotalDistance", mTotalDistance);
+        intent.putExtra("RideTime", mRideTime);
+
         mContext.sendBroadcast(intent);
 
         if (!mWheelIsReady && getAdapter().isReady()) {
@@ -1197,6 +1223,7 @@ public class WheelData {
         mModel = "";
         mModeStr = "";
         mVersion = "";
+        mError = "";
         mSerialNumber = "";
         mBtName = "";
         rideStartTime = 0;

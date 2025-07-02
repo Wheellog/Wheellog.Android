@@ -6,20 +6,42 @@ import com.cooper.wheellog.WheelLog
 import com.google.common.collect.Range
 import com.google.common.truth.Truth.*
 import io.mockk.*
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import java.io.File
 import java.io.InputStream
 import kotlin.system.measureTimeMillis
 
 class TripParserTest {
+    private lateinit var dao: TripDao
+
+    @Before
+    fun setUp() {
+        dao = mockkClass(TripDao::class, relaxed = false)
+        startKoin {
+            modules(
+                module {
+                    single { dao }
+                }
+            )
+        }
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+        stopKoin()
+    }
 
     @Test
     fun parseFile() {
         // Arrange.
         val context = mockkClass(Context::class, relaxed = true)
-        val dao = mockkClass(TripDao::class, relaxed = false)
         val trip = TripDataDbEntry(fileName = "test")
-        ElectroClub.instance.dao = dao
         every { dao.getTripByFileName(any()) } returns trip
         justRun { dao.update(any()) }
         val inputStream: InputStream = File("src/test/resources/log_test1.csv").inputStream()
