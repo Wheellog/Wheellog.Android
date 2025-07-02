@@ -85,6 +85,7 @@
     <string name="gotway_negative" translatable="false">gotway_negative</string>
     <string name="hw_pwm" translatable="false">hw_pwm</string>
     <string name="is_alexovik_fw" translatable="false">is_alexovik_fw</string>
+    <string name="trick" translatable="false">trick</string>
     <string name="extreme_mode" translatable="false">extreme_mode</string>
     <string name="braking_current" translatable="false">braking_current</string>
     <string name="rotation_control" translatable="false">rotation_control</string>

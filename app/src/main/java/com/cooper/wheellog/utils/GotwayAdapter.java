@@ -102,11 +102,12 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature;
-                    if (!bIsAlexovikFW)
+                    if (!bIsAlexovikFW) {
                         temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
-                    else
+                    } else {
                         temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-
+                        appConfig.setTrick(buff[16]);
+                    }
                     int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
@@ -263,7 +264,7 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 } else if (buff[18] == (byte) 0xFF) {
                     if (!bIsAlexovikFW) {
-                        //checkFirmware();
+                        checkFirmware();
                     }
                     if (lock_Changes == 0) {
                         appConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
@@ -474,6 +475,12 @@ public class GotwayAdapter extends BaseAdapter {
 
     public void updateICurrentD(int value) {
         byte[] cmd = { (byte)0x64, (byte)0x69, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void setTrick(int value) {
+        byte[] cmd = { (byte)0x74, (byte)0x74, (byte)value };
         lock_Changes = 2;
         WheelData.getInstance().bluetoothCmd(cmd);
     }

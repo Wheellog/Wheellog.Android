@@ -324,6 +324,11 @@
     <string name="ks18l_scaler_description">18L used to show distance incorrectly. WheelLog corrects this number, but if you want to see the wrong raw numbers from the wheel - check this</string>
     <string name="extreme_mode_title">Extreme Mode</string>
     <string name="extreme_mode_description">For stunts only! Not intended for normal riding!</string>
+    <string name="trick_title">Trick</string>
+    <string name="trick_description">Choose trick</string>
+    <string name="trick_0">None</string>
+    <string name="trick_1">Front flip</string>
+    <string name="trick_2">Back flip</string>
     <string name="braking_current_title">Braking Current</string>
     <string name="braking_current_description">The force with which the motor will be braked after the switch-off.</string>
     <string name="rotation_control_title">Rotation Control</string>

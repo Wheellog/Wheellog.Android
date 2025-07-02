@@ -667,6 +667,10 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.is_alexovik_fw, false)
         set(value) = setSpecific(R.string.is_alexovik_fw, value)
 
+    var trick: Int
+        get() = getSpecific(R.string.trick, 0)
+        set(value) = setSpecific(R.string.trick, value)
+
     var extremeMode: Boolean
         get() = getSpecific(R.string.extreme_mode, false)
         set(value) = setSpecific(R.string.extreme_mode, value)
