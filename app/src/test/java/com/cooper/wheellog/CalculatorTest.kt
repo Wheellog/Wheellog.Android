@@ -15,10 +15,11 @@ import org.koin.test.KoinTest
 
 class CalculatorTest: KoinTest {
     private lateinit var data: WheelData
-    private val appConfig = mockkClass(AppConfig::class, relaxed = true)
+    private lateinit var appConfig: AppConfig
 
     @Before
     fun setUp() {
+        appConfig = mockkClass(AppConfig::class, relaxed = true)
         startKoin {
             modules(
                 module {
