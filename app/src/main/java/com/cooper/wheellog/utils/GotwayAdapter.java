@@ -66,7 +66,7 @@ public class GotwayAdapter extends BaseAdapter {
             } else if (dataS.startsWith("BF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                model = "Begode Alexovik";
+                model = "SmirnoV";
                 wd.setModel(model);
                 appConfig.setHwPwm(true);
                 appConfig.setIsAlexovikFW(true);
@@ -90,7 +90,16 @@ public class GotwayAdapter extends BaseAdapter {
                     Timber.i("Begode frame A found (live data)");
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
-                    int distance = MathsUtil.shortFromBytesBE(buff, 8);
+                    int distance = 0;
+                    if (!bIsAlexovikFW) {
+                        distance = MathsUtil.shortFromBytesBE(buff, 8);
+                    } else {
+                        if ((buff[7] & 0x01) == 1) {
+                            int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
+                            wd.setCurrent(batteryCurrent);
+                            trueCurrent = true;
+                        }
+                    }
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature;
                     if (!bIsAlexovikFW)
@@ -254,7 +263,7 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 } else if (buff[18] == (byte) 0xFF) {
                     if (!bIsAlexovikFW) {
-                        checkFirmware();
+                        //checkFirmware();
                     }
                     if (lock_Changes == 0) {
                         appConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
@@ -369,8 +378,9 @@ public class GotwayAdapter extends BaseAdapter {
             frameFFcount = 0;
 
         if (frameFFcount > 5) {
-            model = "Begode Alexovik";
-            WheelData.getInstance().setModel(model);
+            // Moved to "N" request "NAMExxxxx"
+            //model = "SmirnoV";
+            //WheelData.getInstance().setModel(model);
             appConfig.setHwPwm(true);
             appConfig.setIsAlexovikFW(true);
             bIsReady = true;
