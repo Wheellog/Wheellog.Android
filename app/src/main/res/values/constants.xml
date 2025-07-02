@@ -44,6 +44,10 @@
 
     // WHEEL SETTINGS
     <string name="light_enabled" translatable="false">light_enabled</string>
+    <string name="low_beam_enabled" translatable="false">low_beam_enabled</string>
+    <string name="high_beam_enabled" translatable="false">high_beam_enabled</string>
+    <string name="auto_light" translatable="false">auto_light</string>
+    <string name="sound_wave" translatable="false">sound_wave</string>
     <string name="led_enabled" translatable="false">led_enabled</string>
     <string name="handle_button_disabled" translatable="false">handle_button_disabled</string>
     <string name="wheel_max_speed" translatable="false">wheel_max_speed</string>
@@ -51,6 +55,9 @@
     <string name="beeper_volume" translatable="false">beeper_volume</string>
     <string name="pedals_adjustment" translatable="false">pedals_adjustment</string>
     <string name="pedal_sensivity" translatable="false">pedal_sensivity</string>
+    <string name="standby_delay" translatable="false">standby_delay</string>
+    <string name="split_mode_accel" translatable="false">split_mode_accel</string>
+    <string name="split_mode_break" translatable="false">split_mode_break</string>
     <string name="ride_mode" translatable="false">ride_mode</string>
     <string name="pedals_mode" translatable="false">pedals_mode</string>
     <string name="roll_angle" translatable="false">roll_angle</string>
@@ -98,13 +105,17 @@
     <string name="wheel_ks_alarm1" translatable="false">wheel_ks_alarm1</string>
     <string name="lock_mode" translatable="false">lock_mode</string>
     <string name="transport_mode" translatable="false">transport_mode</string>
+    <string name="berm_angle_mode" translatable="false">berm_angle_mode</string>
     <string name="drl_enabled" translatable="false">drl_enabled</string>
     <string name="go_home_mode" translatable="false">go_home_mode</string>
     <string name="fancier_mode" translatable="false">fancier_mode</string>
+    <string name="split_mode" translatable="false">split_mode</string>
     <string name="speaker_mute" translatable="false">speaker_mute</string>
     <string name="fan_quiet_enable" translatable="false">fan_quiet_enable</string>
     <string name="fan_enabled" translatable="false">fan_enabled</string>
     <string name="light_brightness" translatable="false">light_brightness</string>
+    <string name="low_beam_brightness" translatable="false">low_beam_brightness</string>
+    <string name="high_beam_brightness" translatable="false">high_beam_brightness</string>
     <string name="ks18l_scaler" translatable="false">ks18l_scaler</string>
 
     // LOG PREFERENCES

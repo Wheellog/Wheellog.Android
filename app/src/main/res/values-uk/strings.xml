@@ -331,8 +331,8 @@
     <string name="lock_mode_title">Режим блокування</string>
     <string name="transport_mode_title">Режим транспортування</string>
     <string name="transport_mode_description">Даний режим не дозволяє колесу стартувати під час транспортування</string>
-    <string name="go_home_mode_description">Дозволяє поїздку при низькому рівні батареї</string>
     <string name="go_home_mode_title">Режим Go Home</string>
+    <string name="go_home_mode_description">Дозволяє поїздку при низькому рівні батареї</string>
     <string name="no_file_read_permission">Дозвіл на читання файлу не наданий</string>
     <string name="fancier_mode_description">Режим для досвідчених - 55 км/г.</string>
     <string name="speaker_mute_description">Вимкнути динамік колеса</string>

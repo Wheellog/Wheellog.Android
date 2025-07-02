@@ -3,7 +3,6 @@ package com.cooper.wheellog.utils
 import android.content.Context
 import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.WheelData
-import com.cooper.wheellog.WheelLog
 import com.cooper.wheellog.utils.Utils.Companion.hexToByteArray
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
@@ -50,7 +49,7 @@ class InmotionAdapterV2Test: KoinTest {
         val byteArray1 = "AAAA110882010206010201009C".hexToByteArray() // wheel type
         val byteArray2 = "AAAA11178202313438304341313232323037303032420000000000FD".hexToByteArray() // s/n
         val byteArray3 = "AAAA111D820622080004030F000602214000010110000602230D00010107000001F3".hexToByteArray() //versions
-        val byteArray4 = "AAAA141AA0207C15C800106464140000000058020000006400001500100010".hexToByteArray() // wtf
+        val byteArray4 = "AAAA141AA0207C15C800106464140000000058020000006400001500100010".hexToByteArray() // settings
         val byteArray5 = "AAAA142B900001142614000000803E498AE00FB209D109CEB000C7DF010000BE720000AB1300008F040000AB0600004C".hexToByteArray() // probably statistics
         val byteArray6 = "AAAA141991E86C000066191C002DB2040064E60000974D050000C7DF01A4".hexToByteArray() // totals
         val byteArray7 = "AAAA143184E61EEB0561094A11AE04A004DF01402958CBB000CE004A010000D4FF7C15641900000000492B00000000000000000000C6".hexToByteArray()
@@ -260,7 +259,7 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(result6).isFalse()
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A031155130009730")
-        assertThat(data.model).isEqualTo("Inmotion V12")
+        assertThat(data.model).isEqualTo("Inmotion V12 HS")
         assertThat(data.version).isEqualTo("Main:1.4.24 Drv:4.2.112 BLE:2.1.36")
 
 
@@ -308,7 +307,7 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(result6).isFalse()
         assertThat(result7).isTrue()
         assertThat(data.serial).isEqualTo("A031155130009730")
-        assertThat(data.model).isEqualTo("Inmotion V12")
+        assertThat(data.model).isEqualTo("Inmotion V12 HS")
         assertThat(data.version).isEqualTo("Main:1.4.24 Drv:4.2.112 BLE:2.1.36")
 
 
@@ -334,7 +333,7 @@ class InmotionAdapterV2Test: KoinTest {
     @Test
     fun `decode with v12 data 3`() {
         // Arrange.
-        adapter.setModel(InmotionAdapterV2.Model.V12)
+        adapter.setModel(InmotionAdapterV2.Model.V12HS)
         val byteArray1 = "aaaa14438415273500930496014b0535003a0000008d000000fdfe010010271c255046581b581b000000000000ceca00cfd1d0b08d646400000000490000000000000000000000bc".hexToByteArray() // wheel type
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -362,7 +361,7 @@ class InmotionAdapterV2Test: KoinTest {
     @Test
     fun `decode with v12 data 4`() {
         // Arrange.
-        adapter.setModel(InmotionAdapterV2.Model.V12)
+        adapter.setModel(InmotionAdapterV2.Model.V12HS)
         val byteArray1 = "aaaa1443842627090000000000060000000000000000000000b3fd000010271c255046581b581b000000000000ceca00ced0cfb048282800000000490000000000000000000000ef".hexToByteArray() // wheel type
         // Act.
         val result1 = adapter.decode(byteArray1)
@@ -396,6 +395,7 @@ class InmotionAdapterV2Test: KoinTest {
         val byteArray6 = "aaaa142b90000140264f000000c5708649380000000000c8c8b0c8000000000000000000000000000000001a000000a7".hexToByteArray() // totals
         val byteArray7 = "aaaa141991e12603006567dd00f6f117001cf40400954f1300b0c80000ca".hexToByteArray()
         val byteArray8 = "aaaa144384b7261100000085ff5c00000000000000fcff0000eafe000076266d26803ee015581b000000000000c8c800c9b0c7b0b700000000000049000000000000000000000081".hexToByteArray()
+
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
@@ -533,6 +533,101 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(data.powerDouble).isEqualTo(102.0)
         assertThat(data.angle).isEqualTo(0.39)
         assertThat(data.roll).isEqualTo(-0.17)
+    }
+
+    @Test
+    fun `decode with v13 settings data 1`() {
+        // Arrange.
+        val byteArray1 = "AAAA1108820102080101010091".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA1428A02028233421401F401F5A00006464302C21000000005802000A28645A2800005500010410000000EB".hexToByteArray() // settings
+        val byteArray3 = "AAAA1459845E2F0F000000F8FF00000000CC11750000000000C900E9FFC8000000000000000000FB20FB1F204E28233421401F401F204E401F709400000000CACCC9CAB0C80000B092000000000000491000000000000000000000000093".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+
+    }
+
+    @Test
+    fun `decode with v14 settings data 1`() {
+        // Arrange.
+        val byteArray1 = "aaaa1108820102090201010093".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA1428A02064196419401F401F6AFF10382F3E324500000000040B000A28385A2800001500000444001E1E55".hexToByteArray() // settings
+        val byteArray3 = "AAAA145984A7311600000000000000000049000B00000000006CFFA5AAFC6AFF0000000000000000911E1E1E102764196419401F401F401F401FB88800000000CACDC9CAB0C70000B0EA6400000000004910120000000000000000000000D5".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+       
+    }
+
+    @Test
+    fun `decode with v12 settings data 1`() {
+        // Arrange.
+        val byteArray1 = "aaaa110882010207030101009c".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA142CA020000000000000000070177C1570179CFF403811575701000064323328AC0D241C800C000000000510010096".hexToByteArray() // settings
+        val byteArray3 = "AAAA144384A026FEFF000000000000000000000000C4EDC4ED09000000C125AF25983A7017581B000000000000C5C400C6B0C5B06B282800000000000B00000000000000000000D7".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+
+    }
+
+    @Test
+    fun `decode with v11 settings data 1`() {
+        // Arrange.
+        val byteArray1 = "AAAA110882010206010201009C".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA141EA02018155000106464130000000040380000006461501500141001000000E9".hexToByteArray() // settings
+        val byteArray3 = "AAAA144584631CF6FF000053004E0000000000000051006AFD4F0000000000000023102F0EFD075214641900000000CEB000CED5D3000028000000000049140000000000000000000027".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+
+    }
+
+    @Test
+    fun `decode with v11y settings data 1`() {
+        // Arrange.
+        val byteArray1 = "aaaa110882010206020101009c".hexToByteArray() // wheel type
+        val byteArray2 = "AAAA1428A020FC080807401F401F000000474764321F000000005802000A28645A2800001000040400002D1845".hexToByteArray() // settings
+        val byteArray3 = "AAAA145984671E0D000000000000000000EFFF2B000000000000003704000000000000000000006B192D18E02E9411A00F401F401FA816A816C05D00000000CAC9C7CAB0C90000B070640000000000490012000000000000000000000003".hexToByteArray() // maindata
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isTrue()
+
     }
 
     @Test
