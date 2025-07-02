@@ -66,8 +66,8 @@ public class GotwayAdapter extends BaseAdapter {
             } else if (dataS.startsWith("BF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                model = "SmirnoV";
-                wd.setModel(model);
+                //model = "SmirnoV";
+                //wd.setModel(model);
                 appConfig.setHwPwm(true);
                 appConfig.setIsAlexovikFW(true);
                 bIsReady = true;
@@ -92,10 +92,12 @@ public class GotwayAdapter extends BaseAdapter {
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     int distance = 0;
                     if (!bIsAlexovikFW) {
+                        Timber.i("Normal begode protocol");
                         distance = MathsUtil.shortFromBytesBE(buff, 8);
                     } else {
+                        Timber.i("SmirnoV protocol");
                         if ((buff[7] & 0x01) == 1) {
-                            int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
+                            int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 8);
                             wd.setCurrent(batteryCurrent);
                             trueCurrent = true;
                         }
@@ -164,7 +166,7 @@ public class GotwayAdapter extends BaseAdapter {
                     if (!trueCurrent) {
                         wd.calculateCurrent();
                     }
-                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent);
+                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent) || bIsAlexovikFW;
                 } else if (buff[18] == (byte) 0x01) {
                     if (!bIsAlexovikFW)
                     {
@@ -264,7 +266,7 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 } else if (buff[18] == (byte) 0xFF) {
                     if (!bIsAlexovikFW) {
-                        checkFirmware();
+                        //checkFirmware();
                     }
                     if (lock_Changes == 0) {
                         appConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
@@ -296,7 +298,7 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 }
 
-                if (attempt < 10)
+                if (attempt < 20)
                 {
                     long nowTime = SystemClock.elapsedRealtime();
                     if (nowTime - lastTryTime > 190)
