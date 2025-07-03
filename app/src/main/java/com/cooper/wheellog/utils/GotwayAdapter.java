@@ -88,6 +88,7 @@ public class GotwayAdapter extends BaseAdapter {
                 //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
+                    Timber.i("Model %s FW %s", model, fw);
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
                     int distance = 0;
@@ -334,6 +335,10 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public boolean isReady() {
         return bIsReady && (WheelData.getInstance().getVoltage() != 0);
+    }
+
+    public void resetAttempt() {
+        attempt = 0;
     }
 
     private void sendCommand(String s) {
