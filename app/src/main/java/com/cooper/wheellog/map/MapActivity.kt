@@ -99,7 +99,7 @@ class MapActivity : AppCompatActivity() {
         val path = extras.getString("path", "undefined")
         val uri = Uri.parse(extras.getString("uri", "undefined"))
         val tripData = TripData(title)
-        val list = TripParser.parseFile(applicationContext, title, path, uri)
+        val list = TripParser.parseFile(applicationContext, title, path, uri).first
         tripData.errorMessage = TripParser.lastError
         if (tripData.errorMessage != "") {
             return tripData

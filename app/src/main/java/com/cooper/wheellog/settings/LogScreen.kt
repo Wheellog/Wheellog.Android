@@ -27,6 +27,7 @@ import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
+import kotlinx.coroutines.*
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -242,7 +243,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
             clickablePref(
                 name = stringResource(R.string.import_log),
             ) {
-                activity?.getCsvResult?.launch("text/*")
+                activity?.getCsvResults?.launch("text/*")
             }
 
             clickablePref(
@@ -260,7 +261,13 @@ fun logScreen(appConfig: AppConfig = koinInject())
                              "2025-01-29,23:05:54.021,53.921541,27.4574593,0.0,259.5,0.0,0,19.92,83.28,0.00,1.04,86.61,0.00,59.62,95,1,4778555,24,0,0.14,1.26,Drive,\n" +
                              "2025-01-29,23:05:54.205,53.921541,27.4574593,0.0,259.5,0.0,0,22.05,83.28,0.00,1.33,110.76,0.00,65.99,95,1,4778555,24,0,0.09,0.51,Drive,"
                         )
+                        for (i in 10..59) {
+                            fileUtil.writeLine("2025-01-29,23:$i:00.000,53.921541,27.4574593,0.0,259.5,0.0,0,22.05,83.28,0.00,1.33,110.76,0.00,65.99,95,1,4778555,24,0,0.09,0.51,Drive,")
+                        }
                         fileUtil.close()
+                    }
+                    CoroutineScope(Dispatchers.Main + Job()).launch {
+                        activity.pagerAdapter.updatePageOfTrips()
                     }
                 }
             }

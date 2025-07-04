@@ -30,7 +30,7 @@ object TripParser: KoinComponent {
             return res
         }
 
-    fun parseFile(context: Context, fileName: String, path: String, uri: Uri): List<LogTick> {
+    fun parseFile(context: Context, fileName: String, path: String, uri: Uri): Pair<List<LogTick>, TripDataDbEntry?> {
         lastErrorValue = null
         val inputStream: InputStream?
         try {
@@ -44,17 +44,17 @@ object TripParser: KoinComponent {
         } catch (ex: Exception) {
             lastErrorValue = ex.localizedMessage
             Timber.wtf(lastErrorValue)
-            return emptyList()
+            return Pair(emptyList(), null)
         }
         return parseFile(context, fileName, inputStream)
     }
 
-    fun parseFile(context: Context, fileName: String, inputStream: InputStream?): List<LogTick> {
+    fun parseFile(context: Context, fileName: String, inputStream: InputStream?): Pair<List<LogTick>, TripDataDbEntry?> {
         lastErrorValue = null
         if (inputStream == null) {
             lastErrorValue = context.getString(R.string.error_inputstream_null)
             Timber.wtf(lastErrorValue)
-            return emptyList()
+            return Pair(emptyList(), null)
         }
 
         // read header
@@ -70,7 +70,7 @@ object TripParser: KoinComponent {
             inputStream.close()
             lastErrorValue = context.getString(R.string.error_this_file_without_gps, fileName)
             Timber.wtf(lastErrorValue)
-            return emptyList()
+            return Pair(emptyList(), null)
         }
 
         val sdfTime = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
@@ -81,7 +81,6 @@ object TripParser: KoinComponent {
             reader.forEachLine { line ->
                 if (line.isNotEmpty())
                 {
-
                     val row = line.split(",")
                     val timeString = row[header[LogHeaderEnum.TIME]!!]
                     val dateString = row[header[LogHeaderEnum.DATE]!!]
@@ -114,7 +113,7 @@ object TripParser: KoinComponent {
         } catch (ex: Exception) {
             lastErrorValue = ex.localizedMessage
             Timber.wtf(lastErrorValue)
-            return resultList
+            return Pair(resultList, null)
         } finally {
             inputStream.close()
         }
@@ -175,6 +174,6 @@ object TripParser: KoinComponent {
             Timber.wtf(lastErrorValue)
         }
 
-        return resultList
+        return Pair(resultList, trip)
     }
 }
