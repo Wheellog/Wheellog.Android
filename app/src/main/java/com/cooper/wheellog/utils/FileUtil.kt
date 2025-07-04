@@ -60,16 +60,17 @@ class FileUtil(val context: Context) {
                 return true
             }
             try {
-                val contentValues = ContentValues()
-                contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                contentValues.put(MediaStore.Downloads.TITLE, fileName)
-                contentValues.put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName))
-                var path =
-                    Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME
-                if (folder != null && folder != "") {
-                    path += File.separator + folder.replace(':', '_')
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                    put(MediaStore.Downloads.TITLE, fileName)
+                    put(MediaStore.Downloads.MIME_TYPE, getMimeType(fileName))
+                    var path =
+                        Environment.DIRECTORY_DOWNLOADS + File.separator + Constants.LOG_FOLDER_NAME
+                    if (folder != null && folder != "") {
+                        path += File.separator + folder.replace(':', '_')
+                    }
+                    put(MediaStore.Downloads.RELATIVE_PATH, path)
                 }
-                contentValues.put(MediaStore.Downloads.RELATIVE_PATH, path)
                 val contentUri =
                     MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
                 uri = contentResolver?.insert(contentUri, contentValues)

@@ -59,7 +59,8 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateTrips(tripModels: ArrayList<TripModel>) {
-        this.tripModels = tripModels
+        this.tripModels.clear() // Clear the old list
+        this.tripModels.addAll(tripModels) // Add all new items
         notifyDataSetChanged()
     }
 
@@ -260,8 +261,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                         -1
                     }
                 if (trip == null || trip?.duration == 0) {
-                    TripParser.parseFile(context, tripModel.fileName, "", tripModel.uri)
-                    trip = dao.getTripByFileName(tripModel.fileName)
+                    trip = TripParser.parseFile(context, tripModel.fileName, "", tripModel.uri).second
                 }
             }) {
                 setDescFromDb(trip)

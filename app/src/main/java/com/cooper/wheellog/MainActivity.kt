@@ -62,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 // import com.yandex.metrica.YandexMetrica
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.io.BufferedReader
@@ -1031,8 +1032,9 @@ class MainActivity : AppCompatActivity() {
         if (LoggingService.isInstanceCreated()) {
             unbindService(mLoggingServiceConnection)
             if (!onDestroyProcess) {
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { pagerAdapter.updatePageOfTrips() }, 200)
+                CoroutineScope(Dispatchers.Main + Job()).launch {
+                    pagerAdapter.updatePageOfTrips()
+                }
             }
         } else if (mConnectionState == ConnectionState.CONNECTED) {
             bindService(dataLoggerServiceIntent, mLoggingServiceConnection, BIND_AUTO_CREATE)
@@ -1159,25 +1161,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Добавление файла через Android систему
-    // В результата файл копируется в папку "manual"
-    val getCsvResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
+    // Добавление файлов через Android систему
+    // В результате файлы копируются в папку "manual"
+    val getCsvResults = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
+        uris?.let {
             CoroutineScope(Dispatchers.IO + Job()).launch {
-                contentResolver.apply {
-                    query(uri, null, null, null, null)?.use { cursor ->
-                        val nameIndex = cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME);
-                        cursor.moveToFirst()
-                        cursor.getString(nameIndex)
-                    }?.let { fileName ->
-                        openInputStream(uri)?.use { stream ->
-                            val fileUtil = FileUtil(this@MainActivity)
-                            fileUtil.prepareFile(fileName, "manual")
-                            fileUtil.writeAllStream(stream)
-                            fileUtil.close()
+                for (uri in it) {
+                    contentResolver.apply {
+                        query(uri, null, null, null, null)?.use { cursor ->
+                            val nameIndex = cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME)
+                            cursor.moveToFirst()
+                            cursor.getString(nameIndex)
+                        }?.let { fileName ->
+                            openInputStream(uri)?.use { stream ->
+                                val fileUtil = FileUtil(this@MainActivity)
+                                fileUtil.prepareFile(fileName, "manual")
+                                fileUtil.writeAllStream(stream)
+                                fileUtil.close()
+                            }
                         }
                     }
-                    lifecycle.coroutineScope.launch {
+                }
+                withContext(Dispatchers.Main) {
+                    if (::pagerAdapter.isInitialized) { // Check if initialized (for lateinit var)
                         pagerAdapter.updatePageOfTrips()
                     }
                 }
