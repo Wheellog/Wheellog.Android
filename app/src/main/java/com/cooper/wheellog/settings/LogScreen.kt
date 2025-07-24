@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -104,12 +105,28 @@ fun logScreen(appConfig: AppConfig = koinInject())
         }
 
         var alertGps by remember { mutableStateOf(false) }
+        var notGrantedLocationPermissions by remember { mutableStateOf<Set<String>>(emptySet()) }
         val locationPermission = rememberLauncherForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { granted ->
-            gpsDependency.value = granted.all { gr -> gr.value }
+            notGrantedLocationPermissions = granted.filter { gr -> !gr.value }.keys
+            gpsDependency.value = notGrantedLocationPermissions.isEmpty()
             appConfig.useGps = gpsDependency.value
             alertGps = false
+        }
+
+        if (notGrantedLocationPermissions.isNotEmpty()) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text(stringResource(R.string.permisson_error)) },
+                text = { Text(stringResource(R.string.log_location_permisson_error_text) + notGrantedLocationPermissions) },
+                confirmButton = { Button(onClick = {
+                    notGrantedLocationPermissions = emptySet()
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.data = Uri.fromParts("package", context.packageName, null)
+                    context.startActivity(intent, null)
+                }) { Text(stringResource(android.R.string.ok)) } }
+            )
         }
 
         AnimatedVisibility (locationDependency) {
@@ -145,8 +162,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
                             val mLocationManager = ContextCompat.getSystemService(context, LocationManager::class.java) as LocationManager
                             val mGPS = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                             if (!mGPS) {
-                                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                                ContextCompat.startActivity(context, intent, null)
+                                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), null)
                             }
                         }
                     ) {

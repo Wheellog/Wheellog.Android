@@ -656,4 +656,6 @@
     <string name="swap_speedpwm_description">Show PWM instead of Speed and Speed instead of short PWM</string>
     <string name="import_log">Import exits log</string>
     <string name="create_test_log">Create new test log</string>
+    <string name="permisson_error">Permission error</string>
+    <string name="log_location_permisson_error_text">Please check permission settings.</string>
 </resources>
