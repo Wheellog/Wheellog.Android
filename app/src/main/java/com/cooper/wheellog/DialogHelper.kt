@@ -302,7 +302,7 @@ object DialogHelper : KoinComponent {
                     .setMessage(R.string.gpsdisabled_alert)
                     .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        ContextCompat.startActivity(context, intent, null)
+                        context.startActivity(intent, null)
                     }
                     .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
                     .create()
@@ -315,7 +315,7 @@ object DialogHelper : KoinComponent {
                     .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         intent.data = Uri.fromParts("package", context.packageName, null)
-                        ContextCompat.startActivity(context, intent, null)
+                        context.startActivity(intent, null)
                     }
                     .setNegativeButton(android.R.string.cancel) { _: DialogInterface?, _: Int -> }
                     .create()
