@@ -681,47 +681,100 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(data.roll).isEqualTo(6.13)
     }
 
-/*
+
     @Test
-    fun `Inmotion v12 - decode long trip`() {
+    fun `decode with v9 full data 1`() {
         // Arrange.
-        adapter.setModel(InmotionAdapterV2.Model.V11)
-        val inputStream: InputStream = File("src/test/resources/RAW_2021_11_29_09_14_06.csv").inputStream()
-        //val startTime = sdf.parse("09:30:10.000")
-        val startTime = sdf.parse("09:00:00.000")
-        val stopTime = sdf.parse("10:20:00.000")
-        var decodeSuccessCounter = 0
-        inputStream.bufferedReader().useLines { lines ->
-            run lin@ {
-                lines.forEach {
-                    val row = it.split(',')
-                    val time = sdf.parse(row[0])
+        val byteArray1 = "aaaa11088201020c0101010095".hexToByteArray() // wheel type
+        val byteArray2 = "aaaa11178202413134323139353041303030343635460000000000fd".hexToByteArray() // s/n
+        val byteArray3 = "aaaa11388206222800040719000802212600080101000902230a0004010a0002012401000102010001012501000102010001012f0500050101000000b8".hexToByteArray() //versions
+        val byteArray5 = "aaaa142ca0202a000000071900089411a00f9511000058020064641a020a28646428d0071e32010001012501053015009c".hexToByteArray() // probably statistics
+        val byteArray6 = "aaaa142b900001162617000000c59d4980520367003100cdc9c9c9060000005d0000000000000044000000ca010000cf".hexToByteArray() // totals
+        val byteArray7 = "aaaa14199191620000c1a216008bc301006ffe000037890200ffffd5fe55".hexToByteArray()
+        val byteArray8 = "aaaa1457843e1e0c000000000000000000afffc30000000000ffffd7fe000000000600000000009a17191670178510a00f401f401fa00fa00f983a00000000cdc900ceb0cec8ceb03a6400000000004900000000000000000000003f".hexToByteArray()
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
 
-                    if ((time != null) && (time > startTime)) {
-                        if ((decodeSuccessCounter % 1000) == 0) System.out.println(row[0])
-                        val byteArray = row[1].hexToByteArray()
-                        decodeSuccessCounter++
-                        if (adapter.decode(byteArray)) {
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isTrue()
+        assertThat(data.serial).isEqualTo("A1421950A000465F")
+        assertThat(data.model).isEqualTo("Inmotion V9")
+        assertThat(data.version).isEqualTo("Main:1.8.38 Drv:7.4.40 BLE:1.4.10")
 
+
+        assertThat(data.speedDouble).isEqualTo(0.0)
+        assertThat(data.temperature).isEqualTo(29)
+        assertThat(data.temperature2).isEqualTo(25)
+        assertThat(data.imuTemp).isEqualTo(30)
+        assertThat(data.cpuTemp).isEqualTo(0)
+        assertThat(data.motorPower).isEqualTo(0.0)
+        assertThat(data.currentLimit).isEqualTo(40.00)
+        assertThat(data.speedLimit).isEqualTo(42.29)
+        assertThat(data.torque).isEqualTo(-0.81)
+        assertThat(data.voltageDouble).isEqualTo(77.42)
+        assertThat(data.currentDouble).isEqualTo(0.12)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.06)
+        assertThat(data.totalDistance).isEqualTo(252330)
+        assertThat(data.batteryLevel).isEqualTo(58)
+        assertThat(data.powerDouble).isEqualTo(0.0)
+        assertThat(data.angle).isEqualTo(-0.01)
+        assertThat(data.roll).isEqualTo(-2.97)
+    }
+
+
+    /*
+        @Test
+        fun `Inmotion v12 - decode long trip`() {
+            // Arrange.
+            adapter.setModel(InmotionAdapterV2.Model.V11)
+            val inputStream: InputStream = File("src/test/resources/RAW_2021_11_29_09_14_06.csv").inputStream()
+            //val startTime = sdf.parse("09:30:10.000")
+            val startTime = sdf.parse("09:00:00.000")
+            val stopTime = sdf.parse("10:20:00.000")
+            var decodeSuccessCounter = 0
+            inputStream.bufferedReader().useLines { lines ->
+                run lin@ {
+                    lines.forEach {
+                        val row = it.split(',')
+                        val time = sdf.parse(row[0])
+
+                        if ((time != null) && (time > startTime)) {
+                            if ((decodeSuccessCounter % 1000) == 0) System.out.println(row[0])
+                            val byteArray = row[1].hexToByteArray()
+                            decodeSuccessCounter++
+                            if (adapter.decode(byteArray)) {
+
+                            }
+                            if (time > stopTime) return@lin
                         }
-                        if (time > stopTime) return@lin
                     }
                 }
             }
+
+            // Act.
+
+            // Assert.
+            //assertThat(decodeSuccessCounter).isAtLeast((dataList.size * 0.15).toInt()) // more 15%
+            assertThat(data.batteryLevel).isAnyOf(57, 44)
+            assertThat(data.temperature).isEqualTo(28)
+            assertThat(data.voltageDouble).isEqualTo(74.43)
+            assertThat(data.angle).isLessThan(-0.04)
+            assertThat(data.roll).isLessThan(-8)
+            assertThat(data.speed).isEqualTo(0)
+            assertThat(data.current).isEqualTo(0)
+            assertThat(data.modeStr).isEqualTo("Drive")
         }
-
-        // Act.
-
-        // Assert.
-        //assertThat(decodeSuccessCounter).isAtLeast((dataList.size * 0.15).toInt()) // more 15%
-        assertThat(data.batteryLevel).isAnyOf(57, 44)
-        assertThat(data.temperature).isEqualTo(28)
-        assertThat(data.voltageDouble).isEqualTo(74.43)
-        assertThat(data.angle).isLessThan(-0.04)
-        assertThat(data.roll).isLessThan(-8)
-        assertThat(data.speed).isEqualTo(0)
-        assertThat(data.current).isEqualTo(0)
-        assertThat(data.modeStr).isEqualTo("Drive")
-    }
-*/
+    */
 }

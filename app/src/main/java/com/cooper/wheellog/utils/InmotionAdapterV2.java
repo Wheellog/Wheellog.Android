@@ -62,6 +62,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
                                 return result.parseSettingsV11();
                             } else if (getInstance().getModel() == Model.V11Y) {
                                 return result.parseSettingsV11y();
+                            } else if (getInstance().getModel() == Model.V9) {
+                                return result.parseSettingsV9();
                             } else {
                                 return false;
                             }
@@ -80,6 +82,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
                                 return result.parseRealTimeInfoV14(getContext());
                             } else if (getInstance().getModel() == Model.V11Y) {
                                 return result.parseRealTimeInfoV11y(getContext());
+                            } else if (getInstance().getModel() == Model.V9) {
+                                return result.parseRealTimeInfoV9(getContext());
                             } else if (protoVer < 2) {
                                 return result.parseRealTimeInfoV11(getContext());
                             } else {
@@ -106,6 +110,7 @@ public class InmotionAdapterV2 extends BaseAdapter {
         V13PRO(82, "Inmotion V13 PRO"),
         V14g(91, "Inmotion V14 50GB"),
         V14s(92, "Inmotion V14 50S"),
+        V9(121, "Inmotion V9"),
         UNKNOWN(0,"Inmotion Unknown");
 
 
@@ -442,7 +447,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
     @Override
     public void updateMaxSpeed(final int maxSpeed) {
-        if (getModel() == Model.V14g || getModel() == Model.V14s || getModel()== Model.V13 || getModel()== Model.V13PRO ||getModel()== Model.V11Y) {
+        if (getModel() == Model.V14g || getModel() == Model.V14s || getModel()== Model.V13 ||
+                getModel()== Model.V13PRO || getModel()== Model.V11Y || getModel()== Model.V9) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, 0).writeBuffer();
         } else {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeed(maxSpeed).writeBuffer();
@@ -454,7 +460,8 @@ public class InmotionAdapterV2 extends BaseAdapter {
     public void updateAlarmSpeed(final int alarm1Speed, final int alarm2Speed, final int maxSpeed) {
         if (getModel() == Model.V11 || getModel() == Model.V12HS || getModel() == Model.V12HT || getModel() == Model.V12PRO) {
             settingCommand = InmotionAdapterV2.Message.setAlarmSpeedV12(alarm1Speed, alarm2Speed).writeBuffer();
-        } else if (getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V13 || getModel() == Model.V13PRO || getModel() == Model.V11Y) {
+        } else if (getModel() == Model.V14g || getModel() == Model.V14s || getModel() == Model.V13 ||
+                getModel() == Model.V13PRO || getModel() == Model.V11Y || getModel() == Model.V9) {
             settingCommand = InmotionAdapterV2.Message.setMaxSpeedV14(maxSpeed, alarm1Speed).writeBuffer();
         } //else { //  not confirmed that such command exists at all
             //settingCommand = InmotionAdapterV2.Message.setAlarmSpeed(alarm1Speed).writeBuffer();
@@ -858,6 +865,51 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
         boolean parseSettingsV11y(){
             Timber.i("Parse settings data v11y");
+            int i = 1;
+
+            int mMaxSpeedLim = MathsUtil.shortFromBytesLE(data, i);
+            int mAlarmSpeed1 = MathsUtil.shortFromBytesLE(data, i+2);
+            int mPedalsAdjustment = MathsUtil.signedShortFromBytesLE(data, i+8);
+            int mOffroadMode = data[i+10] & 1;
+            int mFancierMode = (data[i+10]>>4) & 1;
+            int mComfSens = data[i+11];
+            int mClassSens = data[i+12];
+            int mSplitModeAccel = data[i+13];
+            int mSplitModeBreak = data[i+14];
+            int mStandByDelay = MathsUtil.shortFromBytesLE(data, i+20);
+            int mDrl = (data[i+30] >> 2) & 1;
+            int mMute = data[i+30] & 1;
+            int mHandleButton = (data[i+30] >> 4) & 1;
+            int mTransportMode = (data[i+31]>>4) & 1;
+            int mGoHome = (data[i+32] >> 2) & 1;
+            int mSplitMode = (data[i+34] >> 2) & 1;
+            int mBermAngleMode = (data[i+34]>>5) & 1;
+            int sens = mComfSens;
+            if (mOffroadMode != 0) sens = mClassSens;
+
+            final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
+            appConfig.setPedalsAdjustment(mPedalsAdjustment/10);
+            appConfig.setWheelMaxSpeed(mMaxSpeedLim/100);
+            appConfig.setFancierMode(mFancierMode != 0);
+            appConfig.setRideMode(mOffroadMode != 0);
+            appConfig.setPedalSensivity(sens);
+            appConfig.setSpeakerMute(mMute == 0);
+            appConfig.setDrlEnabled(mDrl != 0);
+            //appConfig.setLockMode(mLockState != 0);
+            appConfig.setHandleButtonDisabled(mHandleButton == 0);
+            appConfig.setGoHomeMode(mGoHome != 0);
+            appConfig.setTransportMode(mTransportMode != 0);
+            appConfig.setSplitMode(mSplitMode != 0);
+            appConfig.setSplitModeAccel(mSplitModeAccel);
+            appConfig.setSplitModeBreak(mSplitModeBreak);
+            appConfig.setBermAngleMode(mBermAngleMode != 0);
+            appConfig.setStandbyDelay(mStandByDelay/60);
+            appConfig.setWheelAlarm1Speed(mAlarmSpeed1/100);
+            return false;
+        }
+
+        boolean parseSettingsV9(){
+            Timber.i("Parse settings data v9");
             int i = 1;
 
             int mMaxSpeedLim = MathsUtil.shortFromBytesLE(data, i);
@@ -1477,6 +1529,121 @@ public class InmotionAdapterV2 extends BaseAdapter {
 
         boolean parseRealTimeInfoV11y(Context sContext) {
             Timber.i("Parse V11y realtime stats data");
+            WheelData wd = WheelData.getInstance();
+            int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
+            int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
+            int mSomeThing1 = MathsUtil.signedShortFromBytesLE(data, 4);
+            int mSomeThing2 = MathsUtil.signedShortFromBytesLE(data, 4);
+            int mSomeThing3 = MathsUtil.signedShortFromBytesLE(data, 6); //not sure
+            int mSpeed = MathsUtil.signedShortFromBytesLE(data, 8);
+            int mSomeThing180 = MathsUtil.signedShortFromBytesLE(data, 10);
+            int mTorque = MathsUtil.signedShortFromBytesLE(data, 12); // not sure
+            int mPwm = MathsUtil.signedShortFromBytesLE(data, 14);
+            int mBatPower = MathsUtil.signedShortFromBytesLE(data, 16);
+            int mMotPower = MathsUtil.signedShortFromBytesLE(data, 18); // not sure
+            int mPitchAngle = MathsUtil.signedShortFromBytesLE(data, 20); // not sure
+            int mRollAngle = MathsUtil.signedShortFromBytesLE(data, 22); // not sure
+            int mPitchAimAngle = MathsUtil.signedShortFromBytesLE(data, 24); // not sure
+
+            int mSomeThing183 = MathsUtil.signedShortFromBytesLE(data, 26);
+            int mMileage = MathsUtil.shortFromBytesLE(data, 28)*10; // always 18000
+            int mSomeThing4 = MathsUtil.shortFromBytesLE(data, 30);
+            int mSomeThing5 = MathsUtil.shortFromBytesLE(data, 32);
+
+            int mBatLevel1 = MathsUtil.shortFromBytesLE(data, 34);
+            int mBatLevel2 = MathsUtil.shortFromBytesLE(data, 36);
+            int mSomeThing6 = MathsUtil.shortFromBytesLE(data, 38);
+            int mDynamicSpeedLimit = MathsUtil.shortFromBytesLE(data, 40);
+            int x5 = MathsUtil.shortFromBytesLE(data, 42);
+            int x6 = MathsUtil.shortFromBytesLE(data, 44);
+            int x7 = MathsUtil.shortFromBytesLE(data, 46);
+            int mSomeThing7 = MathsUtil.shortFromBytesLE(data, 48);
+            int mDynamicCurrentLimit = MathsUtil.shortFromBytesLE(data, 50);
+            int mSomeThing380 = MathsUtil.shortFromBytesLE(data, 52);
+
+
+            int mMosTemp = (data[58] & 0xff) + 80 - 256;
+            int mMotTemp = (data[59] & 0xff) + 80 - 256;
+            int mBatTemp = (data[60] & 0xff) + 80 - 256; // 0
+            int mBoardTemp = (data[61] & 0xff) + 80 - 256;
+            int mCpuTemp = (data[62] & 0xff) + 80 - 256;
+            int mImuTemp = (data[63] & 0xff) + 80 - 256;
+            int mLampTemp = (data[64] & 0xff) + 80 - 256; // 0
+
+// don't remove
+/*
+            System.out.println(String.format(Locale.US,"\nVolt: %.2f, Amp: %.2f, Km/h: %.2f, N*m: %.2f, Bat Wt: %d, Mot Wt: %d, XZ: %d, PWM: %.2f, PitchAim: %.2f, Pith: %.2f, Roll: %.2f, \nTrip Km: %.2f, Bat1: %.2f, Bat2: %.2f, Something: %.2f, Lim km/h: %.2f, Lim A: %.2f, \nMos t: %d, Mot t: %d, Bat t: %d, Board t: %d, CPU t: %d, IMU t: %d, Lamp t: %d",
+                    mVoltage/100.0, mCurrent/100.0, mSpeed/100.0, mTorque/100.0, mBatPower,mMotPower, x5, mPwm/100.0, mPitchAimAngle/100.0, mPitchAngle/100.0,  mRollAngle/100.0, mMileage/1.0,  mBatLevel1/100.0, mBatLevel2/100.0, mSomeThing180/100.0, mDynamicSpeedLimit/100.0, mDynamicCurrentLimit/100.0, mMosTemp, mMotTemp, mBatTemp, mBoardTemp, mCpuTemp, mImuTemp, mLampTemp));
+            System.out.println(String.format(Locale.US,"mSomeThing183: %.2f, mPitchAngle: %.2f, mRollAngle: %.2f, X5: %d, X6: %d,X7: %d, mSomeThing380: %.2f",
+                     mSomeThing183/100.0, mPitchAngle/100.0,mRollAngle/100.0, x5,x6,x7, mSomeThing380/100.0));
+            System.out.println(String.format(Locale.US,"m1: %.2f, m2: %.2f, m3: %.2f, m4: %d, m5: %d, m6: %d, m7: %.2f",
+                    mSomeThing1/100.0, mSomeThing2/100.0,mSomeThing3/100.0, mSomeThing4,mSomeThing5,mSomeThing6, mSomeThing7/100.0));
+*/
+            wd.setVoltage(mVoltage);
+            wd.setTorque((double)mTorque/100.0);
+            wd.setMotorPower(mMotPower);
+            wd.setCpuTemp(mCpuTemp);
+            wd.setImuTemp(mImuTemp);
+            wd.setCurrent(mCurrent);
+            wd.setSpeed(mSpeed);
+            wd.setCurrentLimit((double)mDynamicCurrentLimit/100.0);
+            wd.setSpeedLimit((double)mDynamicSpeedLimit/100.0);
+            wd.setBatteryLevel((int)Math.round((mBatLevel1 + mBatLevel2)/200.0));
+            wd.setTemperature(mMosTemp * 100);
+            wd.setTemperature2(mMotTemp * 100);
+            wd.setOutput(mPwm);
+            wd.updatePwm();
+            //wd.setMotorTemp(mMotTemp * 100); not existed in WD
+            wd.setAngle((double)mPitchAngle/100.0);
+            wd.setRoll((double)mRollAngle/100.0);
+            wd.setTopSpeed(mSpeed);
+            wd.setPower(mBatPower * 100);
+            wd.setWheelDistance(mMileage);
+            //// state data
+            int mPcMode = data[74] & 0x07; // lock, drive, shutdown, idle
+            int mMcMode = (data[74]>>3)&0x07;
+            int mMotState = (data[74]>>6)&0x01;
+            int chrgState = (data[74]>>7)&0x01;
+            int lowLightState = (data[75])&0x01;
+            int highLightState = (data[75] >> 1) & 0x01;
+            int liftedState = (data[75]>>2)&0x01;
+            //int tailLiState = (data[75]>>3)&0x03;
+            int fwUpdateState = (data[75]>>5)&0x01;
+            int lightState = (data[76] >> 1) & 0x01;
+            //int liftedState = (data[76]>>2)&0x01;
+            int tailLiState = (data[76]>>4)&0x01;
+            String wmode = "";
+            if (mMotState == 1) {wmode = wmode + "Active";}
+            if (chrgState == 1) {wmode = wmode + " Charging";}
+            if (liftedState == 1) {wmode = wmode + " Lifted";}
+            System.out.println(String.format(Locale.US,"State: %s", wmode));
+            wd.setModeStr(wmode);
+
+            if (appConfig.getLightEnabled() != (lightState == 1)) {
+                if (lightSwitchCounter > 3) {
+                    appConfig.setLightEnabled(lightState == 1); // bad behaviour
+                    lightSwitchCounter = 0;
+                } else lightSwitchCounter += 1;
+            } else lightSwitchCounter = 0;
+
+            //// errors data
+            String inmoError = getError(77);
+            if (!inmoError.equals("")) System.out.println(String.format(Locale.US,"Err: %s", inmoError));
+            wd.setAlert(inmoError);
+            /*
+            if ((inmoError != "") && (sContext != null)) {
+                Timber.i("News to send: %s, sending Intent", inmoError);
+                Intent intent = new Intent(Constants.ACTION_WHEEL_NEWS_AVAILABLE);
+                intent.putExtra(Constants.INTENT_EXTRA_NEWS, inmoError);
+                sContext.sendBroadcast(intent);
+            }
+            */
+            return true;
+        }
+
+
+        boolean parseRealTimeInfoV9(Context sContext) {
+            Timber.i("Parse V9 realtime stats data");
             WheelData wd = WheelData.getInstance();
             int mVoltage = MathsUtil.shortFromBytesLE(data, 0);
             int mCurrent = MathsUtil.signedShortFromBytesLE(data, 2);
