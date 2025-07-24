@@ -528,7 +528,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
     // Inmotion V13 and V14 don't have handle button (kill-switch)
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
-            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y)) {
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y, InmotionAdapterV2.Model.V9)) {
         switchPref(
             name = stringResource(R.string.disable_handle_button_title),
             desc = stringResource(R.string.disable_handle_button_description),
@@ -540,7 +540,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
     // Inmotion V11Y and V14 don't have speaker
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
-            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13,
+            InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V9)) {
         sliderPref(
             name = stringResource(R.string.speaker_volume_title),
             desc = stringResource(R.string.speaker_volume_description),
@@ -579,7 +580,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     // temporally check it for V13 and V11y
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
             InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V14g,
-            InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V11Y)) {
+            InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V11Y,
+            InmotionAdapterV2.Model.V9)) {
         sliderPref(
             name = stringResource(R.string.wheel_alarm1_title),
             desc = stringResource(R.string.wheel_alarm1_description),
