@@ -194,7 +194,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
                     }
                 }
 
-                if (autoUploadDependency.value) {
+                if (autoUploadDependency.value && appConfig.ecToken == null) {
                     loginAlertDialog(
                         title = "electro.club",
                         onDismiss = {
