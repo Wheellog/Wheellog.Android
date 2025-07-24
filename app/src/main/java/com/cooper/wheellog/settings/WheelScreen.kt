@@ -1225,6 +1225,21 @@ private fun begode(appConfig: AppConfig = koinInject()) {
             appConfig.integralCurrentFactorD = it.toInt()
             adapter.updateICurrentD(it.toInt())
         }
+
+        list(
+            name = stringResource(R.string.trick_title),
+            desc = stringResource(R.string.trick_description),
+            entries = mapOf(
+                "0" to stringResource(R.string.trick_0),
+                "1" to stringResource(R.string.trick_1),
+                "2" to stringResource(R.string.trick_2),
+            ),
+            defaultKey = appConfig.trick.toString(),
+        ) {
+            appConfig.trick = it.first.toInt()
+            adapter.setTrick(it.first.toInt())
+        }
+
     }
     list(
         name = stringResource(R.string.battery_voltage_title),

@@ -21,6 +21,7 @@ public class GotwayVirtualAdapter extends BaseAdapter {
         } else if ((data[0] == (byte) 0x55) && (data[1] == (byte) 0xAA)) {
             wd.setWheelType(Constants.WHEEL_TYPE.GOTWAY);
             wd.setModel("Begode");
+            GotwayAdapter.getInstance().resetAttempt();
             result = GotwayAdapter.getInstance().decode(data);
         } else {
             return false;

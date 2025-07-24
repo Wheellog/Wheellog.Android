@@ -66,8 +66,8 @@ public class GotwayAdapter extends BaseAdapter {
             } else if (dataS.startsWith("BF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
-                model = "Begode Alexovik";
-                wd.setModel(model);
+                //model = "SmirnoV";
+                //wd.setModel(model);
                 appConfig.setHwPwm(true);
                 appConfig.setIsAlexovikFW(true);
                 bIsReady = true;
@@ -88,16 +88,29 @@ public class GotwayAdapter extends BaseAdapter {
                 //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
+                    Timber.i("Model %s FW %s", model, fw);
                     int voltage = MathsUtil.shortFromBytesBE(buff, 2);
                     int speed = (int) Math.round(MathsUtil.signedShortFromBytesBE(buff, 4) * 3.6);
-                    int distance = MathsUtil.shortFromBytesBE(buff, 8);
+                    int distance = 0;
+                    if (!bIsAlexovikFW) {
+                        Timber.i("Normal begode protocol");
+                        distance = MathsUtil.shortFromBytesBE(buff, 8);
+                    } else {
+                        Timber.i("SmirnoV protocol");
+                        if ((buff[7] & 0x01) == 1) {
+                            int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 8);
+                            wd.setCurrent(batteryCurrent);
+                            trueCurrent = true;
+                        }
+                    }
                     int phaseCurrent = MathsUtil.signedShortFromBytesBE(buff, 10);
                     int temperature;
-                    if (!bIsAlexovikFW)
+                    if (!bIsAlexovikFW) {
                         temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 340.0) + 36.53) * 100);  // mpu6050
-                    else
+                    } else {
                         temperature = (int) Math.round((((float) MathsUtil.signedShortFromBytesBE(buff, 12) / 333.87) + 21.00) * 100); // mpu6500
-
+                        appConfig.setTrick(buff[16]);
+                    }
                     int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
                     if (gotwayNegative == 0) {
                         speed = Math.abs(speed);
@@ -154,7 +167,7 @@ public class GotwayAdapter extends BaseAdapter {
                     if (!trueCurrent) {
                         wd.calculateCurrent();
                     }
-                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent);
+                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent) || bIsAlexovikFW;
                 } else if (buff[18] == (byte) 0x01) {
                     if (!bIsAlexovikFW)
                     {
@@ -254,7 +267,7 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 } else if (buff[18] == (byte) 0xFF) {
                     if (!bIsAlexovikFW) {
-                        checkFirmware();
+                        //checkFirmware();
                     }
                     if (lock_Changes == 0) {
                         appConfig.setExtremeMode((buff[2] & 0x01) != (byte) 0);
@@ -286,7 +299,7 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 }
 
-                if (attempt < 10)
+                if (attempt < 20)
                 {
                     long nowTime = SystemClock.elapsedRealtime();
                     if (nowTime - lastTryTime > 190)
@@ -322,6 +335,10 @@ public class GotwayAdapter extends BaseAdapter {
     @Override
     public boolean isReady() {
         return bIsReady && (WheelData.getInstance().getVoltage() != 0);
+    }
+
+    public void resetAttempt() {
+        attempt = 0;
     }
 
     private void sendCommand(String s) {
@@ -369,8 +386,9 @@ public class GotwayAdapter extends BaseAdapter {
             frameFFcount = 0;
 
         if (frameFFcount > 5) {
-            model = "Begode Alexovik";
-            WheelData.getInstance().setModel(model);
+            // Moved to "N" request "NAMExxxxx"
+            //model = "SmirnoV";
+            //WheelData.getInstance().setModel(model);
             appConfig.setHwPwm(true);
             appConfig.setIsAlexovikFW(true);
             bIsReady = true;
@@ -464,6 +482,12 @@ public class GotwayAdapter extends BaseAdapter {
 
     public void updateICurrentD(int value) {
         byte[] cmd = { (byte)0x64, (byte)0x69, (byte)value };
+        lock_Changes = 2;
+        WheelData.getInstance().bluetoothCmd(cmd);
+    }
+
+    public void setTrick(int value) {
+        byte[] cmd = { (byte)0x74, (byte)0x74, (byte)value };
         lock_Changes = 2;
         WheelData.getInstance().bluetoothCmd(cmd);
     }

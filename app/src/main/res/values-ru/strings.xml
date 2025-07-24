@@ -135,6 +135,7 @@
     <string name="is_gotway_mcm_description">Если у вас Gotway MCM, а скорость растояние и другие параметры отображаются некорректно, тогда попробуйте установить тут галочку.</string>
     <string name="extreme_mode_title">Экстремальный режим</string>
     <string name="extreme_mode_description">Только для трюков! Не подходит для обычной езды!</string>
+    <string name="trick_2">Сальто назад (back-flip)</string>
     <string name="braking_current_title">Ток торможения</string>
     <string name="braking_current_description">Усилие, с которым будет происходить торможение двигателя после отключения.</string>
     <string name="rotation_control_title">Контроль вращения</string>
@@ -574,4 +575,8 @@
     <string name="standby_delay_title">Автоотключение</string>
     <string name="import_log">Импортировать существующий лог</string>
     <string name="create_test_log">Создать тестовый лог</string>
+    <string name="trick_title">Трюк</string>
+    <string name="trick_description">Выбор трюка</string>
+    <string name="trick_0">Нет</string>
+    <string name="trick_1">Сальто вперед (front-flip)</string>
 </resources>
