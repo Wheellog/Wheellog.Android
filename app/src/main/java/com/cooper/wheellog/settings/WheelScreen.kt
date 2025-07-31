@@ -13,6 +13,7 @@ import com.cooper.wheellog.AppConfig
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
 import com.cooper.wheellog.utils.*
+import com.cooper.wheellog.utils.StringUtil.inArray
 import org.koin.compose.koinInject
 
 @Composable
@@ -1291,18 +1292,20 @@ private fun veteran(appConfig: AppConfig = koinInject()) {
         appConfig.lightEnabled = it
         adapter.setLightState(it)
     }
-    list(
-        name = stringResource(R.string.pedals_mode_title),
-        desc = stringResource(R.string.soft_medium_hard),
-        entries = mapOf(
-            "0" to stringResource(R.string.hard),
-            "1" to stringResource(R.string.medium),
-            "2" to stringResource(R.string.soft),
-        ),
-        defaultKey = appConfig.pedalsMode,
-    ) {
-        appConfig.pedalsMode = it.first
-        adapter.updatePedalsMode(it.first.toInt())
+    if (!inArray(WheelData.getInstance().model, arrayOf("Nosfet Apex", "Nosfet Aero"))) {
+        list(
+            name = stringResource(R.string.pedals_mode_title),
+            desc = stringResource(R.string.soft_medium_hard),
+            entries = mapOf(
+                "0" to stringResource(R.string.hard),
+                "1" to stringResource(R.string.medium),
+                "2" to stringResource(R.string.soft),
+            ),
+            defaultKey = appConfig.pedalsMode,
+        ) {
+            appConfig.pedalsMode = it.first
+            adapter.updatePedalsMode(it.first.toInt())
+        }
     }
     clickableAndAlert(
         name = stringResource(R.string.reset_trip),

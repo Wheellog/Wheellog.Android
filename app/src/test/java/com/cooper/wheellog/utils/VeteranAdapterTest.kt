@@ -648,6 +648,40 @@ class VeteranAdapterTest: KoinTest {
 
 
     @Test
+    fun `decode nosfet aero`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c533124000007f700000a5900000002102b".hexToByteArray()
+        val byteArray2 = "04ad0000015e00c8a8f60780000200c580c80000".hexToByteArray()
+        val byteArray3 = "8080808080800228808064808010661066106610".hexToByteArray()
+        val byteArray4 = "6610661066106510661067106710671066106610".hexToByteArray()
+        val byteArray5 = "661066ce555677".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(41)
+        assertThat(data.voltageDouble).isEqualTo(125.80)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.20)
+        assertThat(data.wheelDistanceDouble).isEqualTo(2.039)
+        assertThat(data.totalDistance).isEqualTo(2649)
+        assertThat(data.batteryLevel).isEqualTo(100)
+        assertThat(data.angle).isEqualTo(0.02)
+        assertThat(data.version).isEqualTo("043.2.54")
+    }
+
+
+    @Test
     fun `update pedals mode`() {
         // Arrange.
         mockkConstructor(android.os.Handler::class)
