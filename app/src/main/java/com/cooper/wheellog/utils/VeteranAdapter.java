@@ -117,7 +117,7 @@ public class VeteranAdapter extends BaseAdapter {
                 // end of smartBMS part
 
                 int battery;
-                if (mVer < 4) { // not Patton
+                if (mVer < 4) { // Sherman, Abrams, Sherman S
                     if (useBetterPercents) {
                         if (voltage > 10020) {
                             battery = 100;
@@ -137,7 +137,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 7935) / 19.5);
                         }
                     }
-                } else if (mVer == 4 || mVer == 7) { // Patton and Patton S
+                } else if (mVer == 4 || mVer == 7 || mVer == 43) { // Patton, Patton S, Nosfet Aero
                     if (useBetterPercents) {
                         if (voltage > 12525) {
                             battery = 100;
@@ -157,7 +157,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 9918) / 24.2);
                         }
                     }
-                } else if (mVer >= 5) { // Lynx = 5; Sherman L = 6, Except Patton S
+                } else if (mVer == 5 || mVer == 6 || mVer == 42) { // Lynx, Sherman L = 6, Nosfet Apex
                     if (useBetterPercents) {
                         if (voltage > 15030) {
                             battery = 100;
@@ -253,7 +253,8 @@ public class VeteranAdapter extends BaseAdapter {
         if (mVer == 5) vModel = "Lynx"; else
         if (mVer == 6) vModel = "Sherman L"; else
         if (mVer == 7) vModel = "Patton S"; else
-        if (mVer == 42) vModel = "Nosfet Apex"; else vModel = "Unknown";
+        if (mVer == 42) vModel = "Nosfet Apex"; else
+        if (mVer == 43) vModel = "Nosfet Aero"; else vModel = "Unknown";
         return vModel;
     }
 
@@ -277,10 +278,10 @@ public class VeteranAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
-        if (mVer >= 5) {
-            return 36;
-        } else if (mVer == 4) {
+        if ((mVer == 4) || (mVer == 43)) {
             return 30;
+        } else if (mVer >= 5) {
+            return 36;
         } else {
             return 24;
         }
