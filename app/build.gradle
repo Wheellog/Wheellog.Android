@@ -23,8 +23,8 @@ android {
         applicationId "com.cooper.wheellog"
         minSdk 21
         targetSdk 35
-        versionCode 126
-        versionName "3.2.2b"
+        versionCode 127
+        versionName "3.2.3"
         buildConfigField 'String', 'BUILD_TIME', "\"" + new Date().format('HH:mm dd.MM.yyyy') + "\""
         buildConfigField 'String', 'BUILD_DATE', "\"" + new Date().format('dd.MM.yyyy') + "\""
         vectorDrawables.useSupportLibrary = true
