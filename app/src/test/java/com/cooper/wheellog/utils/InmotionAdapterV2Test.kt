@@ -733,6 +733,57 @@ class InmotionAdapterV2Test: KoinTest {
         assertThat(data.roll).isEqualTo(-2.97)
     }
 
+    @Test
+    fun `decode with v12s full data 1`() {
+        // Arrange.
+        val byteArray1 = "aaaa11088201020b0101010092".hexToByteArray() // wheel type
+        val byteArray2 = "aaaa1117820241313432313934303730303333353943000000000084".hexToByteArray() // s/n
+        val byteArray3 = "aaaa11418206220e0011060300080221380008016b000802232a0003010a0002012400000301040000002508000101040000002e18000001000000012f050005010100000087".hexToByteArray() //versions
+        val byteArray5 = "aaaa142ca0200000000006030008581b581bb80b0000580210646415020a28646428d0073232040000002508053014008e".hexToByteArray() // probably statistics
+        val byteArray6 = "aaaa142b900001252626000000050629d50000000000008282828200000000000000000000000000000000090000007d".hexToByteArray() // totals
+        val byteArray7 = "aaaa1419911d81000080711c00bd92020019000100cd2002008282000037".hexToByteArray()
+        val byteArray8 = "aaaa145784b520010000000000000000000000000000000000d7e40000d7e400000000000000002427f026e02e581b581b401f401f581b581b786900000000cdce00ceb0cbccceb0216403000000000000000000000000000000001b".hexToByteArray()
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isTrue()
+        assertThat(data.serial).isEqualTo("A14219407003359C")
+        assertThat(data.model).isEqualTo("Inmotion V12S")
+        assertThat(data.version).isEqualTo("Main:1.8.56 Drv:6.17.14 BLE:1.3.42")
+
+
+        assertThat(data.speedDouble).isEqualTo(0.0)
+        assertThat(data.temperature).isEqualTo(29)
+        assertThat(data.temperature2).isEqualTo(30)
+        assertThat(data.imuTemp).isEqualTo(27)
+        assertThat(data.cpuTemp).isEqualTo(0)
+        assertThat(data.motorPower).isEqualTo(0.0)
+        assertThat(data.currentLimit).isEqualTo(70.00)
+        assertThat(data.speedLimit).isEqualTo(70.00)
+        assertThat(data.torque).isEqualTo(0.00)
+        assertThat(data.voltageDouble).isEqualTo(83.73)
+        assertThat(data.currentDouble).isEqualTo(0.01)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.0)
+        assertThat(data.totalDistance).isEqualTo(330530)
+        assertThat(data.batteryLevel).isEqualTo(100)
+        assertThat(data.powerDouble).isEqualTo(0.0)
+        assertThat(data.angle).isEqualTo(-69.53)
+        assertThat(data.roll).isEqualTo(0.0)
+    }
+
 
     /*
         @Test
