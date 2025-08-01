@@ -416,7 +416,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
         speedUnit = R.string.mph
     }
     // models with HighBeam/LowBeam, currently V12 family
-    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT, InmotionAdapterV2.Model.V12PRO)){
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V12S)){
         switchPref(
             name = stringResource(R.string.on_lowbeam_title),
             desc = stringResource(R.string.on_lowbeam_description),
@@ -529,7 +530,8 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     }
     // Inmotion V13 and V14 don't have handle button (kill-switch)
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
-            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y, InmotionAdapterV2.Model.V9)) {
+            InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V11Y,
+            InmotionAdapterV2.Model.V9, InmotionAdapterV2.Model.V12S)) {
         switchPref(
             name = stringResource(R.string.disable_handle_button_title),
             desc = stringResource(R.string.disable_handle_button_description),
@@ -542,7 +544,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     // Inmotion V11Y and V14 don't have speaker
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
             InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V11, InmotionAdapterV2.Model.V13,
-            InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V9)) {
+            InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V9, InmotionAdapterV2.Model.V12S)) {
         sliderPref(
             name = stringResource(R.string.speaker_volume_title),
             desc = stringResource(R.string.speaker_volume_description),
@@ -582,7 +584,7 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
     if (adapter.model in setOf(InmotionAdapterV2.Model.V12HS, InmotionAdapterV2.Model.V12HT,
             InmotionAdapterV2.Model.V12PRO, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V14g,
             InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO, InmotionAdapterV2.Model.V11Y,
-            InmotionAdapterV2.Model.V9)) {
+            InmotionAdapterV2.Model.V9, InmotionAdapterV2.Model.V12S)) {
         sliderPref(
             name = stringResource(R.string.wheel_alarm1_title),
             desc = stringResource(R.string.wheel_alarm1_description),
@@ -705,8 +707,9 @@ private fun inmotionV2(appConfig: AppConfig = koinInject()) {
             adapter.setGoHomeMode(it)
         }
     }
-    // V13 and V14 applicable
-    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO)) {
+    // V13, V14, V12S applicable
+    if (adapter.model in setOf(InmotionAdapterV2.Model.V14g, InmotionAdapterV2.Model.V14s, InmotionAdapterV2.Model.V13, InmotionAdapterV2.Model.V13PRO,
+            InmotionAdapterV2.Model.V12S)) {
         switchPref(
             name = stringResource(R.string.berm_angle_mode_title),
             desc = stringResource(R.string.berm_angle_mode_description),
