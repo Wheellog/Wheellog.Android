@@ -756,6 +756,10 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.profile_name, "")
         set(value) = setSpecific(R.string.profile_name, value)
 
+    var speedScaling: Float
+        get() = getSpecific(R.string.speed_scaling, 1f)
+        set(value) = setSpecific(R.string.speed_scaling, value)
+
     var batteryCapacity: Int
         get() = getSpecific(R.string.battery_capacity, 0)
         set(value) = setSpecific(R.string.battery_capacity, value)
