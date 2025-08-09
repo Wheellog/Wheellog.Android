@@ -224,7 +224,7 @@ public class WheelData {
     }
 
     public int getSpeed() {
-        return (int) Math.round(mSpeed / 10.0);
+        return (int) Math.round(mSpeed / 10.0 * appConfig.getSpeedScaling());
     }
 
     public void setSpeed(int speed) {
@@ -765,7 +765,7 @@ public class WheelData {
     }
 
     public double getSpeedDouble() {
-        return mSpeed / 100.0;
+        return mSpeed / 100.0 * appConfig.getSpeedScaling();
     }
 
     public double getVoltageDouble() {
@@ -865,11 +865,11 @@ public class WheelData {
     }
 
     public int getTopSpeed() {
-        return mTopSpeed;
+        return Math.round(mTopSpeed * appConfig.getSpeedScaling());
     }
 
     public double getTopSpeedDouble() {
-        return mTopSpeed / 100.0;
+        return mTopSpeed / 100.0 * appConfig.getSpeedScaling();
     }
 
     int getDistance() {

@@ -1343,6 +1343,16 @@ private fun veteran(appConfig: AppConfig = koinInject()) {
 @Composable
 private fun forAllWheel(appConfig: AppConfig = koinInject()) {
     sliderPref(
+        name = stringResource(R.string.speed_scaling_title),
+        desc = stringResource(R.string.speed_scaling_description),
+        position = appConfig.speedScaling.toFloat(),
+        min = 0.8f,
+        max = 1.20f,
+		format = "%.3f",
+    ) {
+        appConfig.speedScaling = it.toFloat()
+    }
+    sliderPref(
         name = stringResource(R.string.battery_capacity_title),
         desc = stringResource(R.string.battery_capacity_description),
         position = appConfig.batteryCapacity.toFloat(),

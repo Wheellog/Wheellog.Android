@@ -148,6 +148,7 @@
     <string name="connection_sound" translatable="false">connection_sound</string>
     <string name="no_connection_sound" translatable="false">no_connection_sound</string>
     <string name="use_stop_music" translatable="false">use_stop_music</string>
+    <string name="speed_scaling" translatable="false">speed_scaling</string>
     <string name="battery_capacity" translatable="false">battery_capacity</string>
     <string name="charging_power" translatable="false">charging_power</string>
     <string name="show_unknown_devices" translatable="false">show_unknown_devices</string>
