@@ -92,6 +92,27 @@ public class KingsongAdapter extends BaseAdapter {
                             battery = (voltage - 9375) / 30;
                         }
                     }
+                } else if (is151vWheel()) {
+                    if (useBetterPercents) {
+                        if (voltage > 15030) {
+                            battery = 100;
+                        } else if (voltage > 12240) {
+                            battery = (int) Math.round((voltage - 11970) / 30.6);
+                        } else if (voltage > 11520) {
+                            battery = (int) Math.round((voltage - 11520) / 81.0);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage < 11250) {
+                            battery = 0;
+                        } else if (voltage >= 14850) {
+                            battery = 100;
+                        } else {
+                            battery = (voltage - 11250) / 36;
+                        }
+                    }
+
                 } else if (is176vWheel()) {
                     if (useBetterPercents) {
                         if (voltage > 17535) {
@@ -387,6 +408,11 @@ public class KingsongAdapter extends BaseAdapter {
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-F22P"});
     }
 
+    private boolean is151vWheel() {
+        WheelData wd = WheelData.getInstance();
+        return StringUtil.inArray(wd.getModel(), new String[]{"KS-F18P"});
+    }
+
     private boolean is100vWheel() {
         WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-S19"});
@@ -397,8 +423,9 @@ public class KingsongAdapter extends BaseAdapter {
     public int getCellsForWheel() {
         int cells = 16;
         if (is84vWheel()) {cells = 20; }
-        else if (is126vWheel()) {cells = 30; }
         else if (is100vWheel()) { cells = 24; }
+        else if (is126vWheel()) {cells = 30; }
+        else if (is151vWheel()) { cells = 36; }
         else if (is176vWheel()) { cells = 42; }
         return cells;
     }

@@ -482,6 +482,12 @@
     <string name="bmsCell34">Cell 34</string>
     <string name="bmsCell35">Cell 35</string>
     <string name="bmsCell36">Cell 36</string>
+    <string name="bmsCell37">Cell 37</string>
+    <string name="bmsCell38">Cell 38</string>
+    <string name="bmsCell39">Cell 39</string>
+    <string name="bmsCell40">Cell 40</string>
+    <string name="bmsCell41">Cell 41</string>
+    <string name="bmsCell42">Cell 42</string>
     <string name="password">Password</string>
     <string name="email">E-mail</string>
     <string name="show_page_events_description">Show the events page</string>
