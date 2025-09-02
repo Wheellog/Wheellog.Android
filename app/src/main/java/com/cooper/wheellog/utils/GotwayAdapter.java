@@ -22,6 +22,7 @@ public class GotwayAdapter extends BaseAdapter {
     private String model = "";
     private String imu = "";
     private String fw = "";
+    private int smartBmsCells = 0;
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
     private boolean truePWM = false;
@@ -186,8 +187,33 @@ public class GotwayAdapter extends BaseAdapter {
                         else
                             lock_Changes -= 1;
                     }
-                } else if (buff[18] == (byte) 0x03) {
-                    int zero = MathsUtil.shortFromBytesBE(buff, 2);
+                } else if (buff[18] == (byte) 0x02 || buff[18] == (byte) 0x03) {
+                    int bmsnum = (buff[18] & 255) - 0x01;
+                    SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+                    int pNum = (buff[19] & 255);
+                    int cell_num;
+                    double cell_val;
+                    for (int i = 0; i < 8; i++) {
+                        cell_num = i + pNum * 8;
+                        cell_val = MathsUtil.shortFromBytesBE(buff, (i+1) * 2)/1000.0;
+                        bms.getCells()[cell_num] = cell_val;
+                        if (smartBmsCells <= cell_num && cell_val != 0) {
+                            smartBmsCells = cell_num + 1;
+                        } else if (smartBmsCells == cell_num + 1) {
+                            for (int i2 = 0; i2 < smartBmsCells; i2++) {
+                                double cell = bms.getCells()[i2];
+                                if (cell > 0.0) {
+                                    if (bms.getMaxCell() < cell) {
+                                        bms.setMaxCell(cell);
+                                    }
+                                    if (bms.getMinCell() > cell) {
+                                        bms.setMinCell(cell);
+                                    }
+                                }
+                            }
+                            bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                        }
+                    }
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
