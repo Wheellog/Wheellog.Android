@@ -192,7 +192,7 @@ public class GotwayAdapter extends BaseAdapter {
                     SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
                     int pNum = (buff[19] & 255);
                     int cell_num;
-                    double cell_val;
+                    double cell_val = 0.0;
                     for (int i = 0; i < 8; i++) {
                         cell_num = i + pNum * 8;
                         cell_val = MathsUtil.shortFromBytesBE(buff, (i+1) * 2)/1000.0;
@@ -200,20 +200,32 @@ public class GotwayAdapter extends BaseAdapter {
                         if (smartBmsCells <= cell_num && cell_val != 0) {
                             smartBmsCells = cell_num + 1;
                         } else if (smartBmsCells == cell_num + 1) {
-                            for (int i2 = 0; i2 < smartBmsCells; i2++) {
-                                double cell = bms.getCells()[i2];
-                                if (cell > 0.0) {
-                                    if (bms.getMaxCell() < cell) {
-                                        bms.setMaxCell(cell);
-                                    }
-                                    if (bms.getMinCell() > cell) {
-                                        bms.setMinCell(cell);
-                                    }
-                                }
+
+                            if (bms.getCellNum() != smartBmsCells) {
+                                bms.setCellNum(smartBmsCells);
+                                wd.reconfigureBMSPage();
                             }
-                            bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
                         }
                     }
+                    bms.setMinCell(cell_val);
+                    bms.setMaxCell(cell_val);
+                    double totalVolt = 0.0;
+                    for (int i2 = 0; i2 < smartBmsCells; i2++) {
+                        double cell = bms.getCells()[i2];
+                        if (cell > 0.0) {
+                            totalVolt += cell;
+                            if (bms.getMaxCell() < cell) {
+                                bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i2+1);
+                            }
+                            if (bms.getMinCell() > cell) {
+                                bms.setMinCell(cell);
+                                bms.setMinCellNum(i2+1);
+                            }
+                        }
+                    }
+                    bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/smartBmsCells);
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
@@ -610,6 +622,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
+        if (smartBmsCells != 0) return smartBmsCells;
         switch (appConfig.getGotwayVoltage()) {
             case "0":
                 return 16;
@@ -627,6 +640,10 @@ public class GotwayAdapter extends BaseAdapter {
                 return 36;
         }
         return 24;
+    }
+
+    public boolean getAutoVoltage() {
+        return (appConfig.getAutoVoltage() && smartBmsCells > 0);
     }
 
     @Override

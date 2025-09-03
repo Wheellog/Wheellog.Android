@@ -26,6 +26,10 @@ class SmartBms {
     var minCell: Double = 0.0
     var maxCell: Double = 0.0
     var cellDiff: Double = 0.0
+    var avgCell: Double = 0.0
+    var minCellNum: Int = 0
+    var maxCellNum: Int = 0
+    var cellNum: Int = 0
     lateinit var cells: Array<Double>
 
     init {
@@ -58,6 +62,9 @@ class SmartBms {
         minCell = 0.0
         maxCell = 0.0
         cellDiff = 0.0
+        minCellNum = 0
+        maxCellNum = 0
+        cellNum = 0
         cells = Array(56) { 0.0 }
     }
 }

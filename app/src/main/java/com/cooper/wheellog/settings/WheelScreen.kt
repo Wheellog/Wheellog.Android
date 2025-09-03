@@ -1247,21 +1247,24 @@ private fun begode(appConfig: AppConfig = koinInject()) {
         }
 
     }
-    list(
-        name = stringResource(R.string.battery_voltage_title),
-        desc = stringResource(R.string.battery_voltage_description),
-        entries = mapOf(
-            "0" to "67.2V",
-            "1" to "84V",
-            "2" to "100.8V",
-            "3" to "117.6V",
-            "4" to "134.4V",
-            "5" to "168V",
-            "6" to "151.2V"
-        ),
-        defaultKey = appConfig.gotwayVoltage,
-    ) {
-        appConfig.gotwayVoltage = it.first
+
+    if (!adapter.autoVoltage) {
+        list(
+            name = stringResource(R.string.battery_voltage_title),
+            desc = stringResource(R.string.battery_voltage_description),
+            entries = mapOf(
+                "0" to "67.2V",
+                "1" to "84V",
+                "2" to "100.8V",
+                "3" to "117.6V",
+                "4" to "134.4V",
+                "5" to "168V",
+                "6" to "151.2V"
+            ),
+            defaultKey = appConfig.gotwayVoltage,
+        ) {
+            appConfig.gotwayVoltage = it.first
+        }
     }
 
     list(

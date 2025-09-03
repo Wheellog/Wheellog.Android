@@ -445,6 +445,7 @@
     <string name="bmsHealth">Health</string>
     <string name="bmsMinCell">Min Cell</string>
     <string name="bmsMaxCell">Max Cell</string>
+    <string name="bmsAvgCell">Avg Cell</string>
     <string name="bmsCellDiff">Cell diff</string>
     <string name="bmsCell1">Cell 1</string>
     <string name="bmsCell2">Cell 2</string>

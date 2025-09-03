@@ -622,6 +622,12 @@ public class WheelData {
 
     }
 
+    public void reconfigureBMSPage() {
+        Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
+        Context mContext = KoinJavaComponent.get(Context.class);
+        mContext.sendBroadcast(intent);
+    }
+
     public String getModeStr() {
         return mModeStr;
     }
