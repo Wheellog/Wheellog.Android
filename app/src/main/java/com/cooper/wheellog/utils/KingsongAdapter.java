@@ -304,21 +304,26 @@ public class KingsongAdapter extends BaseAdapter {
                     //bms.getCells()[30] = MathsUtil.getInt2R(data, 6)/1000.0;
                     //bms.getCells()[31] = MathsUtil.getInt2R(data, 8)/1000.0;
                     bms.setTempMosEnv((MathsUtil.getInt2R(data, 10)-2730)/10.0);
-                    //bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
+
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
+                    double totalVolt = 0.0;
                     for (int i = 0; i < getCellsForWheel(); i++) {
                         double cell = bms.getCells()[i];
                         if (cell > 0.0) {
+                            totalVolt += cell;
                             if (bms.getMaxCell() < cell) {
                                 bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i+1);
                             }
                             if (bms.getMinCell() > cell) {
                                 bms.setMinCell(cell);
+                                bms.setMinCellNum(i+1);
                             }
                         }
                     }
                     bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/getCellsForWheel());
                     if (bms.getVersionNumber().equals("")) {
                         if (bmsnum == 1) {
                             requestBms1Firmware();

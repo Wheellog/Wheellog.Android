@@ -106,14 +106,17 @@ public class VeteranAdapter extends BaseAdapter {
                                 if (cell > 0.0) {
                                     if (bms.getMaxCell() < cell) {
                                         bms.setMaxCell(cell);
+                                        bms.setMaxCellNum(i+1);
                                     }
                                     if (bms.getMinCell() > cell) {
                                         bms.setMinCell(cell);
+                                        bms.setMinCellNum(i+1);
                                     }
                                 }
                             }
                             bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
                             bms.setVoltage(totalVolt);
+                            bms.setAvgCell(totalVolt/getCellsForWheel());
                         } else if (pnum == 8) {
                             // new packet, TODO: to recognize
                         }

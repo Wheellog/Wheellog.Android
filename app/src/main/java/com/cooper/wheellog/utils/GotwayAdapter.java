@@ -95,7 +95,7 @@ public class GotwayAdapter extends BaseAdapter {
                     System.out.println(String.format(Locale.US,"%d, %d, %d, %d, %d, %d, %d, %d",value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7]));
                 }
                 //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
-                
+
                  */
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
@@ -188,7 +188,7 @@ public class GotwayAdapter extends BaseAdapter {
                         int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
                         if (autoVoltage) wd.setVoltage(batVoltage * 10);
                         int bmsnum = (buff[19] & 255);
-                        SmartBms bms = bmsnum < 3 ? wd.getBms1() : wd.getBms2();
+                        SmartBms bms = bmsnum < 2 ? wd.getBms1() : wd.getBms2();
                         bms.setCurrent(MathsUtil.signedShortFromBytesBE(buff, 8)/10.0);
                         if (bmsnum % 2 == 0) {
                             bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 10));

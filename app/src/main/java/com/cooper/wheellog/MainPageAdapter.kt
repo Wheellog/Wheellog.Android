@@ -763,6 +763,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     }
                     setupFieldForSmartBmsPage(R.string.bmsTempMos)
                     setupFieldForSmartBmsPage(R.string.bmsTempMosEnv)
+                    setupFieldForSmartBmsPage(R.string.bmsAvgCell)
                     setupFieldForSmartBmsPage(R.string.bmsMaxCell)
                     setupFieldForSmartBmsPage(R.string.bmsMinCell)
                     setupFieldForSmartBmsPage(R.string.bmsCellDiff)
@@ -816,6 +817,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsTemp4)
                     setupFieldForSmartBmsPage(R.string.bmsTemp5)
                     setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    setupFieldForSmartBmsPage(R.string.bmsAvgCell)
                     setupFieldForSmartBmsPage(R.string.bmsMaxCell)
                     setupFieldForSmartBmsPage(R.string.bmsMinCell)
                     setupFieldForSmartBmsPage(R.string.bmsCellDiff)
@@ -971,6 +973,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsTemp1)
                     setupFieldForSmartBmsPage(R.string.bmsTemp2)
                     setupFieldForSmartBmsPage(R.string.bmsHealth)
+                    setupFieldForSmartBmsPage(R.string.bmsAvgCell)
                     setupFieldForSmartBmsPage(R.string.bmsMaxCell)
                     setupFieldForSmartBmsPage(R.string.bmsMinCell)
                     setupFieldForSmartBmsPage(R.string.bmsCellDiff)
@@ -988,8 +991,12 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsCell12)
                     setupFieldForSmartBmsPage(R.string.bmsCell13)
                     setupFieldForSmartBmsPage(R.string.bmsCell14)
-                    setupFieldForSmartBmsPage(R.string.bmsCell15)
-                    setupFieldForSmartBmsPage(R.string.bmsCell16)
+                    if (WheelData.getInstance().bms1.cellNum > 14) {
+                        setupFieldForSmartBmsPage(R.string.bmsCell15)
+                    }
+                    if (WheelData.getInstance().bms1.cellNum > 15) {
+                        setupFieldForSmartBmsPage(R.string.bmsCell16)
+                    }
                 } else {
                     removePage(R.layout.main_view_smart_bms)
                     return
