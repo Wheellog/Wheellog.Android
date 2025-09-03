@@ -13,6 +13,8 @@ class SmartBms {
     var remPerc: Int = 0
     var current: Double = 0.0
     var voltage: Double = 0.0
+    var semiVoltage1: Double = 0.0
+    var semiVoltage2: Double = 0.0
     var temp1: Double = 0.0
     var temp2: Double = 0.0
     var temp3: Double = 0.0
@@ -49,6 +51,8 @@ class SmartBms {
         remPerc = 0
         current = 0.0
         voltage = 0.0
+        semiVoltage1 = 0.0
+        semiVoltage2 = 0.0
         temp1 = 0.0
         temp2 = 0.0
         temp3 = 0.0

@@ -434,6 +434,8 @@
     <string name="bmsRemPerc">Percent</string>
     <string name="bmsCurrent">Current</string>
     <string name="bmsVoltage">Voltage</string>
+    <string name="bmsSemiVoltage1">Voltage 1/2</string>
+    <string name="bmsSemiVoltage2">Voltage 2/2</string>
     <string name="bmsTemp1">Temp 1</string>
     <string name="bmsTemp2">Temp 2</string>
     <string name="bmsTemp3">Temp 3</string>
