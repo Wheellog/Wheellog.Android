@@ -167,7 +167,7 @@
     <string name="battery_voltage_title">Напряжение батареи</string>
     <string name="battery_voltage_description">67В/84В/100В</string>
     <string name="gotway_negative_title">Отрицательный ток</string>
-    <string name="gotway_negative_description">Когда вы едете прямо, если ток отрицательные - попробуйте изменить настройку на противоположную или выберите абсолютное значение</string>
+    <string name="gotway_negative_description">Когда вы едете прямо, если ток отрицательный - попробуйте изменить настройку на противоположную или выберите абсолютное значение</string>
     <string name="absolute">Абсолютный (всегда положительный)</string>
     <string name="reverse">Обратный</string>
     <string name="straight">Прямой</string>
