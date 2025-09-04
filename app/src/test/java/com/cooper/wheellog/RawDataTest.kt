@@ -187,7 +187,7 @@ class RawDataTest: KoinTest {
         assertThat(data.modeStr).isEqualTo("Drive")
     }
 
-    /*
+/*
     @Test
     fun `Begode PWM`() {
         // Arrange.
@@ -196,7 +196,7 @@ class RawDataTest: KoinTest {
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter = GotwayAdapter()
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
-        val inputStream: InputStream = File("src/test/resources/RAW_2025_09_03_13_26_30.csv").inputStream()
+        val inputStream: InputStream = File("src/test/resources/RAW_2025_09_04_17_19_04.csv").inputStream()
         val startTime = sdf.parse("10:29:00.000")
 
         val dataList = mutableListOf<String>()
@@ -217,12 +217,13 @@ class RawDataTest: KoinTest {
         }
 
         // Assert.
-        assertThat(data.model).isEqualTo("bEGODE")
+        assertThat(data.model).isEqualTo("Blitz")
+        assertThat(data.temperature2).isEqualTo(35)
 
 
     }
 
-
+    /*
 
 
     @Test

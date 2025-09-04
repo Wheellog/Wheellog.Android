@@ -85,7 +85,7 @@ public class GotwayAdapter extends BaseAdapter {
                 Boolean useBetterPercents = appConfig.getUseBetterPercents();
                 Boolean autoVoltage = !bIsAlexovikFW ? appConfig.getAutoVoltage() : false;
                 int gotwayNegative = Integer.parseInt(appConfig.getGotwayNegative());
-                /*
+/*
                 if (buff[18] == (byte) 0x07) {
                     System.out.println(String.format(Locale.US,StringUtil.toHexString(buff)));
                     int [] value = new int[8];
@@ -95,8 +95,8 @@ public class GotwayAdapter extends BaseAdapter {
                     System.out.println(String.format(Locale.US,"%d, %d, %d, %d, %d, %d, %d, %d",value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7]));
                 }
                 //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
+*/
 
-                 */
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
                     Timber.i("Model %s FW %s", model, fw);
@@ -326,7 +326,7 @@ public class GotwayAdapter extends BaseAdapter {
                             wd.setOutput(hwPWMb * 100);
                         }
                         wd.setCurrent((-1) * batteryCurrent);
-                        wd.setTemperature2(motorTemp);
+                        wd.setTemperature2(motorTemp * 100);
                     }
                 } else if (buff[18] == (byte) 0xFF) {
                     if (!bIsAlexovikFW) {
