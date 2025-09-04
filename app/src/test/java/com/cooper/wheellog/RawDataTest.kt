@@ -196,7 +196,7 @@ class RawDataTest: KoinTest {
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter = GotwayAdapter()
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
-        val inputStream: InputStream = File("src/test/resources/RAW_2025_09_04_17_19_04.csv").inputStream()
+        val inputStream: InputStream = File("src/test/resources/RAW_2025_09_03_00_33_13.csv").inputStream()
         val startTime = sdf.parse("10:29:00.000")
 
         val dataList = mutableListOf<String>()
@@ -223,7 +223,7 @@ class RawDataTest: KoinTest {
 
     }
 
-    /*
+
 
 
     @Test
