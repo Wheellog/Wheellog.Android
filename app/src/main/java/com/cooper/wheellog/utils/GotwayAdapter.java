@@ -22,6 +22,7 @@ public class GotwayAdapter extends BaseAdapter {
     private String model = "";
     private String imu = "";
     private String fw = "";
+    private int smartBmsCells = 0;
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
     private boolean truePWM = false;
@@ -84,8 +85,18 @@ public class GotwayAdapter extends BaseAdapter {
                 Boolean useBetterPercents = appConfig.getUseBetterPercents();
                 Boolean autoVoltage = !bIsAlexovikFW ? appConfig.getAutoVoltage() : false;
                 int gotwayNegative = Integer.parseInt(appConfig.getGotwayNegative());
-                if (buff[18] == (byte) 0x07) System.out.println(String.format(Locale.US,StringUtil.toHexString(buff)));
+/*
+                if (buff[18] == (byte) 0x07) {
+                    System.out.println(String.format(Locale.US,StringUtil.toHexString(buff)));
+                    int [] value = new int[8];
+                    for (int i = 0; i < 8; i++) {
+                        value[i] = MathsUtil.shortFromBytesBE(buff, (i + 1) * 2);
+                    }
+                    System.out.println(String.format(Locale.US,"%d, %d, %d, %d, %d, %d, %d, %d",value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7]));
+                }
                 //System.out.println(String.format(Locale.US, "type: %d", buff[18]));
+*/
+
                 if (buff[18] == (byte) 0x00) {
                     Timber.i("Begode frame A found (live data)");
                     Timber.i("Model %s FW %s", model, fw);
@@ -175,8 +186,20 @@ public class GotwayAdapter extends BaseAdapter {
                         trueVoltage = true;
                         int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
                         int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
-                        int something5000 = MathsUtil.shortFromBytesBE(buff, 12);
                         if (autoVoltage) wd.setVoltage(batVoltage * 10);
+                        int bmsnum = (buff[19] & 255);
+                        SmartBms bms = bmsnum < 2 ? wd.getBms1() : wd.getBms2();
+                        bms.setCurrent(MathsUtil.signedShortFromBytesBE(buff, 8)/10.0);
+                        if (bmsnum % 2 == 0) {
+                            bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 10));
+                            bms.setTemp2(MathsUtil.signedShortFromBytesBE(buff, 12));
+                            bms.setSemiVoltage1(MathsUtil.signedShortFromBytesBE(buff, 14)/10.0);
+                        } else {
+                            bms.setTemp3(MathsUtil.signedShortFromBytesBE(buff, 10));
+                            bms.setTemp4(MathsUtil.signedShortFromBytesBE(buff, 12));
+                            bms.setSemiVoltage2(MathsUtil.signedShortFromBytesBE(buff, 14)/10.0);
+                        }
+
                     }
                     else
                     {
@@ -186,8 +209,46 @@ public class GotwayAdapter extends BaseAdapter {
                         else
                             lock_Changes -= 1;
                     }
-                } else if (buff[18] == (byte) 0x03) {
-                    int zero = MathsUtil.shortFromBytesBE(buff, 2);
+                } else if (buff[18] == (byte) 0x02 || buff[18] == (byte) 0x03) {
+                    int bmsnum = (buff[18] & 255) - 0x01;
+                    SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
+                    int pNum = (buff[19] & 255);
+                    int cell_num;
+                    double cell_val = 0.0;
+                    for (int i = 0; i < 8; i++) {
+                        cell_num = i + pNum * 8;
+                        cell_val = MathsUtil.shortFromBytesBE(buff, (i+1) * 2)/1000.0;
+                        bms.getCells()[cell_num] = cell_val;
+                        if (smartBmsCells <= cell_num && cell_val != 0) {
+                            smartBmsCells = cell_num + 1;
+                        } else if (smartBmsCells == cell_num + 1) {
+
+                            if (bms.getCellNum() != smartBmsCells) {
+                                bms.setCellNum(smartBmsCells);
+                                wd.reconfigureBMSPage();
+                            }
+                        }
+                    }
+                    bms.setMinCell(bms.getCells()[0]);
+                    bms.setMaxCell(bms.getCells()[0]);
+                    double totalVolt = 0.0;
+                    for (int i2 = 0; i2 < smartBmsCells; i2++) {
+                        double cell = bms.getCells()[i2];
+                        if (cell > 0.0) {
+                            totalVolt += cell;
+                            if (bms.getMaxCell() < cell) {
+                                bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i2+1);
+                            }
+                            if (bms.getMinCell() > cell) {
+                                bms.setMinCell(cell);
+                                bms.setMinCellNum(i2+1);
+                            }
+                        }
+                    }
+                    bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/smartBmsCells);
+                    bms.setVoltage(totalVolt);
                 } else if (buff[18] == (byte) 0x04) {
                     Timber.i("Begode frame B found (total distance and flags)");
 
@@ -251,6 +312,7 @@ public class GotwayAdapter extends BaseAdapter {
                         newDataFound = trueCurrent;
                         trueCurrent = true;
                         int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
+                        int motorTemp = MathsUtil.signedShortFromBytesBE(buff, 6);
                         int hwPWMb = MathsUtil.signedShortFromBytesBE(buff, 8);
                         if (hwPWMb > 0) {
                             truePWM = true;
@@ -264,6 +326,7 @@ public class GotwayAdapter extends BaseAdapter {
                             wd.setOutput(hwPWMb * 100);
                         }
                         wd.setCurrent((-1) * batteryCurrent);
+                        wd.setTemperature2(motorTemp * 100);
                     }
                 } else if (buff[18] == (byte) 0xFF) {
                     if (!bIsAlexovikFW) {
@@ -584,6 +647,7 @@ public class GotwayAdapter extends BaseAdapter {
 
     @Override
     public int getCellsForWheel() {
+        if (smartBmsCells != 0) return smartBmsCells;
         switch (appConfig.getGotwayVoltage()) {
             case "0":
                 return 16;
@@ -601,6 +665,10 @@ public class GotwayAdapter extends BaseAdapter {
                 return 36;
         }
         return 24;
+    }
+
+    public boolean getAutoVoltage() {
+        return (appConfig.getAutoVoltage() && smartBmsCells > 0);
     }
 
     @Override

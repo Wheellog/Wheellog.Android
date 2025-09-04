@@ -249,6 +249,58 @@ class GotwayAdapterTest: KoinTest {
     }
 
     @Test
+    fun `decode smart bms RACE`() {
+        // Arrange.
+        val byteArray1 = "55aa0f930f890f850f830f810f890f930f9902005a5a5a5a".hexToByteArray()
+        val byteArray2 = "55aa0f9a0f940f980f980f940f950f880f8002015a5a5a5a".hexToByteArray()
+        val byteArray3 = "55aa0f910f920f930f8f0f930f970f960f9202025a5a5a5a".hexToByteArray()
+        val byteArray4 = "55aa0fdd0fdf0fdf0fe20fe10fda0fde0fda02035a5a5a5a".hexToByteArray()
+        val byteArray5 = "55aa0fdf0fe00fda0fe00fdf0fdd0fda0fd802045a5a5a5a".hexToByteArray()
+        val byteArray6 = "55aa0fdb0fde0fdd0fe10fd80fd50fdb0fd302055a5a5a5a".hexToByteArray()
+        val byteArray7 = "55aa0fd40fda00000000000000000000000002065a5a5a5a".hexToByteArray()
+        val byteArray8 = "55aa0fd60fda0fda0fda0fd30fd60fd30fd303005a5a5a5a".hexToByteArray()
+        val byteArray9 = "55aa0fcf0fcb0fce0fd40fd40fd20fcc0fcc03015a5a5a5a".hexToByteArray()
+        val byteArray10 = "55aa0fcd0fcd0fcf0fca0fd00fd60fd50fd803025a5a5a5a".hexToByteArray()
+        val byteArray11 = "55aa0fce0fe40fe00fe40fdf0fd70fd60fd603035a5a5a5a".hexToByteArray()
+        val byteArray12 = "55aa0fde0fdf0fda0fdf0fe10fde0fd80fd803045a5a5a5a".hexToByteArray()
+        val byteArray13 = "55aa0fdb0fe00fe00fe20fd90fda0fdc0fd603055a5a5a5a".hexToByteArray()
+        val byteArray14 = "55aa0fd60fdd00000000000000000000000003065a5a5a5a".hexToByteArray()
+
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+        val result9 = adapter.decode(byteArray9)
+        val result10 = adapter.decode(byteArray10)
+        val result11 = adapter.decode(byteArray11)
+        val result12 = adapter.decode(byteArray12)
+        val result13 = adapter.decode(byteArray13)
+        val result14 = adapter.decode(byteArray14)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isFalse()
+        assertThat(result9).isFalse()
+        assertThat(result10).isFalse()
+        assertThat(result11).isFalse()
+        assertThat(result12).isFalse()
+        assertThat(result13).isFalse()
+        assertThat(result14).isFalse()
+    }
+
+    @Test
     fun `decode name ver data`() {
         // Arrange.
         val byteArray1 = "475732303032303031".hexToByteArray()

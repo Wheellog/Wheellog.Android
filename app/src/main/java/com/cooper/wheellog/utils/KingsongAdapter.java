@@ -92,6 +92,27 @@ public class KingsongAdapter extends BaseAdapter {
                             battery = (voltage - 9375) / 30;
                         }
                     }
+                } else if (is151vWheel()) {
+                    if (useBetterPercents) {
+                        if (voltage > 15030) {
+                            battery = 100;
+                        } else if (voltage > 12240) {
+                            battery = (int) Math.round((voltage - 11970) / 30.6);
+                        } else if (voltage > 11520) {
+                            battery = (int) Math.round((voltage - 11520) / 81.0);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage < 11250) {
+                            battery = 0;
+                        } else if (voltage >= 14850) {
+                            battery = 100;
+                        } else {
+                            battery = (voltage - 11250) / 36;
+                        }
+                    }
+
                 } else if (is176vWheel()) {
                     if (useBetterPercents) {
                         if (voltage > 17535) {
@@ -283,21 +304,26 @@ public class KingsongAdapter extends BaseAdapter {
                     //bms.getCells()[30] = MathsUtil.getInt2R(data, 6)/1000.0;
                     //bms.getCells()[31] = MathsUtil.getInt2R(data, 8)/1000.0;
                     bms.setTempMosEnv((MathsUtil.getInt2R(data, 10)-2730)/10.0);
-                    //bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
+
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
+                    double totalVolt = 0.0;
                     for (int i = 0; i < getCellsForWheel(); i++) {
                         double cell = bms.getCells()[i];
                         if (cell > 0.0) {
+                            totalVolt += cell;
                             if (bms.getMaxCell() < cell) {
                                 bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i+1);
                             }
                             if (bms.getMinCell() > cell) {
                                 bms.setMinCell(cell);
+                                bms.setMinCellNum(i+1);
                             }
                         }
                     }
                     bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/getCellsForWheel());
                     if (bms.getVersionNumber().equals("")) {
                         if (bmsnum == 1) {
                             requestBms1Firmware();
@@ -387,6 +413,11 @@ public class KingsongAdapter extends BaseAdapter {
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-F22P"});
     }
 
+    private boolean is151vWheel() {
+        WheelData wd = WheelData.getInstance();
+        return StringUtil.inArray(wd.getModel(), new String[]{"KS-F18P"});
+    }
+
     private boolean is100vWheel() {
         WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-S19"});
@@ -397,8 +428,9 @@ public class KingsongAdapter extends BaseAdapter {
     public int getCellsForWheel() {
         int cells = 16;
         if (is84vWheel()) {cells = 20; }
-        else if (is126vWheel()) {cells = 30; }
         else if (is100vWheel()) { cells = 24; }
+        else if (is126vWheel()) {cells = 30; }
+        else if (is151vWheel()) { cells = 36; }
         else if (is176vWheel()) { cells = 42; }
         return cells;
     }

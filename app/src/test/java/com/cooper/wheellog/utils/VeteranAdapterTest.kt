@@ -680,6 +680,102 @@ class VeteranAdapterTest: KoinTest {
         assertThat(data.version).isEqualTo("043.2.54")
     }
 
+    @Test
+    fun `decode veteran oryx`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c533e76000030100002a309000f00000a77".hexToByteArray()
+        val byteArray2 = "047b000007d007d01f4300a0e43e000080c80000".hexToByteArray()
+        val byteArray3 = "8080808080800500000000002a0ed30ed30ed30e".hexToByteArray()
+        val byteArray4 = "d30ed30ece0ed30ed30ed30ed20ed30ece0ed20e".hexToByteArray()
+        val byteArray5 = "d30ed34694a2cf".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(26)
+        assertThat(data.voltageDouble).isEqualTo(159.90)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(143.376)
+        assertThat(data.totalDistance).isEqualTo(1024777)
+        assertThat(data.batteryLevel).isEqualTo(62)
+        assertThat(data.angle).isEqualTo(-71.06)
+        assertThat(data.version).isEqualTo("008.0.03")
+    }
+
+    @Test
+    fun `decode veteran oryx 2`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c5f3e76000030100002a309000f00000a83".hexToByteArray()
+        val byteArray2 = "0476000007d007d01f4300a0e43f000080c80000".hexToByteArray()
+        val byteArray3 = "8080808080800706d206a506bb06d406b407250e".hexToByteArray()
+        val byteArray4 = "d60ed50ecf0ed30ed50ed50ed50ed50ecf0ed30e".hexToByteArray()
+        val byteArray5 = "d60ed10000000000000000000000008dedc2b3".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(26)
+        assertThat(data.voltageDouble).isEqualTo(159.90)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(143.376)
+        assertThat(data.totalDistance).isEqualTo(1024777)
+        assertThat(data.batteryLevel).isEqualTo(62)
+        assertThat(data.angle).isEqualTo(-71.05)
+        assertThat(data.version).isEqualTo("008.0.03")
+    }
+
+    @Test
+    fun `decode veteran oryx 3 packet 8`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c473e7b000030100002a309000f00000a86".hexToByteArray()
+        val byteArray2 = "0473000007d007d01f4300a0e43a000080c80000".hexToByteArray()
+        val byteArray3 = "808080808080080000803ce8c8c8c81e00000000".hexToByteArray()
+        val byteArray4 = "0001320554a8648037808064e0ca5a".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(26)
+        assertThat(data.voltageDouble).isEqualTo(159.95)
+        assertThat(data.phaseCurrentDouble).isEqualTo(0.0)
+        assertThat(data.wheelDistanceDouble).isEqualTo(143.376)
+        assertThat(data.totalDistance).isEqualTo(1024777)
+        assertThat(data.batteryLevel).isEqualTo(62)
+        assertThat(data.angle).isEqualTo(-71.1)
+        assertThat(data.version).isEqualTo("008.0.03")
+    }
+
 
     @Test
     fun `update pedals mode`() {
