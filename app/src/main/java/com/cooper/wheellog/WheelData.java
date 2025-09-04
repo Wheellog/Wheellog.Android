@@ -960,7 +960,7 @@ public class WheelData {
     }
 
     public void setBmsView(boolean bmsView) {
-        if (mBmsView != bmsView) resetBmsData();
+//        if (mBmsView != bmsView) resetBmsData();
         mBmsView = bmsView;
     }
 
