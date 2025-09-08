@@ -186,17 +186,18 @@ class RawDataTest: KoinTest {
         assertThat(data.current).isEqualTo(8)
         assertThat(data.modeStr).isEqualTo("Drive")
     }
+    /*
 
-/*
     @Test
     fun `Begode PWM`() {
         // Arrange.
         every { appConfig.gotwayNegative } returns "1"
+        every { appConfig.autoVoltage } returns true
         mockkConstructor(android.os.Handler::class)
         every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
         val adapter = GotwayAdapter()
         data.wheelType = Constants.WHEEL_TYPE.GOTWAY
-        val inputStream: InputStream = File("src/test/resources/RAW_2025_09_03_00_33_13.csv").inputStream()
+        val inputStream: InputStream = File("src/test/resources/RAW_2025_09_06_20_59_33.csv").inputStream()
         val startTime = sdf.parse("10:29:00.000")
 
         val dataList = mutableListOf<String>()

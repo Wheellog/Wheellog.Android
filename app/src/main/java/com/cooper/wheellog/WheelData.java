@@ -1076,7 +1076,7 @@ public class WheelData {
 
         if (!new_data)
             return;
-        mLastLifeData = System.currentTimeMillis();
+        mLastLifeData = timestamp_raw;
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);

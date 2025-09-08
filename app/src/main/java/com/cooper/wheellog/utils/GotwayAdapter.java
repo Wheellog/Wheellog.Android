@@ -25,6 +25,7 @@ public class GotwayAdapter extends BaseAdapter {
     private int smartBmsCells = 0;
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
+    private boolean bmsCurrent = false;
     private boolean truePWM = false;
     private boolean bIsReady = false;
     private long lastTryTime = 0;
@@ -47,6 +48,7 @@ public class GotwayAdapter extends BaseAdapter {
         WheelData wd = WheelData.getInstance();
         wd.resetRideTime();
         boolean newDataFound = false;
+//        int pn = -1;
         if ((model.length() == 0) || (fw.length() == 0)) { // IMU sent at the begining, so there is no sense to check it, we can't request it
             String dataS = new String(data, 0, data.length).trim();
             if (dataS.startsWith("NAME")) {
@@ -85,6 +87,7 @@ public class GotwayAdapter extends BaseAdapter {
                 Boolean useBetterPercents = appConfig.getUseBetterPercents();
                 Boolean autoVoltage = !bIsAlexovikFW ? appConfig.getAutoVoltage() : false;
                 int gotwayNegative = Integer.parseInt(appConfig.getGotwayNegative());
+//                pn = buff[18];
 /*
                 if (buff[18] == (byte) 0x07) {
                     System.out.println(String.format(Locale.US,StringUtil.toHexString(buff)));
@@ -175,21 +178,24 @@ public class GotwayAdapter extends BaseAdapter {
                     if (!truePWM) {
                         wd.setOutput(hwPwm);
                     }
-                    if (!trueCurrent) {
+                    if (!trueCurrent || !bmsCurrent) {
                         wd.calculateCurrent();
                     }
-                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent) || bIsAlexovikFW;
+                    newDataFound = !((trueVoltage && autoVoltage) || trueCurrent || bmsCurrent) || bIsAlexovikFW;
                 } else if (buff[18] == (byte) 0x01) {
                     if (!bIsAlexovikFW)
                     {
-                        newDataFound = !trueCurrent && (trueVoltage && autoVoltage);
+                        newDataFound = bmsCurrent || (!trueCurrent && (trueVoltage && autoVoltage));
                         trueVoltage = true;
                         int pwmlimit = MathsUtil.shortFromBytesBE(buff, 2);
                         int batVoltage = MathsUtil.shortFromBytesBE(buff, 6);
                         if (autoVoltage) wd.setVoltage(batVoltage * 10);
                         int bmsnum = (buff[19] & 255);
                         SmartBms bms = bmsnum < 2 ? wd.getBms1() : wd.getBms2();
-                        bms.setCurrent(MathsUtil.signedShortFromBytesBE(buff, 8)/10.0);
+                        int bmsCurrentM = MathsUtil.signedShortFromBytesBE(buff, 8);
+                        bms.setCurrent(bmsCurrentM/10.0);
+                        if (bmsCurrentM > 0) bmsCurrent = true;
+                        if (bmsCurrent) wd.setCurrent(bmsCurrentM * 20); // double current, taking into account 2 bms
                         if (bmsnum % 2 == 0) {
                             bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 10));
                             bms.setTemp2(MathsUtil.signedShortFromBytesBE(buff, 12));
@@ -232,8 +238,10 @@ public class GotwayAdapter extends BaseAdapter {
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
                     double totalVolt = 0.0;
+//                    System.out.println(String.format(Locale.US,"BMS %d",bmsnum));
                     for (int i2 = 0; i2 < smartBmsCells; i2++) {
                         double cell = bms.getCells()[i2];
+//                        System.out.println(String.format(Locale.US,"Cell %d: %f v",i2+1, cell));
                         if (cell > 0.0) {
                             totalVolt += cell;
                             if (bms.getMaxCell() < cell) {
@@ -309,7 +317,7 @@ public class GotwayAdapter extends BaseAdapter {
                 } else if (buff[18] == (byte) 0x07) {
                     if (!bIsAlexovikFW)
                     {
-                        newDataFound = trueCurrent;
+                        newDataFound = trueCurrent && !bmsCurrent;
                         trueCurrent = true;
                         int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
                         int motorTemp = MathsUtil.signedShortFromBytesBE(buff, 6);
@@ -325,7 +333,7 @@ public class GotwayAdapter extends BaseAdapter {
                             }
                             wd.setOutput(hwPWMb * 100);
                         }
-                        wd.setCurrent((-1) * batteryCurrent);
+                        if (!bmsCurrent) wd.setCurrent((-1) * batteryCurrent);
                         wd.setTemperature2(motorTemp * 100);
                     }
                 } else if (buff[18] == (byte) 0xFF) {
@@ -391,7 +399,7 @@ public class GotwayAdapter extends BaseAdapter {
                 }
             }
         }
-
+//        System.out.println(String.format(Locale.US,"packet num: %d, %b", pn, newDataFound));
         return newDataFound;
     }
 
@@ -716,7 +724,7 @@ public class GotwayAdapter extends BaseAdapter {
                 oldc = c;
                 int size = buffer.size();
                 if (size > 20 && size <= 24 && c != (byte) 0x5A) {
-                    Timber.i("Invalid frame footer (expected 18 5A 5A 5A 5A)");
+                    Timber.i("Invalid frame footer (expected 5A 5A 5A 5A)");
                     state = UnpackerState.unknown;
                     return false;
                 }
@@ -724,6 +732,24 @@ public class GotwayAdapter extends BaseAdapter {
                     state = UnpackerState.done;
                     Timber.i("Valid frame received");
                     return true;
+                }
+                if (size == 5) { //found some garbage in protocol, packet 55aa5a and packet 55aa5a5a
+                    byte[] buf = buffer.toByteArray();
+                    if ((buf[0] == 0x55) && (buf[1] == (byte) 0xAA) && (buf[2] == 0x5A) && (buf[3] == 0x55) && (buf[4] == (byte) 0xAA)) {
+                        Timber.i("Found garbage packet, reassembling");
+                        buffer = new ByteArrayOutputStream();
+                        buffer.write(0x55);
+                        buffer.write(0xAA);
+                    }
+                }
+                if (size == 6) {
+                    byte[] buf = buffer.toByteArray();
+                    if ((buf[0] == 0x55) && (buf[1] == (byte) 0xAA) && (buf[2] == 0x5A) && (buf[3] == 0x5A) && (buf[4] == 0x55) && (buf[5] == (byte) 0xAA)) {
+                        Timber.i("Found garbage packet, reassembling");
+                        buffer = new ByteArrayOutputStream();
+                        buffer.write(0x55);
+                        buffer.write(0xAA);
+                    }
                 }
             } else {
                 if (c == (byte) 0xAA && oldc == (byte) 0x55) {
