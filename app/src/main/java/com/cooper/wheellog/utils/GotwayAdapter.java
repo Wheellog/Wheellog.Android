@@ -194,7 +194,7 @@ public class GotwayAdapter extends BaseAdapter {
                         SmartBms bms = bmsnum < 2 ? wd.getBms1() : wd.getBms2();
                         int bmsCurrentM = MathsUtil.signedShortFromBytesBE(buff, 8);
                         bms.setCurrent(bmsCurrentM/10.0);
-                        if (bmsCurrentM > 0) bmsCurrent = true;
+                        if (bmsCurrentM > 0) bmsCurrent = false;
                         if (bmsCurrent) wd.setCurrent(bmsCurrentM * 20); // double current, taking into account 2 bms
                         if (bmsnum % 2 == 0) {
                             bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 10));

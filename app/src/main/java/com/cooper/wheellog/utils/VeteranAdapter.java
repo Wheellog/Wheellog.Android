@@ -312,6 +312,8 @@ public class VeteranAdapter extends BaseAdapter {
     public int getCellsForWheel() {
         if ((mVer == 4) || (mVer == 7) || (mVer == 43)) {
             return 30;
+        } else if (mVer == 8) {
+            return 42;
         } else if (mVer >= 5) {
             return 36;
         } else {
