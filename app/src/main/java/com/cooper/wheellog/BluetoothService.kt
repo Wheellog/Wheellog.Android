@@ -139,9 +139,30 @@ class BluetoothService: Service() {
 
     private val wheelCallback: BluetoothPeripheralCallback =
         object : BluetoothPeripheralCallback() {
+            override fun onMtuChanged(
+                peripheral: BluetoothPeripheral,
+                mtu: Int,
+                status: GattStatus
+            ) {
+                super.onMtuChanged(peripheral, mtu, status)
+                if (status == GattStatus.SUCCESS) {
+                    val payloadSize = mtu - 3  // ATT overhead is 3 bytes
+                    Timber.i("Bluetooth: MTU negotiated successfully - mtu=$mtu bytes, payload=$payloadSize bytes")
+                    Timber.i("Bluetooth: Extended frames (>20 bytes) now supported for this connection")
+                } else {
+                    Timber.w("Bluetooth: MTU negotiation failed - status=$status, using default 23 bytes (20-byte payload)")
+                }
+            }
+
             override fun onServicesDiscovered(peripheral: BluetoothPeripheral) {
                 super.onServicesDiscovered(peripheral)
                 Timber.i("onServicesDiscovered called")
+
+                // Request maximum MTU for extended frame support (KingSong F22 Pro 0xD0/0xD1 frames)
+                val requestedMtu = BluetoothPeripheral.MAX_MTU  // 517 bytes
+                Timber.i("Bluetooth: Requesting MTU negotiation - requested=$requestedMtu bytes")
+                peripheral.requestMtu(requestedMtu)
+
                 var recognisedWheel = WheelData.getInstance().detectWheel(
                         wheelAddress,
                         applicationContext,
@@ -182,7 +203,15 @@ class BluetoothService: Service() {
                 status: GattStatus
             ) {
                 super.onCharacteristicUpdate(peripheral, value, characteristic, status)
-                Timber.i("onCharacteristicChanged called %s", characteristic.uuid.toString())
+
+                // Log extended packets (require MTU > 23) for diagnostic purposes
+                if (value.size > 20) {
+                    Timber.d("Bluetooth: Received extended packet - size=${value.size} bytes (MTU negotiation enabled)")
+                }
+
+                Timber.i("onCharacteristicChanged called uuid=%s, size=%d bytes",
+                         characteristic.uuid.toString(), value.size)
+
                 if (status == GattStatus.SUCCESS) {
                     readData(characteristic, value)
                 }
