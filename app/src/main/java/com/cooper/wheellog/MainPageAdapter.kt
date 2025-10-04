@@ -743,7 +743,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
         //removePage(R.layout.main_view_smart_bms)
         when (WheelData.getInstance().wheelType) {
             WHEEL_TYPE.KINGSONG -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16", "KS-S16P", "KS-F22P"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-S19", "KS-S16", "KS-S16P", "KS-F22P", "KS-F18P"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsSn)
                     setupFieldForSmartBmsPage(R.string.bmsFw)
@@ -758,7 +758,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsTemp2)
                     setupFieldForSmartBmsPage(R.string.bmsTemp3)
                     setupFieldForSmartBmsPage(R.string.bmsTemp4)
-                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22"))) {
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-F22P", "KS-F18P"))) {
                         setupFieldForSmartBmsPage(R.string.bmsTemp5)
                         setupFieldForSmartBmsPage(R.string.bmsTemp6)
                     }
