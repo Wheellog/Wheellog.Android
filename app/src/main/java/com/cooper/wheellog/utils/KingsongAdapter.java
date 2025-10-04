@@ -331,6 +331,64 @@ public class KingsongAdapter extends BaseAdapter {
                             requestBms2Firmware();
                         }
                     }
+                } else if (pNum == 0xD0) { //extended BMS packet for F-series
+                    int pLen = (data[15] & 255);
+                    int cells = (data[21] & 255);
+                    int offset = 0;
+                    for (int i = 0; i < cells; i++) {
+                        bms.getCells()[i] = MathsUtil.getInt2R(data, (i*2)+22)/1000.0;
+                    }
+                    offset = 23 + cells * 2;
+                    int nTemp = (data[offset-1] & 255);
+                    double b;
+                    bms.setTemp1((MathsUtil.getInt2R(data, offset))/100.0);
+                    bms.setTemp2((MathsUtil.getInt2R(data, offset+2))/100.0);
+                    bms.setTemp3((MathsUtil.getInt2R(data, offset+4))/100.0);
+                    bms.setTemp4((MathsUtil.getInt2R(data, offset+6))/100.0);
+                    bms.setTemp5((MathsUtil.getInt2R(data, offset+8))/100.0);
+                    bms.setTemp6((MathsUtil.getInt2R(data, offset+10))/100.0);
+                    bms.setTempMos((MathsUtil.getInt2R(data, offset+12))/100.0);
+                    bms.setTempMosEnv((MathsUtil.getInt2R(data, offset+14))/100.0);
+                    offset = offset + nTemp * 2;
+                    bms.setCurrent((MathsUtil.getInt2R(data, offset))/100.0);
+                    bms.setVoltage((MathsUtil.getInt2R(data, offset+2))/100.0);
+                    bms.setRemPerc((MathsUtil.getInt2R(data, offset+4))/10);
+                    //(MathsUtil.getInt2R(data, offset+7)); //soh 99.9%
+                    bms.setFullCycles((MathsUtil.getInt2R(data, offset+9)));
+                    bms.setFactoryCap((MathsUtil.getInt2R(data, offset+11)) * 10);
+                    bms.setRemCap(bms.getRemPerc() * bms.getFactoryCap()/100);
+                    //b = (MathsUtil.getInt2R(data, offset+13));
+                    //b = (MathsUtil.getInt2R(data, offset+15));
+                    //b = (MathsUtil.getInt2R(data, offset+17)); //soc 25.60 ?
+                    //b = (MathsUtil.getInt2R(data, offset+19)); // 2?
+                    //b = (MathsUtil.getInt2R(data, offset+21));
+
+                    bms.setMinCell(bms.getCells()[0]);
+                    bms.setMaxCell(bms.getCells()[0]);
+                    double totalVolt = 0.0;
+                    for (int i = 0; i < cells; i++) {
+                        double cell = bms.getCells()[i];
+                        if (cell > 0.0) {
+                            totalVolt += cell;
+                            if (bms.getMaxCell() < cell) {
+                                bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i+1);
+                            }
+                            if (bms.getMinCell() > cell) {
+                                bms.setMinCell(cell);
+                                bms.setMinCellNum(i+1);
+                            }
+                        }
+                    }
+                    bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/cells);
+                    if (bms.getVersionNumber().equals("")) {
+                        if (bmsnum == 1) {
+                            requestBms1Firmware();
+                        } else {
+                            requestBms2Firmware();
+                        }
+                    }
                 }
             } else if ((data[16] & 255) == 0xe1 || (data[16] & 255) == 0xe2) { // e1 - 1st BMS, e2 - 2nd BMS.
                 int bmsnum = (data[16] & 255) - 0xE0;
