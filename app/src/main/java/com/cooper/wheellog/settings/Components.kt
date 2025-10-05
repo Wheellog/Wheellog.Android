@@ -580,8 +580,8 @@ fun multiList(
                                     },
                                     role = Role.Checkbox
                                 )
-                                .animateItemPlacement(
-                                    animationSpec = tween(300)
+                                .animateItem(
+                                    placementSpec = tween(300)
                                 ),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {

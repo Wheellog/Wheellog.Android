@@ -54,6 +54,8 @@ class AppConfig(var context: Context): KoinComponent {
             }
         }
 
+    var useComposeUI: Boolean = false
+
     var dayNightThemeMode: Int
         get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED.toString()).toInt()
         set(value) = setValue(R.string.day_night_theme, value.toString())

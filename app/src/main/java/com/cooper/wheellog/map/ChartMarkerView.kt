@@ -11,7 +11,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
-import okhttp3.internal.toHexString
 
 @SuppressLint("ViewConstructor")
 class ChartMarkerView(context: Context, private val valueFormatter: ValueFormatter, private val stats: List<LineDataSet>)
