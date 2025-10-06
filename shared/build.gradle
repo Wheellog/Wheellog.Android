@@ -36,7 +36,7 @@ dependencies {
     implementation "com.google.android.material:material:$material_version"
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'com.google.truth:truth:1.4.4'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
-    testImplementation 'io.mockk:mockk:1.13.14'
+    testImplementation 'com.google.truth:truth:1.4.5'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.0'
+    testImplementation 'io.mockk:mockk:1.14.6'
 }

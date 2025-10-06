@@ -39,8 +39,8 @@ public class WheelData {
     private static final int GRAPH_UPDATE_INTERVAL = 1000; // milliseconds
     private static final int RIDING_SPEED = 200; // 2km/h
     private final ArrayList<String> xAxis = new ArrayList<>();
-    private final ArrayList<Float> currentAxis = new ArrayList<>();
-    private final ArrayList<Float> speedAxis = new ArrayList<>();
+    public final ArrayList<Float> currentAxis = new ArrayList<>();
+    public final ArrayList<Float> speedAxis = new ArrayList<>();
     // BMS
     private final SmartBms mSmartBms1 = new SmartBms();
     private final SmartBms mSmartBms2 = new SmartBms();
@@ -761,7 +761,7 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    String getRidingTimeString() {
+    public String getRidingTimeString() {
         long hours = TimeUnit.SECONDS.toHours(mRidingTime);
         long minutes = TimeUnit.SECONDS.toMinutes(mRidingTime) -
                 TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(mRidingTime));
@@ -799,7 +799,7 @@ public class WheelData {
         return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    double getVoltageSagDouble() {
+    public double getVoltageSagDouble() {
         return mVoltageSag / 100.0;
     }
 

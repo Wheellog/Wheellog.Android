@@ -22,6 +22,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -39,6 +40,7 @@ import com.cooper.wheellog.DialogHelper.checkAndShowPrivatePolicyDialog
 import com.cooper.wheellog.DialogHelper.checkBatteryOptimizationsAndShowAlert
 import com.cooper.wheellog.DialogHelper.checkPWMIsSetAndShowAlert
 import com.cooper.wheellog.companion.WearOs
+import com.cooper.wheellog.compose.MainScreen
 import com.cooper.wheellog.data.TripDatabase.Companion.getDataBase
 import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ActivityMainBinding
@@ -612,13 +614,25 @@ class MainActivity : AppCompatActivity() {
             Process.killProcess(Process.myPid())
             return
         }
+
         AppCompatDelegate.setDefaultNightMode(appConfig.dayNightThemeMode)
         setTheme(appConfig.appTheme)
         super.onCreate(savedInstanceState)
         volumeControlStream = AudioManager.STREAM_MUSIC
 
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
+        if (appConfig.useComposeUI) {
+            // на Compose
+            setContent {
+                AppTheme {
+                    MainScreen()
+                }
+            }
+        } else {
+            // на xml
+            setContentView(binding.root)
+        }
 
         ElectroClub.instance.apply {
             errorListener = { method: String?, error: String? ->

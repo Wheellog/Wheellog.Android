@@ -406,17 +406,6 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
     private var eventsMaxCount = 500
     private var logsCashe = StringBuffer()
 
-    fun logEvent(message: String) {
-        logsCashe.append(message)
-        if (eventsCurrentCount > eventsMaxCount) {
-            val indexOfNewLine = logsCashe.indexOfFirst { r -> r == '\n' }
-            logsCashe.delete(0, indexOfNewLine)
-        } else {
-            eventsCurrentCount++
-        }
-        eventsTextView?.text = logsCashe
-    }
-
     private var chartAxisValueFormatter: IndexAxisValueFormatter = object : IndexAxisValueFormatter () {
         override fun getFormattedValue(value: Float): String {
             return if (value < xAxisLabels.size) xAxisLabels[value.toInt()] else ""
