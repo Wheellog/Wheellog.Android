@@ -610,6 +610,23 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().bluetoothCmd(data);
     }
 
+    public void requestBms1MoreData() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe3;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void requestBms2MoreData() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe4;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
     public void requestBms1Firmware() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0xe5;

@@ -222,18 +222,24 @@ class KingsongAdapterTest {
         val byteArray2 = "aa550000000000000000000000000049f1d15a5a2a080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000026000002000000000000000015150000".hexToByteArray()
         val byteArray3 = "aa55000000000000000000000000007ff2d05a5a002afa0ff90ff90ff90ff80ff90ff80ff90ff80ff80ff80ff80ff70ff80ff70ff70ff60ff60ff60ff60ff60ff70ff70ff60ff60ff50ff60ff60ff60ff70ff60ff60ff50ff50ff50ff40ff40ff40ff40ff30ff40ff00f08b80bc20bc20bb80bc20bcc0bb80bae0bf8ff0d43b50300e7033000e80300f9000000240200000000".hexToByteArray()
         val byteArray4 = "aa550000000000000000000000000049f2d15a5a2a080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000026000002000000000000000015150000".hexToByteArray()
+        val byteArray5 = "aa5530000000000000000000000000b9e3a15a5a19081f110d390a1037102c000bcc0bb80bae0b9afff1440203de05520000000000040029007b7e340200000000000030".hexToByteArray()
+        val byteArray6 = "aa5530000000000000000000000000b9e4a15a5a19081f110e130610361027000bc20bb80ba40b9afff5440203de05510000000000040029007b7c360200000000000030".hexToByteArray()
 
         // Act.
         val result1 = adapter.decode(byteArray1)
         val result2 = adapter.decode(byteArray2)
         val result3 = adapter.decode(byteArray3)
         val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
 
         // Assert.
         assertThat(result1).isFalse()
         assertThat(result2).isFalse()
         assertThat(result3).isFalse()
         assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
         // 1st data
 
     }
@@ -258,6 +264,108 @@ class KingsongAdapterTest {
         assertThat(result2).isFalse()
         assertThat(result3).isFalse()
         assertThat(result4).isFalse()
+        // 1st data
+
+    }
+
+    @Test
+    fun `decode s16 pro bms data 1`() {
+        // Arrange.
+        val byteArray1 = "aa55f01dfcff4602e7031a00e8030000f1005a5a".hexToByteArray()
+        val byteArray2 = "aa550000000000000000000000002400f5145a5a".hexToByteArray()
+        val byteArray3 = "aa55d00700000000d20100004e000000f6145a5a".hexToByteArray()
+        val byteArray4 = "aa55220b220b220b220b000000005e0bf1015a5a".hexToByteArray()
+        val byteArray5 = "aa55e90ee80ee80ee80ee70ef80ef80ef1025a5a".hexToByteArray()
+        val byteArray6 = "aa55f80ef80ef40ef80ef90efa0ef90ef1035a5a".hexToByteArray()
+        val byteArray7 = "aa55f60ef80ef90ef90efa0ef70e0000f1045a5a".hexToByteArray()
+        val byteArray8 = "aa550000000000000000000000000000f1055a5a".hexToByteArray()
+        val byteArray9 = "aa5500000000000000004a0b00000000f1065a5a".hexToByteArray()
+        val byteArray10 = "aa55ed1dfbff0d029003a101e8030000f2005a5a".hexToByteArray()
+        val byteArray11 = "aa552c0b220b220b2c0b000000005e0bf2015a5a".hexToByteArray()
+        val byteArray12 = "aa55e70ee50ee60ee60ee30ef70ef70ef2025a5a".hexToByteArray()
+        val byteArray13 = "aa55f70ef70ef50ef70ef80ef80ef80ef2035a5a".hexToByteArray()
+        val byteArray14 = "aa55f50ef70ef70ef80ef80ef40e0000f2045a5a".hexToByteArray()
+        val byteArray15 = "aa550000000000000000000000000000f2055a5a".hexToByteArray()
+        val byteArray16 = "aa5500000000000000004a0b00000000f2065a5a".hexToByteArray()
+
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+        val result9 = adapter.decode(byteArray9)
+        val result10 = adapter.decode(byteArray10)
+        val result11 = adapter.decode(byteArray11)
+        val result12 = adapter.decode(byteArray12)
+        val result13 = adapter.decode(byteArray13)
+        val result14 = adapter.decode(byteArray14)
+        val result15 = adapter.decode(byteArray15)
+        val result16 = adapter.decode(byteArray16)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isFalse()
+        assertThat(result9).isFalse()
+        assertThat(result10).isFalse()
+        assertThat(result11).isFalse()
+        assertThat(result12).isFalse()
+        assertThat(result13).isFalse()
+        assertThat(result14).isFalse()
+        assertThat(result15).isFalse()
+        assertThat(result16).isFalse()
+        // 1st data
+
+    }
+
+    @Test
+    fun `decode s16 pro bms data 2`() {
+        // Arrange.
+        val byteArray1 = "aa550300210c0e0e028701200a000000e4bea62f".hexToByteArray()
+        val byteArray2 = "aa5519081f13050d950f070ef9000001e4a15481".hexToByteArray()
+        val byteArray3 = "aa55000be00bcc0bd60bd6fffb1e0f02e4a16644".hexToByteArray()
+        val byteArray4 = "aa550224033a00000000000401a00f03e4a12b2d".hexToByteArray()
+        val byteArray5 = "aa5500cb7f4000000000000000030f04e4a19400".hexToByteArray()
+        val byteArray6 = "aa550300210c0e0e028701200a000000e4bea62f".hexToByteArray()
+        val byteArray7 = "aa5519081f13050d950f070ef9000001e4a15481".hexToByteArray()
+        val byteArray8 = "aa55000be00bcc0bd60bd6fffb1e0f02e4a16644".hexToByteArray()
+        val byteArray9 = "aa550224033a00000000000401a00f03e4a12b2d".hexToByteArray()
+        val byteArray10 = "aa5500cb7f4000000000000000030f04e4a19400".hexToByteArray()
+
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+        val result6 = adapter.decode(byteArray6)
+        val result7 = adapter.decode(byteArray7)
+        val result8 = adapter.decode(byteArray8)
+        val result9 = adapter.decode(byteArray9)
+        val result10 = adapter.decode(byteArray10)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isFalse()
+        assertThat(result6).isFalse()
+        assertThat(result7).isFalse()
+        assertThat(result8).isFalse()
+        assertThat(result9).isFalse()
+        assertThat(result10).isFalse()
         // 1st data
 
     }
