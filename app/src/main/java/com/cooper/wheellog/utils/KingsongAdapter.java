@@ -340,15 +340,15 @@ public class KingsongAdapter extends BaseAdapter {
                     }
                     offset = 23 + cells * 2;
                     int nTemp = (data[offset-1] & 255);
-                    double b;
-                    bms.setTemp1((MathsUtil.getInt2R(data, offset))/100.0);
-                    bms.setTemp2((MathsUtil.getInt2R(data, offset+2))/100.0);
-                    bms.setTemp3((MathsUtil.getInt2R(data, offset+4))/100.0);
-                    bms.setTemp4((MathsUtil.getInt2R(data, offset+6))/100.0);
-                    bms.setTemp5((MathsUtil.getInt2R(data, offset+8))/100.0);
-                    bms.setTemp6((MathsUtil.getInt2R(data, offset+10))/100.0);
-                    bms.setTempMos((MathsUtil.getInt2R(data, offset+12))/100.0);
-                    bms.setTempMosEnv((MathsUtil.getInt2R(data, offset+14))/100.0);
+//                    double b;
+                    bms.setTemp1((MathsUtil.getInt2R(data, offset)-2730)/10.0);
+                    bms.setTemp2((MathsUtil.getInt2R(data, offset+2)-2730)/10.0);
+                    bms.setTemp3((MathsUtil.getInt2R(data, offset+4)-2730)/10.0);
+                    bms.setTemp4((MathsUtil.getInt2R(data, offset+6)-2730)/10.0);
+                    bms.setTemp5((MathsUtil.getInt2R(data, offset+8)-2730)/10.0);
+                    bms.setTemp6((MathsUtil.getInt2R(data, offset+10)-2730)/10.0);
+                    bms.setTempMos((MathsUtil.getInt2R(data, offset+12)-2730)/10.0);
+                    bms.setTempMosEnv((MathsUtil.getInt2R(data, offset+14)-2730)/10.0);
                     offset = offset + nTemp * 2;
                     bms.setCurrent((MathsUtil.getInt2R(data, offset))/100.0);
                     bms.setVoltage((MathsUtil.getInt2R(data, offset+2))/100.0);
