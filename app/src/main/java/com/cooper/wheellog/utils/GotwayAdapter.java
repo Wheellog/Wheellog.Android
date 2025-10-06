@@ -237,6 +237,8 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
+                    bms.setMaxCellNum(1);
+                    bms.setMinCellNum(1);
                     double totalVolt = 0.0;
 //                    System.out.println(String.format(Locale.US,"BMS %d",bmsnum));
                     for (int i2 = 0; i2 < smartBmsCells; i2++) {

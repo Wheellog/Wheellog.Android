@@ -307,6 +307,8 @@ public class KingsongAdapter extends BaseAdapter {
 
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
+                    bms.setMaxCellNum(1);
+                    bms.setMinCellNum(1);
                     double totalVolt = 0.0;
                     for (int i = 0; i < getCellsForWheel(); i++) {
                         double cell = bms.getCells()[i];
@@ -364,6 +366,8 @@ public class KingsongAdapter extends BaseAdapter {
 
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
+                    bms.setMaxCellNum(1);
+                    bms.setMinCellNum(1);
                     double totalVolt = 0.0;
                     for (int i = 0; i < cells; i++) {
                         double cell = bms.getCells()[i];
@@ -381,7 +385,13 @@ public class KingsongAdapter extends BaseAdapter {
                     }
                     bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
                     bms.setAvgCell(totalVolt/cells);
-                    if (bms.getVersionNumber().equals("")) {
+                    if (bms.getSerialNumber().equals("")) {
+                        if (bmsnum == 1) {
+                            requestBms1Serial();
+                        } else {
+                            requestBms2Serial();
+                        }
+                    } else if (bms.getVersionNumber().equals("")) {
                         if (bmsnum == 1) {
                             requestBms1Firmware();
                         } else {

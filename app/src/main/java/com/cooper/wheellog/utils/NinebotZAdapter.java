@@ -1237,6 +1237,8 @@ public class NinebotZAdapter extends BaseAdapter {
             }
             bms.setMinCell(bms.getCells()[0]);
             bms.setMaxCell(bms.getCells()[0]);
+            bms.setMaxCellNum(1);
+            bms.setMinCellNum(1);
             double totalVolt = 0.0;
             for (int i =0; i < bms.getCellNum(); i++) {
                 double cell = bms.getCells()[i];
