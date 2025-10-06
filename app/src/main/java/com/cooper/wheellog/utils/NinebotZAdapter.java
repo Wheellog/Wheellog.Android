@@ -1211,7 +1211,7 @@ public class NinebotZAdapter extends BaseAdapter {
             int cell14 = MathsUtil.shortFromBytesLE(data, 26);
             int cell15 = MathsUtil.shortFromBytesLE(data, 28);
             int cell16 = MathsUtil.shortFromBytesLE(data, 30);
-
+            int cellNum = 14;
             SmartBms bms = bmsnum == 1 ? wd.getBms1() : wd.getBms2();
             bms.getCells()[0] = cell1 / 1000.0;
             bms.getCells()[1] = cell2 / 1000.0;
@@ -1229,19 +1229,33 @@ public class NinebotZAdapter extends BaseAdapter {
             bms.getCells()[13] = cell14 / 1000.0;
             bms.getCells()[14] = cell15 / 1000.0;
             bms.getCells()[15] = cell16 / 1000.0;
+            if (cell15 > 0) cellNum = 15;
+            if (cell16 > 0) cellNum = 16;
+            if (bms.getCellNum() != cellNum) {
+                bms.setCellNum(cellNum);
+                wd.reconfigureBMSPage();
+            }
             bms.setMinCell(bms.getCells()[0]);
-            for (int i =0; i < 16; i++) {
+            bms.setMaxCell(bms.getCells()[0]);
+            bms.setMaxCellNum(1);
+            bms.setMinCellNum(1);
+            double totalVolt = 0.0;
+            for (int i =0; i < bms.getCellNum(); i++) {
                 double cell = bms.getCells()[i];
                 if (cell > 0.0) {
+                    totalVolt += cell;
                     if (bms.getMaxCell() < cell) {
                         bms.setMaxCell(cell);
+                        bms.setMaxCellNum(i+1);
                     }
                     if (bms.getMinCell() > cell) {
                         bms.setMinCell(cell);
+                        bms.setMinCellNum(i+1);
                     }
                 }
             }
             bms.setCellDiff(bms.getMaxCell()-bms.getMinCell());
+            bms.setAvgCell(totalVolt/bms.getCellNum());
         }
 
         public byte[] getData() {

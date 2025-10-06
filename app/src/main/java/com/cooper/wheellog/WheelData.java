@@ -622,6 +622,12 @@ public class WheelData {
 
     }
 
+    public void reconfigureBMSPage() {
+        Intent intent = new Intent(Constants.ACTION_WHEEL_MODEL_CHANGED);
+        Context mContext = KoinJavaComponent.get(Context.class);
+        mContext.sendBroadcast(intent);
+    }
+
     public String getModeStr() {
         return mModeStr;
     }
@@ -954,7 +960,7 @@ public class WheelData {
     }
 
     public void setBmsView(boolean bmsView) {
-        if (mBmsView != bmsView) resetBmsData();
+//        if (mBmsView != bmsView) resetBmsData();
         mBmsView = bmsView;
     }
 
@@ -1070,7 +1076,7 @@ public class WheelData {
 
         if (!new_data)
             return;
-        mLastLifeData = System.currentTimeMillis();
+        mLastLifeData = timestamp_raw;
         resetRideTime();
         updateRideTime();
         setTopSpeed(mSpeed);

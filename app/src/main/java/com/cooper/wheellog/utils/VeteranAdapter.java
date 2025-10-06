@@ -83,9 +83,12 @@ public class VeteranAdapter extends BaseAdapter {
                                 bms.getCells()[i + 15] = cell / 1000.0;
                             }
                         } else if (pnum == 3 | pnum == 7) {
-                            for (int i = 0; i < 6; i++) {
-                                int cell = MathsUtil.shortFromBytesBE(buff, 59 + i * 2);
-                                bms.getCells()[i + 30] = cell / 1000.0;
+                            for (int i = 0; i < 12; i++) {
+                                int offset = 59 + i * 2;
+                                if (offset < buff.length) { //for old wheels the length may be shorter
+                                    int cell = MathsUtil.shortFromBytesBE(buff, 59 + i * 2);
+                                    bms.getCells()[i + 30] = cell / 1000.0;
+                                }
                             }
                             bms.setTemp1(MathsUtil.signedShortFromBytesBE(buff, 47) / 100.0);
                             bms.setTemp2(MathsUtil.signedShortFromBytesBE(buff, 49) / 100.0);
@@ -96,6 +99,8 @@ public class VeteranAdapter extends BaseAdapter {
 
                             bms.setMinCell(bms.getCells()[0]);
                             bms.setMaxCell(bms.getCells()[0]);
+                            bms.setMaxCellNum(1);
+                            bms.setMinCellNum(1);
                             double totalVolt = 0.0;
                             for (int i = 0; i < getCellsForWheel(); i++) {
                                 double cell = bms.getCells()[i];
@@ -103,17 +108,25 @@ public class VeteranAdapter extends BaseAdapter {
                                 if (cell > 0.0) {
                                     if (bms.getMaxCell() < cell) {
                                         bms.setMaxCell(cell);
+                                        bms.setMaxCellNum(i+1);
                                     }
                                     if (bms.getMinCell() > cell) {
                                         bms.setMinCell(cell);
+                                        bms.setMinCellNum(i+1);
                                     }
                                 }
                             }
                             bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
                             bms.setVoltage(totalVolt);
+                            bms.setAvgCell(totalVolt/getCellsForWheel());
+                        } else if (pnum == 8) {
+                            // new packet, TODO: to recognize
                         }
+
                     }
+
                 }
+
                 // end of smartBMS part
 
                 int battery;
@@ -175,6 +188,26 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = 100;
                         } else {
                             battery = (int) Math.round((voltage - 11902) / 29.03);
+                        }
+                    }
+                } else if (mVer == 8) { // Oryx
+                    if (useBetterPercents) {
+                        if (voltage > 17535) {
+                            battery = 100;
+                        } else if (voltage > 14280) {
+                            battery = (int) Math.round((voltage - 14123) / 34.125);
+                        } else if (voltage > 13886) {
+                            battery = (int) Math.round((voltage - 13886) / 85.3125);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage <= 13886) {
+                            battery = 0;
+                        } else if (voltage >= 17272) {
+                            battery = 100;
+                        } else {
+                            battery = (int) Math.round((voltage - 13886) / 34.125);
                         }
                     }
                 } else battery = 1; // for new wheels, set 1% by default
@@ -253,6 +286,7 @@ public class VeteranAdapter extends BaseAdapter {
         if (mVer == 5) vModel = "Lynx"; else
         if (mVer == 6) vModel = "Sherman L"; else
         if (mVer == 7) vModel = "Patton S"; else
+        if (mVer == 8) vModel = "Oryx"; else
         if (mVer == 42) vModel = "Nosfet Apex"; else
         if (mVer == 43) vModel = "Nosfet Aero"; else vModel = "Unknown";
         return vModel;
@@ -280,6 +314,8 @@ public class VeteranAdapter extends BaseAdapter {
     public int getCellsForWheel() {
         if ((mVer == 4) || (mVer == 7) || (mVer == 43)) {
             return 30;
+        } else if (mVer == 8) {
+            return 42;
         } else if (mVer >= 5) {
             return 36;
         } else {

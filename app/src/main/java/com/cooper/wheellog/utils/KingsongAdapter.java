@@ -92,6 +92,27 @@ public class KingsongAdapter extends BaseAdapter {
                             battery = (voltage - 9375) / 30;
                         }
                     }
+                } else if (is151vWheel()) {
+                    if (useBetterPercents) {
+                        if (voltage > 15030) {
+                            battery = 100;
+                        } else if (voltage > 12240) {
+                            battery = (int) Math.round((voltage - 11970) / 30.6);
+                        } else if (voltage > 11520) {
+                            battery = (int) Math.round((voltage - 11520) / 81.0);
+                        } else {
+                            battery = 0;
+                        }
+                    } else {
+                        if (voltage < 11250) {
+                            battery = 0;
+                        } else if (voltage >= 14850) {
+                            battery = 100;
+                        } else {
+                            battery = (voltage - 11250) / 36;
+                        }
+                    }
+
                 } else if (is176vWheel()) {
                     if (useBetterPercents) {
                         if (voltage > 17535) {
@@ -283,22 +304,94 @@ public class KingsongAdapter extends BaseAdapter {
                     //bms.getCells()[30] = MathsUtil.getInt2R(data, 6)/1000.0;
                     //bms.getCells()[31] = MathsUtil.getInt2R(data, 8)/1000.0;
                     bms.setTempMosEnv((MathsUtil.getInt2R(data, 10)-2730)/10.0);
-                    //bms.getCells()[5] = MathsUtil.getInt2R(data, 12)/1000.0;
+
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);
+                    bms.setMaxCellNum(1);
+                    bms.setMinCellNum(1);
+                    double totalVolt = 0.0;
                     for (int i = 0; i < getCellsForWheel(); i++) {
                         double cell = bms.getCells()[i];
                         if (cell > 0.0) {
+                            totalVolt += cell;
                             if (bms.getMaxCell() < cell) {
                                 bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i+1);
                             }
                             if (bms.getMinCell() > cell) {
                                 bms.setMinCell(cell);
+                                bms.setMinCellNum(i+1);
                             }
                         }
                     }
                     bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/getCellsForWheel());
                     if (bms.getVersionNumber().equals("")) {
+                        if (bmsnum == 1) {
+                            requestBms1Firmware();
+                        } else {
+                            requestBms2Firmware();
+                        }
+                    }
+                } else if (pNum == 0xD0) { //extended BMS packet for F-series
+                    int pLen = (data[15] & 255);
+                    int cells = (data[21] & 255);
+                    int offset = 0;
+                    for (int i = 0; i < cells; i++) {
+                        bms.getCells()[i] = MathsUtil.getInt2R(data, (i*2)+22)/1000.0;
+                    }
+                    offset = 23 + cells * 2;
+                    int nTemp = (data[offset-1] & 255);
+//                    double b;
+                    bms.setTemp1((MathsUtil.getInt2R(data, offset)-2730)/10.0);
+                    bms.setTemp2((MathsUtil.getInt2R(data, offset+2)-2730)/10.0);
+                    bms.setTemp3((MathsUtil.getInt2R(data, offset+4)-2730)/10.0);
+                    bms.setTemp4((MathsUtil.getInt2R(data, offset+6)-2730)/10.0);
+                    bms.setTemp5((MathsUtil.getInt2R(data, offset+8)-2730)/10.0);
+                    bms.setTemp6((MathsUtil.getInt2R(data, offset+10)-2730)/10.0);
+                    bms.setTempMos((MathsUtil.getInt2R(data, offset+12)-2730)/10.0);
+                    bms.setTempMosEnv((MathsUtil.getInt2R(data, offset+14)-2730)/10.0);
+                    offset = offset + nTemp * 2;
+                    bms.setCurrent((MathsUtil.getInt2R(data, offset))/100.0);
+                    bms.setVoltage((MathsUtil.getInt2R(data, offset+2))/100.0);
+                    bms.setRemPerc((MathsUtil.getInt2R(data, offset+4))/10);
+//                    b = (MathsUtil.getInt2R(data, offset+7)); //soh 99.9%
+                    bms.setFullCycles((MathsUtil.getInt2R(data, offset+9)));
+                    bms.setFactoryCap((MathsUtil.getInt2R(data, offset+11)) * 10);
+                    bms.setRemCap(bms.getRemPerc() * bms.getFactoryCap()/100);
+                    bms.setTemp1Env(MathsUtil.getInt2R(data, offset+14)/10.0);
+                    bms.setTemp2Env(MathsUtil.getInt2R(data, offset+16)/10.0);
+                    bms.setHumidity1Env(MathsUtil.getInt2R(data, offset+18)/10.0); //soc 25.60 ?
+                    bms.setHumidity2Env(MathsUtil.getInt2R(data, offset+20)/10.0); // 2?
+
+                    bms.setMinCell(bms.getCells()[0]);
+                    bms.setMaxCell(bms.getCells()[0]);
+                    bms.setMaxCellNum(1);
+                    bms.setMinCellNum(1);
+                    double totalVolt = 0.0;
+                    for (int i = 0; i < cells; i++) {
+                        double cell = bms.getCells()[i];
+                        if (cell > 0.0) {
+                            totalVolt += cell;
+                            if (bms.getMaxCell() < cell) {
+                                bms.setMaxCell(cell);
+                                bms.setMaxCellNum(i+1);
+                            }
+                            if (bms.getMinCell() > cell) {
+                                bms.setMinCell(cell);
+                                bms.setMinCellNum(i+1);
+                            }
+                        }
+                    }
+                    bms.setCellDiff(bms.getMaxCell() - bms.getMinCell());
+                    bms.setAvgCell(totalVolt/cells);
+                    if (bms.getSerialNumber().equals("")) {
+                        if (bmsnum == 1) {
+                            requestBms1Serial();
+                        } else {
+                            requestBms2Serial();
+                        }
+                    } else if (bms.getVersionNumber().equals("")) {
                         if (bmsnum == 1) {
                             requestBms1Firmware();
                         } else {
@@ -387,6 +480,11 @@ public class KingsongAdapter extends BaseAdapter {
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-F22P"});
     }
 
+    private boolean is151vWheel() {
+        WheelData wd = WheelData.getInstance();
+        return StringUtil.inArray(wd.getModel(), new String[]{"KS-F18P"});
+    }
+
     private boolean is100vWheel() {
         WheelData wd = WheelData.getInstance();
         return StringUtil.inArray(wd.getModel(), new String[]{"KS-S19"});
@@ -397,8 +495,9 @@ public class KingsongAdapter extends BaseAdapter {
     public int getCellsForWheel() {
         int cells = 16;
         if (is84vWheel()) {cells = 20; }
-        else if (is126vWheel()) {cells = 30; }
         else if (is100vWheel()) { cells = 24; }
+        else if (is126vWheel()) {cells = 30; }
+        else if (is151vWheel()) { cells = 36; }
         else if (is176vWheel()) { cells = 42; }
         return cells;
     }
@@ -511,6 +610,23 @@ public class KingsongAdapter extends BaseAdapter {
         WheelData.getInstance().bluetoothCmd(data);
     }
 
+    public void requestBms1MoreData() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe3;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
+
+    public void requestBms2MoreData() {
+        byte[] data = getEmptyRequest();
+        data[16] = (byte) 0xe4;
+        data[17] = (byte) 0x00;
+        data[18] = (byte) 0x00;
+        data[19] = (byte) 0x00;
+        WheelData.getInstance().bluetoothCmd(data);
+    }
     public void requestBms1Firmware() {
         byte[] data = getEmptyRequest();
         data[16] = (byte) 0xe5;
