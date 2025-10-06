@@ -23,6 +23,10 @@ class SmartBms {
     var temp6: Double = 0.0
     var tempMos: Double = 0.0
     var tempMosEnv: Double = 0.0
+    var temp1Env: Double = 0.0
+    var temp2Env: Double = 0.0
+    var humidity1Env: Double = 0.0
+    var humidity2Env: Double = 0.0
     var balanceMap: Int = 0
     var health: Int = 0
     var minCell: Double = 0.0
@@ -61,6 +65,10 @@ class SmartBms {
         temp6 = 0.0
         tempMos = 0.0
         tempMosEnv = 0.0
+        temp1Env = 0.0
+        temp2Env = 0.0
+        humidity1Env = 0.0
+        humidity2Env = 0.0
         balanceMap = 0
         health = 0
         minCell = 0.0

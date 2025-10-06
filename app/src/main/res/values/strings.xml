@@ -444,6 +444,10 @@
     <string name="bmsTemp6">Temp 6</string>
     <string name="bmsTempMos">Temp Mos</string>
     <string name="bmsTempMosEnv">Temp Mos Env</string>
+    <string name="bmsTemp1Env">Temp 1 Env</string>
+    <string name="bmsTemp2Env">Temp 2 Env</string>
+    <string name="bmsHumidity1Env">Humidity 1 Env</string>
+    <string name="bmsHumidity2Env">Humidity 2 Env</string>
     <string name="bmsHealth">Health</string>
     <string name="bmsMinCell">Min Cell</string>
     <string name="bmsMaxCell">Max Cell</string>

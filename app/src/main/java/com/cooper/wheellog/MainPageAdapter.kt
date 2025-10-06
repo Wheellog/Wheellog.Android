@@ -756,14 +756,26 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsVoltage)
                     setupFieldForSmartBmsPage(R.string.bmsTemp1)
                     setupFieldForSmartBmsPage(R.string.bmsTemp2)
-                    setupFieldForSmartBmsPage(R.string.bmsTemp3)
-                    setupFieldForSmartBmsPage(R.string.bmsTemp4)
-                    if (inArray(WheelData.getInstance().model, arrayOf("KS-S20", "KS-S22", "KS-F22P", "KS-F18P"))) {
-                        setupFieldForSmartBmsPage(R.string.bmsTemp5)
-                        setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                    if (!inArray(WheelData.getInstance().model, arrayOf("KS-14SP"))) {
+                        setupFieldForSmartBmsPage(R.string.bmsTemp3)
+                        setupFieldForSmartBmsPage(R.string.bmsTemp4)
+                        if (inArray(WheelData.getInstance().model,arrayOf("KS-S20", "KS-S22", "KS-F22P", "KS-F18P"))) {
+                            setupFieldForSmartBmsPage(R.string.bmsTemp5)
+                        }
+                        if (inArray(WheelData.getInstance().model,arrayOf("KS-S20", "KS-S22", "KS-F22P"))) {
+                            setupFieldForSmartBmsPage(R.string.bmsTemp6)
+                        }
                     }
                     setupFieldForSmartBmsPage(R.string.bmsTempMos)
-                    setupFieldForSmartBmsPage(R.string.bmsTempMosEnv)
+                    if (!inArray(WheelData.getInstance().model, arrayOf("KS-F18P"))) {
+                        setupFieldForSmartBmsPage(R.string.bmsTempMosEnv)
+                    }
+                    setupFieldForSmartBmsPage(R.string.bmsTemp1Env)
+                    setupFieldForSmartBmsPage(R.string.bmsHumidity1Env)
+                    if (inArray(WheelData.getInstance().model, arrayOf("KS-F18P"))) {
+                        setupFieldForSmartBmsPage(R.string.bmsTemp2Env)
+                        setupFieldForSmartBmsPage(R.string.bmsHumidity2Env)
+                    }
                     setupFieldForSmartBmsPage(R.string.bmsAvgCell)
                     setupFieldForSmartBmsPage(R.string.bmsMaxCell)
                     setupFieldForSmartBmsPage(R.string.bmsMinCell)

@@ -353,15 +353,14 @@ public class KingsongAdapter extends BaseAdapter {
                     bms.setCurrent((MathsUtil.getInt2R(data, offset))/100.0);
                     bms.setVoltage((MathsUtil.getInt2R(data, offset+2))/100.0);
                     bms.setRemPerc((MathsUtil.getInt2R(data, offset+4))/10);
-                    //(MathsUtil.getInt2R(data, offset+7)); //soh 99.9%
+//                    b = (MathsUtil.getInt2R(data, offset+7)); //soh 99.9%
                     bms.setFullCycles((MathsUtil.getInt2R(data, offset+9)));
                     bms.setFactoryCap((MathsUtil.getInt2R(data, offset+11)) * 10);
                     bms.setRemCap(bms.getRemPerc() * bms.getFactoryCap()/100);
-                    //b = (MathsUtil.getInt2R(data, offset+13));
-                    //b = (MathsUtil.getInt2R(data, offset+15));
-                    //b = (MathsUtil.getInt2R(data, offset+17)); //soc 25.60 ?
-                    //b = (MathsUtil.getInt2R(data, offset+19)); // 2?
-                    //b = (MathsUtil.getInt2R(data, offset+21));
+                    bms.setTemp1Env(MathsUtil.getInt2R(data, offset+14)/10.0);
+                    bms.setTemp2Env(MathsUtil.getInt2R(data, offset+16)/10.0);
+                    bms.setHumidity1Env(MathsUtil.getInt2R(data, offset+18)/10.0); //soc 25.60 ?
+                    bms.setHumidity2Env(MathsUtil.getInt2R(data, offset+20)/10.0); // 2?
 
                     bms.setMinCell(bms.getCells()[0]);
                     bms.setMaxCell(bms.getCells()[0]);

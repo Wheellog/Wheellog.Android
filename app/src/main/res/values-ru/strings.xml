@@ -429,8 +429,10 @@
     <string name="bmsRemPerc">Процент</string>
     <string name="bmsCurrent">Ток</string>
     <string name="bmsVoltage">Напряжение</string>
+    <string name="bmsSemiVoltage2">Напряжение 2/2</string>
     <string name="bmsTemp1">Температура 1</string>
     <string name="bmsTemp2">Температура 2</string>
+    <string name="bmsHumidity2Env">Вн. Влажность 2</string>
     <string name="bmsHealth">Здоровье</string>
     <string name="password">Пароль</string>
     <string name="notification_text_not">%1$.0f км/ч | %2$d %% | %3$.0f Вт | %4$d°C | %5$.3f км</string>
@@ -455,7 +457,7 @@
     <string name="continue_this_day_log_alert_description">Эта поездка не будет дозаписываться при следующем логировании.</string>
     <string name="miband_desc">Смена режима Mi Band</string>
     <string name="alarm_text_pwm">PWM аларм</string>
-    <string name="bmsSn">с/н</string>
+    <string name="bmsSn">Серийный номер</string>
     <string name="bmsFw">Прошивка</string>
     <string name="trip_menu_view_map">Показать карту</string>
     <string name="trip_menu_upload_to_ec">Загрузить в electro.club</string>
@@ -524,6 +526,7 @@
     <string name="bmsTempMosEnv">Плата фетов</string>
     <string name="bmsMinCell">Мин ячейка</string>
     <string name="bmsMaxCell">Макс ячейка</string>
+    <string name="bmsAvgCell">Ср. напр. ячеек</string>
     <string name="bmsCellDiff">Разница ячеек</string>
     <string name="donate_title">Пожертвовать</string>
     <string name="wheel_calibration_message_nb">Установите колесо в центральное положение, оно будет заблокировано, продолжить?</string>
@@ -579,4 +582,8 @@
     <string name="trick_description">Выбор трюка</string>
     <string name="trick_0">Нет</string>
     <string name="trick_1">Сальто вперед (front-flip)</string>
+    <string name="bmsTemp1Env">Вн. Темп. 1</string>
+    <string name="bmsTemp2Env">Вн. Темп. 2</string>
+    <string name="bmsHumidity1Env">Вн. Влажность 1</string>
+    <string name="bmsSemiVoltage1">Напряжение 1/2</string>
 </resources>

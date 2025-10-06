@@ -238,6 +238,31 @@ class KingsongAdapterTest {
 
     }
 
+
+    @Test
+    fun `decode f18 bms data 1`() {
+        // Arrange.
+        val byteArray1 = "aa550100000000000000000000000077f1d05a5a00249e0ea30ea10ea10ea20ea20ea20ea20ea20ea10ea10e9e0e9c0e9f0ea20e9f0e9f0ea00ea10ea40ea20ea50ea50ea40ea50ea50ea50ea20ea10ea10ea40ea40ea00ea40ea30ea30e08540b5e0b540b540b680b00005e0b0000f5ffae34e10100e8030700e803ffa100a600b2025a03646c00000000".hexToByteArray()
+        val byteArray2 = "aa550100000000000000000000000047f1d15a5a2408000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000200000000000000001212000000000000".hexToByteArray()
+        val byteArray3 = "aa550100000000000000000000000077f2d05a5a0024a10ea20ea10ea20ea20ea20ea20ea10ea10ea10ea10ea10ea00ea10ea00ea00ea00ea00ea10ea20ea20ea10ea00ea10ea20ea00ea10ea20ea10ea00e9f0ea00ea10e9f0e9f0e9f0e08540b5e0b5e0b5e0b720b00005e0b0000f4ffaa34e00100e8030700e803ffa900a900cc02f902656e00000000".hexToByteArray()
+        val byteArray4 = "aa550100000000000000000000000047f2d15a5a2408000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000200000000000000001212000000000000".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        // 1st data
+
+    }
+
+
     @Test
     fun `update pedals mode`() {
         // Arrange.
