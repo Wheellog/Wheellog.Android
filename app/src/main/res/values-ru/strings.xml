@@ -19,6 +19,7 @@
     <string name="riding_time">Время в пути</string>
     <string name="voltage">Напряжение</string>
     <string name="current">Ток</string>
+    <string name="phase_current">Фазный ток</string>
     <string name="power">Мощность</string>
     <string name="temperature">Температура</string>
     <string name="total">Пробег</string>

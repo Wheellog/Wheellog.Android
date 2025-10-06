@@ -68,6 +68,7 @@
     <string name="voltage">Voltage</string>
     <string name="voltage_sag">Voltage Sag</string>
     <string name="current">Current</string>
+    <string name="phase_current">Phase current</string>
     <string name="power">Power</string>
     <string name="temperature">System temp</string>
     <string name="temperature2">Second temp</string>
