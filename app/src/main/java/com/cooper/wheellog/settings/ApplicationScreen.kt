@@ -165,6 +165,7 @@ fun applicationScreen(
                     stringResource(R.string.current) to stringResource(R.string.current),
                     stringResource(R.string.maxcurrent) to stringResource(R.string.maxcurrent),
                     stringResource(R.string.phase_current) to stringResource(R.string.phase_current),
+                    stringResource(R.string.maxphasecurrent) to stringResource(R.string.maxphasecurrent),
                     stringResource(R.string.power) to stringResource(R.string.power),
                     stringResource(R.string.maxpower) to stringResource(R.string.maxpower),
                     stringResource(R.string.temperature) to stringResource(R.string.temperature),

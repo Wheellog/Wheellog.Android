@@ -165,6 +165,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                 ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mCurrent) },
                 ViewBlockInfo(resources.getString(R.string.phase_current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mPhaseCurrent) },
                 ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrentDouble) },
+                ViewBlockInfo(resources.getString(R.string.maxphasecurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxPhaseCurrentDouble) },
                 ViewBlockInfo(
                     resources.getString(R.string.power),
                     {

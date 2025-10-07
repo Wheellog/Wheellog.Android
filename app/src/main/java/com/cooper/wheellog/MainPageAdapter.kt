@@ -588,7 +588,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 setupFieldForSecondPage(R.string.average_riding_speed)
                 setupFieldForSecondPage(R.string.battery)
                 setupFieldForSecondPage(R.string.temperature)
-                setupFieldForSecondPage(R.string.temperature2)
+                setupFieldForSecondPage(R.string.imu_temp)
                 setupFieldForSecondPage(R.string.angle)
                 setupFieldForSecondPage(R.string.roll)
                 setupFieldForSecondPage(R.string.ride_time)
