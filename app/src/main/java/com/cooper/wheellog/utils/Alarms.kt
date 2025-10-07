@@ -19,6 +19,7 @@ import org.koin.core.component.get
 import org.koin.core.component.inject
 import timber.log.Timber
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 object Alarms: KoinComponent {
@@ -179,10 +180,18 @@ object Alarms: KoinComponent {
             return true
         }
         val alarmTemperature = appConfig.alarmTemperature
+        val alarmMotorTemperature = appConfig.alarmMotorTemperature
         if (alarmTemperature > 0 && WheelData.getInstance().temperature >= alarmTemperature) {
             raiseAlarm(
                 ALARM_TYPE.TEMPERATURE,
                 WheelData.getInstance().temperature.toDouble(),
+                mContext
+            )
+            temperatureAlarmExecuting.value = true
+        } else if (alarmMotorTemperature > 0 && WheelData.getInstance().temperature2 >= alarmMotorTemperature) {
+            raiseAlarm(
+                ALARM_TYPE.TEMPERATURE,
+                WheelData.getInstance().temperature2.toDouble(),
                 mContext
             )
             temperatureAlarmExecuting.value = true
@@ -195,10 +204,18 @@ object Alarms: KoinComponent {
             return true
         }
         val alarmCurrent = appConfig.alarmCurrent * 100
-        if (alarmCurrent > 0 && WheelData.getInstance().current >= alarmCurrent) {
+        val alarmPhaseCurrent = appConfig.alarmPhaseCurrent * 100
+        if (alarmCurrent > 0 && abs(WheelData.getInstance().current) >= alarmCurrent) {
             raiseAlarm(
                 ALARM_TYPE.CURRENT,
                 WheelData.getInstance().currentDouble,
+                mContext
+            )
+            currentAlarmExecuting.value = true
+        } else if (alarmPhaseCurrent > 0 && abs(WheelData.getInstance().phaseCurrent) >= alarmPhaseCurrent) {
+            raiseAlarm(
+                ALARM_TYPE.CURRENT,
+                WheelData.getInstance().phaseCurrentDouble,
                 mContext
             )
             currentAlarmExecuting.value = true

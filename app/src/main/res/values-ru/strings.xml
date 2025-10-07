@@ -103,9 +103,12 @@
     <string name="alarm_3_battery_title">Уровень разряда 3</string>
     <string name="alarm_2_battery_title">Уровень разряда 2</string>
     <string name="current_alarm_title">Предупреждение по току</string>
+    <string name="current_phase_alarm_title">Предупреждение по фазному току</string>
     <string name="current_title">Ток</string>
     <string name="alarm_current_description">Предупреждение о превышении заданного тока.</string>
+    <string name="alarm_phase_current_description">Предупреждение о превышении фазного тока</string>
     <string name="temperature_alarm_title">Предупреждение о температуре</string>
+    <string name="temperature_motor_alarm_title">Предупреждение о температуре мотора</string>
     <string name="temperature_title">Температура</string>
     <string name="alarm_temperature_description">Уровень срабатывания предупреждения о температуре.</string>
     <string name="alarm_wheel_title">Аларм колеса</string>
@@ -507,6 +510,7 @@
     <string name="send_yandex_metriсa_description">Это приложение использует сервис аналитики AppMetrica, предоставляемый компанией Яндекс. Геолокация не отправляется. Информация будет использоваться для решения ошибок и не может идентифицировать вас.</string>
     <string name="alarm_text_battery">Низкий заряд батареи</string>
     <string name="roll_angle_title">Угол отключения колеса</string>
+    <string name="alarm_motor_temperature_description">Предупреждение о первышении температуры мотора</string>
     <string name="battery_alarm_title">Предупреждение по разряду батареи</string>
     <string name="battery_title">Уровень заряда</string>
     <string name="alarm_battery_description">Уровень заряда ниже которого выводить оповещение</string>
