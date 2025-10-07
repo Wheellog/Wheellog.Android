@@ -178,7 +178,7 @@ class RawDataTest: KoinTest {
         assertThat(data.model).isEqualTo(InMotionAdapter.getModelString(InMotionAdapter.Model.V8S))
         assertThat(data.batteryLevel).isEqualTo(96)
         assertThat(data.temperature).isEqualTo(30)
-        assertThat(data.temperature2).isEqualTo(-109) // Fix me
+        assertThat(data.imuTemp).isEqualTo(-109) // Fix me
         assertThat(data.voltageDouble).isEqualTo(81.99)
         assertThat(data.angle).isLessThan(-0.07)
         assertThat(data.roll).isEqualTo(0)

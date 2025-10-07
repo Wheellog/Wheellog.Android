@@ -164,6 +164,8 @@ fun applicationScreen(
                     stringResource(R.string.ride_time) to stringResource(R.string.ride_time),
                     stringResource(R.string.current) to stringResource(R.string.current),
                     stringResource(R.string.maxcurrent) to stringResource(R.string.maxcurrent),
+                    stringResource(R.string.phase_current) to stringResource(R.string.phase_current),
+                    stringResource(R.string.maxphasecurrent) to stringResource(R.string.maxphasecurrent),
                     stringResource(R.string.power) to stringResource(R.string.power),
                     stringResource(R.string.maxpower) to stringResource(R.string.maxpower),
                     stringResource(R.string.temperature) to stringResource(R.string.temperature),
@@ -257,6 +259,7 @@ fun applicationScreen(
                     "0" to stringResource(R.string.speed),
                     "1" to stringResource(R.string.current),
                     "2" to stringResource(R.string.pwm),
+                    "3" to stringResource(R.string.phase_current),
                 ),
                 defaultKey = valueOnDial,
             ) {
@@ -272,7 +275,7 @@ fun applicationScreen(
                     name = stringResource(R.string.max_speed_dial_title),
                     desc = stringResource(R.string.max_speed_dial_description),
                     min = 10f,
-                    max = 100f,
+                    max = 400f,
                     position = appConfig.maxSpeed.toFloat(),
                 ) {
                     appConfig.maxSpeed = it.toInt()

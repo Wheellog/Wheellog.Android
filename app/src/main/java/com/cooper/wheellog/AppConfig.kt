@@ -381,6 +381,10 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.alarm_temperature, 0)
         set(value) = setSpecific(R.string.alarm_temperature, value)
 
+    var alarmMotorTemperature
+        get() = getSpecific(R.string.alarm_motor_temperature, 0)
+        set(value) = setSpecific(R.string.alarm_motor_temperature, value)
+
     var rotationSpeed
         get() = getSpecific(R.string.rotation_speed, 500)
         set(value) = setSpecific(R.string.rotation_speed, value)
@@ -425,6 +429,9 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getSpecific(R.string.alarm_current, 0)
         set(value) = setSpecific(R.string.alarm_current, value)
 
+    var alarmPhaseCurrent
+        get() = getSpecific(R.string.alarm_phase_current, 0)
+        set(value) = setSpecific(R.string.alarm_phase_current, value)
     var alarmBattery
         get() = getSpecific(R.string.alarm_battery, 0)
         set(value) = setSpecific(R.string.alarm_battery, value)

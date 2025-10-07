@@ -19,6 +19,7 @@
     <string name="riding_time">Время в пути</string>
     <string name="voltage">Напряжение</string>
     <string name="current">Ток</string>
+    <string name="phase_current">Фазный ток</string>
     <string name="power">Мощность</string>
     <string name="temperature">Температура</string>
     <string name="total">Пробег</string>
@@ -26,7 +27,7 @@
     <string name="average_riding_speed">Сред. движения</string>
     <string name="angle">Наклон вперед</string>
     <string name="roll">Наклон в бок</string>
-    <string name="temperature2">Темп. 2</string>
+    <string name="temperature2">Темп. мотора</string>
     <string name="total_distance">Пробег</string>
     <string name="name">Название</string>
     <string name="model">Модель</string>
@@ -102,9 +103,12 @@
     <string name="alarm_3_battery_title">Уровень разряда 3</string>
     <string name="alarm_2_battery_title">Уровень разряда 2</string>
     <string name="current_alarm_title">Предупреждение по току</string>
+    <string name="current_phase_alarm_title">Предупреждение по фазному току</string>
     <string name="current_title">Ток</string>
     <string name="alarm_current_description">Предупреждение о превышении заданного тока.</string>
+    <string name="alarm_phase_current_description">Предупреждение о превышении фазного тока</string>
     <string name="temperature_alarm_title">Предупреждение о температуре</string>
+    <string name="temperature_motor_alarm_title">Предупреждение о температуре мотора</string>
     <string name="temperature_title">Температура</string>
     <string name="alarm_temperature_description">Уровень срабатывания предупреждения о температуре.</string>
     <string name="alarm_wheel_title">Аларм колеса</string>
@@ -372,6 +376,7 @@
     <string name="start_miband_alert">Запустить оповещения MiBand</string>
     <string name="show_settings">Показать меню настроек</string>
     <string name="maxcurrent">Макс. ток</string>
+    <string name="maxphasecurrent">Макс. фазный ток</string>
     <string name="maxpower">Макс. мощность</string>
     <string name="notification_text_min">[ЕДЕТ] \n  - %1$.0f к/ч \n  - %2$.0f мкс  \n\n[БАТАРЕЯ] \n  - %3$d %%  \n\n[ПУТЬ] \n  - %4$.1f км</string>
     <string name="notification_text_med">[ЕДЕТ] \n  - %1$.0f к/ч \n  - %2$.0f срд \n  - %3$.0f pwm  \n\n[ДРУГОЕ] \n  - %4$d %% \n  - %5$d °C \n  - %6$.1f км</string>
@@ -505,6 +510,7 @@
     <string name="send_yandex_metriсa_description">Это приложение использует сервис аналитики AppMetrica, предоставляемый компанией Яндекс. Геолокация не отправляется. Информация будет использоваться для решения ошибок и не может идентифицировать вас.</string>
     <string name="alarm_text_battery">Низкий заряд батареи</string>
     <string name="roll_angle_title">Угол отключения колеса</string>
+    <string name="alarm_motor_temperature_description">Предупреждение о первышении температуры мотора</string>
     <string name="battery_alarm_title">Предупреждение по разряду батареи</string>
     <string name="battery_title">Уровень заряда</string>
     <string name="alarm_battery_description">Уровень заряда ниже которого выводить оповещение</string>

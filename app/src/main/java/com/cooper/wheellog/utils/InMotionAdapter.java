@@ -1154,7 +1154,7 @@ public class InMotionAdapter extends BaseAdapter {
             wd.setTotalDistance(totalDistance);
             wd.setWheelDistance(distance);
             wd.setTemperature(temperature*100);
-            wd.setTemperature2(temperature2*100);
+            wd.setImuTemp(temperature2);
             wd.setModeStr(workMode);
             wd.calculatePwm();
             wd.calculatePower();

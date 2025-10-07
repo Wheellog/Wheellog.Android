@@ -42,6 +42,7 @@ class WearOs(var context: Context): MessageClient.OnMessageReceivedListener, Sha
             putDouble(Constants.wearOsVoltageData, wd.voltageDouble)
             putDouble(Constants.wearOsCurrentData, wd.currentDouble)
             putDouble(Constants.wearOsMaxCurrentData, wd.maxCurrentDouble)
+            putDouble(Constants.wearOsMaxCurrentData, wd.maxPhaseCurrentDouble)
             putDouble(Constants.wearOsPowerData, wd.powerDouble)
             putDouble(Constants.wearOsMaxPowerData, wd.maxPowerDouble)
             putDouble(Constants.wearOsPWMData, wd.calculatedPwm)

@@ -67,6 +67,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     private var mTopSpeed = 0.0
     private var mVoltage = 0.0
     private var mCurrent = 0.0
+    private var mPhaseCurrent = 0.0
     private var mPwm = 0.0
     private var mMaxPwm = 0.0
     private var mAverageSpeed = 0.0
@@ -91,9 +92,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     var refreshDisplay = false
     private var targetSpeed = 0
     private var targetCurrent = 0
+    private var targetPhaseCurrent = 0
     private var targetPwm = 0
     private var currentSpeed = 0
     private var currentCurrent = 0
+    private var currentPhaseCurrent = 0
     private var currentPwm = 0
     private var targetTemperature = 112
     private var currentTemperature = 112
@@ -159,14 +162,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     }
                 },
                 ViewBlockInfo(resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
-                ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), mCurrent) },
-                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrentDouble) },
+                ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mCurrent) },
+                ViewBlockInfo(resources.getString(R.string.phase_current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mPhaseCurrent) },
+                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrentDouble) },
+                ViewBlockInfo(resources.getString(R.string.maxphasecurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxPhaseCurrentDouble) },
                 ViewBlockInfo(
                     resources.getString(R.string.power),
                     {
                         String.format(
                             Locale.US,
-                            "%.2f " + resources.getString(R.string.watt),
+                            "%.0f " + resources.getString(R.string.watt),
                             WheelData.getInstance().powerDouble
                         )
                     },
@@ -431,6 +436,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         refresh()
     }
 
+    fun setPhaseCurrent(value: Double) {
+        var current = value
+        if (mPhaseCurrent == current) return
+        mPhaseCurrent = current
+        val maxSpeed = appConfig.maxSpeed
+        current = if (abs(current) > maxSpeed) maxSpeed.toDouble() else current
+        targetPhaseCurrent = (current / maxSpeed.toDouble() * 112).roundToInt()
+        refresh()
+    }
+
     private fun refresh() {
         if (!refreshDisplay) {
             refreshDisplay = true
@@ -685,6 +700,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         else if (appConfig.valueOnDial == "1") {
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent)
             currentDial = currentCurrent
+        } else if (appConfig.valueOnDial == "3") {
+            currentPhaseCurrent = updateCurrentValue2(targetPhaseCurrent, currentPhaseCurrent)
+            currentDial = currentPhaseCurrent
         } else {
             currentSpeed = updateCurrentValue(targetSpeed, currentSpeed)
             currentDial = currentSpeed
@@ -820,6 +838,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             currentSpeed = updateCurrentValue(targetSpeed, currentSpeed)
             currentCurrent = updateCurrentValue2(targetCurrent, currentCurrent)
             currentDial = currentCurrent
+            currentDial2 = currentSpeed
+        } else if (appConfig.valueOnDial == "3") {
+            currentSpeed = updateCurrentValue(targetSpeed, currentSpeed)
+            currentPhaseCurrent = updateCurrentValue2(targetPhaseCurrent, currentPhaseCurrent)
+            currentDial = currentPhaseCurrent
             currentDial2 = currentSpeed
         } else {
             currentSpeed = updateCurrentValue(targetSpeed, currentSpeed)
@@ -984,7 +1007,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
 
     private fun drawTextBlocksBitmap(canvas: Canvas) {
         canvas.drawBitmap(mTextBoxesBitmap!!, 0f, 0f, textPaint)
-        refreshDisplay = currentSpeed != targetSpeed || currentCurrent != targetCurrent || currentBattery != targetBattery || currentTemperature != targetTemperature
+        refreshDisplay = currentSpeed != targetSpeed || currentCurrent != targetCurrent || currentPhaseCurrent != targetPhaseCurrent || currentBattery != targetBattery || currentTemperature != targetTemperature
         if (width * 1.2 < height) {
             canvas.drawText(versionString, (
                     width - paddingRight).toFloat(), (
@@ -1156,9 +1179,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             targetSpeed = (mSpeed.toFloat() / 500 * 112).roundToInt()
             currentSpeed = targetSpeed
             mCurrent = 15.0
+            mPhaseCurrent = 15.0
             targetCurrent = (mSpeed.toFloat() / 500 * 112).roundToInt()
             currentCurrent = 15
-
+            currentPhaseCurrent = 15
+            targetPhaseCurrent = (mSpeed.toFloat() / 500 * 112).roundToInt()
             mTemperature = 35
             mMaxTemperature = 70
             targetTemperature = 112 - (40f / 80f * MathUtils.clamp(mTemperature, 0, 80)).roundToInt()

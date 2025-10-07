@@ -290,9 +290,19 @@ fun alarmScreen(appConfig: AppConfig = koinInject()) {
                 position = appConfig.alarmCurrent.toFloat(),
                 unit = R.string.amp,
                 min = 0f,
-                max = 300f,
+                max = 400f,
             ) {
                 appConfig.alarmCurrent = it.toInt()
+            }
+            sliderPref(
+                name = stringResource(R.string.current_phase_alarm_title),
+                desc = stringResource(R.string.alarm_phase_current_description),
+                position = appConfig.alarmPhaseCurrent.toFloat(),
+                unit = R.string.amp,
+                min = 0f,
+                max = 400f,
+            ) {
+                appConfig.alarmPhaseCurrent = it.toInt()
             }
 
             // TODO: Add Fahrenheit support
@@ -302,9 +312,20 @@ fun alarmScreen(appConfig: AppConfig = koinInject()) {
                 position = appConfig.alarmTemperature.toFloat(),
                 unit = R.string.degree,
                 min = 0f,
-                max = 120f,
+                max = 200f,
             ) {
                 appConfig.alarmTemperature = it.toInt()
+            }
+
+            sliderPref(
+                name = stringResource(R.string.temperature_motor_alarm_title),
+                desc = stringResource(R.string.alarm_motor_temperature_description),
+                position = appConfig.alarmMotorTemperature.toFloat(),
+                unit = R.string.degree,
+                min = 0f,
+                max = 200f,
+            ) {
+                appConfig.alarmMotorTemperature = it.toInt()
             }
 
             sliderPref(

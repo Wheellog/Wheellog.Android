@@ -23,9 +23,11 @@
     <string name="alarm_3_speed" translatable="false">alarm_3_speed</string>
     <string name="alarm_3_battery" translatable="false">alarm_3_battery</string>
     <string name="alarm_current" translatable="false">alarm_current</string>
+    <string name="alarm_phase_current" translatable="false">alarm_phase_current</string>
     <string name="alarm_battery" translatable="false">alarm_battery</string>
     <string name="alarm_wheel" translatable="false">alarm_wheel</string>
     <string name="alarm_temperature" translatable="false">alarm_temperature</string>
+    <string name="alarm_motor_temperature" translatable="false">alarm_motor_temperature</string>
     <string name="altered_alarms" translatable="false">altered_alarms</string>
     <string name="rotation_speed" translatable="false">rotation_speed</string>
     <string name="rotation_voltage" translatable="false">rotation_voltage</string>
