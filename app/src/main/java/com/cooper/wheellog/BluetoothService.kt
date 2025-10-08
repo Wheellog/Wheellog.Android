@@ -85,6 +85,14 @@ class BluetoothService: Service() {
                 mDisconnectTime = null
                 isWheelSearch = false
                 broadcastConnectionUpdate()
+                // Broadcast RAW logging resumed if file is still open
+                if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
+                    val serviceIntent = Intent(Constants.ACTION_RAW_LOGGING_TOGGLED)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtilRawData!!.absolutePath)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true)
+                    serviceIntent.putExtra("raw_logging_resumed", true)
+                    sendBroadcast(serviceIntent)
+                }
             }
 
             override fun onDisconnectedPeripheral(
@@ -133,6 +141,14 @@ class BluetoothService: Service() {
                 } else {
                     Timber.i("Disconnected")
                     broadcastConnectionUpdate()
+                }
+                // Broadcast RAW logging paused if active
+                if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
+                    val serviceIntent = Intent(Constants.ACTION_RAW_LOGGING_TOGGLED)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtilRawData!!.absolutePath)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
+                    serviceIntent.putExtra("raw_logging_paused", true)
+                    sendBroadcast(serviceIntent)
                 }
             }
         }
@@ -237,6 +253,11 @@ class BluetoothService: Service() {
             if (fileUtilRawData!!.isNull) {
                 val fileNameForRawData = "RAW_" + sdf.format(Date()) + ".csv"
                 fileUtilRawData!!.prepareFile(fileNameForRawData, WheelData.getInstance().mac)
+                // Broadcast RAW logging started
+                val serviceIntent = Intent(Constants.ACTION_RAW_LOGGING_TOGGLED)
+                serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtilRawData!!.absolutePath)
+                serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true)
+                sendBroadcast(serviceIntent)
             }
             fileUtilRawData!!.writeLine(
                 String.format(
@@ -246,7 +267,13 @@ class BluetoothService: Service() {
                 )
             )
         } else if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
+            val filePath = fileUtilRawData!!.absolutePath
             fileUtilRawData!!.close()
+            // Broadcast RAW logging stopped
+            val serviceIntent = Intent(Constants.ACTION_RAW_LOGGING_TOGGLED)
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, filePath)
+            serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
+            sendBroadcast(serviceIntent)
         }
         val wd = WheelData.getInstance()
         when (wd.wheelType) {
