@@ -470,6 +470,42 @@ class MainActivity : AppCompatActivity() {
                     setMenuIconStates()
                     notifications.update()
                 }
+                Constants.ACTION_RAW_LOGGING_TOGGLED -> {
+                    val running = intent.getBooleanExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
+                    val paused = intent.getBooleanExtra("raw_logging_paused", false)
+                    val resumed = intent.getBooleanExtra("raw_logging_resumed", false)
+                    if (intent.hasExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)) {
+                        val filepath =
+                            intent.getStringExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION)
+                        val fileName = filepath!!.substring(filepath.lastIndexOf("\\") + 1)
+                        when {
+                            paused -> {
+                                showSnackBar(
+                                    resources.getString(R.string.paused_raw_logging),
+                                    5000
+                                )
+                            }
+                            resumed -> {
+                                showSnackBar(
+                                    resources.getString(R.string.resumed_raw_logging) + " " + fileName,
+                                    5000
+                                )
+                            }
+                            running -> {
+                                showSnackBar(
+                                    resources.getString(R.string.started_raw_logging) + " " + fileName,
+                                    5000
+                                )
+                            }
+                            else -> {
+                                showSnackBar(
+                                    resources.getString(R.string.stopped_raw_logging) + " " + fileName,
+                                    5000
+                                )
+                            }
+                        }
+                    }
+                }
                 Constants.NOTIFICATION_BUTTON_CONNECTION -> {
                     toggleConnectToWheel()
                     notifications.update()
@@ -1216,6 +1252,7 @@ class MainActivity : AppCompatActivity() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
+        intentFilter.addAction(Constants.ACTION_RAW_LOGGING_TOGGLED)
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
         intentFilter.addAction(Constants.ACTION_WHEEL_TYPE_RECOGNIZED)
         intentFilter.addAction(Constants.ACTION_WHEEL_MODEL_CHANGED)
@@ -1231,6 +1268,7 @@ class MainActivity : AppCompatActivity() {
         intentFilter.addAction(Constants.ACTION_BLUETOOTH_CONNECTION_STATE)
         intentFilter.addAction(Constants.ACTION_WHEEL_DATA_AVAILABLE)
         intentFilter.addAction(Constants.ACTION_LOGGING_SERVICE_TOGGLED)
+        intentFilter.addAction(Constants.ACTION_RAW_LOGGING_TOGGLED)
         intentFilter.addAction(Constants.ACTION_PEBBLE_SERVICE_TOGGLED)
         intentFilter.addAction(Constants.ACTION_PREFERENCE_RESET)
         intentFilter.addAction(Constants.NOTIFICATION_BUTTON_CONNECTION)
