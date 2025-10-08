@@ -85,6 +85,14 @@ class BluetoothService: Service() {
                 mDisconnectTime = null
                 isWheelSearch = false
                 broadcastConnectionUpdate()
+                // Broadcast RAW logging resumed if file is still open
+                if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
+                    val serviceIntent = Intent(Constants.ACTION_RAW_LOGGING_TOGGLED)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtilRawData!!.absolutePath)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, true)
+                    serviceIntent.putExtra("raw_logging_resumed", true)
+                    sendBroadcast(serviceIntent)
+                }
             }
 
             override fun onDisconnectedPeripheral(
@@ -133,6 +141,14 @@ class BluetoothService: Service() {
                 } else {
                     Timber.i("Disconnected")
                     broadcastConnectionUpdate()
+                }
+                // Broadcast RAW logging paused if active
+                if (fileUtilRawData != null && !fileUtilRawData!!.isNull) {
+                    val serviceIntent = Intent(Constants.ACTION_RAW_LOGGING_TOGGLED)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_LOGGING_FILE_LOCATION, fileUtilRawData!!.absolutePath)
+                    serviceIntent.putExtra(Constants.INTENT_EXTRA_IS_RUNNING, false)
+                    serviceIntent.putExtra("raw_logging_paused", true)
+                    sendBroadcast(serviceIntent)
                 }
             }
         }
