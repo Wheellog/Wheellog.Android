@@ -519,6 +519,12 @@
     <string name="show_page_graph_title">Graph page</string>
     <string name="main_view_category">Main view</string>
     <string name="beep_category">Beep</string>
+    <string name="general_settings_category_title">General settings</string>
+    <string name="dashboard_speedial_category_title">Dashboard speed dial</string>
+    <string name="dashboard_pages_category_title">Dashboard pages</string>
+    <string name="audio_category_title">Audio</string>
+    <string name="connection_category_title">Connection</string>
+    <string name="system_category_title">System</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
     <string name="beep_on_volume_up_title">Beep on volume keys</string>

@@ -37,69 +37,38 @@ fun applicationScreen(
             )
         }
 
-        switchPref(
-            name = stringResource(R.string.use_eng_title),
-            desc = stringResource(R.string.use_eng_description),
-            themeIcon = ThemeIconEnum.SettingsLanguage,
-            default = appConfig.useEng
-        ) {
-            restartRequiredAlert = true
-            appConfig.useEng = it
-        }
+        group(name = stringResource(R.string.general_settings_category_title)) {
+            switchPref(
+                name = stringResource(R.string.use_eng_title),
+                desc = stringResource(R.string.use_eng_description),
+                themeIcon = ThemeIconEnum.SettingsLanguage,
+                default = appConfig.useEng
+            ) {
+                restartRequiredAlert = true
+                appConfig.useEng = it
+            }
 
-        list(
-            name = stringResource(R.string.app_theme_title),
-            desc = stringResource(R.string.app_theme_description),
-            entries = ThemeEnum.values().associate { it.value.toString() to it.name },
-            defaultKey = appConfig.appThemeInt.toString()
-        ) {
-            restartRequiredAlert = true
-            appConfig.appThemeInt = it.first.toInt()
-        }
+            list(
+                name = stringResource(R.string.app_theme_title),
+                desc = stringResource(R.string.app_theme_description),
+                entries = ThemeEnum.values().associate { it.value.toString() to it.name },
+                defaultKey = appConfig.appThemeInt.toString()
+            ) {
+                restartRequiredAlert = true
+                appConfig.appThemeInt = it.first.toInt()
+            }
 
-        list(
-            name = stringResource(R.string.day_night_theme_title),
-            entries = mapOf(
-                AppCompatDelegate.MODE_NIGHT_UNSPECIFIED.toString() to stringResource(R.string.day_night_theme_as_system),
-                AppCompatDelegate.MODE_NIGHT_NO.toString() to stringResource(R.string.day_night_theme_day),
-                AppCompatDelegate.MODE_NIGHT_YES.toString() to stringResource(R.string.day_night_theme_night),
-            ),
-            defaultKey = appConfig.dayNightThemeMode.toString()
-        ) {
-            appConfig.dayNightThemeMode = it.first.toInt()
-        }
-
-        switchPref(
-            name = stringResource(R.string.use_better_percents_title),
-            desc = stringResource(R.string.use_better_percents_description),
-            default = appConfig.useBetterPercents
-        ) {
-            appConfig.useBetterPercents = it
-        }
-
-        var customPercents by remember { mutableStateOf(appConfig.customPercents) }
-        switchPref(
-            name = stringResource(R.string.custom_percents_title),
-            desc = stringResource(R.string.custom_percents_description),
-            default = appConfig.customPercents,
-            showDiv = customPercents,
-        ) {
-            appConfig.customPercents = it
-            customPercents = it
-        }
-        AnimatedVisibility(visible = customPercents) {
-            sliderPref(
-                name = stringResource(R.string.cell_voltage_tiltback_title),
-                desc = stringResource(R.string.cell_voltage_tiltback_description),
-                position = appConfig.cellVoltageTiltback / 100f,
-                min = 2.5f,
-                max = 4f,
-                unit = R.string.volt,
-                format = "%.2f",
+            list(
+                name = stringResource(R.string.day_night_theme_title),
+                entries = mapOf(
+                    AppCompatDelegate.MODE_NIGHT_UNSPECIFIED.toString() to stringResource(R.string.day_night_theme_as_system),
+                    AppCompatDelegate.MODE_NIGHT_NO.toString() to stringResource(R.string.day_night_theme_day),
+                    AppCompatDelegate.MODE_NIGHT_YES.toString() to stringResource(R.string.day_night_theme_night),
+                ),
+                defaultKey = appConfig.dayNightThemeMode.toString(),
                 showDiv = false,
             ) {
-                appConfig.cellVoltageTiltback = (it * 100).toInt()
-                // currentRecomposeScope.invalidate()
+                appConfig.dayNightThemeMode = it.first.toInt()
             }
         }
 
@@ -117,23 +86,46 @@ fun applicationScreen(
                 name = stringResource(R.string.use_fahrenheit_title),
                 desc = stringResource(R.string.use_fahrenheit_description),
                 default = appConfig.useFahrenheit,
-                showDiv = false,
             ) {
                 appConfig.useFahrenheit = it
+            }
+
+            switchPref(
+                name = stringResource(R.string.use_better_percents_title),
+                desc = stringResource(R.string.use_better_percents_description),
+                default = appConfig.useBetterPercents
+            ) {
+                appConfig.useBetterPercents = it
+            }
+
+            var customPercents by remember { mutableStateOf(appConfig.customPercents) }
+            switchPref(
+                name = stringResource(R.string.custom_percents_title),
+                desc = stringResource(R.string.custom_percents_description),
+                default = appConfig.customPercents,
+                showDiv = customPercents,
+            ) {
+                appConfig.customPercents = it
+                customPercents = it
+            }
+            AnimatedVisibility(visible = customPercents) {
+                sliderPref(
+                    name = stringResource(R.string.cell_voltage_tiltback_title),
+                    desc = stringResource(R.string.cell_voltage_tiltback_description),
+                    position = appConfig.cellVoltageTiltback / 100f,
+                    min = 2.5f,
+                    max = 4f,
+                    unit = R.string.volt,
+                    format = "%.2f",
+                    showDiv = false,
+                ) {
+                    appConfig.cellVoltageTiltback = (it * 100).toInt()
+                    // currentRecomposeScope.invalidate()
+                }
             }
         }
 
         group(name = stringResource(R.string.after_connect_category)) {
-
-            switchPref(
-                name = stringResource(R.string.auto_log_title),
-                desc = stringResource(R.string.auto_log_description),
-                themeIcon = ThemeIconEnum.SettingsAutoLog,
-                default = appConfig.autoLog,
-            ) {
-                appConfig.autoLog = it
-            }
-
             switchPref(
                 name = stringResource(R.string.auto_watch_title),
                 desc = stringResource(R.string.auto_watch_description),
@@ -247,10 +239,13 @@ fun applicationScreen(
             switchPref(
                 name = stringResource(R.string.show_clock_title),
                 default = appConfig.showClock,
+                showDiv = false,
             ) {
                 appConfig.showClock = it
             }
+        }
 
+        group(name = stringResource(R.string.dashboard_speedial_category_title)) {
             var valueOnDial by remember { mutableStateOf(appConfig.valueOnDial) }
             list(
                 name = stringResource(R.string.value_on_dial_title),
@@ -350,76 +345,84 @@ fun applicationScreen(
             }
         }
 
-        switchPref(
-            name = stringResource(R.string.show_page_graph_title),
-            default = appConfig.pageGraph,
-        ) {
-            appConfig.pageGraph = it
+        group(name = stringResource(R.string.dashboard_pages_category_title)) {
+            switchPref(
+                name = stringResource(R.string.show_page_graph_title),
+                default = appConfig.pageGraph,
+            ) {
+                appConfig.pageGraph = it
+            }
+
+            switchPref(
+                name = stringResource(R.string.show_page_events_title),
+                desc = stringResource(R.string.show_page_events_description),
+                themeIcon = ThemeIconEnum.SettingsPageEvents,
+                default = appConfig.pageEvents,
+            ) {
+                appConfig.pageEvents = it
+            }
+
+            switchPref(
+                name = stringResource(R.string.show_page_trips_title),
+                themeIcon = ThemeIconEnum.SettingsPageTrips,
+                default = appConfig.pageTrips,
+                showDiv = false,
+            ) {
+                appConfig.pageTrips = it
+            }
         }
 
-        switchPref(
-            name = stringResource(R.string.show_page_events_title),
-            desc = stringResource(R.string.show_page_events_description),
-            themeIcon = ThemeIconEnum.SettingsPageEvents,
-            default = appConfig.pageEvents,
-        ) {
-            appConfig.pageEvents = it
+        group(name = stringResource(R.string.audio_category_title)) {
+            switchPref(
+                name = stringResource(R.string.connection_sound_title),
+                desc = stringResource(R.string.connection_sound_description),
+                themeIcon = ThemeIconEnum.SettingsConnectionSound,
+                default = appConfig.connectionSound,
+            ) {
+                appConfig.connectionSound = it
+            }
+
+            sliderPref(
+                name = stringResource(R.string.no_connection_sound_title),
+                desc = stringResource(R.string.no_connection_sound_description),
+                min = 0f,
+                max = 60f,
+                unit = R.string.sec,
+                position = appConfig.noConnectionSound.toFloat(),
+                showSwitch = true,
+                disableSwitchAtMin = true,
+            ) {
+                appConfig.noConnectionSound = it.toInt()
+            }
+
+            switchPref(
+                name = stringResource(R.string.use_stop_music_title),
+                desc = stringResource(R.string.use_stop_music_description),
+                themeIcon = ThemeIconEnum.SettingsAutoMute,
+                default = appConfig.useStopMusic,
+                showDiv = false,
+            ) {
+                appConfig.useStopMusic = it
+            }
         }
 
-        switchPref(
-            name = stringResource(R.string.show_page_trips_title),
-            themeIcon = ThemeIconEnum.SettingsPageTrips,
-            default = appConfig.pageTrips,
-        ) {
-            appConfig.pageTrips = it
-        }
+        group(name = stringResource(R.string.connection_category_title)) {
+            switchPref(
+                name = stringResource(R.string.show_unknown_devices_title),
+                desc = stringResource(R.string.show_unknown_devices_description),
+                default = appConfig.showUnknownDevices,
+            ) {
+                appConfig.showUnknownDevices = it
+            }
 
-        switchPref(
-            name = stringResource(R.string.connection_sound_title),
-            desc = stringResource(R.string.connection_sound_description),
-            themeIcon = ThemeIconEnum.SettingsConnectionSound,
-            default = appConfig.connectionSound,
-        ) {
-            appConfig.connectionSound = it
-        }
-
-        sliderPref(
-            name = stringResource(R.string.no_connection_sound_title),
-            desc = stringResource(R.string.no_connection_sound_description),
-            min = 0f,
-            max = 60f,
-            unit = R.string.sec,
-            position = appConfig.noConnectionSound.toFloat(),
-            showSwitch = true,
-            disableSwitchAtMin = true,
-        ) {
-            appConfig.noConnectionSound = it.toInt()
-        }
-
-        switchPref(
-            name = stringResource(R.string.use_stop_music_title),
-            desc = stringResource(R.string.use_stop_music_description),
-            themeIcon = ThemeIconEnum.SettingsAutoMute,
-            default = appConfig.useStopMusic,
-        ) {
-            appConfig.useStopMusic = it
-        }
-
-        switchPref(
-            name = stringResource(R.string.show_unknown_devices_title),
-            desc = stringResource(R.string.show_unknown_devices_description),
-            default = appConfig.showUnknownDevices,
-        ) {
-            appConfig.showUnknownDevices = it
-        }
-
-        switchPref(
-            name = stringResource(R.string.use_reconnect_title),
-            desc = stringResource(R.string.use_reconnect_description),
-            default = appConfig.useReconnect,
-            showDiv = false,
-        ) {
-            appConfig.useReconnect = it
+            switchPref(
+                name = stringResource(R.string.use_reconnect_title),
+                desc = stringResource(R.string.use_reconnect_description),
+                default = appConfig.useReconnect,
+                showDiv = false,
+            ) {
+                appConfig.useReconnect = it
+            }
         }
 
         group(
@@ -491,19 +494,22 @@ fun applicationScreen(
             }
         }
 
-        switchPref(
-            name = stringResource(R.string.use_detect_battery_optimization_title),
-            default = appConfig.detectBatteryOptimization,
-        ) {
-            appConfig.detectBatteryOptimization = it
-        }
+        group(name = stringResource(R.string.system_category_title)) {
+            switchPref(
+                name = stringResource(R.string.use_detect_battery_optimization_title),
+                default = appConfig.detectBatteryOptimization,
+            ) {
+                appConfig.detectBatteryOptimization = it
+            }
 
-        switchPref(
-            name = stringResource(R.string.send_yandex_metriсa_title),
-            desc = stringResource(R.string.send_yandex_metriсa_description),
-            default = appConfig.yandexMetricaAccepted,
-        ) {
-            appConfig.yandexMetricaAccepted = it
+            switchPref(
+                name = stringResource(R.string.send_yandex_metriсa_title),
+                desc = stringResource(R.string.send_yandex_metriсa_description),
+                default = appConfig.yandexMetricaAccepted,
+                showDiv = false,
+            ) {
+                appConfig.yandexMetricaAccepted = it
+            }
         }
     }
 }
