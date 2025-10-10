@@ -128,7 +128,7 @@
     <string name="use_gps_title">Использование GPS</string>
     <string name="use_gps_description">Использовать данные GPS для точного определения местоположения. При использовании GPS повышается энергопотребление телефона, а если параметр отключен, используются данные сотовой связи.</string>
     <string name="use_raw_title">Запись Raw данных</string>
-    <string name="use_raw_description">Исходные данные колеса записывается в отдельный CSV-файл.</string>
+    <string name="use_raw_description">Когда включено, все пакеты Bluetooth от колеса будут записаны в отдельный CSV файл. Запись начинается когда первый пакет будет получен. Лог файл остается открыт пока эта опция включена, и автоматически будет продолжено после подключения и отключения колеса. Отключите эту настройку, чтобы закончить запись лога. Файлы сохраняются в Download/Wheellog/[MAC_ADDRESS]/RAW_yyyy_MM_dd_HH_mm_ss.csv</string>
     <string name="on_off_strobe">Выкл./Вкл./Строб</string>
     <string name="soft_medium_hard">Мягкие/Средние/Жесткие</string>
     <string name="mode1_2_3_4">Режим1/Режим2/Режим3/Режим4</string>
@@ -231,6 +231,7 @@
     <string name="reset_lowest_battery_title">Сбросить просадку напряжения</string>
     <string name="reset_max_values_title">Сбросить максимальные значения</string>
     <string name="reset_max_values_description">Сбросить максимальную скорость, PWM, ток, мощность</string>
+    <string name="resumed_raw_logging">Возобновлена запись лога в</string>
     <string name="search_for_wheel">Найти колесо</string>
     <string name="searching">Поиск</string>
     <string name="start_data_service">Логирование запущено</string>
@@ -306,6 +307,7 @@
     <string name="show_page_graph_title">Страница с графиком</string>
     <string name="main_view_category">Главный экран</string>
     <string name="beep_category">Гудок</string>
+    <string name="system_category_title">Система</string>
     <string name="beep_on_single_tap_title">Гудок при одиночном тапе</string>
     <string name="beep_on_single_tap_description">Одиночный тап на главном экране будет проигрывать гудок</string>
     <string name="beep_on_volume_up_title">Гудок на кнопки громкости</string>
@@ -592,4 +594,12 @@
     <string name="bmsTemp2Env">Вн. Темп. 2</string>
     <string name="bmsHumidity1Env">Вн. Влажность 1</string>
     <string name="bmsSemiVoltage1">Напряжение 1/2</string>
+    <string name="started_raw_logging">Начало записи RAW лога в</string>
+    <string name="stopped_raw_logging">Остановлено логирование в</string>
+    <string name="paused_raw_logging">Приостановлена записаь лога (файл открыт)</string>
+    <string name="general_settings_category_title">Общие настройки</string>
+    <string name="dashboard_speedial_category_title">Главная шкала</string>
+    <string name="dashboard_pages_category_title">Страницы</string>
+    <string name="audio_category_title">Звук</string>
+    <string name="connection_category_title">Подключение</string>
 </resources>
