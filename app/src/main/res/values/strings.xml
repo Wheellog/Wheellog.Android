@@ -42,6 +42,10 @@
     <string name="start_data_service">Start Logging</string>
     <string name="stop_data_service">Stop Logging</string>
     <string name="started_logging">Started logging to</string>
+    <string name="started_raw_logging">Started RAW logging to</string>
+    <string name="stopped_raw_logging">Stopped RAW logging to</string>
+    <string name="paused_raw_logging">RAW logging paused (file open)</string>
+    <string name="resumed_raw_logging">RAW logging resumed to</string>
     <string name="search_for_wheel">Search for Wheel</string>
     <string name="scanning">Scanning…</string>
     <string name="devices">Devices</string>
@@ -299,7 +303,7 @@
     <string name="log_location_description">Include location data within the logs</string>
     <string name="use_gps_title">Use GPS for location</string>
     <string name="use_gps_description">Use GPS for location rather than network provider.  GPS is more accurate but may consume more battery power</string>
-    <string name="use_raw_title">Write Raw data</string>
+    <string name="use_raw_title">RAW Bluetooth Data Logging</string>
     <string name="on_off_strobe">Off/On/Strobe</string>
     <string name="soft_medium_hard">Soft/Medium/Hard</string>
     <string name="mode1_2_3_4">Mode1/Mode2/Mode3/Mode4</string>
@@ -515,6 +519,12 @@
     <string name="show_page_graph_title">Graph page</string>
     <string name="main_view_category">Main view</string>
     <string name="beep_category">Beep</string>
+    <string name="general_settings_category_title">General settings</string>
+    <string name="dashboard_speedial_category_title">Dashboard speed dial</string>
+    <string name="dashboard_pages_category_title">Dashboard pages</string>
+    <string name="audio_category_title">Audio</string>
+    <string name="connection_category_title">Connection</string>
+    <string name="system_category_title">System</string>
     <string name="beep_on_single_tap_title">Beep on single tap</string>
     <string name="beep_on_single_tap_description">A single tap on the main screen will play a beep</string>
     <string name="beep_on_volume_up_title">Beep on volume keys</string>
@@ -634,7 +644,7 @@
     <string name="watch_wearos_group_title" >WearOs</string>
     <string name="use_reconnect_title">Use reconnect</string>
     <string name="use_reconnect_description">Autoreconnect to wheel if data freeze (use only if you have problems)</string>
-    <string name="use_raw_description">Raw data from wheel written into a separate csv file.</string>
+    <string name="use_raw_description">When enabled, all raw Bluetooth data packets from the wheel are logged to a separate CSV file. Logging begins when connected and first packet is received. The log file remains open while this setting is enabled, automatically continuing to log data across any disconnections and reconnections. Toggle this setting off to close the current log file. Files are saved to Downloads/WheelLog/[MAC_ADDRESS]/RAW_yyyy_MM_dd_HH_mm_ss.csv</string>
     <string name="private_policy"><![CDATA[Before using the app, you must accept the <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Privacy-Policy\">Private policy</a> and <a href=\"https://github.com/Wheellog/Wheellog.Android/wiki/Terms-&-Conditions\">Terms & Conditions</a>]]></string>
     <string name="replace_info_block">Replace \"%s\" to:</string>
     <string name="auto_log_when_moving_description">Start auto logging only when wheel speed more than</string>

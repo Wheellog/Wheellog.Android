@@ -9,6 +9,7 @@ object Constants {
     const val ACTION_WHEEL_NEWS_AVAILABLE = "com.cooper.wheellog.wheelNews"
     const val ACTION_PEBBLE_SERVICE_TOGGLED = "com.cooper.wheellog.pebbleServiceToggled"
     const val ACTION_LOGGING_SERVICE_TOGGLED = "com.cooper.wheellog.loggingServiceToggled"
+    const val ACTION_RAW_LOGGING_TOGGLED = "com.cooper.wheellog.rawLoggingToggled"
     const val ACTION_PREFERENCE_RESET = "com.cooper.wheellog.preferenceReset"
     const val ACTION_PEBBLE_AFFECTING_PREFERENCE_CHANGED = "com.cooper.wheellog.pebblePreferenceChanged"
     const val ACTION_ALARM_TRIGGERED = "com.cooper.wheellog.alarmTriggered"
