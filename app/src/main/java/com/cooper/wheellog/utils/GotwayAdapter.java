@@ -126,15 +126,14 @@ public class GotwayAdapter extends BaseAdapter {
                         appConfig.setTrick(buff[16]);
                     }
                     int hwPwm = MathsUtil.signedShortFromBytesBE(buff, 14) * 10;
+                    speed = Math.abs(speed);
                     if (gotwayNegative == 0) {
-                        speed = Math.abs(speed);
                         phaseCurrent = Math.abs(phaseCurrent);
                         hwPwm = Math.abs(hwPwm);
                     } else {
                         phaseCurrent = phaseCurrent * gotwayNegative;
                         if (!bIsAlexovikFW)
                         {
-                            speed = speed * gotwayNegative;
                             hwPwm = hwPwm * gotwayNegative;
                         }
                     }
