@@ -22,6 +22,7 @@ public class GotwayAdapter extends BaseAdapter {
     private String model = "";
     private String imu = "";
     private String fw = "";
+    private String fwprot = "";
     private int smartBmsCells = 0;
     private boolean trueVoltage = false;
     private boolean trueCurrent = false;
@@ -52,28 +53,43 @@ public class GotwayAdapter extends BaseAdapter {
         if ((model.length() == 0) || (fw.length() == 0)) { // IMU sent at the begining, so there is no sense to check it, we can't request it
             String dataS = new String(data, 0, data.length).trim();
             if (dataS.startsWith("NAME")) {
+                attempt = 1000; //stop it
                 model = dataS.substring(5).trim();
                 wd.setModel(model);
             } else if (dataS.startsWith("GW")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
+                fwprot = "Begode";
                 appConfig.setHwPwm(false);
                 appConfig.setIsAlexovikFW(false);
                 bIsReady = true;
+                attempt = 0;
+            } else if (dataS.startsWith("JN")) {
+                fw = dataS.substring(2).trim();
+                wd.setVersion(fw);
+                fwprot = "ExtremeBull";
+                appConfig.setHwPwm(false);
+                appConfig.setIsAlexovikFW(false);
+                bIsReady = true;
+                attempt = 0;
             } else if (dataS.startsWith("CF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
+                fwprot = "Freestyl3r";
                 appConfig.setHwPwm(true);
                 appConfig.setIsAlexovikFW(false);
                 bIsReady = true;
+                attempt = 0;
             } else if (dataS.startsWith("BF")) {
                 fw = dataS.substring(2).trim();
                 wd.setVersion(fw);
+                fwprot = "SV";
                 //model = "SmirnoV";
                 //wd.setModel(model);
                 appConfig.setHwPwm(true);
                 appConfig.setIsAlexovikFW(true);
                 bIsReady = true;
+                attempt = 0;
             } else if (dataS.startsWith("MPU")) {
                 imu = dataS.substring(1, 7).trim();
             }
@@ -372,10 +388,10 @@ public class GotwayAdapter extends BaseAdapter {
                     }
                 }
 
-                if (attempt < 20)
+                if (attempt < 50)
                 {
                     long nowTime = SystemClock.elapsedRealtime();
-                    if (nowTime - lastTryTime > 190)
+                    if (nowTime - lastTryTime > 40)
                     {
                         if (fw.equals(""))
                             sendCommand("V", "", 0);
@@ -389,13 +405,14 @@ public class GotwayAdapter extends BaseAdapter {
                 else
                 {
                     if (model.equals("")) {
-                        model = "Begode";
+                        if (fwprot.equals("")) {
+                            model = "Begode";
+                        } else model = fwprot;
                         wd.setVersion(model);
                     } else if (fw.equals("")) {
                         fw = "-";
                         wd.setVersion(fw);
                         appConfig.setHwPwm(false);
-                        appConfig.setIsAlexovikFW(false);
                         bIsReady = true;
                     }
                 }
