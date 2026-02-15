@@ -680,6 +680,41 @@ class VeteranAdapterTest: KoinTest {
         assertThat(data.version).isEqualTo("043.2.54")
     }
 
+
+    @Test
+    fun `decode nosfet aeon`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c5337f000002342000025150000fff80a66".hexToByteArray()
+        val byteArray2 = "04ae0000025807d0acd907c8ffe8015080c80000".hexToByteArray()
+        val byteArray3 = "808080808080068080808080800f870f870f800f".hexToByteArray()
+        val byteArray4 = "940f920f930f940f930f910f930f940f950f950f".hexToByteArray()
+        val byteArray5 = "960f91d94e297a".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(0)
+        assertThat(data.temperature).isEqualTo(26)
+        assertThat(data.voltageDouble).isEqualTo(143.20)
+        assertThat(data.phaseCurrentDouble).isEqualTo(-0.80)
+        assertThat(data.wheelDistanceDouble).isEqualTo(9.026)
+        assertThat(data.totalDistance).isEqualTo(9493)
+        assertThat(data.batteryLevel).isEqualTo(83)
+        assertThat(data.angle).isEqualTo(-0.24)
+        assertThat(data.version).isEqualTo("044.2.49")
+    }
+
+
     @Test
     fun `decode veteran oryx`() {
         // Arrange.
