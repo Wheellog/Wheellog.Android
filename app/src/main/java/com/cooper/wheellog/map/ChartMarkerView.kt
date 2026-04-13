@@ -5,6 +5,7 @@ import android.os.Build
 import android.text.Html
 import android.widget.TextView
 import com.cooper.wheellog.R
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
@@ -23,18 +24,24 @@ class ChartMarkerView(context: Context, private val valueFormatter: ValueFormatt
         if (e != null) {
             tvTitle.text = valueFormatter.getFormattedValue(e.x)
 
-            val dataText = mutableListOf<String>()
-            stats.forEach {
-                dataText.add(
-                    "<font color=#${it.color.toHexString().substring(2)}>∎</font> ${it.label}: " +
-                            "${it.getEntriesForXValue(e.x).first().y}"
-                )
+            val dataText = stats.joinToString("<br>") { dataSet ->
+                // Извлекаем RRGGBB, пропуская Alpha (первые 2 символа после #, если они есть)
+                val colorHex = String.format("%06X", (0xFFFFFF and dataSet.color))
+                "<font color='#$colorHex'>∎</font> ${dataSet.label}: ${dataSet.getEntriesForXValue(e.x).firstOrNull()?.y ?: 0}"
             }
-            tvData.text = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                Html.fromHtml(dataText.joinToString("<br>"), Html.FROM_HTML_MODE_LEGACY)
+
+            tvData.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(dataText, Html.FROM_HTML_MODE_LEGACY)
             } else {
-                Html.fromHtml(dataText.joinToString("<br>"))
+                @Suppress("DEPRECATION")
+                Html.fromHtml(dataText)
             }
+
+            measure(
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+            )
+            layout(0, 0, measuredWidth, measuredHeight)
         }
         super.refreshContent(e, highlight)
     }
