@@ -812,6 +812,40 @@ class VeteranAdapterTest: KoinTest {
     }
 
 
+
+    @Test
+    fun `decode lynx s`() {
+        // Arrange.
+        val byteArray1 = "dc5a5c5f39190018026e000005fc000001a41244".hexToByteArray()
+        val byteArray2 = "03830000035207d0232b00c2008501fa80c8000b".hexToByteArray()
+        val byteArray3 = "8080808080800705ac04ae04d9052904db06480f".hexToByteArray()
+        val byteArray4 = "e70fe90fea0fea0feb0fe3000000000000000000".hexToByteArray()
+        val byteArray5 = "000000000000000000000000000000dc048b37".hexToByteArray()
+
+        // Act.
+        val result1 = adapter.decode(byteArray1)
+        val result2 = adapter.decode(byteArray2)
+        val result3 = adapter.decode(byteArray3)
+        val result4 = adapter.decode(byteArray4)
+        val result5 = adapter.decode(byteArray5)
+
+        // Assert.
+        assertThat(result1).isFalse()
+        assertThat(result2).isFalse()
+        assertThat(result3).isFalse()
+        assertThat(result4).isFalse()
+        assertThat(result5).isTrue()
+        assertThat(abs(data.speed)).isEqualTo(24)
+        assertThat(data.temperature).isEqualTo(46)
+        assertThat(data.voltageDouble).isEqualTo(146.17)
+        assertThat(data.phaseCurrentDouble).isEqualTo(42.00)
+        assertThat(data.wheelDistanceDouble).isEqualTo(0.622)
+        assertThat(data.totalDistance).isEqualTo(1532)
+        assertThat(data.batteryLevel).isEqualTo(94)
+        assertThat(data.angle).isEqualTo(1.33)
+        assertThat(data.version).isEqualTo("009.0.03")
+    }
+
     @Test
     fun `update pedals mode`() {
         // Arrange.

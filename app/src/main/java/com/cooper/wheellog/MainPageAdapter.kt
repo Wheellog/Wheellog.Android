@@ -835,7 +835,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                 }
             }
             WHEEL_TYPE.VETERAN -> {
-                if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Sherman L", "Nosfet Apex", "Nosfet Aeon", "Patton S", "Nosfet Aero", "Oryx"))) {
+                if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Lynx S", "Sherman L", "Nosfet Apex", "Nosfet Aeon", "Patton S", "Nosfet Aero", "Oryx"))) {
                     addPage(R.layout.main_view_smart_bms, 2)
                     setupFieldForSmartBmsPage(R.string.bmsCurrent)
                     setupFieldForSmartBmsPage(R.string.bmsVoltage)
@@ -879,7 +879,7 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
                     setupFieldForSmartBmsPage(R.string.bmsCell28)
                     setupFieldForSmartBmsPage(R.string.bmsCell29)
                     setupFieldForSmartBmsPage(R.string.bmsCell30)
-                    if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Sherman L", "Nosfet Apex", "Nosfet Aeon", "Oryx"))) {
+                    if (inArray(WheelData.getInstance().model, arrayOf("Lynx", "Lynx S", "Sherman L", "Nosfet Apex", "Nosfet Aeon", "Oryx"))) {
                             setupFieldForSmartBmsPage(R.string.bmsCell31)
                             setupFieldForSmartBmsPage(R.string.bmsCell32)
                             setupFieldForSmartBmsPage(R.string.bmsCell33)

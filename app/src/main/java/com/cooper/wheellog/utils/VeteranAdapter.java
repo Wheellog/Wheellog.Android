@@ -170,7 +170,7 @@ public class VeteranAdapter extends BaseAdapter {
                             battery = (int) Math.round((voltage - 9918) / 24.2);
                         }
                     }
-                } else if (mVer == 5 || mVer == 6 || mVer == 42 || mVer == 44) { // Lynx, Sherman L = 6, Nosfet Apex, Nosfet Aeon
+                } else if (mVer == 5 || mVer == 6 || mVer == 9 || mVer == 42 || mVer == 44) { // Lynx, Lynx S, Sherman L = 6, Nosfet Apex, Nosfet Aeon
                     if (useBetterPercents) {
                         if (voltage > 15030) {
                             battery = 100;
@@ -287,6 +287,7 @@ public class VeteranAdapter extends BaseAdapter {
         if (mVer == 6) vModel = "Sherman L"; else
         if (mVer == 7) vModel = "Patton S"; else
         if (mVer == 8) vModel = "Oryx"; else
+        if (mVer == 9) vModel = "Lynx S"; else
         if (mVer == 42) vModel = "Nosfet Apex"; else
         if (mVer == 43) vModel = "Nosfet Aero"; else
         if (mVer == 44) vModel = "Nosfet Aeon"; else vModel = "Unknown";
