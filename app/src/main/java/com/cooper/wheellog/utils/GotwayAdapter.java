@@ -340,7 +340,7 @@ public class GotwayAdapter extends BaseAdapter {
                         int batteryCurrent = MathsUtil.signedShortFromBytesBE(buff, 2);
                         int motorTemp = MathsUtil.signedShortFromBytesBE(buff, 6);
                         int hwPWMb = MathsUtil.signedShortFromBytesBE(buff, 8);
-                        if (hwPWMb > 0) {
+                        if (Math.abs(hwPWMb) > 0) {
                             truePWM = true;
                         }
                         if (truePWM) {
