@@ -68,6 +68,7 @@ class MapActivity : AppCompatActivity() {
         val tabNames: Array<String> = arrayOf(
             getString(R.string.map_map_tab_name),
             getString(R.string.map_statistics_tab_name),
+            getString(R.string.map_values_tab_name)
         )
 
         tabs = binding.tabs
@@ -99,7 +100,9 @@ class MapActivity : AppCompatActivity() {
         val path = extras.getString("path", "undefined")
         val uri = Uri.parse(extras.getString("uri", "undefined"))
         val tripData = TripData(title)
-        val list = TripParser.parseFile(applicationContext, title, path, uri).first
+        val parsed = TripParser.parseFile(applicationContext, title, path, uri)
+        val list = parsed.first
+        val db = parsed.second
         tripData.errorMessage = TripParser.lastError
         if (tripData.errorMessage != "") {
             return tripData
@@ -187,7 +190,8 @@ class MapActivity : AppCompatActivity() {
         return tripData.copy(
             geoLine = geoLine,
             stats1 = chart1DataSets,
-            stats2 = chart2DataSets
+            stats2 = chart2DataSets,
+            tripDb = db
         )
     }
 }
