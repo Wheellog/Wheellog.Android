@@ -679,6 +679,7 @@
     <string name="send_yandex_metriсa_description">This application uses the AppMetrica analytics service provided by Yandex. Geolocation is not sent. The information collected in this way will be used to resolve errors and cannot identify you.</string>
     <string name="map_map_tab_name">Map</string>
     <string name="map_statistics_tab_name">Stats</string>
+    <string name="map_values_tab_name">Values</string>
     <string name="error_cannot_open_file">Could not open the file.</string>
     <string name="error_inputstream_null">Failed to create inputStream.</string>
     <string name="error_this_file_without_gps">%s file does not contain geolocation data.</string>

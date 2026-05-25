@@ -6,12 +6,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class MapActivityAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
-    override fun getItemCount(): Int = 2
+    override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment {
         val fragment = when (position) {
             0 -> MapFragment()
-            else -> StatsFragment()
+            1 -> StatsFragment()
+            else -> StatsTextFragment()
         }
         return fragment
     }
