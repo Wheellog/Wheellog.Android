@@ -358,10 +358,10 @@
     <string name="dynamic_compensation_filter_description">Dynamic horizon angle compensation filter factor.</string>
     <string name="acceleration_compensation_title">Acceleration Compensation</string>
     <string name="acceleration_compensation_description">Compensation for horizon deviations caused by wheel acceleration/deceleration.</string>
-    <string name="proportional_q_current_factor_title">Proportional Current Factor Q</string>
-    <string name="proportional_q_current_factor_decsription">Proportional current factor Q of the motor.</string>
-    <string name="integral_q_current_factor_title">Integral Current Factor Q</string>
-    <string name="integral_q_current_factor_decsription">Integral current factor Q of the motor.</string>
+    <string name="horizon_compensation_in_turns_title">Horizon compensation in turns</string>
+    <string name="horizon_compensation_in_turns_decsription">Horizon compensation in turns</string>
+    <string name="pedal_adjustment_title">Pedal adjustment</string>
+    <string name="pedal_adjustment_decsription">Pedal tilt adjustment</string>
     <string name="proportional_d_current_factor_title">Proportional Current Factor D</string>
     <string name="proportional_d_current_factor_decsription">Proportional current factor D of the motor.</string>
     <string name="integral_d_current_factor_title">Integral Current Factor D</string>

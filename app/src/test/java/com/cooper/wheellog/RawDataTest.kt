@@ -356,4 +356,42 @@ class RawDataTest: KoinTest {
     }
 
     */
+    @Test
+    fun `SV`() {
+        // Arrange.
+
+        // Arrange.
+        every { appConfig.gotwayNegative } returns "1"
+        every { appConfig.IsAlexovikFW } returns true
+        every { appConfig.autoVoltage } returns true
+        mockkConstructor(android.os.Handler::class)
+        every { anyConstructed<android.os.Handler>().postDelayed(any(), any()) } returns true
+        val adapter = GotwayAdapter()
+        data.wheelType = Constants.WHEEL_TYPE.GOTWAY
+        val inputStream: InputStream = File("src/test/resources/RAW_2026_06_20_17_27_53.csv").inputStream()
+        val startTime = sdf.parse("16:38:41.000")
+        val stopTime = sdf.parse("23:59:45.000")
+        val dataList = mutableListOf<String>()
+        inputStream.bufferedReader().useLines { lines ->
+            lines.forEach {
+                val row = it.split(',')
+                val time = sdf.parse(row[0])
+                if (time != null && time > startTime && time < stopTime) {
+                    dataList.add(row[1])
+                }
+            }
+        }
+
+        // Act.
+        dataList.forEach {
+            val byteArray = it.hexToByteArray()
+            adapter.decode(byteArray)
+        }
+
+        // Assert.
+        //assertThat(data.model).isEqualTo("Blitz")
+        assertThat(data.temperature2).isEqualTo(0)
+
+
+    }
 }

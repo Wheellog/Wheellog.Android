@@ -1185,8 +1185,8 @@ private fun begode(appConfig: AppConfig = koinInject()) {
         }
 
         sliderPref(
-            name = stringResource(R.string.proportional_q_current_factor_title),
-            desc = stringResource(R.string.proportional_q_current_factor_decsription),
+            name = stringResource(R.string.horizon_compensation_in_turns_title),
+            desc = stringResource(R.string.horizon_compensation_in_turns_decsription),
             position = appConfig.proportionalCurrentFactorQ.toFloat(),
             min = 0f,
             max = 100f,
@@ -1197,8 +1197,8 @@ private fun begode(appConfig: AppConfig = koinInject()) {
         }
 
         sliderPref(
-            name = stringResource(R.string.integral_q_current_factor_title),
-            desc = stringResource(R.string.integral_q_current_factor_decsription),
+            name = stringResource(R.string.pedal_adjustment_title),
+            desc = stringResource(R.string.pedal_adjustment_decsription),
             position = appConfig.integralCurrentFactorQ.toFloat(),
             min = 0f,
             max = 100f,

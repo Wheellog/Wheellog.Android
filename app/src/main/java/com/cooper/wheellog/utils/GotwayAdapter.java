@@ -186,7 +186,11 @@ public class GotwayAdapter extends BaseAdapter {
                     wd.setTopSpeed(speed);
                     wd.setWheelDistance(distance);
                     wd.setTemperature(temperature);
-                    wd.setPhaseCurrent(phaseCurrent);
+                    if (bIsAlexovikFW) {
+                        wd.setPhaseCurrent(phaseCurrent * 10);
+                    } else {
+                        wd.setPhaseCurrent(phaseCurrent);
+                    }
                     if (!(trueVoltage && autoVoltage)) {
                         wd.setVoltage(voltage);
                     }
@@ -194,7 +198,7 @@ public class GotwayAdapter extends BaseAdapter {
                     if (!truePWM) {
                         wd.setOutput(hwPwm);
                     }
-                    if (!trueCurrent || !bmsCurrent) {
+                    if (!bIsAlexovikFW && (!trueCurrent || !bmsCurrent)) {
                         wd.calculateCurrent();
                     }
                     newDataFound = !((trueVoltage && autoVoltage) || trueCurrent || bmsCurrent) || bIsAlexovikFW;
