@@ -160,10 +160,10 @@
     <string name="dynamic_compensation_filter_description">Коэффициент фильтра динамической компенсации угла горизонта.</string>
     <string name="acceleration_compensation_title">Компенсация ускорения</string>
     <string name="acceleration_compensation_description">Компенсация отклонений горизонта, вызванных ускорением/замедлением колеса.</string>
-    <string name="proportional_q_current_factor_title">Пропорциональный коэффициент тока Q</string>
-    <string name="proportional_q_current_factor_decsription">Пропорциональный коэффициент тока Q двигателя.</string>
-    <string name="integral_q_current_factor_title">Интегральный коэффициент тока Q</string>
-    <string name="integral_q_current_factor_decsription">Интегральный коэффициент тока Q двигателя.</string>
+    <string name="horizon_compensation_in_turns_title">Компенсация горизонта в поворотах</string>
+    <string name="horizon_compensation_in_turns_decsription">Компенсация горизонта в поворотах</string>
+    <string name="pedal_adjustment_title">Наклон педалей</string>
+    <string name="pedal_adjustment_decsription">"Наклон уровня горизонта педалей "</string>
     <string name="proportional_d_current_factor_title">Пропорциональный коэффициент тока D</string>
     <string name="proportional_d_current_factor_decsription">Пропорциональный коэффициент тока D двигателя.</string>
     <string name="integral_d_current_factor_title">Интегральный коэффициент тока D</string>
