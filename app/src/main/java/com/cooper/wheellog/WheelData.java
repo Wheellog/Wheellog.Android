@@ -1169,7 +1169,7 @@ public class WheelData {
             long restoreDelayMs = appConfig.getStopMusicRestoreDelay() * 1000L;
 
             // Задержка возврата обычной громкости.
-            // Нужна, чтобы звук не возвращался от краткого скачка скорости на ямке,
+            // Нужна, чтобы звук не возвращался от скачка скорости на ямке,
             // переходе, трамвайных путях и т.п.
             if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= restoreDelayMs)
                 restoreMusicVolume();
@@ -1180,7 +1180,7 @@ public class WheelData {
         if (MainActivity.audioManager == null)
             return;
 
-        // Если до этого WheelLog полностью заглушил звук на высокой скорости,
+        // Если до этого звук был полностью заглушен на высокой скорости,
         // сначала отпускаем mute.
         if (mMusicMutedByWheelLog) {
             MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
@@ -1189,7 +1189,7 @@ public class WheelData {
 
         int currentVolume = MainActivity.audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
-        // Запоминаем громкость пользователя только один раз,
+        // Запоминаем уровень громкости только один раз,
         // перед первым переходом в тихий режим.
         if (!mMusicVolumeChangedByWheelLog) {
             mMusicVolumeBeforeQuiet = currentVolume;
