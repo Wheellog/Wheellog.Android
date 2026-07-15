@@ -102,6 +102,9 @@ public class WheelData {
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
     private long mLowSpeedMusicTime = 0;
+    private int mMusicVolumeBeforeQuiet = -1;
+    private boolean mMusicVolumeChangedByWheelLog = false;
+    private boolean mMusicMutedByWheelLog = false;
 
     private boolean mBmsView = false;
     private String protoVer = "";
@@ -1143,21 +1146,113 @@ public class WheelData {
     }
 
     private void CheckMuteMusic() {
-        if (!appConfig.getUseStopMusic())
+        if (!appConfig.getUseStopMusic()) {
+            releaseMusicControl();
             return;
+        }
 
-        final double muteSpeedThreshold = 3.5;
+        final double lowMuteSpeedThreshold = appConfig.getStopMusicSpeed();
+        final double highMuteSpeedThreshold = appConfig.getStopMusicHighSpeed();
+
         double speed = getSpeedDouble();
-        if (speed <= muteSpeedThreshold) {
+
+        if (speed <= lowMuteSpeedThreshold) {
             mLowSpeedMusicTime = 0;
-            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+            setQuietMusicVolume();
+        } else if (speed >= highMuteSpeedThreshold) {
+            mLowSpeedMusicTime = 0;
+            muteMusic();
         } else {
             if (mLowSpeedMusicTime == 0)
                 mLowSpeedMusicTime = System.currentTimeMillis();
 
-            if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= 1500)
-                MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            long restoreDelayMs = appConfig.getStopMusicRestoreDelay() * 1000L;
+
+            // Задержка возврата обычной громкости.
+            // Нужна, чтобы звук не возвращался от краткого скачка скорости на ямке,
+            // переходе, трамвайных путях и т.п.
+            if ((System.currentTimeMillis() - mLowSpeedMusicTime) >= restoreDelayMs)
+                restoreMusicVolume();
         }
+    }
+
+    private void setQuietMusicVolume() {
+        if (MainActivity.audioManager == null)
+            return;
+
+        // Если до этого WheelLog полностью заглушил звук на высокой скорости,
+        // сначала отпускаем mute.
+        if (mMusicMutedByWheelLog) {
+            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            mMusicMutedByWheelLog = false;
+        }
+
+        int currentVolume = MainActivity.audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        // Запоминаем громкость пользователя только один раз,
+        // перед первым переходом в тихий режим.
+        if (!mMusicVolumeChangedByWheelLog) {
+            mMusicVolumeBeforeQuiet = currentVolume;
+            mMusicVolumeChangedByWheelLog = true;
+        }
+
+        int quietVolume = getMusicVolumeByPercent(appConfig.getStopMusicLowVolume());
+
+        if (currentVolume != quietVolume) {
+            MainActivity.audioManager.setStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    quietVolume,
+                    0
+            );
+        }
+    }
+
+    private void muteMusic() {
+        if (MainActivity.audioManager == null)
+            return;
+
+        MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+        mMusicMutedByWheelLog = true;
+    }
+
+    private void restoreMusicVolume() {
+        if (MainActivity.audioManager == null)
+            return;
+
+        if (mMusicMutedByWheelLog) {
+            MainActivity.audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+            mMusicMutedByWheelLog = false;
+        }
+
+        if (mMusicVolumeChangedByWheelLog && mMusicVolumeBeforeQuiet >= 0) {
+            MainActivity.audioManager.setStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    mMusicVolumeBeforeQuiet,
+                    0
+            );
+        }
+
+        mMusicVolumeBeforeQuiet = -1;
+        mMusicVolumeChangedByWheelLog = false;
+    }
+
+    private void releaseMusicControl() {
+        restoreMusicVolume();
+        mLowSpeedMusicTime = 0;
+    }
+
+    private int getMusicVolumeByPercent(int percent) {
+        if (MainActivity.audioManager == null)
+            return 0;
+
+        int maxVolume = MainActivity.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+        percent = Math.max(0, Math.min(percent, 100));
+
+        if (percent == 0)
+            return 0;
+
+        return Math.max(1, (int) Math.round(maxVolume * percent / 100.0));
     }
 
     public void resetRideTime() {
@@ -1202,6 +1297,9 @@ public class WheelData {
 
     void reset() {
         mLowSpeedMusicTime = 0;
+        mMusicVolumeBeforeQuiet = -1;
+        mMusicVolumeChangedByWheelLog = false;
+        mMusicMutedByWheelLog = false;
         mSpeed = 0;
         mTorque = 0;
         mMotorPower = 0;

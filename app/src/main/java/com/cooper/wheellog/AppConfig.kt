@@ -152,6 +152,22 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getValue(R.string.use_stop_music, false)
         set(value) = setValue(R.string.use_stop_music, value)
 
+    var stopMusicSpeed: Int
+        get() = getValue("stop_music_speed", 10)
+        set(value) = setValue("stop_music_speed", value)
+
+    var stopMusicLowVolume: Int
+        get() = getValue("stop_music_low_volume", 5)
+        set(value) = setValue("stop_music_low_volume", value)
+
+    var stopMusicRestoreDelay: Int
+        get() = getValue("stop_music_restore_delay", 3)
+        set(value) = setValue("stop_music_restore_delay", value)
+
+    var stopMusicHighSpeed: Int
+        get() = getValue("stop_music_high_speed", 50)
+        set(value) = setValue("stop_music_high_speed", value)
+
     var showUnknownDevices: Boolean
         get() = getValue(R.string.show_unknown_devices, false)
         set(value) = setValue(R.string.show_unknown_devices, value)
