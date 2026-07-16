@@ -395,15 +395,74 @@ fun applicationScreen(
                 appConfig.noConnectionSound = it.toInt()
             }
 
+            var useStopMusic by remember { mutableStateOf(appConfig.useStopMusic) }
+
             switchPref(
                 name = stringResource(R.string.use_stop_music_title),
                 desc = stringResource(R.string.use_stop_music_description),
                 themeIcon = ThemeIconEnum.SettingsAutoMute,
-                default = appConfig.useStopMusic,
-                showDiv = false,
+                default = useStopMusic,
+                showDiv = !useStopMusic,
             ) {
                 appConfig.useStopMusic = it
+                useStopMusic = it
             }
+            AnimatedVisibility(visible = useStopMusic) {
+                Column {
+                    sliderPref(
+                        name = stringResource(R.string.stop_music_speed_title),
+                        desc = stringResource(R.string.stop_music_speed_description),
+                        min = 3f,
+                        max = 20f,
+                        position = appConfig.stopMusicSpeed.toFloat(),
+                        unit = R.string.speed_unit_kmh,
+                        format = "%.0f",
+                        showDiv = true,
+                    ) {
+                        appConfig.stopMusicSpeed = it.toInt()
+                    }
+
+                    sliderPref(
+                        name = stringResource(R.string.stop_music_low_volume_title),
+                        desc = stringResource(R.string.stop_music_low_volume_description),
+                        min = 0f,
+                        max = 100f,
+                        position = appConfig.stopMusicLowVolume.toFloat(),
+                        unit = R.string.volume_unit_percent,
+                        format = "%.0f",
+                        showDiv = true,
+                    ) {
+                        appConfig.stopMusicLowVolume = it.toInt()
+                    }
+
+                    sliderPref(
+                        name = stringResource(R.string.stop_music_restore_delay_title),
+                        desc = stringResource(R.string.stop_music_restore_delay_description),
+                        min = 1f,
+                        max = 10f,
+                        position = appConfig.stopMusicRestoreDelay.toFloat(),
+                        unit = R.string.sec,
+                        format = "%.0f",
+                        showDiv = true,
+                    ) {
+                        appConfig.stopMusicRestoreDelay = it.toInt()
+                    }
+
+                    sliderPref(
+                        name = stringResource(R.string.stop_music_high_speed_title),
+                        desc = stringResource(R.string.stop_music_high_speed_description),
+                        min = 20f,
+                        max = 120f,
+                        position = appConfig.stopMusicHighSpeed.toFloat(),
+                        unit = R.string.speed_unit_kmh,
+                        format = "%.0f",
+                        showDiv = false,
+                    ) {
+                        appConfig.stopMusicHighSpeed = it.toInt()
+                    }
+                }
+            }
+
         }
 
         group(name = stringResource(R.string.connection_category_title)) {
