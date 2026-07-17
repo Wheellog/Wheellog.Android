@@ -996,6 +996,10 @@ public class WheelData {
     }
 
     void setConnected(boolean connected) {
+        if (mConnectionState != connected) {
+            mWheelIsReady = false;
+        }
+
         mConnectionState = connected;
         Timber.i("State %b", connected);
     }
@@ -1131,6 +1135,15 @@ public class WheelData {
 
         if (!mWheelIsReady && getAdapter().isReady()) {
             mWheelIsReady = true;
+
+            if (
+                    mWheelType == WHEEL_TYPE.VETERAN
+                            && VeteranAdapter.getInstance().getVer() == 7
+                            && appConfig.getLightEnabled()
+            ) {
+                updateLight(true);
+            }
+
             var isReadyIntent = new Intent(Constants.ACTION_WHEEL_IS_READY);
             mContext.sendBroadcast(isReadyIntent);
         }
