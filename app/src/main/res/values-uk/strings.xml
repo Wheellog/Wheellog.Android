@@ -261,8 +261,8 @@
     <string name="auto_upload_log_ec_description">Автоматичне завантаження логу. Потрібно увімкнути GPS.</string>
     <string name="ks18l_scaler_title">Корегування одометру 18L</string>
     <string name="ks18l_scaler_description">Якщо Ваш 18L неправильно відображає дистанцію - виберіть даний пункт</string>
-    <string name="gotway_negative_title">Дзеркальний режим сили струму та напруги</string>
-    <string name="gotway_negative_description">Якщо заначення напруги та сили струму відображається навапаки - спробуйте даний параметр</string>
+    <string name="gotway_negative_title">Дзеркальний режим напруги</string>
+    <string name="gotway_negative_description">Якщо заначення напруги відображається навапаки - спробуйте даний параметр</string>
     <string name="absolute">Абсолютне значення</string>
     <string name="reverse">Реверс</string>
     <string name="straight">Нормальний режим</string>

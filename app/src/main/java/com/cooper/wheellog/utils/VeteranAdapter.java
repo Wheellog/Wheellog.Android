@@ -212,11 +212,11 @@ public class VeteranAdapter extends BaseAdapter {
                     }
                 } else battery = 1; // for new wheels, set 1% by default
 
+                speed = Math.abs(speed);
+
                 if (veteranNegative == 0) {
-                    speed = Math.abs(speed);
                     phaseCurrent = Math.abs(phaseCurrent);
                 } else {
-                    speed = speed * veteranNegative;
                     phaseCurrent = phaseCurrent * veteranNegative;
                 }
 
