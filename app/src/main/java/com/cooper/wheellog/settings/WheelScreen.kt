@@ -1367,7 +1367,7 @@ private fun forAllWheel(appConfig: AppConfig = koinInject()) {
         unit = R.string.amp,
         format = "%.1f",
     ) {
-        appConfig.chargingPower = it.toInt() * 10
+        appConfig.chargingPower = (it * 10).toInt()
     }
 
     var showProfileDialog by remember { mutableStateOf(false) }
