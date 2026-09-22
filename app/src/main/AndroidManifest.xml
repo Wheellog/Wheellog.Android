@@ -133,8 +133,7 @@
 
         <receiver
             android:name=".PebbleBroadcastReceiver"
-            android:exported="true"
-            android:permission="${applicationId}.permission">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.getpebble.action.app.RECEIVE" />
                 <action android:name="com.getpebble.action.app.RECEIVE_ACK" />

@@ -21,6 +21,7 @@ import timber.log.Timber;
 
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.DETAILS;
 import static com.cooper.wheellog.utils.Constants.PEBBLE_APP_SCREEN.GUI;
+import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE;
 import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_ACK;
 import static com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE_NACK;
 
@@ -250,6 +251,12 @@ public class PebbleService extends Service {
                 new IntentFilter(INTENT_APP_RECEIVE_NACK),
                 ContextCompat.RECEIVER_EXPORTED
         );
+        ContextCompat.registerReceiver(
+                this,
+                pebbleMessageReceiver,
+                new IntentFilter(INTENT_APP_RECEIVE),
+                ContextCompat.RECEIVER_EXPORTED
+        );
 
         PebbleKit.startAppOnPebble(this, APP_UUID);
 
@@ -286,6 +293,7 @@ public class PebbleService extends Service {
             unregisterReceiver(mBroadcastReceiver);
             unregisterReceiver(ackReceiver);
             unregisterReceiver(nackReceiver);
+            unregisterReceiver(pebbleMessageReceiver);
         } catch (Exception exception) {
             // ignored
         }
@@ -300,6 +308,8 @@ public class PebbleService extends Service {
         stopForeground(false);
         Timber.i("PebbleConnectivity Stopped");
     }
+
+    private final PebbleBroadcastReceiver pebbleMessageReceiver = new PebbleBroadcastReceiver(true);
 
     private final PebbleKit.PebbleAckReceiver ackReceiver = new PebbleKit.PebbleAckReceiver(APP_UUID) {
         @Override

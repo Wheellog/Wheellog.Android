@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import timber.log.Timber;
+
 import static com.cooper.wheellog.utils.Constants.ACTION_PEBBLE_APP_READY;
 import static com.cooper.wheellog.utils.Constants.ACTION_PEBBLE_APP_SCREEN;
 import static com.cooper.wheellog.utils.Constants.INTENT_EXTRA_LAUNCHED_FROM_PEBBLE;
@@ -31,10 +33,25 @@ import static com.cooper.wheellog.utils.Constants.PEBBLE_KEY_READY;
 
 public class PebbleBroadcastReceiver extends BroadcastReceiver {
     private final AppConfig appConfig = KoinJavaComponent.get(AppConfig.class);
+    // Android 8+ may not deliver the Pebble app's implicit broadcasts to the manifest-declared
+    // receiver, so PebbleService also registers an instance at runtime while it is running.
+    private final boolean registeredAtRuntime;
+
+    public PebbleBroadcastReceiver() {
+        this(false);
+    }
+
+    PebbleBroadcastReceiver(boolean registeredAtRuntime) {
+        this.registeredAtRuntime = registeredAtRuntime;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Constants.INTENT_APP_RECEIVE)) {
+            // While the service runs, its runtime-registered instance handles messages; skip to avoid handling them twice
+            if (!registeredAtRuntime && PebbleService.isInstanceCreated())
+                return;
+
             final UUID receivedUuid = (UUID) intent.getSerializableExtra(Constants.APP_UUID);
             // Pebble-enabled apps are expected to be good citizens and only inspect broadcasts containing their UUID
             if (!PEBBLE_APP_UUID.equals(receivedUuid))
@@ -44,6 +61,7 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
             PebbleKit.sendAckToPebble(context, transactionId);
 
             final String jsonData = intent.getStringExtra(Constants.MSG_DATA);
+            Timber.d("Pebble message received: %s", jsonData);
             final PebbleDictionary data;
 
             try {
@@ -67,11 +85,13 @@ public class PebbleBroadcastReceiver extends BroadcastReceiver {
                     sendPebbleAlert(context, "A newer version of the app is available. Please upgrade to make sure the app works as expected.");
                 Intent pebbleReadyIntent = new Intent(ACTION_PEBBLE_APP_READY);
                 pebbleReadyIntent.putExtra(INTENT_EXTRA_PEBBLE_APP_VERSION, watch_app_version);
+                pebbleReadyIntent.setPackage(context.getPackageName());
                 context.sendBroadcast(pebbleReadyIntent);
             } else if (data.contains(PEBBLE_KEY_DISPLAYED_SCREEN)) {
                 int displayed_screen = data.getInteger(PEBBLE_KEY_DISPLAYED_SCREEN).intValue();
                 Intent pebbleScreenIntent = new Intent(ACTION_PEBBLE_APP_SCREEN);
                 pebbleScreenIntent.putExtra(INTENT_EXTRA_PEBBLE_DISPLAYED_SCREEN, displayed_screen);
+                pebbleScreenIntent.setPackage(context.getPackageName());
                 context.sendBroadcast(pebbleScreenIntent);
             } else if (data.contains(PEBBLE_KEY_PLAY_HORN)) {
                 int horn_mode = appConfig.getHornMode();
