@@ -391,7 +391,8 @@ class RawDataTest: KoinTest {
         // Assert.
         //assertThat(data.model).isEqualTo("Blitz")
         assertThat(data.temperature2).isEqualTo(0)
-*/
+
 
     }
+*/
 }
