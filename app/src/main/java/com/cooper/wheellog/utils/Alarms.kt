@@ -98,6 +98,10 @@ object Alarms: KoinComponent {
     }
 
     private fun reCheckAlarm(pwm: Double, mContext: Context): Boolean {
+        val wd = WheelData.getInstance() ?: return false
+        if (!wd.isConnected) {
+            return false
+        }
         val executed = if (appConfig.pwmBasedAlarms) {
             alertedAlarms(pwm, mContext)
         } else {
