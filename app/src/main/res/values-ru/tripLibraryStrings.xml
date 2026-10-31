@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trips_search_hint">Название поездки</string>
+    <string name="trips_clear_search">Очистить поиск по названию</string>
+    <string name="trips_date_filter">Фильтр по дате</string>
+    <string name="trips_clear_date">Сбросить фильтр даты</string>
+    <string name="trips_sort">Сортировка поездок</string>
+    <string name="trips_sort_date">Дата начала</string>
+    <string name="trips_sort_distance">Расстояние</string>
+    <string name="trips_sort_gps">Максимальная скорость GPS</string>
+    <string name="trips_sort_duration">Продолжительность</string>
+    <string name="trips_descending">По убыванию</string>
+    <string name="trips_ascending">По возрастанию</string>
+    <string name="trips_all_dates">Все даты</string>
+    <string name="trips_day">Конкретная дата</string>
+    <string name="trips_month">Месяц и год</string>
+    <string name="trips_year">Год целиком</string>
+    <string name="trips_date_range">Диапазон дат</string>
+    <string name="trips_range_start">Первый день (включительно)</string>
+    <string name="trips_range_end">Последний день (включительно)</string>
+    <string name="trips_found_count">Найдено %1$d из %2$d</string>
+    <string name="trips_nothing_found">Подходящих поездок нет</string>
+    <string name="trips_loading">Загружаются данные поездок…</string>
+    <string name="csv_import_progress">Импорт CSV: %1$d / %2$d</string>
+    <string name="csv_import_indexing">Проверка существующих поездок…</string>
+    <string name="csv_import_title">Результат импорта CSV</string>
+    <string name="csv_import_summary">Добавлено: %1$d\nУже есть: %2$d\nОшибки: %3$d</string>
+    <string name="csv_import_unchecked">Не удалось сравнить имеющиеся файлы: %1$d</string>
+    <string name="csv_import_busy">Импорт CSV уже выполняется</string>
+    <string name="csv_import_invalid">Не удалось прочитать CSV-лог WheelLog</string>
+</resources>

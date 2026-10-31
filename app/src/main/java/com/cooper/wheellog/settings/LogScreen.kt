@@ -250,7 +250,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
             clickablePref(
                 name = stringResource(R.string.import_log),
             ) {
-                activity?.getCsvResults?.launch("text/*")
+                activity?.getCsvResults?.launch("*/*")
             }
 
             clickablePref(

@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/page_trips"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_trips"
-        android:scrollbars="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/page_trips"
+ android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="12dp">
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+  <EditText android:id="@+id/trip_search" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp"
+   android:singleLine="true" android:textSize="16sp" android:inputType="text" android:imeOptions="actionDone"
+   android:hint="@string/trips_search_hint" android:paddingStart="12dp" android:paddingEnd="8dp" />
+  <ImageButton android:id="@+id/trip_clear_search" android:layout_width="48dp" android:layout_height="48dp"
+   android:padding="12dp" android:src="@drawable/ic_trip_clear" android:background="?attr/selectableItemBackgroundBorderless"
+   android:contentDescription="@string/trips_clear_search" />
+  <ImageButton android:id="@+id/trip_date_filter" android:layout_width="48dp" android:layout_height="48dp"
+   android:padding="12dp" android:src="@drawable/ic_trip_calendar" android:background="?attr/selectableItemBackgroundBorderless"
+   android:contentDescription="@string/trips_date_filter" />
+  <ImageButton android:id="@+id/trip_sort" android:layout_width="48dp" android:layout_height="48dp"
+   android:padding="12dp" android:src="@drawable/ic_trip_sort" android:background="?attr/selectableItemBackgroundBorderless"
+   android:contentDescription="@string/trips_sort" />
+ </LinearLayout>
+ <TextView android:id="@+id/trip_filter_status" android:layout_width="match_parent" android:layout_height="wrap_content"
+  android:minHeight="48dp" android:gravity="center_vertical" android:textSize="14sp" android:visibility="gone"
+  android:paddingStart="4dp" android:paddingEnd="4dp" />
+ <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+  <androidx.recyclerview.widget.RecyclerView android:id="@+id/list_trips" android:scrollbars="vertical"
+   android:layout_width="match_parent" android:layout_height="match_parent" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+  <TextView android:id="@+id/trips_empty" android:layout_width="match_parent" android:layout_height="match_parent"
+   android:padding="24dp" android:gravity="center" android:textSize="16sp" android:visibility="gone" android:text="@string/trips_nothing_found" />
+ </FrameLayout>
+</LinearLayout>

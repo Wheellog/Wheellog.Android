@@ -32,6 +32,12 @@ import androidx.compose.ui.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import com.cooper.wheellog.data.CsvImportViewModel
+import com.cooper.wheellog.data.CsvImportState
+import com.cooper.wheellog.views.showTripBrowserDialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.viewpager2.widget.ViewPager2
@@ -82,6 +88,10 @@ class MainActivity : AppCompatActivity() {
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(LocaleManager.setLocale(base))
     }
+
+    private val csvImports by lazy { ViewModelProvider(this)[CsvImportViewModel::class.java] }
+    private var csvImportBar: Snackbar? = null
+    private var csvImportDialog: androidx.appcompat.app.AlertDialog? = null
 
     //region private variables
     private lateinit var binding: ActivityMainBinding
@@ -659,6 +669,11 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         lifecycle.coroutineScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                csvImports.state.collect { renderCsvImport(it) }
+            }
+        }
+        lifecycle.coroutineScope.launch {
             LoggingService.status.collect { updateTrackRecordIcon() }
         }
         LoggingService.ensureArmed(this, appConfig)
@@ -843,6 +858,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        csvImportBar?.dismiss()
+        csvImportDialog?.dismiss()
         super.onDestroy()
         eventsLoggingTree?.let { Timber.uproot(it); it.close() }
         eventsLoggingTree = null
@@ -1197,34 +1214,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Добавление файлов через Android систему
-    // В результате файлы копируются в папку "manual"
-    val getCsvResults = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-        uris?.let {
-            CoroutineScope(Dispatchers.IO + Job()).launch {
-                for (uri in it) {
-                    contentResolver.apply {
-                        query(uri, null, null, null, null)?.use { cursor ->
-                            val nameIndex = cursor.getColumnIndex(MediaStore.Downloads.DISPLAY_NAME)
-                            cursor.moveToFirst()
-                            cursor.getString(nameIndex)
-                        }?.let { fileName ->
-                            openInputStream(uri)?.use { stream ->
-                                val fileUtil = FileUtil(this@MainActivity)
-                                fileUtil.prepareFile(fileName, "manual")
-                                fileUtil.writeAllStream(stream)
-                                fileUtil.close()
-                            }
-                        }
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    if (::pagerAdapter.isInitialized) { // Check if initialized (for lateinit var)
-                        pagerAdapter.updatePageOfTrips()
-                    }
-                }
-            }
+    // Copy selected logs into app-owned Downloads only after duplicate checks.
+    val getCsvResults = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        if (!uris.isNullOrEmpty() && !csvImports.start(uris)) showSnackBar(R.string.csv_import_busy)
+    }
+
+    private fun renderCsvImport(state: CsvImportState) {
+        if (state.running) {
+            val progress = state.progress
+            val message = if (progress == null || progress.indexing) getString(R.string.csv_import_indexing)
+                else getString(R.string.csv_import_progress, progress.done, progress.total)
+            val bar = csvImportBar ?: Snackbar.make(binding.mainView,message,Snackbar.LENGTH_INDEFINITE).also { csvImportBar = it }
+            com.cooper.wheellog.map.styleTripMessage(this,bar)
+            bar.setText(message)
+            if (!bar.isShown) bar.show()
+            return
         }
+        csvImportBar?.dismiss(); csvImportBar = null
+        val result = state.result ?: return
+        if (csvImportDialog?.isShowing == true || isFinishing) return
+        if (::pagerAdapter.isInitialized) pagerAdapter.updatePageOfTrips()
+        val message = buildString {
+            append(getString(R.string.csv_import_summary,result.added,result.existing,result.errors.size))
+            if (result.uncheckedExisting > 0) append("\n\n" + getString(R.string.csv_import_unchecked,result.uncheckedExisting))
+            if (result.errors.isNotEmpty()) append("\n\n" + result.errors.take(8).joinToString("\n") { it.take(120) })
+        }
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this).setTitle(R.string.csv_import_title)
+            .setMessage(message).setPositiveButton(android.R.string.ok) { _,_ -> csvImports.acknowledge() }
+            .setOnCancelListener { csvImports.acknowledge() }.create()
+        csvImportDialog = dialog
+        showTripBrowserDialog(this,dialog)
     }
 
     private fun makeIntentPipFilter(): IntentFilter {

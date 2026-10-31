@@ -29,6 +29,10 @@ import com.cooper.wheellog.map.tripMutedColor
 import com.cooper.wheellog.map.tripIconColor
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.R
+import com.cooper.wheellog.data.TripCatalog
+import com.cooper.wheellog.data.TripListItem
+import com.cooper.wheellog.data.TripListQuery
+import com.cooper.wheellog.data.TripListPreferences
 import com.cooper.wheellog.data.TripDao
 import com.cooper.wheellog.data.TripDataDbEntry
 import com.cooper.wheellog.data.TripParser
@@ -60,6 +64,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
     private var font = ThemeManager.getTypeface(context)
     private val refreshScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var refreshJob: Job? = null
+    private var refreshOnAttach = false
 
     var uploadVisible: Boolean
         get() = uploadViewVisible == View.VISIBLE
@@ -67,18 +72,72 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
 
     init {
         uploadVisible = appConfig.autoUploadEc
-        updateTrips(tripModels)
+    }
+
+    private val listPreferences by lazy { TripListPreferences(context.getSharedPreferences("trip_list", Context.MODE_PRIVATE)) }
+    var query: TripListQuery = listPreferences.load()
+        private set
+    private var allTrips = ArrayList(tripModels)
+    private var catalog = allTrips.map { TripCatalog.item(context, it) }
+    var loading: Boolean = false
+        private set
+    var changed: (() -> Unit)? = null
+    val totalCount: Int get() = allTrips.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setQuery(value: TripListQuery) {
+        query = value
+        listPreferences.save(value)
+        applyQuery()
     }
 
     @SuppressLint("NotifyDataSetChanged")
+    private fun applyQuery() {
+        val byId = allTrips.associateBy { it.uri.toString() }
+        tripModels = ArrayList(query.apply(catalog).mapNotNull { entry -> byId[entry.id]?.apply { title = entry.name } })
+        notifyDataSetChanged()
+        changed?.invoke()
+    }
+
     fun updateTrips(tripModels: ArrayList<TripModel>) {
         refreshJob?.cancel()
+        allTrips = ArrayList(tripModels)
+        val previous = catalog.associateBy { it.id }
+        catalog = allTrips.map { model -> previous[model.uri.toString()]?.copy(name = TripCatalog.title(context, model, previous[model.uri.toString()]?.startedAt))
+            ?: TripCatalog.item(context, model) }
+        if (allTrips.isEmpty()) { catalog = emptyList(); loading = false; applyQuery(); return }
+        loading = true
+        applyQuery()
         refreshJob = refreshScope.launch {
-            val merged = ArrayList(tripModels)
-            this@TripAdapter.tripModels = merged
-            notifyDataSetChanged()
+            val models = ArrayList(allTrips)
+            try {
+                catalog = withContext(Dispatchers.IO) {
+                    TripCatalog.load(context, models, get<TripDao>()) { available ->
+                        withContext(Dispatchers.Main) {
+                            catalog = available
+                            applyQuery()
+                        }
+                    }
+                }
+            } catch (cancelled: CancellationException) { throw cancelled
+            } catch (error: Exception) { Timber.w(error, "Trip catalog could not be refreshed") }
+            loading = false
+            applyQuery()
         }
     }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        if (refreshOnAttach) { refreshOnAttach = false; updateTrips(ArrayList(allTrips)) }
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        refreshOnAttach = refreshJob?.isActive == true
+        refreshJob?.cancel()
+        super.onDetachedFromRecyclerView(recyclerView)
+    }
+
+    init { updateTrips(tripModels) }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemBinding = ListTripItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -95,12 +154,11 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
         return tripModels.size
     }
 
-    fun removeAt(position: Int) {
-        if (tripModels.size > position) {
-            tripModels.removeAt(position)
-            notifyItemChanged(position)
-            notifyItemRangeRemoved(position, 1)
-        }
+    fun removeAt(position: Int) { tripModels.getOrNull(position)?.let { removeTrip(it) } }
+    fun removeTrip(model: TripModel) {
+        allTrips.removeAll { it.uri == model.uri }
+        catalog = catalog.filterNot { it.id == model.uri.toString() }
+        applyQuery()
     }
 
     class ViewHolder internal constructor(private val itemBinding: ListTripItemBinding, val font: Typeface) : RecyclerView.ViewHolder(itemBinding.root), KoinComponent {
@@ -168,7 +226,7 @@ class TripAdapter(var context: Context, private var tripModels: ArrayList<TripMo
                     } else {
                         get<Context>().contentResolver.delete(tripModel.uri, null, null)
                     }
-                    adapter.removeAt(adapterPosition)
+                    adapter.removeTrip(tripModel)
 
                     CoroutineScope(Dispatchers.IO + Job()).launch {
                         dao.apply {

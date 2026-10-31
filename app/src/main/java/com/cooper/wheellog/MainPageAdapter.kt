@@ -144,11 +144,10 @@ class MainPageAdapter(private var pages: MutableList<Int>, val activity: MainAct
             }
             R.layout.main_view_trips -> {
                 listOfTrips = view.findViewById(R.id.list_trips)
-                // listOfTrips?.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
-                listOfTrips?.adapter = TripAdapter(activity, FileUtil.fillTrips(activity))
-                // for Tests
-                // val models = arrayListOf(TripModel("title", "desc", "asd"))
-                // listOfTrips?.adapter = TripAdapter(activity, models)
+                val trips = TripAdapter(activity, FileUtil.fillTrips(activity))
+                listOfTrips?.adapter = trips
+                com.cooper.wheellog.views.TripBrowserControls(activity, view, trips)
+
             }
             R.layout.main_view_smart_bms -> {
                 createSmartBmsPage()

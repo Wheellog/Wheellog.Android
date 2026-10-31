@@ -389,7 +389,7 @@ class FileUtil(val context: Context) {
                                 continue
                             }
                             val extension = f.absolutePath.substring(indexExt)
-                            if (extension == ".csv" && !f.name.startsWith("RAW")) {
+                            if (extension.equals(".csv", ignoreCase = true) && !f.name.startsWith("RAW", ignoreCase = true)) {
                                 try {
                                     val contentUri = FileProvider.getUriForFile(
                                         context,
@@ -430,7 +430,7 @@ class FileUtil(val context: Context) {
             val cursor = context.contentResolver.query(
                 uri,
                 projection,
-                where + " AND " + MediaStore.Downloads.DISPLAY_NAME + " NOT LIKE ?",
+                where + " AND " + MediaStore.Downloads.IS_PENDING + " = 0 AND " + MediaStore.Downloads.DISPLAY_NAME + " NOT LIKE ?",
                 arrayOf("RAW_%"),
                 MediaStore.Downloads.DATE_MODIFIED + " DESC"
             )

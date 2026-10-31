@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trips_search_hint">Trip name</string>
+    <string name="trips_clear_search">Clear name search</string>
+    <string name="trips_date_filter">Filter by date</string>
+    <string name="trips_clear_date">Clear the date filter</string>
+    <string name="trips_sort">Sort trips</string>
+    <string name="trips_sort_date">Start date</string>
+    <string name="trips_sort_distance">Distance</string>
+    <string name="trips_sort_gps">Maximum GPS speed</string>
+    <string name="trips_sort_duration">Duration</string>
+    <string name="trips_descending">Descending</string>
+    <string name="trips_ascending">Ascending</string>
+    <string name="trips_all_dates">All dates</string>
+    <string name="trips_day">Specific day</string>
+    <string name="trips_month">Month and year</string>
+    <string name="trips_year">Whole year</string>
+    <string name="trips_date_range">Date range</string>
+    <string name="trips_range_start">First day (inclusive)</string>
+    <string name="trips_range_end">Last day (inclusive)</string>
+    <string name="trips_found_count">Found %1$d of %2$d</string>
+    <string name="trips_nothing_found">No matching trips</string>
+    <string name="trips_loading">Loading trip details…</string>
+    <string name="csv_import_progress">Importing CSV: %1$d / %2$d</string>
+    <string name="csv_import_indexing">Checking existing trips…</string>
+    <string name="csv_import_title">CSV import results</string>
+    <string name="csv_import_summary">Added: %1$d\nAlready present: %2$d\nErrors: %3$d</string>
+    <string name="csv_import_unchecked">Existing files that could not be compared: %1$d</string>
+    <string name="csv_import_busy">CSV import is already running</string>
+    <string name="csv_import_invalid">Not a readable WheelLog CSV log</string>
+</resources>
