@@ -11,6 +11,8 @@ class LogGeoPoint(latitude: Double, longitude: Double, altitude: Double): GeoPoi
     var distance: Int = 0
     var temperature: Int = 0
     var timeString: String = ""
+    var segmentStart = false
+    var telemetryAvailable = true
     val timeDate: Date?
         get() {
             return if (timeString.isNotEmpty()) {

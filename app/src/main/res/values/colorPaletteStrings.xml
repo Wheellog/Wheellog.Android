@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_standard">Standard</string>
+    <string name="theme_ajdm" translatable="false">AJDM</string>
+    <string name="palette_percent_unit" translatable="false">%</string>
+    <string name="theme_contrast">Contrast</string>
+    <string name="theme_inferno">Inferno</string>
+    <string name="palette_restart_description">The selection is saved. Exit WheelLog and start it again to apply the theme or language. The app will not close automatically.</string>
+    <string name="low_battery_color_threshold" translatable="false">low_battery_color_threshold</string>
+    <string name="low_battery_color_threshold_title">Low battery color threshold</string>
+    <string name="low_battery_color_threshold_description">In Contrast and Inferno, the battery gauge and percentage turn pure red at this charge level or below. Sound and vibration alarms are unchanged.</string>
+</resources>

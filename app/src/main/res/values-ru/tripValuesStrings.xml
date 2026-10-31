@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_gps_maximum">Макс. скорость GPS</string>
+    <string name="trip_gps_average">Сред. скорость GPS</string>
+    <string name="trip_gps_moving_average">Сред. скорость движения GPS</string>
+    <string name="trip_wheel_maximum">Макс. скорость колеса</string>
+    <string name="trip_min_voltage">Мин. напряжение</string>
+    <string name="trip_max_motor_temperature">Макс. темп. мотора</string>
+</resources>

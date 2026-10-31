@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_standard">Стандартная</string>
+    <string name="theme_contrast">Контрастная</string>
+    <string name="theme_inferno">Инферно</string>
+    <string name="palette_restart_description">Выбор сохранён. Чтобы применить тему или язык, выйдите из WheelLog и запустите его снова. Приложение не закроется автоматически.</string>
+    <string name="low_battery_color_threshold_title">Порог цвета низкого заряда</string>
+    <string name="low_battery_color_threshold_description">В схемах «Контрастная» и «Инферно» шкала батареи и процент становятся чисто красными при этом заряде и ниже. Звуковые сигналы и вибрация не меняются.</string>
+</resources>

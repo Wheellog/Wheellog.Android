@@ -1,6 +1,7 @@
 package com.cooper.wheellog
 
 import android.content.Context
+import com.cooper.wheellog.utils.Cached
 import com.cooper.wheellog.utils.Calculator
 import com.cooper.wheellog.utils.SomeUtil
 import com.google.common.truth.Truth.assertThat
@@ -17,8 +18,20 @@ class CalculatorTest: KoinTest {
     private lateinit var data: WheelData
     private lateinit var appConfig: AppConfig
 
+    private fun clearSharedCalculationState() {
+        // Tests reset the mocked clock to zero. A cache created by another test
+        // can otherwise appear unexpired forever, making results order-dependent.
+        val samples = Calculator::class.java.getDeclaredField("powerArray").apply { isAccessible = true }
+        (samples.get(Calculator) as MutableList<*>).clear()
+        for (name in listOf("expiredFunctions", "doubleValues")) {
+            val field = Cached::class.java.getDeclaredField(name).apply { isAccessible = true }
+            (field.get(Cached) as MutableMap<*, *>).clear()
+        }
+    }
+
     @Before
     fun setUp() {
+        clearSharedCalculationState()
         appConfig = mockkClass(AppConfig::class, relaxed = true)
         startKoin {
             modules(
@@ -41,6 +54,7 @@ class CalculatorTest: KoinTest {
 
     @After
     fun tearDown() {
+        clearSharedCalculationState()
         unmockkAll()
         stopKoin()
     }

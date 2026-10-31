@@ -5,6 +5,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.utils.ThemeManager
+import com.cooper.wheellog.R
 
 
 private val LightColors = lightColorScheme(
@@ -77,7 +82,35 @@ fun AppTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable() () -> Unit
 ) {
-  val colors = if (!useDarkTheme) {
+  val palette = ThemeManager.palette
+  val context = LocalContext.current
+  val colors = if (palette != null) {
+    // Settings text has its own readable foreground; the dashboard remains red.
+    val foreground = Color(context.getColorEx(
+      if (ThemeManager.theme == R.style.InfernoTheme) R.color.inferno_battery else palette.foreground
+    ))
+    val muted = Color(context.getColorEx(palette.muted))
+    val accent = Color(context.getColorEx(palette.accent))
+    val background = Color(context.getColorEx(palette.background))
+    val surface = Color(context.getColorEx(palette.surface))
+    darkColorScheme(
+      primary = accent, onPrimary = if (androidx.core.graphics.ColorUtils.calculateLuminance(context.getColorEx(palette.accent)) < .179) Color.White else Color.Black,
+      primaryContainer = surface, onPrimaryContainer = foreground,
+      secondary = accent, onSecondary = if (androidx.core.graphics.ColorUtils.calculateLuminance(context.getColorEx(palette.accent)) < .179) Color.White else Color.Black,
+      secondaryContainer = surface, onSecondaryContainer = muted,
+      tertiary = Color(context.getColorEx(palette.temperature)), onTertiary = Color.Black,
+      background = background, onBackground = foreground,
+      surface = surface, onSurface = foreground,
+      surfaceVariant = surface, onSurfaceVariant = muted,
+      outline = muted, outlineVariant = Color(context.getColorEx(palette.arc)),
+      surfaceTint = accent,
+      error = Color.Red, onError = Color.Black,
+      surfaceBright = surface, surfaceDim = background,
+      surfaceContainer = surface, surfaceContainerLow = surface,
+      surfaceContainerLowest = background, surfaceContainerHigh = surface,
+      surfaceContainerHighest = surface,
+    )
+  } else if (!useDarkTheme) {
     LightColors
   } else {
     DarkColors

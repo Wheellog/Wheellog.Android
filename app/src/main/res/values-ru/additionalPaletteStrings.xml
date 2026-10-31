@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_porcelain">Фарфор</string>
+    <string name="theme_polar">Полярная</string>
+    <string name="theme_jade">Нефрит</string>
+    <string name="theme_steel">Сталь</string>
+    <string name="theme_heather">Вереск</string>
+</resources>

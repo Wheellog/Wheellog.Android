@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_manage">Порядок и видимость экранов</string>
+    <string name="dashboard_fixed_main">Главный экран всегда включён и стоит первым. Остальные экраны можно отключить и переместить стрелками.</string>
+    <string name="dashboard_main">Главный экран</string>
+    <string name="dashboard_trips">Поездки</string>
+    <string name="dashboard_values">Параметры</string>
+    <string name="dashboard_bms">Smart BMS</string>
+    <string name="dashboard_graph">График</string>
+    <string name="dashboard_events">События</string>
+    <string name="dashboard_move_up">Переместить %1$s выше</string>
+    <string name="dashboard_move_down">Переместить %1$s ниже</string>
+</resources>

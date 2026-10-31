@@ -298,7 +298,7 @@ object DialogHelper : KoinComponent {
             ) as LocationManager
             val mGPS = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             if (!mGPS) {
-                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                AlertDialog.Builder(context)
                     .setMessage(R.string.gpsdisabled_alert)
                     .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -310,7 +310,7 @@ object DialogHelper : KoinComponent {
             }
 
             if (!PermissionsUtil.checkLocationPermission(context)) {
-                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                AlertDialog.Builder(context)
                     .setMessage(R.string.logging_error_no_location_permission)
                     .setPositiveButton(R.string.gotosettings) { _: DialogInterface?, _: Int ->
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

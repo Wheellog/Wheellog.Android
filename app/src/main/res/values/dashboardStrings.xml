@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_manage">Screen order and visibility</string>
+    <string name="dashboard_fixed_main">The main dashboard stays enabled and first. Use the arrows to reorder other screens or disable them.</string>
+    <string name="dashboard_main">Main dashboard</string>
+    <string name="dashboard_trips">Trips</string>
+    <string name="dashboard_values">Parameters</string>
+    <string name="dashboard_bms">Smart BMS</string>
+    <string name="dashboard_graph">Graph</string>
+    <string name="dashboard_events">Events</string>
+    <string name="dashboard_move_up">Move %1$s up</string>
+    <string name="dashboard_move_down">Move %1$s down</string>
+</resources>

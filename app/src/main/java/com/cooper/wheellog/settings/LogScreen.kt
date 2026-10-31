@@ -25,6 +25,7 @@ import com.cooper.wheellog.ElectroClub
 import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
 import com.cooper.wheellog.WheelData
+import com.cooper.wheellog.LoggingService
 import com.cooper.wheellog.utils.FileUtil
 import com.cooper.wheellog.utils.PermissionsUtil
 import com.cooper.wheellog.utils.ThemeIconEnum
@@ -39,6 +40,8 @@ import kotlin.coroutines.suspendCoroutine
 @Composable
 fun logScreen(appConfig: AppConfig = koinInject())
 {
+    val context = LocalContext.current
+    var locationDependency by remember { mutableStateOf(appConfig.logLocationData) }
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -85,9 +88,6 @@ fun logScreen(appConfig: AppConfig = koinInject())
             }
         }
 
-        val context = LocalContext.current
-        var locationDependency by remember { mutableStateOf(appConfig.logLocationData) }
-
         switchPref(
             name = stringResource(R.string.log_location_title),
             desc = stringResource(R.string.log_location_description),
@@ -99,7 +99,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
         }
 
         val gpsDependency = remember { mutableStateOf(appConfig.useGps) }
-        if (gpsDependency.value && !PermissionsUtil.checkLocationPermission(context)) {
+        if (gpsDependency.value && !LoggingService.hasPermission(context)) {
             gpsDependency.value = false
             appConfig.useGps = false
         }
@@ -137,7 +137,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
             ) {
                 appConfig.useGps = it
                 gpsDependency.value = it
-                alertGps = it && !PermissionsUtil.checkLocationPermission(context)
+                alertGps = it && !LoggingService.hasPermission(context)
             }
         }
 
@@ -149,16 +149,7 @@ fun logScreen(appConfig: AppConfig = koinInject())
                 confirmButton = {
                     Button(
                         onClick = {
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
-                            } else {
-                                locationPermission.launch(
-                                    arrayOf(
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                                    )
-                                )
-                            }
+                            locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                             val mLocationManager = ContextCompat.getSystemService(context, LocationManager::class.java) as LocationManager
                             val mGPS = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                             if (!mGPS) {
@@ -239,6 +230,14 @@ fun logScreen(appConfig: AppConfig = koinInject())
         }
 
         switchPref(
+            name = stringResource(R.string.continue_this_day_log_title),
+            desc = stringResource(R.string.track_continue_day_description),
+            default = appConfig.continueThisDayLog,
+        ) {
+            appConfig.continueThisDayLog = it
+        }
+
+        switchPref(
             name = stringResource(R.string.use_raw_title),
             desc = stringResource(R.string.use_raw_description),
             default = appConfig.enableRawData,
@@ -246,20 +245,12 @@ fun logScreen(appConfig: AppConfig = koinInject())
             appConfig.enableRawData = it
         }
 
-        switchPref(
-            name = stringResource(R.string.continue_this_day_log_title),
-            desc = stringResource(R.string.continue_this_day_log_description),
-            default = appConfig.continueThisDayLog,
-        ) {
-            appConfig.continueThisDayLog = it
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || BuildConfig.DEBUG) {
             val activity = (LocalContext.current as? MainActivity)
             clickablePref(
                 name = stringResource(R.string.import_log),
             ) {
-                activity?.getCsvResults?.launch("text/*")
+                activity?.getCsvResults?.launch("*/*")
             }
 
             clickablePref(

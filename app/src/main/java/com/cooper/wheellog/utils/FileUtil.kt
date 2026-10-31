@@ -26,6 +26,7 @@ class FileUtil(val context: Context) {
     private val androidQCache = Hashtable<String, CachedFile>()
     private var ignoreTimber = false
     private var stream: OutputStream? = null
+    val contentUri: Uri? get() = uri ?: file?.let { Uri.fromFile(it) }
 
     internal class CachedFile {
         var file: File? = null
@@ -33,16 +34,63 @@ class FileUtil(val context: Context) {
     }
 
     var fileName = ""
+    fun hasColumn(name: String): Boolean = runCatching {
+        val input = uri?.let { context.contentResolver.openInputStream(it) } ?: file?.inputStream()
+        input?.bufferedReader()?.use { it.readLine()?.split(',')?.contains(name) == true } ?: false
+    }.getOrDefault(false)
     fun setIgnoreTimber(value: Boolean) {
         ignoreTimber = value
     }
 
     val absolutePath: String?
-        get() = if (isNull) {
-            null
-        } else file!!.absolutePath
+        get() = file?.absolutePath ?: uri?.toString()
     val isNull: Boolean
-        get() = file == null || file.toString() == "null" || stream == null
+        get() = (file == null && uri == null) || stream == null
+
+    fun openExisting(source: Uri, path: String?, name: String): Boolean {
+        fileName = name
+        uri = source.takeIf { it.scheme == "content" }
+        file = if (uri == null) File(path?.takeIf { it.isNotBlank() } ?: source.path ?: return false)
+            else path?.takeIf { !it.startsWith("content:") }?.let(::File)
+        prepareStream()
+        return !isNull
+    }
+
+    /** Drop only an incomplete last row before appending to a recovered native CSV. */
+    fun repairCsvTail() {
+        var bytes = 0L
+        var complete = 0L
+        inputStream?.use { input ->
+            val buffer = ByteArray(8192)
+            while (true) {
+                val count = input.read(buffer)
+                if (count < 0) break
+                for (index in 0 until count) if (buffer[index] == '\n'.code.toByte()) complete = bytes + index + 1
+                bytes += count
+            }
+        }
+        if (complete == bytes) return
+        close()
+        if (uri != null) {
+            val descriptor = context.contentResolver.openFileDescriptor(uri!!, "rw") ?: error("Cannot repair CSV")
+            android.os.ParcelFileDescriptor.AutoCloseOutputStream(descriptor).use { output ->
+                output.channel.truncate(complete); output.fd.sync()
+            }
+        } else RandomAccessFile(file!!, "rw").use { it.setLength(complete) }
+        prepareStream()
+    }
+
+    @Synchronized fun appendLineChecked(line: String) {
+        val output = stream ?: error("CSV is not open")
+        output.write((line + "\r\n").toByteArray(Charsets.UTF_8))
+        output.flush()
+    }
+
+    fun resetContents() {
+        close()
+        stream = if (uri != null) context.contentResolver.openOutputStream(uri!!, "wt") else FileOutputStream(file!!, false)
+        check(stream != null)
+    }
 
     @JvmOverloads
     fun prepareFile(fileName: String, folder: String? = ""): Boolean {
@@ -287,7 +335,7 @@ class FileUtil(val context: Context) {
                 MediaStore.Downloads._ID
             )
             val where =
-                String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE)
+                String.format("%s IN ('text/csv', 'text/comma-separated-values')", MediaStore.Downloads.MIME_TYPE)
             val cursor = context.contentResolver.query(
                 uri,
                 projection,
@@ -341,7 +389,7 @@ class FileUtil(val context: Context) {
                                 continue
                             }
                             val extension = f.absolutePath.substring(indexExt)
-                            if (extension == ".csv" && !f.name.startsWith("RAW")) {
+                            if (extension.equals(".csv", ignoreCase = true) && !f.name.startsWith("RAW", ignoreCase = true)) {
                                 try {
                                     val contentUri = FileProvider.getUriForFile(
                                         context,
@@ -378,11 +426,11 @@ class FileUtil(val context: Context) {
                 MediaStore.Downloads._ID
             )
             val where =
-                String.format("%s = 'text/comma-separated-values'", MediaStore.Downloads.MIME_TYPE)
+                String.format("%s IN ('text/csv', 'text/comma-separated-values')", MediaStore.Downloads.MIME_TYPE)
             val cursor = context.contentResolver.query(
                 uri,
                 projection,
-                where + " AND " + MediaStore.Downloads.DISPLAY_NAME + " NOT LIKE ?",
+                where + " AND " + MediaStore.Downloads.IS_PENDING + " = 0 AND " + MediaStore.Downloads.DISPLAY_NAME + " NOT LIKE ?",
                 arrayOf("RAW_%"),
                 MediaStore.Downloads.DATE_MODIFIED + " DESC"
             )

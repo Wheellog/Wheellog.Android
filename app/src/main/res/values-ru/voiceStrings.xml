@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_title">Голосовые уведомления</string>
+    <string name="voice_language_note">Озвучка следует языку приложения: русский или английский. Ниже можно выбрать и послушать офлайн-голос для каждого языка.</string>
+    <string name="voice_enable">Включить голосовые уведомления</string>
+    <string name="voice_alarms">Озвучивать тревоги</string>
+    <string name="voice_alarm_note">Используются существующие пороги тревог. Звуковые сигналы и вибрация регулируются в настройках тревог.</string>
+    <string name="voice_connection">Озвучивать подключение и потерю связи</string>
+    <string name="voice_reports">Автоматические сводки поездки</string>
+    <string name="voice_triggers">Когда читать сводку</string>
+    <string name="voice_triggers_note">Условия можно включать вместе. Все они читают показатели из раздела «Состав сводки». Совпавшие условия запускают одну сводку. Расстояния задаются в километрах и метрах.</string>
+    <string name="voice_time_enabled">По времени</string>
+    <string name="voice_distance_connect">Подключите колесо, чтобы настроить условия по расстоянию.</string>
+    <string name="voice_distance_periodic">Каждые N км поездки</string>
+    <string name="voice_distance_interval">Интервал по расстоянию</string>
+    <string name="voice_distance_after">Через N км после включения опции</string>
+    <string name="voice_distance_after_note">Один раз. После срабатывания опция выключается. Изменение расстояния начинает новый отсчёт. Без связи отсчёт начнётся с первых свежих данных колеса.</string>
+    <string name="voice_distance_after_value">Расстояние после включения</string>
+    <string name="voice_distance_target">При достижении общего пробега</string>
+    <string name="voice_distance_target_note">Один раз. Введите будущий общий пробег колеса. Цель сохраняется при перезапуске, после срабатывания опция выключается.</string>
+    <string name="voice_distance_target_value">Общий пробег для сводки</string>
+    <string name="voice_distance_amount">%1$d км %2$d м</string>
+    <string name="voice_distance_current">Текущий общий пробег: %1$d км %2$d м. Настройки расстояния сохраняются отдельно для каждого колеса.</string>
+    <string name="voice_distance_waiting">Ожидание свежих данных колеса</string>
+    <string name="voice_distance_future">Укажите пробег больше текущего. Метры — от 0 до 999.</string>
+    <string name="voice_distance_invalid">Укажите расстояние больше нуля. Метры — от 0 до 999.</string>
+    <string name="voice_kilometres">Километры</string>
+    <string name="voice_metres">Метры</string>
+    <string name="voice_field_time">Время поездки</string>
+    <string name="voice_value_average_moving_kmh">Средняя скорость движения: %1$s километров в час.</string>
+    <string name="voice_value_average_moving_mph">Средняя скорость движения: %1$s миль в час.</string>
+    <string name="voice_value_average_kmh">Средняя скорость: %1$s километров в час.</string>
+    <string name="voice_value_average_mph">Средняя скорость: %1$s миль в час.</string>
+    <string name="voice_value_time">Время поездки: %1$s.</string>
+    <plurals name="voice_time_hours"><item quantity="one">%1$d час</item><item quantity="few">%1$d часа</item><item quantity="many">%1$d часов</item><item quantity="other">%1$d часа</item></plurals>
+    <plurals name="voice_time_minutes"><item quantity="one">%1$d минута</item><item quantity="few">%1$d минуты</item><item quantity="many">%1$d минут</item><item quantity="other">%1$d минуты</item></plurals>
+    <plurals name="voice_time_seconds"><item quantity="one">%1$d секунда</item><item quantity="few">%1$d секунды</item><item quantity="many">%1$d секунд</item><item quantity="other">%1$d секунды</item></plurals>
+    <string name="voice_interval">Интервал сводок, секунды</string>
+    <string name="voice_interval_note">15–1800 секунд. Сводка читается только по свежим данным колеса и уступает место тревогам.</string>
+    <string name="voice_moving">Сводки только в движении</string>
+    <string name="voice_moving_note">Автоматические сводки включаются от 10 км/ч. На тревоги это ограничение не действует.</string>
+    <string name="voice_report_fields">Состав сводки</string>
+    <string name="voice_field_temperature">Температура контроллера</string>
+    <string name="voice_field_motor_temperature">Температура двигателя</string>
+    <string name="voice_field_voltage">Напряжение</string>
+    <string name="voice_field_current">Ток</string>
+    <string name="voice_field_power">Мощность</string>
+    <string name="voice_field_pwm">PWM</string>
+    <string name="voice_report_now">Прочитать текущие показатели</string>
+    <string name="voice_voices">Голоса и прослушивание</string>
+    <string name="voice_engine">Синтезатор речи</string>
+    <string name="voice_russian">Русский голос</string>
+    <string name="voice_english">Английский голос</string>
+    <string name="voice_choose_note">При выборе звучит пример. Голос сохраняется для этого языка.</string>
+    <string name="voice_number">Голос %1$d</string>
+    <string name="voice_auto">Автоматически, офлайн</string>
+    <plurals name="voice_battery_percent"><item quantity="one">Заряд: %1$s процент.</item><item quantity="few">Заряд: %1$s процента.</item><item quantity="many">Заряд: %1$s процентов.</item><item quantity="other">Заряд: %1$s процента.</item></plurals>
+    <plurals name="voice_distance_km"><item quantity="one">Расстояние: %1$s километр.</item><item quantity="few">Расстояние: %1$s километра.</item><item quantity="many">Расстояние: %1$s километров.</item><item quantity="other">Расстояние: %1$s километра.</item></plurals>
+    <plurals name="voice_distance_mi"><item quantity="one">Расстояние: %1$s миля.</item><item quantity="few">Расстояние: %1$s мили.</item><item quantity="many">Расстояние: %1$s миль.</item><item quantity="other">Расстояние: %1$s мили.</item></plurals>
+    <string name="voice_preview_ru">Послушать русский голос</string>
+    <string name="voice_preview_en">Послушать английский голос</string>
+    <string name="voice_stop">Остановить речь</string>
+    <string name="voice_refresh">Перечитать список голосов</string>
+    <string name="voice_install">Установить голосовые данные</string>
+    <string name="voice_install_note">Загрузите русский и английский голоса в синтезаторе, затем вернитесь и нажмите «Перечитать список голосов». Для уведомлений используются установленные офлайн-голоса.</string>
+    <string name="voice_install_error">Для установки голосов найдите «Синтез речи» в настройках телефона.</string>
+    <string name="voice_loading">Загрузка доступных голосов…</string>
+    <string name="voice_engine_error">Синтезатор речи недоступен. Проверьте его настройки и обновите голоса.</string>
+    <string name="voice_no_offline_voice">В выбранном синтезаторе нет установленного офлайн-голоса для этого языка.</string>
+    <string name="voice_no_live_data">Подключите колесо и дождитесь свежих данных для чтения сводки.</string>
+    <string name="voice_audio_unavailable">Звук сейчас недоступен. Повторите после звонка или другого прерывания.</string>
+    <string name="voice_rate">Темп речи, проценты</string>
+    <string name="voice_volume">Громкость речи, проценты</string>
+    <string name="voice_volume_note">Относительно громкости мультимедиа на телефоне.</string>
+    <string name="voice_repeat">Интервал повторения тревоги, секунды</string>
+    <string name="voice_duck">Приглушать музыку во время речи</string>
+    <string name="voice_preview_text">Виллог. Скорость: 25 километров в час. Заряд: 80 процентов. Расстояние: 12,5 километра.</string>
+    <string name="voice_connected">Колесо подключено.</string>
+    <string name="voice_disconnected">Связь с колесом потеряна.</string>
+    <string name="voice_alarm_speed">Сбавьте скорость! Превышен предел скорости.</string>
+    <string name="voice_alarm_pwm">Сбавьте скорость! ШИМ: %1$s процентов.</string>
+    <string name="voice_alarm_current">Высокий ток! %1$s ампер.</string>
+    <string name="voice_alarm_temperature">Перегрев! %1$s градусов Цельсия.</string>
+    <string name="voice_alarm_battery">Низкий заряд! %1$s процентов.</string>
+    <string name="voice_alarm_wheel">Тревога колеса! Сбавьте скорость.</string>
+    <string name="voice_value_speed_kmh">Скорость: %1$s километров в час.</string>
+    <string name="voice_value_speed_mph">Скорость: %1$s миль в час.</string>
+    <string name="voice_value_battery">Заряд: %1$s процентов.</string>
+    <string name="voice_value_distance_km">Расстояние: %1$s километра.</string>
+    <string name="voice_value_distance_mi">Расстояние: %1$s мили.</string>
+    <string name="voice_value_voltage">Напряжение: %1$s вольт.</string>
+    <string name="voice_value_current">Ток: %1$s ампер.</string>
+    <string name="voice_value_power">Мощность: %1$s ватт.</string>
+    <string name="voice_value_temperature">Температура контроллера: %1$s градусов Цельсия.</string>
+    <string name="voice_value_motor_temperature">Температура двигателя: %1$s градусов Цельсия.</string>
+    <string name="voice_value_pwm">ШИМ: %1$s процентов.</string>
+    <string name="voice_playback_ready">Готовы к озвучиванию показателей и тревог</string>
+    <string name="voice_music_mode">Музыка во время речи</string>
+    <string name="voice_music_mode_note">Позволяет лучше слышать голосовые уведомления. Работа паузы зависит от плеера.</string>
+    <string name="voice_music_mix">Без изменений</string>
+    <string name="voice_music_duck">Приглушать</string>
+    <string name="voice_music_pause">Приостанавливать</string>
+</resources>

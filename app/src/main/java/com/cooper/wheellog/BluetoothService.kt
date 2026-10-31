@@ -60,6 +60,8 @@ class BluetoothService: Service() {
 
             override fun onConnectionFailed(peripheral: BluetoothPeripheral, status: HciStatus) {
                 super.onConnectionFailed(peripheral, status)
+                if (peripheral.address == wheelAddress)
+                    com.cooper.wheellog.voice.VoiceAnnouncements.onDisconnected(applicationContext, disconnectRequested)
                 broadcastConnectionUpdate(autoConnect = isWheelSearch, directSearch = true)
                 if (isWheelSearch) {
                     central.autoConnectPeripheral(peripheral, wheelCallback)
@@ -101,6 +103,8 @@ class BluetoothService: Service() {
             ) {
                 super.onDisconnectedPeripheral(peripheral, status)
                 Timber.i("Disconnected from wheel.")
+                if (peripheral.address == wheelAddress)
+                    com.cooper.wheellog.voice.VoiceAnnouncements.onDisconnected(applicationContext, disconnectRequested)
                 mDisconnectTime = Calendar.getInstance().time
                 if (!disconnectRequested && wheelAddress.isNotEmpty()) {
                     Timber.i("Trying to reconnect")
@@ -193,6 +197,8 @@ class BluetoothService: Service() {
                 }
                 WheelData.getInstance().isConnected = recognisedWheel
                 if (recognisedWheel) {
+                    if (peripheral.address == wheelAddress && !disconnectRequested && peripheral.state == ConnectionState.CONNECTED)
+                        com.cooper.wheellog.voice.VoiceAnnouncements.onConnected(applicationContext, peripheral.address)
                     sendBroadcast(Intent(Constants.ACTION_WHEEL_TYPE_RECOGNIZED))
                 } else {
                     Timber.e("Wheel is not recognised")
@@ -357,7 +363,8 @@ class BluetoothService: Service() {
 
     override fun onBind(p0: Intent?): IBinder {
         mgr = this.getSystemService(POWER_SERVICE) as PowerManager
-        startForeground(Constants.MAIN_NOTIFICATION_ID, notifications.notification)
+        com.cooper.wheellog.voice.VoiceForeground.start(this, notifications.notification)
+        com.cooper.wheellog.voice.VoiceAnnouncements.attach(applicationContext)
         if (appConfig.useReconnect) {
             startReconnectTimer()
         }
@@ -366,6 +373,7 @@ class BluetoothService: Service() {
     }
 
     override fun onDestroy() {
+        com.cooper.wheellog.voice.VoiceAnnouncements.detach()
         super.onDestroy()
         fileUtilRawData?.close()
         stopBeepTimer()

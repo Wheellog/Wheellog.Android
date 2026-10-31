@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speed_correction_title">Correct wheel speed</string>
+    <string name="speed_correction_description" formatted="false">Adjust wheel speed by −10% to +10% in 0.5% steps. Saved separately for each wheel. GPS speed is unchanged. For example: −10% changes 100 km/h to 90 km/h.</string>
+    <string name="speed_correction_decrease">Decrease correction by 0.5%</string>
+    <string name="speed_correction_increase">Increase correction by 0.5%</string>
+    <string name="speed_correction_indicator" translatable="false">true</string>
+</resources>

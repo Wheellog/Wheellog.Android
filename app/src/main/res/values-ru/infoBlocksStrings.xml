@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_blocks_order_description">Выбранные блоки находятся сверху. Меняйте их порядок стрелками. Остальные блоки отсортированы по имени.</string>
+    <string name="info_blocks_enabled">Выбранные блоки</string>
+    <string name="info_blocks_disabled">Остальные блоки</string>
+    <string name="info_presets_selection">Пресеты: %1$s</string>
+    <string name="info_presets_choose">выбрать или сохранить</string>
+    <string name="info_presets_save_new">Сохранить новый пресет (%1$d/%2$d)</string>
+    <string name="info_presets_new">Новый пресет блоков</string>
+    <string name="info_presets_name">Название пресета</string>
+    <string name="info_presets_update">Обновить сохранённые блоки и порядок</string>
+    <string name="info_presets_rename">Переименовать пресет</string>
+    <string name="info_presets_delete">Удалить пресет</string>
+    <string name="info_presets_delete_confirmation">Удалить «%1$s»? Текущие блоки главного экрана останутся без изменений.</string>
+    <string name="info_presets_duplicate">Пресет с таким названием уже существует.</string>
+    <string name="trip_metric_wheel">колесо</string>
+    <string name="trip_metric_average">средняя</string>
+</resources>

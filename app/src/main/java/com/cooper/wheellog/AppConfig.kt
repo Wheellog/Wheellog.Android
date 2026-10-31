@@ -42,19 +42,29 @@ class AppConfig(var context: Context): KoinComponent {
         set(value) = setValue(R.string.use_eng, value)
 
     var appThemeInt: Int
-        get() = getValue(R.string.app_theme, ThemeEnum.Original.value.toString()).toInt()
+        get() = ThemeEnum.fromInt(getValue(R.string.app_theme, ThemeEnum.Original.value.toString()).toIntOrNull() ?: 0).value
         set(value) = setValue(R.string.app_theme, value.toString())
 
     val appTheme: Int
         get() {
-            val stringVal = getValue(R.string.app_theme, ThemeEnum.Original.value.toString())
-            return when (ThemeEnum.fromInt(stringVal.toInt())) {
+            return when (ThemeEnum.fromInt(appThemeInt)) {
                 ThemeEnum.AJDM -> R.style.AJDMTheme
+                ThemeEnum.Contrast -> R.style.ContrastTheme
+                ThemeEnum.Inferno -> R.style.InfernoTheme
+                ThemeEnum.Porcelain -> R.style.PorcelainTheme
+                ThemeEnum.Polar -> R.style.PolarTheme
+                ThemeEnum.Jade -> R.style.JadeTheme
+                ThemeEnum.Steel -> R.style.SteelTheme
+                ThemeEnum.Heather -> R.style.HeatherTheme
                 else -> R.style.OriginalTheme
             }
         }
 
     var useComposeUI: Boolean = false
+
+    var lowBatteryColorThreshold: Int
+        get() = getValue(R.string.low_battery_color_threshold, 20).coerceIn(0, 100)
+        set(value) = setValue(R.string.low_battery_color_threshold, value.coerceIn(0, 100))
 
     var dayNightThemeMode: Int
         get() = getValue(R.string.day_night_theme, MODE_NIGHT_UNSPECIFIED.toString()).toInt()
@@ -63,6 +73,25 @@ class AppConfig(var context: Context): KoinComponent {
     var useBetterPercents: Boolean
         get() = getValue(R.string.use_better_percents, false)
         set(value) = setValue(R.string.use_better_percents, value)
+
+    var useSpeedCorrection: Boolean
+        get() = getValue("speed_correction_enabled_$lastMac", false)
+        set(value) = setValue("speed_correction_enabled_$lastMac", value)
+
+    // Keep the old integer-percent preference readable; the new key stores half-percent units.
+    var speedCorrectionPercent: Double
+        get() {
+            val key = "speed_correction_half_steps_$lastMac"
+            return if (sharedPreferences.contains(key)) {
+                WheelSpeedCorrection.fromHalfSteps(getValue(key, 0))
+            } else {
+                WheelSpeedCorrection.normalize(getValue("speed_correction_percent_$lastMac", 0).toDouble())
+            }
+        }
+        set(value) = setValue("speed_correction_half_steps_$lastMac", WheelSpeedCorrection.toHalfSteps(value))
+
+    val appliedSpeedCorrectionPercent: Double
+        get() = if (useSpeedCorrection) speedCorrectionPercent else 0.0
 
     var customPercents: Boolean
         get() = getValue(R.string.custom_percents, false)
@@ -84,18 +113,36 @@ class AppConfig(var context: Context): KoinComponent {
         get() = getValue(R.string.view_blocks_string, null)
         set(value) = setValue(R.string.view_blocks_string, value)
 
-   var viewBlocks: Array<String>
-        get() = this.viewBlocksString?.split(separator)?.toTypedArray()
-            ?: arrayOf(
-                context.getString(R.string.pwm),
-                context.getString(R.string.max_pwm),
-                context.getString(R.string.voltage),
-                context.getString(R.string.average_riding_speed),
-                context.getString(R.string.riding_time),
-                context.getString(R.string.top_speed),
-                context.getString(R.string.distance),
-                context.getString(R.string.total))
-        set(value) { this.viewBlocksString = value.joinToString(separator) }
+    private val infoBlocks by lazy { InfoBlocks(context) }
+    val infoBlockPresets by lazy { InfoBlockPresets(sharedPreferences, infoBlocks) }
+
+    var viewBlockIds: List<String>
+        get() {
+            val saved = viewBlocksString ?: return infoBlocks.defaults
+            val ids = infoBlocks.normalize(saved.split(separator))
+            val normalized = ids.joinToString(separator)
+            if (normalized != saved) viewBlocksString = normalized
+            return ids.filter { it in infoBlocks.titles }
+        }
+        set(value) { viewBlocksString = infoBlocks.normalize(value).joinToString(separator) }
+
+    var viewBlockOrder: List<String>
+        get() = infoBlocks.order(getValue("view_blocks_order", "").split(separator), viewBlockIds)
+        set(value) {
+            val order = infoBlocks.order(value, viewBlockIds)
+            setValue("view_blocks_order", order.joinToString(separator))
+            val selected = viewBlockIds.toSet()
+            viewBlockIds = order.filter { it in selected }
+        }
+
+    // The existing drawing and long-press replacement code consumes display titles.
+    // Only the persistence layer converts them to stable IDs and back.
+    var viewBlocks: Array<String>
+        get() = viewBlockIds.map { context.getString(infoBlocks.titles.getValue(it)) }.toTypedArray()
+        set(value) {
+            viewBlockIds = value.toList()
+            viewBlockOrder = viewBlockIds + viewBlockOrder
+        }
 
     var usePipMode: Boolean
         get() = getValue(R.string.use_pip_mode, false)
@@ -233,7 +280,12 @@ class AppConfig(var context: Context): KoinComponent {
 
     var logLocationData: Boolean
         get() = getValue(R.string.log_location_data, false)
-        set(value) = setValue(R.string.log_location_data, value)
+        set(value) {
+            setValue(R.string.log_location_data, value)
+            if (!value) {
+                LoggingService.disableLocation()
+            }
+        }
 
     var ecUserId: String?
         get() = getValue(R.string.ec_user_id, null)
@@ -279,8 +331,25 @@ class AppConfig(var context: Context): KoinComponent {
 
     var mainMenuButtons: Array<String>
         get() = getValue<String?>("main_menu_buttons", null)?.split(separator)?.toTypedArray()
-            ?: arrayOf("watch")
+            ?: arrayOf("watch", "record")
         set(value) = setValue("main_menu_buttons", value.joinToString(separator))
+
+    var dashboardPageOrder: List<String>
+        get() = com.cooper.wheellog.DashboardPages.normalizeOrder(getValue<String?>("dashboard_page_order", null)?.split("|") ?: emptyList())
+        set(value) = setValue("dashboard_page_order", com.cooper.wheellog.DashboardPages.normalizeOrder(value).joinToString("|"))
+
+    var dashboardVisiblePages: Set<String>
+        get() = getValue<String?>("dashboard_visible_pages", null)?.split("|")?.toSet()?.plus("main")
+            ?: setOf("main", "values", "bms") + (if (pageTrips) setOf("trips") else emptySet()) + (if (pageGraph) setOf("graph") else emptySet()) +
+                (if (pageEvents) setOf("events") else emptySet())
+        set(value) = setValue("dashboard_visible_pages", (value + "main").joinToString("|"))
+
+    fun migrateRecordButtonVisibility() {
+        if (!getValue("record_button_visibility_migrated", false)) {
+            mainMenuButtons = (mainMenuButtons + "record").distinct().toTypedArray()
+            setValue("record_button_visibility_migrated", true)
+        }
+    }
 
     var showClock: Boolean
         get() = getValue("show_clock", true)

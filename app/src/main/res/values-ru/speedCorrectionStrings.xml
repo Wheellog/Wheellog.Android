@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speed_correction_title">Коррекция скорости колеса</string>
+    <string name="speed_correction_description" formatted="false">Изменение скорости колеса от −10% до +10% с шагом 0,5%. Сохраняется отдельно для каждого колеса. Скорость GPS не меняется. Например: −10% превращает 100 км/ч в 90 км/ч.</string>
+    <string name="speed_correction_decrease">Уменьшить коррекцию на 0,5%</string>
+    <string name="speed_correction_increase">Увеличить коррекцию на 0,5%</string>
+</resources>

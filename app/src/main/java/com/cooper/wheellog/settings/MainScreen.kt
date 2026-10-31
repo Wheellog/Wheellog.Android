@@ -18,12 +18,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cooper.wheellog.MainActivity
 import com.cooper.wheellog.R
+import com.cooper.wheellog.utils.ThemeManager
 
 enum class SettingsScreenEnum(@StringRes val title: Int) {
     Start(title = R.string.settings_title),
     Application(title = R.string.speed_settings_title),
     Log(title = R.string.logs_settings_title),
     Alarm(title = R.string.alarm_settings_title),
+    Voice(title = R.string.voice_title),
     Watch(title = R.string.watch_settings_title),
     Wheel(title = R.string.wheel_settings_title),
     Trip(title = R.string.trip_settings_title),
@@ -49,6 +51,8 @@ private fun settingsAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
+                        tint = if (ThemeManager.theme == R.style.InfernoTheme)
+                            MaterialTheme.colorScheme.primary else LocalContentColor.current,
                         contentDescription = ""
                     )
                 }
@@ -56,6 +60,8 @@ private fun settingsAppBar(
                 IconButton(onClick = { activity?.toggleSettings() }) {
                     Icon(
                         imageVector = Icons.Filled.Close,
+                        tint = if (ThemeManager.theme == R.style.InfernoTheme)
+                            MaterialTheme.colorScheme.primary else LocalContentColor.current,
                         contentDescription = ""
                     )
                 }
@@ -99,6 +105,9 @@ fun mainScreen(
             }
             composable(route = SettingsScreenEnum.Alarm.name) {
                 alarmScreen()
+            }
+            composable(route = SettingsScreenEnum.Voice.name) {
+                voiceScreen()
             }
             composable(route = SettingsScreenEnum.Watch.name) {
                 watchScreen()

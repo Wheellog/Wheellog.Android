@@ -1,0 +1,11 @@
+<resources>
+    <color name="trip_popup_background">#FFFFFF</color>
+    <style name="TripPopupOriginal" parent="ThemeOverlay.AppCompat">
+        <item name="popupMenuStyle">@style/TripPopupOriginal.Widget</item>
+        <item name="android:popupMenuStyle">@style/TripPopupOriginal.Widget</item>
+    </style>
+    <style name="TripPopupOriginal.Widget" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@color/trip_popup_background</item>
+        <item name="android:itemBackground">@color/trip_popup_background</item>
+    </style>
+</resources>

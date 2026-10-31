@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="contrast_background">#000000</color>
+    <color name="contrast_surface">#101012</color>
+    <color name="contrast_accent">#EF3340</color>
+    <color name="contrast_foreground">#F4F4F5</color>
+    <color name="contrast_muted">#9B9B9F</color>
+    <color name="contrast_arc">#101012</color>
+    <color name="contrast_temperature">#E1DCE2</color>
+    <color name="inferno_background">#020709</color>
+    <color name="inferno_surface">#0A1519</color>
+    <color name="inferno_accent">#FF123D</color>
+    <color name="inferno_foreground">#FF3557</color>
+    <color name="inferno_muted">#B7CBD0</color>
+    <color name="inferno_arc">#06323B</color>
+    <color name="inferno_battery">#F4FDFF</color>
+    <color name="inferno_temperature">#22E4FF</color>
+    <color name="palette_signal_red">#FF0000</color>
+    <color name="palette_battery_recovery">#FFCC00</color>
+    <color name="palette_negative_current">#209100</color>
+    <color name="palette_version_muted">#69777B</color>
+
+    <attr name="paletteText" format="color"/>
+    <attr name="paletteAccent" format="color"/>
+    <attr name="paletteLabel" format="color"/>
+    <attr name="paletteArc" format="color"/>
+    <attr name="paletteSurface" format="color"/>
+    <attr name="paletteStatsText" format="color"/>
+    <attr name="paletteStatsLabel" format="color"/>
+
+    <style name="ContrastTheme" parent="OriginalTheme">
+        <item name="android:windowBackground">@color/contrast_background</item>
+        <item name="android:colorBackground">@color/contrast_background</item>
+        <item name="android:statusBarColor">@color/contrast_background</item>
+        <item name="android:navigationBarColor">@color/contrast_background</item>
+        <item name="android:textColor">@color/contrast_foreground</item>
+        <item name="android:textColorPrimary">@color/contrast_foreground</item>
+        <item name="android:textColorSecondary">@color/contrast_muted</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="colorPrimary">@color/contrast_surface</item>
+        <item name="colorPrimaryDark">@color/contrast_background</item>
+        <item name="colorAccent">@color/contrast_accent</item>
+        <item name="colorControlNormal">@color/contrast_muted</item>
+        <item name="colorControlActivated">@color/contrast_accent</item>
+        <item name="paletteText">@color/contrast_foreground</item>
+        <item name="paletteAccent">@color/contrast_accent</item>
+        <item name="paletteLabel">@color/contrast_muted</item>
+        <item name="paletteArc">@color/contrast_arc</item>
+        <item name="paletteSurface">@color/contrast_surface</item>
+        <item name="paletteStatsText">@color/contrast_foreground</item>
+        <item name="paletteStatsLabel">@color/contrast_muted</item>
+        <item name="alertDialogTheme">@style/PaletteDialog</item>
+        <item name="popupMenuStyle">@style/PalettePopup</item>
+        <item name="android:popupMenuStyle">@style/PalettePopup</item>
+    </style>
+    <style name="InfernoTheme" parent="ContrastTheme">
+        <item name="android:windowBackground">@color/inferno_background</item>
+        <item name="android:colorBackground">@color/inferno_background</item>
+        <item name="android:statusBarColor">@color/inferno_background</item>
+        <item name="android:navigationBarColor">@color/inferno_background</item>
+        <item name="android:textColor">@color/inferno_foreground</item>
+        <item name="android:textColorPrimary">@color/inferno_foreground</item>
+        <item name="android:textColorSecondary">@color/inferno_muted</item>
+        <item name="colorPrimary">@color/inferno_surface</item>
+        <item name="colorPrimaryDark">@color/inferno_background</item>
+        <item name="colorAccent">@color/inferno_accent</item>
+        <item name="colorControlNormal">@color/inferno_muted</item>
+        <item name="colorControlActivated">@color/inferno_accent</item>
+        <item name="paletteText">@color/inferno_foreground</item>
+        <item name="paletteAccent">@color/inferno_accent</item>
+        <item name="paletteLabel">@color/inferno_muted</item>
+        <item name="paletteArc">@color/inferno_arc</item>
+        <item name="paletteSurface">@color/inferno_surface</item>
+        <item name="paletteStatsText">@color/inferno_foreground</item>
+        <item name="paletteStatsLabel">@color/inferno_muted</item>
+    </style>
+    <style name="PaletteDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorPrimary">?attr/paletteAccent</item>
+        <item name="colorAccent">?attr/paletteAccent</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PaletteDialog.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/PaletteDialog.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/PaletteDialog.Button</item>
+        <item name="android:windowBackground">?attr/paletteSurface</item>
+        <item name="android:colorBackground">?attr/paletteSurface</item>
+        <item name="colorSurface">?attr/paletteSurface</item>
+        <item name="colorOnSurface">?attr/paletteText</item>
+        <item name="android:textColor">?attr/paletteText</item>
+        <item name="android:textColorPrimary">?attr/paletteText</item>
+        <item name="android:textColorSecondary">?attr/paletteLabel</item>
+        <item name="colorControlNormal">?attr/paletteLabel</item>
+    </style>
+    <style name="PaletteDialog.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/paletteAccent</item>
+    </style>
+    <style name="PalettePopup" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">?attr/paletteText</item>
+        <item name="android:itemBackground">?attr/paletteSurface</item>
+        <item name="android:popupBackground">?attr/paletteSurface</item>
+    </style>
+</resources>

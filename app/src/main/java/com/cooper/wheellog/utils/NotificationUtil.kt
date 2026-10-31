@@ -56,9 +56,9 @@ class NotificationUtil(private val context: Context): KoinComponent {
         val intentFlag = if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, intentFlag)
 
-        notificationView.setViewVisibility(R.id.ib_actions_layout,
-                if (buttonSettings.any()) View.VISIBLE
-                else View.GONE)
+        notificationView.setViewVisibility(R.id.ib_actions_layout, View.VISIBLE)
+        notificationView.setViewVisibility(R.id.ib_actions_text, View.GONE)
+        notificationView.setViewVisibility(R.id.ib_track, View.GONE)
 
         arrayOf(Triple(R.id.ib_connection, R.string.icon_connection, Constants.NOTIFICATION_BUTTON_CONNECTION),
                 Triple(R.id.ib_logging, R.string.icon_logging, Constants.NOTIFICATION_BUTTON_LOGGING),
@@ -73,6 +73,7 @@ class NotificationUtil(private val context: Context): KoinComponent {
             notificationView.setOnClickPendingIntent(it.first,
                     PendingIntent.getBroadcast(context, 0, Intent(it.third), intentFlag))
         }
+        notificationView.setViewVisibility(R.id.ib_logging, View.GONE)
         val wd = WheelData.getInstance() ?: return builder.build()
         val connectionState = wd.bluetoothService?.connectionState
                 ?: ConnectionState.DISCONNECTED
@@ -88,7 +89,7 @@ class NotificationUtil(private val context: Context): KoinComponent {
             if (appConfig.mibandMode == MiBandEnum.Alarm) {
                 notificationView.setTextViewText(R.id.text_message, context.getString(R.string.alarmmiband))
             } else {
-                val template = when (appConfig.appTheme) {
+                val template = when (ThemeManager.theme) {
                     R.style.AJDMTheme -> R.string.notification_text_ajdm_theme
                     else -> R.string.notification_text
                 }
@@ -107,7 +108,7 @@ class NotificationUtil(private val context: Context): KoinComponent {
                     MiBandEnum.Max -> ThemeManager.getId(ThemeIconEnum.MenuMiBandMax)
                 })
         // Themes
-        if (appConfig.appTheme == R.style.AJDMTheme) {
+        if (ThemeManager.theme == R.style.AJDMTheme) {
             notificationView.setImageViewResource(R.id.icon, R.drawable.ajdm_notification_icon)
             notificationView.setInt(R.id.status_bar_latest_event_content, "setBackgroundResource", R.color.ajdm_background)
             val textColor = Color.BLACK
@@ -179,7 +180,7 @@ class NotificationUtil(private val context: Context): KoinComponent {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 deleteNotificationChannel(Constants.NOTIFICATION_CHANNEL_ID_NOTIFICATION)
             }
-            cancelAll()
+            cancel(Constants.MAIN_NOTIFICATION_ID)
         }
         kostilTimer?.cancel()
         kostilTimer = null

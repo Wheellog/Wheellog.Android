@@ -22,6 +22,7 @@ import com.cooper.wheellog.utils.SomeUtil
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
 import com.cooper.wheellog.utils.StringUtil.toTempString
 import com.cooper.wheellog.utils.ThemeManager
+import com.cooper.wheellog.utils.PaletteSignals
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
@@ -36,6 +37,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     private var outerArcPaint = Paint()
     private var innerArcPaint = Paint()
     private var textPaint = Paint()
+    private val gaugeLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val outerArcRect = RectF()
     private val innerArcRect = RectF()
     private val middleArcRect = RectF()
@@ -118,32 +120,32 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
 
     private val viewBlockInfo: Array<ViewBlockInfo>
         get() = arrayOf(
-                ViewBlockInfo(resources.getString(R.string.pwm)) { String.format(Locale.US, "%.2f%%", mPwm) },
-                ViewBlockInfo(resources.getString(R.string.max_pwm)) { String.format(Locale.US, "%.2f%%", mMaxPwm) },
-                ViewBlockInfo(resources.getString(R.string.voltage)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), mVoltage) },
-                ViewBlockInfo(resources.getString(R.string.average_riding_speed)) {
+                ViewBlockInfo("pwm", resources.getString(R.string.pwm)) { String.format(Locale.US, "%.2f%%", mPwm) },
+                ViewBlockInfo("max_pwm", resources.getString(R.string.max_pwm)) { String.format(Locale.US, "%.2f%%", mMaxPwm) },
+                ViewBlockInfo("voltage", resources.getString(R.string.voltage)) { String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), mVoltage) },
+                ViewBlockInfo("average_riding_speed", resources.getString(R.string.average_riding_speed)) {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mAverageSpeed))
                     } else {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), mAverageSpeed)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.riding_time)) { mCurrentTime },
-                ViewBlockInfo(resources.getString(R.string.speed)) {
+                ViewBlockInfo("riding_time", resources.getString(R.string.riding_time)) { mCurrentTime },
+                ViewBlockInfo("speed", resources.getString(R.string.speed)) {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mSpeed.toFloat() / 10))
                     } else {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), mSpeed.toFloat() / 10)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.top_speed)) {
+                ViewBlockInfo("top_speed", resources.getString(R.string.top_speed)) {
                     if (useMph) {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.mph), kmToMiles(mTopSpeed))
                     } else {
                         String.format(Locale.US, "%.1f " + resources.getString(R.string.kmh), mTopSpeed)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.distance)) {
+                ViewBlockInfo("distance", resources.getString(R.string.distance)) {
                     if (useMph) {
                         String.format(Locale.US, "%.2f " + resources.getString(R.string.miles), kmToMiles(mDistance))
                     } else {
@@ -154,20 +156,20 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                         }
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.total)) {
+                ViewBlockInfo("total", resources.getString(R.string.total)) {
                     if (useMph) {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.miles), kmToMiles(mTotalDistance))
                     } else {
                         String.format(Locale.US, "%.0f " + resources.getString(R.string.km), mTotalDistance)
                     }
                 },
-                ViewBlockInfo(resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
-                ViewBlockInfo(resources.getString(R.string.current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mCurrent) },
-                ViewBlockInfo(resources.getString(R.string.phase_current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mPhaseCurrent) },
-                ViewBlockInfo(resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrentDouble) },
-                ViewBlockInfo(resources.getString(R.string.maxphasecurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxPhaseCurrentDouble) },
+                ViewBlockInfo("battery", resources.getString(R.string.battery)) { String.format(Locale.US, "%d %%", mBattery) },
+                ViewBlockInfo("current", resources.getString(R.string.current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mCurrent) },
+                ViewBlockInfo("phase_current", resources.getString(R.string.phase_current)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), mPhaseCurrent) },
+                ViewBlockInfo("maxcurrent", resources.getString(R.string.maxcurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxCurrentDouble) },
+                ViewBlockInfo("maxphasecurrent", resources.getString(R.string.maxphasecurrent)) { String.format(Locale.US, "%.1f " + resources.getString(R.string.amp), WheelData.getInstance().maxPhaseCurrentDouble) },
                 ViewBlockInfo(
-                    resources.getString(R.string.power),
+                    "power", resources.getString(R.string.power),
                     {
                         String.format(
                             Locale.US,
@@ -178,7 +180,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.maxpower),
+                    "maxpower", resources.getString(R.string.maxpower),
                     {
                         String.format(
                             Locale.US,
@@ -188,17 +190,17 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     },
                     false
                 ),
-                ViewBlockInfo(resources.getString(R.string.temperature), {
+                ViewBlockInfo("temperature", resources.getString(R.string.temperature), {
                     mTemperature.toTempString()
                 },
                 false),
-                ViewBlockInfo(resources.getString(R.string.temperature2), {
+                ViewBlockInfo("temperature2", resources.getString(R.string.temperature2), {
                     WheelData.getInstance().temperature2.toTempString()
                 }, false),
-                ViewBlockInfo(resources.getString(R.string.maxtemperature), {
+                ViewBlockInfo("maxtemperature", resources.getString(R.string.maxtemperature), {
                     mMaxTemperature.toTempString()
                 }, false),
-                ViewBlockInfo(resources.getString(R.string.average_speed), {
+                ViewBlockInfo("average_speed", resources.getString(R.string.average_speed), {
                         if (useMph) {
                             String.format(
                                 Locale.US,
@@ -216,12 +218,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.ride_time),
+                    "ride_time", resources.getString(R.string.ride_time),
                     { WheelData.getInstance().rideTimeString },
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.wheel_distance),
+                    "wheel_distance", resources.getString(R.string.wheel_distance),
                     {
                         if (useMph) {
                             String.format(
@@ -240,7 +242,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.remaining_distance),
+                    "remaining_distance", resources.getString(R.string.remaining_distance),
                     {
                         if (useMph) {
                             String.format(
@@ -259,21 +261,21 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.battery_per_km),
+                    "battery_per_km", resources.getString(R.string.battery_per_km),
                     {
                         String.format(Locale.US, "%.2f %%", WheelData.getInstance().batteryPerKm)
                     },
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.avg_cell_volt),
+                    "avg_cell_volt", resources.getString(R.string.avg_cell_volt),
                     {
                         String.format(Locale.US, "%.2f " + resources.getString(R.string.volt), WheelData.getInstance().avgVoltagePerCell)
                     },
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.user_distance),
+                    "user_distance", resources.getString(R.string.user_distance),
                     {
                         String.format(
                             Locale.US,
@@ -283,7 +285,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     false
                 ),
                 ViewBlockInfo(
-                    resources.getString(R.string.consumption),
+                    "consumption", resources.getString(R.string.consumption),
                     {
                         if (appConfig.useMph) {
                             String.format(
@@ -315,9 +317,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             block.index = -1
         }
         var index = 0
-        for (title in appConfig.viewBlocks) {
+        for (key in appConfig.viewBlockIds) {
             for (block in mViewBlocks) {
-                if (block.title == title) {
+                if (block.key == key) {
                     block.index = index++
                     block.enabled = true
                     break
@@ -326,6 +328,16 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         }
         useMph = appConfig.useMph
         Arrays.sort(mViewBlocks)
+    }
+
+    private fun drawSpeedCorrectionIndicator(canvas: Canvas, metric: String, metricOffset: Float) {
+        if (!appConfig.useSpeedCorrection) return
+        textPaint.textSize = speedTextKPHSize
+        val baseline = speedTextRect.bottom + speedTextKPHHeight * metricOffset
+        if (appConfig.useShortPwm) canvas.drawText(metric, outerArcRect.centerX(), baseline, textPaint)
+        textPaint.textSize = speedTextKPHSize * 0.55f
+        canvas.drawText(resources.getString(R.string.speed_correction_indicator), outerArcRect.centerX(),
+            baseline + speedTextKPHHeight * 0.8f, textPaint)
     }
 
     fun resetBatteryLowest() {
@@ -533,7 +545,8 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         if (landscape && w.toFloat() / h > 1.4 || !landscape && h.toFloat() / w > 1.1) {
             redrawTextBoxes()
         }
-        versionPaint.textSize = (height / 50.0).roundToInt().toFloat()
+        versionPaint.textSize = (height / 50.0).roundToInt().toFloat() *
+            if (ThemeManager.palette != null) 0.75f else 1f
         refresh()
     }
 
@@ -631,6 +644,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         val paintDescription = Paint(paint)
         paintDescription.textSize = boxTextSize / 2f
         paintDescription.alpha = 150
+        if (ThemeManager.palette != null) {
+            paintDescription.color = getColorEx(R.color.secondary_text)
+        }
         try {
             var i = 0
             for (block in mViewBlocks) {
@@ -711,6 +727,15 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         currentBattery = updateCurrentValue(targetBattery, currentBattery)
         val pwmColor = getPwmColor(WheelData.getInstance().calculatedPwm.toInt())
 
+        val customPalette = ThemeManager.palette != null
+        val speedWarning = PaletteSignals.isSpeedWarning(
+            customPalette, appConfig.pwmBasedAlarms, mSpeed, appConfig.alarm1Speed,
+        )
+        val batteryWarning = PaletteSignals.isBatteryWarning(
+            customPalette, mBattery, appConfig.lowBatteryColorThreshold,
+        )
+        val signalRed = getColorEx(R.color.palette_signal_red)
+
         //####################################################
         //################# DRAW OUTER ARC ###################
         //####################################################
@@ -725,6 +750,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                 outerArcPaint.color = getColorEx(R.color.wheelview_main_negative_dial)
             }
         }
+        if (speedWarning && appConfig.valueOnDial == "0") outerArcPaint.color = signalRed
         currentDial = abs(currentDial)
         //###########TEST purp
         //currentSpeed = (int) Math.round(( mCurrent /(10*mMaxSpeed)) * 112);
@@ -741,8 +767,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         canvas.drawArc(innerArcRect, 144f, 90f, false, innerArcPaint)
         canvas.drawArc(innerArcRect, 306f, 90f, false, innerArcPaint)
         innerArcPaint.color = getColorEx(R.color.wheelview_battery_dial)
+        if (batteryWarning) innerArcPaint.color = signalRed
         for (i in 0..111) {
-            if (i == targetBatteryLowest) innerArcPaint.color = getColorEx(R.color.wheelview_battery_low_dial)
+            if (i == targetBatteryLowest && !batteryWarning) innerArcPaint.color = getColorEx(R.color.wheelview_battery_low_dial)
             if (i == currentTemperature) innerArcPaint.color = getColorEx(R.color.wheelview_temperature_dial)
             if (i < currentBattery || i >= currentTemperature) {
                 val value = 144 + i * 2.25f
@@ -757,6 +784,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         val speedString: String = if (speed < 100) String.format(Locale.US, "%.1f", speed / 10.0) else String.format(Locale.US, "%02d", (speed / 10.0).roundToInt())
         val alarm1Speed = appConfig.alarm1Speed.toDouble()
         if (appConfig.swapSpeedPwm) textPaint.color = pwmColor
+        else if (speedWarning) textPaint.color = signalRed
         else if (!appConfig.pwmBasedAlarms && alarm1Speed * 10 > 0 && mSpeed >= alarm1Speed * 10) textPaint.color = getColorEx(R.color.accent)
         else textPaint.color = getColorEx(R.color.wheelview_speed_text)
         textPaint.textSize = speedTextSize
@@ -781,6 +809,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             textPaint.color = getColorEx(R.color.wheelview_text)
             canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 1.7f, textPaint)
         }
+        drawSpeedCorrectionIndicator(canvas, metric, 1.7f)
 
         //####################################################
         //######## DRAW BATTERY AND TEMPERATURE TEXT #########
@@ -790,7 +819,9 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             canvas.save()
             if (width > height) canvas.rotate(144 + currentBattery * 2.25f - 180, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(144 + currentBattery * 2.25f - 180, innerArcRect.centerY(), innerArcRect.centerX())
             val bestBatteryString = String.format(Locale.US, "%02d%%", mBattery)
-            canvas.drawText(bestBatteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint)
+            if (batteryWarning) textPaint.color = signalRed
+            drawGaugeLabel(canvas, bestBatteryString, batteryTextRect.centerX(), batteryTextRect.centerY())
+            textPaint.color = getColorEx(R.color.wheelview_text)
             canvas.restore()
             canvas.save()
             /// true battery
@@ -800,18 +831,18 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                 var batteryCalculateType = "true"
                 if (customPercents && !WheelData.getInstance().isVoltageTiltbackUnsupported) batteryCalculateType = "custom"
                 val batteryString = String.format(Locale.US, "%s", batteryCalculateType)
-                canvas.drawText(batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), textPaint)
+                drawGaugeLabel(canvas, batteryString, batteryTextRect.centerX(), batteryTextRect.centerY(), batteryMode = true)
                 canvas.restore()
                 canvas.save()
             }
             if (width > height) canvas.rotate(143.5f + currentTemperature * 2.25f, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(143.5f + currentTemperature * 2.25f, innerArcRect.centerY(), innerArcRect.centerX())
-            canvas.drawText(mTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
+            drawGaugeLabel(canvas, mTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY())
             canvas.restore()
             canvas.save()
 
             // Max temperature
             if (width > height) canvas.rotate(-50f, innerArcRect.centerX(), innerArcRect.centerY()) else canvas.rotate(-50f, innerArcRect.centerY(), innerArcRect.centerX())
-            canvas.drawText(mMaxTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY(), textPaint)
+            drawGaugeLabel(canvas, mMaxTemperature.toTempString(), temperatureTextRect.centerX(), temperatureTextRect.centerY())
             canvas.restore()
             canvas.save()
         }
@@ -821,6 +852,25 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
 
         // Draw text blocks bitmap
         drawTextBlocksBitmap(canvas)
+    }
+
+    private fun drawGaugeLabel(canvas: Canvas, text: String, x: Float, y: Float, batteryMode: Boolean = false) {
+        if (ThemeManager.theme != R.style.InfernoTheme) {
+            canvas.drawText(text, x, y, textPaint)
+            return
+        }
+        gaugeLabelPaint.set(textPaint)
+        gaugeLabelPaint.typeface = Typeface.create("sans-serif", Typeface.BOLD)
+        gaugeLabelPaint.textSize = innerArcTextSize * if (batteryMode) 1.15f else 1.5f
+        // Outline first, then the original text color (including the low-charge warning).
+        gaugeLabelPaint.style = Paint.Style.STROKE
+        gaugeLabelPaint.strokeJoin = Paint.Join.ROUND
+        gaugeLabelPaint.strokeWidth = gaugeLabelPaint.textSize * if (batteryMode) 0.08f else 0.12f
+        gaugeLabelPaint.color = Color.BLACK
+        canvas.drawText(text, x, y, gaugeLabelPaint)
+        gaugeLabelPaint.style = Paint.Style.FILL
+        gaugeLabelPaint.color = textPaint.color
+        canvas.drawText(text, x, y, gaugeLabelPaint)
     }
 
     private fun drawAJDM(canvas: Canvas) {
@@ -969,6 +1019,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             textPaint.color = getColorEx(R.color.ajdm_wheelview_text)
             canvas.drawText(metric, outerArcRect.centerX(), speedTextRect.bottom + speedTextKPHHeight * 1.1f, textPaint)
         }
+        drawSpeedCorrectionIndicator(canvas, metric, 1.1f)
 
         //####################################################
         //######## DRAW BATTERY AND TEMPERATURE TEXT #########
@@ -1009,9 +1060,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         canvas.drawBitmap(mTextBoxesBitmap!!, 0f, 0f, textPaint)
         refreshDisplay = currentSpeed != targetSpeed || currentCurrent != targetCurrent || currentPhaseCurrent != targetPhaseCurrent || currentBattery != targetBattery || currentTemperature != targetTemperature
         if (width * 1.2 < height) {
+            // Reserve the glyph descent inside the existing view, without moving the tiles.
+            val baseline = height - paddingBottom - if (ThemeManager.palette != null)
+                max(0f, versionPaint.fontMetrics.descent) else 0f
             canvas.drawText(versionString, (
-                    width - paddingRight).toFloat(), (
-                    height - paddingBottom).toFloat(),
+                    width - paddingRight).toFloat(), baseline,
                 versionPaint)
         }
     }
@@ -1147,9 +1200,11 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                     return
                 }
                 Alarms.vibrate(context, longArrayOf(0, 50, 50))
-                val currentTitle = mViewBlocks.filter { it.enabled }[i].title
-                val items = mViewBlocks.filter { !it.enabled }.map { block -> block.title }
-                AlertDialog.Builder(context, R.style.OriginalTheme_Dialog_Alert)
+                val current = mViewBlocks.filter { it.enabled }[i]
+                val currentTitle = current.title
+                val replacements = mViewBlocks.filter { !it.enabled }
+                val items = replacements.map { block -> block.title }
+                AlertDialog.Builder(context)
                     .setIcon(R.drawable.ic_baseline_dashboard_customize_24)
                     .setTitle(
                         String.format(
@@ -1158,10 +1213,12 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
                         )
                     )
                     .setItems(items.toTypedArray()) { _, which ->
-                        val title = items[which]
-                        val newBlocks = appConfig.viewBlocks
-                        newBlocks[newBlocks.indexOf(currentTitle)] = title
-                        appConfig.viewBlocks = newBlocks
+                        val newBlocks = appConfig.viewBlockIds.toMutableList()
+                        val index = newBlocks.indexOf(current.key)
+                        if (index < 0) return@setItems
+                        newBlocks[index] = replacements[which].key
+                        appConfig.viewBlockIds = newBlocks
+                        appConfig.viewBlockOrder = newBlocks + appConfig.viewBlockOrder
                         updateViewBlocksVisibility()
                         redrawTextBoxes()
                     }
@@ -1205,7 +1262,7 @@ class WheelView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             } catch (ignored: Exception) {
             }
         } else {
-            currentTheme = appConfig.appTheme
+            currentTheme = ThemeManager.dialTheme
         }
 
         useMph = appConfig.useMph

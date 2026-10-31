@@ -40,7 +40,11 @@
             android:format24Hour="HH:mm:ss"
             android:gravity="start"
             android:maxLines="1"
-            android:textColor="@color/wheelview_text"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeMaxTextSize="29sp"
+            android:autoSizeStepGranularity="1sp"
+            android:textColor="?attr/paletteText"
             android:textSize="29sp" />
     </androidx.appcompat.widget.Toolbar>
 
@@ -56,9 +60,9 @@
         android:layout_width="match_parent"
         android:layout_height="14dp"
         app:ci_height="2dp"
-        app:ci_width="30dp"
-        app:ci_margin="10dp"
-        app:ci_drawable="@color/accent"
-        app:ci_drawable_unselected="@color/wheelview_arc_dim"
+        app:ci_width="20dp"
+        app:ci_margin="5dp"
+        app:ci_drawable="?attr/paletteAccent"
+        app:ci_drawable_unselected="?attr/paletteArc"
         android:layout_gravity = "center_horizontal|bottom" />
 </LinearLayout>

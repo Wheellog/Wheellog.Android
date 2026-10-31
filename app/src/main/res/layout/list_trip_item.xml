@@ -1,73 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    app:cardBackgroundColor="@color/primary"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="2dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp">
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/prime"
-            android:singleLine="true"
-            android:text="2021_99_99_23_59_59.csv"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toStartOf="@+id/popupButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="6dp"
-            android:fontFamily="@font/prime"
-            android:text="123 Kb"
-            app:layout_constraintStart_toStartOf="@+id/name"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/description2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="6dp"
-            android:fontFamily="@font/prime"
-            android:text="123 Kb"
-            app:layout_constraintStart_toEndOf="@+id/description"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            tools:ignore="HardcodedText" />
-
-        <ImageButton
-            android:id="@+id/popupButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/share"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_drop_down_circle_24" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:layout_marginVertical="5dp"
+    app:cardCornerRadius="10dp" app:cardElevation="2dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="8dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+            <TextView android:id="@+id/name" android:layout_width="0dp" android:layout_weight="1"
+                android:layout_height="wrap_content" android:textSize="19sp" android:fontFamily="@font/prime"
+                android:maxLines="2" android:ellipsize="end" />
+            <ImageButton android:id="@+id/popupButton" android:layout_width="48dp" android:layout_height="48dp"
+                android:background="@android:color/transparent" android:contentDescription="@string/track_actions"
+                android:padding="10dp" app:srcCompat="@drawable/ic_baseline_settings_24" />
+        </LinearLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.Guideline android:id="@+id/thumbnail_edge"
+                android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.40" />
+            <com.cooper.wheellog.track.TrackThumbnailView android:id="@+id/thumbnail"
+                android:layout_width="0dp" android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="1:1" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/thumbnail_edge" app:layout_constraintTop_toTopOf="parent" />
+            <androidx.gridlayout.widget.GridLayout android:id="@+id/metric_grid"
+                android:layout_width="0dp" android:layout_height="0dp" android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="@id/thumbnail_edge" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/thumbnail" app:layout_constraintBottom_toBottomOf="@id/thumbnail"
+                app:columnCount="2" app:rowCount="4" app:useDefaultMargins="false">
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_wheel_speed"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="0" app:layout_column="0" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_gps_speed"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="0" app:layout_column="1" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_average"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="1" app:layout_column="0" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_pwm"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="1" app:layout_column="1" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_duration"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="2" app:layout_column="0" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_distance"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="2" app:layout_column="1" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_energy"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="3" app:layout_column="0" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+                <com.cooper.wheellog.views.TripMetricView android:id="@+id/metric_consumption"
+                    android:layout_width="0dp" android:layout_height="0dp"
+                    app:layout_row="3" app:layout_column="1" app:layout_columnWeight="1" app:layout_rowWeight="1" app:layout_gravity="fill" />
+            </androidx.gridlayout.widget.GridLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

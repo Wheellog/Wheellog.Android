@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_porcelain">Porcelain</string>
+    <string name="theme_polar">Polar</string>
+    <string name="theme_jade">Jade</string>
+    <string name="theme_steel">Steel</string>
+    <string name="theme_heather">Heather</string>
+</resources>

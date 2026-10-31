@@ -50,6 +50,10 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Composable
+private fun settingsTextColor(fallback: Color = MaterialTheme.colorScheme.primary): Color =
+    if (ThemeManager.theme == R.style.InfernoTheme) MaterialTheme.colorScheme.onSurface else fallback
+
+@Composable
 fun clickablePref(
     name: String,
     modifier: Modifier = Modifier,
@@ -202,6 +206,7 @@ fun sliderPref(
                         Text(
                             text = unitStr,
                             style = MaterialTheme.typography.bodyMedium,
+                            color = settingsTextColor(MaterialTheme.colorScheme.onSurfaceVariant),
                         )
                     },
                     isError = isError,
@@ -318,7 +323,7 @@ fun sliderPref(
                             maxLines = 1,
                             modifier = Modifier.padding(6.dp).fillMaxWidth(),
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                color = MaterialTheme.colorScheme.primary
+                                color = settingsTextColor()
                             ),
                             textAlign = TextAlign.Center,
                         )
@@ -332,7 +337,7 @@ fun sliderPref(
                                 start = 2.dp
                             ),
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                color = MaterialTheme.colorScheme.primary
+                                color = settingsTextColor()
                             ),
                             textAlign = TextAlign.Center,
                         )
@@ -373,7 +378,7 @@ fun group(
                     ),
                 text = if (contentVisible) { "" } else { "➖   " } + name,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary,
+                color = settingsTextColor(MaterialTheme.colorScheme.secondary),
             )
         }
         AnimatedVisibility (contentVisible) {
@@ -862,7 +867,7 @@ fun baseSettings(
                     Text(
                         text = name,
                         style = MaterialTheme.typography.bodyLarge.copy(
-                            color = MaterialTheme.colorScheme.primary
+                            color = settingsTextColor()
                         ),
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis
@@ -873,6 +878,8 @@ fun baseSettings(
                         modifier = Modifier.padding(top = 4.dp),
                         text = desc,
                         style = MaterialTheme.typography.bodySmall,
+                        color = if (ThemeManager.theme == R.style.InfernoTheme)
+                            MaterialTheme.colorScheme.onSurfaceVariant else LocalContentColor.current,
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1151,7 +1158,7 @@ private fun listPreview(appConfig: AppConfig = koinInject()) {
     list(
         name = stringResource(R.string.app_theme_title),
         desc = stringResource(R.string.app_theme_description),
-        entries = ThemeEnum.values().associate { it.value.toString() to it.name },
+        entries = ThemeEnum.values().associate { it.value.toString() to stringResource(it.title) },
         defaultKey = ThemeEnum.Original.value.toString(),
     )
 }

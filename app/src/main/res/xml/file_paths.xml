@@ -3,4 +3,5 @@
     <external-path name="logs" path="Download/WheelLog/" />
     <external-path name="logs_old" path="Download/WheelLog Logs/" />
     <files-path name="files" path="." />
+    <cache-path name="gpx" path="gpx/" />
 </paths>

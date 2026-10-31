@@ -31,6 +31,7 @@ enum class ThemeIconEnum {
     SettingsBug,
     SettingsAbout,
     SettingsVibration,
+    SettingsVoice,
     SettingsTrips,
     SettingsDonate,
     SettingsPowerOff,

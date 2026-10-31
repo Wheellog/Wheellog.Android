@@ -14,6 +14,15 @@ import com.cooper.wheellog.R
 import com.cooper.wheellog.data.TripParser
 import com.cooper.wheellog.databinding.ActivityMapBinding
 import com.cooper.wheellog.utils.SomeUtil.getColorEx
+import com.cooper.wheellog.AppConfig
+import com.cooper.wheellog.LoggingService
+import com.cooper.wheellog.data.NativeCsv
+import com.cooper.wheellog.utils.ThemeManager
+import org.koin.android.ext.android.inject
+import android.os.SystemClock
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.Date
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
@@ -24,6 +33,7 @@ import org.osmdroid.config.Configuration
 import java.io.*
 
 class MapActivity : AppCompatActivity() {
+    private val appConfig: AppConfig by inject()
 
     private val mapAdapter by lazy { MapActivityAdapter(this) }
     private lateinit var viewPager: ViewPager2
@@ -37,6 +47,7 @@ class MapActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(ThemeManager.theme)
         super.onCreate(savedInstanceState)
         val context = applicationContext
 
@@ -72,6 +83,8 @@ class MapActivity : AppCompatActivity() {
         )
 
         tabs = binding.tabs
+        binding.root.setBackgroundColor(getColorEx(R.color.background))
+        styleTripTabs(this, tabs)
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = tabNames[position]
         }.attach()
@@ -82,25 +95,29 @@ class MapActivity : AppCompatActivity() {
                 return
             }
 
-        // async
         backgroundScope.launch {
-            val tripData = parseFile(extras)
-            if (isDestroyed) {
-                return@launch
-            }
-
-            MainScope().launch {
-                viewModel.selectItem(tripData)
-            }
+            do {
+                val tripData = parseFile(extras)
+                if (isDestroyed) return@launch
+                withContext(Dispatchers.Main) { viewModel.selectItem(tripData) }
+                if (LoggingService.currentLogFileName != tripData.fileName) break
+                delay(3_000)
+            } while (isActive)
         }
     }
 
+    override fun onDestroy() {
+        backgroundScope.cancel()
+        super.onDestroy()
+    }
+
     private fun parseFile(extras: Bundle): TripData {
-        val title = extras.getString("title", "undefined")
+        val fileName = extras.getString("file_name", extras.getString("title", "undefined"))
+        val title = getSharedPreferences("trip_titles", MODE_PRIVATE).getString(fileName, extras.getString("title", fileName))!!
         val path = extras.getString("path", "undefined")
         val uri = Uri.parse(extras.getString("uri", "undefined"))
         val tripData = TripData(title)
-        val parsed = TripParser.parseFile(applicationContext, title, path, uri)
+        val parsed = TripParser.parseFile(applicationContext, fileName, path, uri)
         val list = parsed.first
         val db = parsed.second
         tripData.errorMessage = TripParser.lastError
@@ -121,77 +138,28 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
-        val chart1DataSets = listOf(
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.batteryLevel.toFloat()) },
-                getString(R.string.battery)
-            ).apply {
-                color = getColorEx(R.color.stats_battery)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            },
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.speed.toFloat()) },
-                getString(R.string.speed)
-            ).apply {
-                color = getColorEx(R.color.stats_speed)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            },
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.temperature.toFloat()) },
-                getString(R.string.temperature)
-            ).apply {
-                color = getColorEx(R.color.stats_temp)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.RIGHT
-                lineWidth = 2f
-            })
-        val chart2DataSets = listOf(
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.pwm.toFloat()) },
-                getString(R.string.pwm)
-            ).apply {
-                color = getColorEx(R.color.stats_pwm)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            },
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.voltage.toFloat()) },
-                getString(R.string.voltage)
-            ).apply {
-                color = getColorEx(R.color.stats_voltage)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            },
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.power.toFloat()) },
-                getString(R.string.power)
-            ).apply {
-                color = getColorEx(R.color.stats_power)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.RIGHT
-                lineWidth = 2f
-            },
-            LineDataSet(
-                list.map { Entry(it.timePlusDayOfWeek, it.current.toFloat()) },
-                getString(R.string.current)
-            ).apply {
-                color = getColorEx(R.color.stats_current)
-                setDrawCircles(false)
-                axisDependency = YAxis.AxisDependency.LEFT
-                lineWidth = 2f
-            })
+        fun series(title: Int, metric: Int, right: Boolean = false, wheelOnly: Boolean = true,
+                   reading: (com.cooper.wheellog.data.LogTick) -> Double?) = statsSeries(list, getString(title),
+            statSeriesColor(metric), if (right) YAxis.AxisDependency.RIGHT else YAxis.AxisDependency.LEFT, wheelOnly, reading)
+        val chart1DataSets = series(R.string.battery, R.color.stats_battery) { if (it.wheelDataAvailable) it.batteryLevel.toDouble() else null } +
+            series(R.string.speed, R.color.stats_speed, wheelOnly = false) { if (it.wheelDataAvailable || it.gpsSpeedAvailable) it.speed else null } +
+            series(R.string.temperature, R.color.stats_temp, right = true) { if (it.wheelDataAvailable) it.availableTemperature else null }
+        val chart2DataSets = series(R.string.pwm, R.color.stats_pwm) { if (it.pwmAvailable) it.pwm else null } +
+            series(R.string.voltage, R.color.stats_voltage) { if (it.wheelDataAvailable) it.availableVoltage else null } +
+            series(R.string.power, R.color.stats_power, right = true) { if (it.wheelDataAvailable) it.availablePower else null } +
+            series(R.string.current, R.color.stats_current) { if (it.wheelDataAvailable) it.availableCurrent else null }
 
         return tripData.copy(
             geoLine = geoLine,
-            stats1 = chart1DataSets,
-            stats2 = chart2DataSets,
-            tripDb = db
+            stats1 = chart1DataSets.filter { it.entryCount > 0 },
+            stats2 = chart2DataSets.filter { it.entryCount > 0 },
+            tripDb = db,
+            values = com.cooper.wheellog.data.TripValues.calculate(list),
+            routePoints = NativeCsv.points(list),
+            startedAt = list.firstOrNull()?.timestampMillis ?: 0,
+            endedAt = list.lastOrNull()?.timestampMillis,
+            distanceMeters = db?.distance?.toDouble() ?: com.cooper.wheellog.track.summarizeTrack(NativeCsv.points(list)).distanceMeters,
+            fileName = fileName,
         )
     }
 }

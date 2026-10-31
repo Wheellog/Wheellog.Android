@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="trip_gps_maximum">Max GPS speed</string>
+    <string name="trip_gps_average">Average GPS speed</string>
+    <string name="trip_gps_moving_average">Average moving GPS speed</string>
+    <string name="trip_wheel_maximum">Max wheel speed</string>
+    <string name="trip_min_voltage">Min voltage</string>
+    <string name="trip_max_motor_temperature">Max motor temperature</string>
+</resources>

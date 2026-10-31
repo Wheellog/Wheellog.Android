@@ -20,6 +20,12 @@ object ThemeManager: KoinComponent {
 
     var theme = appConfig.appTheme
 
+    val palette: ColorPalette?
+        get() = ColorPalette.forTheme(theme)
+
+    val dialTheme: Int
+        get() = if (theme == R.style.AJDMTheme) R.style.AJDMTheme else R.style.OriginalTheme
+
     fun getTypeface(context: Context): Typeface {
         val fontResId = when(theme) {
             R.style.AJDMTheme -> R.font.ajdm
@@ -87,6 +93,8 @@ object ThemeManager: KoinComponent {
         original[ThemeIconEnum.SettingsBug] = R.drawable.ic_baseline_bug_report_24
         original[ThemeIconEnum.SettingsAbout] = R.drawable.ic_baseline_info_24
         original[ThemeIconEnum.SettingsVibration] = R.drawable.ic_baseline_vibration_24
+        original[ThemeIconEnum.SettingsVoice] = R.drawable.ic_voice_notifications_24
+        ajdm[ThemeIconEnum.SettingsVoice] = R.drawable.ic_voice_notifications_24
         original[ThemeIconEnum.SettingsWheel] = R.drawable.ic_wheel_white_24
         original[ThemeIconEnum.SettingsTrips] = R.drawable.ic_baseline_explore_24
         original[ThemeIconEnum.SettingsDonate] = R.drawable.ic_donate_24
@@ -133,24 +141,14 @@ object ThemeManager: KoinComponent {
         val pm = pkg.packageManager
         val original = ComponentName(pkg, "com.cooper.wheellog.OriginalIconAlias")
         val ajdm = ComponentName(pkg, "com.cooper.wheellog.AjdmIconAlias")
-        if (appConfig.appTheme == R.style.AJDMTheme) {
-            pm.setComponentEnabledSetting(
-                    ajdm,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP)
-            pm.setComponentEnabledSetting(
-                    original,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP)
-        } else {
-            pm.setComponentEnabledSetting(
-                    ajdm,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP)
-            pm.setComponentEnabledSetting(
-                    original,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP)
+        fun enabled(component: ComponentName, manifestDefault: Boolean): Boolean = when (pm.getComponentEnabledSetting(component)) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
+            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT -> manifestDefault
+            else -> false
+        }
+        // Never disable the component to which an existing home-screen shortcut points.
+        if (!enabled(original, true) && !enabled(ajdm, false)) {
+            pm.setComponentEnabledSetting(original, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
         }
     }
 }

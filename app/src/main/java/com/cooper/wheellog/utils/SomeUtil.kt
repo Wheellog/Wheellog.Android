@@ -37,10 +37,11 @@ object SomeUtil: KoinComponent {
     @Suppress("DEPRECATION")
     @ColorInt
     fun Context.getColorEx(@ColorRes id: Int): Int {
+        val colorId = ThemeManager.palette?.resourceFor(id) ?: id
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            resources.getColor(id)
+            resources.getColor(colorId)
         else
-            getColor(id)
+            getColor(colorId)
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

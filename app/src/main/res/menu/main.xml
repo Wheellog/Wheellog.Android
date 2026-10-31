@@ -32,6 +32,7 @@
         android:title="@string/reset_extremum_values_title"
         android:visible="false"
         app:showAsAction="always" />
+    <item android:id="@+id/miTrackRecord" android:title="@string/track_start" android:icon="@drawable/ic_track_record" app:showAsAction="always" />
     <item
         android:id="@+id/miSettings"
         app:showAsAction="always"

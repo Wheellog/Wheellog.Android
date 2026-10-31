@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_blocks_order_description">Selected blocks appear first. Use the arrows to change their order. Other blocks are sorted by name.</string>
+    <string name="info_blocks_enabled">Selected blocks</string>
+    <string name="info_blocks_disabled">Other blocks</string>
+    <string name="info_presets_selection">Presets: %1$s</string>
+    <string name="info_presets_choose">choose or save</string>
+    <string name="info_presets_save_new">Save as new preset (%1$d/%2$d)</string>
+    <string name="info_presets_new">New block preset</string>
+    <string name="info_presets_name">Preset name</string>
+    <string name="info_presets_update">Update saved blocks and order</string>
+    <string name="info_presets_rename">Rename preset</string>
+    <string name="info_presets_delete">Delete preset</string>
+    <string name="info_presets_delete_confirmation">Delete “%1$s”? The current dashboard blocks will stay unchanged.</string>
+    <string name="info_presets_duplicate">A preset with this name already exists.</string>
+    <string name="trip_metric_wheel">wheel</string>
+    <string name="trip_metric_average">average</string>
+</resources>

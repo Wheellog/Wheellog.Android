@@ -28,7 +28,7 @@ fun applicationScreen(
             AlertDialog(
                 onDismissRequest ={ restartRequiredAlert = false },
                 title = { Text(stringResource(R.string.use_eng_alert_title)) },
-                text = { Text(stringResource(R.string.use_eng_alert_description)) },
+                text = { Text(stringResource(R.string.palette_restart_description)) },
                 confirmButton = {
                     Button(onClick = { restartRequiredAlert = false }) {
                         Text(stringResource(android.R.string.ok))
@@ -51,11 +51,23 @@ fun applicationScreen(
             list(
                 name = stringResource(R.string.app_theme_title),
                 desc = stringResource(R.string.app_theme_description),
-                entries = ThemeEnum.values().associate { it.value.toString() to it.name },
+                entries = ThemeEnum.values().associate { it.value.toString() to stringResource(it.title) },
                 defaultKey = appConfig.appThemeInt.toString()
             ) {
-                restartRequiredAlert = true
                 appConfig.appThemeInt = it.first.toInt()
+                restartRequiredAlert = true
+            }
+
+            sliderPref(
+                name = stringResource(R.string.low_battery_color_threshold_title),
+                desc = stringResource(R.string.low_battery_color_threshold_description),
+                position = appConfig.lowBatteryColorThreshold.toFloat(),
+                min = 0f,
+                max = 100f,
+                unit = R.string.palette_percent_unit,
+                format = "%.0f",
+            ) {
+                appConfig.lowBatteryColorThreshold = it.toInt()
             }
 
             list(
@@ -98,6 +110,8 @@ fun applicationScreen(
                 appConfig.useBetterPercents = it
             }
 
+            speedCorrectionPreference(appConfig)
+
             var customPercents by remember { mutableStateOf(appConfig.customPercents) }
             switchPref(
                 name = stringResource(R.string.custom_percents_title),
@@ -139,45 +153,7 @@ fun applicationScreen(
 
         group(name = stringResource(R.string.main_view_category)) {
 
-            multiList(
-                name = stringResource(R.string.view_blocks_title),
-                desc = stringResource(R.string.view_blocks_description),
-                themeIcon = ThemeIconEnum.SettingsBlocks,
-                entries = mapOf(
-                    // TODO: use enum as key instead of localized string resources
-                    stringResource(R.string.pwm) to stringResource(R.string.pwm),
-                    stringResource(R.string.max_pwm) to stringResource(R.string.max_pwm),
-                    stringResource(R.string.voltage) to stringResource(R.string.voltage),
-                    stringResource(R.string.battery) to stringResource(R.string.battery),
-                    stringResource(R.string.top_speed) to stringResource(R.string.top_speed),
-                    stringResource(R.string.average_riding_speed) to stringResource(R.string.average_riding_speed),
-                    stringResource(R.string.average_speed) to stringResource(R.string.average_speed),
-                    stringResource(R.string.riding_time) to stringResource(R.string.riding_time),
-                    stringResource(R.string.ride_time) to stringResource(R.string.ride_time),
-                    stringResource(R.string.current) to stringResource(R.string.current),
-                    stringResource(R.string.maxcurrent) to stringResource(R.string.maxcurrent),
-                    stringResource(R.string.phase_current) to stringResource(R.string.phase_current),
-                    stringResource(R.string.maxphasecurrent) to stringResource(R.string.maxphasecurrent),
-                    stringResource(R.string.power) to stringResource(R.string.power),
-                    stringResource(R.string.maxpower) to stringResource(R.string.maxpower),
-                    stringResource(R.string.temperature) to stringResource(R.string.temperature),
-                    stringResource(R.string.temperature2) to stringResource(R.string.temperature2),
-                    stringResource(R.string.maxtemperature) to stringResource(R.string.maxtemperature),
-                    stringResource(R.string.distance) to stringResource(R.string.distance),
-                    stringResource(R.string.total) to stringResource(R.string.total),
-                    stringResource(R.string.wheel_distance) to stringResource(R.string.wheel_distance),
-                    stringResource(R.string.remaining_distance) to stringResource(R.string.remaining_distance),
-                    stringResource(R.string.battery_per_km) to stringResource(R.string.battery_per_km),
-                    stringResource(R.string.consumption) to stringResource(R.string.consumption),
-                    stringResource(R.string.avg_cell_volt) to stringResource(R.string.avg_cell_volt),
-                    stringResource(R.string.user_distance) to stringResource(R.string.user_distance),
-                    stringResource(R.string.speed) to stringResource(R.string.speed),
-                ),
-                defaultKeys = appConfig.viewBlocks.toList(),
-                useSort = true,
-            ) {
-                appConfig.viewBlocks = it.toTypedArray()
-            }
+            infoBlocksPreference(appConfig)
             var usePipMode by remember { mutableStateOf(appConfig.usePipMode) }
 
             switchPref(
@@ -222,11 +198,13 @@ fun applicationScreen(
             multiList(
                 name = stringResource(R.string.main_menu_buttons_title),
                 entries = mapOf(
+                    "record" to stringResource(R.string.track_title),
                     "watch" to stringResource(R.string.start_pebble_service),
                     "miband" to stringResource(R.string.miband_desc),
                     "reset" to stringResource(R.string.reset_max_values_title),
                 ),
                 keyIcons = mapOf(
+                    "record" to R.drawable.ic_track_record,
                     "watch" to R.drawable.ic_action_watch_white,
                     "miband" to R.drawable.ajdm_ic_mi_med,
                     "reset" to R.drawable.ic_action_reset,
@@ -346,30 +324,7 @@ fun applicationScreen(
         }
 
         group(name = stringResource(R.string.dashboard_pages_category_title)) {
-            switchPref(
-                name = stringResource(R.string.show_page_graph_title),
-                default = appConfig.pageGraph,
-            ) {
-                appConfig.pageGraph = it
-            }
-
-            switchPref(
-                name = stringResource(R.string.show_page_events_title),
-                desc = stringResource(R.string.show_page_events_description),
-                themeIcon = ThemeIconEnum.SettingsPageEvents,
-                default = appConfig.pageEvents,
-            ) {
-                appConfig.pageEvents = it
-            }
-
-            switchPref(
-                name = stringResource(R.string.show_page_trips_title),
-                themeIcon = ThemeIconEnum.SettingsPageTrips,
-                default = appConfig.pageTrips,
-                showDiv = false,
-            ) {
-                appConfig.pageTrips = it
-            }
+            dashboardPagesPreference(appConfig)
         }
 
         group(name = stringResource(R.string.audio_category_title)) {

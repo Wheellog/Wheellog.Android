@@ -256,6 +256,7 @@ object Alarms: KoinComponent {
     }
 
     private fun raiseAlarm(alarmType: ALARM_TYPE, value: Double, mContext: Context) {
+        com.cooper.wheellog.voice.VoiceAnnouncements.onAlarm(mContext, alarmType, value)
         val intent = Intent(Constants.ACTION_ALARM_TRIGGERED)
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_TYPE, alarmType)
         intent.putExtra(Constants.INTENT_EXTRA_ALARM_VALUE, value)

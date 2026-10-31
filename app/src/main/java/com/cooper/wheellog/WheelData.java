@@ -25,6 +25,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import timber.log.Timber;
 
@@ -98,6 +99,10 @@ public class WheelData {
     private WHEEL_TYPE mWheelType = WHEEL_TYPE.Unknown;
     private long rideStartTime;
     private long mStartTotalDistance;
+    // A continued CSV can start before this live dashboard session. Keep its
+    // distance origin separate from the counters used for session averages.
+    // null: no recording origin; -1: waiting for the first live wheel odometer.
+    private final AtomicReference<Long> mRecordingStartTotalDistance = new AtomicReference<>();
 
     private double mCalculatedPwm = 0.0;
     private double mMaxPwm = 0.0;
@@ -225,7 +230,7 @@ public class WheelData {
     }
 
     public int getSpeed() {
-        return (int) Math.round(mSpeed / 10.0);
+        return (int) Math.round(mSpeed / 10.0 * speedCorrectionFactor());
     }
 
     public void setSpeed(int speed) {
@@ -744,14 +749,14 @@ public class WheelData {
     public double getAverageSpeedDouble() {
         if (mTotalDistance != 0 && mRideTime != 0) {
             // 3.6 = (60 sec * 60 mim) / 1000 meters.
-            return getDistanceFromStart() * 3.6 / (mRideTime + mLastRideTime);
+            return getDistanceFromStart() * 3.6 / (mRideTime + mLastRideTime) * speedCorrectionFactor();
         } else return 0.0;
     }
 
     public double getAverageRidingSpeedDouble() {
         if (mTotalDistance != 0 && mRidingTime != 0) {
             // 3.6 = (60 sec * 60 mim) / 1000 meters.
-            return getDistanceFromStart() * 3.6 / mRidingTime;
+            return getDistanceFromStart() * 3.6 / mRidingTime * speedCorrectionFactor();
         } else return 0.0;
     }
 
@@ -775,8 +780,14 @@ public class WheelData {
     }
 
     public double getSpeedDouble() {
-        return mSpeed / 100.0;
+        return getRawSpeedDouble() * speedCorrectionFactor();
     }
+
+    public double getRawSpeedDouble() { return mSpeed / 100.0; }
+
+    public double getAppliedSpeedCorrectionPercent() { return appConfig.getAppliedSpeedCorrectionPercent(); }
+
+    private double speedCorrectionFactor() { return 1.0 + getAppliedSpeedCorrectionPercent() / 100.0; }
 
     public double getVoltageDouble() {
         return mVoltage / 100.0;
@@ -880,15 +891,15 @@ public class WheelData {
     }
 
     public int getTopSpeed() {
-        return mTopSpeed;
+        return (int) Math.round(mTopSpeed * speedCorrectionFactor());
     }
 
     public double getTopSpeedDouble() {
-        return mTopSpeed / 100.0;
+        return mTopSpeed / 100.0 * speedCorrectionFactor();
     }
 
     int getDistance() {
-        return (int) (mTotalDistance - mStartTotalDistance);
+        return (int) getRecordedDistanceMeters();
     }
 
     long getWheelDistance() {
@@ -950,7 +961,30 @@ public class WheelData {
     }
 
     public double getDistanceDouble() {
-        return (mTotalDistance - mStartTotalDistance) / 1000.0;
+        return getRecordedDistanceMeters() / 1000.0;
+    }
+
+    /** Restore distance only, without replaying archived live sensor readings. */
+    public void setRecordingDistanceStart(Long startTotalDistance) {
+        mRecordingStartTotalDistance.set(startTotalDistance != null && startTotalDistance >= 0
+                ? startTotalDistance : -1L);
+    }
+
+    private long getRecordedDistanceMeters() {
+        return getDistanceAtOdometer(mTotalDistance);
+    }
+
+    public long getDistanceAtOdometer(long odometer) {
+        if (odometer <= 0) return 0;
+        Long start = mRecordingStartTotalDistance.get();
+        if (start != null && start < 0) {
+            // A GPS-only start has no odometer yet. The first live wheel packet
+            // establishes the origin, rather than displaying the lifetime total.
+            mRecordingStartTotalDistance.compareAndSet(start, odometer);
+            start = mRecordingStartTotalDistance.get();
+        }
+        long origin = start == null ? mStartTotalDistance : start < 0 ? odometer : start;
+        return Math.max(0, odometer - origin);
     }
 
     public double getTotalDistanceDouble() {
@@ -1093,6 +1127,9 @@ public class WheelData {
         updateVoltageSag();
         setMaxTemp(mTemperature);
 
+        LoggingService.onWheelDataDecoded(this);
+        com.cooper.wheellog.voice.VoiceAnnouncements.onTelemetry(mContext, this);
+
         Intent intent = new Intent(Constants.ACTION_WHEEL_DATA_AVAILABLE);
 
         if (graph_last_update_time + GRAPH_UPDATE_INTERVAL < Calendar.getInstance().getTimeInMillis()) {
@@ -1212,6 +1249,9 @@ public class WheelData {
         mTotalDistance = 0;
         mCurrent = 0;
         mPower = 0;
+        mMaxCurrent = 0;
+        mMaxPhaseCurrent = 0;
+        mMaxPower = 0;
         mTemperature = 0;
         mTemperature2 = 0;
         mCpuLoad = 0;
@@ -1244,9 +1284,11 @@ public class WheelData {
         mBtName = "";
         rideStartTime = 0;
         mStartTotalDistance = 0;
+        mRecordingStartTotalDistance.set(null);
         protoVer = "";
         mWheelAlarm = false;
         mWheelIsReady = false;
+        mLastLifeData = -1;
     }
 
     boolean detectWheel(String deviceAddress, Context mContext, int servicesResId) {

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_title">Voice announcements</string>
+    <string name="voice_language_note">Speech follows the app language: Russian or English. Choose and listen to an offline voice for each language below.</string>
+    <string name="voice_enable">Enable voice announcements</string>
+    <string name="voice_alarms">Speak alarms</string>
+    <string name="voice_alarm_note">Uses your existing alarm thresholds. Beeps and vibration remain controlled by Alarm settings.</string>
+    <string name="voice_connection">Announce connection and connection loss</string>
+    <string name="voice_reports">Automatic ride reports</string>
+    <string name="voice_triggers">When to read a report</string>
+    <string name="voice_triggers_note">Conditions can be enabled together. All read the values selected in Report contents. Simultaneous conditions produce one report. Enter distances in kilometres and metres.</string>
+    <string name="voice_time_enabled">By time</string>
+    <string name="voice_distance_connect">Connect the wheel to configure distance conditions.</string>
+    <string name="voice_distance_periodic">Every N kilometres of the ride</string>
+    <string name="voice_distance_interval">Distance interval</string>
+    <string name="voice_distance_after">N kilometres after enabling this option</string>
+    <string name="voice_distance_after_note">Once. Turns off after announcing. Changing the distance starts a new countdown. Without a connection, counting starts with the first fresh wheel data.</string>
+    <string name="voice_distance_after_value">Distance after enabling</string>
+    <string name="voice_distance_target">At a total wheel mileage</string>
+    <string name="voice_distance_target_note">Once. Enter a future wheel odometer reading. The target survives app restarts. Turns off after announcing.</string>
+    <string name="voice_distance_target_value">Total mileage for the report</string>
+    <string name="voice_distance_amount">%1$d km %2$d m</string>
+    <string name="voice_distance_current">Current total mileage: %1$d km %2$d m. Distance settings are saved separately for each wheel.</string>
+    <string name="voice_distance_waiting">Waiting for fresh wheel data</string>
+    <string name="voice_distance_future">Enter a mileage greater than the current reading. Metres: 0–999.</string>
+    <string name="voice_distance_invalid">Enter a distance greater than zero. Metres: 0–999.</string>
+    <string name="voice_kilometres">Kilometres</string>
+    <string name="voice_metres">Metres</string>
+    <string name="voice_field_time">Ride time</string>
+    <string name="voice_value_average_moving_kmh">Average moving speed: %1$s kilometres per hour.</string>
+    <string name="voice_value_average_moving_mph">Average moving speed: %1$s miles per hour.</string>
+    <string name="voice_value_average_kmh">Average speed: %1$s kilometres per hour.</string>
+    <string name="voice_value_average_mph">Average speed: %1$s miles per hour.</string>
+    <string name="voice_value_time">Ride time: %1$s.</string>
+    <plurals name="voice_time_hours"><item quantity="one">%1$d hour</item><item quantity="other">%1$d hours</item></plurals>
+    <plurals name="voice_time_minutes"><item quantity="one">%1$d minute</item><item quantity="other">%1$d minutes</item></plurals>
+    <plurals name="voice_time_seconds"><item quantity="one">%1$d second</item><item quantity="other">%1$d seconds</item></plurals>
+    <string name="voice_interval">Report interval, seconds</string>
+    <string name="voice_interval_note">15–1800 seconds. A report starts only with fresh wheel data and yields to alarms.</string>
+    <string name="voice_moving">Reports only while moving</string>
+    <string name="voice_moving_note">Automatic reports require a speed of at least 10 km/h (6.2 mph). Alarms are unaffected.</string>
+    <string name="voice_report_fields">Report contents</string>
+    <string name="voice_field_temperature">Controller temperature</string>
+    <string name="voice_field_motor_temperature">Motor temperature</string>
+    <string name="voice_field_voltage">Voltage</string>
+    <string name="voice_field_current">Current</string>
+    <string name="voice_field_power">Power</string>
+    <string name="voice_field_pwm">PWM</string>
+    <string name="voice_report_now">Read current values now</string>
+    <string name="voice_voices">Voices and listening</string>
+    <string name="voice_engine">Speech synthesizer</string>
+    <string name="voice_russian">Russian voice</string>
+    <string name="voice_english">English voice</string>
+    <string name="voice_choose_note">Selecting a voice plays a sample. The choice is saved for this language.</string>
+    <string name="voice_number">Voice %1$d</string>
+    <string name="voice_auto">Automatic offline voice</string>
+    <plurals name="voice_battery_percent"><item quantity="one">Battery: %1$s percent.</item><item quantity="other">Battery: %1$s percent.</item></plurals>
+    <plurals name="voice_distance_km"><item quantity="one">Distance: %1$s kilometer.</item><item quantity="other">Distance: %1$s kilometers.</item></plurals>
+    <plurals name="voice_distance_mi"><item quantity="one">Distance: %1$s mile.</item><item quantity="other">Distance: %1$s miles.</item></plurals>
+    <string name="voice_preview_ru">Listen to the Russian voice</string>
+    <string name="voice_preview_en">Listen to the English voice</string>
+    <string name="voice_stop">Stop speech</string>
+    <string name="voice_refresh">Reload voice list</string>
+    <string name="voice_install">Install voice data</string>
+    <string name="voice_install_note">Download English and Russian voices in the synthesizer, then return and tap Reload voice list. Announcements use installed offline voices.</string>
+    <string name="voice_install_error">Open your phone settings and search for text-to-speech to install voices.</string>
+    <string name="voice_loading">Loading available voices…</string>
+    <string name="voice_engine_error">The speech synthesizer is unavailable. Check its settings and refresh the voices.</string>
+    <string name="voice_no_offline_voice">No installed offline voice is available for this language in the selected synthesizer.</string>
+    <string name="voice_no_live_data">Connect the wheel and wait for fresh data to read a report.</string>
+    <string name="voice_audio_unavailable">Audio is currently unavailable. Try again after the call or other audio interruption.</string>
+    <string name="voice_rate">Speech rate, percent</string>
+    <string name="voice_volume">Speech volume, percent</string>
+    <string name="voice_volume_note">Relative to the phone’s media volume.</string>
+    <string name="voice_repeat">Alarm repeat interval, seconds</string>
+    <string name="voice_duck">Lower music volume during speech</string>
+    <string name="voice_preview_text">WheelLog. Speed: 25 kilometers per hour. Battery: 80 percent. Distance: 12.5 kilometers.</string>
+    <string name="voice_connected">Wheel connected.</string>
+    <string name="voice_disconnected">Wheel connection lost.</string>
+    <string name="voice_alarm_speed">Slow down! Speed limit exceeded.</string>
+    <string name="voice_alarm_pwm">Slow down! PWM: %1$s percent.</string>
+    <string name="voice_alarm_current">High current! %1$s amperes.</string>
+    <string name="voice_alarm_temperature">High temperature! %1$s degrees Celsius.</string>
+    <string name="voice_alarm_battery">Low battery! %1$s percent.</string>
+    <string name="voice_alarm_wheel">Wheel alarm! Slow down.</string>
+    <string name="voice_value_speed_kmh">Speed: %1$s kilometers per hour.</string>
+    <string name="voice_value_speed_mph">Speed: %1$s miles per hour.</string>
+    <string name="voice_value_battery">Battery: %1$s percent.</string>
+    <string name="voice_value_distance_km">Distance: %1$s kilometers.</string>
+    <string name="voice_value_distance_mi">Distance: %1$s miles.</string>
+    <string name="voice_value_voltage">Voltage: %1$s volts.</string>
+    <string name="voice_value_current">Current: %1$s amperes.</string>
+    <string name="voice_value_power">Power: %1$s watts.</string>
+    <string name="voice_value_temperature">Controller temperature: %1$s degrees Celsius.</string>
+    <string name="voice_value_motor_temperature">Motor temperature: %1$s degrees Celsius.</string>
+    <string name="voice_value_pwm">PWM: %1$s percent.</string>
+    <string name="voice_playback_ready">Ready to announce readings and alarms</string>
+    <string name="voice_music_mode">Music during speech</string>
+    <string name="voice_music_mode_note">Makes voice announcements easier to hear. Pausing depends on player support.</string>
+    <string name="voice_music_mix">Leave unchanged</string>
+    <string name="voice_music_duck">Lower volume</string>
+    <string name="voice_music_pause">Pause</string>
+</resources>
